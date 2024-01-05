@@ -145,11 +145,13 @@ struct VortexMakerDebugAllocInfo {
 // [SECTION]: Internal structures
 //_____________________________________________________________________________
 
-
 struct VxIO {
   int         MetricsActiveAllocations;  
+                                       
   // All loaded components
+  std::vector<VxToolchain> toolchains;    
 };
+
 
 //-----------------------------------------------------------------------------
 // (Context) VortexMakerContext => Main VortexMaker context.
@@ -160,8 +162,22 @@ struct VxIO {
 struct VxContext {
   bool                              initialized;
   VxIO                              IO;
-  VortexMakerDebugAllocInfo            debugAllocInfo;
+  VortexMakerDebugAllocInfo         debugAllocInfo;
+
+  std::string author;
+  std::string description;
+  std::string label;
+  std::string name;
+  std::string type;
+  std::string version;
+
+
+  std::string toolchainsPath;
+  std::string packagesPath;
+
   // All contents...
+
+
 
 };
 //-----------------------------------------------------------------------------

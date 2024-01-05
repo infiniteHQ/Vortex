@@ -238,4 +238,96 @@ bool VortexMaker::DebugCheckVersionAndDataLayout(const char* version)
 }
 
 
+bool RegisterPackage(nlohmann::json packageData) {
+  // Create instance from json raw and ad it into the context IO.
+
+  return true;
+}
+
+bool RegisterToolchain(nlohmann::json toolchainData) {
+  VxContext &ctx = *CVortexMaker;
+  VxToolchain toolchain;
+
+  toolchain.name      = toolchainData["toolchain"]["name"].get<std::string>();
+  toolchain.author    = toolchainData["toolchain"]["author"].get<std::string>();
+  toolchain.type      = toolchainData["toolchain"]["type"].get<std::string>();
+  toolchain.state     = toolchainData["toolchain"]["state"].get<std::string>();
+
+  toolchain.target_arch     = toolchainData["configs"]["target_arch"].get<std::string>();
+  toolchain.host_arch       = toolchainData["configs"]["host_arch"].get<std::string>();
+  toolchain.builder_arch    = toolchainData["configs"]["builder_arch"].get<std::string>();
+  
+  ctx.IO.toolchains.push_back(toolchain);
+
+  return true;
+}
+
+namespace fs = std::filesystem;
+
+nlohmann::json DumpJSON(const std::string& file) {
+    std::ifstream fichier(file);
+    
+    if (!fichier.is_open()) {
+        throw std::runtime_error("Error while opening file " + file);
+    }
+
+    nlohmann::json json_data;
+    fichier >> json_data;
+
+    return json_data;
+}
+
+void SearchFilesRecursive(const fs::path& chemin, const std::string& filename, std::vector<std::string>& fichiersTest) {
+    for (const auto& entry : fs::directory_iterator(chemin)) {
+        if (entry.is_regular_file() && entry.path().filename().string().find(filename) != std::string::npos) {
+            std::cout << "Ajout d'un nouveau fichier : " << entry.path().string() << std::endl;
+            fichiersTest.push_back(entry.path().string());
+        } else if (entry.is_directory()) {
+            SearchFilesRecursive(entry.path(), filename, fichiersTest);
+        }
+    }
+}
+
+std::vector<std::string> SearchFiles(const std::string& path, const std::string& filename) {
+    std::vector<std::string> fichiersTest;
+    SearchFilesRecursive(fs::current_path() / path, filename, fichiersTest);
+    return fichiersTest;
+}
+
+
+VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs){
+  VxContext &ctx = *CVortexMaker;
+
+  ctx.author = main_configs["project"]["author"].get<std::string>();
+  ctx.description = main_configs["project"]["description"].get<std::string>();
+  ctx.label = main_configs["project"]["label"].get<std::string>();
+  ctx.name = main_configs["project"]["name"].get<std::string>();
+  ctx.type = main_configs["project"]["type"].get<std::string>();
+  ctx.version = main_configs["project"]["version"].get<std::string>();
+
+  ctx.packagesPath = main_configs["data"]["packages"].get<std::string>();
+  ctx.toolchainsPath = main_configs["data"]["toolchains"].get<std::string>();
+
+    // Packages
+    for (const auto& file : SearchFiles(ctx.packagesPath, "package.config")) {
+        try {
+            nlohmann::json filecontent = DumpJSON(file);
+            RegisterPackage(filecontent);
+        } catch (const std::exception& e) {
+            std::cerr << "Error : " << e.what() << std::endl;
+        }
+    }
+
+    // Toolchains
+    for (const auto& file : SearchFiles(ctx.toolchainsPath, "toolchain.config")) {
+        try {
+            nlohmann::json filecontent = DumpJSON(file);
+            RegisterToolchain(filecontent);
+        } catch (const std::exception& e) {
+            std::cerr << "Error : " << e.what() << std::endl;
+        }
+    }
+}
+
+
 #endif // VORTEX_DISABLE

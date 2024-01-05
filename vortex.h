@@ -75,6 +75,12 @@
 #include <stdio.h>                  // NULL
 #include <stdexcept>                // NULL
 #include <cstring>                  // strchr, strncpy
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <nlohmann/json.hpp>
+#include <filesystem>
+#include <vector>
 
 #ifdef USE_REGISTERING
 #include <chrono>
@@ -191,6 +197,8 @@ namespace VortexMaker
     VORTEX_API VxContext*       GetCurrentContext();
     VORTEX_API void             SetCurrentContext(VxContext* context);
     VORTEX_API void             Initialize();
+
+    VORTEX_API void             InitProject(nlohmann::json main_config);
 
 
     bool                        DebugCheckVersionAndDataLayout(const char* version);
@@ -450,8 +458,62 @@ private:
 //_____________________________________________________________________________
 
 
-struct Toolchain{
 
+struct VxPackage{
+    std::string name;
+    std::string label;
+
+};
+
+struct VxToolchain{
+    // Vortex project informations
+    std::string name;
+    std::string author;
+    std::string description;
+    std::string type;
+    std::string state;
+
+    std::string target_arch;
+    std::string builder_arch;
+    std::string host_arch;
+
+
+    // Low level toolchain informations
+    std::string vendor                  = "not specified";
+    std::string workingPath             = "not specified";
+    std::string ouputPath              = "not specified";
+    std::string toolchainSourcePath     = "not specified";
+    bool        useWorkingPath          = false;
+    bool        isCompressed            = false;
+    std::string compressionMode         = "not specified";
+
+    
+
+        // -> Toolchain Sysroot Path
+    std::string sysrootPath             = "not specified";
+    std::string debugrootPath             = "not specified";
+    std::string vxToolchain_TempPackagesPoolPath             = "not specified";
+    std::string vxToolchain_CrossToolsPath             = "not specified";
+    std::string vxToolchain_HostPath            = "not specified";
+    std::string vxToolchain_ProdPath            = "not specified";
+
+        // -> Source pool
+    std::string vxToolchain_SourcesPool             = "not specified";
+
+        // -> Temporary source directory in toolchain
+    std::string vxToolchain_SourcesToolchain        = "not specified";
+
+        // -> Complete triplet to handle or complete if specified
+    std::string vxToolchain_HostTriplet             = "not specified";
+    std::string vxToolchain_BuilderTriplet          = "not specified";
+    std::string vxToolchain_TargetTriplet           = "not specified";
+
+        // -> Simple ARCH index
+    std::string vxToolchain_BuilderArch             = "not specified";
+    std::string vxToolchain_TargetArch              = "not specified";
+    std::string vxToolchain_HostArch                = "not specified";
+
+    // Vector de packages
 }; 
 
 

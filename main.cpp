@@ -1,14 +1,48 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <fstream>
+
 
 #include "./tools/devtools/app/src/devtools.h"
 #include "./vortex.h"
 
+bool CheckDirectory(){
+    std::ifstream mainconfig("vortex.config");
+    if (!mainconfig.good()) {
+        std::cout << "This directory does not contain a Vortex project. Please initialize a new project with \"vortex -I <project_name>\" or repair it." << std::endl;
+        return false;
+    }
+    return true;
+}
+
+VxContext* InitRuntime(){ 
+    VxContext* ctx = VortexMaker::CreateContext();
+    std::ifstream file("vortex.config");
+
+    // Vérification si le fichier existe
+    if (file) {
+        nlohmann::json jsonContenu;
+        file >> jsonContenu;
+
+        std::cout << "Contenu JSON du fichier :" << std::endl;
+        std::cout << jsonContenu.dump(4) << std::endl;
+        VortexMaker::InitProject(jsonContenu);
+    } else {
+    }
+
+
+    // ajouter les fichiers de config
+    // et init le projet, charger tout.
+
+    return ctx;
+}
+
 int main(int argc, char *argv[])
 {
 
-    VxContext* ctx = VortexMaker::CreateContext();
+
+
 
     if (argc < 2)
     {
@@ -27,16 +61,17 @@ int main(int argc, char *argv[])
     {
         if (std::string(argv[1]) == "-g" || std::string(argv[1]) == "--gui")
         {
+            if(!CheckDirectory()){return 1;};
             std::cout << "Opening the graphical interface..." << std::endl;
 
             std::thread receiveThread;
-            std::thread Thread([&]()
-                               { VortexMaker::DebugTools(argc, argv, ctx); });
+            std::thread Thread([&]() { VortexMaker::DebugTools(argc, argv, InitRuntime()); });
             receiveThread.swap(Thread);
             receiveThread.join();
         }
         else if (std::string(argv[1]) == "-b" || std::string(argv[1]) == "--build")
         {
+            if(!CheckDirectory()){return 1;};
             if (argc < 3)
             {
                 std::cout << "Usage : vortex -b <build_type>" << std::endl;
@@ -79,6 +114,7 @@ int main(int argc, char *argv[])
         }
         else if (std::string(argv[1]) == "-a" || std::string(argv[1]) == "--add")
         {
+            if(!CheckDirectory()){return 1;};
             if (argc < 3)
             {
                 std::cout << "Usage : vortex -a <content_type>" << std::endl;
@@ -91,6 +127,7 @@ int main(int argc, char *argv[])
         }
         else if (std::string(argv[1]) == "-p" || std::string(argv[1]) == "--preview")
         {
+            if(!CheckDirectory()){return 1;};
             if (argc < 3)
             {
             }
