@@ -194,7 +194,38 @@ void VortexMaker::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
 }
 
 
+std::string SearchFilesRecursive(const fs::path& chemin, const std::string& filename, std::vector<std::string>& file) {
+    for (const auto& entry : fs::directory_iterator(chemin)) {
+        if (entry.is_regular_file() && entry.path().filename().string().find(filename) != std::string::npos) {
+            std::cout << "Ajout d'un nouveau fichier : " << entry.path().string() << std::endl;
+            file.push_back(entry.path().string());
+            return entry.path().string();
+        } else if (entry.is_directory()) {
+            SearchFilesRecursive(entry.path(), filename, file);
+        }
+    }
+    return "null";
+}
 
+
+VORTEX_API std::vector<std::string> VortexMaker::SearchFiles(const std::string& path, const std::string& filename) {
+    std::vector<std::string> fichiersTest;
+    SearchFilesRecursive(fs::current_path() / path, filename, fichiersTest);
+    return fichiersTest;
+}
+
+VORTEX_API nlohmann::json VortexMaker::DumpJSON(const std::string& file) {
+    std::ifstream fichier(file);
+    
+    if (!fichier.is_open()) {
+        throw std::runtime_error("Error while opening file " + file);
+    }
+
+    nlohmann::json json_data;
+    fichier >> json_data;
+
+    return json_data;
+}
 
 //-----------------------------------------------------------------------------
 // [SECTION] ImGuiTextBuffer, ImGuiTextIndex
@@ -237,9 +268,26 @@ bool VortexMaker::DebugCheckVersionAndDataLayout(const char* version)
     return !error;
 }
 
+std::string replacePlaceholders(const std::string &command,
+                                           const std::unordered_map<std::string, std::string> &replacements)
+    {
+        std::string result = command;
+        for (const auto &[placeholder, value] : replacements)
+        {
+            size_t pos = 0;
+            while ((pos = result.find(placeholder, pos)) != std::string::npos)
+            {
+                result.replace(pos, placeholder.length(), value);
+                pos += value.length();
+            }
+        }
+        return result;
+    }
+
+
 
 bool RegisterPackage(nlohmann::json packageData) {
-  // Create instance from json raw and ad it into the context IO.
+  // Global package registering
 
   return true;
 }
@@ -252,47 +300,29 @@ bool RegisterToolchain(nlohmann::json toolchainData) {
   toolchain.author    = toolchainData["toolchain"]["author"].get<std::string>();
   toolchain.type      = toolchainData["toolchain"]["type"].get<std::string>();
   toolchain.state     = toolchainData["toolchain"]["state"].get<std::string>();
+  toolchain.vendor     = toolchainData["toolchain"]["vendor"].get<std::string>();
+  toolchain.platform     = toolchainData["toolchain"]["platform"].get<std::string>();
 
   toolchain.target_arch     = toolchainData["configs"]["target_arch"].get<std::string>();
   toolchain.host_arch       = toolchainData["configs"]["host_arch"].get<std::string>();
   toolchain.builder_arch    = toolchainData["configs"]["builder_arch"].get<std::string>();
+
+
+  nlohmann::json packages = toolchainData["content"]["packages"];
+  for(auto &pkg : packages){
+    toolchain.RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
+  }
+
+  toolchain.FindPackages();
+
+
   
   ctx.IO.toolchains.push_back(toolchain);
 
   return true;
 }
 
-namespace fs = std::filesystem;
 
-nlohmann::json DumpJSON(const std::string& file) {
-    std::ifstream fichier(file);
-    
-    if (!fichier.is_open()) {
-        throw std::runtime_error("Error while opening file " + file);
-    }
-
-    nlohmann::json json_data;
-    fichier >> json_data;
-
-    return json_data;
-}
-
-void SearchFilesRecursive(const fs::path& chemin, const std::string& filename, std::vector<std::string>& fichiersTest) {
-    for (const auto& entry : fs::directory_iterator(chemin)) {
-        if (entry.is_regular_file() && entry.path().filename().string().find(filename) != std::string::npos) {
-            std::cout << "Ajout d'un nouveau fichier : " << entry.path().string() << std::endl;
-            fichiersTest.push_back(entry.path().string());
-        } else if (entry.is_directory()) {
-            SearchFilesRecursive(entry.path(), filename, fichiersTest);
-        }
-    }
-}
-
-std::vector<std::string> SearchFiles(const std::string& path, const std::string& filename) {
-    std::vector<std::string> fichiersTest;
-    SearchFilesRecursive(fs::current_path() / path, filename, fichiersTest);
-    return fichiersTest;
-}
 
 
 VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs){
@@ -307,6 +337,10 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs){
 
   ctx.packagesPath = main_configs["data"]["packages"].get<std::string>();
   ctx.toolchainsPath = main_configs["data"]["toolchains"].get<std::string>();
+
+  ctx.paths.toolchainDistFolder = main_configs["dists"]["toolchains"].get<std::string>();
+
+  ctx.projectPath = fs::current_path();
 
     // Packages
     for (const auto& file : SearchFiles(ctx.packagesPath, "package.config")) {
@@ -328,6 +362,264 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs){
         }
     }
 }
+
+void VxToolchain::FindPackages(){
+    VxContext &ctx = *CVortexMaker;
+
+    // Register all finded local packages
+    for (const auto& file : VortexMaker::SearchFiles(ctx.toolchainsPath + localPackagesPath, "package.config")) {
+        try {
+            nlohmann::json filecontent = VortexMaker::DumpJSON(file);
+            VxPackage newPackage;
+
+            // Get packages infos
+
+            for(auto registeredPackage : this->registeredPackages){
+                if(registeredPackage->emplacement == "local"){
+                if(registeredPackage->label == filecontent["package"]["label"].get<std::string>()){
+                    std::shared_ptr<VxPackage> newPackage = std::make_shared<VxPackage>();
+
+                    newPackage->path = file;
+                    size_t position = newPackage->path.find("/package.config");
+
+                    if (position != std::string::npos) {
+                      newPackage->path.erase(position, 17);
+                    }
+
+                    newPackage->label = filecontent["package"]["label"].get<std::string>();
+                    newPackage->description = filecontent["package"]["description"].get<std::string>();
+                    newPackage->name = filecontent["package"]["name"].get<std::string>();
+                    newPackage->priority = filecontent["package"]["priority"].get<int>();
+
+                    for(auto configSuffixes : filecontent["compilation"]["configurationSuffixes"]){
+                      newPackage->compilation.configurationSuffixes.push_back(configSuffixes);
+                    }
+
+                    for(auto configParameters : filecontent["compilation"]["configurationParameters"]){
+                      newPackage->compilation.configurationParameters.push_back(configParameters);
+                    }
+
+                    this->packages.push_back(newPackage);
+                    registeredPackage->resolved = true;
+                }
+            }
+            }
+
+        } catch (const std::exception& e) {
+            std::cerr << "Error : " << e.what() << std::endl;
+        }
+    }
+
+    // Register global packages
+    for(auto registeredPackage : this->registeredPackages){
+      if(registeredPackage->emplacement == "global"){
+          // Recupérer les packages du ctx.
+      }
+
+    }
+}
+
+
+    void VxToolchain::PreBuild(){
+        VxContext &ctx = *CVortexMaker;
+        std::string envPath = ctx.projectPath / ctx.paths.toolchainDistFolder;
+            
+      std::string baseDir = envPath + "/" + this->name;
+      if (mkdir(baseDir.c_str(), 0777) == -1) {perror("Erreur lors de la création du dossier baseDir");}
+
+      std::string crosstoolsDir = baseDir + "/" + this->GetTriplet("target");
+      if (mkdir(crosstoolsDir.c_str(), 0777) == -1) {perror("Erreur lors de la création du dossier crosstoolsDir");}
+
+      this->crosstoolsPath = crosstoolsDir;
+
+      std::string data = baseDir + "/data";
+      if (mkdir(data.c_str(), 0777) == -1) {perror("Erreur lors de la création du dossier crosstoolsDir");}
+
+      std::string packages_data = baseDir + "/data/packages";
+      if (mkdir(packages_data.c_str(), 0777) == -1) {perror("Erreur lors de la création du dossier crosstoolsDir");}
+
+      std::string patchs_data = baseDir + "/data/patchs";
+      if (mkdir(packages_data.c_str(), 0777) == -1) {perror("Erreur lors de la création du dossier crosstoolsDir");}
+
+      std::string scripts_data = baseDir + "/data/scripts";
+      if (mkdir(packages_data.c_str(), 0777) == -1) {perror("Erreur lors de la création du dossier crosstoolsDir");}
+
+      std::string sysrootDir = crosstoolsDir + "/sysroot";
+      if (mkdir(sysrootDir.c_str(), 0777) == -1) {perror("Erreur lors de la création du dossier sysrootDir");}
+
+      std::string debugrootDir = crosstoolsDir + "/debugroot";
+      if (mkdir(debugrootDir.c_str(), 0777) == -1) {perror("Erreur lors de la création du dossier debugrootDir");}
+
+      for(auto package : this->packages){
+        std::string cmd = "cp -r " + package->path + " " + packages_data;
+        system(cmd.c_str());
+      }
+
+      // other assets
+
+      std::string CMD_AddToGroup = "groupadd vortex";
+      std::string CMD_AddUser = "useradd -s /bin/bash -g vortex -m -k /dev/null vortex"; // + " -p " + user.vxHostUser_Crypto;
+      std::string CMD_CreateUserDirectory = "mkdir -pv /home/vortex";
+      std::string CMD_GiveUserDirectoryToUser = "sudo chown -v vortex:vortex  /home/vortex";
+
+      system((char *)CMD_AddToGroup.c_str());
+      system((char *)CMD_AddUser.c_str());
+
+
+      // Give toolchain to user
+      std::string cmd = "sudo chown -v -R vortex " + baseDir+ "/*";
+      system((char *)cmd.c_str());
+  
+    }
+
+
+    void VxToolchain::Build(){
+
+        std::unordered_map<std::string, std::string> replacements = {
+            {"${CrossTools}", this->crosstoolsPath}
+        };
+            
+
+        for(auto packageToBuild : this->packages){
+
+          // Uncompress 
+
+          // Configure
+          std::string configuration;
+          if(packageToBuild->compilation.exclusiveCustomConfigProcess == "not specified"){
+            std::string cmd = "";
+
+            for(auto suffix : packageToBuild->compilation.configurationSuffixes){
+              cmd += suffix + " ";
+            }
+
+            cmd += "../configure ";
+
+            for(auto parameter : packageToBuild->compilation.configurationParameters){
+              cmd += parameter + " ";
+            }
+
+            configuration = replacePlaceholders(cmd, replacements);
+          }
+          else{
+            configuration = replacePlaceholders(packageToBuild->compilation.exclusiveCustomConfigProcess, replacements);
+          }
+          std::cout << "Configuration : " << configuration << std::endl;
+        }
+
+
+    }
+
+    void VxToolchain::PostBuild(){
+      std::string cmd = "userdel -r vortex";
+      system((char *)cmd.c_str());
+    }
+
+    std::string VxToolchain::GetTriplet(std::string triplet_type)
+    {
+        std::string NativeTriplet;
+        FILE *pipe = popen("gcc -dumpmachine", "r");
+        if (!pipe)
+        {
+            perror("Error while try to get triplet with gcc !");
+            return "unknow";
+        }
+        char buffer[128];
+        while (fgets(buffer, 128, pipe) != NULL)
+        {
+            NativeTriplet += buffer;
+        }
+        pclose(pipe);
+        NativeTriplet.pop_back(); 
+
+        if (triplet_type == "target")
+        {
+
+            if (this->type == "native")
+            {
+              return NativeTriplet;
+            }
+            else if (this->type == "cross")
+            {
+              return NativeTriplet;
+            }
+            else if (this->type == "cross-native" || this->type == "canadian" || this->type == "custom")
+            {
+                std::string SpecifiedTriplet;
+
+                SpecifiedTriplet += this->target_arch;
+                SpecifiedTriplet += "-";
+                SpecifiedTriplet += this->vendor;
+                SpecifiedTriplet += "-";
+                SpecifiedTriplet += this->platform;
+
+                return SpecifiedTriplet;
+            }
+            else
+            {
+                return "unknow";
+            }
+        }
+        else if(triplet_type == "builder")
+        {
+
+            if (this->type == "native")
+            {
+                return NativeTriplet;
+            }
+            else if (this->type == "cross")
+            {
+                // return crosstoolchain wanted arch
+            }
+            else if (this->type == "cross-native")
+            {
+                // return crosstoolchain wanted arch
+            }
+            else if (this->type == "canadian")
+            {
+                // return crosstoolchain wanted arch
+            }
+            else if (this->type == "custom")
+            {
+                // -> Return Custom triplet
+            }
+            else
+            {
+                return "unknow";
+            }
+        }
+
+        if (triplet_type == "host")
+        {
+
+            if (this->type == "native")
+            {
+                return NativeTriplet;
+            }
+            else if (this->type == "cross")
+            {
+                // return crosstoolchain wanted arch
+            }
+            else if (this->type == "cross-native")
+            {
+                // return crosstoolchain wanted arch
+            }
+            else if (this->type == "canadian")
+            {
+                // return crosstoolchain wanted arch
+            }
+            else if (this->type == "custom")
+            {
+                // -> Return Custom triplet
+            }
+            else
+            {
+                return "unknow";
+            }
+        }
+
+        return "unknow";
+    }
 
 
 #endif // VORTEX_DISABLE

@@ -81,6 +81,11 @@
 #include <nlohmann/json.hpp>
 #include <filesystem>
 #include <vector>
+#include <unordered_map>
+#include <sys/stat.h>
+
+
+namespace fs = std::filesystem;
 
 #ifdef USE_REGISTERING
 #include <chrono>
@@ -168,6 +173,8 @@ struct hMap;
 struct hString;
 struct hArgs;
 
+struct CommandOutput;
+
 // Internals (from vortex_internals.h)
 struct VxContext;
 //_____________________________________________________________________________
@@ -202,6 +209,15 @@ namespace VortexMaker
 
 
     bool                        DebugCheckVersionAndDataLayout(const char* version);
+
+
+    VORTEX_API void             MoveAllContent();
+    VORTEX_API void             CopyAllContent();
+    VORTEX_API void             ExecuteCommand();
+    VORTEX_API std::vector<std::string> SearchFiles(const std::string& path, const std::string& filename);
+
+    VORTEX_API nlohmann::json DumpJSON(const std::string& file);
+
 
     // Memory Allocators
     // - Those functions are not reliant on the current context.
@@ -457,12 +473,68 @@ private:
 // [SECTION] Structures
 //_____________________________________________________________________________
 
+struct VxPackageInterface{
+    std::string emplacement;
+    std::string label;
+    bool resolved;
+};
 
+
+
+struct VXPackage_Asset{
+    int         priority;
+    std::string type;
+    std::string emplacement;
+    std::string command;
+    std::string executionSequence;
+};
+
+
+struct VxPackageCompilation{
+    std::string customScript = "unknow"; // For a fully custom behavior
+    std::string configurationCommand = "unknow"; // Final cooked configuration command (Step 1 of vortex basic  compilation)
+    std::string compilationCommand = "unknow"; // Final cooked compilation command (Step 2 of vortex basic  compilation)
+    std::string installationCommand = "unknow"; // Final cooked installation command (Step 3 of vortex basic compilation)
+    std::vector<std::pair<std::string, std::string>> configurationParams; // previous command' parameters
+    std::vector<std::pair<std::string, std::string>> compilationParams; // previous command' parameters
+    std::vector<std::pair<std::string, std::string>> installationParams; // previous command' parameters
+
+    std::vector<std::string> configurationSuffixes;
+    std::vector<std::string> configurationParameters;
+
+    // Configuration Commands
+    std::string customConfigurationProcess = "not specified"; // Customized configuration processus
+    std::string exclusiveCustomConfigProcess = "not specified"; // Absolute customized configuration processus
+
+    // Compilation Commands
+    std::string customCompilationProcess = "not specified";
+    std::string exclusiveCustomCompilationProcess = "not specified";
+
+    // Installation Commands
+    std::string customInstallationProcess = "not specified";
+    std::string exclusiveCustomInstallationProcess = "not specified";
+};
 
 struct VxPackage{
-    std::string name;
-    std::string label;
 
+    std::string name = "unknow"; // Proper name of the package
+    std::string path = "unknow"; // Path to package
+    std::string description = "unknow";  // Short description of the package
+    std::string label = "unknow"; // Dedicated package name (unique)
+    std::string format = "unknow"; // Format of the package
+    int         priority = -1;  // Priority of process when the package is in a queue
+    std::vector<std::string> archs; // CPU archs supported by package
+    std::vector<std::string> scopes; // Where the package can be used. (in a Toolchain, in a Host, Final system, etc...)
+    std::string locality = "unknow"; // local (in the component), global (in the project), public (in a repository)
+    std::string installationMethod = "unknow"; // compilation, installation
+    bool        enabled = false; 
+    std::string strapper = "unknow";
+    std::string type = "unknow";
+
+    VxPackageCompilation compilation;
+    // Package manager profile
+
+    std::vector<VXPackage_Asset> assets;
 };
 
 struct VxToolchain{
@@ -472,6 +544,8 @@ struct VxToolchain{
     std::string description;
     std::string type;
     std::string state;
+    std::string vendor;
+    std::string platform;
 
     std::string target_arch;
     std::string builder_arch;
@@ -479,7 +553,6 @@ struct VxToolchain{
 
 
     // Low level toolchain informations
-    std::string vendor                  = "not specified";
     std::string workingPath             = "not specified";
     std::string ouputPath              = "not specified";
     std::string toolchainSourcePath     = "not specified";
@@ -487,13 +560,16 @@ struct VxToolchain{
     bool        isCompressed            = false;
     std::string compressionMode         = "not specified";
 
+
+    std::string localPackagesPath;
+
     
 
         // -> Toolchain Sysroot Path
     std::string sysrootPath             = "not specified";
     std::string debugrootPath             = "not specified";
     std::string vxToolchain_TempPackagesPoolPath             = "not specified";
-    std::string vxToolchain_CrossToolsPath             = "not specified";
+    std::string crosstoolsPath             = "not specified";
     std::string vxToolchain_HostPath            = "not specified";
     std::string vxToolchain_ProdPath            = "not specified";
 
@@ -504,9 +580,9 @@ struct VxToolchain{
     std::string vxToolchain_SourcesToolchain        = "not specified";
 
         // -> Complete triplet to handle or complete if specified
-    std::string vxToolchain_HostTriplet             = "not specified";
-    std::string vxToolchain_BuilderTriplet          = "not specified";
-    std::string vxToolchain_TargetTriplet           = "not specified";
+    std::string hostTriplet             = "not specified";
+    std::string builderTriplet          = "not specified";
+    std::string targetTriplet           = "not specified";
 
         // -> Simple ARCH index
     std::string vxToolchain_BuilderArch             = "not specified";
@@ -514,6 +590,36 @@ struct VxToolchain{
     std::string vxToolchain_HostArch                = "not specified";
 
     // Vector de packages
+
+    hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    hVector<std::shared_ptr<VxPackage>> packages;
+    // Scripts
+    // Modules & other assets..
+    // Patchs
+
+
+    std::string GetTriplet(std::string triplet_type);
+
+    void PreBuild();
+    void Build();
+    void PostBuild();
+
+    void RegisterPackage(const std::string label,const std::string emplacemement){
+        std::shared_ptr<VxPackageInterface> newPackageInterface = std::make_shared<VxPackageInterface>();
+        newPackageInterface->label = label;
+        newPackageInterface->emplacement = emplacemement;
+        newPackageInterface->resolved = false;
+        registeredPackages.push_back(newPackageInterface);
+    }
+
+    void FindPackages();
+
+    void PreparePackage(std::string packageName);
+    void ConfigurePackage(std::string packageName);
+    void CompilePackage(std::string packageName);
+    void InstallPackage(std::string packageName);
+
+    void CreateToolchainDirectory(/*VxDirectory*/);
 }; 
 
 

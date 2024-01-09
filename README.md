@@ -4,6 +4,8 @@ Vortex makes it easy to create a system, application or toolchain. It also offer
 
 ## Build & Installation
 ```
+git clone https://github.com/infiniteHQ/VortexMaker.git
+cd VortexMaker
 mkdir build && cd build
 cmake ..
 sudo make install

@@ -153,6 +153,11 @@ struct VxIO {
 };
 
 
+struct VxPaths {
+  std::string toolchainDistFolder;
+
+};
+
 //-----------------------------------------------------------------------------
 // (Context) VortexMakerContext => Main VortexMaker context.
 //-----------------------------------------------------------------------------
@@ -163,6 +168,9 @@ struct VxContext {
   bool                              initialized;
   VxIO                              IO;
   VortexMakerDebugAllocInfo         debugAllocInfo;
+
+  fs::path projectPath;
+  VxPaths paths;
 
   std::string author;
   std::string description;
