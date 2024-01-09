@@ -82,6 +82,7 @@
 #include <filesystem>
 #include <vector>
 #include <unordered_map>
+#include <unistd.h>
 #include <sys/stat.h>
 
 
@@ -499,8 +500,14 @@ struct VxPackageCompilation{
     std::vector<std::pair<std::string, std::string>> compilationParams; // previous command' parameters
     std::vector<std::pair<std::string, std::string>> installationParams; // previous command' parameters
 
-    std::vector<std::string> configurationSuffixes;
-    std::vector<std::string> configurationParameters;
+    std::vector<std::pair<std::string, std::string>> configurationSuffixes;
+    std::vector<std::pair<std::string, std::string>> configurationParameters;
+
+    std::vector<std::pair<std::string, std::string>> compilationSuffixes;
+    std::vector<std::pair<std::string, std::string>> compilationParameters;
+
+    std::vector<std::pair<std::string, std::string>> installationSuffixes;
+    std::vector<std::pair<std::string, std::string>> installationParameters;
 
     // Configuration Commands
     std::string customConfigurationProcess = "not specified"; // Customized configuration processus
@@ -519,6 +526,9 @@ struct VxPackage{
 
     std::string name = "unknow"; // Proper name of the package
     std::string path = "unknow"; // Path to package
+    std::string distPath = "unknow"; // Path to package
+    std::string fileName = "unknow"; // Path to package
+    std::string compressed = "unknow"; // Path to package
     std::string description = "unknow";  // Short description of the package
     std::string label = "unknow"; // Dedicated package name (unique)
     std::string format = "unknow"; // Format of the package
@@ -570,6 +580,8 @@ struct VxToolchain{
     std::string debugrootPath             = "not specified";
     std::string vxToolchain_TempPackagesPoolPath             = "not specified";
     std::string crosstoolsPath             = "not specified";
+    std::string distPackagesPath             = "not specified";
+    std::string currentBuildArch = "unknow";
     std::string vxToolchain_HostPath            = "not specified";
     std::string vxToolchain_ProdPath            = "not specified";
 
