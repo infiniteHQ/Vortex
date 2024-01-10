@@ -311,12 +311,11 @@ std::string replacePlaceholders(const std::string &command,
     {
         try
         {
-            std::string decompressionCommand = "sudo tar -xvf " + tarballName;
+            std::string decompressionCommand = "cd " + path + " && sudo tar -xvf " + tarballName;
 
-        std::string cmd = "cd " + path;
-            //system(decompressionCommand.c_str());
-std::cout << cmd << std::endl;
-std::cout << "Decompresison : " << decompressionCommand << std::endl;
+            system(decompressionCommand.c_str());
+            system("pwd");
+            std::cout << "Decompresison : " << decompressionCommand << std::endl;
             std::string path = path + "/" + tarballName;
 
             size_t lastSlashPos = path.find_last_of('/');
@@ -427,6 +426,19 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
   }
 }
 
+void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package){
+  for(auto action : this->actions){
+    if(sequence == action->executionSequence){
+      if(action->type == "command"){
+
+      std::string cmd = "";
+        cmd += "cd " + package->distPath + "/" + package->path + "/build && ";
+        system(action->command.c_str());
+      }
+    }
+  }
+}
+
 void VxToolchain::FindPackages()
 {
   VxContext &ctx = *CVortexMaker;
@@ -447,7 +459,15 @@ void VxToolchain::FindPackages()
         {
           if (registeredPackage->label == filecontent["package"]["label"].get<std::string>())
           {
-            std::shared_ptr<VxPackage> newPackage = std::make_shared<VxPackage>();
+            bool already_registered = false;
+            for(auto registered_package : this->packages){
+              if(filecontent["package"]["label"].get<std::string>() == registered_package->label){
+                already_registered = true;
+              }
+            }
+            
+            if(!already_registered){
+              std::shared_ptr<VxPackage> newPackage = std::make_shared<VxPackage>();
 
             newPackage->path = file;
             size_t position = newPackage->path.find("/package.config");
@@ -474,6 +494,23 @@ void VxToolchain::FindPackages()
                 newPackage->compilation.configurationSuffixes.emplace_back(it.key(), it.value());
               }
             }
+
+
+            for (auto action : filecontent["actions"])
+            {
+              if(action["type"].get<std::string>() == "command"){
+                std::shared_ptr<VXPackage_Action> newAction = std::make_shared<VXPackage_Action>();
+                newAction->type = action["type"].get<std::string>();
+                newAction->priority = action["priority"].get<int>();
+                newAction->command = action["command"].get<std::string>();
+              }
+
+            }
+
+
+            std::sort(newPackage->actions.begin(), newPackage->actions.end(), [](const std::shared_ptr<VXPackage_Action> &a, const std::shared_ptr<VXPackage_Action> &b)
+            { return a->priority < b->priority; });
+
 
             for (auto installSuffixes : filecontent["compilation"]["installationSuffixes"])
             {
@@ -512,6 +549,8 @@ void VxToolchain::FindPackages()
 
             this->packages.push_back(newPackage);
             registeredPackage->resolved = true;
+            }
+
           }
         }
       }
@@ -521,6 +560,9 @@ void VxToolchain::FindPackages()
       std::cerr << "Error : " << e.what() << std::endl;
     }
   }
+
+  std::sort(this->packages.begin(), this->packages.end(), [](const std::shared_ptr<VxPackage> &a, const std::shared_ptr<VxPackage> &b)
+  { return a->priority < b->priority; });
 
   // Register global packages
   for (auto registeredPackage : this->registeredPackages)
@@ -536,6 +578,10 @@ void VxToolchain::PreBuild()
 {
   VxContext &ctx = *CVortexMaker;
   std::string envPath = ctx.projectPath / ctx.paths.toolchainDistFolder;
+
+  this->targetTriplet = this->GetTriplet("target");
+  this->builderTriplet = this->GetTriplet("builder");
+  this->hostTriplet = this->GetTriplet("host");
 
   std::string baseDir = envPath + "/" + this->name;
   if (mkdir(baseDir.c_str(), 0777) == -1)
@@ -576,6 +622,7 @@ void VxToolchain::PreBuild()
   }
 
   std::string sysrootDir = crosstoolsDir + "/sysroot";
+  this->sysrootPath = sysrootDir;
   if (mkdir(sysrootDir.c_str(), 0777) == -1)
   {
     perror("Erreur lors de la création du dossier sysrootDir");
@@ -616,23 +663,31 @@ void VxToolchain::Build()
 {
 
   std::unordered_map<std::string, std::string> replacements = {
-      {"${CrossTools}", this->crosstoolsPath}};
+      {"${Target}", this->targetTriplet},
+      {"${Build}", this->builderTriplet},
+      {"${Host}", this->hostTriplet},
+      {"${Crosstools}", this->crosstoolsPath},
+      {"${Sysroot}", this->sysrootPath}
+      };
+
+
+  std::sort(this->packages.begin(), this->packages.end(), [](const std::shared_ptr<VxPackage> &a, const std::shared_ptr<VxPackage> &b)
+  { return a->priority < b->priority; });
 
   for (auto packageToBuild : this->packages)
   {
         // If décompréssé = decompression
+        std::string path;
         if (packageToBuild->compressed == ".tar.xz" || packageToBuild->compressed == ".tar.gz")
         {
-            std::string path = ExtractPackageWithTar(packageToBuild->distPath, packageToBuild->fileName);
-        // Rentrer dedans
-        std::string cmd = "cd " + packageToBuild->distPath + "/" + path;
-        //system((char *)cmd.c_str());
-        std::cout << cmd << std::endl;
+            path = ExtractPackageWithTar(packageToBuild->distPath, packageToBuild->fileName);
         }
         // else, rentrer dans le package->path
 
 
-    std::string moveToBuildFolder = "mkdir build && cd build";
+    std::string moveToBuildFolder = "cd " + packageToBuild->distPath + "/" + path + " && mkdir build && cd build";
+    packageToBuild->path = path;
+    system((char *)moveToBuildFolder.c_str());
 
     // Configure
     std::string configuration;
@@ -640,13 +695,16 @@ void VxToolchain::Build()
     {
       std::string cmd = "";
 
+
+      cmd += "cd " + packageToBuild->distPath + "/" + path + "/build && ";
+      
       for (auto suffix : packageToBuild->compilation.configurationSuffixes)
       {
         if(suffix.first == "all" || suffix.first == this->target_arch){
           cmd += suffix.second + " ";
         }
       }
-
+      
       cmd += "../configure ";
 
       for (auto parameter : packageToBuild->compilation.configurationParameters)
@@ -662,13 +720,17 @@ void VxToolchain::Build()
     {
       configuration = replacePlaceholders(packageToBuild->compilation.exclusiveCustomConfigProcess, replacements);
     }
+
+    packageToBuild->ExecuteActions("preconfig", packageToBuild);
     std::cout << "Configuration : " << configuration << std::endl;
+    system((char *)configuration.c_str());
 
 
     std::string compilation;
     if (packageToBuild->compilation.exclusiveCustomCompilationProcess == "not specified")
     {
       std::string cmd = "";
+      cmd += "cd " + packageToBuild->distPath + "/" + path + "/build && ";
 
       for (auto suffix : packageToBuild->compilation.compilationSuffixes)
       {
@@ -692,7 +754,9 @@ void VxToolchain::Build()
     {
       compilation = replacePlaceholders(packageToBuild->compilation.exclusiveCustomCompilationProcess, replacements);
     }
+    packageToBuild->ExecuteActions("precompile", packageToBuild);
     std::cout << "Compilation : " << compilation << std::endl;
+        system((char *)compilation.c_str());
 
 
 
@@ -700,6 +764,7 @@ void VxToolchain::Build()
     if (packageToBuild->compilation.exclusiveCustomInstallationProcess == "not specified")
     {
       std::string cmd = "";
+      cmd += "cd " + packageToBuild->distPath + "/" + path + "/build && ";
 
       for (auto suffix : packageToBuild->compilation.installationSuffixes)
       {
@@ -723,9 +788,12 @@ void VxToolchain::Build()
     {
       installatiobn = replacePlaceholders(packageToBuild->compilation.exclusiveCustomInstallationProcess, replacements);
     }
+    packageToBuild->ExecuteActions("preinstall", packageToBuild);
     std::cout << "Installation : " << installatiobn << std::endl;
+        system((char *)installatiobn.c_str());
   }
 }
+
 
 void VxToolchain::PostBuild()
 {

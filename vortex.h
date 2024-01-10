@@ -482,7 +482,7 @@ struct VxPackageInterface{
 
 
 
-struct VXPackage_Asset{
+struct VXPackage_Action{
     int         priority;
     std::string type;
     std::string emplacement;
@@ -544,7 +544,8 @@ struct VxPackage{
     VxPackageCompilation compilation;
     // Package manager profile
 
-    std::vector<VXPackage_Asset> assets;
+    hVector<std::shared_ptr<VXPackage_Action>> actions;
+    void ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package);
 };
 
 struct VxToolchain{
