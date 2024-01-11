@@ -5,6 +5,8 @@
 #include "../../backend/Platform/GUI/Devtools/UI/UI.h"
 #include "../../vendor/imgui/imgui.h"
 
+#include <thread>
+
 using namespace VortexMaker;
 
 
@@ -33,11 +35,14 @@ public:
         // ImGui::Button("Button");
         // ImGui::End();
 
-        //ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
 
         // Elementsy
         UI_ShowContextToolchains(); // change to active label
-        UI_ShowToolchainPannel();
+        UI_ShowContextToolchainsTobuild(); // change to active label
+
+        UI_ShowToolchainPannel();        
+        UI_ShowToolchainBuildPannel();
     }
 
     // Fonction pour obtenir la couleur en fonction de la valeur de l'entier
@@ -65,6 +70,191 @@ public:
     {
         this->m_currentToolchainForPannel = toolchain;
         m_UI_ShowToolchainPannel = true;
+    }
+
+    void BuildToolchain(){
+
+              this->m_currentToolchainForPannelToBuild->PreBuild();
+              this->m_currentToolchainForPannelToBuild->Build();
+              this->m_currentToolchainForPannelToBuild->PostBuild();
+    }
+
+
+    void ShowToolchainBuildPannel(VxToolchain *toolchain)
+    {
+        this->m_currentToolchainForPannelToBuild = toolchain;
+        m_UI_ShowToolchainBuildPannel = true;
+    }
+
+
+
+    void UI_ShowToolchainBuildPannel()
+    {
+        if (!m_UI_ShowToolchainBuildPannel)
+            return;
+
+
+        if (ImGui::Begin("Toolchain Build Pannel"))
+        {
+            float oldsize = ImGui::GetFont()->Scale;
+            ImGui::GetFont()->Scale *= 1.5;
+            ImGui::PushFont(ImGui::GetFont());
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Toolchain :");
+            ImGui::SameLine();
+            ImGui::Text((char *)this->m_currentToolchainForPannelToBuild->name.c_str());
+            ImGui::GetFont()->Scale = oldsize;
+            ImGui::PopFont();
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author :");
+            ImGui::SameLine();
+            ImGui::Text((char *)this->m_currentToolchainForPannelToBuild->author.c_str());
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "State :");
+            ImGui::SameLine();
+            ImGui::Text((char *)this->m_currentToolchainForPannelToBuild->state.c_str());
+
+            if(ImGui::Button("Build")){
+            std::thread Thread([&]() { this->BuildToolchain();});
+            this->receiveThread.swap(Thread);
+            }
+
+            ImGui::Separator();
+            ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+
+            for(auto package : m_currentToolchainForPannelToBuild->packages){
+              std::string label = "Package : " + package->label;
+             if (ImGui::TreeNode((char*)label.c_str()))
+            {
+                std::string label;
+
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+
+                if(package->GetDiagCode("decompression") == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Decompression [Success]";
+                }
+                else if(package->GetDiagCode("decompression") == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += "Decompression [Wait]";
+                }
+                else if(package->GetDiagCode("decompression") == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += "Decompression [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Decompression [Fail]";
+
+                }
+
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text("Success with code 0");
+                    ImGui::TreePop();
+                }
+                ImGui::PopStyleColor();
+
+
+
+
+                if(package->GetDiagCode("configuration") == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Configuration [Success]";
+                }
+                else if(package->GetDiagCode("configuration") == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += "Configuration [Wait]";
+                }
+                else if(package->GetDiagCode("decompression") == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += "Configuration [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Configuration [Fail]";
+
+                }
+
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text("Success with code 0");
+                    ImGui::TreePop();
+                }
+                ImGui::PopStyleColor();
+
+
+                if(package->GetDiagCode("compilation") == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Compilation [Success]";
+                }
+                else if(package->GetDiagCode("compilation") == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += "Compilation [Wait]";
+                }
+                else if(package->GetDiagCode("decompression") == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += "Compilation [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Compilation [Fail]";
+
+                }
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text("Success with code 0");
+                    ImGui::TreePop();
+                }
+                ImGui::PopStyleColor();
+
+                std::cout << package->GetDiagCode("installation") << std::endl;
+                if(package->GetDiagCode("installation") == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Installation [Success]";
+                }
+                else if(package->GetDiagCode("installation") == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += "Installation [Wait]";
+                }
+                else if(package->GetDiagCode("decompression") == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += "Installation [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Installation [Fail]";
+
+                }
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text("Success with code 0");
+                    ImGui::TreePop();
+                }
+                ImGui::PopStyleColor();
+            ImGui::TreePop();
+            }
+        }
+        }
+        ImGui::End();
     }
 
 
@@ -232,6 +422,89 @@ public:
     }
 
 
+    void UI_ShowContextToolchainsTobuild()
+    {
+        if (!m_UI_ShowContextToolchainsToBuild)
+            return;
+
+        if (ImGui::Begin("Select a toolchain for build"))
+        {
+
+                static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                if (ImGui::BeginTable("RegisteredToolchains", 7, flags))
+                {
+                    ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Author", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Target", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Build", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableHeadersRow();
+                    ImGui::TableNextRow();
+                    //int i = 0;
+                    //for (auto m : m_ctx->IO.GetAllActiveMatrixes())
+                    for (int i = 0; i < m_ctx->IO.toolchains.size(); i++)
+                    {
+
+                        ImGui::TableNextRow();
+                        for (int column = 0; column < 6; column++)
+                        {
+                            ImGui::TableSetColumnIndex(column);
+
+                            if (column == 0)
+                            {
+                                if (ImGui::Button("Build"))
+                                {
+                                  this->ShowToolchainBuildPannel(&m_ctx->IO.toolchains[i]);
+                                };
+                            }
+                            if (column == 1)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.toolchains[i].name.c_str());
+                            }
+                            if (column == 2)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.toolchains[i].author.c_str());
+                            }
+                            if (column == 3)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.toolchains[i].target_arch.c_str());
+                            }
+                            if (column == 4)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.toolchains[i].type.c_str());
+                            }
+                            if (column == 5)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.toolchains[i].state.c_str());
+                            }
+                            if (column == 6)
+                            {
+                            }
+                        }
+                    }
+
+                    ImGui::EndTable();
+                }
+            
+         
+
+            ImGui::Columns(1); // Reviens à une seule colonne
+
+            // Redimensionnement automatique de la hauteur entre les deux enfants
+            float minHeight = ImGui::GetContentRegionAvail().y;                       // Hauteur minimale
+            float maxHeight = ImGui::GetIO().DisplaySize.y - ImGui::GetCursorPos().y; // Hauteur maximale
+
+            if (minHeight > maxHeight)
+            {
+                minHeight = maxHeight;
+            }
+        }
+        ImGui::End();
+    }
+
     void UI_ShowContextToolchains()
     {
         if (!m_UI_ShowContextToolchains)
@@ -327,15 +600,24 @@ public:
 
 
     void ShowContextToolchains() { m_UI_ShowContextToolchains = true; }
+    void ShowToolchainToBuild() { m_UI_ShowContextToolchainsToBuild = true; }
     void ShowToolchain() { m_UI_ShowToolchainPannel = true; }
 
     VxContext* m_ctx;
 
+
+    std::thread receiveThread;
+
 private:
     bool m_UI_ShowContextToolchains = false;
     bool m_UI_ShowToolchainPannel = false;
+    bool m_UI_ShowToolchainBuildPannel = false;
+    bool m_UI_ShowContextToolchainsToBuild = false;
+
+    
 
     VxToolchain *m_currentToolchainForPannel;
+    VxToolchain *m_currentToolchainForPannelToBuild;
 };
 
 Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext* ctx)
@@ -398,21 +680,15 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext*
 
 
     if (ImGui::BeginMenu("Build")) {
-    ImGui::Text("Build all project now");
-      if (ImGui::MenuItem("Build all")) {
+      if (ImGui::MenuItem("Build a Toolchain")) {
+        exampleLayer->ShowToolchainToBuild();
       }
       
-    ImGui::Text("Build only parts");
-      if (ImGui::MenuItem("Build toolchain(s)")) {
-      }
-      if (ImGui::MenuItem("Build package(s)")) {
-      }
-      if (ImGui::MenuItem("Build other...")) {
-      }
 
       ImGui::EndMenu();
     }
     });
+
     
     return app;
 }

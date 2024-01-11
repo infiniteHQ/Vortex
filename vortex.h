@@ -522,6 +522,14 @@ struct VxPackageCompilation{
     std::string exclusiveCustomInstallationProcess = "not specified";
 };
 
+
+struct VxDiag{
+    std::string properName;
+    std::string statut;
+    std::string description;
+    int code;
+};
+
 struct VxPackage{
 
     std::string name = "unknow"; // Proper name of the package
@@ -544,8 +552,43 @@ struct VxPackage{
     VxPackageCompilation compilation;
     // Package manager profile
 
+    std::unordered_map<std::string, std::shared_ptr<VxDiag>> diags;
+
     hVector<std::shared_ptr<VXPackage_Action>> actions;
+
     void ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package);
+
+    void AddDiag(std::string name) {
+        std::shared_ptr<VxDiag> diag = std::make_shared<VxDiag>();
+        diag->code = 999;
+        this->diags[name] = diag;
+    };
+
+    void SetDiagCode(std::string name, int code) {
+          auto it = diags.find(name);
+    if (it != diags.end()) {
+        it->second->code = code;
+    } else {
+        std::cerr << "Key not finded" << std::endl;
+    }
+    };
+
+    
+    std::string GetDiagStatus(std::string name) {};
+
+    int GetDiagCode(std::string name) {
+        auto it = diags.find(name);
+    if (it != diags.end()) {
+        std::shared_ptr<VxDiag> foundDiag = it->second;
+        return foundDiag->code;
+    } else {
+        return -999;
+        std::cerr << "Key not finded" << std::endl;
+    }
+    };
+
+    
+
 };
 
 struct VxToolchain{

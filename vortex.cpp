@@ -633,6 +633,11 @@ void VxToolchain::PreBuild()
 
   for (auto package : this->packages)
   {
+    package->AddDiag("decompression");
+    package->AddDiag("configuration");
+    package->AddDiag("compilation");
+    package->AddDiag("installation");
+
     std::string cmd = "cp -r " + package->path + " " + packages_data;
 
     size_t posDernierSlash = package->path.find_last_of('/');
@@ -641,7 +646,15 @@ void VxToolchain::PreBuild()
         package->distPath = packages_data + "/" + resultat;
     }
 
-    system(cmd.c_str());
+    int returnCode = system(cmd.c_str());
+    package->SetDiagCode("Prepare", returnCode);
+
+    if(returnCode == 0){
+      //package->SetDiagStatus("Prepare", "Success");
+    }
+    else{
+     // package->SetDiagStatus("Prepare", "Fail");
+    }
   }
 
   // other assets
@@ -681,6 +694,7 @@ void VxToolchain::Build()
         if (packageToBuild->compressed == ".tar.xz" || packageToBuild->compressed == ".tar.gz")
         {
             path = ExtractPackageWithTar(packageToBuild->distPath, packageToBuild->fileName);
+            packageToBuild->SetDiagCode("decompression", 0);
         }
         // else, rentrer dans le package->path
 
@@ -723,8 +737,7 @@ void VxToolchain::Build()
 
     packageToBuild->ExecuteActions("preconfig", packageToBuild);
     std::cout << "Configuration : " << configuration << std::endl;
-    system((char *)configuration.c_str());
-
+    packageToBuild->SetDiagCode("configuration", system((char *)configuration.c_str()));
 
     std::string compilation;
     if (packageToBuild->compilation.exclusiveCustomCompilationProcess == "not specified")
@@ -756,7 +769,7 @@ void VxToolchain::Build()
     }
     packageToBuild->ExecuteActions("precompile", packageToBuild);
     std::cout << "Compilation : " << compilation << std::endl;
-        system((char *)compilation.c_str());
+    packageToBuild->SetDiagCode("compilation", system((char *)compilation.c_str()));
 
 
 
@@ -790,7 +803,7 @@ void VxToolchain::Build()
     }
     packageToBuild->ExecuteActions("preinstall", packageToBuild);
     std::cout << "Installation : " << installatiobn << std::endl;
-        system((char *)installatiobn.c_str());
+    packageToBuild->SetDiagCode("installation", system((char *)installatiobn.c_str()));
   }
 }
 
