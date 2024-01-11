@@ -527,6 +527,7 @@ struct VxDiag{
     std::string properName;
     std::string statut;
     std::string description;
+    std::string output;
     int code;
 };
 
@@ -561,6 +562,7 @@ struct VxPackage{
     void AddDiag(std::string name) {
         std::shared_ptr<VxDiag> diag = std::make_shared<VxDiag>();
         diag->code = 999;
+        diag->output = "No output.";
         this->diags[name] = diag;
     };
 
@@ -573,8 +575,31 @@ struct VxPackage{
     }
     };
 
+
+    void SetDiagOutput(std::string name, std::string output) {
+          auto it = diags.find(name);
+    if (it != diags.end()) {
+        it->second->output = output;
+    } else {
+        std::cerr << "Key not finded" << std::endl;
+    }
+    };
+
+
     
     std::string GetDiagStatus(std::string name) {};
+
+    std::string GetDiagOutput(std::string name) {
+        auto it = diags.find(name);
+    if (it != diags.end()) {
+        std::shared_ptr<VxDiag> foundDiag = it->second;
+        return foundDiag->output;
+    } else {
+        return "No found.";
+        std::cerr << "Key not finded" << std::endl;
+    }
+
+    };
 
     int GetDiagCode(std::string name) {
         auto it = diags.find(name);

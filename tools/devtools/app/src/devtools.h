@@ -153,7 +153,7 @@ public:
 
                 if (ImGui::TreeNode((char*)label.c_str()))
                 {
-                    ImGui::Text("Success with code 0");
+                    ImGui::Text((char*)package->GetDiagOutput("decompression").c_str());
                     ImGui::TreePop();
                 }
                 ImGui::PopStyleColor();
@@ -186,7 +186,7 @@ public:
                 ImGui::SetNextItemOpen(false, ImGuiCond_Once);
                 if (ImGui::TreeNode((char*)label.c_str()))
                 {
-                    ImGui::Text("Success with code 0");
+                    ImGui::Text((char*)package->GetDiagOutput("configuration").c_str());
                     ImGui::TreePop();
                 }
                 ImGui::PopStyleColor();
@@ -216,12 +216,11 @@ public:
                 ImGui::SetNextItemOpen(false, ImGuiCond_Once);
                 if (ImGui::TreeNode((char*)label.c_str()))
                 {
-                    ImGui::Text("Success with code 0");
+                    ImGui::Text((char*)package->GetDiagOutput("compilation").c_str());
                     ImGui::TreePop();
                 }
                 ImGui::PopStyleColor();
 
-                std::cout << package->GetDiagCode("installation") << std::endl;
                 if(package->GetDiagCode("installation") == 0){
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
                     label.clear();
@@ -246,7 +245,7 @@ public:
                 ImGui::SetNextItemOpen(false, ImGuiCond_Once);
                 if (ImGui::TreeNode((char*)label.c_str()))
                 {
-                    ImGui::Text("Success with code 0");
+                    ImGui::Text((char*)package->GetDiagOutput("installation").c_str());
                     ImGui::TreePop();
                 }
                 ImGui::PopStyleColor();

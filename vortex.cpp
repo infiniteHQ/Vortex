@@ -737,7 +737,26 @@ void VxToolchain::Build()
 
     packageToBuild->ExecuteActions("preconfig", packageToBuild);
     std::cout << "Configuration : " << configuration << std::endl;
+
+    std::string errortxt = "cd " + packageToBuild->distPath + "/" + path + "/build && touch error_output.txt";
+    configuration +=" 2>error_output.txt";
     packageToBuild->SetDiagCode("configuration", system((char *)configuration.c_str()));
+
+    std::ifstream errorFile("error_output.txt");
+    std::string errorMessage;
+
+    if (errorFile.is_open()) {
+        errorMessage.assign(std::istreambuf_iterator<char>(errorFile), std::istreambuf_iterator<char>());
+        errorFile.close();
+        
+        packageToBuild->SetDiagOutput("configuration", errorMessage);
+
+    } else {
+        std::cerr << "Impossible d'ouvrir le fichier de sortie d'erreur." << std::endl;
+    }
+
+    std::cout << "Message d'erreur : " << errorMessage << std::endl;
+
 
     std::string compilation;
     if (packageToBuild->compilation.exclusiveCustomCompilationProcess == "not specified")
