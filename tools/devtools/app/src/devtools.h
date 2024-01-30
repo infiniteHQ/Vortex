@@ -39,9 +39,13 @@ public:
 
         // Elementsy
         UI_ShowContextToolchains(); // change to active label
+        UI_ShowContextHosts();
         UI_ShowContextToolchainsTobuild(); // change to active label
+        UI_ShowContextDistToolchains();
+        UI_ShowContextDistHost();
 
-        UI_ShowToolchainPannel();        
+        UI_ShowToolchainPannel();       
+        UI_ShowHostPannel();         
         UI_ShowToolchainBuildPannel();
     }
 
@@ -72,11 +76,25 @@ public:
         m_UI_ShowToolchainPannel = true;
     }
 
+    void ShowHostPannel(VxHost *host)
+    {
+        this->m_currentHostForPannel = host;
+        m_UI_ShowHostPannel = true;
+    }
+
     void BuildToolchain(){
 
-              this->m_currentToolchainForPannelToBuild->PreBuild();
-              this->m_currentToolchainForPannelToBuild->Build();
-              this->m_currentToolchainForPannelToBuild->PostBuild();
+              this->m_currentToolchainForPannel->PreBuild();
+              this->m_currentToolchainForPannel->Build();
+              this->m_currentToolchainForPannel->PostBuild();
+    }
+
+
+    void BuildHost(){
+
+              this->m_currentHostForPannel->PreBuild();
+              this->m_currentHostForPannel->Build();
+              this->m_currentHostForPannel->PostBuild();
     }
 
 
@@ -112,20 +130,219 @@ public:
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "State :");
             ImGui::SameLine();
             ImGui::Text((char *)this->m_currentToolchainForPannelToBuild->state.c_str());
+        }
+        ImGui::End();
+    }
+
+
+
+    void UI_ShowHostPannel()
+    {
+        if (!m_UI_ShowHostPannel)
+            return;
+
+        if (ImGui::Begin("Host Pannel"))
+        {
+            float oldsize = ImGui::GetFont()->Scale;
+            ImGui::GetFont()->Scale *= 1.5;
+            ImGui::PushFont(ImGui::GetFont());
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Host :");
+            ImGui::SameLine();
+            ImGui::Text((char *)this->m_currentHostForPannel->name.c_str());
+            ImGui::GetFont()->Scale = oldsize;
+            ImGui::PopFont();
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author :");
+            ImGui::SameLine();
+            ImGui::Text((char *)this->m_currentHostForPannel->author.c_str());
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "State :");
+            ImGui::SameLine();
+            ImGui::Text((char *)this->m_currentHostForPannel->state.c_str());
+
+            ImGui::Separator();
+            ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+            if (ImGui::BeginTabBar("MatrixPannelTabBar", tab_bar_flags))
+            {
+                std::string registeredpackages_title = "Registered Packages (";
+                registeredpackages_title += std::to_string(m_currentHostForPannel->registeredPackages.size());
+                registeredpackages_title += ")";
+                if (ImGui::BeginTabItem((char*)registeredpackages_title.c_str()))
+                {
+                    int selected_row = -1; // Variable pour suivre la ligne sélectionnée
+
+                    static ImGuiTableFlags flagsd =
+                        ImGuiTableFlags_ScrollY |
+                        ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
+                        ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable |
+                        ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+
+                    if (ImGui::BeginTable("RegisteredPackages", 3, flagsd))
+                    {
+                        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Origin", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Resolved", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableHeadersRow();
+
+                        for (auto package : m_currentHostForPannel->registeredPackages)
+                        { 
+                            
+                            ImGui::TableNextRow();
+
+                            for (int column = 0; column < 2; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
+
+                                if (column == 0)
+                                {
+                                    ImGui::Text((char *)package->label.c_str());
+                                }
+                                if (column == 1)
+                                {
+                                    ImGui::Text((char *)package->emplacement.c_str());
+                                }
+                                if (column == 2)
+                                {
+                                  if(package->resolved){
+                                    ImGui::Text("Resolved");
+                                  }else{
+                                    ImGui::Text("Not resolved...");
+
+                                  }
+                                }
+                            }
+                        }
+                        ImGui::EndTable();
+                    }
+                    ImGui::EndTabItem();
+                }
+                
+                std::string elements_title = "Packages (";
+                elements_title += std::to_string(m_currentHostForPannel->packages.size());
+                elements_title += ")";
+                if (ImGui::BeginTabItem((char*)elements_title.c_str()))
+                {
+                    int selected_row = -1; // Variable pour suivre la ligne sélectionnée
+
+                    static ImGuiTableFlags flagsd =
+                        ImGuiTableFlags_ScrollY |
+                        ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter |
+                        ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable |
+                        ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+
+                    if (ImGui::BeginTable("Packages", 5, flagsd))
+                    {
+                        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Runtime", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableHeadersRow();
+
+                        for (auto package : m_currentHostForPannel->packages)
+                        { 
+                            
+                            ImGui::TableNextRow();
+
+                            for (int column = 0; column < 5; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
+
+                                if (column == 0)
+                                {
+                                  if(ImGui::Button("Open")){
+
+                                  }
+                                }
+                                if (column == 1)
+                                {
+                                    ImGui::Text((char *)package->label.c_str());
+                                }
+                                if (column == 2)
+                                {
+                                    //ImGui::Text((char *)element->attached_matrix->GetId().c_str());
+                                }
+                                if (column == 3)
+                                {
+                                }
+                                if (column == 4)
+                                {
+                                }
+                            }
+                        }
+                        ImGui::EndTable();
+                    }
+                    ImGui::EndTabItem();
+                }
+                
+              if(ImGui::BeginTabItem("Scripts")){
+                ImGui::EndTabItem();
+              }
+              if(ImGui::BeginTabItem("Patchs")){
+                ImGui::EndTabItem();
+              }
+              if(ImGui::BeginTabItem("Modules")){
+                ImGui::EndTabItem();
+              }
+              if(ImGui::BeginTabItem("Compilation")){
+                ImGui::EndTabItem();
+              }
+              if(ImGui::BeginTabItem("Build")){
 
             if(ImGui::Button("Build")){
-            std::thread Thread([&]() { this->BuildToolchain();});
+            std::thread Thread([&]() { this->BuildHost();});
             this->receiveThread.swap(Thread);
             }
+
 
             ImGui::Separator();
             ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 
-            for(auto package : m_currentToolchainForPannelToBuild->packages){
+            for(auto package : m_currentHostForPannel->packages){
               std::string label = "Package : " + package->label;
              if (ImGui::TreeNode((char*)label.c_str()))
             {
                 std::string label;
+
+                for(auto action : package->actions){
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+
+                std::string ddname = "action-" + action->type + "-" + action->executionSequence + "-" + std::to_string(action->priority);
+                if(package->GetDiagCode(ddname) == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += ddname + " [Success]";
+                }
+                else if(package->GetDiagCode(ddname) == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += ddname + " [Wait]";
+                }
+                else if(package->GetDiagCode(ddname) == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += ddname + " [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += ddname + " [Fail]";
+
+                }
+
+
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text((char*)package->GetDiagOutput(ddname).c_str());
+                    ImGui::TreePop();
+                }
+                ddname.clear();
+                ImGui::PopStyleColor();
+
+
+                }
 
                 ImGui::SetNextItemOpen(false, ImGuiCond_Once);
 
@@ -252,6 +469,11 @@ public:
             ImGui::TreePop();
             }
         }
+        
+                ImGui::EndTabItem();
+              }
+              ImGui::EndTabBar();
+            }
         }
         ImGui::End();
     }
@@ -360,7 +582,7 @@ public:
                         ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
                         ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed);
                         ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed);
-                        ImGui::TableSetupColumn("Runtime", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Priority", ImGuiTableColumnFlags_WidthFixed);
                         ImGui::TableHeadersRow();
 
                         for (auto package : m_currentToolchainForPannel->packages)
@@ -391,6 +613,8 @@ public:
                                 }
                                 if (column == 4)
                                 {
+                                    ImGui::Text((char *)std::to_string(package->priority).c_str());
+
                                 }
                             }
                         }
@@ -411,7 +635,186 @@ public:
               if(ImGui::BeginTabItem("Compilation")){
                 ImGui::EndTabItem();
               }
-              if(ImGui::BeginTabItem("Archs")){
+              if(ImGui::BeginTabItem("Build")){
+
+            if(ImGui::Button("Build")){
+            std::thread Thread([&]() { this->BuildToolchain();});
+            this->receiveThread.swap(Thread);
+            }
+
+            ImGui::Separator();
+            ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+
+            for(auto package : m_currentToolchainForPannel->packages){
+              std::string label = "Package : " + package->label;
+             if (ImGui::TreeNode((char*)label.c_str()))
+            {
+                std::string label;
+
+                for(auto action : package->actions){
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+
+                std::string ddname = "action-" + action->type + "-" + action->executionSequence + "-" + std::to_string(action->priority);
+                if(package->GetDiagCode(ddname) == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += ddname + " [Success]";
+                }
+                else if(package->GetDiagCode(ddname) == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += ddname + " [Wait]";
+                }
+                else if(package->GetDiagCode(ddname) == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += ddname + " [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += ddname + " [Fail]";
+
+                }
+
+
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text((char*)package->GetDiagOutput(ddname).c_str());
+                    ImGui::TreePop();
+                }
+                ddname.clear();
+                ImGui::PopStyleColor();
+
+
+                }
+
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+
+                if(package->GetDiagCode("decompression") == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Decompression [Success]";
+                }
+                else if(package->GetDiagCode("decompression") == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += "Decompression [Wait]";
+                }
+                else if(package->GetDiagCode("decompression") == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += "Decompression [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Decompression [Fail]";
+
+                }
+
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text((char*)package->GetDiagOutput("decompression").c_str());
+                    ImGui::TreePop();
+                }
+                ImGui::PopStyleColor();
+
+
+
+
+                if(package->GetDiagCode("configuration") == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Configuration [Success]";
+                }
+                else if(package->GetDiagCode("configuration") == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += "Configuration [Wait]";
+                }
+                else if(package->GetDiagCode("decompression") == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += "Configuration [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Configuration [Fail]";
+
+                }
+
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text((char*)package->GetDiagOutput("configuration").c_str());
+                    ImGui::TreePop();
+                }
+                ImGui::PopStyleColor();
+
+
+                if(package->GetDiagCode("compilation") == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Compilation [Success]";
+                }
+                else if(package->GetDiagCode("compilation") == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += "Compilation [Wait]";
+                }
+                else if(package->GetDiagCode("decompression") == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += "Compilation [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Compilation [Fail]";
+
+                }
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text((char*)package->GetDiagOutput("compilation").c_str());
+                    ImGui::TreePop();
+                }
+                ImGui::PopStyleColor();
+
+                if(package->GetDiagCode("installation") == 0){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.2f, 1.0f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Installation [Success]";
+                }
+                else if(package->GetDiagCode("installation") == 999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.0f, 1.0f));
+                    label.clear();
+                    label += "Installation [Wait]";
+                }
+                else if(package->GetDiagCode("decompression") == -999){
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+                    label.clear();
+                    label += "Installation [Build not started]";
+                }
+                else{
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+                    label.clear();
+                    label += "Installation [Fail]";
+
+                }
+                ImGui::SetNextItemOpen(false, ImGuiCond_Once);
+                if (ImGui::TreeNode((char*)label.c_str()))
+                {
+                    ImGui::Text((char*)package->GetDiagOutput("installation").c_str());
+                    ImGui::TreePop();
+                }
+                ImGui::PopStyleColor();
+            ImGui::TreePop();
+            }
+        }
+        
                 ImGui::EndTabItem();
               }
               ImGui::EndTabBar();
@@ -503,6 +906,93 @@ public:
         }
         ImGui::End();
     }
+
+    void UI_ShowContextHosts()
+    {
+        if (!m_UI_ShowContextHosts)
+            return;
+
+        if (ImGui::Begin("Registered Host(s)"))
+        {
+
+                static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                if (ImGui::BeginTable("RegisteredToolchains", 7, flags))
+                {
+                    ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Author", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Target", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Build", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableHeadersRow();
+                    ImGui::TableNextRow();
+                    //int i = 0;
+                    //for (auto m : m_ctx->IO.GetAllActiveMatrixes())
+                    for (int i = 0; i < m_ctx->IO.hosts.size(); i++)
+                    {
+
+                        ImGui::TableNextRow();
+                        for (int column = 0; column < 6; column++)
+                        {
+                            ImGui::TableSetColumnIndex(column);
+
+                            if (column == 0)
+                            {
+                                std::string label = "Open";
+
+                                if (ImGui::Button((char*)label.c_str()))
+                                {
+                                    this->ShowHostPannel(&m_ctx->IO.hosts[i]);
+                                    //this->ShowMatrixPannel(m_ctx->IO.GetAllActiveMatrixes()[i]);
+                                };
+                            }
+                            if (column == 1)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.hosts[i].name.c_str());
+                            }
+                            if (column == 2)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.hosts[i].author.c_str());
+                            }
+                            if (column == 3)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.hosts[i].target_arch.c_str());
+                            }
+                            if (column == 4)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.hosts[i].type.c_str());
+                            }
+                            if (column == 5)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.hosts[i].state.c_str());
+                            }
+                            if (column == 6)
+                            {
+                            }
+                        }
+                    }
+
+                    ImGui::EndTable();
+                }
+            
+         
+
+            ImGui::Columns(1); // Reviens à une seule colonne
+
+            // Redimensionnement automatique de la hauteur entre les deux enfants
+            float minHeight = ImGui::GetContentRegionAvail().y;                       // Hauteur minimale
+            float maxHeight = ImGui::GetIO().DisplaySize.y - ImGui::GetCursorPos().y; // Hauteur maximale
+
+            if (minHeight > maxHeight)
+            {
+                minHeight = maxHeight;
+            }
+        }
+        ImGui::End();
+    }
+
 
     void UI_ShowContextToolchains()
     {
@@ -597,10 +1087,193 @@ public:
         ImGui::End();
     }
 
+    void UI_ShowContextDistToolchains()
+    {
+        if (!m_UI_ShowContextDistToolchains)
+            return;
+
+        if (ImGui::Begin("Registered Dist Toolchain(s)"))
+        {
+
+                static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                
+
+
+                if (ImGui::BeginTable("RegisteredToolchains", 7, flags))
+                {
+                    ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Author", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Platform", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Build", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableHeadersRow();
+                    ImGui::TableNextRow();
+                    //int i = 0;
+                    //for (auto m : m_ctx->IO.GetAllActiveMatrixes())
+                    for (int i = 0; i < m_ctx->IO.distToolchains.size(); i++)
+                    {
+
+                        ImGui::TableNextRow();
+                        for (int column = 0; column < 6; column++)
+                        {
+                            ImGui::TableSetColumnIndex(column);
+
+                            if (column == 0)
+                            {
+                                std::string label = "Open";
+
+                                if (ImGui::Button((char*)label.c_str()))
+                                {
+                                    //this->ShowToolchainPannel(&m_ctx->IO.distToolchains[i]);
+                                    //this->ShowMatrixPannel(m_ctx->IO.GetAllActiveMatrixes()[i]);
+                                };
+
+                            }
+                            if (column == 1)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distToolchains[i].name.c_str());
+                            }
+                            if (column == 2)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distToolchains[i].author.c_str());
+                            }
+                            if (column == 3)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distToolchains[i].platform.c_str());
+                            }
+                            if (column == 4)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distToolchains[i].type.c_str());
+                            }
+                            if (column == 5)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distToolchains[i].state.c_str());
+                            }
+                            if (column == 6)
+                            {
+                            }
+                        }
+                    }
+
+                    ImGui::EndTable();
+                }
+            
+         
+
+            ImGui::Columns(1); // Reviens à une seule colonne
+
+            // Redimensionnement automatique de la hauteur entre les deux enfants
+            float minHeight = ImGui::GetContentRegionAvail().y;                       // Hauteur minimale
+            float maxHeight = ImGui::GetIO().DisplaySize.y - ImGui::GetCursorPos().y; // Hauteur maximale
+
+            if (minHeight > maxHeight)
+            {
+                minHeight = maxHeight;
+            }
+        }
+        ImGui::End();
+    }
+
+    void UI_ShowContextDistHost()
+    {
+        if (!m_UI_ShowContextDistHost)
+            return;
+
+        if (ImGui::Begin("Registered Dist Host(s)"))
+        {
+
+                static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+
+                if (ImGui::BeginTable("RegisteredToolchains", 7, flags))
+                {
+                    ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Author", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Platform", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("Build", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableHeadersRow();
+                    ImGui::TableNextRow();
+                    //int i = 0;
+                    //for (auto m : m_ctx->IO.GetAllActiveMatrixes())
+                    for (int i = 0; i < m_ctx->IO.distHosts.size(); i++)
+                    {
+
+                        ImGui::TableNextRow();
+                        for (int column = 0; column < 6; column++)
+                        {
+                            ImGui::TableSetColumnIndex(column);
+
+                            if (column == 0)
+                            {
+                                std::string label = "Open";
+
+                                if (ImGui::Button((char*)label.c_str()))
+                                {
+                                    //this->ShowToolchainPannel(&m_ctx->IO.distToolchains[i]);
+                                    //this->ShowMatrixPannel(m_ctx->IO.GetAllActiveMatrixes()[i]);
+                                };
+
+                            }
+                            if (column == 1)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distHosts[i].name.c_str());
+                            }
+                            if (column == 2)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distHosts[i].author.c_str());
+                            }
+                            if (column == 3)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distHosts[i].platform.c_str());
+                            }
+                            if (column == 4)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distHosts[i].type.c_str());
+                            }
+                            if (column == 5)
+                            {
+                                ImGui::Text((char *)m_ctx->IO.distHosts[i].state.c_str());
+                            }
+                            if (column == 6)
+                            {
+                            }
+                        }
+                    }
+
+                    ImGui::EndTable();
+                }
+            
+         
+
+            ImGui::Columns(1); // Reviens à une seule colonne
+
+            // Redimensionnement automatique de la hauteur entre les deux enfants
+            float minHeight = ImGui::GetContentRegionAvail().y;                       // Hauteur minimale
+            float maxHeight = ImGui::GetIO().DisplaySize.y - ImGui::GetCursorPos().y; // Hauteur maximale
+
+            if (minHeight > maxHeight)
+            {
+                minHeight = maxHeight;
+            }
+        }
+        ImGui::End();
+    }
+
+
 
     void ShowContextToolchains() { m_UI_ShowContextToolchains = true; }
+    void ShowContextHosts() { m_UI_ShowContextHosts = true; }
+    void ShowContextDistToolchains() { m_UI_ShowContextDistToolchains = true; }
+    void ShowContextDistHost() { m_UI_ShowContextDistHost = true; }
     void ShowToolchainToBuild() { m_UI_ShowContextToolchainsToBuild = true; }
     void ShowToolchain() { m_UI_ShowToolchainPannel = true; }
+    void ShowHost() { m_UI_ShowHostPannel = true; }
 
     VxContext* m_ctx;
 
@@ -612,11 +1285,15 @@ private:
     bool m_UI_ShowToolchainPannel = false;
     bool m_UI_ShowToolchainBuildPannel = false;
     bool m_UI_ShowContextToolchainsToBuild = false;
-
+    bool m_UI_ShowContextDistToolchains = false;
+    bool m_UI_ShowContextDistHost = false;
+    bool m_UI_ShowContextHosts = false;
+    bool m_UI_ShowHostPannel = false;
     
 
     VxToolchain *m_currentToolchainForPannel;
     VxToolchain *m_currentToolchainForPannelToBuild;
+    VxHost *m_currentHostForPannel;
 };
 
 Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext* ctx)
@@ -628,9 +1305,9 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext*
     std::string name = exampleLayer->m_ctx->name + " - Vortex Editor";
     spec.Name = name;
     spec.CustomTitlebar = false;
-    
 
     Walnut::Application *app = new Walnut::Application(spec);
+
 
     app->PushLayer(exampleLayer);
     app->SetMenubarCallback([app, exampleLayer]()
@@ -668,6 +1345,29 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext*
       if (ImGui::MenuItem("Toolchain(s)")) {
         exampleLayer->ShowContextToolchains();
       }
+      if (ImGui::MenuItem("Host(s)")) {
+        exampleLayer->ShowContextHosts();
+      }
+      if (ImGui::MenuItem("System(s)")) {
+      }
+      ImGui::Separator();
+      if (ImGui::MenuItem("Chrooter(s)")) {
+      }
+      if (ImGui::MenuItem("Package(s)")) {
+      }
+      if (ImGui::MenuItem("Strapper(s)")) {
+      }
+      ImGui::Separator();
+      if (ImGui::MenuItem("Builded Toolchain(s)")) {
+        exampleLayer->ShowContextDistToolchains();
+      }
+      if (ImGui::MenuItem("Builded Host(s)")) {
+        exampleLayer->ShowContextDistHost();
+        
+      }
+      if (ImGui::MenuItem("Builded System(s)")) {
+      }
+      ImGui::Separator();
       ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Tools")) {
@@ -688,7 +1388,7 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext*
     }
     });
 
-    
+
     return app;
 }
 

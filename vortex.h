@@ -208,6 +208,8 @@ namespace VortexMaker
 
     VORTEX_API void             InitProject(nlohmann::json main_config);
 
+    VORTEX_API void             RefreshDistToolchains();
+    VORTEX_API void             RefreshDistHosts();
 
     bool                        DebugCheckVersionAndDataLayout(const char* version);
 
@@ -492,6 +494,8 @@ struct VXPackage_Action{
 
 
 struct VxPackageCompilation{
+    bool useCompilationOptimization = false; // For a fully custom behavior
+
     std::string customScript = "unknow"; // For a fully custom behavior
     std::string configurationCommand = "unknow"; // Final cooked configuration command (Step 1 of vortex basic  compilation)
     std::string compilationCommand = "unknow"; // Final cooked compilation command (Step 2 of vortex basic  compilation)
@@ -702,6 +706,99 @@ struct VxToolchain{
 
     void CreateToolchainDirectory(/*VxDirectory*/);
 }; 
+
+
+struct VxHost{
+    // Vortex project informations
+    std::string name;
+    std::string author;
+    std::string description;
+    std::string type;
+    std::string state;
+    std::string vendor;
+    std::string platform;
+
+    std::string toolchainToUse;
+
+    std::string distPackagesPath             = "not specified";
+
+    std::string localPackagesPath;
+
+    std::string target_arch;
+    std::string builder_arch;
+    std::string host_arch;
+
+    std::string host          = "not specified";
+
+    std::string hostTriplet             = "not specified";
+    std::string builderTriplet          = "not specified";
+    std::string targetTriplet           = "not specified";
+
+    std::string GetTriplet(std::string triplet_type);
+
+    hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    hVector<std::shared_ptr<VxPackage>> packages;
+
+
+    void RegisterPackage(const std::string label,const std::string emplacemement){
+        std::shared_ptr<VxPackageInterface> newPackageInterface = std::make_shared<VxPackageInterface>();
+        newPackageInterface->label = label;
+        newPackageInterface->emplacement = emplacemement;
+        newPackageInterface->resolved = false;
+        registeredPackages.push_back(newPackageInterface);
+    }
+
+    void FindPackages();
+
+    void PreBuild();
+    void Build();
+    void PostBuild();
+
+};
+
+
+struct VxDistToolchain{
+    // Vortex project informations
+    std::string name;
+    std::string author;
+    std::string target;
+    std::string description;
+    std::string type;
+    std::string state;
+    std::string path;
+    std::string vendor;
+    std::string platform;
+
+
+    std::string CC;
+    std::string CXX;
+    std::string AR;
+    std::string AS;
+    std::string RANLIB;
+    std::string LD;
+    std::string STRIP;
+    
+};
+
+struct VxDistHost{
+    // Vortex project informations
+    std::string name;
+    std::string author;
+    std::string target;
+    std::string description;
+    std::string type;
+    std::string state;
+    std::string vendor;
+    std::string platform;
+
+    std::string CC;
+    std::string CXX;
+    std::string AR;
+    std::string AS;
+    std::string RANLIB;
+    std::string LD;
+    std::string STRIP;
+};
 
 
 //_____________________________________________________________________________

@@ -59,6 +59,13 @@ int main(int argc, char *argv[])
     }
     else
     {
+        if (std::string(argv[1]) == "-breakpoint")
+        {
+            std::cout << "||| BREAKPOINT : Asked by command \"vortex -breakpoint\" |||" << std::endl;
+            std::cout << "Press a key and hit ENTER to continue ..." << std::endl;
+            std::string ui;
+            std::cin >> ui;
+        }
         if (std::string(argv[1]) == "-g" || std::string(argv[1]) == "--gui")
         {
             if(!CheckDirectory()){return 1;};

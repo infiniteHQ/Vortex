@@ -149,12 +149,16 @@ struct VxIO {
   int         MetricsActiveAllocations;  
                                        
   // All loaded components
-  std::vector<VxToolchain> toolchains;    
+  std::vector<VxToolchain>      toolchains;    
+  std::vector<VxDistToolchain>  distToolchains;    
+  std::vector<VxHost>           hosts;    
+  std::vector<VxDistHost>  distHosts;    
 };
 
 
 struct VxPaths {
   std::string toolchainDistFolder;
+  std::string hostDistFolder;
 
 };
 
@@ -182,6 +186,7 @@ struct VxContext {
 
   std::string toolchainsPath;
   std::string packagesPath;
+  std::string hostsPath;
 
   // All contents...
 
