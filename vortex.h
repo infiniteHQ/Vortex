@@ -787,6 +787,7 @@ struct VxDistHost{
     std::string target;
     std::string description;
     std::string type;
+    std::string path;
     std::string state;
     std::string vendor;
     std::string platform;
@@ -798,6 +799,8 @@ struct VxDistHost{
     std::string RANLIB;
     std::string LD;
     std::string STRIP;
+
+    void TestingChroot();
 };
 
 

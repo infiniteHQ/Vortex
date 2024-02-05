@@ -47,6 +47,7 @@ public:
         UI_ShowToolchainPannel();       
         UI_ShowHostPannel();         
         UI_ShowToolchainBuildPannel();
+        UI_ShowDistHostPannel();
     }
 
     // Fonction pour obtenir la couleur en fonction de la valeur de l'entier
@@ -105,6 +106,11 @@ public:
     }
 
 
+    void ShowDistHostPannel(VxDistHost *host)
+    {
+        this->m_currentDistHostForPannel = host;
+        m_UI_ShowDistHostPannel = true;
+    }
 
     void UI_ShowToolchainBuildPannel()
     {
@@ -134,7 +140,45 @@ public:
         ImGui::End();
     }
 
+    void UI_ShowDistHostPannel()
+    {
+        if (!m_UI_ShowDistHostPannel)
+            return;
 
+        if (ImGui::Begin("Dist Host Pannel"))
+        {
+            float oldsize = ImGui::GetFont()->Scale;
+            ImGui::GetFont()->Scale *= 1.5;
+            ImGui::PushFont(ImGui::GetFont());
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Dist Host :");
+            ImGui::SameLine();
+            ImGui::Text((char *)this->m_currentDistHostForPannel->name.c_str());
+            ImGui::GetFont()->Scale = oldsize;
+            ImGui::PopFont();
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author :");
+            ImGui::SameLine();
+            ImGui::Text((char *)this->m_currentDistHostForPannel->author.c_str());
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "State :");
+            ImGui::SameLine();
+            ImGui::Text((char *)this->m_currentDistHostForPannel->state.c_str());
+
+            ImGui::Separator();
+            ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+            if (ImGui::BeginTabBar("MatrixPannelTabBar", tab_bar_flags))
+            {
+                 if(ImGui::BeginTabItem("Testing")){
+                    if(ImGui::Button("Testing Chroot")){
+                        this->m_currentDistHostForPannel->TestingChroot();
+                    }
+                    ImGui::EndTabItem();
+                }
+            ImGui::EndTabBar();
+            }
+        }
+        ImGui::End();
+    }
 
     void UI_ShowHostPannel()
     {
@@ -477,8 +521,6 @@ public:
         }
         ImGui::End();
     }
-
-
 
     void UI_ShowToolchainPannel()
     {
@@ -823,7 +865,6 @@ public:
         ImGui::End();
     }
 
-
     void UI_ShowContextToolchainsTobuild()
     {
         if (!m_UI_ShowContextToolchainsToBuild)
@@ -992,7 +1033,6 @@ public:
         }
         ImGui::End();
     }
-
 
     void UI_ShowContextToolchains()
     {
@@ -1215,6 +1255,7 @@ public:
 
                                 if (ImGui::Button((char*)label.c_str()))
                                 {
+                                    this->ShowDistHostPannel(&m_ctx->IO.distHosts[i]);
                                     //this->ShowToolchainPannel(&m_ctx->IO.distToolchains[i]);
                                     //this->ShowMatrixPannel(m_ctx->IO.GetAllActiveMatrixes()[i]);
                                 };
@@ -1274,6 +1315,7 @@ public:
     void ShowToolchainToBuild() { m_UI_ShowContextToolchainsToBuild = true; }
     void ShowToolchain() { m_UI_ShowToolchainPannel = true; }
     void ShowHost() { m_UI_ShowHostPannel = true; }
+    void ShowDistHost() { m_UI_ShowDistHostPannel = true; }
 
     VxContext* m_ctx;
 
@@ -1289,11 +1331,14 @@ private:
     bool m_UI_ShowContextDistHost = false;
     bool m_UI_ShowContextHosts = false;
     bool m_UI_ShowHostPannel = false;
+    bool m_UI_ShowDistHostPannel = false;
     
 
     VxToolchain *m_currentToolchainForPannel;
     VxToolchain *m_currentToolchainForPannelToBuild;
     VxHost *m_currentHostForPannel;
+    VxDistHost *m_currentDistHostForPannel;
+    VxDistToolchain *m_currentDistToolchainForPannel;
 };
 
 Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext* ctx)
