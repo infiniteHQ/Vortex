@@ -3,6 +3,36 @@ cmake_minimum_required(VERSION 3.16)
 project(vortex)
 
 add_executable(vortex
+
+    # Toolchain sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_prebuild.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_build.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_postbuild.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_findpackages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_utils.cpp
+
+    # Toolchain sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_prebuild.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_build.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_postbuild.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_findpackages.cpp
+
+    # Dist Toolchain sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/disthost/disthost_testingchroot.cpp
+
+    # Project managment sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/refresh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disttoolchain.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_host.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_toolchain.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disthost.cpp
+    # Utils sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/utils/extractpackage.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/utils/replaceplaceholders.cpp
+
+
+    # Base of vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/vortex.cpp
 	main.cpp
 )

@@ -175,6 +175,9 @@ struct hString;
 struct hArgs;
 
 struct CommandOutput;
+struct VxToolchain;
+struct VxDistHost;
+struct VxDistToolchain;
 
 // Internals (from vortex_internals.h)
 struct VxContext;
@@ -220,6 +223,15 @@ namespace VortexMaker
     VORTEX_API std::vector<std::string> SearchFiles(const std::string& path, const std::string& filename);
 
     VORTEX_API nlohmann::json DumpJSON(const std::string& file);
+
+
+    VORTEX_API bool RegisterDistHost(VxDistHost host, nlohmann::json packageData);
+    VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
+    VORTEX_API bool RegisterToolchain(nlohmann::json toolchainData);
+    VORTEX_API bool RegisterHost(nlohmann::json toolchainData);
+
+    VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
+    VORTEX_API std::string replacePlaceholders(const std::string &command, const std::unordered_map<std::string, std::string> &replacements);
 
 
     // Memory Allocators
@@ -551,6 +563,7 @@ struct VxPackage{
     std::string locality = "unknow"; // local (in the component), global (in the project), public (in a repository)
     std::string installationMethod = "unknow"; // compilation, installation
     bool        enabled = false; 
+    bool        handleInHost = false; 
     std::string strapper = "unknow";
     std::string type = "unknow";
 
@@ -620,6 +633,95 @@ struct VxPackage{
 
 };
 
+struct VxHost{
+    // Vortex project informations
+    std::string name;
+    std::string author;
+    std::string description;
+    std::string type;
+    std::string state;
+    std::string vendor;
+    std::string platform;
+
+    std::string toolchainToUse;
+
+    std::string distPackagesPath             = "not specified";
+
+    std::string localPackagesPath;
+
+    std::string target_arch;
+    std::string builder_arch;
+    std::string host_arch;
+
+    std::string host          = "not specified";
+
+    std::string hostTriplet             = "not specified";
+    std::string builderTriplet          = "not specified";
+    std::string targetTriplet           = "not specified";
+
+    std::string GetTriplet(std::string triplet_type);
+
+    hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    hVector<std::shared_ptr<VxPackage>> packages;
+
+
+    void RegisterPackage(const std::string label,const std::string emplacemement);
+    void FindPackages();
+
+    void PreBuild();
+    void Build();
+    void PostBuild();
+
+};
+
+
+struct VxDistToolchain{
+    // Vortex project informations
+    std::string name;
+    std::string author;
+    std::string target;
+    std::string description;
+    std::string type;
+    std::string state;
+    std::string path;
+    std::string vendor;
+    std::string platform;
+
+
+    std::string CC;
+    std::string CXX;
+    std::string AR;
+    std::string AS;
+    std::string RANLIB;
+    std::string LD;
+    std::string STRIP;
+    
+};
+
+struct VxDistHost{
+    // Vortex project informations
+    std::string name;
+    std::string author;
+    std::string target;
+    std::string description;
+    std::string type;
+    std::string path;
+    std::string state;
+    std::string vendor;
+    std::string platform;
+
+    std::string CC;
+    std::string CXX;
+    std::string AR;
+    std::string AS;
+    std::string RANLIB;
+    std::string LD;
+    std::string STRIP;
+
+    void TestingChroot();
+};
+
+
 struct VxToolchain{
     // Vortex project informations
     std::string name;
@@ -676,8 +778,8 @@ struct VxToolchain{
 
     // Vector de packages
 
-    hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
-    hVector<std::shared_ptr<VxPackage>> packages;
+    std::vector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    std::vector<std::shared_ptr<VxPackage>> packages;
     // Scripts
     // Modules & other assets..
     // Patchs
@@ -689,13 +791,7 @@ struct VxToolchain{
     void Build();
     void PostBuild();
 
-    void RegisterPackage(const std::string label,const std::string emplacemement){
-        std::shared_ptr<VxPackageInterface> newPackageInterface = std::make_shared<VxPackageInterface>();
-        newPackageInterface->label = label;
-        newPackageInterface->emplacement = emplacemement;
-        newPackageInterface->resolved = false;
-        registeredPackages.push_back(newPackageInterface);
-    }
+    void RegisterPackage(const std::string label,const std::string emplacemement);
 
     void FindPackages();
 
@@ -706,102 +802,6 @@ struct VxToolchain{
 
     void CreateToolchainDirectory(/*VxDirectory*/);
 }; 
-
-
-struct VxHost{
-    // Vortex project informations
-    std::string name;
-    std::string author;
-    std::string description;
-    std::string type;
-    std::string state;
-    std::string vendor;
-    std::string platform;
-
-    std::string toolchainToUse;
-
-    std::string distPackagesPath             = "not specified";
-
-    std::string localPackagesPath;
-
-    std::string target_arch;
-    std::string builder_arch;
-    std::string host_arch;
-
-    std::string host          = "not specified";
-
-    std::string hostTriplet             = "not specified";
-    std::string builderTriplet          = "not specified";
-    std::string targetTriplet           = "not specified";
-
-    std::string GetTriplet(std::string triplet_type);
-
-    hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
-    hVector<std::shared_ptr<VxPackage>> packages;
-
-
-    void RegisterPackage(const std::string label,const std::string emplacemement){
-        std::shared_ptr<VxPackageInterface> newPackageInterface = std::make_shared<VxPackageInterface>();
-        newPackageInterface->label = label;
-        newPackageInterface->emplacement = emplacemement;
-        newPackageInterface->resolved = false;
-        registeredPackages.push_back(newPackageInterface);
-    }
-
-    void FindPackages();
-
-    void PreBuild();
-    void Build();
-    void PostBuild();
-
-};
-
-
-struct VxDistToolchain{
-    // Vortex project informations
-    std::string name;
-    std::string author;
-    std::string target;
-    std::string description;
-    std::string type;
-    std::string state;
-    std::string path;
-    std::string vendor;
-    std::string platform;
-
-
-    std::string CC;
-    std::string CXX;
-    std::string AR;
-    std::string AS;
-    std::string RANLIB;
-    std::string LD;
-    std::string STRIP;
-    
-};
-
-struct VxDistHost{
-    // Vortex project informations
-    std::string name;
-    std::string author;
-    std::string target;
-    std::string description;
-    std::string type;
-    std::string path;
-    std::string state;
-    std::string vendor;
-    std::string platform;
-
-    std::string CC;
-    std::string CXX;
-    std::string AR;
-    std::string AS;
-    std::string RANLIB;
-    std::string LD;
-    std::string STRIP;
-
-    void TestingChroot();
-};
 
 
 //_____________________________________________________________________________
