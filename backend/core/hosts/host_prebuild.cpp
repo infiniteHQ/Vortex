@@ -24,6 +24,17 @@ void VxHost::PreBuild()
 
   this->host = crosstoolsDir;
 
+  std::string usrDir = crosstoolsDir + "/usr";
+  if (mkdir(usrDir.c_str(), 0777) == -1)
+  {
+    perror("Erreur lors de la création du dossier crosstoolsDir");
+  }
+  std::string usrLibDir = usrDir + "/lib";
+  if (mkdir(usrLibDir.c_str(), 0777) == -1)
+  {
+    perror("Erreur lors de la création du dossier crosstoolsDir");
+  }
+
   // this->crosstoolsPath = crosstoolsDir;
 
   std::string data = baseDir + "/data";
@@ -110,7 +121,6 @@ void VxHost::PreBuild()
         std::cout << system(LD.c_str());
         std::cout << system(STRIP.c_str());
         std::cout << Bashrc << std::endl;
-        std::cout << system("vortex -breakpoint");
 
 
         // FAIRE PLUTOT UN PATH QUE LES ELEMERNTS
@@ -120,7 +130,7 @@ void VxHost::PreBuild()
 
   for (auto package : this->packages)
   {
-    if(!package->handleInHost){
+    if(!package->useChroot){
 
     package->AddDiag("decompression");
     package->AddDiag("configuration");

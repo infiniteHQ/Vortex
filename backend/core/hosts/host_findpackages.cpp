@@ -49,6 +49,12 @@ void VxHost::FindPackages()
               newPackage->name = filecontent["package"]["name"].get<std::string>();
               newPackage->compressed = filecontent["package"]["compressed"].get<std::string>();
               newPackage->priority = filecontent["package"]["priority"].get<int>();
+              newPackage->useChroot = false;
+              try{
+                newPackage->useChroot = filecontent["parameters"]["useChroot"].get<bool>();
+              }
+              catch(std::exception e){e.what();};
+
               newPackage->compilation.useCompilationOptimization = filecontent["parameters"]["useCompilationOptimization"].get<bool>();
               newPackage->compilation.exclusiveCustomCompilationProcess = filecontent["parameters"]["useOnlyCustomCompilationProcess"].get<std::string>();
               newPackage->compilation.exclusiveCustomConfigProcess = filecontent["parameters"]["useOnlyCustomConfigurationProcess"].get<std::string>();

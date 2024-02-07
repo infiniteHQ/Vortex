@@ -563,7 +563,7 @@ struct VxPackage{
     std::string locality = "unknow"; // local (in the component), global (in the project), public (in a repository)
     std::string installationMethod = "unknow"; // compilation, installation
     bool        enabled = false; 
-    bool        handleInHost = false; 
+    bool        useChroot = false; 
     std::string strapper = "unknow";
     std::string type = "unknow";
 
@@ -671,6 +671,7 @@ struct VxHost{
     void PreBuild();
     void Build();
     void PostBuild();
+    int ExecuteCmdInChroot(std::string cmd);
 
 };
 

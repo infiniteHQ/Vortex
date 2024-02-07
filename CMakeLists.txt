@@ -28,8 +28,8 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_toolchain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disthost.cpp
     # Utils sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/utils/extractpackage.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/utils/replaceplaceholders.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/utils/extract_package.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/utils/replace_placeholders.cpp
 
 
     # Base of vortex

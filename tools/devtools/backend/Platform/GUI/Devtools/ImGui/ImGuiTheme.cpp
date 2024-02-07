@@ -27,8 +27,8 @@ namespace Walnut::UI {
 
 		// Tabs
 		colors[ImGuiCol_Tab] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::titlebar);
-		colors[ImGuiCol_TabHovered] = ImColor(255, 225, 135, 30);
-		colors[ImGuiCol_TabActive] = ImColor(255, 225, 135, 60);
+		colors[ImGuiCol_TabHovered] = ImColor(100, 100, 204, 30);
+		colors[ImGuiCol_TabActive] = ImColor(100, 100, 204, 60);
 		colors[ImGuiCol_TabUnfocused] = ImGui::ColorConvertU32ToFloat4(Colors::Theme::titlebar);
 		colors[ImGuiCol_TabUnfocusedActive] = colors[ImGuiCol_TabHovered];
 
