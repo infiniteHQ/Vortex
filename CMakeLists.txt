@@ -38,9 +38,9 @@ add_executable(vortex
 )
 
 
-# # Add devtools
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/devtools devtools_build)
-target_link_libraries(vortex PUBLIC devtools)
+# Add editor
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/editor editor_build)
+target_link_libraries(vortex PUBLIC editor)
 
 
 # Trouvez la bibliothèque nlohmann/json installée

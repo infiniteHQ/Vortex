@@ -4,7 +4,7 @@
 #include <fstream>
 
 
-#include "./tools/devtools/app/src/devtools.h"
+#include "./tools/editor/app/src/editor.h"
 #include "./vortex.h"
 
 bool CheckDirectory(){
@@ -74,6 +74,18 @@ int main(int argc, char *argv[])
             std::thread receiveThread;
             std::thread Thread([&]() { VortexMaker::DebugTools(argc, argv, InitRuntime()); });
             receiveThread.swap(Thread);
+            receiveThread.join();
+        }
+        if (std::string(argv[1]) == "-test" || std::string(argv[1]) == "--test")
+        {
+            if(!CheckDirectory()){return 1;};
+            std::cout << "Opening the graphical interface..." << std::endl;
+
+            std::thread receiveThread;
+            std::thread Thread([&]() { system("vortex -g"); });
+            std::thread Thread2([&]() { system("vortex -g"); });
+            receiveThread.swap(Thread);
+            receiveThread.swap(Thread2);
             receiveThread.join();
         }
         else if (std::string(argv[1]) == "-b" || std::string(argv[1]) == "--build")
