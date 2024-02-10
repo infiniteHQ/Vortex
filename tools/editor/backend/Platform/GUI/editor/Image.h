@@ -3,6 +3,8 @@
 #include <string>
 
 #include "vulkan/vulkan.h"
+#include "../../../../vendor/imgui/imgui.h"
+#include "../../../../vendor/imgui/backends/imgui_impl_vulkan.h"
 
 namespace Walnut {
 
@@ -24,6 +26,10 @@ namespace Walnut {
 
 		VkDescriptorSet GetDescriptorSet() const { return m_DescriptorSet; }
 
+  		ImTextureID GetImGuiTextureID(VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) const { 
+            return ImGui_ImplVulkan_AddTexture(m_Sampler, m_ImageView, layout);
+        }
+        
 		void Resize(uint32_t width, uint32_t height);
 
 		uint32_t GetWidth() const { return m_Width; }
@@ -49,6 +55,7 @@ namespace Walnut {
 		size_t m_AlignedSize = 0;
 
 		VkDescriptorSet m_DescriptorSet = nullptr;
+		
 
 		std::string m_Filepath;
 	};

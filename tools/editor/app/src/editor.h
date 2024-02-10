@@ -39,16 +39,17 @@ public:
     {
 
         ImGui::ShowDemoWindow();
-        //pannel.OnImGuiRender();
+        
 
         // Instances
         for(auto window : instanciedWindows){
           window->render();
         }
     }
-
-    void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName){
+    
+    void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName, std::shared_ptr<VxHost> host){
       win->name = winName;
+      win->setup(host);
       this->instanciedWindows.push_back(win);
     }
 
@@ -82,7 +83,7 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext*
     std::shared_ptr<ExampleLayer> exampleLayer = std::make_shared<ExampleLayer>(ctx);
     std::string name = exampleLayer->m_ctx->name + " - Vortex Editor";
     spec.Name = name;
-    spec.CustomTitlebar = true;
+    spec.CustomTitlebar = false;
 
 
     Walnut::Application *app = new Walnut::Application(spec);
@@ -117,13 +118,28 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext*
     }
 
     if (ImGui::BeginMenu("Window")) {
+      for(auto host : ctx->IO.hosts){
+        static std::string label = "Open" + host.name;
+
+      if (ImGui::MenuItem(label.c_str())) {
+        std::shared_ptr<InstanceWindow> window = std::make_shared<InstanceWindow>(ctx);
+        std::string label = "test_";
+        label += number;
+        number++;
+        std::shared_ptr<VxHost> hostToOpen = std::make_shared<VxHost>(host);
+        exampleLayer->AddInstanceOfWindow(window, label, hostToOpen);
+
+      }
+
+      }
+      /*
       if (ImGui::MenuItem("CreateInstance")) {
         std::shared_ptr<InstanceWindow> window = std::make_shared<InstanceWindow>(ctx);
         std::string label = "test_";
         label += number;
         number++;
-        exampleLayer->AddInstanceOfWindow(window, label);
-      }
+        exampleLayer->AddInstanceOfWindow(window, label, host);
+      }*/
       ImGui::EndMenu();
     }
 
