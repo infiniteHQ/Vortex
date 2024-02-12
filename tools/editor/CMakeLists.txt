@@ -17,9 +17,16 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/ImGui/ImGuiTheme.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/UI/UI.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/ApplicationGUI.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ContentBrowser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/Image.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Source/editor/Core/Log.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/Assets/icons.cpp
+
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ContentBrowser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectViewer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_ContentWindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_ParameterWindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/HostInstance.cpp
 )
 
 

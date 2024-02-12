@@ -3,7 +3,6 @@
 #include "../../backend/Platform/GUI/editor/Image.h"
 #include "../../backend/Platform/GUI/editor/UI/UI.h"
 
-#include "icons.embed"
 
 #include <iostream>
 	
@@ -12,24 +11,26 @@
 		: m_BaseDirectory("../../"), m_CurrentDirectory(m_BaseDirectory)
 	{
 
+		{
+			uint32_t w, h;
+			void* data = Walnut::Image::Decode(icons::i_FolderIcon, icons::i_FolderIcon_size, w, h);
+			this->m_DirectoryIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+		 	this->m_DirectoryIconTexture = m_DirectoryIcon->GetImGuiTextureID();
+			free(data);
+		}
+		{
+			uint32_t w, h;
+		  	void* data = Walnut::Image::Decode(icons::i_file, icons::i_file_size, w, h);
+			this->m_FileIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+			this->m_FileIconTexture = m_FileIcon->GetImGuiTextureID();
+			free(data);
+		}
 	}
 
 	void ContentBrowserPanel::OnImGuiRender()
 	{
 		ImGui::Begin("Content Browser");
 
-		{
-			uint32_t w, h;
-			void* data = Walnut::Image::Decode(g_WindowMinimizeIcon, sizeof(g_WindowMinimizeIcon), w, h);
-			m_DirectoryIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
-			free(data);
-		}
-		{
-			uint32_t w, h;
-			void* data = Walnut::Image::Decode(g_WindowMinimizeIcon, sizeof(g_WindowMinimizeIcon), w, h);
-			m_FileIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
-			free(data);
-		}
 		if (m_CurrentDirectory != std::filesystem::path(m_BaseDirectory))
 		{
 			if (ImGui::Button("<-"))
@@ -39,7 +40,7 @@
 		}
 
 		static float padding = 16.0f;
-		static float thumbnailSize = 128.0f;
+		static float thumbnailSize = 94.0f;
 		float cellSize = thumbnailSize + padding;
 
 		float panelWidth = ImGui::GetContentRegionAvail().x;
@@ -55,15 +56,23 @@
 			std::string filenameString = path.filename().string();
 			
 			ImGui::PushID(filenameString.c_str());
-			std::shared_ptr<Walnut::Image> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-			//ImGui::ImageButton((ImTextureID)icon->, { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+
+
+			static ImTextureID texture;
+			if(directoryEntry.is_directory()){
+				texture = this->m_DirectoryIconTexture;
+			 }
+			 else{ 
+				texture = this->m_FileIconTexture;
+			 }
+
+			ImGui::ImageButton(texture, { thumbnailSize, thumbnailSize }, { 1, 0 }, { 0, 1 });
 
 
 
 			std::filesystem::path relativePath(path);
 			static std::string itemPath = relativePath.c_str();
-			Walnut::UI::DrawButtonImage(icon, 50, 50, 50, ImRect(ImVec4(1.0f,1.0f,1.0f,1.0f)));
             
 
 

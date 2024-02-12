@@ -6,92 +6,100 @@
 #include "../../vendor/imgui/imgui.h"
 #include "../instances/instance.h"
 #include "../core/ContentBrowser.hpp"
+#include "../core/ProjectViewer.hpp"
 
 #include <thread>
 
 using namespace VortexMaker;
 
-
 // Make the UI compact because there are so many fields
 static void PushStyleCompact()
 {
-    ImGuiStyle &style = ImGui::GetStyle();
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 1.30f)));
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 0.60f)));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x, (float)(int)(style.ItemSpacing.y * 0.60f)));
+  ImGuiStyle &style = ImGui::GetStyle();
+  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 1.30f)));
+  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 0.60f)));
+  ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x, (float)(int)(style.ItemSpacing.y * 0.60f)));
 }
 
 static void PopStyleCompact()
 {
-    ImGui::PopStyleVar(2);
+  ImGui::PopStyleVar(2);
 }
 
 class ExampleLayer : public Walnut::Layer
 {
 public:
-    ExampleLayer(VxContext* ctx) {
-      this->m_ctx = ctx;
+  ExampleLayer(VxContext *ctx)
+  {
+    this->m_ctx = ctx;
+  };
 
-    
-    };
+  virtual void OnUIRender() override
+  {
 
-    virtual void OnUIRender() override
+    ImGui::ShowDemoWindow();
+
+    if (this->ShowContentBrowser)
     {
-
-        ImGui::ShowDemoWindow();
-        
-
-        // Instances
-        for(auto window : instanciedWindows){
-          window->render();
-        }
-    }
-    
-    void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName, std::shared_ptr<VxHost> host){
-      win->name = winName;
-      win->setup(host);
-      this->instanciedWindows.push_back(win);
+      static ContentBrowserPanel contentBrowser;
+      contentBrowser.OnImGuiRender();
     }
 
-    VxContext* m_ctx;
+    if (this->ShowProjectViewer)
+    {
+      static ProjectViewer projectViewer(this->m_ctx);
+      projectViewer.OnImGuiRender();
+    }
 
+    // Instances
+    for (auto window : instanciedWindows)
+    {
+      window->render();
+    }
+  }
 
-    std::thread receiveThread;
+  void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName, std::shared_ptr<VxHost> host)
+  {
+    win->name = winName;
+    win->setup(host);
+    this->instanciedWindows.push_back(win);
+  }
+
+  VxContext *m_ctx;
+
+  std::thread receiveThread;
+  bool ShowContentBrowser = false;
+  bool ShowProjectViewer = false;
+  bool ShowProjectSettings = false;
 
 private:
-    bool m_UI_ShowContextToolchains = false;
 
-    std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
-    std::vector<std::string> instanciedWindowsNames;
-    
+  std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
+  std::vector<std::string> instanciedWindowsNames;
 
-        ContentBrowserPanel pannel;
-
-    // To remove 
-    VxToolchain *m_currentToolchainForPannel;
-    VxToolchain *m_currentToolchainForPannelToBuild;
-    VxHost *m_currentHostForPannel;
-    VxDistHost *m_currentDistHostForPannel;
-    VxDistToolchain *m_currentDistToolchainForPannel;
+  // To remove
+  VxToolchain *m_currentToolchainForPannel;
+  VxToolchain *m_currentToolchainForPannelToBuild;
+  VxHost *m_currentHostForPannel;
+  VxDistHost *m_currentDistHostForPannel;
+  VxDistToolchain *m_currentDistToolchainForPannel;
 };
 
-Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext* ctx)
+Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext *ctx)
 {
-    int port = atoi(argv[1]);
+  int port = atoi(argv[1]);
 
-    Walnut::ApplicationSpecification spec;
-    std::shared_ptr<ExampleLayer> exampleLayer = std::make_shared<ExampleLayer>(ctx);
-    std::string name = exampleLayer->m_ctx->name + " - Vortex Editor";
-    spec.Name = name;
-    spec.CustomTitlebar = false;
+  Walnut::ApplicationSpecification spec;
+  std::shared_ptr<ExampleLayer> exampleLayer = std::make_shared<ExampleLayer>(ctx);
+  std::string name = exampleLayer->m_ctx->name + " - Vortex Editor";
+  spec.Name = name;
+  spec.CustomTitlebar = false;
 
+  Walnut::Application *app = new Walnut::Application(spec);
 
-    Walnut::Application *app = new Walnut::Application(spec);
-
-
-    app->PushLayer(exampleLayer);
-    app->SetMenubarCallback([app, exampleLayer, ctx]()
-    {
+  app->PushLayer(exampleLayer);
+  app->SetMenubarCallback([app, exampleLayer, ctx]()
+                          {
     ImGuiStyle &style = ImGui::GetStyle();
     
 		style.FrameRounding = 5.0f;
@@ -144,9 +152,12 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext*
     }
 
     if (ImGui::BeginMenu("Tools")) {
-      if (ImGui::MenuItem("Contents Window")) {
-        
-      }
+      if (ImGui::MenuItem("Content Browser", NULL, &exampleLayer->ShowContentBrowser))
+        {
+        }
+      if (ImGui::MenuItem("Content Browser", NULL, &exampleLayer->ShowProjectViewer))
+        {
+        }
       ImGui::EndMenu();
     }
 
@@ -155,11 +166,9 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext*
         app->Close();
       }
       ImGui::EndMenu();
-    }
-    });
+    } });
 
-
-    return app;
+  return app;
 }
 
 // Faire plutot un combo Registered / Active / Innactive / Desactiverd / OnError

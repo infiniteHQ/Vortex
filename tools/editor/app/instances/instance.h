@@ -7,7 +7,7 @@
 #include "../../vendor/imgui/imgui.h"
 #include "../../vendor/stb-image/stb_image.h"
 
-#include "../../backend/Assets/icons.embed"
+#include "../../backend/Assets/icons.h"
 
 #include "../../../../vortex.h"
 
@@ -288,25 +288,25 @@ public:
     {
         {
             uint32_t w, h;
-            void *data = Walnut::Image::Decode(i_save, sizeof(i_save), w, h);
+            void *data = Walnut::Image::Decode(icons::i_save, icons::i_save_size, w, h);
             m_SaveIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
             free(data);
         }
         {
             uint32_t w, h;
-            void *data = Walnut::Image::Decode(i_add, sizeof(i_add), w, h);
+            void *data = Walnut::Image::Decode(icons::i_add, icons::i_add_size, w, h);
             m_AddIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
             free(data);
         }
         {
             uint32_t w, h;
-            void *data = Walnut::Image::Decode(i_folder, sizeof(i_folder), w, h);
+            void *data = Walnut::Image::Decode(icons::i_folder, icons::i_folder_size, w, h);
             m_FolderIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
             free(data);
         }
         {
             uint32_t w, h;
-            void *data = Walnut::Image::Decode(i_settings, sizeof(i_settings), w, h);
+            void *data = Walnut::Image::Decode(icons::i_settings, icons::i_settings_size, w, h);
             m_SettingsIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
             free(data);
         }
