@@ -6,14 +6,16 @@
 
 #include <iostream>
 
-ProjectViewer::ProjectViewer(VxContext *_ctx)
+ProjectViewer::ProjectViewer(VxContext *_ctx, InstanceFactory* _factory)
 {
     this->ctx = _ctx;
+    this->factory = _factory;
+    this->refreshContents();
 }
 
 void ProjectViewer::OnImGuiRender()
 {
-    ImGui::Begin("Project Viewer");
+    ImGui::Begin("Project Viewer", &this->opened, ImGuiWindowFlags_MenuBar);
     this->menubar();
 
     static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
@@ -26,57 +28,8 @@ void ProjectViewer::OnImGuiRender()
         ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 18.0f);
         ImGui::TableHeadersRow();
 
-        // Simple storage to output a dummy file-system.
-        struct MyTreeNode
-        {
-            const char *Name;
-            const char *Type;
-            int Size;
-            int ChildIdx;
-            int ChildCount;
-            static void DisplayNode(const MyTreeNode *node, const MyTreeNode *all_nodes)
-            {
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                const bool is_folder = (node->ChildCount > 0);
-                if (is_folder)
-                {
-                    bool open = ImGui::TreeNodeEx(node->Name, ImGuiTreeNodeFlags_SpanFullWidth);
-                    ImGui::TableNextColumn();
-                    ImGui::TextDisabled("--");
-                    ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(node->Type);
-                    if (open)
-                    {
-                        for (int child_n = 0; child_n < node->ChildCount; child_n++)
-                            DisplayNode(&all_nodes[node->ChildIdx + child_n], all_nodes);
-                        ImGui::TreePop();
-                    }
-                }
-                else
-                {
-                    ImGui::TreeNodeEx(node->Name, ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth);
-                    ImGui::TableNextColumn();
-                    ImGui::Text("%d", node->Size);
-                    ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(node->Type);
-                }
-            }
-        };
-        static const MyTreeNode nodes[] =
-            {
-                {"MySuperOS", "Folder", -1, 1, 3},                               // 0
-                {"LinuxSystem", "Folder", -1, 4, 2},                             // 1
-                {"BaseLinuxHost", "Folder", -1, 6, 3},                           // 2
-                {"desktop.ini", "System file", 1024, -1, -1},                    // 3
-                {"File1_a.wav", "Audio file", 123000, -1, -1},                   // 4
-                {"File1_b.wav", "Audio file", 456000, -1, -1},                   // 5
-                {"Image001.png", "Image file", 203128, -1, -1},                  // 6
-                {"Copy of Image001.png", "Image file", 203256, -1, -1},          // 7
-                {"Copy of Image001 (Final2).png", "Image file", 203512, -1, -1}, // 8
-            };
-
-        MyTreeNode::DisplayNode(&nodes[0], nodes);
+    
+        MyTreeNode::DisplayNode(&nodeInfos[0], nodeInfos, factory, ctx);
 
         ImGui::EndTable();
     }
@@ -89,6 +42,17 @@ void ProjectViewer::menubar(){
             if (ImGui::BeginMenuBar())
             {   
                 ImGui::Checkbox("Collapse all", &this->CollapseAll);
+                ImGui::Separator();
+                if (ImGui::BeginMenu("Build"))
+                {
+                    if (ImGui::MenuItem("Build/Rebuild single parts"))
+                    {
+                    }
+                    if (ImGui::MenuItem("Global build"))
+                    {
+                    }
+                    ImGui::EndMenu();
+                }
                 ImGui::EndMenuBar();
             }
             

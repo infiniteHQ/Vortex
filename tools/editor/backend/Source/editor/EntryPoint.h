@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../../../../vortex_internals.h"
+
 namespace Walnut {
     extern Walnut::Application* CreateApplication(int argc, char** argv, VxContext* ctx);
 }

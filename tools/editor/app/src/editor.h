@@ -5,12 +5,20 @@
 #include "../../backend/Platform/GUI/editor/UI/UI.h"
 #include "../../vendor/imgui/imgui.h"
 #include "../instances/instance.h"
+#include "../instances/Components/Host/HostInstance.h"
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
+
+#include "./instanceFactory.h"
+
 
 #include <thread>
 
 using namespace VortexMaker;
+
+static std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
+static std::vector<std::shared_ptr<HostInstance>> hostInstances;
+
 
 // Make the UI compact because there are so many fields
 static void PushStyleCompact()
@@ -25,6 +33,16 @@ static void PopStyleCompact()
 {
   ImGui::PopStyleVar(2);
 }
+
+
+class Instance : public InstanceFactory {
+  void SpawnInstance(std::shared_ptr<HostInstance> instance) override {
+    instance->name = instance->host->name;
+    hostInstances.push_back(instance);
+  };
+
+};
+
 
 class ExampleLayer : public Walnut::Layer
 {
@@ -47,22 +65,20 @@ public:
 
     if (this->ShowProjectViewer)
     {
-      static ProjectViewer projectViewer(this->m_ctx);
+      static ProjectViewer projectViewer(this->m_ctx, &factory);
       projectViewer.OnImGuiRender();
     }
 
     // Instances
-    for (auto window : instanciedWindows)
-    {
-      window->render();
-    }
+    for (auto window : instanciedWindows){window->render();}
+    for (auto window : hostInstances){window->render();}
   }
 
   void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName, std::shared_ptr<VxHost> host)
   {
     win->name = winName;
     win->setup(host);
-    this->instanciedWindows.push_back(win);
+    instanciedWindows.push_back(win);
   }
 
   VxContext *m_ctx;
@@ -74,8 +90,10 @@ public:
 
 private:
 
-  std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
+
   std::vector<std::string> instanciedWindowsNames;
+
+  Instance factory;
 
   // To remove
   VxToolchain *m_currentToolchainForPannel;
@@ -155,7 +173,7 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
       if (ImGui::MenuItem("Content Browser", NULL, &exampleLayer->ShowContentBrowser))
         {
         }
-      if (ImGui::MenuItem("Content Browser", NULL, &exampleLayer->ShowProjectViewer))
+      if (ImGui::MenuItem("Project Viewer", NULL, &exampleLayer->ShowProjectViewer))
         {
         }
       ImGui::EndMenu();

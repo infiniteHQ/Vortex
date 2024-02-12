@@ -1,7 +1,6 @@
 // UI (with imgui)
 #include "../../backend/Source/editor/Application.h"
 #include "../../backend/Platform/GUI/editor/ImGui/ImGuiTheme.h"
-#include "../../backend/Source/editor/EntryPoint.h"
 #include "../../backend/Platform/GUI/editor/Image.h"
 #include "../../backend/Platform/GUI/editor/UI/UI.h"
 #include "../../vendor/imgui/imgui.h"
@@ -10,6 +9,9 @@
 #include "../../backend/Assets/icons.h"
 
 #include "../../../../vortex.h"
+
+#ifndef InstanceWindow_H
+#define InstanceWindow_H
 
 using namespace VortexMaker;
 
@@ -329,3 +331,5 @@ public:
     std::shared_ptr<Walnut::Image> m_AddIcon;
     std::shared_ptr<Walnut::Image> m_FolderIcon;
 };
+
+#endif

@@ -1,7 +1,6 @@
 // UI (with imgui)
 #include "../../backend/Source/editor/Application.h"
 #include "../../backend/Platform/GUI/editor/ImGui/ImGuiTheme.h"
-#include "../../backend/Source/editor/EntryPoint.h"
 #include "../../backend/Platform/GUI/editor/Image.h"
 #include "../../backend/Platform/GUI/editor/UI/UI.h"
 #include "../../vendor/imgui/imgui.h"
@@ -11,12 +10,15 @@
 
 #include "../../../../vortex.h"
 
+#ifndef HostInstance_H
+#define HostInstance_H
+
 using namespace VortexMaker;
 
 class HostInstance
 {
 public:
-    HostInstance(VxContext *ctx);
+    HostInstance(VxContext *ctx, VxHost* _host);
 
     void render();
 
@@ -32,7 +34,7 @@ public:
 
     std::string name;
     VxContext *m_ctx;
-    std::shared_ptr<VxHost> host;
+    VxHost* host;
     ImGuiID dockspaceID;
 
     std::shared_ptr<Walnut::Image> m_Icon;
@@ -41,3 +43,5 @@ public:
     std::shared_ptr<Walnut::Image> m_AddIcon;
     std::shared_ptr<Walnut::Image> m_FolderIcon;
 };
+
+#endif // HostInstance_H
