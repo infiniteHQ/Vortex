@@ -6,6 +6,7 @@
 #include "../../vendor/imgui/imgui.h"
 #include "../instances/instance.h"
 #include "../instances/Components/Host/HostInstance.h"
+#include "../instances/Components/Toolchain/ToolchainInstance.h"
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
 
@@ -16,8 +17,11 @@
 
 using namespace VortexMaker;
 
+// Toolchain window not appear when we activate it from Project viewer.
+
 static std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
 static std::vector<std::shared_ptr<HostInstance>> hostInstances;
+static std::vector<std::shared_ptr<ToolchainInstance>> toolchainInstances;
 
 
 // Make the UI compact because there are so many fields
@@ -36,10 +40,30 @@ static void PopStyleCompact()
 
 
 class Instance : public InstanceFactory {
+  public:
   void SpawnInstance(std::shared_ptr<HostInstance> instance) override {
     instance->name = instance->host->name;
+    instance->opened = true;
     hostInstances.push_back(instance);
   };
+
+  void UnspawnInstance(std::shared_ptr<HostInstance> instance) override {
+    std::string instanceName = instance->name;
+    hostInstances.erase(
+        std::remove_if(hostInstances.begin(), hostInstances.end(),
+            [&instanceName](const std::shared_ptr<HostInstance>& p) {
+                return p->name == instanceName;
+            }),
+        hostInstances.end()
+    );
+  };
+
+
+  void SpawnInstance(std::shared_ptr<ToolchainInstance> instance) override {
+    instance->name = instance->toolchain->name;
+    toolchainInstances.push_back(instance);
+  };
+
 
 };
 
@@ -70,13 +94,14 @@ public:
     }
 
     // Instances
-    for (auto window : instanciedWindows){window->render();}
-    for (auto window : hostInstances){window->render();}
+    for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
+    for (auto window : toolchainInstances){window->render();}
   }
 
   void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName, std::shared_ptr<VxHost> host)
   {
     win->name = winName;
+    win->opened = true;
     win->setup(host);
     instanciedWindows.push_back(win);
   }
@@ -88,12 +113,12 @@ public:
   bool ShowProjectViewer = false;
   bool ShowProjectSettings = false;
 
+  Instance factory;
 private:
 
 
   std::vector<std::string> instanciedWindowsNames;
 
-  Instance factory;
 
   // To remove
   VxToolchain *m_currentToolchainForPannel;

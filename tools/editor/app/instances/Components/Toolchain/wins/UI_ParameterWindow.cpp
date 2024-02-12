@@ -1,6 +1,6 @@
-#include "../HostInstance.h"
+#include "../ToolchainInstance.h"
 
-void HostInstance::UI_ParametersWindow(){
+void ToolchainInstance::UI_ParametersWindow(){
         if (this->show_UI_ParametersWindow)
         {
 

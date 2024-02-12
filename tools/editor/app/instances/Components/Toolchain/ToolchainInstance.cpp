@@ -1,11 +1,11 @@
-#include "HostInstance.h"
+#include "ToolchainInstance.h"
 
 using namespace VortexMaker;
 
-HostInstance::HostInstance(VxContext *ctx, VxHost* _host)
+ToolchainInstance::ToolchainInstance(VxContext *ctx, VxToolchain* _toolchain)
 {
     this->m_ctx = ctx;
-    this->host = _host;
+    this->toolchain = _toolchain;
 
 
         {
@@ -35,15 +35,8 @@ HostInstance::HostInstance(VxContext *ctx, VxHost* _host)
 
 };
 
-
-void HostInstance::close(){
-    this->opened = false;
-}
-
-std::string HostInstance::render()
+void ToolchainInstance::render()
     {
-        if(opened){
-
         this->dockspaceID = ImGui::GetID(this->name.c_str());
         static ImGuiIO &io = ImGui::GetIO();
 
@@ -69,18 +62,11 @@ std::string HostInstance::render()
         // All Windows of this instances :
         this->UI_ParametersWindow();
         this->UI_ContentWindow();
-        this->UI_OptionsEditor();
-        return "rendering";
-        }
-        else{
-
-        return "closed";
-        }
 
 
 }
 
-void HostInstance::menubar(){
+void ToolchainInstance::menubar(){
 
             if (ImGui::BeginMenuBar())
             {
@@ -103,12 +89,6 @@ void HostInstance::menubar(){
 
                 if (ImGui::BeginMenu("Pannels"))
                 {
-                    if (ImGui::MenuItem("Options Editor"))
-                    {
-                    }
-                    if (ImGui::MenuItem("Options Editor", NULL, &this->show_UI_OptionsEditor))
-                    {
-                    }
                     if (ImGui::MenuItem("Contents Window"))
                     {
                     }
@@ -178,11 +158,6 @@ void HostInstance::menubar(){
 
                 if(ImGui::ImageButtonWithText(settingsIcon, "Settings", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight()))){
                     //Save behavior
-                }
-
-
-                if(ImGui::ImageButtonWithText(settingsIcon, "Close", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight()))){
-                    this->close();
                 }
                 ImGui::EndMenuBar();
             }

@@ -1,14 +1,35 @@
 #include "../HostInstance.h"
 
-void HostInstance::UI_ContentWindow()
+void HostInstance::UI_OptionsEditor()
 {
-    if (this->show_UI_ContentWindow)
+    if (this->show_UI_OptionsEditor)
     {
-
-        static std::string label = this->name + " - Content Window";
+        static std::string label = this->name + " - Options Window";
         ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_FirstUseEver);
-        if (ImGui::Begin(label.c_str()))
-        {
+
+        ImGui::Begin(label.c_str(), &this->opened, ImGuiWindowFlags_MenuBar);
+
+            if (ImGui::BeginMenuBar())
+
+            {const char* items[] = { "Configuration Options", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIIIIII", "JJJJ", "KKKKKKK" };
+            static int item_current = 0;
+            ImGui::Combo("combo", &item_current, items, IM_ARRAYSIZE(items));
+
+                ImGui::Separator();
+                if (ImGui::BeginMenu("Pannels"))
+                {
+                    if (ImGui::MenuItem("Options Editor"))
+                    {
+                    }
+                    if (ImGui::MenuItem("Contents Window"))
+                    {
+                    }
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMenuBar();
+
+            }
+
             static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
             if (ImGui::BeginTable("table1", 3, flags))
@@ -28,7 +49,7 @@ void HostInstance::UI_ContentWindow()
                 }
                 ImGui::EndTable();
             }
-        }
+        
         ImGui::End();
     }
 }

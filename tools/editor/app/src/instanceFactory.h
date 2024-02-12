@@ -1,5 +1,6 @@
 
 #include "../instances/Components/Host/HostInstance.h"
+#include "../instances/Components/Toolchain/ToolchainInstance.h"
 #include "../instances/instance.h"
 #include <thread>
 
@@ -11,7 +12,10 @@ using namespace VortexMaker;
 class InstanceFactory {
   public:
   virtual void SpawnInstance(std::shared_ptr<HostInstance>) {std::cout << "Not implemented" << std::endl;};
+  virtual void SpawnInstance(std::shared_ptr<ToolchainInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void SpawnInstance(std::shared_ptr<InstanceWindow>) {};
+  virtual void UnspawnInstance(std::shared_ptr<HostInstance>) {std::cout << "Not implemented" << std::endl;};
+  virtual void UnspawnInstance(std::shared_ptr<ToolchainInstance>) {std::cout << "Not implemented" << std::endl;};
 };
 
 #endif

@@ -10,46 +10,31 @@
 
 #include "../../../../vortex.h"
 
-#ifndef HostInstance_H
-#define HostInstance_H
+#ifndef ToolchainInstance_H
+#define ToolchainInstance_H
 
 using namespace VortexMaker;
 
-
-struct HostSave{
-    std::string name;
-    std::string author;
-    std::string type;
-    std::string state;
-    std::string vendor;
-    std::string platform;
-    std::string host_arch;
-    std::string target_arch;
-};
-
-class HostInstance
+class ToolchainInstance
 {
 public:
-    HostInstance(VxContext *ctx, VxHost* _host);
+    ToolchainInstance(VxContext *ctx, VxToolchain* _toolchain);
 
-    std::string render();
-    void close();
+    void render();
 
     void menubar();
 
     void UI_ContentWindow();
-    void UI_OptionsEditor();
+    
     void UI_ParametersWindow();
 
     bool opened;
     bool show_UI_ContentWindow = false;
     bool show_UI_ParametersWindow = false;
-    bool show_UI_OptionsEditor = false;
-
 
     std::string name;
     VxContext *m_ctx;
-    VxHost* host;
+    VxToolchain* toolchain;
     ImGuiID dockspaceID;
 
     std::shared_ptr<Walnut::Image> m_Icon;
@@ -59,4 +44,4 @@ public:
     std::shared_ptr<Walnut::Image> m_FolderIcon;
 };
 
-#endif // HostInstance_H
+#endif // ToolchainInstance_H

@@ -6,6 +6,7 @@
 #include "../../backend/Platform/GUI/editor/Image.h"
 
 #include "../instances/Components/Host/HostInstance.h"
+#include "../instances/Components/Toolchain/ToolchainInstance.h"
 #include "../src/instanceFactory.h"
 
 // Simple storage to output a dummy file-system.
@@ -51,7 +52,19 @@ struct MyTreeNode
 				}
 				ImGui::SameLine();
 			}
-			ImGui::TreeNodeEx(node->Name.c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth);
+			if(node->Type == "Toolchain"){
+				if(ImGui::Button("Open")){
+					for(auto toolchain : ctx->IO.toolchains){
+						if(node->Name == toolchain.name){
+							std::shared_ptr<ToolchainInstance> instance = std::make_shared<ToolchainInstance>(ctx, &toolchain);
+							factory->SpawnInstance(instance);	
+						}
+					}
+
+				}
+				ImGui::SameLine();
+			}
+			ImGui::TreeNodeEx(node->Name.c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth);
 			
 			ImGui::TableNextColumn();
 			ImGui::Text("%d", node->Size);

@@ -1,6 +1,6 @@
-#include "../HostInstance.h"
+#include "../ToolchainInstance.h"
 
-void HostInstance::UI_ContentWindow()
+void ToolchainInstance::UI_ContentWindow()
 {
     if (this->show_UI_ContentWindow)
     {
