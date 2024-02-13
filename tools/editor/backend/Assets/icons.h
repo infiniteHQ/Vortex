@@ -6,6 +6,15 @@
 #define ICONS_
 
 struct icons {
+    static const uint8_t i_list[];
+    static const size_t i_list_size;
+
+    static const uint8_t i_toolchain[];
+    static const size_t i_toolchain_size;
+
+    static const uint8_t i_host[];
+    static const size_t i_host_size;
+
     static const uint8_t i_save[];
     static const size_t i_save_size;
 

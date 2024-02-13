@@ -174,5 +174,7 @@ private:
 
 	std::vector<MyTreeNode> nodeInfos;
 
+    std::shared_ptr<Walnut::Image> m_ListIcon;
+
 	bool CollapseAll = false;
 };

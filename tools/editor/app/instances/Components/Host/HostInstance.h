@@ -52,6 +52,7 @@ public:
     VxHost* host;
     ImGuiID dockspaceID;
 
+    std::shared_ptr<Walnut::Image> m_HostIcon;
     std::shared_ptr<Walnut::Image> m_Icon;
     std::shared_ptr<Walnut::Image> m_SaveIcon;
     std::shared_ptr<Walnut::Image> m_SettingsIcon;

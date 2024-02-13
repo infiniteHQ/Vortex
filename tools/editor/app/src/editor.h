@@ -109,6 +109,7 @@ public:
     // Instances
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
+
   }
 
   void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName, std::shared_ptr<VxHost> host)
@@ -157,7 +158,6 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
   app->SetMenubarCallback([app, exampleLayer, ctx]()
                           {
     ImGuiStyle &style = ImGui::GetStyle();
-    
 		style.FrameRounding = 5.0f;
 		style.FrameBorderSize = 1.0f;
 		style.IndentSpacing = 11.0f;
@@ -222,7 +222,10 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
         app->Close();
       }
       ImGui::EndMenu();
-    } });
+    } 
+    
+    
+    });
 
   return app;
 }

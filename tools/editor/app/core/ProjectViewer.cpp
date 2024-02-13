@@ -11,11 +11,20 @@ ProjectViewer::ProjectViewer(VxContext *_ctx, InstanceFactory* _factory)
     this->ctx = _ctx;
     this->factory = _factory;
     this->refreshContents();
+
+        {
+            uint32_t w, h;
+            void *data = Walnut::Image::Decode(icons::i_list, icons::i_list_size, w, h);
+            m_ListIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+            free(data);
+        }
 }
 
 void ProjectViewer::OnImGuiRender()
 {
-    ImGui::Begin("Project Viewer", &this->opened, ImGuiWindowFlags_MenuBar);
+        static ImTextureID listIcon = this->m_ListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+        if (ImGui::Begin("Project Viewer", &listIcon, &this->opened, ImGuiWindowFlags_MenuBar))
     this->menubar();
 
     static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;

@@ -32,6 +32,12 @@ HostInstance::HostInstance(VxContext *ctx, VxHost* _host)
             m_SettingsIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
             free(data);
         }
+        {
+            uint32_t w, h;
+            void *data = Walnut::Image::Decode(icons::i_host, icons::i_host_size, w, h);
+            m_HostIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+            free(data);
+        }
 
 };
 
@@ -42,7 +48,8 @@ void HostInstance::close(){
 
 std::string HostInstance::render()
     {
-                static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID hostIcon = this->m_HostIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         if(opened){
 
         this->dockspaceID = ImGui::GetID(this->name.c_str());
@@ -50,17 +57,14 @@ std::string HostInstance::render()
 
 
         // Mainwindow with dockspace
-        if (ImGui::Begin(name.c_str(), &addIcon, &this->opened, ImGuiWindowFlags_MenuBar))
+        if (ImGui::Begin(name.c_str(), &hostIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         {
             static ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-        std::cout << "Host Texture : "<< window->textureID<< std::endl;
-        std::cout << "Host Window : "<< window << std::endl;
 
             this->menubar();
 
 
-        ImGui::FindWindowByName(name.c_str())->textureID = &addIcon;
+        ImGui::FindWindowByName(name.c_str())->textureID = &hostIcon;
             
             static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 

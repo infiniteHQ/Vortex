@@ -8017,7 +8017,7 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
         tab_is_new = true;
     }
     tab_bar->LastTabItemIdx = (ImS16)tab_bar->Tabs.index_from_ptr(tab);
-    tab->ContentWidth = size.x;
+    tab->ContentWidth = size.x + 30.0f;
     tab->BeginOrder = tab_bar->TabsActiveCount++;
 
     const bool tab_bar_appearing = (tab_bar->PrevFrameVisible + 1 < g.FrameCount);
@@ -8080,11 +8080,19 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
 
     // Layout
     const bool is_central_section = (tab->Flags & ImGuiTabItemFlags_SectionMask_) == 0;
+    tab->Width += 30.0f;
+    
     size.x = tab->Width;
-    if (is_central_section)
+    if (is_central_section){
+
+    tab_bar->BarRect.Min.x += 30.0f;
         window->DC.CursorPos = tab_bar->BarRect.Min + ImVec2(IM_FLOOR(tab->Offset - tab_bar->ScrollingAnim), 0.0f);
-    else
+    }
+    else{
+    tab_bar->BarRect.Min.x += 30.0f;
+
         window->DC.CursorPos = tab_bar->BarRect.Min + ImVec2(tab->Offset, 0.0f);
+    }
     ImVec2 pos = window->DC.CursorPos;
     ImRect bb(pos, pos + size);
 
@@ -8096,7 +8104,6 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
     ImVec2 backup_cursor_max_pos = window->DC.CursorMaxPos;
     ItemSize(bb.GetSize(), style.FramePadding.y);
     window->DC.CursorMaxPos = backup_cursor_max_pos;
-
     if (!ItemAdd(bb, id))
     {
         if (want_clip_rect)
@@ -8219,15 +8226,9 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
 
     ImGuiWindow* targetWindow = FindWindowByName(label);
     if(targetWindow->textureID != NULL){
-        std::cout << "AAA"<< std::endl;
-        std::cout << "Texture : "<< FindWindowByName(label) << std::endl;
-        std::cout << "Finded Window : "<< FindWindowByName(label) << std::endl;
         TabItemLabelAndCloseButton(display_draw_list, targetWindow->textureID, bb, flags, tab_bar->FramePadding, label, id, close_button_id, tab_contents_visible, &just_closed, &text_clipped);
     }
     else{
-        std::cout << "Des"<< std::endl;
-        std::cout << "Texture : "<< FindWindowByName(label) << std::endl;
-        std::cout << "Finded Window : "<< FindWindowByName(label) << std::endl;
         TabItemLabelAndCloseButton(display_draw_list, bb, flags, tab_bar->FramePadding, label, id, close_button_id, tab_contents_visible, &just_closed, &text_clipped);
     }
 
@@ -8423,7 +8424,6 @@ void ImGui::TabItemLabelAndCloseButton(ImDrawList* draw_list, ImTextureID* textu
 {
     ImGuiContext& g = *GImGui;
     ImVec2 label_size = CalcTextSize(label, NULL, true);
-
     if (out_just_closed)
         *out_just_closed = false;
     if (out_text_clipped)
@@ -8450,7 +8450,7 @@ void ImGui::TabItemLabelAndCloseButton(ImDrawList* draw_list, ImTextureID* textu
 #endif
 
     // Render text label (with clipping + alpha gradient) + unsaved marker
-    ImRect text_pixel_clip_bb(bb.Min.x + frame_padding.x * 2.0f + 16.0f + frame_padding.x, bb.Min.y + frame_padding.y, bb.Max.x - frame_padding.x, bb.Max.y);
+    ImRect text_pixel_clip_bb(bb.Min.x + frame_padding.x * 2.0f + 2.0f + frame_padding.x, bb.Min.y + frame_padding.y, bb.Max.x - frame_padding.x, bb.Max.y);
     ImRect text_ellipsis_clip_bb = text_pixel_clip_bb;
 
     // Return clipped state ignoring the close button
@@ -8505,7 +8505,7 @@ void ImGui::TabItemLabelAndCloseButton(ImDrawList* draw_list, ImTextureID* textu
         text_ellipsis_clip_bb.Max.x -= unsaved_marker_visible ? (button_sz * 0.80f) : 0.0f;
         ellipsis_max_x = text_pixel_clip_bb.Max.x;
     }
-    RenderTextEllipsis(draw_list, text_ellipsis_clip_bb.Min, text_ellipsis_clip_bb.Max, text_pixel_clip_bb.Max.x, ellipsis_max_x, label, NULL, &label_size);
+    RenderTextEllipsis(draw_list, text_ellipsis_clip_bb.Min, text_ellipsis_clip_bb.Max , text_pixel_clip_bb.Max.x, ellipsis_max_x, label, NULL, &label_size);
 
 #if 0
     if (!is_contents_visible)
@@ -8514,6 +8514,7 @@ void ImGui::TabItemLabelAndCloseButton(ImDrawList* draw_list, ImTextureID* textu
 
     if (out_just_closed)
         *out_just_closed = close_button_pressed;
+
 }
 
 #endif // #ifndef IMGUI_DISABLE
