@@ -47,6 +47,13 @@ class Instance : public InstanceFactory {
     hostInstances.push_back(instance);
   };
 
+  void SpawnInstance(std::shared_ptr<ToolchainInstance> instance) override {
+    instance->name = instance->toolchain->name;
+    instance->opened = true;
+    toolchainInstances.push_back(instance);
+  };
+
+
   void UnspawnInstance(std::shared_ptr<HostInstance> instance) override {
     std::string instanceName = instance->name;
     hostInstances.erase(
@@ -59,9 +66,15 @@ class Instance : public InstanceFactory {
   };
 
 
-  void SpawnInstance(std::shared_ptr<ToolchainInstance> instance) override {
-    instance->name = instance->toolchain->name;
-    toolchainInstances.push_back(instance);
+  void UnspawnInstance(std::shared_ptr<ToolchainInstance> instance) override {
+    std::string instanceName = instance->name;
+    toolchainInstances.erase(
+        std::remove_if(toolchainInstances.begin(), toolchainInstances.end(),
+            [&instanceName](const std::shared_ptr<ToolchainInstance>& p) {
+                return p->name == instanceName;
+            }),
+        toolchainInstances.end()
+    );
   };
 
 
@@ -95,7 +108,7 @@ public:
 
     // Instances
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
-    for (auto window : toolchainInstances){window->render();}
+    for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
   }
 
   void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName, std::shared_ptr<VxHost> host)

@@ -35,8 +35,15 @@ ToolchainInstance::ToolchainInstance(VxContext *ctx, VxToolchain* _toolchain)
 
 };
 
-void ToolchainInstance::render()
+
+void ToolchainInstance::close(){
+    this->opened = false;
+}
+
+
+std::string ToolchainInstance::render()
     {
+        if(opened){
         this->dockspaceID = ImGui::GetID(this->name.c_str());
         static ImGuiIO &io = ImGui::GetIO();
 
@@ -63,8 +70,15 @@ void ToolchainInstance::render()
         this->UI_ParametersWindow();
         this->UI_ContentWindow();
 
+        return "rendering";
+        }
+        else{
 
-}
+        return "closed";
+    }
+    }
+
+
 
 void ToolchainInstance::menubar(){
 

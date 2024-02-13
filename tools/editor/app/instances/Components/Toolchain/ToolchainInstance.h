@@ -20,7 +20,8 @@ class ToolchainInstance
 public:
     ToolchainInstance(VxContext *ctx, VxToolchain* _toolchain);
 
-    void render();
+    std::string render();
+    void close();
 
     void menubar();
 

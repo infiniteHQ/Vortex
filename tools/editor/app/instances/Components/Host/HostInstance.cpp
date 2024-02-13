@@ -42,15 +42,25 @@ void HostInstance::close(){
 
 std::string HostInstance::render()
     {
+                static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         if(opened){
 
         this->dockspaceID = ImGui::GetID(this->name.c_str());
         static ImGuiIO &io = ImGui::GetIO();
 
+
         // Mainwindow with dockspace
-        if (ImGui::Begin(this->name.c_str(), &this->opened, ImGuiWindowFlags_MenuBar))
+        if (ImGui::Begin(name.c_str(), &addIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         {
+            static ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+        std::cout << "Host Texture : "<< window->textureID<< std::endl;
+        std::cout << "Host Window : "<< window << std::endl;
+
             this->menubar();
+
+
+        ImGui::FindWindowByName(name.c_str())->textureID = &addIcon;
             
             static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
@@ -69,7 +79,7 @@ std::string HostInstance::render()
         // All Windows of this instances :
         this->UI_ParametersWindow();
         this->UI_ContentWindow();
-        this->UI_OptionsEditor();
+        this->UI_AssetsViewer();
         return "rendering";
         }
         else{
@@ -106,7 +116,7 @@ void HostInstance::menubar(){
                     if (ImGui::MenuItem("Options Editor"))
                     {
                     }
-                    if (ImGui::MenuItem("Options Editor", NULL, &this->show_UI_OptionsEditor))
+                    if (ImGui::MenuItem("Options Editor", NULL, &this->show_UI_AssetsViewer))
                     {
                     }
                     if (ImGui::MenuItem("Contents Window"))

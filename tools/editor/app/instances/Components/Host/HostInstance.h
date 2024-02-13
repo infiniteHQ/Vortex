@@ -38,13 +38,13 @@ public:
     void menubar();
 
     void UI_ContentWindow();
-    void UI_OptionsEditor();
+    void UI_AssetsViewer();
     void UI_ParametersWindow();
 
     bool opened;
     bool show_UI_ContentWindow = false;
     bool show_UI_ParametersWindow = false;
-    bool show_UI_OptionsEditor = false;
+    bool show_UI_AssetsViewer = false;
 
 
     std::string name;
