@@ -16629,6 +16629,7 @@ static void DockNodeSetupHostWindow(ImGuiDockNode* node, ImGuiWindow* host_windo
     node->HostWindow = host_window;
 }
 
+
 static void ImGui::DockNodeUpdate(ImGuiDockNode* node)
 {
     ImGuiContext& g = *GImGui;
@@ -16876,6 +16877,8 @@ static void ImGui::DockNodeUpdate(ImGuiDockNode* node)
         else
             host_window->DrawList->AddRectFilled(node->Pos, node->Pos + node->Size, GetColorU32(ImGuiCol_WindowBg), 0.0f);
     }
+
+
 
     // Draw and populate Tab Bar
     if (host_window)

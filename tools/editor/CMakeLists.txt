@@ -26,6 +26,7 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectViewer.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_ContentWindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_MainSettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_ParameterWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_AssetsViewer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/HostInstance.cpp

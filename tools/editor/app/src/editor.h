@@ -23,21 +23,24 @@ static std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
 static std::vector<std::shared_ptr<HostInstance>> hostInstances;
 static std::vector<std::shared_ptr<ToolchainInstance>> toolchainInstances;
 
-
-// Make the UI compact because there are so many fields
-static void PushStyleCompact()
+static void PushStyle()
 {
-  ImGuiStyle &style = ImGui::GetStyle();
-  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 1.30f)));
-  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 0.60f)));
-  ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x, (float)(int)(style.ItemSpacing.y * 0.60f)));
+ImGuiStyle& style = ImGui::GetStyle();
+ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 11.0f);
+ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 11.0f);
+ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 6.0f));
+ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(9.0f, 3.0f));
+ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
+
 }
 
-static void PopStyleCompact()
+static void PopStyle()
 {
-  ImGui::PopStyleVar(2);
+ImGui::PopStyleVar(8);
 }
-
 
 class Instance : public InstanceFactory {
   public:
@@ -91,6 +94,7 @@ public:
 
   virtual void OnUIRender() override
   {
+    PushStyle();
 
     ImGui::ShowDemoWindow();
 
@@ -109,6 +113,8 @@ public:
     // Instances
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
+
+    PopStyle();
 
   }
 
@@ -150,23 +156,15 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
   std::shared_ptr<ExampleLayer> exampleLayer = std::make_shared<ExampleLayer>(ctx);
   std::string name = exampleLayer->m_ctx->name + " - Vortex Editor";
   spec.Name = name;
-  spec.CustomTitlebar = false;
+  spec.CustomTitlebar = true;
 
   Walnut::Application *app = new Walnut::Application(spec);
+
+
 
   app->PushLayer(exampleLayer);
   app->SetMenubarCallback([app, exampleLayer, ctx]()
                           {
-    ImGuiStyle &style = ImGui::GetStyle();
-		style.FrameRounding = 5.0f;
-		style.FrameBorderSize = 1.0f;
-		style.IndentSpacing = 11.0f;
-		style.ScrollbarSize = 11.0f;
-		style.WindowPadding = ImVec2(10.0f, 10.0f);
-		style.FramePadding = ImVec2(15.0f, 6.0f);
-		style.ItemSpacing = ImVec2(9.0f, 3.0f);
-		style.TabRounding = 7.0f;
-
       static  int number=1;
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("Exit")) {
@@ -224,6 +222,7 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
       ImGui::EndMenu();
     } 
     
+
     
     });
 

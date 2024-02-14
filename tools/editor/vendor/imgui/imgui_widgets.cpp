@@ -6854,6 +6854,158 @@ static bool IsRootOfOpenMenuSet()
     return (/*upper_popup->OpenParentId == window->IDStack.back() &&*/ upper_popup->Window && (upper_popup->Window->Flags & ImGuiWindowFlags_ChildMenu));
 }
 
+
+bool ImGui::BeginMenuImageEx(const char* label, ImTextureID* texture, const char* icon, bool enabled)
+{
+    ImGuiWindow* window = GetCurrentWindow();
+    if (window->SkipItems)
+        return false;
+
+    ImGuiContext& g = *GImGui;
+    const ImGuiStyle& style = g.Style;
+    const ImGuiID id = window->GetID(label);
+    bool menu_is_open = IsPopupOpen(id, ImGuiPopupFlags_None);
+
+    // Sub-menus are ChildWindow so that the mouse can hover across them
+    ImGuiWindowFlags flags = ImGuiWindowFlags_ChildMenu | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus;
+    if (window->Flags & ImGuiWindowFlags_ChildMenu)
+        flags |= ImGuiWindowFlags_ChildWindow;
+
+    if (g.MenusIdSubmittedThisFrame.contains(id))
+    {
+        if (menu_is_open)
+            menu_is_open = BeginPopupEx(id, flags);
+        else
+            g.NextWindowData.ClearFlags();
+        return menu_is_open;
+    }
+
+    g.MenusIdSubmittedThisFrame.push_back(id);
+
+    ImVec2 label_size = CalcTextSize(label, NULL, true);
+
+    const bool menuset_is_open = IsRootOfOpenMenuSet();
+    ImGuiWindow* backed_nav_window = g.NavWindow;
+    if (menuset_is_open)
+        g.NavWindow = window;
+
+    ImVec2 popup_pos, pos = window->DC.CursorPos;
+    PushID(label);
+    if (!enabled)
+        BeginDisabled();
+    bool pressed;
+    const ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_NoHoldingActiveID | ImGuiSelectableFlags_SelectOnClick | ImGuiSelectableFlags_DontClosePopups;
+    if (window->DC.LayoutType == ImGuiLayoutType_Horizontal)
+    {
+        popup_pos = ImVec2(pos.x - 1.0f - IM_FLOOR(style.ItemSpacing.x * 0.5f), pos.y - style.FramePadding.y + window->MenuBarHeight());
+        window->DC.CursorPos.x += IM_FLOOR(style.ItemSpacing.x * 0.5f);
+        PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x * 2.0f, style.ItemSpacing.y));
+        float w = label_size.x;
+        ImVec2 text_pos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+        ImVec2 icon_pos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+        RenderText(text_pos, label);
+        if (icon && icon[0])
+            window->DrawList->AddImage(*texture, ImVec2(icon_pos.x, icon_pos.y), ImVec2(icon_pos.x + style.FramePadding.y, icon_pos.y + style.FramePadding.y));
+        PopStyleVar();
+        window->DC.CursorPos.x += IM_FLOOR(style.ItemSpacing.x * (-1.0f + 0.5f));
+    }
+    else
+    {
+        popup_pos = ImVec2(pos.x, pos.y - style.WindowPadding.y);
+        float icon_w = (icon && icon[0]) ? CalcTextSize(icon, NULL).x + style.FramePadding.y : 0.0f;
+        float checkmark_w = IM_FLOOR(g.FontSize * 1.20f);
+        float min_w = window->DC.MenuColumns.DeclColumns(icon_w, label_size.x, 0.0f, checkmark_w);
+        float extra_w = ImMax(0.0f, GetContentRegionAvail().x - min_w);
+        ImVec2 text_pos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+        ImVec2 icon_pos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+        RenderText(text_pos, label);
+        if (icon && icon[0])
+            window->DrawList->AddImage(*texture, ImVec2(icon_pos.x, icon_pos.y), ImVec2(icon_pos.x + style.FramePadding.y, icon_pos.y + style.FramePadding.y));
+        pressed = Selectable("", menu_is_open, selectable_flags | ImGuiSelectableFlags_SpanAvailWidth, ImVec2(min_w, 0.0f));
+        RenderArrow(window->DrawList, pos + ImVec2(style.ItemInnerSpacing.x + icon_w + extra_w + g.FontSize * 0.30f, 0.0f), GetColorU32(ImGuiCol_Text), ImGuiDir_Right);
+    }
+    if (!enabled)
+        EndDisabled();
+
+    const bool hovered = (g.HoveredId == id) && enabled;
+    if (menuset_is_open)
+        g.NavWindow = backed_nav_window;
+
+    bool want_open = false;
+    bool want_close = false;
+    if (window->DC.LayoutType == ImGuiLayoutType_Vertical)
+    {
+        bool moving_toward_other_child_menu = false;
+        ImGuiWindow* child_menu_window = (g.BeginPopupStack.Size < g.OpenPopupStack.Size && g.OpenPopupStack[g.BeginPopupStack.Size].SourceWindow == window) ? g.OpenPopupStack[g.BeginPopupStack.Size].Window : NULL;
+        if (g.HoveredWindow == window && child_menu_window != NULL && !(window->Flags & ImGuiWindowFlags_MenuBar))
+        {
+            moving_toward_other_child_menu = true; // Adjust this accordingly
+        }
+        if (menu_is_open && !hovered && g.HoveredWindow == window && g.HoveredIdPreviousFrame != 0 && g.HoveredIdPreviousFrame != id && !moving_toward_other_child_menu)
+            want_close = true;
+
+        if (!menu_is_open && pressed)
+            want_open = true;
+        else if (!menu_is_open && hovered && !moving_toward_other_child_menu)
+            want_open = true;
+        if (g.NavId == id && g.NavMoveDir == ImGuiDir_Right)
+        {
+            want_open = true;
+            NavMoveRequestCancel();
+        }
+    }
+    else
+    {
+        if (menu_is_open && pressed && menuset_is_open)
+        {
+            want_close = true;
+            want_open = menu_is_open = false;
+        }
+        else if (pressed || (hovered && menuset_is_open && !menu_is_open))
+        {
+            want_open = true;
+        }
+        else if (g.NavId == id && g.NavMoveDir == ImGuiDir_Down)
+        {
+            want_open = true;
+            NavMoveRequestCancel();
+        }
+    }
+
+    if (!enabled)
+        want_close = true;
+    if (want_close && IsPopupOpen(id, ImGuiPopupFlags_None))
+        ClosePopupToLevel(g.BeginPopupStack.Size, true);
+
+    IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Openable | (menu_is_open ? ImGuiItemStatusFlags_Opened : 0));
+    PopID();
+
+    if (!menu_is_open && want_open && g.OpenPopupStack.Size > g.BeginPopupStack.Size)
+    {
+        OpenPopup(label);
+        return false;
+    }
+
+    menu_is_open |= want_open;
+    if (want_open)
+        OpenPopup(label);
+
+    if (menu_is_open)
+    {
+        SetNextWindowPos(popup_pos, ImGuiCond_Always);
+        PushStyleVar(ImGuiStyleVar_ChildRounding, style.PopupRounding);
+        menu_is_open = BeginPopupEx(id, flags);
+        PopStyleVar();
+    }
+    else
+    {
+        g.NextWindowData.ClearFlags();
+    }
+
+    return menu_is_open;
+}
+
+
 bool ImGui::BeginMenuEx(const char* label, const char* icon, bool enabled)
 {
     ImGuiWindow* window = GetCurrentWindow();
@@ -7036,6 +7188,11 @@ bool ImGui::BeginMenu(const char* label, bool enabled)
 {
     return BeginMenuEx(label, NULL, enabled);
 }
+bool ImGui::BeginMenuImage(const char* label, ImTextureID* texture, bool enabled)
+{
+    return BeginMenuImageEx(label, texture, NULL, enabled);
+}
+
 
 void ImGui::EndMenu()
 {

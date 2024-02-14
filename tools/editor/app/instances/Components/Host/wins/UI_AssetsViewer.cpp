@@ -7,8 +7,9 @@ void HostInstance::UI_AssetsViewer()
         static std::string label = this->name + " - Assets Viewer";
         ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_FirstUseEver);
                 static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                static ImTextureID databaseIcon = this->m_DatabaseIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        ImGui::Begin(label.c_str(), &addIcon, &this->opened, ImGuiWindowFlags_MenuBar);
+        ImGui::Begin(label.c_str(), &databaseIcon, &this->opened, ImGuiWindowFlags_MenuBar);
 
             if (ImGui::BeginMenuBar())
             {

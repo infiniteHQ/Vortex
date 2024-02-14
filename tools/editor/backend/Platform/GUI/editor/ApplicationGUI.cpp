@@ -851,6 +851,21 @@ namespace Walnut {
 		}
 	}
 
+
+void PushTabStyle()
+{
+ImGuiStyle& style = ImGui::GetStyle();
+ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 6.0f));
+ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 3.0f);
+ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(15.0f, 6.0f));
+
+}
+static void PopTabStyle()
+{
+ImGui::PopStyleVar(3);
+}
+
+
 	void Application::Run()
 	{
 		m_Running = true;
@@ -960,8 +975,11 @@ namespace Walnut {
 				ImGuiStyle& style = ImGui::GetStyle();
 				float minWinSizeX = style.WindowMinSize.x;
 				style.WindowMinSize.x = 370.0f;
-
+				
+				PushTabStyle();
 				ImGui::DockSpace(ImGui::GetID("MyDockspace"));
+
+				PopTabStyle();
 				style.WindowMinSize.x = minWinSizeX;
 
 				if (!m_Specification.CustomTitlebar)

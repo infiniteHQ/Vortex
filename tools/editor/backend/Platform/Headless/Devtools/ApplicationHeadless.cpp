@@ -49,6 +49,25 @@ namespace Walnut {
 		Log::Shutdown();
 	}
 
+static void PushStyle()
+{
+ImGuiStyle& style = ImGui::GetStyle();
+ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 11.0f);
+ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 11.0f);
+ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 6.0f));
+ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(9.0f, 3.0f));
+ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
+
+}
+
+static void PopStyle()
+{
+ImGui::PopStyleVar(8);
+}
+
 	void Application::Run()
 	{
 		m_Running = true;
@@ -56,6 +75,7 @@ namespace Walnut {
 		// Main loop
 		while (m_Running)
 		{
+		PushStyle();
 			for (auto& layer : m_LayerStack)
 				layer->OnUpdate(m_TimeStep);
 
@@ -66,6 +86,7 @@ namespace Walnut {
 			m_FrameTime = time - m_LastFrameTime;
 			m_TimeStep = glm::min<float>(m_FrameTime, 0.0333f);
 			m_LastFrameTime = time;
+		PopStyle();
 		}
 
 	}
