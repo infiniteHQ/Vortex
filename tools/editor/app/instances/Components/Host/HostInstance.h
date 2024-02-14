@@ -17,7 +17,7 @@ using namespace VortexMaker;
 
 
 struct HostSave{ 
-    char name[128];
+    char name[128] = "unknow";
     //static std::string name;
 
 };
@@ -25,7 +25,7 @@ struct HostSave{
 class HostInstance
 {
 public:
-    HostInstance(VxContext *ctx, VxHost* _host);
+    HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host);
 
     // Content Managment 
     void Refresh();
@@ -40,17 +40,19 @@ public:
     void UI_AssetsViewer();
     void UI_ParametersWindow();
     void UI_MainSettings();
+    void UI_FullBuild();
 
     bool opened;
     bool show_UI_ContentWindow = false;
     bool show_UI_ParametersWindow = false;
     bool show_UI_AssetsViewer = false;
     bool show_UI_MainSettings = false;
+    bool show_UI_FullBuild = false;
 
 
     std::string name;
     VxContext *m_ctx;
-    VxHost* host;
+    std::shared_ptr<VxHost> host;
     std::shared_ptr<HostSave> m_currentSave;
     ImGuiID dockspaceID;
 
@@ -60,6 +62,7 @@ public:
     std::shared_ptr<Walnut::Image> m_RefreshIcon;
     std::shared_ptr<Walnut::Image> m_DatabaseIcon;
     std::shared_ptr<Walnut::Image> m_EditIcon;
+    std::shared_ptr<Walnut::Image> m_BuildIcon;
     std::shared_ptr<Walnut::Image> m_SettingsIcon;
     std::shared_ptr<Walnut::Image> m_AddIcon;
     std::shared_ptr<Walnut::Image> m_FolderIcon;

@@ -43,8 +43,8 @@ struct MyTreeNode
 			if(node->Type == "Host"){
 				if(ImGui::Button("Open")){
 					for(auto host : ctx->IO.hosts){
-						if(node->Name == host.name){
-							std::shared_ptr<HostInstance> instance = std::make_shared<HostInstance>(ctx, &host);
+						if(node->Name == host->name){
+							std::shared_ptr<HostInstance> instance = std::make_shared<HostInstance>(ctx, host);
 							factory->SpawnInstance(instance);	
 						}
 					}
@@ -107,7 +107,7 @@ public:
 		std::vector<MyTreeNode> Hosts = {};
 		for(auto host : ctx->IO.hosts){
 			MyTreeNode nodeHost;
-			nodeHost.Name = host.name.c_str();
+			nodeHost.Name = host->name.c_str();
 			nodeHost.Type = "Host";
 			nodeHost.Size = 1024;
 			nodeHost.ChildCount = -1;

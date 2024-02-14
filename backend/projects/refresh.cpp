@@ -1,7 +1,23 @@
 #include "../../vortex.h"
 #include "../../vortex_internals.h"
 
-VORTEX_API void VortexMaker::RefreshDistToolchains()
+
+void VxHost::Refresh(){
+  std::cout << this->configFilePath << std::endl;
+  nlohmann::json toolchainData = VortexMaker::DumpJSON(this->configFilePath);
+
+  this->name = toolchainData["host"]["name"].get<std::string>();
+  this->author = toolchainData["host"]["author"].get<std::string>();
+  this->type = toolchainData["host"]["type"].get<std::string>();
+  this->state = toolchainData["host"]["state"].get<std::string>();
+  this->vendor = toolchainData["host"]["vendor"].get<std::string>();
+  this->platform = toolchainData["host"]["platform"].get<std::string>();
+  this->host_arch = toolchainData["host"]["host_arch"].get<std::string>();
+  this->target_arch = toolchainData["host"]["target_arch"].get<std::string>();
+  this->toolchainToUse = toolchainData["build"]["useToolchain"].get<std::string>();
+}
+
+VORTEX_API void VortexMaker::RefreshDistToolchains() // Rename to RefreshDistHostsList
 {
   VxContext &ctx = *CVortexMaker;
 
@@ -35,7 +51,7 @@ VORTEX_API void VortexMaker::RefreshDistToolchains()
 }
 
 
-VORTEX_API void VortexMaker::RefreshDistHosts()
+VORTEX_API void VortexMaker::RefreshDistHosts() // Rename to RefreshDistHostsList
 {
   VxContext &ctx = *CVortexMaker;
 

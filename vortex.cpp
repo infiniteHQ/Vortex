@@ -61,8 +61,6 @@ static VortexMakerMemAllocFunc CVxAllocatorAllocFunc = MallocWrapper;
 static VortexMakerMemFreeFunc CVxAllocatorFreeFunc = FreeWrapper;
 static void *CVxAllocatorUserData = NULL;
 
-
-
 //-----------------------------------------------------------------------------
 // [Context Function: CreateContext] => Create a context for a VortexMaker use
 //-----------------------------------------------------------------------------
@@ -348,7 +346,11 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
     try
     {
       nlohmann::json filecontent = DumpJSON(file);
-      RegisterHost(filecontent);
+      std::shared_ptr<VxHost> host = std::make_shared<VxHost>();
+
+      host->configFilePath = file;
+
+      RegisterHost(host, filecontent);
     }
     catch (const std::exception &e)
     {

@@ -1,32 +1,34 @@
 #include "../HostInstance.h"
 #include <array> 
 
-void HostInstance::UI_MainSettings()
+void HostInstance::UI_FullBuild()
 {
 
-    if (this->show_UI_MainSettings)
+    if (this->show_UI_FullBuild)
     {
 
-        static std::string label = this->name + " - Host Settings";
+        static std::string label = this->name + " - Full Build";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 static ImTextureID saveIcon = this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+static ImTextureID buildIcon = this->m_BuildIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+static ImTextureID toolIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 
         static ImTextureID settingsIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-          ImGui::Begin(label.c_str(), &editIcon, &this->show_UI_MainSettings, ImGuiWindowFlags_MenuBar);
+          ImGui::Begin(label.c_str(), &toolIcon, &this->show_UI_FullBuild, ImGuiWindowFlags_MenuBar);
 
             if (ImGui::BeginMenuBar())
             {
 
-                if(ImGui::ImageButtonWithText(saveIcon, "Save", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight()))){
+                if(ImGui::ImageButtonWithText(buildIcon, "Build", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight()))){
                     //Save behavior
                 }
                 if(ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight()))){
-                    this->Refresh();
+                    //Save behavior
                 }
                 
                 const char* items[] = { "Packages", "Scripts", "Patchs", "Automations" };
@@ -51,7 +53,7 @@ static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE
   
         // Left
         static int selected = 0;
-        static std::array<char[128], 4> labels = {"Project Settings", "Configuration", "Production", "Maintenance"};
+        static std::array<char[128], 4> labels = {"Build", "General View", "Logs", "Errors"};
 
 
         {
@@ -71,43 +73,9 @@ static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE
         // Project Settings
         if(selected == 0){
 
-            ImGui::BeginGroup();
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(9.0f, 9.0f));
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
-            ImGui::Text("General Informations");
-            ImGui::Separator();
-
-            std::cout << this->m_currentSave->name << std::endl;
-
-            ImGui::InputText("Host Name",     this->m_currentSave->name, 128);
-            static char buf2[128] = ""; ImGui::InputText("Host Author",     buf2, 128);
-            static char buf3[128] = ""; ImGui::InputText("Host Version",     buf3, 128);
-
-            ImGui::PopStyleVar(2);
-            if (ImGui::Button("Revert")) {}
-            ImGui::SameLine();
-            if (ImGui::Button("Save")) {}
-            ImGui::EndGroup();
-
         }
 
         if(selected == 1){
-
-            ImGui::BeginGroup();
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(9.0f, 9.0f));
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
-            ImGui::Text("General Informations");
-            ImGui::Separator();
-
-            static char buf1[128] = ""; ImGui::InputText("Deuxiemme",     buf1, 128);
-            static char buf2[128] = ""; ImGui::InputText("Host Author",     buf2, 128);
-            static char buf3[128] = ""; ImGui::InputText("Host Version",     buf3, 128);
-
-            ImGui::PopStyleVar(2);
-            if (ImGui::Button("Revert")) {}
-            ImGui::SameLine();
-            if (ImGui::Button("Save")) {}
-            ImGui::EndGroup();
 
         }
 

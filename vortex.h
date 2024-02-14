@@ -173,6 +173,7 @@ struct hMap;
 
 struct hString;
 struct hArgs;
+struct VxHost;
 
 struct CommandOutput;
 struct VxToolchain;
@@ -211,6 +212,7 @@ namespace VortexMaker
 
     VORTEX_API void             InitProject(nlohmann::json main_config);
 
+    VORTEX_API void             RefreshHost();
     VORTEX_API void             RefreshDistToolchains();
     VORTEX_API void             RefreshDistHosts();
 
@@ -228,7 +230,7 @@ namespace VortexMaker
     VORTEX_API bool RegisterDistHost(VxDistHost host, nlohmann::json packageData);
     VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
     VORTEX_API bool RegisterToolchain(nlohmann::json toolchainData);
-    VORTEX_API bool RegisterHost(nlohmann::json toolchainData);
+    VORTEX_API bool RegisterHost(std::shared_ptr<VxHost> host, nlohmann::json toolchainData);
 
     VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
     VORTEX_API std::string replacePlaceholders(const std::string &command, const std::unordered_map<std::string, std::string> &replacements);
@@ -642,6 +644,7 @@ struct VxHost{
     std::string state;
     std::string vendor;
     std::string platform;
+    std::string configFilePath;
 
     std::string toolchainToUse;
 
@@ -664,6 +667,7 @@ struct VxHost{
     hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
     hVector<std::shared_ptr<VxPackage>> packages;
 
+    void Refresh();
 
     void RegisterPackage(const std::string label,const std::string emplacemement);
     void FindPackages();

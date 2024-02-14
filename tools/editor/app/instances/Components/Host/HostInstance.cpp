@@ -2,7 +2,7 @@
 
 using namespace VortexMaker;
 
-HostInstance::HostInstance(VxContext *ctx, VxHost *_host)
+HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host)
 {
     this->m_ctx = ctx;
     this->host = _host;
@@ -57,6 +57,12 @@ HostInstance::HostInstance(VxContext *ctx, VxHost *_host)
         m_RefreshIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
         free(data);
     }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_build, icons::i_build_size, w, h);
+        m_BuildIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
 };
 
 void HostInstance::close()
@@ -102,6 +108,7 @@ std::string HostInstance::render()
         this->UI_ContentWindow();
         this->UI_MainSettings();
         this->UI_AssetsViewer();
+        this->UI_FullBuild();
 
         return "rendering";
     }
@@ -169,7 +176,7 @@ void HostInstance::menubar()
         ImGui::Separator();
         if (ImGui::BeginMenu("Build"))
         {
-            if (ImGui::MenuItem("Build/Rebuild single parts"))
+            if (ImGui::MenuItem("Full Build", NULL, &this->show_UI_FullBuild))
             {
             }
             if (ImGui::MenuItem("Global build"))
@@ -229,6 +236,7 @@ void HostInstance::Refresh()
 
 
     // TODO: BEFORE ALL, REFRESH API INSTANCE OF THIS HOST
+    this->host->Refresh();
 
     std::shared_ptr<HostSave> refreshedCurrentSave = std::make_shared<HostSave>();
 
@@ -245,6 +253,7 @@ void HostInstance::Refresh()
 
     this->m_currentSave = refreshedCurrentSave;
 }
+
 void HostInstance::Save(){
     // Get currentSave (modified by all UI editors)
     // Set host new host variables with save contents

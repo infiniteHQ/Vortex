@@ -151,7 +151,7 @@ struct VxIO {
   // All loaded components
   std::vector<VxToolchain>      toolchains;    
   std::vector<VxDistToolchain>  distToolchains;    
-  std::vector<VxHost>           hosts;    
+  std::vector<std::shared_ptr<VxHost>>           hosts;    
   std::vector<VxDistHost>  distHosts;    
 };
 

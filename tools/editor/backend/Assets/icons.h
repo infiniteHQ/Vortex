@@ -45,6 +45,9 @@ struct icons {
     static const size_t i_library_size;
 
     // Basic Icons
+    static const uint8_t i_build[];
+    static const size_t i_build_size;
+
     static const uint8_t i_refresh[];
     static const size_t i_refresh_size;
 

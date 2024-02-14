@@ -181,14 +181,14 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
 
     if (ImGui::BeginMenu("Window")) {
       for(auto host : ctx->IO.hosts){
-        static std::string label = "Open" + host.name;
+        static std::string label = "Open" + host->name;
 
       if (ImGui::MenuItem(label.c_str())) {
         std::shared_ptr<InstanceWindow> window = std::make_shared<InstanceWindow>(ctx);
         std::string label = "test_";
         label += number;
         number++;
-        std::shared_ptr<VxHost> hostToOpen = std::make_shared<VxHost>(host);
+        std::shared_ptr<VxHost> hostToOpen = std::make_shared<VxHost>();
         exampleLayer->AddInstanceOfWindow(window, label, hostToOpen);
 
       }
