@@ -234,29 +234,67 @@ void HostInstance::Refresh()
     // Refresh host from vortex API
     // Get all vortex infos, store into save struct and save the save struct to current save struct
 
-
     // TODO: BEFORE ALL, REFRESH API INSTANCE OF THIS HOST
     this->host->Refresh();
 
     std::shared_ptr<HostSave> refreshedCurrentSave = std::make_shared<HostSave>();
 
+    strncpy(refreshedCurrentSave->name, this->host->name.c_str(), sizeof(refreshedCurrentSave->name));
+    refreshedCurrentSave->name[sizeof(refreshedCurrentSave->name) - 1] = '\0';
 
-    // Copy the content of str into buffer, ensuring null-termination
-    strncpy(refreshedCurrentSave->name, this->host->name.c_str(), sizeof(refreshedCurrentSave->name)); // Copy up to sizeof(buffer) characters
-    refreshedCurrentSave->name[sizeof(refreshedCurrentSave->name) - 1] = '\0'; // Null-terminate the buffer
+    strncpy(refreshedCurrentSave->author, this->host->author.c_str(), sizeof(refreshedCurrentSave->author));
+    refreshedCurrentSave->author[sizeof(refreshedCurrentSave->author) - 1] = '\0';
 
+    strncpy(refreshedCurrentSave->type, this->host->type.c_str(), sizeof(refreshedCurrentSave->type));
+    refreshedCurrentSave->type[sizeof(refreshedCurrentSave->type) - 1] = '\0';
 
+    strncpy(refreshedCurrentSave->vendor, this->host->vendor.c_str(), sizeof(refreshedCurrentSave->vendor));
+    refreshedCurrentSave->vendor[sizeof(refreshedCurrentSave->vendor) - 1] = '\0';
 
+    strncpy(refreshedCurrentSave->platform, this->host->platform.c_str(), sizeof(refreshedCurrentSave->platform));
+    refreshedCurrentSave->platform[sizeof(refreshedCurrentSave->platform) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->host_arch, this->host->host_arch.c_str(), sizeof(refreshedCurrentSave->host_arch));
+    refreshedCurrentSave->host_arch[sizeof(refreshedCurrentSave->host_arch) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->target_arch, this->host->target_arch.c_str(), sizeof(refreshedCurrentSave->target_arch));
+    refreshedCurrentSave->target_arch[sizeof(refreshedCurrentSave->target_arch) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->toolchainToUse, this->host->toolchainToUse.c_str(), sizeof(refreshedCurrentSave->toolchainToUse));
+    refreshedCurrentSave->toolchainToUse[sizeof(refreshedCurrentSave->toolchainToUse) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->localScriptsPath, this->host->localScriptsPath.c_str(), sizeof(refreshedCurrentSave->localScriptsPath));
+    refreshedCurrentSave->localScriptsPath[sizeof(refreshedCurrentSave->localScriptsPath) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->localPatchsPath, this->host->localPatchsPath.c_str(), sizeof(refreshedCurrentSave->localPatchsPath));
+    refreshedCurrentSave->localPatchsPath[sizeof(refreshedCurrentSave->localPatchsPath) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->localPackagePath, this->host->localPackagePath.c_str(), sizeof(refreshedCurrentSave->localPackagePath));
+    refreshedCurrentSave->localPackagePath[sizeof(refreshedCurrentSave->localPackagePath) - 1] = '\0';
 
     // Output the content of buffer
-    //refreshedCurrentSave.name = this->host->name;
+    // refreshedCurrentSave.name = this->host->name;
+
+    for (auto registeredPackage : this->host->registeredPackages)
+    {
+        std::pair<char[128], char[128]> package;
+
+        strncpy(package.first, registeredPackage->label.c_str(), sizeof(package.first));
+        package.first[sizeof(package.first) - 1] = '\0';
+
+        strncpy(package.second, registeredPackage->emplacement.c_str(), sizeof(package.second));
+        package.second[sizeof(package.second) - 1] = '\0';
+
+        refreshedCurrentSave->registeredPackages.push_back(package);
+    }
 
     this->m_currentSave = refreshedCurrentSave;
 }
 
-void HostInstance::Save(){
+void HostInstance::Save()
+{
     // Get currentSave (modified by all UI editors)
     // Set host new host variables with save contents
     // Patch json with native Vortex APi
+    this->host->PushSave(this->m_currentSave);
 }
-

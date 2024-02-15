@@ -635,6 +635,27 @@ struct VxPackage{
 
 };
 
+
+struct HostSave{ 
+    char name[128] = "unknow";
+    char author[128] = "unknow";
+    char type[128] = "unknow";
+    char state[128] = "unknow";
+    char vendor[128] = "unknow";
+    char platform[128] = "unknow";
+    char host_arch[128] = "unknow";
+    char target_arch[128] = "unknow";
+    char toolchainToUse[128] = "unknow";
+
+
+    char localPackagePath[128] = "unknow";
+    char localScriptsPath[128] = "unknow";
+    char localPatchsPath[128] = "unknow";
+
+    std::vector<std::pair<char[128], char[128]>> registeredPackages;
+
+};
+
 struct VxHost{
     // Vortex project informations
     std::string name;
@@ -645,6 +666,10 @@ struct VxHost{
     std::string vendor;
     std::string platform;
     std::string configFilePath;
+
+    std::string localPackagePath;
+    std::string localScriptsPath;
+    std::string localPatchsPath;
 
     std::string toolchainToUse;
 
@@ -668,6 +693,7 @@ struct VxHost{
     hVector<std::shared_ptr<VxPackage>> packages;
 
     void Refresh();
+    void PushSave(std::shared_ptr<HostSave> save);
 
     void RegisterPackage(const std::string label,const std::string emplacemement);
     void FindPackages();
@@ -678,6 +704,8 @@ struct VxHost{
     int ExecuteCmdInChroot(std::string cmd);
 
 };
+
+
 
 
 struct VxDistToolchain{

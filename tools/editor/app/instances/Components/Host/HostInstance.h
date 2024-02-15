@@ -16,12 +16,6 @@
 using namespace VortexMaker;
 
 
-struct HostSave{ 
-    char name[128] = "unknow";
-    //static std::string name;
-
-};
-
 class HostInstance
 {
 public:

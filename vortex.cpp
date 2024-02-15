@@ -211,7 +211,6 @@ std::string SearchFilesRecursive(const fs::path &chemin, const std::string &file
   {
     if (entry.is_regular_file() && entry.path().filename().string().find(filename) != std::string::npos)
     {
-      std::cout << "Ajout d'un nouveau fichier : " << entry.path().string() << std::endl;
       file.push_back(entry.path().string());
       return entry.path().string();
     }

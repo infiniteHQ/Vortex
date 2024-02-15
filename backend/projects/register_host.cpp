@@ -15,6 +15,10 @@ bool VortexMaker::RegisterHost(std::shared_ptr<VxHost> host, nlohmann::json tool
   host->target_arch = toolchainData["host"]["target_arch"].get<std::string>();
   host->toolchainToUse = toolchainData["build"]["useToolchain"].get<std::string>();
 
+  host->localPackagesPath = toolchainData["data"]["packages"].get<std::string>();
+  host->localScriptsPath = toolchainData["data"]["scripts"].get<std::string>();
+  host->localPatchsPath = toolchainData["data"]["patchs"].get<std::string>();
+
   // Register file emplacement
 
   nlohmann::json packages = toolchainData["content"]["packages"];

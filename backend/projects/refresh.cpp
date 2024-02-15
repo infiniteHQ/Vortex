@@ -2,21 +2,31 @@
 #include "../../vortex_internals.h"
 
 
-void VxHost::Refresh(){
-  std::cout << this->configFilePath << std::endl;
-  nlohmann::json toolchainData = VortexMaker::DumpJSON(this->configFilePath);
+void VxHost::Refresh()
+{
+    nlohmann::json toolchainData = VortexMaker::DumpJSON(this->configFilePath);
 
-  this->name = toolchainData["host"]["name"].get<std::string>();
-  this->author = toolchainData["host"]["author"].get<std::string>();
-  this->type = toolchainData["host"]["type"].get<std::string>();
-  this->state = toolchainData["host"]["state"].get<std::string>();
-  this->vendor = toolchainData["host"]["vendor"].get<std::string>();
-  this->platform = toolchainData["host"]["platform"].get<std::string>();
-  this->host_arch = toolchainData["host"]["host_arch"].get<std::string>();
-  this->target_arch = toolchainData["host"]["target_arch"].get<std::string>();
-  this->toolchainToUse = toolchainData["build"]["useToolchain"].get<std::string>();
+    this->name = toolchainData["host"]["name"].get<std::string>();
+    this->author = toolchainData["host"]["author"].get<std::string>();
+    this->type = toolchainData["host"]["type"].get<std::string>();
+    this->state = toolchainData["host"]["state"].get<std::string>();
+    this->vendor = toolchainData["host"]["vendor"].get<std::string>();
+    this->platform = toolchainData["host"]["platform"].get<std::string>();
+    this->host_arch = toolchainData["host"]["host_arch"].get<std::string>();
+    this->target_arch = toolchainData["host"]["target_arch"].get<std::string>();
+    this->toolchainToUse = toolchainData["build"]["useToolchain"].get<std::string>();
+
+    this->localPackagesPath = toolchainData["data"]["packages"].get<std::string>();
+    this->localPatchsPath = toolchainData["data"]["patchs"].get<std::string>();
+    this->localScriptsPath = toolchainData["data"]["scripts"].get<std::string>();
+
+    registeredPackages.clear();
+    nlohmann::json packages = toolchainData["content"]["packages"];
+    for (auto &pkg : packages)
+    {
+        this->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
+    }
 }
-
 VORTEX_API void VortexMaker::RefreshDistToolchains() // Rename to RefreshDistHostsList
 {
   VxContext &ctx = *CVortexMaker;

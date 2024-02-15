@@ -6,7 +6,7 @@ void VxHost::FindPackages()
   VxContext &ctx = *CVortexMaker;
 
   // Register all finded local packages
-  for (const auto &file : VortexMaker::SearchFiles(ctx.hostsPath + localPackagesPath, "package.config"))
+  for (const auto &file : VortexMaker::SearchFiles(ctx.hostsPath, "package.config"))
   {
     try
     {
@@ -19,7 +19,6 @@ void VxHost::FindPackages()
       {
         if (registeredPackage->emplacement == "local")
         {
-          std::cout << registeredPackage->label << filecontent["package"]["label"].get<std::string>() << std::endl;
           if (registeredPackage->label == filecontent["package"]["label"].get<std::string>())
           {
             bool already_registered = false;

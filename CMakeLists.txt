@@ -23,6 +23,7 @@ add_executable(vortex
 
     # Project managment sources
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/refresh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/update.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disttoolchain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_host.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_toolchain.cpp
