@@ -22,6 +22,7 @@ using namespace VortexMaker;
 static std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
 static std::vector<std::shared_ptr<HostInstance>> hostInstances;
 static std::vector<std::shared_ptr<ToolchainInstance>> toolchainInstances;
+static std::vector<std::shared_ptr<PackageInstance>> packageInstances;
 
 static void PushStyle()
 {
@@ -56,6 +57,23 @@ class Instance : public InstanceFactory {
     toolchainInstances.push_back(instance);
   };
 
+
+  void SpawnInstance(std::shared_ptr<PackageInstance> instance) override {
+    instance->name = instance->package->name;
+    instance->opened = true;
+    packageInstances.push_back(instance);
+  };
+
+  void UnspawnInstance(std::shared_ptr<PackageInstance> instance) override {
+    std::string instanceName = instance->name;
+    packageInstances.erase(
+        std::remove_if(packageInstances.begin(), packageInstances.end(),
+            [&instanceName](const std::shared_ptr<PackageInstance>& p) {
+                return p->name == instanceName;
+            }),
+        packageInstances.end()
+    );
+  };
 
   void UnspawnInstance(std::shared_ptr<HostInstance> instance) override {
     std::string instanceName = instance->name;
@@ -113,6 +131,7 @@ public:
     // Instances
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
+    for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
 
     PopStyle();
 

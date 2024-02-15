@@ -13,6 +13,8 @@ void VxHost::PushSave(std::shared_ptr<HostSave> save)
     toolchainData["host"]["vendor"] = save->vendor;
     toolchainData["host"]["platform"] = save->platform;
     toolchainData["host"]["host_arch"] = save->host_arch;
+    toolchainData["host"]["version"] = save->version;
+    toolchainData["host"]["description"] = save->description;
     toolchainData["host"]["target_arch"] = save->target_arch;
     toolchainData["build"]["useToolchain"] = save->toolchainToUse;
 

@@ -44,7 +44,7 @@ struct MyTreeNode
 				if(ImGui::Button("Open")){
 					for(auto host : ctx->IO.hosts){
 						if(node->Name == host->name){
-							std::shared_ptr<HostInstance> instance = std::make_shared<HostInstance>(ctx, host);
+							std::shared_ptr<HostInstance> instance = std::make_shared<HostInstance>(ctx, host, factory);
 							factory->SpawnInstance(instance);	
 						}
 					}

@@ -639,6 +639,8 @@ struct VxPackage{
 struct HostSave{ 
     char name[128] = "unknow";
     char author[128] = "unknow";
+    char version[128] = "unknow";
+    char description[128] = "unknow";
     char type[128] = "unknow";
     char state[128] = "unknow";
     char vendor[128] = "unknow";
@@ -663,6 +665,7 @@ struct VxHost{
     std::string description;
     std::string type;
     std::string state;
+    std::string version;
     std::string vendor;
     std::string platform;
     std::string configFilePath;

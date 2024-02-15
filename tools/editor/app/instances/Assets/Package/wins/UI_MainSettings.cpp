@@ -1,7 +1,7 @@
-#include "../HostInstance.h"
+#include "../PackageInstance.h"
 #include <array> 
 
-void HostInstance::UI_MainSettings()
+void PackageInstance::UI_MainSettings()
 {
 
     if (this->show_UI_MainSettings)
@@ -77,10 +77,6 @@ static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE
             ImGui::Text("Informations");
             ImGui::Separator();
 
-            ImGui::InputText("Host Name",     this->m_currentSave->name, 128);
-            ImGui::InputText("Host Author",     this->m_currentSave->author, 128);
-            ImGui::InputText("Host Description",     this->m_currentSave->description, 128);
-            ImGui::InputText("Host Version",     this->m_currentSave->version, 128);
 
             ImGui::PopStyleVar(2);
             if (ImGui::Button("Revert")) {}

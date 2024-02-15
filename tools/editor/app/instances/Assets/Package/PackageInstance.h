@@ -10,19 +10,16 @@
 
 #include "../../../../vortex.h"
 
-#include "../../../src/instanceFactory.h"
-
-#ifndef HostInstance_H
-#define HostInstance_H
+#ifndef PackageInstance_H
+#define PackageInstance_H
 
 using namespace VortexMaker;
-class InstanceFactory;
 
 
-class HostInstance
+class PackageInstance
 {
 public:
-    HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, InstanceFactory* factory);
+    PackageInstance(VxContext *ctx, std::shared_ptr<VxPackage> _package);
 
     // Content Managment 
     void Refresh();
@@ -33,26 +30,16 @@ public:
     void close();
     void menubar();
 
-    void UI_ContentWindow();
-    void UI_AssetsViewer();
-    void UI_ParametersWindow();
     void UI_MainSettings();
-    void UI_FullBuild();
 
     bool opened;
-    bool show_UI_ContentWindow = false;
-    bool show_UI_ParametersWindow = false;
-    bool show_UI_AssetsViewer = false;
     bool show_UI_MainSettings = false;
-    bool show_UI_FullBuild = false;
 
-    
-    InstanceFactory* factory;
 
     std::string name;
     VxContext *m_ctx;
-    std::shared_ptr<VxHost> host;
-    std::shared_ptr<HostSave> m_currentSave;
+    std::shared_ptr<VxPackage> package;
+    //std::shared_ptr<HostSave> m_currentSave;
     ImGuiID dockspaceID;
 
     std::shared_ptr<Walnut::Image> m_HostIcon;
@@ -68,4 +55,4 @@ public:
     std::shared_ptr<Walnut::Image> m_FolderIcon;
 };
 
-#endif // HostInstance_H
+#endif // PackageInstance_H

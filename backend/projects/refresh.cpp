@@ -8,6 +8,8 @@ void VxHost::Refresh()
 
     this->name = toolchainData["host"]["name"].get<std::string>();
     this->author = toolchainData["host"]["author"].get<std::string>();
+    this->description = toolchainData["host"]["description"].get<std::string>();
+    this->version = toolchainData["host"]["version"].get<std::string>();
     this->type = toolchainData["host"]["type"].get<std::string>();
     this->state = toolchainData["host"]["state"].get<std::string>();
     this->vendor = toolchainData["host"]["vendor"].get<std::string>();
