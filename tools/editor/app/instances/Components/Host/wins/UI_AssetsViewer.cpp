@@ -71,7 +71,10 @@ void HostInstance::UI_AssetsViewer()
                         if (it != this->host->packages.end())
                         {
 
-                            if (ImGui::ImageButtonWithText(packageIcon, currentPackage->name.c_str(), ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+                        ImGui::TableSetColumnIndex(column);   std::string openButtonID = "Open###" + std::to_string(row) + "-" + std::to_string(column);
+
+
+                            if (ImGui::ImageButtonWithText(packageIcon, openButtonID.c_str(), ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
                             {
                                 std::cout << "Opening " << currentPackage->name << std::endl;
 							    std::shared_ptr<PackageInstance> instance = std::make_shared<PackageInstance>(m_ctx, currentPackage);

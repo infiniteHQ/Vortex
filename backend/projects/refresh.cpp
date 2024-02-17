@@ -2,9 +2,8 @@
 #include "../../vortex_internals.h"
 
 
-void VxPackage::Refresh() {
+void VxPackage::Refresh() {             
               nlohmann::json filecontent = VortexMaker::DumpJSON(this->configFilePath);
-          
 
               this->label = filecontent["package"]["label"].get<std::string>();
               this->fileName = filecontent["package"]["filename"].get<std::string>();
@@ -28,13 +27,6 @@ void VxPackage::Refresh() {
                 this->archs.push_back(arch);
               }
 
-              for (auto configSuffixes : filecontent["compilation"]["configurationSuffixes"])
-              {
-                for (auto it = configSuffixes.begin(); it != configSuffixes.end(); ++it)
-                {
-                  this->compilation.configurationSuffixes.emplace_back(it.key(), it.value());
-                }
-              }
 
 
               this->actions.clear();
@@ -82,7 +74,7 @@ void VxPackage::Refresh() {
               }
 
               this->compilation.configurationPrefixes.clear();
-              for (auto configurationPrefixes : filecontent["compilation"]["configurationParameters"])
+              for (auto configurationPrefixes : filecontent["compilation"]["configurationPrefixes"])
               {
                 for (auto it = configurationPrefixes.begin(); it != configurationPrefixes.end(); ++it)
                 {
@@ -91,7 +83,7 @@ void VxPackage::Refresh() {
               }
 
               this->compilation.installationPrefixes.clear();
-              for (auto installationPrefixes : filecontent["compilation"]["installationParameters"])
+              for (auto installationPrefixes : filecontent["compilation"]["installationPrefixes"])
               {
                 for (auto it = installationPrefixes.begin(); it != installationPrefixes.end(); ++it)
                 {
@@ -100,7 +92,7 @@ void VxPackage::Refresh() {
               }
 
               this->compilation.compilationPrefixes.clear();
-              for (auto compilationPrefixes : filecontent["compilation"]["compilationParameters"])
+              for (auto compilationPrefixes : filecontent["compilation"]["compilationPrefixes"])
               {
                 for (auto it = compilationPrefixes.begin(); it != compilationPrefixes.end(); ++it)
                 {

@@ -303,7 +303,7 @@ void VxHost::Build()
 
         cmd += "sudo -u vortex -i sh -c 'cd " + packageToBuild->distPath + "/" + path + "/build && ";
 
-        for (auto suffix : packageToBuild->compilation.configurationSuffixes)
+        for (auto suffix : packageToBuild->compilation.configurationPrefixes)
         {
           if (suffix.first == "all" || suffix.first == this->target_arch)
           {
@@ -313,7 +313,7 @@ void VxHost::Build()
 
         cmd += "../configure ";
 
-        for (auto parameter : packageToBuild->compilation.configurationPrefixes)
+        for (auto parameter : packageToBuild->compilation.configurationSuffixes)
         {
           if (parameter.first == "all" || parameter.first == this->target_arch)
           {
@@ -365,7 +365,7 @@ void VxHost::Build()
         std::string cmd = "";
         cmd += "sudo -u vortex -i sh -c 'cd " + packageToBuild->distPath + "/" + path + "/build && ";
 
-        for (auto suffix : packageToBuild->compilation.compilationSuffixes)
+        for (auto suffix : packageToBuild->compilation.compilationPrefixes)
         {
           if (suffix.first == "all" || suffix.first == this->target_arch)
           {
@@ -382,7 +382,7 @@ void VxHost::Build()
           cmd += " make";
         }
 
-        for (auto parameter : packageToBuild->compilation.compilationPrefixes)
+        for (auto parameter : packageToBuild->compilation.compilationSuffixes)
         {
           if (parameter.first == "all" || parameter.first == this->target_arch)
           {
@@ -431,7 +431,7 @@ void VxHost::Build()
         std::string cmd = "";
         cmd += "sudo -u vortex -i sh -c 'cd " + packageToBuild->distPath + "/" + path + "/build && ";
 
-        for (auto suffix : packageToBuild->compilation.installationSuffixes)
+        for (auto suffix : packageToBuild->compilation.installationPrefixes)
         {
           if (suffix.first == "all" || suffix.first == this->target_arch)
           {
@@ -441,7 +441,7 @@ void VxHost::Build()
 
         cmd += " make install ";
 
-        for (auto parameter : packageToBuild->compilation.installationPrefixes)
+        for (auto parameter : packageToBuild->compilation.installationSuffixes)
         {
           if (parameter.first == "all" || parameter.first == this->target_arch)
           {

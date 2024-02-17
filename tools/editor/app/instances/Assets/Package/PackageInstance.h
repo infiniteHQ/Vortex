@@ -34,9 +34,11 @@ public:
     void menubar();
 
     void UI_MainSettings();
+    void UI_CompilationArguments();
 
     bool opened;
     bool show_UI_MainSettings = false;
+    bool show_UI_CompilationArguments = false;
 
 
     std::string name;
@@ -50,6 +52,7 @@ public:
     std::shared_ptr<Walnut::Image> m_SaveIcon;
     std::shared_ptr<Walnut::Image> m_RefreshIcon;
     std::shared_ptr<Walnut::Image> m_DatabaseIcon;
+    std::shared_ptr<Walnut::Image> m_TrashIcon;
     std::shared_ptr<Walnut::Image> m_PackageIcon;
     std::shared_ptr<Walnut::Image> m_EditIcon;
     std::shared_ptr<Walnut::Image> m_BuildIcon;

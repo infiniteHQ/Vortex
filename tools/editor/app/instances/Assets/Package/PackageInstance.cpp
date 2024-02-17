@@ -69,6 +69,12 @@ PackageInstance::PackageInstance(VxContext *ctx, std::shared_ptr<VxPackage> _pac
         m_PackageIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
         free(data);
     }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
+        m_TrashIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
 };
 
 void PackageInstance::close()
@@ -111,6 +117,8 @@ std::string PackageInstance::render()
 
         // All Windows of this instances :
         this->UI_MainSettings();
+        this->UI_CompilationArguments();
+
 
         return "rendering";
     }
@@ -145,6 +153,9 @@ void PackageInstance::menubar()
         if (ImGui::BeginMenu("Pannels"))
         {
             if (ImGui::MenuItem("Main Settings", NULL, &this->show_UI_MainSettings))
+            {
+            }
+            if (ImGui::MenuItem("Compilation Arguments", NULL, &this->show_UI_CompilationArguments))
             {
             }
             ImGui::EndMenu();
