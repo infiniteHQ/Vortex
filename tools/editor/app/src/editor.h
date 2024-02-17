@@ -64,6 +64,7 @@ class Instance : public InstanceFactory {
     packageInstances.push_back(instance);
   };
 
+
   void UnspawnInstance(std::shared_ptr<PackageInstance> instance) override {
     std::string instanceName = instance->name;
     packageInstances.erase(
@@ -129,7 +130,7 @@ public:
     }
 
     // Instances
-    for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
+    for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}    
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
     for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
 

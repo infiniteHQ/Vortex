@@ -10,8 +10,11 @@ void VxHost::FindPackages()
   {
     try
     {
+      
       nlohmann::json filecontent = VortexMaker::DumpJSON(file);
-      VxPackage newPackage;
+      //VxPackage newPackage;
+
+      //newPackage.configFilePath = file;
 
       // Get packages infos
 
@@ -42,6 +45,7 @@ void VxHost::FindPackages()
                 newPackage->path.erase(position, 17);
               }
 
+              newPackage->configFilePath = file;
               newPackage->label = filecontent["package"]["label"].get<std::string>();
               newPackage->fileName = filecontent["package"]["filename"].get<std::string>();
               newPackage->description = filecontent["package"]["description"].get<std::string>();
@@ -104,27 +108,27 @@ void VxHost::FindPackages()
                 }
               }
 
-              for (auto configParameters : filecontent["compilation"]["configurationParameters"])
+              for (auto configParameters : filecontent["compilation"]["configurationPrefixes"])
               {
                 for (auto it = configParameters.begin(); it != configParameters.end(); ++it)
                 {
-                  newPackage->compilation.configurationParameters.emplace_back(it.key(), it.value());
+                  newPackage->compilation.configurationPrefixes.emplace_back(it.key(), it.value());
                 }
               }
 
-              for (auto installParameters : filecontent["compilation"]["installationParameters"])
+              for (auto installParameters : filecontent["compilation"]["installationPrefixes"])
               {
                 for (auto it = installParameters.begin(); it != installParameters.end(); ++it)
                 {
-                  newPackage->compilation.installationParameters.emplace_back(it.key(), it.value());
+                  newPackage->compilation.installationPrefixes.emplace_back(it.key(), it.value());
                 }
               }
 
-              for (auto compileParameters : filecontent["compilation"]["compilationParameters"])
+              for (auto compileParameters : filecontent["compilation"]["compilationPrefixes"])
               {
                 for (auto it = compileParameters.begin(); it != compileParameters.end(); ++it)
                 {
-                  newPackage->compilation.compilationParameters.emplace_back(it.key(), it.value());
+                  newPackage->compilation.compilationPrefixes.emplace_back(it.key(), it.value());
                 }
               }
 

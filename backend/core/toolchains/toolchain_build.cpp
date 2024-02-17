@@ -52,7 +52,7 @@ void VxToolchain::Build()
 
       cmd += "../configure ";
 
-      for (auto parameter : packageToBuild->compilation.configurationParameters)
+      for (auto parameter : packageToBuild->compilation.configurationPrefixes)
       {
         if (parameter.first == "all" || parameter.first == this->target_arch)
         {
@@ -119,7 +119,7 @@ void VxToolchain::Build()
         cmd += " make";
       }
 
-      for (auto parameter : packageToBuild->compilation.compilationParameters)
+      for (auto parameter : packageToBuild->compilation.compilationPrefixes)
       {
         if (parameter.first == "all" || parameter.first == this->target_arch)
         {
@@ -176,7 +176,7 @@ void VxToolchain::Build()
 
       cmd += " make install ";
 
-      for (auto parameter : packageToBuild->compilation.installationParameters)
+      for (auto parameter : packageToBuild->compilation.installationPrefixes)
       {
         if (parameter.first == "all" || parameter.first == this->target_arch)
         {

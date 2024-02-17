@@ -56,23 +56,24 @@ void HostInstance::UI_AssetsViewer()
             ImGui::TableHeadersRow();
             for (int row = 0; row < this->m_currentSave->registeredPackages.size(); row++)
             {
-                ImGui::TableNextRow();
-                for (int column = 0; column < 4; column++)
-                {
-                    ImGui::TableSetColumnIndex(column);
                          auto it = std::find_if(this->host->packages.begin(), this->host->packages.end(),
                                                [&](const std::shared_ptr<VxPackage> &obj)
                                                { return compareLabels(obj, this->m_currentSave->registeredPackages[row].first); });
 
                         std::shared_ptr<VxPackage> currentPackage = *it;
 
+                ImGui::TableNextRow();
+                for (int column = 0; column < 4; column++)
+                {
+                    ImGui::TableSetColumnIndex(column);
                     if (column == 0)
                     {
                         if (it != this->host->packages.end())
                         {
 
-                            if (ImGui::ImageButtonWithText(packageIcon, "Open", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+                            if (ImGui::ImageButtonWithText(packageIcon, currentPackage->name.c_str(), ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
                             {
+                                std::cout << "Opening " << currentPackage->name << std::endl;
 							    std::shared_ptr<PackageInstance> instance = std::make_shared<PackageInstance>(m_ctx, currentPackage);
 							    this->factory->SpawnInstance(instance);	
                             }

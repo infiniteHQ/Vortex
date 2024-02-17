@@ -10,10 +10,13 @@
 
 #include "../../../../vortex.h"
 
+#include "../../../src/instanceFactory.h"
+
 #ifndef PackageInstance_H
 #define PackageInstance_H
 
 using namespace VortexMaker;
+class InstanceFactory;
 
 
 class PackageInstance
@@ -39,7 +42,7 @@ public:
     std::string name;
     VxContext *m_ctx;
     std::shared_ptr<VxPackage> package;
-    //std::shared_ptr<HostSave> m_currentSave;
+    std::shared_ptr<PackageSave> m_currentSave;
     ImGuiID dockspaceID;
 
     std::shared_ptr<Walnut::Image> m_HostIcon;

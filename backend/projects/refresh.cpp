@@ -2,6 +2,113 @@
 #include "../../vortex_internals.h"
 
 
+void VxPackage::Refresh() {
+              nlohmann::json filecontent = VortexMaker::DumpJSON(this->configFilePath);
+          
+
+              this->label = filecontent["package"]["label"].get<std::string>();
+              this->fileName = filecontent["package"]["filename"].get<std::string>();
+              this->description = filecontent["package"]["description"].get<std::string>();
+              this->name = filecontent["package"]["name"].get<std::string>();
+              this->compressed = filecontent["package"]["compressed"].get<std::string>();
+              this->priority = filecontent["package"]["priority"].get<int>();
+              this->useChroot = false;
+              try{
+                this->useChroot = filecontent["parameters"]["useChroot"].get<bool>();
+              }
+              catch(std::exception e){e.what();};
+
+              this->compilation.useCompilationOptimization = filecontent["parameters"]["useCompilationOptimization"].get<bool>();
+              this->compilation.exclusiveCustomCompilationProcess = filecontent["parameters"]["useOnlyCustomCompilationProcess"].get<std::string>();
+              this->compilation.exclusiveCustomConfigProcess = filecontent["parameters"]["useOnlyCustomConfigurationProcess"].get<std::string>();
+              this->compilation.exclusiveCustomInstallationProcess = filecontent["parameters"]["useOnlyCustomInstallationProcess"].get<std::string>();
+
+              for (auto arch : filecontent["package"]["target_archs"])
+              {
+                this->archs.push_back(arch);
+              }
+
+              for (auto configSuffixes : filecontent["compilation"]["configurationSuffixes"])
+              {
+                for (auto it = configSuffixes.begin(); it != configSuffixes.end(); ++it)
+                {
+                  this->compilation.configurationSuffixes.emplace_back(it.key(), it.value());
+                }
+              }
+
+
+              this->actions.clear();
+              for (auto action : filecontent["actions"])
+              {
+                if (action["type"].get<std::string>() == "command")
+                {
+                  std::shared_ptr<VXPackage_Action> newAction = std::make_shared<VXPackage_Action>();
+                  newAction->type = action["type"].get<std::string>();
+                  newAction->priority = action["priority"].get<int>();
+                  newAction->executionSequence = action["sequence"].get<std::string>();
+                  newAction->command = action["command"].get<std::string>();
+                  this->actions.push_back(newAction);
+                }
+              }
+
+              std::sort(this->actions.begin(), this->actions.end(), [](const std::shared_ptr<VXPackage_Action> &a, const std::shared_ptr<VXPackage_Action> &b)
+                        { return a->priority < b->priority; });
+
+              this->compilation.installationSuffixes.clear();
+              for (auto installSuffixes : filecontent["compilation"]["installationSuffixes"])
+              {
+                for (auto it = installSuffixes.begin(); it != installSuffixes.end(); ++it)
+                {
+                  this->compilation.installationSuffixes.emplace_back(it.key(), it.value());
+                }
+              }
+
+              this->compilation.configurationSuffixes.clear();
+              for (auto configurationSuffixes : filecontent["compilation"]["configurationSuffixes"])
+              {
+                for (auto it = configurationSuffixes.begin(); it != configurationSuffixes.end(); ++it)
+                {
+                  this->compilation.configurationSuffixes.emplace_back(it.key(), it.value());
+                }
+              }
+
+              this->compilation.compilationSuffixes.clear();
+              for (auto compileSuffixes : filecontent["compilation"]["compilationSuffixes"])
+              {
+                for (auto it = compileSuffixes.begin(); it != compileSuffixes.end(); ++it)
+                {
+                  this->compilation.compilationSuffixes.emplace_back(it.key(), it.value());
+                }
+              }
+
+              this->compilation.configurationPrefixes.clear();
+              for (auto configurationPrefixes : filecontent["compilation"]["configurationParameters"])
+              {
+                for (auto it = configurationPrefixes.begin(); it != configurationPrefixes.end(); ++it)
+                {
+                  this->compilation.configurationPrefixes.emplace_back(it.key(), it.value());
+                }
+              }
+
+              this->compilation.installationPrefixes.clear();
+              for (auto installationPrefixes : filecontent["compilation"]["installationParameters"])
+              {
+                for (auto it = installationPrefixes.begin(); it != installationPrefixes.end(); ++it)
+                {
+                  this->compilation.installationPrefixes.emplace_back(it.key(), it.value());
+                }
+              }
+
+              this->compilation.compilationPrefixes.clear();
+              for (auto compilationPrefixes : filecontent["compilation"]["compilationParameters"])
+              {
+                for (auto it = compilationPrefixes.begin(); it != compilationPrefixes.end(); ++it)
+                {
+                  this->compilation.compilationPrefixes.emplace_back(it.key(), it.value());
+                }
+              }
+}
+
 void VxHost::Refresh()
 {
     nlohmann::json toolchainData = VortexMaker::DumpJSON(this->configFilePath);

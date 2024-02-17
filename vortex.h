@@ -518,14 +518,14 @@ struct VxPackageCompilation{
     std::vector<std::pair<std::string, std::string>> compilationParams; // previous command' parameters
     std::vector<std::pair<std::string, std::string>> installationParams; // previous command' parameters
 
+    std::vector<std::pair<std::string, std::string>> configurationPrefixes;
     std::vector<std::pair<std::string, std::string>> configurationSuffixes;
-    std::vector<std::pair<std::string, std::string>> configurationParameters;
 
+    std::vector<std::pair<std::string, std::string>> compilationPrefixes;
     std::vector<std::pair<std::string, std::string>> compilationSuffixes;
-    std::vector<std::pair<std::string, std::string>> compilationParameters;
 
+    std::vector<std::pair<std::string, std::string>> installationPrefixes;
     std::vector<std::pair<std::string, std::string>> installationSuffixes;
-    std::vector<std::pair<std::string, std::string>> installationParameters;
 
     // Configuration Commands
     std::string customConfigurationProcess = "not specified"; // Customized configuration processus
@@ -549,14 +549,64 @@ struct VxDiag{
     int code;
 };
 
-struct VxPackage{
+struct PackageActionSave{
+    char type[128] = "unknow";
+    int  priority = -1;
+    char sequence[128] = "unknow";
+    char command[128] = "unknow";
+};
 
+struct PackageSave{ 
+    char name[128] = "unknow";
+    char label[128] = "unknow";
+    char author[128] = "unknow";
+    char version[128] = "unknow";
+    char description[128] = "unknow";
+
+    int priority = -1;
+    char compressed[128] = "unknow";
+    
+    // Change to a list of files 
+    char filename[128] = "unknow";
+
+    // Configuration
+    bool useCompilationOptimization = true;
+    char useOnlyCustomConfigurationProcess[128] = "unknow";
+    char useOnlyCustomCompilationProcess[128] = "unknow";
+    char useOnlyCustomInstallationProcess[128] = "unknow";
+
+    // Les actions devront être des composants a part, non présents dans 
+    std::vector<char[128]> compatibleArchitecture;
+    
+    std::vector<std::pair<char[128], char[128]>> configurationPrefixes;
+    std::vector<std::pair<char[128], char[128]>> configurationSuffixes;
+    std::string configurationExclusiveCommand;
+
+    std::vector<std::pair<char[128], char[128]>> compilationPrefixes;
+    std::vector<std::pair<char[128], char[128]>> compilationSuffixes;
+    std::string compilationExclusiveCommand;
+
+    std::vector<std::pair<char[128], char[128]>> installationPrefixes;
+    std::vector<std::pair<char[128], char[128]>> installationSuffixes;
+    std::string installationExclusiveCommand;
+
+    std::vector<PackageActionSave> actions;
+
+
+};
+
+
+struct VxPackage{
     std::string name = "unknow"; // Proper name of the package
+    std::string author = "unknow"; // Proper name of the package
+    std::string description = "unknow";  // Short description of the package
+    std::string configFilePath = "unknow";  // Short description of the package
+
+
     std::string path = "unknow"; // Path to package
     std::string distPath = "unknow"; // Path to package
     std::string fileName = "unknow"; // Path to package
     std::string compressed = "unknow"; // Path to package
-    std::string description = "unknow";  // Short description of the package
     std::string label = "unknow"; // Dedicated package name (unique)
     std::string format = "unknow"; // Format of the package
     int         priority = -1;  // Priority of process when the package is in a queue
@@ -575,6 +625,9 @@ struct VxPackage{
     std::unordered_map<std::string, std::shared_ptr<VxDiag>> diags;
 
     hVector<std::shared_ptr<VXPackage_Action>> actions;
+
+    void PushSave(std::shared_ptr<PackageSave> save);
+    void Refresh();
 
     void ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package);
 
