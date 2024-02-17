@@ -67,36 +67,18 @@ class Instance : public InstanceFactory {
 
   void UnspawnInstance(std::shared_ptr<PackageInstance> instance) override {
     std::string instanceName = instance->name;
-    packageInstances.erase(
-        std::remove_if(packageInstances.begin(), packageInstances.end(),
-            [&instanceName](const std::shared_ptr<PackageInstance>& p) {
-                return p->name == instanceName;
-            }),
-        packageInstances.end()
-    );
+    instance = nullptr;
   };
 
   void UnspawnInstance(std::shared_ptr<HostInstance> instance) override {
     std::string instanceName = instance->name;
-    hostInstances.erase(
-        std::remove_if(hostInstances.begin(), hostInstances.end(),
-            [&instanceName](const std::shared_ptr<HostInstance>& p) {
-                return p->name == instanceName;
-            }),
-        hostInstances.end()
-    );
+    instance = nullptr;
   };
 
 
   void UnspawnInstance(std::shared_ptr<ToolchainInstance> instance) override {
     std::string instanceName = instance->name;
-    toolchainInstances.erase(
-        std::remove_if(toolchainInstances.begin(), toolchainInstances.end(),
-            [&instanceName](const std::shared_ptr<ToolchainInstance>& p) {
-                return p->name == instanceName;
-            }),
-        toolchainInstances.end()
-    );
+    instance = nullptr;
   };
 
 
