@@ -84,7 +84,7 @@ void PackageInstance::close()
 
 std::string PackageInstance::render()
 {
-    if (this->opened) // HHHHERRRER
+    if (this->opened)
     {
 
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -93,6 +93,7 @@ std::string PackageInstance::render()
         static ImGuiIO &io = ImGui::GetIO();
 
         // Mainwindow with dockspace
+
         if (ImGui::Begin(name.c_str(), &packageIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         {
             static ImGuiWindow *window = ImGui::GetCurrentWindow();

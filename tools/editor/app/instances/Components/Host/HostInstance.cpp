@@ -150,29 +150,20 @@ void HostInstance::menubar()
 
         if (ImGui::BeginMenu("Pannels"))
         {
-            if (ImGui::MenuItem("Main Settings", NULL, &this->show_UI_MainSettings))
+            if (ImGui::MenuItem("Settings", "Main settings of this host", &this->show_UI_MainSettings))
             {
             }
-            if (ImGui::MenuItem("Assets Viewer", NULL, &this->show_UI_AssetsViewer))
+            if (ImGui::MenuItem("Assets", "All contents registered in the host", &this->show_UI_AssetsViewer))
             {
             }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Tools"))
         {
-            if (ImGui::MenuItem("Contents Window"))
+            if (ImGui::MenuItem("Snapshots", "All saves of this host"))
             {
             }
-            if (ImGui::MenuItem("Contents Window"))
-            {
-            }
-            if (ImGui::MenuItem("Contents Window"))
-            {
-            }
-            if (ImGui::MenuItem("Contents Window"))
-            {
-            }
-            if (ImGui::MenuItem("Contents Window"))
+            if (ImGui::MenuItem("Build Optimisations", "Optimize the build process"))
             {
             }
             ImGui::EndMenu();
@@ -180,6 +171,15 @@ void HostInstance::menubar()
         ImGui::Separator();
         if (ImGui::BeginMenu("Build"))
         {
+            if (ImGui::MenuItem("Tasks Editor", "Edit tasks of build processus"))
+            {
+            }
+            if (ImGui::MenuItem("Auto Build", "Build from task lists"))
+            {
+            }
+            if (ImGui::MenuItem("Manual Build", "Builds tasks or components manually"))
+            {
+            }
             if (ImGui::MenuItem("Full Build", NULL, &this->show_UI_FullBuild))
             {
             }
@@ -190,20 +190,10 @@ void HostInstance::menubar()
         }
         if (ImGui::BeginMenu("Debug"))
         {
-            if (ImGui::MenuItem("Parameters window", NULL, &this->show_UI_ParametersWindow))
+            if (ImGui::MenuItem("Test Window", "Test host, compilers & binaries"))
             {
             }
-            if (ImGui::MenuItem("Content window", NULL, &this->show_UI_ContentWindow))
-            {
-            }
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Preview"))
-        {
-            if (ImGui::MenuItem("Build/Rebuild single parts", NULL, &this->show_UI_ContentWindow))
-            {
-            }
-            if (ImGui::MenuItem("Global build"))
+            if (ImGui::MenuItem("Chroot", "Start a chroot environment"))
             {
             }
             ImGui::EndMenu();
@@ -212,9 +202,9 @@ void HostInstance::menubar()
         ImGui::Separator();
 
         if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
-        {
-            // Save behavior
-        }
+        {  
+            ImGui::OpenPopup("Delete?");
+        }        
         if (ImGui::Button("Preview"))
         {
         }
@@ -229,6 +219,32 @@ void HostInstance::menubar()
         {
             this->close();
         }
+        if (ImGui::BeginPopupModal("Delete?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Get content");
+            ImGui::Separator();
+
+            ImGui::Text("Create Basic Component");
+            ImGui::Separator();
+
+            ImGui::Text("Create Advanced Component");
+            ImGui::Separator();
+
+            //static int unused_i = 0;
+            //ImGui::Combo("Combo", &unused_i, "Delete\0Delete harder\0");
+
+            static bool dont_ask_me_next_time = false;
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+            ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
+            ImGui::PopStyleVar();
+
+            if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+            ImGui::EndPopup();
+        }
+
         ImGui::EndMenuBar();
     }
 }

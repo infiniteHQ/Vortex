@@ -56,7 +56,7 @@ void PackageInstance::UI_CompilationArguments()
 
         if (ImGui::BeginTable("table", 3, flags))
         {
-            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Add a new argument", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableHeadersRow();
@@ -302,14 +302,14 @@ void PackageInstance::UI_CompilationArguments()
                         }
                         if (column == 1)
                         {
-                            std::string label = "When ";
+                            std::string label = "###" + std::to_string(row) + "-" + std::to_string(column) + "-when";
                             label += std::to_string(row);
                             ImGui::InputText(label.c_str(), this->m_currentSave->configurationPrefixes[row].first, 128);
                         }
 
                         if (column == 2)
                         {
-                            std::string label = "Arg ";
+                            std::string label = "###" + std::to_string(row) + "-" + std::to_string(column) + "-arg";
                             label += std::to_string(row);
                             ImGui::InputText(label.c_str(), m_currentSave->configurationPrefixes[row].second, 128);
                         }
@@ -331,22 +331,21 @@ void PackageInstance::UI_CompilationArguments()
                         {
                             if (ImGui::ImageButtonWithText(trashIcon, deleteButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                             {
-                                std::cout << "sfdljkhj" << std::endl;
-                                std::swap(this->m_currentSave->configurationPrefixes[row], this->m_currentSave->configurationSuffixes.back());
-                                this->m_currentSave->configurationPrefixes.pop_back();
+                                std::swap(this->m_currentSave->configurationSuffixes[row], this->m_currentSave->configurationSuffixes.back());
+                                this->m_currentSave->configurationSuffixes.pop_back();
                             }
                         }
 
                         if (column == 1)
                         {
-                            std::string label = "When ";
+                            std::string label = "###" + std::to_string(row) + "-" + std::to_string(column) + "-when";
                             label += std::to_string(row);
                             ImGui::InputText(label.c_str(), this->m_currentSave->configurationSuffixes[row].first, 128);
                         }
 
                         if (column == 2)
                         {
-                            std::string label = "Arg ";
+                            std::string label = "###" + std::to_string(row) + "-" + std::to_string(column) + "-arg";
                             label += std::to_string(row);
                             ImGui::InputText(label.c_str(), m_currentSave->configurationSuffixes[row].second, 128);
                         }

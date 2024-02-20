@@ -208,12 +208,13 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
     }
 
     if (ImGui::BeginMenu("Tools")) {
-      if (ImGui::MenuItem("Content Browser", NULL, &exampleLayer->ShowContentBrowser))
-        {
-        }
-      if (ImGui::MenuItem("Project Viewer", NULL, &exampleLayer->ShowProjectViewer))
-        {
-        }
+
+            if (ImGui::MenuItem("Content Browser", "Project file manager", &exampleLayer->ShowContentBrowser))
+            {
+            }
+            if (ImGui::MenuItem("Project Viewer", "Project component manager", &exampleLayer->ShowProjectViewer))
+            {
+            }
       ImGui::EndMenu();
     }
 

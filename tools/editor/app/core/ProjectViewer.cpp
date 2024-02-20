@@ -62,6 +62,7 @@ void ProjectViewer::menubar(){
                     }
                     ImGui::EndMenu();
                 }
+                
                 ImGui::EndMenuBar();
             }
             

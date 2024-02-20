@@ -711,6 +711,19 @@ struct HostSave{
 
 };
 
+struct VxHostTask{
+    std::string label;
+    int priority;
+    std::string type; // package_compilation, package_installation (if package_compilation = execution de la série de fonction lié à la compilation)
+};
+
+struct VxHostTaskManager{
+    int taskState;
+    // returns
+    // time created
+};
+
+
 struct VxHost{
     // Vortex project informations
     std::string name;
@@ -751,13 +764,61 @@ struct VxHost{
     void Refresh();
     void PushSave(std::shared_ptr<HostSave> save);
 
+
+    int ExecuteCmdInChroot(std::string cmd);
+
+    // Pareil pour les toolchains, découper en plein de fonctions
+    ////////////////// OLD //////////////////////////
+    void PreBuild();
+
+
+    ////////////////////////// Host Manipulation ////////////////////////////////
     void RegisterPackage(const std::string label,const std::string emplacemement);
     void FindPackages();
 
-    void PreBuild();
+    /////////////////////////////////////////////////////////////////////////////
+
+    ////////////////// Build Environment Manipulations //////////////////////////
+    // - MakeSnapshot();                Prendre un snapshot de l'ancien system
+    void MakeSnapshot(std::string label);
+
+    // - MakeDistSnapshot();            Prendre un snapshot de l'ancien system en tant que système pret a la production
+    void MakeDistSnapshot(std::string label);
+
+    // - RetakeSnapshot();              Retake a old saved snapshot, and put it as current system to work 
+    void RetakeSnapshot(std::string snapshot_label);
+
+    // - CleanBuildEnvironment();       Si ancien system présent, le suprimmer et recréer un environment de base
+    void CleanBuildEnvironment();
+
+    // - MovePackagesToDist();          Envoyer tout les paquets dans l'environement de construction
+    void MovePackagesToDist();
+
+    // - MovePackagesToDist();          Envoyer tout les paquets dans l'environement de construction
+    void MovePackageToDist(std::string package_label);
+
+    // - DeployBuildUser();             Crée un utilisateur avec un environment de construction dédié (vortex)
+    void DeployBuildUser();
+
+    // - DeployBuildUser();             Delete vortex user
+    void DestroyBuildUser();
+
+    /////////////////////////////////////////////////////////////////////////////
+
+    // - CreateBuildTasks(); (with end-flags)
+
+
     void Build();
+    // Decouper en :
+    // (Main) NextTaskEvent();
+    // BuildPackage();
+    // ExecuteAction();
+    // ExecuteScript();
+
     void PostBuild();
-    int ExecuteCmdInChroot(std::string cmd);
+    // MakeDistSnapshot(); (with host.dist.config)
+    // CleanBuildEnvironment();  (same as PreBuild())
+
 
 };
 
