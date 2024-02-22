@@ -23,6 +23,7 @@ class HostInstance
 {
 public:
     HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, InstanceFactory* factory);
+    ~HostInstance(){this->receiveThread.join();}
 
     // Content Managment 
     void Refresh();
@@ -38,6 +39,8 @@ public:
     void UI_ParametersWindow();
     void UI_MainSettings();
     void UI_FullBuild();
+    void UI_SnapshotUtility();
+    void UI_CurrentHostPreview();
 
     bool opened;
     bool show_UI_ContentWindow = false;
@@ -45,8 +48,11 @@ public:
     bool show_UI_AssetsViewer = false;
     bool show_UI_MainSettings = false;
     bool show_UI_FullBuild = false;
+    bool show_UI_SnapshotUtility = false;
+    bool show_UI_CurrentHostPreview = false;
 
-    
+    std::thread receiveThread;
+
     InstanceFactory* factory;
 
     std::string name;
@@ -57,6 +63,7 @@ public:
 
     std::shared_ptr<Walnut::Image> m_HostIcon;
     std::shared_ptr<Walnut::Image> m_Icon;
+    std::shared_ptr<Walnut::Image> m_EyeIcon;
     std::shared_ptr<Walnut::Image> m_SaveIcon;
     std::shared_ptr<Walnut::Image> m_RefreshIcon;
     std::shared_ptr<Walnut::Image> m_DatabaseIcon;

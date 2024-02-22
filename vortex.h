@@ -724,6 +724,48 @@ struct VxHostTaskManager{
 };
 
 
+struct VxPackageReport{
+    std::string label;
+    std::string source;
+    std::string taskID;
+    std::string sizeImpact;
+
+    std::string result;
+    std::string state; 
+    std::string report;
+};
+
+struct VxActionReport{
+    std::string actionType;
+
+    std::string label;
+    std::string result;
+    std::string state;
+    std::string report;
+};
+
+struct VxHostCurrentSystem{
+    std::string lastUpdate;
+    std::string size;
+
+    std::vector<VxPackageReport> packageReports;
+    std::vector<VxActionReport> actionReports;
+
+    void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
+    void PushSize(std::string newsize){this->size = newsize;};
+
+    void PopulateFromFile(nlohmann::json jsonData); // from working_host.config
+    nlohmann::json ExtractJson();
+};
+
+struct VxHostSnapshot{
+    std::string date;
+    std::string name;
+
+    VxHostCurrentSystem snapshotSystem; // to import from 
+};
+
+// Task list, uniquement ici, pour les snapshots, possibilité de reprendre la task list, et de reasseyer tout les précédents echecs
 struct VxHost{
     // Vortex project informations
     std::string name;
@@ -756,13 +798,25 @@ struct VxHost{
     std::string builderTriplet          = "not specified";
     std::string targetTriplet           = "not specified";
 
+    std::string path_hostroot;
+    std::string path_hostfactory;
+    std::string path_hostsnapshots;
+
     std::string GetTriplet(std::string triplet_type);
 
     hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
     hVector<std::shared_ptr<VxPackage>> packages;
+    std::vector<VxHostSnapshot> snapshots;
 
+    VxHostCurrentSystem currentLoadedSystem;
+
+    void Init();
     void Refresh();
+    void RefreshSnapshots();
+    void RefreshCurrentWorkingHost();
     void PushSave(std::shared_ptr<HostSave> save);
+
+
 
 
     int ExecuteCmdInChroot(std::string cmd);
@@ -806,6 +860,9 @@ struct VxHost{
     /////////////////////////////////////////////////////////////////////////////
 
     // - CreateBuildTasks(); (with end-flags)
+    void AddTask();
+    void RemoveTask();
+
 
 
     void Build();

@@ -18,6 +18,12 @@ HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, Instan
     }
     {
         uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_eye, icons::i_eye_size, w, h);
+        m_EyeIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
         void *data = Walnut::Image::Decode(icons::i_add, icons::i_add_size, w, h);
         m_AddIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
         free(data);
@@ -116,6 +122,8 @@ std::string HostInstance::render()
         this->UI_MainSettings();
         this->UI_AssetsViewer();
         this->UI_FullBuild();
+        this->UI_SnapshotUtility();
+        this->UI_CurrentHostPreview();
 
         return "rendering";
     }
@@ -135,6 +143,7 @@ void HostInstance::menubar()
         static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID folderIcon = this->m_FolderIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID settingsIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID eyeIcon = this->m_EyeIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         if (ImGui::ImageButtonWithText(saveIcon, "Save All", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
         {
@@ -160,7 +169,7 @@ void HostInstance::menubar()
         }
         if (ImGui::BeginMenu("Tools"))
         {
-            if (ImGui::MenuItem("Snapshots", "All saves of this host"))
+            if (ImGui::MenuItem("Snapshots", "All saves of this host", &this->show_UI_SnapshotUtility))
             {
             }
             if (ImGui::MenuItem("Build Optimisations", "Optimize the build process"))
@@ -204,10 +213,12 @@ void HostInstance::menubar()
         if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
         {  
             ImGui::OpenPopup("Delete?");
+        }       
+
+        if (ImGui::ImageButtonWithText(eyeIcon, "Preview", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+        {  
+            this->show_UI_CurrentHostPreview = !this->show_UI_CurrentHostPreview;
         }        
-        if (ImGui::Button("Preview"))
-        {
-        }
         ImGui::Separator();
 
         if (ImGui::ImageButtonWithText(settingsIcon, "Settings", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight())))

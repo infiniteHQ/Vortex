@@ -15,6 +15,7 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_prebuild.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_build.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_postbuild.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_snapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_findpackages.cpp
 

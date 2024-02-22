@@ -1,6 +1,19 @@
 #include "../../../vortex.h"
 #include "../../../vortex_internals.h"
 
+// Functions
+
+//(A la fin de chaques tasks, créer un report dans le working_host.config)
+
+// DeploySkeleton
+// ExecuteTask
+
+    // Decouper en :
+    // (Main) NextTaskEvent();
+    // BuildPackage();
+    // ExecuteAction();
+    // ExecuteScript();
+
 void VxHost::Build()
 {
 

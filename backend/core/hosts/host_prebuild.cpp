@@ -1,6 +1,56 @@
 #include "../../../vortex.h"
 #include "../../../vortex_internals.h"
 
+void VxHost::Init()
+{
+  VxContext &ctx = *CVortexMaker;
+  std::string envPath = ctx.projectPath / ctx.paths.hostDistFolder;
+
+  this->targetTriplet = this->GetTriplet("target");
+  this->builderTriplet = this->GetTriplet("builder");
+  this->hostTriplet = this->GetTriplet("host");
+
+  std::string baseDir = envPath + "/" + this->name;
+  if (mkdir(baseDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  std::string crosstoolsDir = baseDir + "/" + "working_host";
+  if (mkdir(crosstoolsDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  std::string snapshotsDir = baseDir + "/" + "snapshots";
+  if (mkdir(snapshotsDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  std::string factory = baseDir + "/factory";
+  if (mkdir(factory.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  std::string packages_data = baseDir + "/factory/packages";
+  if (mkdir(packages_data.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  std::string patchs_data = baseDir + "/factory/patchs";
+  if (mkdir(patchs_data.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  std::string scripts_data = baseDir + "/factory/scripts";
+  if (mkdir(scripts_data.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  std::string toolchain_data = baseDir + "/factory/toolchains";
+  if (mkdir(toolchain_data.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+
+
+  // Apply skeleton of host (when prebuild)
+  std::string usrDir = crosstoolsDir + "/usr";
+  if (mkdir(usrDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  std::string usrLibDir = usrDir + "/lib";
+  if (mkdir(usrLibDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+
+
+  this->path_hostroot = crosstoolsDir;
+  this->path_hostsnapshots = snapshotsDir;
+  this->path_hostfactory = factory;
+
+}
+
 void VxHost::PreBuild()
 {
   VxContext &ctx = *CVortexMaker;
