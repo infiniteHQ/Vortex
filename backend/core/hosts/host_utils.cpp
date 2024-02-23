@@ -1,6 +1,47 @@
 #include "../../../vortex.h"
 #include "../../../vortex_internals.h"
 
+void VxHost::ExecuteTask(VxHostTask t, hArgs args){
+
+
+  // Creaate Task Report
+  std::shared_ptr<VxHostTaskReport> report = std::make_shared<VxHostTaskReport>();
+  this->currentLoadedSystem.reports.push_back(report);
+
+  report->parent = t;
+  report->state = "execution";
+  
+
+  if(t.task == "fullBuildPackage"){
+    std::shared_ptr<VxPackage> package = args.get<std::shared_ptr<VxPackage>>("pacakge", nullptr);
+    // PreparePackage
+    // ConfigurePackage
+    // CompilePackage
+    // install package
+
+  }
+  else if(t.task == "testpackage"){
+    report->parent.uniqueID = report->parent.component + "-testpackage";
+    report->state = "finish";
+    report->description = "Everything is ok";
+    report->result = "success";
+
+  }
+  else if(t.task == "test"){
+    report->state = "finish";
+    report->description = "Everything is ok";
+    report->result = "success";
+
+  }
+  else{
+    //custom task...
+  }
+
+
+  // Update working_host.config with this report (for future initialization)
+}
+
+
 void VxHost::RegisterPackage(const std::string label, const std::string emplacemement)
 {
   std::shared_ptr<VxPackageInterface> newPackageInterface = std::make_shared<VxPackageInterface>();

@@ -8,7 +8,7 @@ void TasklistInstance::UI_MainSettings()
     if (this->show_UI_MainSettings)
     {
 
-        static std::string label = this->name + " - Main Settings";
+        static std::string label = this->name + " - Main Settings###" +  this->name;
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);    

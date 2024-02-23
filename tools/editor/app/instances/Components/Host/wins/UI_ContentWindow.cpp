@@ -5,7 +5,7 @@ void HostInstance::UI_ContentWindow()
     if (this->show_UI_ContentWindow)
     {
 
-        static std::string label = this->name + " - Content Window";
+        static std::string label = this->name + " - Content Window###" +  this->name + "contentwindow";
         ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_FirstUseEver);
         if (ImGui::Begin(label.c_str()))
         {

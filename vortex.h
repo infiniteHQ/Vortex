@@ -218,7 +218,7 @@ namespace VortexMaker
 
     bool                        DebugCheckVersionAndDataLayout(const char* version);
 
-    VORTEX_API void             ExecuteAction(std::string task, hArgs args);
+    VORTEX_API void             ExecuteTask(std::string task, hArgs args);
 
     VORTEX_API void             MoveAllContent();
     VORTEX_API void             CopyAllContent();
@@ -731,6 +731,7 @@ struct HostSave{
 
 struct VxHostTask{
     std::string task;
+    std::string uniqueID; // to find this task from everywhere
     int priority;
     std::string component; // package_compilation, package_installation (if package_compilation = execution de la série de fonction lié à la compilation)
 };
@@ -747,6 +748,15 @@ struct VxPackageReport{
     std::string report;
 };
 
+struct VxHostTaskReport{
+    VxHostTask parent;
+    std::string state;
+    std::string date;
+    std::string time;
+    std::string result;
+    std::string description;
+};
+
 struct VxActionReport{
     std::string actionType;
 
@@ -759,6 +769,8 @@ struct VxActionReport{
 struct VxHostCurrentSystem{
     std::string lastUpdate;
     std::string size;
+
+    std::vector<std::shared_ptr<VxHostTaskReport>> reports;
 
     std::vector<VxPackageReport> packageReports;
     std::vector<VxActionReport> actionReports;
@@ -844,6 +856,7 @@ struct VxHost{
     void RefreshCurrentWorkingHost();
     void PushSave(std::shared_ptr<HostSave> save);
 
+    void ExecuteTask(VxHostTask task, hArgs args);
 
 
 

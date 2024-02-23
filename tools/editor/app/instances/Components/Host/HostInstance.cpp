@@ -188,6 +188,9 @@ void HostInstance::menubar()
         }
         if (ImGui::BeginMenu("Tools"))
         {
+            if (ImGui::MenuItem("Tasks Editor", "Edit tasks of build processus", &this->show_UI_TasksEditor))
+            {
+            }
             if (ImGui::MenuItem("Snapshots", "All saves of this host", &this->show_UI_SnapshotUtility))
             {
             }
@@ -199,9 +202,6 @@ void HostInstance::menubar()
         ImGui::Separator();
         if (ImGui::BeginMenu("Build"))
         {
-            if (ImGui::MenuItem("Tasks Editor", "Edit tasks of build processus", &this->show_UI_TasksEditor))
-            {
-            }
             if (ImGui::MenuItem("Auto Build", "Build from task lists"))
             {
             }

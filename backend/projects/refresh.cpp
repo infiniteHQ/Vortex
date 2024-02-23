@@ -198,13 +198,20 @@ nlohmann::json VxHostCurrentSystem::ExtractJson()
   jsonData["packagesReportsList"] = nlohmann::json::array();
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
-  for (auto actionReport : this->packageReports)
+  for (auto reports : this->reports)
   {
     nlohmann::json report;
-    report["label"] = actionReport.label;
-    report["report"] = actionReport.report;
-    report["result"] = actionReport.result;
-    report["state"] = actionReport.state;
+    report["t_id"] = reports->parent.uniqueID;
+    report["t_priority"] = reports->parent.priority;
+    report["t_task"] = reports->parent.task;
+    report["t_component"] = reports->parent.component;
+
+    report["r_description"] = reports->description;
+    report["r_result"] = reports->result;
+    report["r_state"] = reports->state;
+    report["r_date"] = reports->date;
+    report["r_time"] = reports->time;
+
     jsonData["packagesReportsList"].push_back(report);
   }
 }
