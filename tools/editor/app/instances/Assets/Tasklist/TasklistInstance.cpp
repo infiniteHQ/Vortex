@@ -2,10 +2,11 @@
 
 using namespace VortexMaker;
 
-TasklistInstance::TasklistInstance(VxContext *ctx, std::shared_ptr<TaskList> t)
+TasklistInstance::TasklistInstance(VxContext *ctx, std::shared_ptr<TaskList> t, std::shared_ptr<VxHost> host)
 {
     this->m_ctx = ctx;
     this->tasklist = t;
+    this->parentHost = host;
 
     this->Refresh();
 
@@ -93,8 +94,8 @@ std::string TasklistInstance::render()
     if (this->opened)
     {
 
-    static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    static ImTextureID mainicon = this->m_TaskListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID mainicon = this->m_TaskListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         this->dockspaceID = ImGui::GetID(this->name.c_str());
         static ImGuiIO &io = ImGui::GetIO();
 
@@ -124,7 +125,6 @@ std::string TasklistInstance::render()
 
         // All Windows of this instances :
         this->UI_MainSettings();
-
 
         return "rendering";
     }
@@ -162,7 +162,7 @@ void TasklistInstance::menubar()
             }
             ImGui::EndMenu();
         }
-       
+
         ImGui::Separator();
 
         if (ImGui::ImageButtonWithText(settingsIcon, "Settings", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight())))
@@ -180,12 +180,34 @@ void TasklistInstance::menubar()
 
 void TasklistInstance::Refresh()
 {
+
+    this->tasklist->Refresh();
+
+    std::shared_ptr<TaskListSave> refreshedCurrentSave = std::make_shared<TaskListSave>();
     // Refresh host from vortex API
     // Get all vortex infos, store into save struct and save the save struct to current save struct
 
     // TODO: BEFORE ALL, REFRESH API INSTANCE OF THIS HOST
 
- 
+    strncpy(refreshedCurrentSave->label, this->tasklist->label.c_str(), sizeof(refreshedCurrentSave->label));
+    refreshedCurrentSave->label[sizeof(refreshedCurrentSave->label) - 1] = '\0';
+
+    for (auto task : this->tasklist->list)
+    {
+        TaskSave newtask;
+
+        strncpy(newtask.task, task.task.c_str(), sizeof(newtask.task));
+        newtask.task[sizeof(newtask.task) - 1] = '\0';
+
+        strncpy(newtask.component, task.component.c_str(), sizeof(newtask.component));
+        newtask.component[sizeof(newtask.component) - 1] = '\0';
+        
+        newtask.priority = task.priority;
+
+        refreshedCurrentSave->list.push_back(newtask);
+    }
+
+    this->m_currentSave = refreshedCurrentSave;
 }
 
 void TasklistInstance::Save()
@@ -193,5 +215,5 @@ void TasklistInstance::Save()
     // Get currentSave (modified by all UI editors)
     // Set host new host variables with save contents
     // Patch json with native Vortex APi
-    // this->package->PushSave(this->m_currentSave);
+    this->tasklist->PushSave(this->m_currentSave);
 }

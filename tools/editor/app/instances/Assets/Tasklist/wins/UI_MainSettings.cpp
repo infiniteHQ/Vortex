@@ -1,5 +1,6 @@
 #include "../TasklistInstance.h"
-#include <array> 
+#include <array>
+#include <random>
 
 void TasklistInstance::UI_MainSettings()
 {
@@ -7,119 +8,145 @@ void TasklistInstance::UI_MainSettings()
     if (this->show_UI_MainSettings)
     {
 
-        static std::string label = this->name + " - Package Settings###" +  this->name ;
+        static std::string label = this->name + " - Main Settings";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
-        static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-static ImTextureID saveIcon = this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);    
+        static ImTextureID saveIcon = this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID trashIcon = this->m_TrashIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID listIcon = this->m_TaskListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
+        static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         static ImTextureID settingsIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-          ImGui::Begin(label.c_str(), &editIcon, &this->show_UI_MainSettings, ImGuiWindowFlags_MenuBar);
+        ImGui::Begin(label.c_str(), &editIcon, &this->show_UI_MainSettings, ImGuiWindowFlags_MenuBar);
 
-            if (ImGui::BeginMenuBar())
+        static int item_current = 0;
+        if (ImGui::BeginMenuBar())
+        {
+
+            if (ImGui::ImageButtonWithText(saveIcon, "Save", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
             {
+                this->Save();
+            }
+                            if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            {
+                                this->Refresh();
+                            }
 
-                if(ImGui::ImageButtonWithText(saveIcon, "Save", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight()))){
-                    this->Save();
-                }
-                if(ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight()))){
-                    this->Refresh();
-                }
-                
-                const char* items[] = { "Packages", "Scripts", "Patchs", "Automations" };
-            static int item_current = 0;
-            ImGui::Combo("Type", &item_current, items, IM_ARRAYSIZE(items));
-
-                ImGui::Separator();
-                if (ImGui::BeginMenu("Pannels"))
+            ImGui::Separator();
+            if (ImGui::BeginMenu("Pannels"))
+            {
+                if (ImGui::MenuItem("Options Editor"))
                 {
-                    if (ImGui::MenuItem("Options Editor"))
-                    {
-                    }
-                    if (ImGui::MenuItem("Contents Window"))
-                    {
-                    }
-                    ImGui::EndMenu();
                 }
-                ImGui::EndMenuBar();
-
+                if (ImGui::MenuItem("Contents Window"))
+                {
+                }
+                ImGui::EndMenu();
             }
+            ImGui::EndMenuBar();
+        }
 
-  
-        // Left
-        static int selected = 0;
-        static std::array<char[128], 4> labels = {"Project Settings", "Configuration", "Production", "Maintenance"};
+        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-
+        if (ImGui::BeginTable("table", 4, flags))
         {
-            ImGui::BeginChild("left pane", ImVec2(170, 0), true);
-            for (int i = 0; i < labels.size(); i++)
-            {
-                if (ImGui::Selectable(labels[i], selected == i))
-                    selected = i;
-            }
-            ImGui::EndChild();
-        }
-        ImGui::SameLine();
+            ImGui::TableSetupColumn("Add", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableHeadersRow();
 
-            ImGui::Separator();
-        ImGui::SameLine();
+                for (int row = 0; row < 1; row++)
+                {
+                    static TaskSave newtask;
 
-        // Project Settings
-        if(selected == 0){
+                    ImGui::TableNextRow();
+                    for (int column = 0; column < 4; column++)
+                    {
+                        ImGui::TableSetColumnIndex(column);
 
-            ImGui::BeginGroup();
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(9.0f, 9.0f));
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
-            ImGui::Text("Informations");
-            ImGui::Separator();
+                        if (column == 0)
+                        {
+                            if (ImGui::ImageButtonWithText(addIcon, "Create new", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            {
+                                this->m_currentSave->list.push_back(newtask);
+                            }
+                        }
+                        if (column == 1)
+                        {
+                            ImGui::InputText("Task", newtask.task, 128);
+                        }
 
-            ImGui::InputText("Package Name",     this->m_currentSave->name, 128);
-            ImGui::InputText("Package Author",     this->m_currentSave->author, 128);
-            ImGui::InputText("Package Description",     this->m_currentSave->description, 128);
-            ImGui::InputInt("Package Priority",     &this->m_currentSave->priority);
-            ImGui::InputText("Package Compressed",     this->m_currentSave->compressed, 128);
-            ImGui::InputText("Package Filename",     this->m_currentSave->filename, 128);
-            ImGui::InputText("Package Label",     this->m_currentSave->label, 128);
+                        if (column == 2)
+                        {
+                            ImGui::InputText("Component", newtask.component, 128);
+                        }
 
+                        if (column == 3)
+                        {
+                            ImGui::InputInt("Priority", &newtask.priority);
+                        }
+                    }
+                }
 
-            ImGui::PopStyleVar(2);
-            if (ImGui::Button("Revert")) {}
-            ImGui::SameLine();
-            if (ImGui::Button("Save")) {}
-            ImGui::EndGroup();
-
-        }
-
-        if(selected == 1){
-
-            ImGui::BeginGroup();
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(9.0f, 9.0f));
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
-            ImGui::Text("General Informations");
-            ImGui::Separator();
-
-            static char buf1[128] = ""; ImGui::InputText("Deuxiemme",     buf1, 128);
-            static char buf2[128] = ""; ImGui::InputText("Host Author",     buf2, 128);
-            static char buf3[128] = ""; ImGui::InputText("Host Version",     buf3, 128);
-
-            ImGui::PopStyleVar(2);
-            if (ImGui::Button("Revert")) {}
-            ImGui::SameLine();
-            if (ImGui::Button("Save")) {}
-            ImGui::EndGroup();
-
+            ImGui::EndTable();
         }
 
-        // Right
+        if (ImGui::BeginTable("table", 4, flags))
         {
+            ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Component", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Priority", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableHeadersRow();
+
+                for (int row = 0; row < this->m_currentSave->list.size(); row++)
+                {
+                    ImGui::TableNextRow();
+                    for (int column = 0; column < 4; column++)
+                    {
+                        ImGui::TableSetColumnIndex(column);
+                         std::string deleteButtonID = "Delete###" + std::to_string(row) + "-" + std::to_string(column);
+
+
+                        if (column == 0)
+                        {
+                            if (ImGui::ImageButtonWithText(trashIcon, deleteButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            {
+                                std::swap(this->m_currentSave->list[row], this->m_currentSave->list.back());
+                                this->m_currentSave->list.pop_back();
+                            }
+                        }
+                        if (column == 1)
+                        {
+                             std::string label = "###" + std::to_string(row) + "-" + std::to_string(column) + "-task";
+                            label += std::to_string(row);
+                            ImGui::InputText(label.c_str(), m_currentSave->list[row].task, 128);
+                        }
+
+                        if (column == 2)
+                        {
+                             std::string label = "###" + std::to_string(row) + "-" + std::to_string(column) + "-component";
+                            label += std::to_string(row);
+                            ImGui::InputText(label.c_str(), m_currentSave->list[row].component, 128);
+                        }
+                        if (column == 3)
+                        {
+                             std::string label = "###" + std::to_string(row) + "-" + std::to_string(column) + "-priority";
+                            label += std::to_string(row);
+                            ImGui::InputInt(label.c_str(), &m_currentSave->list[row].priority);
+                        }
+                    }
+                }
+            
+
+            ImGui::EndTable();
         }
-        
+
         ImGui::End();
-        }
-
-    
+    }
 }

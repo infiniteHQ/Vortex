@@ -382,4 +382,19 @@ void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> 
   }
 }
 
+
+void ExecuteAction(std::string task, hArgs args){
+  if(task == "fullBuildPackage"){
+    std::shared_ptr<VxPackage> package = args.get<std::shared_ptr<VxPackage>>("pacakge", nullptr);
+    // PreparePackage
+    // ConfigurePackage
+    // CompilePackage
+    // install package
+
+  }
+  else{
+    //custom task...
+  }
+}
+
 #endif // VORTEX_DISABLE

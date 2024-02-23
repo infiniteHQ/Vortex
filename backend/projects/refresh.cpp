@@ -1,6 +1,24 @@
 #include "../../vortex.h"
 #include "../../vortex_internals.h"
 
+void TaskList::Refresh()
+{
+  nlohmann::json filecontent = VortexMaker::DumpJSON(this->configFilePath);
+
+  this->label = filecontent["label"].get<std::string>();
+
+  this->list.clear();
+  nlohmann::json tasks = filecontent["tasks"];
+  for (auto &t : tasks)
+  {
+    VxHostTask task;
+    task.task = t["task"].get<std::string>();
+    task.component = t["component"].get<std::string>();
+    task.priority = t["priority"].get<int>();
+    this->list.push_back(task);
+  }
+}
+
 void VxPackage::Refresh()
 {
   nlohmann::json filecontent = VortexMaker::DumpJSON(this->configFilePath);
@@ -109,8 +127,8 @@ void VxHost::RefreshCurrentWorkingHost()
   this->currentLoadedSystem.PopulateFromFile(data);
 }
 
-
-void VxHost::RefreshSnapshots(){
+void VxHost::RefreshSnapshots()
+{
   this->snapshots.clear();
   // Dist Toolchains
   for (const auto &file : VortexMaker::SearchFiles(this->path_hostsnapshots, "snapshot.config"))
@@ -121,12 +139,11 @@ void VxHost::RefreshSnapshots(){
       VxHostSnapshot newsnapshot;
 
       std::string path = file;
-       size_t position = path.find("/snapshot.config");
-       if (position != std::string::npos)
-       {
+      size_t position = path.find("/snapshot.config");
+      if (position != std::string::npos)
+      {
         path.erase(position, 16);
-       }
-
+      }
 
       newsnapshot.name = filecontent["snapshot"]["name"].get<std::string>();
 
@@ -140,13 +157,12 @@ void VxHost::RefreshSnapshots(){
       std::cerr << "Error : " << e.what() << std::endl;
     }
   }
-
 }
 
 void VxHostCurrentSystem::PopulateFromFile(nlohmann::json jsonData)
 {
   this->size = jsonData["size"].get<std::string>();
-/*
+
   // Get list of tasks
   for (auto task : jsonData["taskList"])
   {
@@ -168,7 +184,7 @@ void VxHostCurrentSystem::PopulateFromFile(nlohmann::json jsonData)
 
   for (auto actionReport : jsonData["actionsReportsList"])
   {
-  }*/
+  }
 
   // Get filesystem informations
 
@@ -182,7 +198,8 @@ nlohmann::json VxHostCurrentSystem::ExtractJson()
   jsonData["packagesReportsList"] = nlohmann::json::array();
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
-  for(auto actionReport : this->packageReports){
+  for (auto actionReport : this->packageReports)
+  {
     nlohmann::json report;
     report["label"] = actionReport.label;
     report["report"] = actionReport.report;
@@ -190,7 +207,6 @@ nlohmann::json VxHostCurrentSystem::ExtractJson()
     report["state"] = actionReport.state;
     jsonData["packagesReportsList"].push_back(report);
   }
-
 }
 
 // TODO : Split to little refresh functions, create a RefreshAll function.
@@ -221,7 +237,6 @@ void VxHost::Refresh()
     this->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
   }
   this->FindPackages();
-
 
   registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];

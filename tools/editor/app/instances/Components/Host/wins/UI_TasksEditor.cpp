@@ -112,11 +112,9 @@ void HostInstance::UI_TasksEditor()
 
                         if (column == 0)
                         {
-                            if (ImGui::ImageButtonWithText(listIcon, openButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            if (ImGui::ImageButtonWithText(trashIcon, openButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                             {
-
-                                std::cout << "Opening " << this->host->tasklists[row]->label << std::endl;
-							    std::shared_ptr<TasklistInstance> instance = std::make_shared<TasklistInstance>(m_ctx, this->host->tasklists[row]);
+							    std::shared_ptr<TasklistInstance> instance = std::make_shared<TasklistInstance>(m_ctx, this->host->tasklists[row], this->host);
 							    this->factory->SpawnInstance(instance);	
                             }
                         }

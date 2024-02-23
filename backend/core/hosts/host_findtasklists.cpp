@@ -35,6 +35,8 @@ void VxHost::FindTasklists()
           {
             std::shared_ptr<TaskList> newTasklist = std::make_shared<TaskList>();
 
+              newTasklist->configFilePath = file;
+
             newTasklist->label = filecontent["label"].get<std::string>();
 
             this->tasks.clear();
@@ -45,7 +47,7 @@ void VxHost::FindTasklists()
               task.task = t["task"].get<std::string>();
               task.component = t["component"].get<std::string>();
               task.priority = t["priority"].get<int>();
-              this->tasks.push_back(task);
+              newTasklist->list.push_back(task);
             }
 
             this->tasklists.push_back(newTasklist);

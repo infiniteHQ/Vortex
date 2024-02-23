@@ -61,6 +61,31 @@ void VxPackage::PushSave(std::shared_ptr<PackageSave> save)
 }
 
 
+void TaskList::PushSave(std::shared_ptr<TaskListSave> save){
+    nlohmann::json data;
+
+    data["label"] = save->label;
+    data["tasks"] = nlohmann::json::array();
+
+    for(auto task : save->list){
+        nlohmann::json t;
+        t["component"] = task.component;
+        t["priority"] = task.priority;
+        t["task"] = task.task;
+        data["tasks"].push_back(t);
+    }
+
+    std::ofstream file(this->configFilePath);
+        if (file.is_open()) {
+            file << std::setw(4) << data << std::endl;
+            std::cout << "Object saved to " << this->configFilePath << std::endl;
+            file.close();
+        } else {
+            std::cerr << "Unable to open file " << this->configFilePath << " for writing!" << std::endl;
+        }
+}
+
+
 void VxHost::PushSave(std::shared_ptr<HostSave> save)
 {
     nlohmann::json toolchainData;

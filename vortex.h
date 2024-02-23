@@ -218,6 +218,7 @@ namespace VortexMaker
 
     bool                        DebugCheckVersionAndDataLayout(const char* version);
 
+    VORTEX_API void             ExecuteAction(std::string task, hArgs args);
 
     VORTEX_API void             MoveAllContent();
     VORTEX_API void             CopyAllContent();
@@ -552,6 +553,20 @@ struct VxDiag{
     int code;
 };
 
+struct TaskSave{
+    char task[128];
+    char component[128];
+    int priority = - 1;
+
+};
+
+struct TaskListSave {
+    char label[128] = "unknow";
+    std::vector<TaskSave> list;
+
+};
+
+
 struct PackageActionSave{
     char type[128] = "unknow";
     int  priority = -1;
@@ -763,8 +778,11 @@ struct VxHostSnapshot{
 };
 
 struct TaskList{
+    std::string configFilePath;
     std::string label;
-    std::vector<VxHostSnapshot> list;
+    std::vector<VxHostTask> list;
+    void Refresh();
+    void PushSave(std::shared_ptr<TaskListSave> save);
 };
 
 // Task list, uniquement ici, pour les snapshots, possibilité de reprendre la task list, et de reasseyer tout les précédents echecs

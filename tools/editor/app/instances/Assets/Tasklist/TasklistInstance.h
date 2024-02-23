@@ -10,7 +10,6 @@
 
 #include "../../../../vortex.h"
 
-
 #include "../../../src/instanceFactory.h"
 
 #ifndef TasklistInstance_H
@@ -24,7 +23,7 @@ class InstanceFactory;
 class TasklistInstance
 {
 public:
-    TasklistInstance(VxContext *ctx, std::shared_ptr<TaskList> t); // parent host
+    TasklistInstance(VxContext *ctx, std::shared_ptr<TaskList> t, std::shared_ptr<VxHost> parentHost);
 
     // Content Managment 
     void Refresh();
@@ -38,14 +37,15 @@ public:
     void UI_MainSettings();
 
     bool opened;
-    bool show_UI_MainSettings = false;
+    bool show_UI_MainSettings = true;
 
 
     std::string name;
     VxContext *m_ctx;
     std::shared_ptr<TaskList> tasklist;
-    std::shared_ptr<PackageSave> m_currentSave;
+    std::shared_ptr<TaskListSave> m_currentSave;
     ImGuiID dockspaceID;
+    std::shared_ptr<VxHost> parentHost;
 
     std::shared_ptr<Walnut::Image> m_HostIcon;
     std::shared_ptr<Walnut::Image> m_Icon;
