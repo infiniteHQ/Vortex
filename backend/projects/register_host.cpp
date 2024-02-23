@@ -28,6 +28,14 @@ bool VortexMaker::RegisterHost(std::shared_ptr<VxHost> host, nlohmann::json tool
   }
   host->FindPackages();
 
+
+  nlohmann::json tasklists = toolchainData["content"]["tasklists"];
+  for (auto &t : tasklists)
+  {
+    host->RegisterTasklist(t["label"].get<std::string>());
+  }
+  host->FindTasklists();
+
   ctx.IO.hosts.push_back(host);
 
   return true;

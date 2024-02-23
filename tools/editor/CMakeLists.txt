@@ -32,11 +32,15 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_AssetsViewer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_SnapshotUtility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_CurrentHostPreview.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_TasksEditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/HostInstance.cpp
     
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/PackageInstance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/wins/UI_MainSettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/wins/UI_CompilationArguments.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Tasklist/wins/UI_MainSettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Tasklist/TasklistInstance.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/ToolchainInstance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ContentWindow.cpp

@@ -220,6 +220,17 @@ void VxHost::Refresh()
   {
     this->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
   }
+  this->FindPackages();
+
+
+  registeredTasklists.clear();
+  nlohmann::json tasklists = toolchainData["content"]["tasklists"];
+  for (auto &t : tasklists)
+  {
+    this->RegisterTasklist(t["label"].get<std::string>());
+  }
+  this->FindTasklists();
+
   this->Init();
 }
 

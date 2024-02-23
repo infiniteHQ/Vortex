@@ -495,7 +495,10 @@ struct VxPackageInterface{
     std::string label;
     bool resolved;
 };
-
+struct VxTasklistInterface{
+    std::string label;
+    bool resolved;
+};
 
 
 struct VXPackage_Action{
@@ -712,15 +715,9 @@ struct HostSave{
 };
 
 struct VxHostTask{
-    std::string label;
+    std::string task;
     int priority;
-    std::string type; // package_compilation, package_installation (if package_compilation = execution de la série de fonction lié à la compilation)
-};
-
-struct VxHostTaskManager{
-    int taskState;
-    // returns
-    // time created
+    std::string component; // package_compilation, package_installation (if package_compilation = execution de la série de fonction lié à la compilation)
 };
 
 
@@ -765,6 +762,11 @@ struct VxHostSnapshot{
     VxHostCurrentSystem snapshotSystem; // to import from 
 };
 
+struct TaskList{
+    std::string label;
+    std::vector<VxHostSnapshot> list;
+};
+
 // Task list, uniquement ici, pour les snapshots, possibilité de reprendre la task list, et de reasseyer tout les précédents echecs
 struct VxHost{
     // Vortex project informations
@@ -805,8 +807,16 @@ struct VxHost{
     std::string GetTriplet(std::string triplet_type);
 
     hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    hVector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
+
     hVector<std::shared_ptr<VxPackage>> packages;
+    std::vector<std::shared_ptr<TaskList>> tasklists;
     std::vector<VxHostSnapshot> snapshots;
+
+    std::vector<VxHostTask> tasks; // Toutes les taches, une fois une execution de tache(s) dans le current sys, mêttre toutes les taches et leurs etats, (executed, failed, etc...)
+    // Apres, possibilité de reprendre la tasklist en fonction des taches executées dans le current sys
+
+    std::vector<TaskList> allTaskLists;
 
     VxHostCurrentSystem currentLoadedSystem;
 
@@ -828,7 +838,9 @@ struct VxHost{
 
     ////////////////////////// Host Manipulation ////////////////////////////////
     void RegisterPackage(const std::string label,const std::string emplacemement);
+    void RegisterTasklist(const std::string label);
     void FindPackages();
+    void FindTasklists();
 
     /////////////////////////////////////////////////////////////////////////////
 
@@ -986,6 +998,8 @@ struct VxToolchain{
     // Vector de packages
 
     std::vector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    std::vector<std::shared_ptr<VxTasklistInterface>> registeredTasklist;
+
     std::vector<std::shared_ptr<VxPackage>> packages;
     // Scripts
     // Modules & other assets..

@@ -10,20 +10,21 @@
 
 #include "../../../../vortex.h"
 
+
 #include "../../../src/instanceFactory.h"
 
-#ifndef HostInstance_H
-#define HostInstance_H
+#ifndef TasklistInstance_H
+#define TasklistInstance_H
+
 
 using namespace VortexMaker;
 class InstanceFactory;
 
 
-class HostInstance
+class TasklistInstance
 {
 public:
-    HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, InstanceFactory* factory);
-    ~HostInstance(){this->receiveThread.join();}
+    TasklistInstance(VxContext *ctx, std::shared_ptr<TaskList> t); // parent host
 
     // Content Managment 
     void Refresh();
@@ -34,40 +35,22 @@ public:
     void close();
     void menubar();
 
-    void UI_ContentWindow();
-    void UI_AssetsViewer();
-    void UI_ParametersWindow();
     void UI_MainSettings();
-    void UI_FullBuild();
-    void UI_SnapshotUtility();
-    void UI_CurrentHostPreview();
-    void UI_TasksEditor();
 
     bool opened;
-    bool show_UI_ContentWindow = false;
-    bool show_UI_ParametersWindow = false;
-    bool show_UI_AssetsViewer = false;
     bool show_UI_MainSettings = false;
-    bool show_UI_FullBuild = false;
-    bool show_UI_SnapshotUtility = false;
-    bool show_UI_CurrentHostPreview = false;
-    bool show_UI_TasksEditor = false;
 
-    std::thread receiveThread;
-
-    InstanceFactory* factory;
 
     std::string name;
     VxContext *m_ctx;
-    std::shared_ptr<VxHost> host;
-    std::shared_ptr<HostSave> m_currentSave;
+    std::shared_ptr<TaskList> tasklist;
+    std::shared_ptr<PackageSave> m_currentSave;
     ImGuiID dockspaceID;
 
     std::shared_ptr<Walnut::Image> m_HostIcon;
     std::shared_ptr<Walnut::Image> m_Icon;
-    std::shared_ptr<Walnut::Image> m_EyeIcon;
-    std::shared_ptr<Walnut::Image> m_TaskListIcon;
     std::shared_ptr<Walnut::Image> m_SaveIcon;
+    std::shared_ptr<Walnut::Image> m_TaskListIcon;
     std::shared_ptr<Walnut::Image> m_RefreshIcon;
     std::shared_ptr<Walnut::Image> m_DatabaseIcon;
     std::shared_ptr<Walnut::Image> m_TrashIcon;
@@ -79,4 +62,4 @@ public:
     std::shared_ptr<Walnut::Image> m_FolderIcon;
 };
 
-#endif // HostInstance_H
+#endif // TasklistInstance_H

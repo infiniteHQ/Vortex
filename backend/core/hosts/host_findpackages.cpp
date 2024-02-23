@@ -10,11 +10,11 @@ void VxHost::FindPackages()
   {
     try
     {
-      
-      nlohmann::json filecontent = VortexMaker::DumpJSON(file);
-      //VxPackage newPackage;
 
-      //newPackage.configFilePath = file;
+      nlohmann::json filecontent = VortexMaker::DumpJSON(file);
+      // VxPackage newPackage;
+
+      // newPackage.configFilePath = file;
 
       // Get packages infos
 
@@ -53,10 +53,14 @@ void VxHost::FindPackages()
               newPackage->compressed = filecontent["package"]["compressed"].get<std::string>();
               newPackage->priority = filecontent["package"]["priority"].get<int>();
               newPackage->useChroot = false;
-              try{
+              try
+              {
                 newPackage->useChroot = filecontent["parameters"]["useChroot"].get<bool>();
               }
-              catch(std::exception e){e.what();};
+              catch (std::exception e)
+              {
+                e.what();
+              };
 
               newPackage->compilation.useCompilationOptimization = filecontent["parameters"]["useCompilationOptimization"].get<bool>();
               newPackage->compilation.exclusiveCustomCompilationProcess = filecontent["parameters"]["useOnlyCustomCompilationProcess"].get<std::string>();

@@ -18,6 +18,7 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_snapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_findpackages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_findtasklists.cpp
 
     # Dist Toolchain sources
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/disthost/disthost_testingchroot.cpp

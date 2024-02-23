@@ -23,6 +23,7 @@ static std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
 static std::vector<std::shared_ptr<HostInstance>> hostInstances;
 static std::vector<std::shared_ptr<ToolchainInstance>> toolchainInstances;
 static std::vector<std::shared_ptr<PackageInstance>> packageInstances;
+static std::vector<std::shared_ptr<TasklistInstance>> tasklistInstances;
 
 static void PushStyle()
 {
@@ -64,6 +65,17 @@ class Instance : public InstanceFactory {
     packageInstances.push_back(instance);
   };
 
+  void SpawnInstance(std::shared_ptr<TasklistInstance> instance) override {
+    instance->name = instance->tasklist->label;
+    instance->opened = true;
+    tasklistInstances.push_back(instance);
+  };
+
+
+  void UnspawnInstance(std::shared_ptr<TasklistInstance> instance) override {
+    std::string instanceName = instance->name;
+    instance = nullptr;
+  };
 
   void UnspawnInstance(std::shared_ptr<PackageInstance> instance) override {
     std::string instanceName = instance->name;
@@ -115,6 +127,7 @@ public:
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}    
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
     for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
+    for (auto window : tasklistInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
 
     PopStyle();
 

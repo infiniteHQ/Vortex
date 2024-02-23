@@ -8,7 +8,13 @@ HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, Instan
     this->host = _host;
     this->factory = _factory;
 
+    // POUR DEMAIN : Finir la gestion et la creation de snapshot et des working host
+    // Système de tasks et creation d'actions rapides sur le working host (package, actions, scripts, chroot, etc...)
+
+
     this->Refresh();
+    this->host->RefreshCurrentWorkingHost();
+    this->host->RefreshSnapshots();
 
     {
         uint32_t w, h;
@@ -32,6 +38,12 @@ HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, Instan
         uint32_t w, h;
         void *data = Walnut::Image::Decode(icons::i_folder, icons::i_folder_size, w, h);
         m_FolderIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_tasklist, icons::i_tasklist_size, w, h);
+        m_TaskListIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
         free(data);
     }
     {
@@ -74,6 +86,12 @@ HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, Instan
         uint32_t w, h;
         void *data = Walnut::Image::Decode(icons::i_package, icons::i_package_size, w, h);
         m_PackageIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
+        m_TrashIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
         free(data);
     }
 };
@@ -124,6 +142,7 @@ std::string HostInstance::render()
         this->UI_FullBuild();
         this->UI_SnapshotUtility();
         this->UI_CurrentHostPreview();
+        this->UI_TasksEditor();
 
         return "rendering";
     }
@@ -180,7 +199,7 @@ void HostInstance::menubar()
         ImGui::Separator();
         if (ImGui::BeginMenu("Build"))
         {
-            if (ImGui::MenuItem("Tasks Editor", "Edit tasks of build processus"))
+            if (ImGui::MenuItem("Tasks Editor", "Edit tasks of build processus", &this->show_UI_TasksEditor))
             {
             }
             if (ImGui::MenuItem("Auto Build", "Build from task lists"))

@@ -10,6 +10,13 @@ void VxHost::RegisterPackage(const std::string label, const std::string emplacem
   registeredPackages.push_back(newPackageInterface);
 }
 
+void VxHost::RegisterTasklist(const std::string label)
+{
+  std::shared_ptr<VxTasklistInterface> newTasklistInterface = std::make_shared<VxTasklistInterface>();
+  newTasklistInterface->label = label;
+  registeredTasklists.push_back(newTasklistInterface);
+}
+
 int VxHost::ExecuteCmdInChroot(std::string cmd)
 {
 
