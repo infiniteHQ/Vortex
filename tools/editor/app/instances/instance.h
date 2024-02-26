@@ -9,6 +9,7 @@
 #include "../../backend/Assets/icons.h"
 
 #include "../../../../vortex.h"
+#include "../../../../vortex_core.h"
 
 #ifndef InstanceWindow_H
 #define InstanceWindow_H

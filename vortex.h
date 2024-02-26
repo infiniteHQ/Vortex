@@ -180,6 +180,8 @@ struct VxToolchain;
 struct VxDistHost;
 struct VxDistToolchain;
 
+struct Task;
+
 // Internals (from vortex_internals.h)
 struct VxContext;
 //_____________________________________________________________________________
@@ -232,6 +234,10 @@ namespace VortexMaker
     VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
     VORTEX_API bool RegisterToolchain(nlohmann::json toolchainData);
     VORTEX_API bool RegisterHost(std::shared_ptr<VxHost> host, nlohmann::json toolchainData);
+
+
+    VORTEX_API void CreateNewTask(std::shared_ptr<Task> task, std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
+
 
     VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
     VORTEX_API std::string replacePlaceholders(const std::string &command, const std::unordered_map<std::string, std::string> &replacements);
@@ -491,6 +497,26 @@ private:
 // [SECTION] Structures
 //_____________________________________________________________________________
 
+
+struct Task{
+    std::string id; // to find this task from everywhere
+    std::string tasktype;
+    std::string state; // state of this task
+
+    int priority;
+    
+    // Custom args
+    std::shared_ptr<hArgs> props;
+
+    // Result
+    std::shared_ptr<hArgs> result_props;
+
+    virtual void exec(){};
+    virtual void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties){};
+};
+
+
+
 struct VxPackageInterface{
     std::string emplacement;
     std::string label;
@@ -500,6 +526,8 @@ struct VxTasklistInterface{
     std::string label;
     bool resolved;
 };
+
+
 
 
 struct VXPackage_Action{
@@ -707,6 +735,8 @@ struct VxPackage{
 };
 
 
+
+
 struct HostSave{ 
     char name[128] = "unknow";
     char author[128] = "unknow";
@@ -729,13 +759,6 @@ struct HostSave{
 
 };
 
-struct VxHostTask{
-    std::string task;
-    std::string uniqueID; // to find this task from everywhere
-    int priority;
-    std::string component; // package_compilation, package_installation (if package_compilation = execution de la série de fonction lié à la compilation)
-};
-
 
 struct VxPackageReport{
     std::string label;
@@ -748,14 +771,6 @@ struct VxPackageReport{
     std::string report;
 };
 
-struct VxHostTaskReport{
-    VxHostTask parent;
-    std::string state;
-    std::string date;
-    std::string time;
-    std::string result;
-    std::string description;
-};
 
 struct VxActionReport{
     std::string actionType;
@@ -770,7 +785,7 @@ struct VxHostCurrentSystem{
     std::string lastUpdate;
     std::string size;
 
-    std::vector<std::shared_ptr<VxHostTaskReport>> reports;
+    std::vector<std::shared_ptr<Task>> executedTasks;
 
     std::vector<VxPackageReport> packageReports;
     std::vector<VxActionReport> actionReports;
@@ -778,8 +793,9 @@ struct VxHostCurrentSystem{
     void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
     void PushSize(std::string newsize){this->size = newsize;};
 
-    void PopulateFromFile(nlohmann::json jsonData); // from working_host.config
-    nlohmann::json ExtractJson();
+    void Populate(nlohmann::json jsonData); // from working_host.config
+    nlohmann::json Extract();
+
 };
 
 struct VxHostSnapshot{
@@ -792,7 +808,7 @@ struct VxHostSnapshot{
 struct TaskList{
     std::string configFilePath;
     std::string label;
-    std::vector<VxHostTask> list;
+    std::vector<Task> list;
     void Refresh();
     void PushSave(std::shared_ptr<TaskListSave> save);
 };
@@ -843,7 +859,8 @@ struct VxHost{
     std::vector<std::shared_ptr<TaskList>> tasklists;
     std::vector<VxHostSnapshot> snapshots;
 
-    std::vector<VxHostTask> tasks; // Toutes les taches, une fois une execution de tache(s) dans le current sys, mêttre toutes les taches et leurs etats, (executed, failed, etc...)
+    // Dans le ctx
+    //std::vector<VxHostTask> tasks; // Toutes les taches, une fois une execution de tache(s) dans le current sys, mêttre toutes les taches et leurs etats, (executed, failed, etc...)
     // Apres, possibilité de reprendre la tasklist en fonction des taches executées dans le current sys
 
     std::vector<TaskList> allTaskLists;
@@ -856,7 +873,7 @@ struct VxHost{
     void RefreshCurrentWorkingHost();
     void PushSave(std::shared_ptr<HostSave> save);
 
-    void ExecuteTask(VxHostTask task, hArgs args);
+    void ExecuteTask(Task task, hArgs args);
 
 
 

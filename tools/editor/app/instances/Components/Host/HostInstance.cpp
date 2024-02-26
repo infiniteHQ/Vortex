@@ -133,6 +133,7 @@ std::string HostInstance::render()
         }
 
         ImGui::End();
+        std::cout << this->host->currentLoadedSystem.executedTasks.size() << std::endl;
 
         // All Windows of this instances :
         this->UI_ParametersWindow();
@@ -245,10 +246,16 @@ void HostInstance::menubar()
             // Save behavior
         }
 
-        if (ImGui::ImageButtonWithText(settingsIcon, "Close", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight())))
+        if (ImGui::ImageButtonWithText(settingsIcon, "Task", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight())))
         {
-            this->close();
+            std::shared_ptr<TestHostTask> task = std::make_shared<TestHostTask>();
+            std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+            props->add("host", this->host);
+            props->add("self", task);
+            VortexMaker::CreateNewTask(task,"test","123",1,props);
         }
+
+
         if (ImGui::BeginPopupModal("Delete?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Get content");

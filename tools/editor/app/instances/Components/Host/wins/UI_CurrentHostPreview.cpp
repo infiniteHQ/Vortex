@@ -88,6 +88,8 @@ void HostInstance::UI_CurrentHostPreview()
             ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableSetupColumn("Description", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableHeadersRow();
+
+            /*
                 for (int row = 0; row < this->host->currentLoadedSystem.reports.size(); row++)
                 {
                     static std::pair<char[128], char[128]> newItem;
@@ -127,7 +129,7 @@ void HostInstance::UI_CurrentHostPreview()
                         }
                     }
                 }
-
+*/
             ImGui::EndTable();
         }
 
@@ -143,7 +145,7 @@ void HostInstance::UI_CurrentHostPreview()
             ImGui::TableHeadersRow();
 
 
-                for (int row = 0; row < this->host->currentLoadedSystem.reports.size(); row++)
+               /* for (int row = 0; row < this->host->currentLoadedSystem.reports.size(); row++)
                 {
                     if(this->host->currentLoadedSystem.reports[row]->parent.task == "testpackage"){
                         
@@ -169,7 +171,7 @@ void HostInstance::UI_CurrentHostPreview()
                         }
                     }
                     }
-                }
+                }*/
 
             ImGui::EndTable();
         }

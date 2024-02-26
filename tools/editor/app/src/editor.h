@@ -123,6 +123,17 @@ public:
       projectViewer.OnImGuiRender();
     }
 
+    // Execute tasks
+    for(auto task : this->m_ctx->IO.tasksToProcess){
+      if(task->state == "not_started"){
+        std::cout << "Executing task " << task->id << std::endl;
+        task->exec();
+      }
+      else{
+        task = nullptr;
+      }
+    }
+
     // Instances
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}    
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}

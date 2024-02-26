@@ -145,6 +145,9 @@ struct VortexMakerDebugAllocInfo {
 // [SECTION]: Internal structures
 //_____________________________________________________________________________
 
+
+
+
 struct VxIO {
   int         MetricsActiveAllocations;  
                                        
@@ -153,6 +156,10 @@ struct VxIO {
   std::vector<VxDistToolchain>  distToolchains;    
   std::vector<std::shared_ptr<VxHost>>           hosts;    
   std::vector<VxDistHost>  distHosts;    
+
+
+  std::vector<std::shared_ptr<Task>> tasksToProcess; // compy referece of tasks to process (from "task")
+  std::vector<std::shared_ptr<Task>> tasks;
 };
 
 
@@ -161,6 +168,8 @@ struct VxPaths {
   std::string hostDistFolder;
 
 };
+
+
 
 //-----------------------------------------------------------------------------
 // (Context) VortexMakerContext => Main VortexMaker context.
@@ -172,6 +181,7 @@ struct VxContext {
   bool                              initialized;
   VxIO                              IO;
   VortexMakerDebugAllocInfo         debugAllocInfo;
+  
 
   fs::path projectPath;
   VxPaths paths;
@@ -211,6 +221,8 @@ namespace VortexMaker {
 
 // Utils & Base
 VORTEX_API void DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,size_t size); // size >= 0 : alloc, size = -1 : free
+
+
 
 }
 //_____________________________________________________________________________

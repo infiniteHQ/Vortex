@@ -196,11 +196,11 @@ void TasklistInstance::Refresh()
     {
         TaskSave newtask;
 
-        strncpy(newtask.task, task.task.c_str(), sizeof(newtask.task));
-        newtask.task[sizeof(newtask.task) - 1] = '\0';
+       // strncpy(newtask.task, task.task.c_str(), sizeof(newtask.task));
+        //newtask.task[sizeof(newtask.task) - 1] = '\0';
 
-        strncpy(newtask.component, task.component.c_str(), sizeof(newtask.component));
-        newtask.component[sizeof(newtask.component) - 1] = '\0';
+      //  strncpy(newtask.component, task.component.c_str(), sizeof(newtask.component));
+        //newtask.component[sizeof(newtask.component) - 1] = '\0';
         
         newtask.priority = task.priority;
 

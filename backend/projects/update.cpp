@@ -113,7 +113,7 @@ void VxHost::PushSave(std::shared_ptr<HostSave> save)
         packageJson["origin"] = std::string(package.second);
         registeredPackagesJson.push_back(packageJson);
     }
-
+/*
     nlohmann::json tasksJson;
     for (const auto &task : this->tasks)
     {
@@ -123,10 +123,10 @@ void VxHost::PushSave(std::shared_ptr<HostSave> save)
         packageJson["priority"] = task.priority;
         registeredPackagesJson.push_back(packageJson);
     }
-
+*/
     nlohmann::json contents;
     contents["packages"] = registeredPackagesJson;
-    contents["tasks"] = tasksJson;
+   // contents["tasks"] = tasksJson;
 
     toolchainData["content"] = contents;
 

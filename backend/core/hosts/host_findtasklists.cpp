@@ -38,12 +38,12 @@ void VxHost::FindTasklists()
               newTasklist->configFilePath = file;
 
             newTasklist->label = filecontent["label"].get<std::string>();
-
-            this->tasks.clear();
+/*
+            //this->tasks.clear();
             nlohmann::json tasks = filecontent["tasks"];
             for (auto &t : tasks)
             {
-              VxHostTask task;
+              //VxHostTask task;
               task.task = t["task"].get<std::string>();
               task.component = t["component"].get<std::string>();
               task.priority = t["priority"].get<int>();
@@ -51,7 +51,7 @@ void VxHost::FindTasklists()
             }
 
             this->tasklists.push_back(newTasklist);
-            registeredTasklist->resolved = true;
+            registeredTasklist->resolved = true;*/
           }
         }
       }

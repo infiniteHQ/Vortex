@@ -1,8 +1,8 @@
 #include "../../../vortex.h"
 #include "../../../vortex_internals.h"
 
-void VxHost::ExecuteTask(VxHostTask t, hArgs args){
-
+void VxHost::ExecuteTask(Task t, hArgs args){
+/*
 
   // Creaate Task Report
   std::shared_ptr<VxHostTaskReport> report = std::make_shared<VxHostTaskReport>();
@@ -38,7 +38,7 @@ void VxHost::ExecuteTask(VxHostTask t, hArgs args){
   }
 
 
-  // Update working_host.config with this report (for future initialization)
+  // Update working_host.config with this report (for future initialization)*/
 }
 
 

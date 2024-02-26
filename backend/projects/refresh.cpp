@@ -2,7 +2,7 @@
 #include "../../vortex_internals.h"
 
 void TaskList::Refresh()
-{
+{/*
   nlohmann::json filecontent = VortexMaker::DumpJSON(this->configFilePath);
 
   this->label = filecontent["label"].get<std::string>();
@@ -16,7 +16,7 @@ void TaskList::Refresh()
     task.component = t["component"].get<std::string>();
     task.priority = t["priority"].get<int>();
     this->list.push_back(task);
-  }
+  }*/
 }
 
 void VxPackage::Refresh()
@@ -124,7 +124,7 @@ void VxPackage::Refresh()
 void VxHost::RefreshCurrentWorkingHost()
 {
   nlohmann::json data = VortexMaker::DumpJSON(this->path_hostroot + "/working_host.config");
-  this->currentLoadedSystem.PopulateFromFile(data);
+  this->currentLoadedSystem.Populate(data);
 }
 
 void VxHost::RefreshSnapshots()
@@ -148,7 +148,7 @@ void VxHost::RefreshSnapshots()
       newsnapshot.name = filecontent["snapshot"]["name"].get<std::string>();
 
       nlohmann::json working_host = VortexMaker::DumpJSON(path + "/working_host.config");
-      newsnapshot.snapshotSystem.PopulateFromFile(working_host); // working_host file data
+      newsnapshot.snapshotSystem.Populate(working_host); // working_host file data
 
       this->snapshots.push_back(newsnapshot);
     }
@@ -159,7 +159,7 @@ void VxHost::RefreshSnapshots()
   }
 }
 
-void VxHostCurrentSystem::PopulateFromFile(nlohmann::json jsonData)
+void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
 {
   this->size = jsonData["size"].get<std::string>();
 
@@ -171,15 +171,14 @@ void VxHostCurrentSystem::PopulateFromFile(nlohmann::json jsonData)
   // Get list of packages and all reports associated
   for (auto packageReport : jsonData["packagesReportsList"])
   {
-    VxPackageReport report;
+    std::shared_ptr<Task> task = std::make_shared<Task>();
 
-    // All package reports data
-    report.label = packageReport["label"].get<std::string>();
-    report.report = packageReport["report"].get<std::string>();
-    report.result = packageReport["result"].get<std::string>();
-    report.state = packageReport["state"].get<std::string>();
+    task->id = packageReport["t_id"].get<std::string>();
+    task->tasktype = packageReport["t_tasktype"].get<std::string>();
+    task->priority = packageReport["t_priority"].get<int>();
+    task->state = packageReport["t_state"].get<std::string>();
 
-    this->packageReports.push_back(report);
+    this->executedTasks.push_back(task);
   }
 
   for (auto actionReport : jsonData["actionsReportsList"])
@@ -191,27 +190,27 @@ void VxHostCurrentSystem::PopulateFromFile(nlohmann::json jsonData)
   // Get list of all render assets (actions, scirpts, skeletons, etc)
 } // from working_host.config
 
-nlohmann::json VxHostCurrentSystem::ExtractJson()
+nlohmann::json VxHostCurrentSystem::Extract()
 {
+  VxContext &ctx = *CVortexMaker;
   nlohmann::json jsonData;
   jsonData["size"] = this->size;
   jsonData["packagesReportsList"] = nlohmann::json::array();
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
-  for (auto reports : this->reports)
+  for (auto task : this->executedTasks)
   {
+    std::string def = "unknow";
+
     nlohmann::json report;
-    report["t_id"] = reports->parent.uniqueID;
-    report["t_priority"] = reports->parent.priority;
-    report["t_task"] = reports->parent.task;
-    report["t_component"] = reports->parent.component;
+    report["t_id"] = task->id;
+    report["t_tasktype"] = task->tasktype;
+    report["t_priority"] = task->priority;
+    report["t_state"] = task->state;
 
-    report["r_description"] = reports->description;
-    report["r_result"] = reports->result;
-    report["r_state"] = reports->state;
-    report["r_date"] = reports->date;
-    report["r_time"] = reports->time;
+    report["t_component"] = task->result_props->get("component", def);
 
+    
     jsonData["packagesReportsList"].push_back(report);
   }
 }
@@ -245,14 +244,14 @@ void VxHost::Refresh()
   }
   this->FindPackages();
 
-  registeredTasklists.clear();
+  /*registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
   {
     this->RegisterTasklist(t["label"].get<std::string>());
   }
   this->FindTasklists();
-
+*/
   this->Init();
 }
 

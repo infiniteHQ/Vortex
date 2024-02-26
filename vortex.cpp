@@ -382,4 +382,16 @@ void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> 
   }
 }
 
+
+VORTEX_API void VortexMaker::CreateNewTask(std::shared_ptr<Task> task, std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props){
+  VxContext &ctx = *CVortexMaker;
+  task->id = uniqueID;
+  task->tasktype = tasktype;
+  task->priority = priority;
+  task->state = "not_started";
+  task->props = props;
+  ctx.IO.tasksToProcess.push_back(task);
+  ctx.IO.tasks.push_back(task);
+}
+
 #endif // VORTEX_DISABLE
