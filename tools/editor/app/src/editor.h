@@ -10,11 +10,8 @@
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
 
+
 #include "./instanceFactory.h"
-
-
-#include <thread>
-
 using namespace VortexMaker;
 
 // Toolchain window not appear when we activate it from Project viewer.
@@ -24,6 +21,7 @@ static std::vector<std::shared_ptr<HostInstance>> hostInstances;
 static std::vector<std::shared_ptr<ToolchainInstance>> toolchainInstances;
 static std::vector<std::shared_ptr<PackageInstance>> packageInstances;
 static std::vector<std::shared_ptr<TasklistInstance>> tasklistInstances;
+
 
 static void PushStyle()
 {
@@ -100,6 +98,8 @@ class Instance : public InstanceFactory {
 class ExampleLayer : public Walnut::Layer
 {
 public:
+
+
   ExampleLayer(VxContext *ctx)
   {
     this->m_ctx = ctx;
@@ -122,24 +122,6 @@ public:
       static ProjectViewer projectViewer(this->m_ctx, &factory);
       projectViewer.OnImGuiRender();
     }
-
-
-// Correction de la boucle de traitement des tâches
-for (auto it = this->m_ctx->IO.tasksToProcess.begin(); it != this->m_ctx->IO.tasksToProcess.end();) {
-    auto task = *it;
-    if (task->state == "paused") {
-        // Ne rien faire pour les tâches en pause
-        ++it;
-    } else if (task->state == "not_started") {
-        task->exec();
-        ++it;
-    } else {
-        // Supprimer les tâches terminées ou dans un état inconnu
-        it = this->m_ctx->IO.tasksToProcess.erase(it);
-    }
-}
-
-
     // Instances
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}    
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
@@ -147,6 +129,19 @@ for (auto it = this->m_ctx->IO.tasksToProcess.begin(); it != this->m_ctx->IO.tas
     for (auto window : tasklistInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
 
     PopStyle();
+    
+for (auto& task : this->m_ctx->IO.tasksToProcess) {
+    if (task->state == "paused") {
+        // Ignore paused tasks
+        continue;
+    }
+    if (task->state == "not_started" || task->state == "retry") {
+        taskProcessor.addTask(task);
+    } else if (task->state == "success" || task->state == "finished") {
+        // Marquer les tâches terminées pour qu'elles ne soient pas réexécutées
+        taskProcessor.markTaskCompleted(task);
+    }
+}
 
   }
 
@@ -159,6 +154,10 @@ for (auto it = this->m_ctx->IO.tasksToProcess.begin(); it != this->m_ctx->IO.tas
   }
 
   VxContext *m_ctx;
+
+
+// Global TaskProcessor instance
+TaskProcessor taskProcessor;
 
   std::thread receiveThread;
   bool ShowContentBrowser = false;

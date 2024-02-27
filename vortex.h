@@ -85,7 +85,21 @@
 #include <unordered_map>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <chrono>
+#include <format>
+#include <iostream>
+#include <string>
 
+#include <thread>
+#include <vector>
+#include <algorithm>
+#include <mutex>
+#include <condition_variable>
+
+
+#include <future>
+
+#include <thread>
 
 namespace fs = std::filesystem;
 
@@ -505,12 +519,37 @@ struct Task{
     std::string id; // to find this task from everywhere
     std::string tasktype;
     std::string state; // state of this task
-
-    std::time_t start_time;
-    std::time_t stop_time;
-    std::time_t total_time;
-
     int priority;
+
+
+    std::chrono::time_point<std::chrono::system_clock> m_StartTime;
+    std::chrono::time_point<std::chrono::system_clock> m_EndTime;
+    bool                                               m_bRunning = false;
+
+
+    double elapsedMilliseconds(){std::chrono::time_point<std::chrono::system_clock> endTime;if(m_bRunning){endTime = std::chrono::system_clock::now();}else{endTime = m_EndTime;}return std::chrono::duration_cast<std::chrono::milliseconds>(endTime - m_StartTime).count();}
+    double elapsedSeconds(){return elapsedMilliseconds() / 1000.0;}
+
+std::string startTime() {
+    std::time_t t = std::chrono::system_clock::to_time_t(this->m_StartTime);
+    std::string ts = std::ctime(&t);
+    ts.resize(ts.size()-1);
+    return ts;
+}
+
+    void start()
+    {
+        this->m_StartTime = std::chrono::system_clock::now();
+        this->state = "not_started";
+        this->m_bRunning = true;
+    }
+    
+    void stop()
+    {
+        this->m_EndTime = std::chrono::system_clock::now();
+        this->m_bRunning = false;
+    }
+
     
     // Custom args
     std::shared_ptr<hArgs> props;
@@ -1082,6 +1121,37 @@ struct VxToolchain{
 
     void CreateToolchainDirectory(/*VxDirectory*/);
 }; 
+
+
+#include <queue>
+
+// Comparateur pour trier les tâches par priorité
+struct CompareTaskPriority {
+    bool operator()(const std::shared_ptr<Task>& task1, const std::shared_ptr<Task>& task2) const {
+        return task1->priority > task2->priority; // Priorité plus élevée a un indice plus bas
+    }
+};
+
+// Déclaration anticipée de la classe TaskProcessor
+class TaskProcessor {
+public:
+    TaskProcessor();
+    ~TaskProcessor();
+    void addTask(std::shared_ptr<Task> task);
+    void processTasks();
+    void markTaskCompleted(std::shared_ptr<Task> task);
+    void removeTask(std::shared_ptr<Task> taskToRemove);
+
+private:
+    std::atomic<bool> stop;
+    std::priority_queue<std::shared_ptr<Task>, std::vector<std::shared_ptr<Task>>, CompareTaskPriority> tasks;
+    
+std::map<int, std::deque<std::shared_ptr<Task>>> tasksByPriority;
+    std::mutex mutex;
+    std::condition_variable condition;
+    std::vector<std::thread> workers;
+    std::thread worker;
+};
 
 
 //_____________________________________________________________________________

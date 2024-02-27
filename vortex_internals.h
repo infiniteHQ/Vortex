@@ -170,6 +170,11 @@ struct VxPaths {
 };
 
 
+#include <iostream>
+#include <thread>
+#include <vector>
+#include <mutex>
+#include <condition_variable>
 
 //-----------------------------------------------------------------------------
 // (Context) VortexMakerContext => Main VortexMaker context.
@@ -201,6 +206,7 @@ struct VxContext {
   std::string hostsPath;
 
   // All contents...
+
 
 
 

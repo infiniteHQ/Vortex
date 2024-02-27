@@ -9,6 +9,7 @@
 #include "../../backend/Assets/icons.h"
 
 #include "../../../../vortex.h"
+#include "../../../../vortex_internals.h"
 
 #include "../../../src/instanceFactory.h"
 
@@ -42,6 +43,8 @@ public:
     void UI_SnapshotUtility();
     void UI_CurrentHostPreview();
     void UI_TasksEditor();
+
+
 
     bool opened;
     bool show_UI_ContentWindow = false;

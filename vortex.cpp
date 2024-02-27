@@ -363,29 +363,32 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
   VortexMaker::RefreshDistHosts();
 }
 
-
 // Correction de la fonction CreateTask
-std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props) {
-    VxContext &ctx = *CVortexMaker;
+std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
+{
+  VxContext &ctx = *CVortexMaker;
 
-    // Utilisation de make_shared pour créer la tâche
-    std::shared_ptr<Task> task = TaskFactory::getInstance().createInstance(tasktype);
+  // Utilisation de make_shared pour créer la tâche
+  std::shared_ptr<Task> task = TaskFactory::getInstance().createInstance(tasktype);
 
-    if (task) { // Vérification si la tâche a été créée avec succès
-        task->id = uniqueID;
-        task->tasktype = tasktype;
-        task->priority = priority;
-        task->props = props;
-        task->state = "not_started";
-        
-        // Ajout de la tâche aux listes appropriées
-        ctx.IO.tasksToProcess.push_back(task);
-        ctx.IO.tasks.push_back(task);
-    } else {
-        std::cerr << "Failed to create task of type: " << tasktype << std::endl;
-    }
+  if (task)
+  { // Vérification si la tâche a été créée avec succès
+    task->id = uniqueID;
+    task->tasktype = tasktype;
+    task->priority = priority;
+    task->props = props;
+    task->state = "not_started";
 
-    return task;
+    // Ajout de la tâche aux listes appropriées
+    ctx.IO.tasksToProcess.push_back(task);
+    ctx.IO.tasks.push_back(task);
+  }
+  else
+  {
+    std::cerr << "Failed to create task of type: " << tasktype << std::endl;
+  }
+
+  return task;
 }
 
 void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package)
@@ -409,9 +412,121 @@ void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> 
   }
 }
 
+VORTEX_API void VortexMaker::CreateNewTask(std::shared_ptr<Task> task, std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
+{
+}
 
-VORTEX_API void VortexMaker::CreateNewTask(std::shared_ptr<Task> task, std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props){
+// Constructeur de TaskProcessor
+TaskProcessor::TaskProcessor() : stop(false)
+{
+  std::thread Thread([&]()
+                     { this->processTasks(); });
+  worker.swap(Thread);
+}
 
+// Destructeur de TaskProcessor
+TaskProcessor::~TaskProcessor()
+{
+  worker.join();
+}
+
+// Ajout d'une tâche à TaskProcessor
+void TaskProcessor::addTask(std::shared_ptr<Task> task)
+{
+  std::unique_lock<std::mutex> lock(mutex);
+  tasks.push(task);
+  tasksByPriority[task->priority].push_back(task); // Ajout à la map de regroupement par priorité
+  condition.notify_one();
+}
+// Marque une tâche comme terminée
+void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
+{
+  std::unique_lock<std::mutex> lock(mutex);
+  task->state = "finished"; // ou "success", selon votre besoin
+}
+
+// Supprime une tâche de TaskProcessor
+void TaskProcessor::removeTask(std::shared_ptr<Task> taskToRemove)
+{
+  std::unique_lock<std::mutex> lock(mutex);
+  std::priority_queue<std::shared_ptr<Task>, std::vector<std::shared_ptr<Task>>, CompareTaskPriority> newTasks;
+  while (!tasks.empty())
+  {
+    auto currentTask = tasks.top();
+    tasks.pop();
+    if (currentTask != taskToRemove)
+    {
+      newTasks.push(currentTask);
+    }
+  }
+  tasks = newTasks;
+  // Supprimer également de la map de regroupement par priorité
+  tasksByPriority[taskToRemove->priority].erase(
+      std::remove(tasksByPriority[taskToRemove->priority].begin(), tasksByPriority[taskToRemove->priority].end(), taskToRemove),
+      tasksByPriority[taskToRemove->priority].end());
+}
+
+#include <deque>
+#include <mutex>
+
+void TaskProcessor::processTasks()
+{
+
+  VxContext &ctx = *CVortexMaker;
+
+  while (true)
+  {
+
+    std::vector<std::future<void>> futures;
+
+    std::sort(ctx.IO.tasksToProcess.begin(), ctx.IO.tasksToProcess.end(), [](const std::shared_ptr<Task> &a, const std::shared_ptr<Task> &b)
+              { return a->priority < b->priority; });
+
+    int last_priority = 0;
+    bool first = true;
+
+for (auto task : ctx.IO.tasksToProcess)
+{
+    if (first || task->priority == last_priority)
+    {
+        futures.emplace_back(std::async(std::launch::async, [this, task]()
+        {
+            if (task->state == "not_started" || task->state == "retry") {
+                task->state = "process";
+                task->exec();
+                markTaskCompleted(task);
+            }
+        }));
+        last_priority = task->priority;
+        first = false;
+    }
+    else
+    {
+        for (auto &future : futures)
+        {
+            future.get();
+        }
+        futures.clear(); 
+
+        futures.emplace_back(std::async(std::launch::async, [this, task]()
+        {
+            if (task->state == "not_started" || task->state == "retry") {
+                task->state = "process";
+                task->exec();
+                markTaskCompleted(task);
+            }
+        }));
+        last_priority = task->priority;
+    }
+}
+
+// Attendre que les derniers futures se terminent
+for (auto &future : futures)
+{
+    future.get();
+}
+futures.clear();
+}
 }
 
 #endif // VORTEX_DISABLE

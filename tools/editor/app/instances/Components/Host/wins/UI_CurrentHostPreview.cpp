@@ -106,13 +106,14 @@ void HostInstance::UI_CurrentHostPreview()
 
         if (selected == 1)
         {
-            if (ImGui::BeginTable("table_", 7, flags))
+            if (ImGui::BeginTable("table_", 8, flags))
             {
                 ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Retry", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Priority", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Duration", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Started", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableHeadersRow();
@@ -123,7 +124,7 @@ void HostInstance::UI_CurrentHostPreview()
                     static char label[128];
 
                     ImGui::TableNextRow();
-                    for (int column = 0; column < 7; column++)
+                    for (int column = 0; column < 8; column++)
                     {
                         ImGui::TableSetColumnIndex(column);
 
@@ -186,6 +187,10 @@ void HostInstance::UI_CurrentHostPreview()
                             {
                                 coloredTag("Retry", ImVec4(0.5f, 0.5f, 0.2f, 0.4f));
                             }
+                            if (this->host->currentLoadedSystem.executedTasks[row]->state == "process")
+                            {
+                                coloredTag("Processing...", ImVec4(0.8f, 0.5f, 0.5f, 0.4f));
+                            }
                             if (this->host->currentLoadedSystem.executedTasks[row]->state == "not_started")
                             {
                                 coloredTag("Not Started", ImVec4(0.5f, 0.5f, 0.5f, 0.1f));
@@ -193,11 +198,15 @@ void HostInstance::UI_CurrentHostPreview()
                         }
                         if (column == 5)
                         {
-                            ImGui::Text(std::to_string(this->host->currentLoadedSystem.executedTasks[row]->total_time).c_str());
+                            ImGui::Text(std::to_string(this->host->currentLoadedSystem.executedTasks[row]->priority).c_str());
                         }
                         if (column == 6)
                         {
-                            ImGui::Text(std::to_string(this->host->currentLoadedSystem.executedTasks[row]->start_time).c_str());
+                            ImGui::Text(std::to_string(this->host->currentLoadedSystem.executedTasks[row]->elapsedSeconds()).c_str());
+                        }
+                        if (column == 7)
+                        {
+                            ImGui::Text(this->host->currentLoadedSystem.executedTasks[row]->startTime().c_str());
                         }
                     }
                 }

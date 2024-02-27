@@ -2,6 +2,7 @@
 
 using namespace VortexMaker;
 
+
 HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, InstanceFactory* _factory)
 {
     this->m_ctx = ctx;
@@ -103,6 +104,7 @@ void HostInstance::close()
 
 std::string HostInstance::render()
 {
+
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID hostIcon = this->m_HostIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     if (opened)
@@ -133,6 +135,9 @@ std::string HostInstance::render()
         }
 
         ImGui::End();
+
+
+
 
         // All Windows of this instances :
         this->UI_ParametersWindow();

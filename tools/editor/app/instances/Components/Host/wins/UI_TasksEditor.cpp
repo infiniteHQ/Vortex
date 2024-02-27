@@ -124,7 +124,7 @@ void HostInstance::UI_TasksEditor()
                                 std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
                                 props->add("host", this->host);
 
-                                std::shared_ptr<Task> instancetask = VortexMaker::CreateTask(task->tasktype, "SecondTestHostTask-123", 123, props);
+                                std::shared_ptr<Task> instancetask = VortexMaker::CreateTask(task->tasktype, "SecondTestHostTask-123", task->priority, props);
 
                                 instancetask->state = "not_started";
                                 props->add("self", instancetask);
