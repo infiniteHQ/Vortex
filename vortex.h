@@ -540,7 +540,7 @@ std::string startTime() {
     void start()
     {
         this->m_StartTime = std::chrono::system_clock::now();
-        this->state = "not_started";
+        this->state = "process";
         this->m_bRunning = true;
     }
     
