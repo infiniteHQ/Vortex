@@ -133,7 +133,6 @@ std::string HostInstance::render()
         }
 
         ImGui::End();
-        std::cout << this->host->currentLoadedSystem.executedTasks.size() << std::endl;
 
         // All Windows of this instances :
         this->UI_ParametersWindow();
@@ -246,14 +245,22 @@ void HostInstance::menubar()
             // Save behavior
         }
 
-        if (ImGui::ImageButtonWithText(settingsIcon, "Task", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight())))
+        if (ImGui::ImageButtonWithText(settingsIcon, "HostTasdk", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight())))
         {
-            std::shared_ptr<TestHostTask> task = std::make_shared<TestHostTask>();
             std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
             props->add("host", this->host);
+
+            std::shared_ptr<Task> task = VortexMaker::CreateTask("SecondTestHostTask", "SecondTestHostTask-123", 123, props);
+
+            task->state = "not_started";
             props->add("self", task);
-            VortexMaker::CreateNewTask(task,"test","123",1,props);
+            
+            this->host->currentLoadedSystem.executedTasks.push_back(task);
+
+            this->host->currentLoadedSystem.Save(this->host);
+
         }
+
 
 
         if (ImGui::BeginPopupModal("Delete?", NULL, ImGuiWindowFlags_AlwaysAutoResize))

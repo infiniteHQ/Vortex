@@ -1,11 +1,8 @@
-#pragma once
-
-#include "vortex.h"
-
-#include "backend/core/hosts/tasks_host.h"
-
+#include "../../../vortex.h"
 struct Task;
-struct SecondTestHostTask : public Task
+
+
+struct fullBuildPackage : public Task
 {
   void init() override
   {
@@ -15,15 +12,15 @@ struct SecondTestHostTask : public Task
   {
   };
 
-  void exec() override
-  {
-    std::shared_ptr<hArgs> finishprops = std::make_shared<hArgs>();
-    std::string state = "finished";
-    this->finish(state, finishprops);
-  };
+  void exec() override;
 
   void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties) override
   {
+
+    // Get time 
+    // Get timer
+    // Get all...
+
     this->result_props = result_properties;
     this->state = finish_state;
 
@@ -48,4 +45,4 @@ struct SecondTestHostTask : public Task
   }
 };
 
-TASK(SecondTestHostTask);
+TASK(fullBuildPackage);

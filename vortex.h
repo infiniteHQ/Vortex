@@ -218,6 +218,8 @@ namespace VortexMaker
     VORTEX_API void             RefreshDistToolchains();
     VORTEX_API void             RefreshDistHosts();
 
+    VORTEX_API std::shared_ptr<Task>             CreateTask(std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
+
     bool                        DebugCheckVersionAndDataLayout(const char* version);
 
     VORTEX_API void             ExecuteTask(std::string task, hArgs args);
@@ -511,8 +513,12 @@ struct Task{
     // Result
     std::shared_ptr<hArgs> result_props;
 
-    virtual void exec(){};
-    virtual void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties){};
+    std::shared_ptr<VxHost> parent;
+
+    virtual void init(){std::cout << "Not implemented" << std::endl;};
+    virtual void retry(){std::cout << "Not implemented" << std::endl;};
+    virtual void exec(){std::cout << "Not implemented" << std::endl;};
+    virtual void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties){std::cout << "Not implemented" << std::endl;};
 };
 
 
@@ -792,10 +798,9 @@ struct VxHostCurrentSystem{
 
     void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
     void PushSize(std::string newsize){this->size = newsize;};
-
     void Populate(nlohmann::json jsonData); // from working_host.config
     nlohmann::json Extract();
-
+    void Save(std::shared_ptr<VxHost> host);
 };
 
 struct VxHostSnapshot{
@@ -866,6 +871,7 @@ struct VxHost{
     std::vector<TaskList> allTaskLists;
 
     VxHostCurrentSystem currentLoadedSystem;
+
 
     void Init();
     void Refresh();
@@ -1075,6 +1081,39 @@ struct VxToolchain{
 
 //_____________________________________________________________________________
 
+
+class TaskFactory {
+public:
+    using CreatorFunction = std::function<std::shared_ptr<Task>()>;
+
+    static TaskFactory& getInstance() {
+        static TaskFactory instance;
+        return instance;
+    }
+
+    void registerType(const std::string& typeName, CreatorFunction creator) {
+        creatorMap[typeName] = creator;
+    }
+
+    std::shared_ptr<Task> createInstance(const std::string& typeName) const {
+        if (creatorMap.find(typeName)) {return (creatorMap.at(typeName))();}return nullptr;
+    }
+
+    hMap<std::string, CreatorFunction> creatorMap;
+
+};
+
+
+#define TASK(taskName) \
+    namespace { \
+        inline std::shared_ptr<taskName> create_##taskName() { return std::make_shared<taskName>(); }; \
+        struct taskName##Registrar { \
+            taskName##Registrar() { \
+                TaskFactory::getInstance().registerType(#taskName, create_##taskName); \
+            } \
+        }; \
+        inline static taskName##Registrar taskName##RegistrarInstance; \
+    }
 
 
 

@@ -125,6 +125,7 @@ void VxHost::RefreshCurrentWorkingHost()
 {
   nlohmann::json data = VortexMaker::DumpJSON(this->path_hostroot + "/working_host.config");
   this->currentLoadedSystem.Populate(data);
+  
 }
 
 void VxHost::RefreshSnapshots()
@@ -163,15 +164,12 @@ void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
 {
   this->size = jsonData["size"].get<std::string>();
 
-  // Get list of tasks
-  for (auto task : jsonData["taskList"])
-  {
-  }
-
   // Get list of packages and all reports associated
-  for (auto packageReport : jsonData["packagesReportsList"])
+  for (auto packageReport : jsonData["taskList"])
   {
-    std::shared_ptr<Task> task = std::make_shared<Task>();
+    std::shared_ptr<Task> task = TaskFactory::getInstance().createInstance(packageReport["t_tasktype"].get<std::string>().c_str());
+
+
 
     task->id = packageReport["t_id"].get<std::string>();
     task->tasktype = packageReport["t_tasktype"].get<std::string>();
@@ -181,9 +179,6 @@ void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
     this->executedTasks.push_back(task);
   }
 
-  for (auto actionReport : jsonData["actionsReportsList"])
-  {
-  }
 
   // Get filesystem informations
 
@@ -195,7 +190,7 @@ nlohmann::json VxHostCurrentSystem::Extract()
   VxContext &ctx = *CVortexMaker;
   nlohmann::json jsonData;
   jsonData["size"] = this->size;
-  jsonData["packagesReportsList"] = nlohmann::json::array();
+  jsonData["taskList"] = nlohmann::json::array();
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
   for (auto task : this->executedTasks)
@@ -208,11 +203,13 @@ nlohmann::json VxHostCurrentSystem::Extract()
     report["t_priority"] = task->priority;
     report["t_state"] = task->state;
 
-    report["t_component"] = task->result_props->get("component", def);
+    //report["t_component"] = task->result_props->get("component", def);
 
     
-    jsonData["packagesReportsList"].push_back(report);
+    jsonData["taskList"].push_back(report);
   }
+  
+  return jsonData;
 }
 
 // TODO : Split to little refresh functions, create a RefreshAll function.

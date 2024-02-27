@@ -150,6 +150,8 @@ VORTEX_API void VortexMaker::Initialize()
 {
   VxContext &ctx = *CVortexMaker;
 
+  ctx.taskFactory = &TaskFactory::getInstance();
+
   // Set initialized flags
   ctx.initialized = true;
 }
@@ -361,6 +363,31 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
   VortexMaker::RefreshDistHosts();
 }
 
+
+// Correction de la fonction CreateTask
+std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props) {
+    VxContext &ctx = *CVortexMaker;
+
+    // Utilisation de make_shared pour créer la tâche
+    std::shared_ptr<Task> task = TaskFactory::getInstance().createInstance(tasktype);
+
+    if (task) { // Vérification si la tâche a été créée avec succès
+        task->id = uniqueID;
+        task->tasktype = tasktype;
+        task->priority = priority;
+        task->props = props;
+        task->state = "not_started";
+        
+        // Ajout de la tâche aux listes appropriées
+        ctx.IO.tasksToProcess.push_back(task);
+        ctx.IO.tasks.push_back(task);
+    } else {
+        std::cerr << "Failed to create task of type: " << tasktype << std::endl;
+    }
+
+    return task;
+}
+
 void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package)
 {
   for (auto action : this->actions)
@@ -384,14 +411,7 @@ void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> 
 
 
 VORTEX_API void VortexMaker::CreateNewTask(std::shared_ptr<Task> task, std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props){
-  VxContext &ctx = *CVortexMaker;
-  task->id = uniqueID;
-  task->tasktype = tasktype;
-  task->priority = priority;
-  task->state = "not_started";
-  task->props = props;
-  ctx.IO.tasksToProcess.push_back(task);
-  ctx.IO.tasks.push_back(task);
+
 }
 
 #endif // VORTEX_DISABLE

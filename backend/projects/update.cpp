@@ -86,6 +86,20 @@ void TaskList::PushSave(std::shared_ptr<TaskListSave> save){
 }
 
 
+    void VxHostCurrentSystem::Save(std::shared_ptr<VxHost> parent){
+    nlohmann::json data = this->Extract();
+    std::ofstream file(parent->path_hostroot + "/working_host.config");
+        if (file.is_open()) {
+            file << std::setw(4) << data << std::endl;
+            std::cout << "Object saved to " << parent->path_hostroot + "/working_host.config" << std::endl;
+            file.close();
+        } else {
+            std::cerr << "Unable to open file " << parent->path_hostroot + "/working_host.config" << " for writing!" << std::endl;
+        }
+
+
+    }
+
 void VxHost::PushSave(std::shared_ptr<HostSave> save)
 {
     nlohmann::json toolchainData;

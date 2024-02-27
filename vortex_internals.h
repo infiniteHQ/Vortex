@@ -183,6 +183,8 @@ struct VxContext {
   VortexMakerDebugAllocInfo         debugAllocInfo;
   
 
+  TaskFactory*                      taskFactory;
+
   fs::path projectPath;
   VxPaths paths;
 

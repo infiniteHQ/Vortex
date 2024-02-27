@@ -1,5 +1,13 @@
 #include "../../../vortex.h"
 #include "../../../vortex_internals.h"
+#include "./tasks_host.h"
+
+void fullBuildPackage::exec() {
+
+    std::shared_ptr<hArgs> finishprops = std::make_shared<hArgs>();
+    std::string state = "finished";
+    this->finish(state, finishprops);
+}
 
 // Functions
 

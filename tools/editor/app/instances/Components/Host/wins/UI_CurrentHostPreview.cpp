@@ -35,6 +35,7 @@ void HostInstance::UI_CurrentHostPreview()
                 // Save behavior
             }
 
+
             const char *items[] = {"Filesystem", "Binaries", "Patchs", "Automations"};
             static int item_current = 0;
             ImGui::Combo("Type", &item_current, items, IM_ARRAYSIZE(items));
@@ -55,14 +56,15 @@ void HostInstance::UI_CurrentHostPreview()
 
         // Left
         static int selected = 0;
-        // For tasks, check from host tasks, and get all reports
-        static std::array<char[128], 6> labels = {"General", "Tasks", "Package", "Filesystem", "Actions", "Scripts"};
-
+        
+        static std::string patchlabel = "Executed tasks (" + std::to_string(this->host->currentLoadedSystem.executedTasks.size()) + ")";
+        static std::array<std::string, 6> labels = {"General", patchlabel, "Package", "Filesystem", "Actions", "Scripts"};
+    
         {
             ImGui::BeginChild("left pane", ImVec2(170, 0), true);
             for (int i = 0; i < labels.size(); i++)
             {
-                if (ImGui::Selectable(labels[i], selected == i))
+                if (ImGui::Selectable(labels[i].c_str(), selected == i))
                     selected = i;
             }
             ImGui::EndChild();
@@ -79,24 +81,23 @@ void HostInstance::UI_CurrentHostPreview()
 
             if (selected == 1)
             {
-        if (ImGui::BeginTable("table_", 6, flags))
+        if (ImGui::BeginTable("table_", 5, flags))
         {
             ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Retry", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Component", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Description", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableHeadersRow();
 
-            /*
-                for (int row = 0; row < this->host->currentLoadedSystem.reports.size(); row++)
+            
+                for (int row = 0; row < this->host->currentLoadedSystem.executedTasks.size(); row++)
                 {
                     static std::pair<char[128], char[128]> newItem;
                     static char label[128];
 
                     ImGui::TableNextRow();
-                    for (int column = 0; column < 6; column++)
+                    for (int column = 0; column < 5; column++)
                     {
                         ImGui::TableSetColumnIndex(column);
 
@@ -109,27 +110,43 @@ void HostInstance::UI_CurrentHostPreview()
                         }
                         if (column == 1)
                         {
-                            ImGui::Text(this->host->currentLoadedSystem.reports[row]->parent.task.c_str());
+
+                            if (ImGui::ImageButtonWithText(addIcon, "Retry", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            {
+            std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+            props->add("host", this->host);
+
+            std::shared_ptr<Task> task = VortexMaker::CreateTask(this->host->currentLoadedSystem.executedTasks[row]->tasktype, "SecondTestHostTask-123-retry", 123, props);
+
+            task->state = "retry";
+            props->add("self", task);
+            
+            this->host->currentLoadedSystem.executedTasks.push_back(task);
+
+            this->host->currentLoadedSystem.Save(this->host);
+
+                            }
+
                         }
                         if (column == 2)
                         {
-                            ImGui::Text(this->host->currentLoadedSystem.reports[row]->parent.uniqueID.c_str());
+                            ImGui::Text(this->host->currentLoadedSystem.executedTasks[row]->id.c_str());
                         }
                         if (column == 3)
                         {
-                            ImGui::Text(this->host->currentLoadedSystem.reports[row]->parent.component.c_str());
+                            ImGui::Text(this->host->currentLoadedSystem.executedTasks[row]->tasktype.c_str());
                         }
                         if (column == 4)
                         {
-                            ImGui::Text(this->host->currentLoadedSystem.reports[row]->result.c_str());
+                            ImGui::Text(this->host->currentLoadedSystem.executedTasks[row]->state.c_str());
                         }
                         if (column == 5)
                         {
-                            ImGui::Text(this->host->currentLoadedSystem.reports[row]->description.c_str());
+                            ImGui::Text(this->host->currentLoadedSystem.executedTasks[row]->state.c_str());
                         }
                     }
                 }
-*/
+
             ImGui::EndTable();
         }
 
