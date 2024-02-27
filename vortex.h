@@ -1137,10 +1137,8 @@ class TaskProcessor {
 public:
     TaskProcessor();
     ~TaskProcessor();
-    void addTask(std::shared_ptr<Task> task);
     void processTasks();
     void markTaskCompleted(std::shared_ptr<Task> task);
-    void removeTask(std::shared_ptr<Task> taskToRemove);
 
 private:
     std::atomic<bool> stop;

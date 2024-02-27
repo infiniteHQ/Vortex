@@ -431,40 +431,16 @@ TaskProcessor::~TaskProcessor()
 }
 
 // Ajout d'une tâche à TaskProcessor
-void TaskProcessor::addTask(std::shared_ptr<Task> task)
-{
-  std::unique_lock<std::mutex> lock(mutex);
-  tasks.push(task);
-  tasksByPriority[task->priority].push_back(task); // Ajout à la map de regroupement par priorité
-  condition.notify_one();
-}
+
 // Marque une tâche comme terminée
 void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
 {
+  VxContext &ctx = *CVortexMaker;
+    ctx.IO.tasksToProcess.erase(std::remove_if(ctx.IO.tasksToProcess.begin(), ctx.IO.tasksToProcess.end(), [task](const auto& t) { return t == task; }), ctx.IO.tasksToProcess.end());
   std::unique_lock<std::mutex> lock(mutex);
   task->state = "finished"; // ou "success", selon votre besoin
 }
 
-// Supprime une tâche de TaskProcessor
-void TaskProcessor::removeTask(std::shared_ptr<Task> taskToRemove)
-{
-  std::unique_lock<std::mutex> lock(mutex);
-  std::priority_queue<std::shared_ptr<Task>, std::vector<std::shared_ptr<Task>>, CompareTaskPriority> newTasks;
-  while (!tasks.empty())
-  {
-    auto currentTask = tasks.top();
-    tasks.pop();
-    if (currentTask != taskToRemove)
-    {
-      newTasks.push(currentTask);
-    }
-  }
-  tasks = newTasks;
-  // Supprimer également de la map de regroupement par priorité
-  tasksByPriority[taskToRemove->priority].erase(
-      std::remove(tasksByPriority[taskToRemove->priority].begin(), tasksByPriority[taskToRemove->priority].end(), taskToRemove),
-      tasksByPriority[taskToRemove->priority].end());
-}
 
 #include <deque>
 #include <mutex>
@@ -485,6 +461,7 @@ void TaskProcessor::processTasks()
     int last_priority = 0;
     bool first = true;
 
+std::cout << ctx.IO.tasksToProcess.size()<< std::endl;
 for (auto task : ctx.IO.tasksToProcess)
 {
     if (first || task->priority == last_priority)
@@ -506,7 +483,6 @@ for (auto task : ctx.IO.tasksToProcess)
         {
             future.get();
         }
-        futures.clear(); 
 
         futures.emplace_back(std::async(std::launch::async, [this, task]()
         {
@@ -518,6 +494,8 @@ for (auto task : ctx.IO.tasksToProcess)
         }));
         last_priority = task->priority;
     }
+
+
 }
 
 // Attendre que les derniers futures se terminent
@@ -525,7 +503,6 @@ for (auto &future : futures)
 {
     future.get();
 }
-futures.clear();
 }
 }
 

@@ -130,18 +130,7 @@ public:
 
     PopStyle();
     
-for (auto& task : this->m_ctx->IO.tasksToProcess) {
-    if (task->state == "paused") {
-        // Ignore paused tasks
-        continue;
-    }
-    if (task->state == "not_started" || task->state == "retry") {
-        taskProcessor.addTask(task);
-    } else if (task->state == "success" || task->state == "finished") {
-        // Marquer les tâches terminées pour qu'elles ne soient pas réexécutées
-        taskProcessor.markTaskCompleted(task);
-    }
-}
+
 
   }
 
