@@ -2,7 +2,7 @@
 #include "../../vortex_internals.h"
 
 void TaskList::Refresh()
-{/*
+{
   nlohmann::json filecontent = VortexMaker::DumpJSON(this->configFilePath);
 
   this->label = filecontent["label"].get<std::string>();
@@ -11,12 +11,12 @@ void TaskList::Refresh()
   nlohmann::json tasks = filecontent["tasks"];
   for (auto &t : tasks)
   {
-    VxHostTask task;
-    task.task = t["task"].get<std::string>();
-    task.component = t["component"].get<std::string>();
-    task.priority = t["priority"].get<int>();
+    std::shared_ptr<Task> task = std::make_shared<Task>();
+    task->tasktype = t["task"].get<std::string>();
+    //task.component = t["component"].get<std::string>();
+    task->priority = t["priority"].get<int>();
     this->list.push_back(task);
-  }*/
+  }
 }
 
 void VxPackage::Refresh()
@@ -241,14 +241,14 @@ void VxHost::Refresh()
   }
   this->FindPackages();
 
-  /*registeredTasklists.clear();
+  registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
   {
     this->RegisterTasklist(t["label"].get<std::string>());
   }
   this->FindTasklists();
-*/
+
   this->Init();
 }
 

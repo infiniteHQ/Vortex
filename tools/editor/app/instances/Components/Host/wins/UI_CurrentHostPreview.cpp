@@ -1,13 +1,39 @@
 #include "../HostInstance.h"
 #include <array>
 
+static void coloredTag(std::string name, ImVec4 color)
+{
+    ImGui::PushStyleColor(ImGuiCol_Button, color);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
+    ImGui::Button(name.c_str());
+    ImGui::PopStyleColor(3);
+}
+
+static void idTag(std::string name)
+{
+    ImGuiStyle &style = ImGui::GetStyle();
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 0.60f)));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x, (float)(int)(style.ItemSpacing.y * 0.60f)));
+    
+    ImVec4 color(0.0f,0.0f,0.0f,0.0f);
+    ImGui::PushStyleColor(ImGuiCol_Button, color);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
+
+    ImGui::Button(name.c_str());
+
+    ImGui::PopStyleColor(3);
+    ImGui::PopStyleVar(2);
+}
+
 void HostInstance::UI_CurrentHostPreview()
 {
 
     if (this->show_UI_CurrentHostPreview)
     {
 
-        static std::string label = this->name + " - Preview Current Host###" +  this->name + "previewcurrenthost";
+        static std::string label = this->name + " - Preview Current Host###" + this->name + "previewcurrenthost";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static std::thread receiveThread;
@@ -35,7 +61,6 @@ void HostInstance::UI_CurrentHostPreview()
                 // Save behavior
             }
 
-
             const char *items[] = {"Filesystem", "Binaries", "Patchs", "Automations"};
             static int item_current = 0;
             ImGui::Combo("Type", &item_current, items, IM_ARRAYSIZE(items));
@@ -56,10 +81,10 @@ void HostInstance::UI_CurrentHostPreview()
 
         // Left
         static int selected = 0;
-        
-        static std::string patchlabel = "Executed tasks (" + std::to_string(this->host->currentLoadedSystem.executedTasks.size()) + ")";
-        static std::array<std::string, 6> labels = {"General", patchlabel, "Package", "Filesystem", "Actions", "Scripts"};
-    
+
+        std::string patchlabel = "Executed tasks (" + std::to_string(this->host->currentLoadedSystem.executedTasks.size()) + ")";
+        std::array<std::string, 6> labels = {"General", patchlabel, "Package", "Filesystem", "Actions", "Scripts"};
+
         {
             ImGui::BeginChild("left pane", ImVec2(170, 0), true);
             for (int i = 0; i < labels.size(); i++)
@@ -79,58 +104,61 @@ void HostInstance::UI_CurrentHostPreview()
 
         static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-            if (selected == 1)
-            {
-        if (ImGui::BeginTable("table_", 5, flags))
+        if (selected == 1)
         {
-            ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Retry", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableHeadersRow();
+            if (ImGui::BeginTable("table_", 7, flags))
+            {
+                ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Retry", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Duration", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Started", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableHeadersRow();
 
-            
                 for (int row = 0; row < this->host->currentLoadedSystem.executedTasks.size(); row++)
                 {
                     static std::pair<char[128], char[128]> newItem;
                     static char label[128];
 
                     ImGui::TableNextRow();
-                    for (int column = 0; column < 5; column++)
+                    for (int column = 0; column < 7; column++)
                     {
                         ImGui::TableSetColumnIndex(column);
 
                         if (column == 0)
                         {
-                            if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            std::string deleteButtonID = "Delete###" + std::to_string(row) + "-" + std::to_string(column);
+                            if (ImGui::ImageButtonWithText(trashIcon, deleteButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                             {
-
+                                std::swap(this->host->currentLoadedSystem.executedTasks[row], this->host->currentLoadedSystem.executedTasks.back());
+                                this->host->currentLoadedSystem.executedTasks.pop_back();
+                                this->host->currentLoadedSystem.Save(this->host);
                             }
                         }
                         if (column == 1)
                         {
 
-                            if (ImGui::ImageButtonWithText(addIcon, "Retry", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            std::string retryButtonID = "Retry###" + std::to_string(row) + "-" + std::to_string(column);
+                            if (ImGui::ImageButtonWithText(refreshIcon, retryButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                             {
-            std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-            props->add("host", this->host);
+                                std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+                                props->add("host", this->host);
 
-            std::shared_ptr<Task> task = VortexMaker::CreateTask(this->host->currentLoadedSystem.executedTasks[row]->tasktype, "SecondTestHostTask-123-retry", 123, props);
+                                std::shared_ptr<Task> task = VortexMaker::CreateTask(this->host->currentLoadedSystem.executedTasks[row]->tasktype, "SecondTestHostTask-123-retry", 123, props);
 
-            task->state = "retry";
-            props->add("self", task);
-            
-            this->host->currentLoadedSystem.executedTasks.push_back(task);
+                                task->state = "retry";
+                                props->add("self", task);
 
-            this->host->currentLoadedSystem.Save(this->host);
+                                this->host->currentLoadedSystem.executedTasks.push_back(task);
 
+                                this->host->currentLoadedSystem.Save(this->host);
                             }
-
                         }
                         if (column == 2)
                         {
-                            ImGui::Text(this->host->currentLoadedSystem.executedTasks[row]->id.c_str());
+                            idTag(this->host->currentLoadedSystem.executedTasks[row]->id);
                         }
                         if (column == 3)
                         {
@@ -138,68 +166,91 @@ void HostInstance::UI_CurrentHostPreview()
                         }
                         if (column == 4)
                         {
-                            ImGui::Text(this->host->currentLoadedSystem.executedTasks[row]->state.c_str());
+                            if (this->host->currentLoadedSystem.executedTasks[row]->state == "finished")
+                            {
+                                coloredTag("Finished", ImVec4(0.0f, 1.0f, 0.2f, 0.4f));
+                            }
+                            if (this->host->currentLoadedSystem.executedTasks[row]->state == "success")
+                            {
+                                coloredTag("Success", ImVec4(0.0f, 1.0f, 0.2f, 0.4f));
+                            }
+                            if (this->host->currentLoadedSystem.executedTasks[row]->state == "failed")
+                            {
+                                coloredTag("Fail", ImVec4(1.0f, 0.2f, 0.2f, 0.4f));
+                            }
+                            if (this->host->currentLoadedSystem.executedTasks[row]->state == "paused")
+                            {
+                                coloredTag("Fail", ImVec4(0.5f, 0.5f, 0.2f, 0.4f));
+                            }
+                            if (this->host->currentLoadedSystem.executedTasks[row]->state == "retry")
+                            {
+                                coloredTag("Retry", ImVec4(0.5f, 0.5f, 0.2f, 0.4f));
+                            }
+                            if (this->host->currentLoadedSystem.executedTasks[row]->state == "not_started")
+                            {
+                                coloredTag("Not Started", ImVec4(0.5f, 0.5f, 0.5f, 0.1f));
+                            }
                         }
                         if (column == 5)
                         {
-                            ImGui::Text(this->host->currentLoadedSystem.executedTasks[row]->state.c_str());
+                            ImGui::Text(std::to_string(this->host->currentLoadedSystem.executedTasks[row]->total_time).c_str());
+                        }
+                        if (column == 6)
+                        {
+                            ImGui::Text(std::to_string(this->host->currentLoadedSystem.executedTasks[row]->start_time).c_str());
                         }
                     }
                 }
 
-            ImGui::EndTable();
+                ImGui::EndTable();
+            }
         }
 
-            }
-
-                      if (selected == 2)
-            {
-        if (ImGui::BeginTable("table_", 3, flags))
+        if (selected == 2)
         {
-            ImGui::TableSetupColumn("Package", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableHeadersRow();
+            if (ImGui::BeginTable("table_", 3, flags))
+            {
+                ImGui::TableSetupColumn("Package", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableHeadersRow();
 
+                /* for (int row = 0; row < this->host->currentLoadedSystem.reports.size(); row++)
+                 {
+                     if(this->host->currentLoadedSystem.reports[row]->parent.task == "testpackage"){
 
-               /* for (int row = 0; row < this->host->currentLoadedSystem.reports.size(); row++)
-                {
-                    if(this->host->currentLoadedSystem.reports[row]->parent.task == "testpackage"){
-                        
-                    static std::pair<char[128], char[128]> newItem;
-                    static char label[128];
+                     static std::pair<char[128], char[128]> newItem;
+                     static char label[128];
 
-                    ImGui::TableNextRow();
-                    for (int column = 0; column < 3; column++)
-                    {
-                        ImGui::TableSetColumnIndex(column);
+                     ImGui::TableNextRow();
+                     for (int column = 0; column < 3; column++)
+                     {
+                         ImGui::TableSetColumnIndex(column);
 
-                        if (column == 0)
-                        {
-                            ImGui::Text(this->host->currentLoadedSystem.reports[row]->parent.component.c_str());
-                        }
-                        if (column == 1)
-                        {
-                            ImGui::Text(this->host->currentLoadedSystem.reports[row]->parent.uniqueID.c_str());
-                        }
-                        if (column == 2)
-                        {
-                            ImGui::Text(this->host->currentLoadedSystem.reports[row]->result.c_str());
-                        }
-                    }
-                    }
-                }*/
+                         if (column == 0)
+                         {
+                             ImGui::Text(this->host->currentLoadedSystem.reports[row]->parent.component.c_str());
+                         }
+                         if (column == 1)
+                         {
+                             ImGui::Text(this->host->currentLoadedSystem.reports[row]->parent.uniqueID.c_str());
+                         }
+                         if (column == 2)
+                         {
+                             ImGui::Text(this->host->currentLoadedSystem.reports[row]->result.c_str());
+                         }
+                     }
+                     }
+                 }*/
 
-            ImGui::EndTable();
+                ImGui::EndTable();
+            }
         }
 
-            }
-    
         // Right
         {
         }
 
         ImGui::End();
-
     }
 }

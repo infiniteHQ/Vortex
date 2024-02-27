@@ -78,6 +78,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <ctime>
 #include <nlohmann/json.hpp>
 #include <filesystem>
 #include <vector>
@@ -505,6 +506,10 @@ struct Task{
     std::string tasktype;
     std::string state; // state of this task
 
+    std::time_t start_time;
+    std::time_t stop_time;
+    std::time_t total_time;
+
     int priority;
     
     // Custom args
@@ -813,7 +818,7 @@ struct VxHostSnapshot{
 struct TaskList{
     std::string configFilePath;
     std::string label;
-    std::vector<Task> list;
+    std::vector<std::shared_ptr<Task>> list;
     void Refresh();
     void PushSave(std::shared_ptr<TaskListSave> save);
 };

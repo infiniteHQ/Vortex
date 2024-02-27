@@ -17,6 +17,7 @@ struct SecondTestHostTask : public Task
 
   void exec() override
   {
+    std::time(&this->start_time);
     std::shared_ptr<hArgs> finishprops = std::make_shared<hArgs>();
     std::string state = "finished";
     this->finish(state, finishprops);
@@ -24,6 +25,9 @@ struct SecondTestHostTask : public Task
 
   void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties) override
   {
+
+    std::time(&this->stop_time);
+    this->total_time = this->stop_time - this->start_time;
     this->result_props = result_properties;
     this->state = finish_state;
 

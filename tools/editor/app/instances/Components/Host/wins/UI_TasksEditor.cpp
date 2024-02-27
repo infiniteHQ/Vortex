@@ -8,11 +8,11 @@ void HostInstance::UI_TasksEditor()
     if (this->show_UI_TasksEditor)
     {
 
-        static std::string label = this->name + " - Tasks Editor###" +  this->name + "taskseditor";
+        static std::string label = this->name + " - Tasks Editor###" + this->name + "taskseditor";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
-        static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);   
-        static ImTextureID buildIcon = this->m_BuildIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);        
+        static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID buildIcon = this->m_BuildIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID eyeIcon = this->m_EyeIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID saveIcon = this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -62,34 +62,34 @@ void HostInstance::UI_TasksEditor()
             ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableHeadersRow();
 
-                for (int row = 0; row < 1; row++)
+            for (int row = 0; row < 1; row++)
+            {
+                static std::pair<char[128], char[128]> newItem;
+
+                ImGui::TableNextRow();
+                for (int column = 0; column < 3; column++)
                 {
-                    static std::pair<char[128], char[128]> newItem;
+                    ImGui::TableSetColumnIndex(column);
 
-                    ImGui::TableNextRow();
-                    for (int column = 0; column < 3; column++)
+                    if (column == 0)
                     {
-                        ImGui::TableSetColumnIndex(column);
-
-                        if (column == 0)
-                        {
-                            if (ImGui::ImageButtonWithText(addIcon, "Create new", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-                            {
-                            }
-                        }
-                        if (column == 1)
-                        {
-                        }
-
-                        if (column == 2)
-                        {
-                        }
-
-                        if (column == 3)
+                        if (ImGui::ImageButtonWithText(addIcon, "Create new", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                         {
                         }
                     }
+                    if (column == 1)
+                    {
+                    }
+
+                    if (column == 2)
+                    {
+                    }
+
+                    if (column == 3)
+                    {
+                    }
                 }
+            }
 
             ImGui::EndTable();
         }
@@ -103,53 +103,64 @@ void HostInstance::UI_TasksEditor()
             ImGui::TableSetupColumn("Number of tasks", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableHeadersRow();
 
-                for (int row = 0; row < this->host->tasklists.size(); row++)
+            for (int row = 0; row < this->host->tasklists.size(); row++)
+            {
+                ImGui::TableNextRow();
+                for (int column = 0; column < 5; column++)
                 {
-                    ImGui::TableNextRow();
-                    for (int column = 0; column < 5; column++)
+                    ImGui::TableSetColumnIndex(column);
+                    std::string execButtonID = "Execute###" + std::to_string(row) + "-" + std::to_string(column);
+                    std::string deleteButtonID = "Delete###" + std::to_string(row) + "-" + std::to_string(column);
+                    std::string openButtonID = "Open###" + std::to_string(row) + "-" + std::to_string(column);
+
+                    if (column == 0)
                     {
-                        ImGui::TableSetColumnIndex(column);
-                         std::string execButtonID = "Execute###" + std::to_string(row) + "-" + std::to_string(column);
-                         std::string deleteButtonID = "Delete###" + std::to_string(row) + "-" + std::to_string(column);
-                         std::string openButtonID = "Open###" + std::to_string(row) + "-" + std::to_string(column);
-
-                        if (column == 0)
+                        if (ImGui::ImageButtonWithText(buildIcon, execButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                         {
-                            if (ImGui::ImageButtonWithText(buildIcon, execButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            for (auto task : this->host->tasklists[row]->list)
                             {
-                                for(auto task : this->host->tasklists[row]->list){
-                                    hArgs args;
-                                    this->host->ExecuteTask(task, args);
-                                }
-                            }
-                        }
-                        if (column == 1)
-                        {
-                            if (ImGui::ImageButtonWithText(eyeIcon, openButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-                            {
-							    std::shared_ptr<TasklistInstance> instance = std::make_shared<TasklistInstance>(m_ctx, this->host->tasklists[row], this->host);
-							    this->factory->SpawnInstance(instance);	
-                            }
-                        }
-                        if (column == 2)
-                        {
-                            if (ImGui::ImageButtonWithText(trashIcon, deleteButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-                            {
-                            }
-                        }
+                                // this->host->ExecuteTask(task, args);
 
-                        if (column == 3)
-                        {
-                            ImGui::Text(this->host->tasklists[row]->label.c_str());
-                        }
+                                std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+                                props->add("host", this->host);
 
-                        if (column == 4)
-                        {
-                            ImGui::Text(std::to_string(this->host->tasklists[row]->list.size()).c_str());
+                                std::shared_ptr<Task> instancetask = VortexMaker::CreateTask(task->tasktype, "SecondTestHostTask-123", 123, props);
+
+                                instancetask->state = "not_started";
+                                props->add("self", instancetask);
+
+                                this->host->currentLoadedSystem.executedTasks.push_back(instancetask);
+
+                                this->host->currentLoadedSystem.Save(this->host);
+                            }
                         }
                     }
+                    if (column == 1)
+                    {
+                        if (ImGui::ImageButtonWithText(eyeIcon, openButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                        {
+                            std::shared_ptr<TasklistInstance> instance = std::make_shared<TasklistInstance>(m_ctx, this->host->tasklists[row], this->host);
+                            this->factory->SpawnInstance(instance);
+                        }
+                    }
+                    if (column == 2)
+                    {
+                        if (ImGui::ImageButtonWithText(trashIcon, deleteButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                        {
+                        }
+                    }
+
+                    if (column == 3)
+                    {
+                        ImGui::Text(this->host->tasklists[row]->label.c_str());
+                    }
+
+                    if (column == 4)
+                    {
+                        ImGui::Text(std::to_string(this->host->tasklists[row]->list.size()).c_str());
+                    }
                 }
-            
+            }
 
             ImGui::EndTable();
         }

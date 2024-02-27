@@ -69,7 +69,7 @@ void TaskList::PushSave(std::shared_ptr<TaskListSave> save){
 
     for(auto task : save->list){
         nlohmann::json t;
-        t["component"] = task.component;
+        //t["component"] = task.component;
         t["priority"] = task.priority;
         t["task"] = task.task;
         data["tasks"].push_back(t);
@@ -102,6 +102,7 @@ void TaskList::PushSave(std::shared_ptr<TaskListSave> save){
 
 void VxHost::PushSave(std::shared_ptr<HostSave> save)
 {
+  VxContext &ctx = *CVortexMaker;
     nlohmann::json toolchainData;
     toolchainData["host"]["name"] = save->name;
     toolchainData["host"]["author"] = save->author;
@@ -127,20 +128,18 @@ void VxHost::PushSave(std::shared_ptr<HostSave> save)
         packageJson["origin"] = std::string(package.second);
         registeredPackagesJson.push_back(packageJson);
     }
-/*
-    nlohmann::json tasksJson;
-    for (const auto &task : this->tasks)
-    {
+
+    nlohmann::json tasklist;
+    for (const auto &list : this->allTaskLists){
         nlohmann::json packageJson;
-        packageJson["task"] = task.task;
-        packageJson["component"] = task.component;
-        packageJson["priority"] = task.priority;
+        packageJson["label"] = list.label;
         registeredPackagesJson.push_back(packageJson);
     }
-*/
+
+
     nlohmann::json contents;
     contents["packages"] = registeredPackagesJson;
-   // contents["tasks"] = tasksJson;
+    contents["tasklists"] = tasklist;
 
     toolchainData["content"] = contents;
 
