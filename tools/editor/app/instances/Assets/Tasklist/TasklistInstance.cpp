@@ -201,8 +201,8 @@ void TasklistInstance::Refresh()
 
         newtask.priority = task->priority;
 
-        //strncpy(newtask.component, task.component.c_str(), sizeof(newtask.component));
-        //newtask.component[sizeof(newtask.component) - 1] = '\0';
+        strncpy(newtask.component, task->component.c_str(), sizeof(newtask.component));
+        newtask.component[sizeof(newtask.component) - 1] = '\0';
 
         refreshedCurrentSave->list.push_back(newtask);
     }

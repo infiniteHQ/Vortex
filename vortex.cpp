@@ -364,7 +364,7 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
 }
 
 // Correction de la fonction CreateTask
-std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
+std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
 {
   VxContext &ctx = *CVortexMaker;
 
@@ -375,6 +375,7 @@ std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string 
   { // Vérification si la tâche a été créée avec succès
     task->id = uniqueID;
     task->tasktype = tasktype;
+    task->component = component;
     task->priority = priority;
     task->props = props;
     task->state = "not_started";
@@ -460,8 +461,6 @@ void TaskProcessor::processTasks()
 
     int last_priority = 0;
     bool first = true;
-
-std::cout << ctx.IO.tasksToProcess.size()<< std::endl;
 for (auto task : ctx.IO.tasksToProcess)
 {
     if (first || task->priority == last_priority)

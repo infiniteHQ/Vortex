@@ -48,6 +48,20 @@ struct icons {
     static const size_t i_library_size;
 
     // Basic Icons
+
+    static const uint8_t i_error[];
+    static const size_t i_error_size;
+
+    static const uint8_t i_warn[];
+    static const size_t i_warn_size;
+
+    static const uint8_t i_success[];
+    static const size_t i_success_size;
+
+    static const uint8_t i_unknow[];
+    static const size_t i_unknow_size;
+
+
     static const uint8_t i_build[];
     static const size_t i_build_size;
 

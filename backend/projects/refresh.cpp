@@ -13,7 +13,7 @@ void TaskList::Refresh()
   {
     std::shared_ptr<Task> task = std::make_shared<Task>();
     task->tasktype = t["task"].get<std::string>();
-    //task.component = t["component"].get<std::string>();
+    task->component = t["component"].get<std::string>();
     task->priority = t["priority"].get<int>();
     this->list.push_back(task);
   }

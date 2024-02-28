@@ -117,15 +117,16 @@ void HostInstance::UI_TasksEditor()
                     {
                         if (ImGui::ImageButtonWithText(buildIcon, execButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                         {
+                            this->host->tasklists[row]->Refresh();
                             for (auto task : this->host->tasklists[row]->list)
                             {
                                 // this->host->ExecuteTask(task, args);
 
                                 std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
                                 props->add("host", this->host);
+                                std::shared_ptr<Task> instancetask = VortexMaker::CreateTask(task->tasktype, task->component, "SecondTestHostTask-123", task->priority, props);
 
-                                std::shared_ptr<Task> instancetask = VortexMaker::CreateTask(task->tasktype, "SecondTestHostTask-123", task->priority, props);
-
+                                instancetask->parent = this->host; // il faut assigner le component name ici ! il n'est pas bon pour l'instant
                                 instancetask->state = "not_started";
                                 props->add("self", instancetask);
 

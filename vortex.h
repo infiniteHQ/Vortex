@@ -233,7 +233,7 @@ namespace VortexMaker
     VORTEX_API void             RefreshDistToolchains();
     VORTEX_API void             RefreshDistHosts();
 
-    VORTEX_API std::shared_ptr<Task>             CreateTask(std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
+    VORTEX_API std::shared_ptr<Task>             CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
 
     bool                        DebugCheckVersionAndDataLayout(const char* version);
 
@@ -514,12 +514,56 @@ private:
 // [SECTION] Structures
 //_____________________________________________________________________________
 
+struct Check{
+    std::string checkID;
+    std::string checkResult = "unknow";
+    std::string checkLog;
+};
 
 struct Task{
     std::string id; // to find this task from everywhere
     std::string tasktype;
+    std::string component;
     std::string state; // state of this task
     int priority;
+
+    int warningCounter = 0;
+    int failCounter = 0;
+    int unknowCounter = 0;
+    int successCounter = 0;
+
+    std::vector<std::shared_ptr<Check>> checkList;
+    void addIdleCheck(std::string id){
+        std::shared_ptr<Check> newCheck = std::make_shared<Check>();
+        newCheck->checkID = id;
+        this->checkList.push_back(newCheck);
+        this->unknowCounter++;
+    }
+
+    void addCheckVerdict(std::string id, std::string result, std::string log){
+        for(auto check : this->checkList){
+            if(check->checkID == id){
+                check->checkLog = log;
+                check->checkResult = result;
+                
+      if (check->checkResult == "failed"){
+        this->failCounter++;
+        this->unknowCounter--;
+      }
+      else if (check->checkResult == "success"){
+        this->successCounter++;
+        this->unknowCounter--;
+      }
+      else if (check->checkResult == "warning"){
+        this->warningCounter++;
+        this->unknowCounter--;
+      }
+      else if (check->checkResult == "unknow"){
+
+      }
+            }
+        }
+    }
 
 
     std::chrono::time_point<std::chrono::system_clock> m_StartTime;
@@ -539,6 +583,7 @@ std::string startTime() {
 
     void start()
     {
+        std::cout << "Started" << std::endl;
         this->m_StartTime = std::chrono::system_clock::now();
         this->state = "process";
         this->m_bRunning = true;
@@ -897,6 +942,7 @@ struct VxHost{
 
     std::string path_hostroot;
     std::string path_hostfactory;
+    std::string path_datapackages;
     std::string path_hostsnapshots;
 
     std::string GetTriplet(std::string triplet_type);

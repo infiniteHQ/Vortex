@@ -93,8 +93,8 @@ void VxHost::PreBuild()
     perror("Erreur lors de la création du dossier crosstoolsDir");
   }
 
-  std::string packages_data = baseDir + "/data/packages";
-  if (mkdir(packages_data.c_str(), 0777) == -1)
+  this->path_datapackages = baseDir + "/data/packages";
+  if (mkdir(this->path_datapackages.c_str(), 0777) == -1)
   {
     perror("Erreur lors de la création du dossier crosstoolsDir");
   }
@@ -202,13 +202,13 @@ void VxHost::PreBuild()
     // Puis, se reabser dans l'host pour compiler le système final (dans tmp/system)
     // Faire les utilitaire de reprise eet de compilation optimisée
 
-    std::string cmd = "cp -r " + package->path + " " + packages_data;
+    std::string cmd = "cp -r " + package->path + " " + this->path_datapackages;
 
     size_t posDernierSlash = package->path.find_last_of('/');
     if (posDernierSlash != std::string::npos)
     {
       std::string resultat = package->path.substr(posDernierSlash + 1);
-      package->distPath = packages_data + "/" + resultat;
+      package->distPath = this->path_datapackages + "/" + resultat;
     }
 
     int returnCode = system(cmd.c_str());

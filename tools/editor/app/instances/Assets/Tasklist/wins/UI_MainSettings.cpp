@@ -64,11 +64,39 @@ void TasklistInstance::UI_MainSettings()
             {
                 static TaskSave newtask;
                 std::vector<const char *> items;
-                for(auto& chaine : this->m_ctx->taskFactory->creatorMap) {
-            items.push_back(chaine.key.c_str());
-        }
+                for (auto &chaine : this->m_ctx->taskFactory->creatorMap)
+                {
+                    items.push_back(chaine.key.c_str());
+                }
+
+                std::vector<const char *> items_components = {"none"};
+
+                for (auto &chaine : this->parentHost->packages)
+                {
+                    items_components.push_back(chaine->name.c_str());
+                }
+                for (auto &chaine : this->m_ctx->IO.distHosts)
+                {
+                    items_components.push_back(chaine.name.c_str());
+                }
+
+                for (auto &chaine : this->m_ctx->IO.toolchains)
+                {
+                    items_components.push_back(chaine.name.c_str());
+                }
+
+                for (auto &chaine : this->m_ctx->IO.hosts)
+                {
+                    items_components.push_back(chaine->name.c_str());
+                }
+
+                for (auto &chaine : this->m_ctx->IO.distHosts)
+                {
+                    items_components.push_back(chaine.name.c_str());
+                }
 
                 static int item_current = 0;
+                static int item_component_current = 0;
 
                 ImGui::TableNextRow();
                 for (int column = 0; column < 4; column++)
@@ -81,6 +109,10 @@ void TasklistInstance::UI_MainSettings()
                         {
                             strncpy(newtask.task, items[item_current], sizeof(newtask.task) - 1);
                             newtask.task[sizeof(newtask.task) - 1] = '\0'; // Assurez-vous que la chaîne est terminée par un null byte
+
+                            strncpy(newtask.component, items_components[item_component_current], sizeof(newtask.component) - 1);
+                            newtask.component[sizeof(newtask.component) - 1] = '\0'; // Assurez-vous que la chaîne est terminée par un null byte
+
                             this->m_currentSave->list.push_back(newtask);
                         }
                     }
@@ -107,7 +139,22 @@ void TasklistInstance::UI_MainSettings()
 
                     if (column == 2)
                     {
-                        ImGui::InputText("Component", newtask.component, 128);
+                        if (ImGui::BeginCombo("Component", items_components[item_component_current]))
+                        {
+                            for (int i = 0; i < items_components.size(); ++i)
+                            {
+                                bool is_selected = (item_component_current == i);
+                                if (ImGui::Selectable(items_components[i], is_selected))
+                                {
+                                    item_component_current = i; // Met à jour l'ID de l'élément sélectionné
+                                }
+                                if (is_selected)
+                                {
+                                    ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
+                                }
+                            }
+                            ImGui::EndCombo();
+                        }
                     }
 
                     if (column == 3)

@@ -19,7 +19,7 @@ struct SecondTestHostTask : public Task
   {
     this->start();
      
-  std::this_thread::sleep_for(std::chrono::seconds(3)); // Simuler une tâche en cours d'exécution
+  std::this_thread::sleep_for(std::chrono::seconds(70)); // Simuler une tâche en cours d'exécution
      
 
 

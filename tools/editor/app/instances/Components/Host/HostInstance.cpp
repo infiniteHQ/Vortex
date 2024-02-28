@@ -19,6 +19,31 @@ HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, Instan
 
     {
         uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_error, icons::i_error_size, w, h);
+        m_ErrorIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_warn, icons::i_warn_size, w, h);
+        m_WarningIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_unknow, icons::i_unknow_size, w, h);
+        m_UnknowIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_success, icons::i_success_size, w, h);
+        m_SuccessIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+
+    {
+        uint32_t w, h;
         void *data = Walnut::Image::Decode(icons::i_save, icons::i_save_size, w, h);
         m_SaveIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
         free(data);
@@ -250,21 +275,6 @@ void HostInstance::menubar()
             // Save behavior
         }
 
-        if (ImGui::ImageButtonWithText(settingsIcon, "HostTasdk", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight())))
-        {
-            std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-            props->add("host", this->host);
-
-            std::shared_ptr<Task> task = VortexMaker::CreateTask("SecondTestHostTask", "SecondTestHostTask-123", 123, props);
-
-            task->state = "not_started";
-            props->add("self", task);
-            
-            this->host->currentLoadedSystem.executedTasks.push_back(task);
-
-            this->host->currentLoadedSystem.Save(this->host);
-
-        }
 
 
 

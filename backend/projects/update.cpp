@@ -69,7 +69,7 @@ void TaskList::PushSave(std::shared_ptr<TaskListSave> save){
 
     for(auto task : save->list){
         nlohmann::json t;
-        //t["component"] = task.component;
+        t["component"] = task.component;
         t["priority"] = task.priority;
         t["task"] = task.task;
         data["tasks"].push_back(t);

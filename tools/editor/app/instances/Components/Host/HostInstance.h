@@ -69,6 +69,10 @@ public:
     std::shared_ptr<Walnut::Image> m_HostIcon;
     std::shared_ptr<Walnut::Image> m_Icon;
     std::shared_ptr<Walnut::Image> m_EyeIcon;
+    std::shared_ptr<Walnut::Image> m_WarningIcon;
+    std::shared_ptr<Walnut::Image> m_ErrorIcon;
+    std::shared_ptr<Walnut::Image> m_SuccessIcon;
+    std::shared_ptr<Walnut::Image> m_UnknowIcon;
     std::shared_ptr<Walnut::Image> m_TaskListIcon;
     std::shared_ptr<Walnut::Image> m_SaveIcon;
     std::shared_ptr<Walnut::Image> m_RefreshIcon;

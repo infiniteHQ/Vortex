@@ -105,30 +105,39 @@ int VxHost::ExecuteCmdInChroot(std::string cmd)
 
 std::string VxHost::GetTriplet(std::string triplet_type)
 {
+  
+        std::cout << "Yan3" << std::endl;
   std::string NativeTriplet;
+        std::cout << "Yan3" + triplet_type<< std::endl;
   FILE *pipe = popen("gcc -dumpmachine", "r");
   if (!pipe)
   {
     perror("Error while try to get triplet with gcc !");
     return "unknow";
   }
+        std::cout << "Yan3" << std::endl;
   char buffer[128];
   while (fgets(buffer, 128, pipe) != NULL)
   {
     NativeTriplet += buffer;
   }
+        std::cout << "Yan3" << std::endl;
   pclose(pipe);
   NativeTriplet.pop_back();
 
+        std::cout << "Yan3" << std::endl;
   if (triplet_type == "target")
   {
 
+        std::cout << "Yan3" << std::endl;
     if (this->type == "native")
     {
+        std::cout << "Yan3" << std::endl;
       return NativeTriplet;
     }
     else if (this->type == "cross")
     {
+        std::cout << "Yan3" << std::endl;
       return NativeTriplet;
     }
     else if (this->type == "cross-native" || this->type == "canadian" || this->type == "custom")
@@ -145,6 +154,7 @@ std::string VxHost::GetTriplet(std::string triplet_type)
     }
     else
     {
+        std::cout << "Yan3" << std::endl;
       return "unknow";
     }
   }
@@ -173,6 +183,7 @@ std::string VxHost::GetTriplet(std::string triplet_type)
     }
     else
     {
+        std::cout << "Yan3" << std::endl;
       return "unknow";
     }
   }

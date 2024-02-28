@@ -1,6 +1,24 @@
 #include "../HostInstance.h"
 #include <array>
 
+std::string formatElapsedTime(double elapsedSeconds) {
+    int hours = static_cast<int>(elapsedSeconds / 3600);
+    int minutes = static_cast<int>((elapsedSeconds - hours * 3600) / 60);
+    int seconds = static_cast<int>(elapsedSeconds - hours * 3600 - minutes * 60);
+
+    std::string formattedTime;
+    if (hours > 0) {
+        formattedTime += std::to_string(hours) + "h ";
+    }
+    if (minutes > 0 || hours > 0) {
+        formattedTime += std::to_string(minutes) + "m ";
+    }
+    formattedTime += std::to_string(seconds) + "s";
+
+    return formattedTime;
+}
+
+
 static void coloredTag(std::string name, ImVec4 color)
 {
     ImGui::PushStyleColor(ImGuiCol_Button, color);
@@ -37,6 +55,11 @@ void HostInstance::UI_CurrentHostPreview()
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static std::thread receiveThread;
+
+        static ImTextureID errorIcon = this->m_ErrorIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID warnIcon = this->m_WarningIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID successIcon = this->m_SuccessIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID unknowIcon = this->m_UnknowIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID saveIcon = this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -102,17 +125,20 @@ void HostInstance::UI_CurrentHostPreview()
 
         // Project Settings
 
+
+
         static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
         if (selected == 1)
         {
-            if (ImGui::BeginTable("table_", 8, flags))
+            if (ImGui::BeginTable("table_", 9, flags))
             {
                 ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Retry", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Priority", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Duration", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Started", ImGuiTableColumnFlags_WidthFixed);
@@ -124,7 +150,7 @@ void HostInstance::UI_CurrentHostPreview()
                     static char label[128];
 
                     ImGui::TableNextRow();
-                    for (int column = 0; column < 8; column++)
+                    for (int column = 0; column < 9; column++)
                     {
                         ImGui::TableSetColumnIndex(column);
 
@@ -147,7 +173,7 @@ void HostInstance::UI_CurrentHostPreview()
                                 std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
                                 props->add("host", this->host);
 
-                                std::shared_ptr<Task> task = VortexMaker::CreateTask(this->host->currentLoadedSystem.executedTasks[row]->tasktype, "SecondTestHostTask-123-retry", 123, props);
+                                std::shared_ptr<Task> task = VortexMaker::CreateTask(this->host->currentLoadedSystem.executedTasks[row]->tasktype, this->host->currentLoadedSystem.executedTasks[row]->component, "SecondTestHostTask-123-retry", 123, props);
 
                                 task->state = "retry";
                                 props->add("self", task);
@@ -177,11 +203,11 @@ void HostInstance::UI_CurrentHostPreview()
                             }
                             if (this->host->currentLoadedSystem.executedTasks[row]->state == "failed")
                             {
-                                coloredTag("Fail", ImVec4(1.0f, 0.2f, 0.2f, 0.4f));
+                                coloredTag("Failed", ImVec4(1.0f, 0.2f, 0.2f, 0.4f));
                             }
                             if (this->host->currentLoadedSystem.executedTasks[row]->state == "paused")
                             {
-                                coloredTag("Fail", ImVec4(0.5f, 0.5f, 0.2f, 0.4f));
+                                coloredTag("Paused", ImVec4(0.5f, 0.5f, 0.2f, 0.4f));
                             }
                             if (this->host->currentLoadedSystem.executedTasks[row]->state == "retry")
                             {
@@ -198,13 +224,42 @@ void HostInstance::UI_CurrentHostPreview()
                         }
                         if (column == 5)
                         {
-                            ImGui::Text(std::to_string(this->host->currentLoadedSystem.executedTasks[row]->priority).c_str());
+                            std::string errorButtonID = std::to_string(this->host->currentLoadedSystem.executedTasks[row]->failCounter) +"###" + std::to_string(row) + "-" + std::to_string(column);
+                            if (ImGui::ImageButtonWithText(errorIcon, errorButtonID.c_str(), ImVec2(this->m_ErrorIcon->GetWidth(), this->m_ErrorIcon->GetHeight())))
+                            {
+                            }
+                            ImGui::SameLine();
+
+                            std::string warnButtonID = std::to_string(this->host->currentLoadedSystem.executedTasks[row]->warningCounter)  +"###" + std::to_string(row) + "-" + std::to_string(column);
+                            if (ImGui::ImageButtonWithText(warnIcon, warnButtonID.c_str(), ImVec2(this->m_ErrorIcon->GetWidth(), this->m_ErrorIcon->GetHeight())))
+                            {
+                            }
+                            ImGui::SameLine();
+
+                            std::string successButtonID =std::to_string(this->host->currentLoadedSystem.executedTasks[row]->successCounter)  +"###" + std::to_string(row) + "-" + std::to_string(column);
+                            if (ImGui::ImageButtonWithText(successIcon, successButtonID.c_str(), ImVec2(this->m_ErrorIcon->GetWidth(), this->m_ErrorIcon->GetHeight())))
+                            {
+                            }
+
+                            ImGui::SameLine();
+
+                            std::string unknowButtonID = std::to_string(this->host->currentLoadedSystem.executedTasks[row]->unknowCounter) +"###" + std::to_string(row) + "-" + std::to_string(column);
+                            if (ImGui::ImageButtonWithText(unknowIcon, unknowButtonID.c_str(), ImVec2(this->m_ErrorIcon->GetWidth(), this->m_ErrorIcon->GetHeight())))
+                            {
+                            }
+                            
                         }
                         if (column == 6)
                         {
-                            ImGui::Text(std::to_string(this->host->currentLoadedSystem.executedTasks[row]->elapsedSeconds()).c_str());
+                            ImGui::Text(std::to_string(this->host->currentLoadedSystem.executedTasks[row]->priority).c_str());
                         }
                         if (column == 7)
+                        {
+    double elapsed = this->host->currentLoadedSystem.executedTasks[row]->elapsedSeconds();
+    std::string formattedElapsedTime = formatElapsedTime(elapsed);
+    ImGui::Text(formattedElapsedTime.c_str());
+                        }
+                        if (column == 8)
                         {
                             ImGui::Text(this->host->currentLoadedSystem.executedTasks[row]->startTime().c_str());
                         }
