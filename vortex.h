@@ -250,7 +250,7 @@ namespace VortexMaker
 
     VORTEX_API bool RegisterDistHost(VxDistHost host, nlohmann::json packageData);
     VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
-    VORTEX_API bool RegisterToolchain(nlohmann::json toolchainData);
+    VORTEX_API bool RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nlohmann::json toolchainData);
     VORTEX_API bool RegisterHost(std::shared_ptr<VxHost> host, nlohmann::json toolchainData);
     
     VORTEX_API bool RegisterGPOS(std::shared_ptr<VxGPOSystem> gpos, nlohmann::json gposData);
@@ -881,6 +881,25 @@ struct VxActionReport{
     std::string report;
 };
 
+
+struct VxToolchainCurrentSystem{
+    std::string lastUpdate;
+    std::string size;
+
+    std::vector<std::shared_ptr<Task>> executedTasks;
+    std::shared_ptr<VxToolchain> parent;
+
+    std::vector<VxPackageReport> packageReports;
+    std::vector<VxActionReport> actionReports;
+    void CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
+
+    void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
+    void PushSize(std::string newsize){this->size = newsize;};
+    void Populate(nlohmann::json jsonData); // from working_host.config
+    nlohmann::json Extract();
+    void Save(std::shared_ptr<VxToolchain> host);
+};
+
 struct VxHostCurrentSystem{
     std::string lastUpdate;
     std::string size;
@@ -889,6 +908,7 @@ struct VxHostCurrentSystem{
 
     std::vector<VxPackageReport> packageReports;
     std::vector<VxActionReport> actionReports;
+
 
     void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
     void PushSize(std::string newsize){this->size = newsize;};
@@ -967,6 +987,7 @@ struct VxHost{
 
     VxHostCurrentSystem currentLoadedSystem;
 
+    void CreatePackage(std::string label, std::string author, std::string description, std::string pathToTarball, std::shared_ptr<HostSave> save);
 
     void Init();
     void Refresh();
@@ -1197,6 +1218,15 @@ struct VxDistHost{
 };
 
 
+
+struct VxToolchainSnapshot{
+    std::string date;
+    std::string name;
+
+    VxToolchainCurrentSystem snapshotSystem; // to import from 
+};
+
+
 struct VxToolchain{
     // Vortex project informations
     std::string name;
@@ -1206,10 +1236,16 @@ struct VxToolchain{
     std::string state;
     std::string vendor;
     std::string platform;
+    std::string configFilePath;
 
     std::string target_arch;
     std::string builder_arch;
     std::string host_arch;
+
+    std::string packages_data;
+    std::string envPath;
+
+
 
 
     // Low level toolchain informations
@@ -1262,7 +1298,21 @@ struct VxToolchain{
     // Patchs
 
 
+    VxToolchainCurrentSystem currentLoadedSystem;
+
+    std::vector<std::shared_ptr<Task>> tasks;
+
+    void RefreshCurrentWorkingToolchain();
+
+
     std::string GetTriplet(std::string triplet_type);
+
+
+    void MakeSnapshot(std::string label);
+    void DeployNewCurrentSystem();
+    void DeleteCurrentSystem();
+
+    void Init();
 
     void PreBuild();
     void Build();

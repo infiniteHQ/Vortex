@@ -2,8 +2,7 @@
 
 using namespace VortexMaker;
 
-
-HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, InstanceFactory* _factory)
+HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, InstanceFactory *_factory)
 {
     this->m_ctx = ctx;
     this->host = _host;
@@ -11,7 +10,6 @@ HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, Instan
 
     // POUR DEMAIN : Finir la gestion et la creation de snapshot et des working host
     // Système de tasks et creation d'actions rapides sur le working host (package, actions, scripts, chroot, etc...)
-
 
     this->Refresh();
     this->host->RefreshCurrentWorkingHost();
@@ -161,9 +159,6 @@ std::string HostInstance::render()
 
         ImGui::End();
 
-
-
-
         // All Windows of this instances :
         this->UI_ParametersWindow();
         this->UI_ContentWindow();
@@ -206,7 +201,7 @@ void HostInstance::menubar()
 
         ImGui::Separator();
 
-        if (ImGui::BeginMenu("Pannels"))
+        if (ImGui::BeginMenu("Misc"))
         {
             if (ImGui::MenuItem("Settings", "Main settings of this host", &this->show_UI_MainSettings))
             {
@@ -218,13 +213,10 @@ void HostInstance::menubar()
         }
         if (ImGui::BeginMenu("Tools"))
         {
-            if (ImGui::MenuItem("Tasks Editor", "Edit tasks of build processus", &this->show_UI_TasksEditor))
+            if (ImGui::MenuItem("Tasklists utility", "Edit tasks of build processus", &this->show_UI_TasksEditor))
             {
             }
-            if (ImGui::MenuItem("Snapshots", "All saves of this host", &this->show_UI_SnapshotUtility))
-            {
-            }
-            if (ImGui::MenuItem("Build Optimisations", "Optimize the build process"))
+            if (ImGui::MenuItem("Snapshots utility", "All saves of this host", &this->show_UI_SnapshotUtility))
             {
             }
             ImGui::EndMenu();
@@ -232,26 +224,20 @@ void HostInstance::menubar()
         ImGui::Separator();
         if (ImGui::BeginMenu("Build"))
         {
-            if (ImGui::MenuItem("Auto Build", "Build from task lists"))
-            {
-            }
-            if (ImGui::MenuItem("Manual Build", "Builds tasks or components manually"))
-            {
-            }
             if (ImGui::MenuItem("Full Build", NULL, &this->show_UI_FullBuild))
             {
             }
-            if (ImGui::MenuItem("Global build"))
+            if (ImGui::MenuItem("Manual build"))
             {
             }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Debug"))
         {
-            if (ImGui::MenuItem("Test Window", "Test host, compilers & binaries"))
+            if (ImGui::MenuItem("Tester", "Test host, compilers & binaries"))
             {
             }
-            if (ImGui::MenuItem("Chroot", "Start a chroot environment"))
+            if (ImGui::MenuItem("Chroot utility", "Start a chroot environment"))
             {
             }
             ImGui::EndMenu();
@@ -260,14 +246,14 @@ void HostInstance::menubar()
         ImGui::Separator();
 
         if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
-        {  
-            ImGui::OpenPopup("Delete?");
-        }       
+        {
+            ImGui::OpenPopup("CreateNew");
+        }
 
         if (ImGui::ImageButtonWithText(eyeIcon, "Preview", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
-        {  
+        {
             this->show_UI_CurrentHostPreview = !this->show_UI_CurrentHostPreview;
-        }        
+        }
         ImGui::Separator();
 
         if (ImGui::ImageButtonWithText(settingsIcon, "Settings", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight())))
@@ -275,32 +261,85 @@ void HostInstance::menubar()
             // Save behavior
         }
 
+        static bool open_edit_popup = false;
 
+        if (open_edit_popup)
+        {
+            if (ImGui::BeginPopupModal("CreatePackage"))
+            {
+                // 3 text inputs
+                static char label[128] = "";
+                static char author[128] = "";
+                static char description[128] = "";
+                static char pathToTarball[128] = "";
 
+                // inputs widget
+                ImGui::InputText("Name", label, IM_ARRAYSIZE(label));
+                ImGui::InputText("Author", author, IM_ARRAYSIZE(author));
+                ImGui::InputText("Description", description, IM_ARRAYSIZE(description));
+                ImGui::InputText("Tarball Path", pathToTarball, IM_ARRAYSIZE(pathToTarball));
 
-        if (ImGui::BeginPopupModal("Delete?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+                // Call CreatePackage function from VxHost
+                if (ImGui::Button("Create", ImVec2(120, 0)))
+                {
+                    std::string _label = label;
+                    std::string _author = author;
+                    std::string _description = description;
+                    std::string _pathToTarball = pathToTarball;
+                    this->host->CreatePackage(_label, _author, _description, _pathToTarball, this->m_currentSave);
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+        }
+
+        if (open_edit_popup)
+            ImGui::OpenPopup("CreatePackage");
+
+        if (ImGui::BeginPopupModal("CreateNew", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             ImGui::Text("Get content");
             ImGui::Separator();
 
             ImGui::Text("Create Basic Component");
             ImGui::Separator();
+            if (ImGui::ImageButtonWithText(eyeIcon, "Package", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+            {
+                open_edit_popup = true;
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::ImageButtonWithText(eyeIcon, "Script", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+            {
+            }
+            if (ImGui::ImageButtonWithText(eyeIcon, "Tasklist", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+            {
+            }
 
             ImGui::Text("Create Advanced Component");
             ImGui::Separator();
+            if (ImGui::ImageButtonWithText(eyeIcon, "Chrooter", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+            {
+            }
 
-            //static int unused_i = 0;
-            //ImGui::Combo("Combo", &unused_i, "Delete\0Delete harder\0");
+            // static int unused_i = 0;
+            // ImGui::Combo("Combo", &unused_i, "Delete\0Delete harder\0");
 
             static bool dont_ask_me_next_time = false;
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
             ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
             ImGui::PopStyleVar();
 
-            if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+            if (ImGui::Button("OK", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
             ImGui::SetItemDefaultFocus();
             ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
             ImGui::EndPopup();
         }
 

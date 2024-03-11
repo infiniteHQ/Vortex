@@ -7,6 +7,7 @@
 
 #include "../instances/Components/Host/HostInstance.h"
 #include "../instances/Components/Toolchain/ToolchainInstance.h"
+#include "../instances/Components/GPOS/GPOSInstance.h"
 
 #ifndef PackageInstance_H
 #include "../instances/Assets/Package/PackageInstance.h"
@@ -16,9 +17,7 @@
 #include "../instances/Assets/Tasklist/TasklistInstance.h"
 #endif
 
-#ifndef GPOSInstance_H
-#include "../instances/Components/GPOS/GPOSInstance.h"
-#endif
+
 
 using namespace VortexMaker;
 

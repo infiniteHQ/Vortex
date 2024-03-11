@@ -82,7 +82,7 @@ void TasklistInstance::UI_MainSettings()
 
                 for (auto &chaine : this->m_ctx->IO.toolchains)
                 {
-                    items_components.push_back(chaine.name.c_str());
+                    items_components.push_back(chaine->name.c_str());
                 }
 
                 for (auto &chaine : this->m_ctx->IO.hosts)

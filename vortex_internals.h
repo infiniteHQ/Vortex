@@ -152,7 +152,7 @@ struct VxIO {
   int         MetricsActiveAllocations;  
                                        
   // All loaded components
-  std::vector<VxToolchain>      toolchains;    
+  std::vector<std::shared_ptr<VxToolchain>>      toolchains;    
   std::vector<VxDistToolchain>  distToolchains;    
   std::vector<std::shared_ptr<VxHost>>           hosts;    
   std::vector<std::shared_ptr<VxGPOSystem>>      gpoSystems;

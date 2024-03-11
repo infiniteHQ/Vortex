@@ -68,8 +68,8 @@ struct MyTreeNode
 			if(node->Type == "Toolchain"){
 				if(ImGui::Button("Open")){
 					for(auto toolchain : ctx->IO.toolchains){
-						if(node->Name == toolchain.name){
-							std::shared_ptr<ToolchainInstance> instance = std::make_shared<ToolchainInstance>(ctx, &toolchain);
+						if(node->Name == toolchain->name){
+							std::shared_ptr<ToolchainInstance> instance = std::make_shared<ToolchainInstance>(ctx, toolchain);
 							factory->SpawnInstance(instance);	
 						}
 					}
@@ -134,7 +134,7 @@ public:
 		std::vector<MyTreeNode> Toolchains = {};
 		for(auto toolchain : ctx->IO.toolchains){
 			MyTreeNode nodeToolchain;
-			nodeToolchain.Name = (char*)toolchain.name.c_str();
+			nodeToolchain.Name = (char*)toolchain->name.c_str();
 			nodeToolchain.Size = 1024;
 			nodeToolchain.Type = "Toolchain";
 			nodeToolchain.ChildCount = -1;

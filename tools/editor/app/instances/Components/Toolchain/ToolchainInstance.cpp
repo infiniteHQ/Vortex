@@ -2,43 +2,118 @@
 
 using namespace VortexMaker;
 
-ToolchainInstance::ToolchainInstance(VxContext *ctx, VxToolchain* _toolchain)
+ToolchainInstance::ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain)
 {
     this->m_ctx = ctx;
     this->toolchain = _toolchain;
+    this->toolchain->Init();
 
+    this->Refresh();
+    this->toolchain->RefreshCurrentWorkingToolchain();
 
-        {
-            uint32_t w, h;
-            void *data = Walnut::Image::Decode(icons::i_save, icons::i_save_size, w, h);
-            m_SaveIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
-            free(data);
-        }
-        {
-            uint32_t w, h;
-            void *data = Walnut::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-            m_AddIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
-            free(data);
-        }
-        {
-            uint32_t w, h;
-            void *data = Walnut::Image::Decode(icons::i_folder, icons::i_folder_size, w, h);
-            m_FolderIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
-            free(data);
-        }
-        {
-            uint32_t w, h;
-            void *data = Walnut::Image::Decode(icons::i_settings, icons::i_settings_size, w, h);
-            m_SettingsIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
-            free(data);
-        }
-        {
-            uint32_t w, h;
-            void *data = Walnut::Image::Decode(icons::i_toolchain, icons::i_toolchain_size, w, h);
-            m_ToolchainIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
-            free(data);
-        }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_error, icons::i_error_size, w, h);
+        m_ErrorIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_warn, icons::i_warn_size, w, h);
+        m_WarningIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_unknow, icons::i_unknow_size, w, h);
+        m_UnknowIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_success, icons::i_success_size, w, h);
+        m_SuccessIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
 
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_save, icons::i_save_size, w, h);
+        m_SaveIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_eye, icons::i_eye_size, w, h);
+        m_EyeIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_add, icons::i_add_size, w, h);
+        m_AddIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_folder, icons::i_folder_size, w, h);
+        m_FolderIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_tasklist, icons::i_tasklist_size, w, h);
+        m_TaskListIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_settings, icons::i_settings_size, w, h);
+        m_SettingsIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_toolchain, icons::i_toolchain_size, w, h);
+        m_ToolchainIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_database, icons::i_database_size, w, h);
+        m_DatabaseIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_pen, icons::i_pen_size, w, h);
+        m_EditIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
+        m_RefreshIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_build, icons::i_build_size, w, h);
+        m_BuildIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_package, icons::i_package_size, w, h);
+        m_PackageIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
+        m_TrashIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
 };
 
 
@@ -77,6 +152,8 @@ std::string ToolchainInstance::render()
         // All Windows of this instances :
         this->UI_ParametersWindow();
         this->UI_ContentWindow();
+        this->UI_TasksEditor();
+        this->UI_CurrentToolchainPreview();
 
         return "rendering";
         }
@@ -90,12 +167,15 @@ std::string ToolchainInstance::render()
 
 void ToolchainInstance::menubar(){
 
+
             if (ImGui::BeginMenuBar())
             {
+
                 static ImTextureID saveIcon = this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                 static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                 static ImTextureID folderIcon = this->m_FolderIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                 static ImTextureID settingsIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                static ImTextureID eyeIcon = this->m_EyeIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 
 
@@ -109,28 +189,25 @@ void ToolchainInstance::menubar(){
 
                 ImGui::Separator();
 
-                if (ImGui::BeginMenu("Pannels"))
+                if (ImGui::BeginMenu("Misc"))
                 {
-                    if (ImGui::MenuItem("Contents Window"))
+                    if (ImGui::MenuItem("Settings"))
+                    {
+                    }
+                    if (ImGui::MenuItem("Assets"))
                     {
                     }
                     ImGui::EndMenu();
                 }
                 if (ImGui::BeginMenu("Tools"))
                 {
-                    if (ImGui::MenuItem("Contents Window"))
+                    if (ImGui::MenuItem("Task viewer", NULL, &this->show_UI_TasksEditor))
                     {
                     }
-                    if (ImGui::MenuItem("Contents Window"))
+                    if (ImGui::MenuItem("Tasklists utility", NULL, &this->show_UI_TasksEditor))
                     {
                     }
-                    if (ImGui::MenuItem("Contents Window"))
-                    {
-                    }
-                    if (ImGui::MenuItem("Contents Window"))
-                    {
-                    }
-                    if (ImGui::MenuItem("Contents Window"))
+                    if (ImGui::MenuItem("Snapshot utility", NULL, &this->show_UI_TasksEditor))
                     {
                     }
                     ImGui::EndMenu();
@@ -138,30 +215,17 @@ void ToolchainInstance::menubar(){
                 ImGui::Separator();
                 if (ImGui::BeginMenu("Build"))
                 {
-                    if (ImGui::MenuItem("Build/Rebuild single parts"))
+                    if (ImGui::MenuItem("Full build"))
                     {
                     }
-                    if (ImGui::MenuItem("Global build"))
+                    if (ImGui::MenuItem("Manual build"))
                     {
                     }
                     ImGui::EndMenu();
                 }
                 if (ImGui::BeginMenu("Debug"))
                 {
-                    if (ImGui::MenuItem("Parameters window", NULL, &this->show_UI_ParametersWindow))
-                    {
-                    }
-                    if (ImGui::MenuItem("Content window", NULL, &this->show_UI_ContentWindow))
-                    {
-                    }
-                    ImGui::EndMenu();
-                }
-                if (ImGui::BeginMenu("Preview"))
-                {
-                    if (ImGui::MenuItem("Build/Rebuild single parts", NULL, &this->show_UI_ContentWindow))
-                    {
-                    }
-                    if (ImGui::MenuItem("Global build"))
+                    if (ImGui::MenuItem("Tester", NULL, &this->show_UI_ParametersWindow))
                     {
                     }
                     ImGui::EndMenu();
@@ -170,12 +234,15 @@ void ToolchainInstance::menubar(){
                 ImGui::Separator();
 
                 if(ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight()))){
-                    //Save behavior
                 }
-                if (ImGui::Button("Preview"))
-                {
-                }
+
+        if (ImGui::ImageButtonWithText(eyeIcon, "Preview", ImVec2(this->m_EyeIcon->GetWidth(), this->m_EyeIcon->GetHeight())))
+        {  
+            this->show_UI_CurrentToolchainPreview = !this->show_UI_CurrentToolchainPreview;
+        }        
                 ImGui::Separator();
+
+                
                
 
                 if(ImGui::ImageButtonWithText(settingsIcon, "Settings", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight()))){
@@ -185,3 +252,20 @@ void ToolchainInstance::menubar(){
             }
             
     }
+
+
+void ToolchainInstance::Refresh()
+{
+    for(auto task : this->toolchain->tasks){
+        task->init();
+    }
+    //this->m_currentSave = refreshedCurrentSave;
+}
+
+void ToolchainInstance::Save()
+{
+    // Get currentSave (modified by all UI editors)
+    // Set host new host variables with save contents
+    // Patch json with native Vortex APi
+    //this->host->PushSave(this->m_currentSave);
+}

@@ -127,6 +127,12 @@ void VxHost::RefreshCurrentWorkingHost()
   this->currentLoadedSystem.Populate(data);
 }
 
+void VxToolchain::RefreshCurrentWorkingToolchain()
+{
+  nlohmann::json data = VortexMaker::DumpJSON(this->workingPath + "/working_host.config");
+  this->currentLoadedSystem.Populate(data);
+}
+
 void VxHost::RefreshSnapshots()
 {
   this->snapshots.clear();
@@ -184,6 +190,44 @@ std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::
 }
 
 
+void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
+{
+  this->size = jsonData["size"].get<std::string>();
+
+  // Get list of packages and all reports associated
+  for (auto packageReport : jsonData["taskList"])
+  {
+    std::shared_ptr<Task> task = TaskFactory::getInstance().createInstance(packageReport["t_tasktype"].get<std::string>().c_str());
+
+    task->id = packageReport["t_id"].get<std::string>();
+    task->tasktype = packageReport["t_tasktype"].get<std::string>();
+    task->priority = packageReport["t_priority"].get<int>();
+    task->state = packageReport["t_state"].get<std::string>();
+    task->m_TotalTime = packageReport["t_duration"].get<double>();
+    task->m_StartTime = stringToTimePoint(packageReport["t_time"].get<std::string>());
+
+  for (auto checks : packageReport["t_checklist"])
+  {
+    std::shared_ptr<Check> check = std::make_shared<Check>(); 
+      check->checkResult = checks["result"].get<std::string>();
+      check->checkID = checks["id"].get<std::string>();
+      check->checkLog = checks["log"].get<std::string>();
+      if(check->checkResult == "success"){task->successCounter++;};
+      if(check->checkResult == "failed"){task->failCounter++;};
+      if(check->checkResult == "warning"){task->warningCounter++;};
+      if(check->checkResult == "unknow"){task->unknowCounter++;};
+      task->checkList.push_back(check);
+  }
+
+    this->executedTasks.push_back(task);
+  }
+
+  // Get filesystem informations
+
+  // Get list of all render assets (actions, scirpts, skeletons, etc)
+} // from working_host.config
+
+
 void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
 {
   this->size = jsonData["size"].get<std::string>();
@@ -220,6 +264,47 @@ void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
 
   // Get list of all render assets (actions, scirpts, skeletons, etc)
 } // from working_host.config
+
+
+nlohmann::json VxToolchainCurrentSystem::Extract()
+{
+  VxContext &ctx = *CVortexMaker;
+  nlohmann::json jsonData;
+  jsonData["size"] = this->size;
+  jsonData["taskList"] = nlohmann::json::array();
+  jsonData["actionsReportsList"] = nlohmann::json::array();
+
+  for (auto task : this->executedTasks)
+  {
+    std::string def = "unknow";
+
+    nlohmann::json report;
+    report["t_id"] = task->id;
+    report["t_tasktype"] = task->tasktype;
+    report["t_priority"] = task->priority;
+    report["t_state"] = task->state;
+
+    report["t_duration"] = task->m_TotalTime;
+    report["t_time"] = task->startTime();
+
+    report["t_component"] = task->component;
+
+    report["t_checklist"] = nlohmann::json::array();
+
+    for (auto check : task->checkList)
+    {
+      nlohmann::json c;
+      c["result"] = check->checkResult;
+      c["id"] = check->checkID;
+      c["log"] = check->checkLog;
+      report["t_checklist"].push_back(c);
+    }
+
+    jsonData["taskList"].push_back(report);
+  }
+
+  return jsonData;
+}
 
 nlohmann::json VxHostCurrentSystem::Extract()
 {
@@ -303,7 +388,6 @@ void VxHost::Refresh()
 
 void VxGPOSystem::Refresh()
 {
-  std::cout << "Refreshing GPO System" << std::endl;
   nlohmann::json gposData = VortexMaker::DumpJSON(this->configFilePath);
 
   this->name = gposData["gpos"]["name"].get<std::string>();
@@ -317,7 +401,6 @@ void VxGPOSystem::Refresh()
   this->localPackagesPath = gposData["data"]["packages"].get<std::string>();
   this->localPatchsPath = gposData["data"]["patchs"].get<std::string>();
   this->localScriptsPath = gposData["data"]["scripts"].get<std::string>();
-  std::cout << "Refreshing GPO System" << std::endl;
   registeredPackages.clear();
   nlohmann::json packages = gposData["content"]["packages"];
   for (auto &pkg : packages)
@@ -334,7 +417,6 @@ void VxGPOSystem::Refresh()
   }
   this->FindTasklists();
 
-  std::cout << "Refreshing GPO System" << std::endl;
   //this->Init();
 }
 

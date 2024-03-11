@@ -199,7 +199,7 @@ void GPOSInstance::menubar()
 
         ImGui::Separator();
 
-        if (ImGui::BeginMenu("Pannels"))
+        if (ImGui::BeginMenu("Misc"))
         {
             if (ImGui::MenuItem("Settings", "Main settings of this host", &this->show_UI_MainSettings))
             {
@@ -211,13 +211,19 @@ void GPOSInstance::menubar()
         }
         if (ImGui::BeginMenu("Tools"))
         {
-            if (ImGui::MenuItem("Tasks Editor", "Edit tasks of build processus", &this->show_UI_TasksEditor))
+            if (ImGui::MenuItem("Tasklists utility", "Edit tasks of build processus", &this->show_UI_TasksEditor))
             {
             }
-            if (ImGui::MenuItem("Snapshots", "All saves of this host", &this->show_UI_SnapshotUtility))
+            if (ImGui::MenuItem("Snapshot utility", "Edit tasks of build processus", &this->show_UI_TasksEditor))
             {
             }
-            if (ImGui::MenuItem("Build Optimisations", "Optimize the build process"))
+            if (ImGui::MenuItem("Versionner utility", "Edit tasks of build processus", &this->show_UI_TasksEditor))
+            {
+            }
+            if (ImGui::MenuItem("Remote PMP server", "Edit tasks of build processus", &this->show_UI_TasksEditor))
+            {
+            }
+            if (ImGui::MenuItem("Package Manager Utility", "Edit tasks of build processus", &this->show_UI_TasksEditor))
             {
             }
             ImGui::EndMenu();
@@ -225,16 +231,23 @@ void GPOSInstance::menubar()
         ImGui::Separator();
         if (ImGui::BeginMenu("Build"))
         {
-            if (ImGui::MenuItem("Auto Build", "Build from task lists"))
-            {
-            }
-            if (ImGui::MenuItem("Manual Build", "Builds tasks or components manually"))
-            {
-            }
             if (ImGui::MenuItem("Full Build", NULL, &this->show_UI_FullBuild))
             {
             }
-            if (ImGui::MenuItem("Global build"))
+            if (ImGui::MenuItem("Manual build"))
+            {
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Export"))
+        {
+            if (ImGui::MenuItem("Packaged FS", NULL, &this->show_UI_FullBuild))
+            {
+            }
+            if (ImGui::MenuItem("Docker Image"))
+            {
+            }
+            if (ImGui::MenuItem("NetBoot"))
             {
             }
             ImGui::EndMenu();

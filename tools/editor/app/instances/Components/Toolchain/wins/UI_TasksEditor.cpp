@@ -1,11 +1,10 @@
 #include "../ToolchainInstance.h"
 
-void ToolchainInstance::UI_ParametersWindow()
+void ToolchainInstance::UI_TasksEditor()
 {
-    if (this->show_UI_ParametersWindow)
+    if (this->show_UI_TasksEditor)
     {
-
-        static std::string label = this->name + " - Task editor";
+        static std::string label = this->name + " - Task viewer";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
         if (ImGui::Begin(label.c_str()))
         {
@@ -23,11 +22,15 @@ void ToolchainInstance::UI_ParametersWindow()
                     for (int column = 0; column < 3; column++)
                     {
                         ImGui::TableSetColumnIndex(column);
-                        ImGui::Text((char*)this->toolchain->tasks[row]->tasktype.c_str());
+                        if(column == 0){
+                            ImGui::Text(this->toolchain->tasks[row]->tasktype.c_str());
+
+                        }
                     }
                 }
                 ImGui::EndTable();
             }
+            
         }
         ImGui::End();
     }

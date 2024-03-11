@@ -334,7 +334,11 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
     try
     {
       nlohmann::json filecontent = DumpJSON(file);
-      RegisterToolchain(filecontent);
+      std::shared_ptr<VxToolchain> toolchain = std::make_shared<VxToolchain>();
+
+      toolchain->configFilePath = file;
+
+      RegisterToolchain(toolchain, filecontent);
     }
     catch (const std::exception &e)
     {
