@@ -133,6 +133,49 @@ void VxToolchain::RefreshCurrentWorkingToolchain()
   this->currentLoadedSystem.Populate(data);
 }
 
+void VxToolchain::RefreshSnapshots()
+{
+    // Create snapshot folder
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+  std::string envPath = ctx->projectPath / ctx->paths.toolchainDistFolder;
+  std::string baseDir = envPath + "/" + this->name;
+  std::string snapshotsDir = baseDir + "/" + "snapshots";
+  if (mkdir(snapshotsDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  this->path_hostsnapshots = snapshotsDir;
+
+  this->snapshots.clear();
+  // Dist Toolchains
+  for (const auto &file : VortexMaker::SearchFiles(this->path_hostsnapshots, "snapshot.config"))
+  {
+    try
+    {
+      nlohmann::json filecontent = VortexMaker::DumpJSON(file);
+      VxToolchainSnapshot newsnapshot;
+
+      std::string path = file;
+      size_t position = path.find("/snapshot.config");
+      if (position != std::string::npos)
+      {
+        path.erase(position, 16);
+      }
+
+      newsnapshot.name = filecontent["snapshot"]["name"].get<std::string>();
+      newsnapshot.path = path;
+
+      nlohmann::json working_host = VortexMaker::DumpJSON(path + "/working_host.config");
+      newsnapshot.snapshotSystem.Populate(working_host); // working_host file data
+
+      this->snapshots.push_back(newsnapshot);
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << "Error : " << e.what() << std::endl;
+    }
+  }
+}
+
+
 void VxHost::RefreshSnapshots()
 {
   this->snapshots.clear();
@@ -164,6 +207,7 @@ void VxHost::RefreshSnapshots()
     }
   }
 }
+
 std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::string& timeString) {
     // Création du flux de chaînes pour la conversion
     std::istringstream ss(timeString);

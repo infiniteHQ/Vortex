@@ -154,6 +154,7 @@ std::string ToolchainInstance::render()
         this->UI_ContentWindow();
         this->UI_TasksEditor();
         this->UI_CurrentToolchainPreview();
+        this->UI_SnapshotUtility();
 
         return "rendering";
         }
@@ -207,7 +208,7 @@ void ToolchainInstance::menubar(){
                     if (ImGui::MenuItem("Tasklists utility", NULL, &this->show_UI_TasksEditor))
                     {
                     }
-                    if (ImGui::MenuItem("Snapshot utility", NULL, &this->show_UI_TasksEditor))
+                    if (ImGui::MenuItem("Snapshot utility", NULL, &this->show_UI_SnapshotUtility))
                     {
                     }
                     ImGui::EndMenu();

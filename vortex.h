@@ -1222,6 +1222,7 @@ struct VxDistHost{
 struct VxToolchainSnapshot{
     std::string date;
     std::string name;
+    std::string path;
 
     VxToolchainCurrentSystem snapshotSystem; // to import from 
 };
@@ -1245,7 +1246,7 @@ struct VxToolchain{
     std::string packages_data;
     std::string envPath;
 
-
+    std::string path_hostsnapshots;
 
 
     // Low level toolchain informations
@@ -1301,6 +1302,8 @@ struct VxToolchain{
     VxToolchainCurrentSystem currentLoadedSystem;
 
     std::vector<std::shared_ptr<Task>> tasks;
+    std::vector<VxToolchainSnapshot> snapshots;
+
 
     void RefreshCurrentWorkingToolchain();
 
@@ -1309,6 +1312,12 @@ struct VxToolchain{
 
 
     void MakeSnapshot(std::string label);
+
+void MakeDistSnapshot(std::string label);
+void RetakeSnapshot(std::string snapshot_label);
+
+void RefreshSnapshots();
+
     void DeployNewCurrentSystem();
     void DeleteCurrentSystem();
 

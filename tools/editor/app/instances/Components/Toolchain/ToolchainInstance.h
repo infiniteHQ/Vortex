@@ -34,12 +34,14 @@ public:
     void UI_TasksEditor();
     void UI_ParametersWindow();
     void UI_CurrentToolchainPreview();
+    void UI_SnapshotUtility();
 
     bool opened;
     bool show_UI_ContentWindow = false;
     bool show_UI_ParametersWindow = false;
     bool show_UI_TasksEditor = false;
     bool show_UI_CurrentToolchainPreview = false;
+    bool show_UI_SnapshotUtility = false;
 
     std::string name;
     VxContext *m_ctx;

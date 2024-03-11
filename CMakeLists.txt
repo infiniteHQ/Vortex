@@ -9,6 +9,7 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_build.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_postbuild.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_findpackages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_snapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_BuildPackage.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_CreateTemporaryUser.hpp
