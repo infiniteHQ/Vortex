@@ -189,6 +189,7 @@ struct hMap;
 struct hString;
 struct hArgs;
 struct VxHost;
+struct VxGPOSystem;
 
 struct CommandOutput;
 struct VxToolchain;
@@ -251,6 +252,8 @@ namespace VortexMaker
     VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
     VORTEX_API bool RegisterToolchain(nlohmann::json toolchainData);
     VORTEX_API bool RegisterHost(std::shared_ptr<VxHost> host, nlohmann::json toolchainData);
+    
+    VORTEX_API bool RegisterGPOS(std::shared_ptr<VxGPOSystem> gpos, nlohmann::json gposData);
 
 
     VORTEX_API void CreateNewTask(std::shared_ptr<Task> task, std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
@@ -568,6 +571,7 @@ struct Task{
 
     std::chrono::time_point<std::chrono::system_clock> m_StartTime;
     std::chrono::time_point<std::chrono::system_clock> m_EndTime;
+    double m_TotalTime;
     bool                                               m_bRunning = false;
 
 
@@ -593,6 +597,7 @@ std::string startTime() {
     {
         this->m_EndTime = std::chrono::system_clock::now();
         this->m_bRunning = false;
+        this->m_TotalTime = elapsedSeconds();
     }
 
     
@@ -1012,6 +1017,113 @@ struct VxHost{
 
     // - DeployBuildUser();             Delete vortex user
     void DestroyBuildUser();
+
+    /////////////////////////////////////////////////////////////////////////////
+
+    // - CreateBuildTasks(); (with end-flags)
+    void AddTask();
+    void RemoveTask();
+
+
+
+    void Build();
+    // Decouper en :
+    // (Main) NextTaskEvent();
+    // BuildPackage();
+    // ExecuteAction();
+    // ExecuteScript();
+
+    void PostBuild();
+    // MakeDistSnapshot(); (with host.dist.config)
+    // CleanBuildEnvironment();  (same as PreBuild())
+
+
+};
+
+
+struct VxGPOSystem{
+    // Vortex project informations
+    std::string name;
+    std::string author;
+    std::string description;
+    std::string type;
+    std::string state;
+    std::string version;
+    std::string vendor;
+    std::string platform;
+    std::string configFilePath;
+
+    std::string localPackagePath;
+    std::string localScriptsPath;
+    std::string localPatchsPath;
+
+    std::string toolchainToUse;
+
+    std::string distPackagesPath             = "not specified";
+
+    std::string localPackagesPath;
+
+    std::string target_arch;
+    std::string builder_arch;
+    std::string host_arch;
+
+    std::string host          = "not specified";
+
+    std::string hostTriplet             = "not specified";
+    std::string builderTriplet          = "not specified";
+    std::string targetTriplet           = "not specified";
+
+    std::string path_hostroot;
+    std::string path_hostfactory;
+    std::string path_datapackages;
+    std::string path_hostsnapshots;
+
+    std::string GetTriplet(std::string triplet_type);
+
+    hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    hVector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
+
+    hVector<std::shared_ptr<VxPackage>> packages;
+    std::vector<std::shared_ptr<TaskList>> tasklists;
+    std::vector<VxHostSnapshot> snapshots;
+
+    // Dans le ctx
+    //std::vector<VxHostTask> tasks; // Toutes les taches, une fois une execution de tache(s) dans le current sys, mêttre toutes les taches et leurs etats, (executed, failed, etc...)
+    // Apres, possibilité de reprendre la tasklist en fonction des taches executées dans le current sys
+
+    std::vector<TaskList> allTaskLists;
+
+    VxHostCurrentSystem currentLoadedSystem;
+
+
+    void Init();
+    void Refresh();
+    void RefreshSnapshots();
+    void RefreshCurrentWorkingHost();
+    void PushSave(std::shared_ptr<HostSave> save);
+
+    void ExecuteTask(Task task, hArgs args);
+
+
+
+    int ExecuteCmdInChroot(std::string cmd);
+
+    // Pareil pour les toolchains, découper en plein de fonctions
+    ////////////////// OLD //////////////////////////
+    void PreBuild();
+
+
+    ////////////////////////// Host Manipulation ////////////////////////////////
+    void RegisterPackage(const std::string label,const std::string emplacemement);
+    void RegisterTasklist(const std::string label);
+    void FindPackages();
+    void FindTasklists();
+
+    /////////////////////////////////////////////////////////////////////////////
+
+    ////////////////// Build Environment Manipulations //////////////////////////
+    // - MakeSnapshot();                Prendre un snapshot de l'ancien system
+    void MakeSnapshot(std::string label);
 
     /////////////////////////////////////////////////////////////////////////////
 

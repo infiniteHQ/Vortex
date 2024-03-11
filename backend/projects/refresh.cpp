@@ -125,7 +125,6 @@ void VxHost::RefreshCurrentWorkingHost()
 {
   nlohmann::json data = VortexMaker::DumpJSON(this->path_hostroot + "/working_host.config");
   this->currentLoadedSystem.Populate(data);
-  
 }
 
 void VxHost::RefreshSnapshots()
@@ -159,6 +158,31 @@ void VxHost::RefreshSnapshots()
     }
   }
 }
+std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::string& timeString) {
+    // Création du flux de chaînes pour la conversion
+    std::istringstream ss(timeString);
+
+    // Déclaration et initialisation de la structure tm pour stocker les composants du temps
+    std::tm tm = {};
+
+    // Utilisation de std::get_time pour extraire les composants du temps de la chaîne
+    ss >> std::get_time(&tm, "%a %b %d %H:%M:%S %Y");
+
+    // Vérification si l'extraction a réussi
+    if (ss.fail()) {
+        throw std::runtime_error("Failed to parse the time string.");
+    }
+
+    // Convertir la structure tm en un point de temps
+    std::time_t time = std::mktime(&tm);
+    if (time == -1) {
+        throw std::runtime_error("Failed to convert time structure.");
+    }
+
+    // Création du point de temps à partir du temps depuis l'époque
+    return std::chrono::system_clock::from_time_t(time);
+}
+
 
 void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
 {
@@ -169,16 +193,28 @@ void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
   {
     std::shared_ptr<Task> task = TaskFactory::getInstance().createInstance(packageReport["t_tasktype"].get<std::string>().c_str());
 
-
-
     task->id = packageReport["t_id"].get<std::string>();
     task->tasktype = packageReport["t_tasktype"].get<std::string>();
     task->priority = packageReport["t_priority"].get<int>();
     task->state = packageReport["t_state"].get<std::string>();
+    task->m_TotalTime = packageReport["t_duration"].get<double>();
+    task->m_StartTime = stringToTimePoint(packageReport["t_time"].get<std::string>());
+
+  for (auto checks : packageReport["t_checklist"])
+  {
+    std::shared_ptr<Check> check = std::make_shared<Check>(); 
+      check->checkResult = checks["result"].get<std::string>();
+      check->checkID = checks["id"].get<std::string>();
+      check->checkLog = checks["log"].get<std::string>();
+      if(check->checkResult == "success"){task->successCounter++;};
+      if(check->checkResult == "failed"){task->failCounter++;};
+      if(check->checkResult == "warning"){task->warningCounter++;};
+      if(check->checkResult == "unknow"){task->unknowCounter++;};
+      task->checkList.push_back(check);
+  }
 
     this->executedTasks.push_back(task);
   }
-
 
   // Get filesystem informations
 
@@ -203,12 +239,25 @@ nlohmann::json VxHostCurrentSystem::Extract()
     report["t_priority"] = task->priority;
     report["t_state"] = task->state;
 
-    //report["t_component"] = task->result_props->get("component", def);
+    report["t_duration"] = task->m_TotalTime;
+    report["t_time"] = task->startTime();
 
-    
+    report["t_component"] = task->component;
+
+    report["t_checklist"] = nlohmann::json::array();
+
+    for (auto check : task->checkList)
+    {
+      nlohmann::json c;
+      c["result"] = check->checkResult;
+      c["id"] = check->checkID;
+      c["log"] = check->checkLog;
+      report["t_checklist"].push_back(c);
+    }
+
     jsonData["taskList"].push_back(report);
   }
-  
+
   return jsonData;
 }
 
@@ -250,6 +299,43 @@ void VxHost::Refresh()
   this->FindTasklists();
 
   this->Init();
+}
+
+void VxGPOSystem::Refresh()
+{
+  std::cout << "Refreshing GPO System" << std::endl;
+  nlohmann::json gposData = VortexMaker::DumpJSON(this->configFilePath);
+
+  this->name = gposData["gpos"]["name"].get<std::string>();
+  this->author = gposData["gpos"]["author"].get<std::string>();
+  this->type = gposData["gpos"]["type"].get<std::string>();
+  this->state = gposData["gpos"]["state"].get<std::string>();
+  this->vendor = gposData["gpos"]["vendor"].get<std::string>();
+  this->platform = gposData["gpos"]["platform"].get<std::string>();
+  this->target_arch = gposData["gpos"]["target_arch"].get<std::string>();
+
+  this->localPackagesPath = gposData["data"]["packages"].get<std::string>();
+  this->localPatchsPath = gposData["data"]["patchs"].get<std::string>();
+  this->localScriptsPath = gposData["data"]["scripts"].get<std::string>();
+  std::cout << "Refreshing GPO System" << std::endl;
+  registeredPackages.clear();
+  nlohmann::json packages = gposData["content"]["packages"];
+  for (auto &pkg : packages)
+  {
+    this->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
+  }
+  this->FindPackages();
+
+  registeredTasklists.clear();
+  nlohmann::json tasklists = gposData["content"]["tasklists"];
+  for (auto &t : tasklists)
+  {
+    this->RegisterTasklist(t["label"].get<std::string>());
+  }
+  this->FindTasklists();
+
+  std::cout << "Refreshing GPO System" << std::endl;
+  //this->Init();
 }
 
 VORTEX_API void VortexMaker::RefreshDistToolchains() // Rename to RefreshDistHostsList

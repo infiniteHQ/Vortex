@@ -21,6 +21,7 @@ static std::vector<std::shared_ptr<HostInstance>> hostInstances;
 static std::vector<std::shared_ptr<ToolchainInstance>> toolchainInstances;
 static std::vector<std::shared_ptr<PackageInstance>> packageInstances;
 static std::vector<std::shared_ptr<TasklistInstance>> tasklistInstances;
+static std::vector<std::shared_ptr<GPOSInstance>> gposInstances;
 
 
 static void PushStyle()
@@ -70,6 +71,14 @@ class Instance : public InstanceFactory {
   };
 
 
+  void SpawnInstance(std::shared_ptr<GPOSInstance> instance) override {
+    instance->name = instance->gpos->name;
+    instance->opened = true;
+    gposInstances.push_back(instance);
+  };
+
+
+
   void UnspawnInstance(std::shared_ptr<TasklistInstance> instance) override {
     std::string instanceName = instance->name;
     instance = nullptr;
@@ -87,6 +96,11 @@ class Instance : public InstanceFactory {
 
 
   void UnspawnInstance(std::shared_ptr<ToolchainInstance> instance) override {
+    std::string instanceName = instance->name;
+    instance = nullptr;
+  };
+
+  void UnspawnInstance(std::shared_ptr<GPOSInstance> instance) override {
     std::string instanceName = instance->name;
     instance = nullptr;
   };
@@ -127,6 +141,7 @@ public:
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
     for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
     for (auto window : tasklistInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
+    for (auto window : gposInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
 
     PopStyle();
     

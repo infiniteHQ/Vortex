@@ -155,6 +155,7 @@ struct VxIO {
   std::vector<VxToolchain>      toolchains;    
   std::vector<VxDistToolchain>  distToolchains;    
   std::vector<std::shared_ptr<VxHost>>           hosts;    
+  std::vector<std::shared_ptr<VxGPOSystem>>      gpoSystems;
   std::vector<VxDistHost>  distHosts;    
 
 
@@ -202,6 +203,7 @@ struct VxContext {
 
 
   std::string toolchainsPath;
+  std::string gposPath;
   std::string packagesPath;
   std::string hostsPath;
 

@@ -420,6 +420,7 @@ namespace Walnut {
 	{
 		return *s_Instance;
 	}
+	
 
 	void Application::Init()
 	{
@@ -435,15 +436,12 @@ namespace Walnut {
 		}
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+/*
+if (m_Specification.CustomTitlebar)
+{
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
-		if (m_Specification.CustomTitlebar)
-		{
-			glfwWindowHint(GLFW_TITLEBAR, false);
-
-			// NOTE(Yan): Undecorated windows are probably
-			//            also desired, so make this an option
-			// glfwWindowHint(GLFW_DECORATED, false);
-		}
+}*/
 
 		GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
 		const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);

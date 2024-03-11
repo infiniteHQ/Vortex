@@ -16,6 +16,10 @@
 #include "../instances/Assets/Tasklist/TasklistInstance.h"
 #endif
 
+#ifndef GPOSInstance_H
+#include "../instances/Components/GPOS/GPOSInstance.h"
+#endif
+
 using namespace VortexMaker;
 
 class InstanceFactory {
@@ -24,11 +28,13 @@ class InstanceFactory {
   virtual void SpawnInstance(std::shared_ptr<ToolchainInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void SpawnInstance(std::shared_ptr<PackageInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void SpawnInstance(std::shared_ptr<TasklistInstance>) {std::cout << "Not implemented" << std::endl;};
+  virtual void SpawnInstance(std::shared_ptr<GPOSInstance>) {std::cout << "Not implemented" << std::endl;};
 
   virtual void UnspawnInstance(std::shared_ptr<HostInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<PackageInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<ToolchainInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<TasklistInstance>) {std::cout << "Not implemented" << std::endl;};
+  virtual void UnspawnInstance(std::shared_ptr<GPOSInstance>) {std::cout << "Not implemented" << std::endl;};
 };
 
 #endif

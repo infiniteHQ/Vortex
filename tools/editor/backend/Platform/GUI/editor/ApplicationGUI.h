@@ -95,7 +95,7 @@ namespace Walnut {
 		ApplicationSpecification m_Specification;
 		GLFWwindow* m_WindowHandle = nullptr;
 		bool m_Running = false;
-
+		
 		float m_TimeStep = 0.0f;
 		float m_FrameTime = 0.0f;
 		float m_LastFrameTime = 0.0f;

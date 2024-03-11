@@ -11,7 +11,7 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_findpackages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_utils.cpp
 
-    # Toolchain sources
+    # Host sources
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_prebuild.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_build.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_postbuild.cpp
@@ -19,6 +19,12 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_findpackages.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_findtasklists.cpp
+
+    # GPOS sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/gpos/gpos_findpackages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/gpos/gpos_findtasklists.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/gpos/gpos_utils.cpp
+
 
     # Dist Toolchain sources
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/disthost/disthost_testingchroot.cpp
@@ -29,6 +35,7 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disttoolchain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_host.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_toolchain.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_gpos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disthost.cpp
     # Utils sources
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/utils/extract_package.cpp

@@ -52,6 +52,19 @@ struct MyTreeNode
 				}
 				ImGui::SameLine();
 			}
+			if(node->Type == "GPOS"){
+				if(ImGui::Button("Open")){
+					for(auto gpos: ctx->IO.gpoSystems){
+						if(node->Name == gpos->name){
+							std::shared_ptr<GPOSInstance> instance = std::make_shared<GPOSInstance>(ctx, gpos, factory);
+							factory->SpawnInstance(instance);	
+						}
+					}
+
+				}
+				ImGui::SameLine();
+			}
+
 			if(node->Type == "Toolchain"){
 				if(ImGui::Button("Open")){
 					for(auto toolchain : ctx->IO.toolchains){
@@ -130,18 +143,31 @@ public:
 		}
 		int toolchains_size = Toolchains.size();
 
+
+		std::vector<MyTreeNode> Gpos = {};
+		for(auto gpos : ctx->IO.gpoSystems){
+			MyTreeNode nodeGPOS;
+			nodeGPOS.Name = (char*)gpos->name.c_str();
+			nodeGPOS.Size = 1024;
+			nodeGPOS.Type = "GPOS";
+			nodeGPOS.ChildCount = -1;
+			nodeGPOS.ChildIdx = -1;
+			Gpos.push_back(nodeGPOS);
+		}
+		int gpos_size = Gpos.size();
+
 		std::cout << hosts_size << std::endl;
 		std::cout << toolchains_size << std::endl;
 
 
 		std::vector<MyTreeNode> nodes = {
 			{this->ctx->name.c_str(), "Project", 	-1, 1, 2}, // 0
-			{"Components", "...", 					-1, 3, 3},				// 1
+			{"Components", "...", 					-1, 3, 4},				// 1
 			{"Assets", "...", 						-1, 6, 3},						// 2
 
-			{"Systems", "Group", 					-1, 1, 1},					// 1
 			{"Hosts", "Group", 						9, 9, 				hosts_size},						// 1
 			{"Toolchains", "Group", 				9 + hosts_size, 9 + hosts_size, 	toolchains_size},				// 1
+			{"GPOS", "Group", 						9 + gpos_size + hosts_size, 9 + gpos_size + hosts_size,  gpos_size},				// 1
 
 			{"Packages", "Group" 					-1, 1, 1},						// 2
 			{"Scripts", "Group" 					-1, 1, 1},						// 2
@@ -160,6 +186,10 @@ public:
 
 		for(auto toolchainnode : Toolchains){
 			nodes.push_back({toolchainnode.Name, toolchainnode.Type, toolchainnode.Size, toolchainnode.ChildIdx, toolchainnode.ChildCount});
+		}
+
+		for(auto systems : Gpos){
+			nodes.push_back({systems.Name, systems.Type, systems.Size, systems.ChildIdx, systems.ChildCount});
 		}
 
 		this->nodeInfos = nodes;

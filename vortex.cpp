@@ -305,6 +305,7 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
 
   ctx.packagesPath = main_configs["data"]["packages"].get<std::string>();
   ctx.toolchainsPath = main_configs["data"]["toolchains"].get<std::string>();
+  ctx.gposPath = main_configs["data"]["gpos"].get<std::string>();
   ctx.hostsPath = main_configs["data"]["hosts"].get<std::string>();
 
   ctx.paths.toolchainDistFolder = main_configs["dists"]["toolchains"].get<std::string>();
@@ -341,7 +342,7 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
     }
   }
 
-  // Toolchains
+  // Hosts
   for (const auto &file : SearchFiles(ctx.hostsPath, "host.config"))
   {
     try
@@ -352,6 +353,24 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
       host->configFilePath = file;
 
       RegisterHost(host, filecontent);
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << "Error : " << e.what() << std::endl;
+    }
+  }
+
+  // Hosts
+  for (const auto &file : SearchFiles(ctx.gposPath, "gpos.config"))
+  {
+    try
+    {
+      nlohmann::json filecontent = DumpJSON(file);
+      std::shared_ptr<VxGPOSystem> gpos = std::make_shared<VxGPOSystem>();
+
+      gpos->configFilePath = file;
+
+      RegisterGPOS(gpos, filecontent);
     }
     catch (const std::exception &e)
     {
@@ -445,64 +464,65 @@ void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
 
 #include <deque>
 #include <mutex>
-
 void TaskProcessor::processTasks()
 {
+    VxContext &ctx = *CVortexMaker;
 
-  VxContext &ctx = *CVortexMaker;
-
-  while (true)
-  {
-
-    std::vector<std::future<void>> futures;
-
-    std::sort(ctx.IO.tasksToProcess.begin(), ctx.IO.tasksToProcess.end(), [](const std::shared_ptr<Task> &a, const std::shared_ptr<Task> &b)
-              { return a->priority < b->priority; });
-
-    int last_priority = 0;
-    bool first = true;
-for (auto task : ctx.IO.tasksToProcess)
-{
-    if (first || task->priority == last_priority)
+    while (true)
     {
-        futures.emplace_back(std::async(std::launch::async, [this, task]()
+        std::vector<std::future<void>> futures;
+
+        std::sort(ctx.IO.tasksToProcess.begin(), ctx.IO.tasksToProcess.end(), [](const std::shared_ptr<Task> &a, const std::shared_ptr<Task> &b)
+                  { return a->priority < b->priority; });
+
+        int last_priority = 0;
+        bool first = true;
+        for (auto task : ctx.IO.tasksToProcess)
         {
-            if (task->state == "not_started" || task->state == "retry") {
-                task->state = "process";
-                task->exec();
-                markTaskCompleted(task);
+            if (first || task->priority == last_priority)
+            {
+                futures.emplace_back(std::async(std::launch::async, [this, task]()
+                                                {
+                                                    if (task->state == "not_started" || task->state == "retry")
+                                                    {
+                                                        task->state = "process";
+                                                        task->exec();
+                                                        markTaskCompleted(task);
+                                                    }
+                                                }));
+                last_priority = task->priority;
+                first = false;
             }
-        }));
-        last_priority = task->priority;
-        first = false;
-    }
-    else
-    {
+            else
+            {
+                for (auto &future : futures)
+                {
+                    future.get(); // Wait for the previous futures to finish
+                }
+
+                // Clear the futures vector before adding new futures
+                futures.clear();
+
+                futures.emplace_back(std::async(std::launch::async, [this, task]()
+                                                {
+                                                    if (task->state == "not_started" || task->state == "retry")
+                                                    {
+                                                        task->state = "process";
+                                                        task->exec();
+                                                        markTaskCompleted(task);
+                                                    }
+                                                }));
+                last_priority = task->priority;
+            }
+        }
+
+        // Wait for the remaining futures to finish
         for (auto &future : futures)
         {
             future.get();
         }
-
-        futures.emplace_back(std::async(std::launch::async, [this, task]()
-        {
-            if (task->state == "not_started" || task->state == "retry") {
-                task->state = "process";
-                task->exec();
-                markTaskCompleted(task);
-            }
-        }));
-        last_priority = task->priority;
     }
-
-
 }
 
-// Attendre que les derniers futures se terminent
-for (auto &future : futures)
-{
-    future.get();
-}
-}
-}
 
 #endif // VORTEX_DISABLE
