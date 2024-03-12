@@ -26,13 +26,25 @@ struct CreateTemporaryUser : public Task
   {
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    std::shared_ptr<hArgs> props;
-    std::shared_ptr<VxToolchain> toolchain = props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
 
 
-    // Creer un nouveau rapport et l'attacher au système current
 
+    // other assets
+
+    std::string CMD_AddToGroup = "groupadd vortex";
+    std::string CMD_AddUser = "useradd -s /bin/bash -g vortex -m -k /dev/null vortex"; // + " -p " + user.vxHostUser_Crypto;
+    std::string CMD_CreateUserDirectory = "mkdir -pv /home/vortex";
+    std::string CMD_GiveUserDirectoryToUser = "sudo chown -v vortex:vortex  /home/vortex";
+    std::string CMD_AddToSudoers = "sudo usermod -aG root vortex";
+
+    system((char *)CMD_AddToGroup.c_str());
+    system((char *)CMD_AddUser.c_str());
+    system((char *)CMD_CreateUserDirectory.c_str());
+    system((char *)CMD_GiveUserDirectoryToUser.c_str());
+    system((char *)CMD_AddToSudoers.c_str());
 
     std::string bashprofile = "cat > ~/.bash_profile << \"EOF\" \n exec env -i HOME=$HOME TERM=$TERM PS1='\\u:\\w\\$ ' /bin/bash \n EOF";
 

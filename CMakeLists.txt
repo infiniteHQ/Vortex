@@ -4,16 +4,19 @@ project(vortex)
 
 add_executable(vortex
 
-    # Toolchain sources
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_prebuild.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_build.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_postbuild.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_findpackages.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_snapshot.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_utils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_BuildPackage.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_CreateTemporaryUser.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_SetupSkeleton.hpp
+
+    # Toolchain sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/src/toolchain_findpackages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/src/toolchain_snapshot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/src/toolchain_utils.cpp
+
+    # Toolchain tasks
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_BuildPackage.inl
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_CreateTemporaryUser.inl
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_SetupSkeleton.inl
 
     # Host sources
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_prebuild.cpp

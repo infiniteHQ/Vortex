@@ -10,17 +10,15 @@
 
 #include "../../../../vortex.h"
 
-#include "../../../src/instanceFactory.h"
-
-#ifndef ToolchainInstance_H
-#define ToolchainInstance_H
+#ifndef ReportInstance_H
+#define ReportInstance_H
 
 using namespace VortexMaker;
 
-class ToolchainInstance
+class ReportInstance
 {
 public:
-    ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain, InstanceFactory* factory);
+    ReportInstance(VxContext *ctx, std::shared_ptr<Task> task);
 
     std::string render();
     void close();
@@ -38,7 +36,6 @@ public:
     void UI_CurrentToolchainPreview();
     void UI_SnapshotUtility();
     void UI_ManualBuild();
-    void UI_TaskLauncher();
 
     bool opened;
     bool show_UI_ContentWindow = false;
@@ -47,14 +44,10 @@ public:
     bool show_UI_CurrentToolchainPreview = false;
     bool show_UI_SnapshotUtility = false;
     bool show_UI_ManualBuild = false;
-    bool show_UI_TaskLauncher = false;
-
-    InstanceFactory* factory;
 
     std::string name;
     VxContext *m_ctx;
-    std::shared_ptr<VxToolchain> toolchain;
-    ImGuiID dockspaceID;
+    std::shared_ptr<Task> task;
 
     std::shared_ptr<Walnut::Image> m_ToolchainIcon;
     std::shared_ptr<Walnut::Image> m_Icon;
@@ -76,4 +69,4 @@ public:
     std::shared_ptr<Walnut::Image> m_FolderIcon;
 };
 
-#endif // ToolchainInstance_H
+#endif // ReportInstance_H

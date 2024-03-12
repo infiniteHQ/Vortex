@@ -21,7 +21,6 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Source/editor/Core/Log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Assets/icons.cpp
 
-
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ContentBrowser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectViewer.cpp
 
@@ -48,9 +47,13 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/ToolchainInstance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ContentWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_TasksEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ManualBuild.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_TaskLauncher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_SnapshotUtility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_CurrentToolchainPreview.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ParameterWindow.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/Report/ReportInstance.cpp
 )
 
 

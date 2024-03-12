@@ -1,9 +1,10 @@
-#include "../../../vortex.h"
-#include "../../../vortex_internals.h"
+#include "../../../../vortex.h"
+#include "../../../../vortex_internals.h"
 
 // Import tasks
-#include "./tasks/t_toolchain_SetupSkeleton.hpp"
-#include "./tasks/t_toolchain_CreateTemporaryUser.hpp"
+#include "../tasks/t_toolchain_SetupSkeleton.inl"
+#include "../tasks/t_toolchain_CreateTemporaryUser.inl"
+
 
 void VxToolchainCurrentSystem::CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
 {
@@ -30,6 +31,29 @@ void VxToolchainCurrentSystem::CreateTask(std::string tasktype, std::string comp
       // error api : event not exist
     }
   }
+}
+
+
+void VxToolchain::ExecuteTask(Task task, hArgs args){
+
+}
+
+
+
+// Task succeded = last task
+// Plutot le faire dans le current system
+bool VxToolchain::TaskSuccedded(std::string label){
+  for(auto succededTask : this->currentLoadedSystem.executedTasks){
+    if(succededTask->tasktype == label){
+      if(succededTask->state == "success"){
+        return true;
+      }
+      else{
+        return false;
+      }
+    }
+  }
+  return false;
 }
 
 void VxToolchain::DeleteCurrentToolchainSystem()

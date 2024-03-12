@@ -3,6 +3,8 @@
 // Date : 03/11/2024
 // Author : Diego Moreno
 
+// WARNING: This is a vanilla VortexMaker features, the core and UI can interact directly with it.
+
 /*
     Description :
 */
@@ -26,19 +28,23 @@ struct SetupSkeleton : public Task
   {
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    std::shared_ptr<hArgs> props;
-    std::shared_ptr<VxToolchain> toolchain = props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
+
+    this->addIdleCheck("createFolders");
+    this->addIdleCheck("giveFoldersToUser");
+
+    // API to check if a task is executed and the result.
+    if(!toolchain->TaskSuccedded("CreateTemporaryUser")){
+      std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+      this->addCheckVerdict("createFolders", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first");
+      this->addCheckVerdict("giveFoldersToUser", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first");
+      this->finish("deps_error", props);
+      return;
+    }
     // Plutot : créer un nouveau report de cette tache
 
     // Set steps flags
-    this->addIdleCheck("deployement");
-    this->addIdleCheck("preparation");
-    this->addIdleCheck("decompression");
-    this->addIdleCheck("configuration");
-    this->addIdleCheck("compilation");
-    this->addIdleCheck("installation");
-    this->addIdleCheck("post_process");
 
     toolchain->envPath = ctx->projectPath / ctx->paths.toolchainDistFolder;
 
@@ -46,17 +52,19 @@ struct SetupSkeleton : public Task
     toolchain->builderTriplet = toolchain->GetTriplet("builder");
     toolchain->hostTriplet = toolchain->GetTriplet("host");
 
+
+    this->addCheckVerdict("createFolders", "success", "Everything is ok");
     std::string baseDir = toolchain->envPath + "/" + toolchain->name;
     if (mkdir(baseDir.c_str(), 0777) == -1)
     {
-      perror("Erreur lors de la création du dossier baseDir");
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + baseDir);
     }
 
 
     std::string crosstoolsDir = baseDir + "/" + toolchain->GetTriplet("target");
     if (mkdir(crosstoolsDir.c_str(), 0777) == -1)
     {
-      perror("Erreur lors de la création du dossier crosstoolsDir");
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + crosstoolsDir);
     }
 
     toolchain->crosstoolsPath = crosstoolsDir;
@@ -65,62 +73,48 @@ struct SetupSkeleton : public Task
     std::string data = baseDir + "/data";
     if (mkdir(data.c_str(), 0777) == -1)
     {
-      perror("Erreur lors de la création du dossier crosstoolsDir");
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + data);
     }
 
     toolchain->packages_data = baseDir + "/data/packages";
     if (mkdir(toolchain->packages_data.c_str(), 0777) == -1)
     {
-      perror("Erreur lors de la création du dossier crosstoolsDir");
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + toolchain->packages_data);
     }
 
     std::string patchs_data = baseDir + "/data/patchs";
     if (mkdir(patchs_data.c_str(), 0777) == -1)
     {
-      perror("Erreur lors de la création du dossier crosstoolsDir");
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + patchs_data);
     }
 
     std::string scripts_data = baseDir + "/data/scripts";
     if (mkdir(scripts_data.c_str(), 0777) == -1)
     {
-      perror("Erreur lors de la création du dossier crosstoolsDir");
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + scripts_data);
     }
 
     std::string sysrootDir = crosstoolsDir + "/sysroot";
     toolchain->sysrootPath = sysrootDir;
     if (mkdir(sysrootDir.c_str(), 0777) == -1)
     {
-      perror("Erreur lors de la création du dossier sysrootDir");
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + sysrootDir);
     }
 
     std::string debugrootDir = crosstoolsDir + "/debugroot";
     if (mkdir(debugrootDir.c_str(), 0777) == -1)
     {
-      perror("Erreur lors de la création du dossier debugrootDir");
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + debugrootDir);
     }
-
-    // other assets
-
-    std::string CMD_AddToGroup = "groupadd vortex";
-    std::string CMD_AddUser = "useradd -s /bin/bash -g vortex -m -k /dev/null vortex"; // + " -p " + user.vxHostUser_Crypto;
-    std::string CMD_CreateUserDirectory = "mkdir -pv /home/vortex";
-    std::string CMD_GiveUserDirectoryToUser = "sudo chown -v vortex:vortex  /home/vortex";
-    std::string CMD_AddToSudoers = "sudo usermod -aG root vortex";
-
-    system((char *)CMD_AddToGroup.c_str());
-    system((char *)CMD_AddUser.c_str());
-    system((char *)CMD_CreateUserDirectory.c_str());
-    system((char *)CMD_GiveUserDirectoryToUser.c_str());
-    system((char *)CMD_AddToSudoers.c_str());
-
     // Give toolchain to user
     std::string cmd = "sudo chown -v -R vortex " + baseDir + "/*";
-    system((char *)cmd.c_str());
+    if(system((char *)cmd.c_str()) == 0){
+      this->addCheckVerdict("giveFoldersToUser", "success", "Everything is ok");
+    }
   }
 
   void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties) override
   {
-
     // Get time
     // Get timer
     // Get all...
@@ -130,12 +124,12 @@ struct SetupSkeleton : public Task
 
     if (this->props)
     {
-      std::shared_ptr<VxHost> host = this->props->get<std::shared_ptr<VxHost>>("host", nullptr);
+      std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
       std::shared_ptr<Task> selfinstance = this->props->get<std::shared_ptr<Task>>("self", nullptr);
 
-      if (host && selfinstance)
+      if (toolchain && selfinstance)
       {
-        host->currentLoadedSystem.Save(host);
+        toolchain->currentLoadedSystem.Save(toolchain);
       }
       else
       {

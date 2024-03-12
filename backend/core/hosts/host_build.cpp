@@ -19,13 +19,21 @@ void fullBuildPackage::exec() {
   VxContext &ctx = *CVortexMaker;
   std::string envPath = ctx.projectPath / ctx.paths.hostDistFolder;
 
+  // get host from props
+  std::shared_ptr<VxHost> host = this->props->get("host", nullptr);
+
+  if (host == nullptr)
+  {
+    return;
+  }
+
         std::cout << "Yan2" << std::endl;
-  this->parent->targetTriplet = this->parent->GetTriplet("target");
-  this->parent->builderTriplet = this->parent->GetTriplet("builder");
-  this->parent->hostTriplet = this->parent->GetTriplet("host");
+  host->targetTriplet = host->GetTriplet("target");
+  host->builderTriplet = host->GetTriplet("builder");
+  host->hostTriplet = host->GetTriplet("host");
         std::cout << "Yan3" << std::endl;
 
-  std::string baseDir = envPath + "/" + this->parent->name;
+  std::string baseDir = envPath + "/" + host->name;
   if (mkdir(baseDir.c_str(), 0777) == -1){perror("Error while creating folder");}
 
   std::string crosstoolsDir = baseDir + "/" + "working_host";
@@ -38,8 +46,8 @@ void fullBuildPackage::exec() {
   std::string factory = baseDir + "/factory";
   if (mkdir(factory.c_str(), 0777) == -1){perror("Error while creating folder");}
 
-  this->parent->path_datapackages = baseDir + "/factory/packages";
-  if (mkdir(this->parent->path_datapackages.c_str(), 0777) == -1){perror("Error while creating folder");}
+  host->path_datapackages = baseDir + "/factory/packages";
+  if (mkdir(host->path_datapackages.c_str(), 0777) == -1){perror("Error while creating folder");}
 
   std::string patchs_data = baseDir + "/factory/patchs";
   if (mkdir(patchs_data.c_str(), 0777) == -1){perror("Error while creating folder");}
@@ -63,9 +71,9 @@ void fullBuildPackage::exec() {
 
         std::cout << "Yan" << std::endl;
 
-  this->parent->path_hostroot = crosstoolsDir;
-  this->parent->path_hostsnapshots = snapshotsDir;
-  this->parent->path_hostfactory = factory;
+  host->path_hostroot = crosstoolsDir;
+  host->path_hostsnapshots = snapshotsDir;
+  host->path_hostfactory = factory;
         std::cout << "Yan" << std::endl;
 
   std::string CMD_AddToGroup = "groupadd vortex";
@@ -90,7 +98,7 @@ void fullBuildPackage::exec() {
 
   for (auto toolchain : ctx.IO.distToolchains)
   {
-    if (this->parent->toolchainToUse == toolchain.name)
+    if (host->toolchainToUse == toolchain.name)
     {
       std::string Bashrc = "sudo touch /home/vortex/.bashrc";    
       std::string CC = "sudo echo \"CC=" + toolchain.CC + "\" >> /home/vortex/.bashrc";
@@ -132,7 +140,7 @@ void fullBuildPackage::exec() {
     std::shared_ptr<VxPackage> component;
     bool component_finded = false;
 
-    for(auto package : this->parent->packages){
+    for(auto package : host->packages){
       std::cout << this->component << " " << package->name << std::endl;
       if(this->component == package->name){
     std::cout << "Finded !" << std::endl;
@@ -142,7 +150,7 @@ void fullBuildPackage::exec() {
     }
 
     if(!component_finded){
-      std::string log = "Error : The \"" + this->component + "\" package not exist in \"" + this->parent->name + "\" host ! ";
+      std::string log = "Error : The \"" + this->component + "\" package not exist in \"" + host->name + "\" host ! ";
       this->addCheckVerdict("deployement", "failed", log);    
       std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
       this->finish("unknow", args);
@@ -165,7 +173,7 @@ void fullBuildPackage::exec() {
     std::cout << "FLKJ" << std::endl;
       std::string resultat = component->path.substr(posDernierSlash + 1);
     std::cout << "FLKJ" << std::endl;
-      component->distPath = this->parent->path_datapackages + "/" + resultat;
+      component->distPath = host->path_datapackages + "/" + resultat;
     }
     std::cout << "FLKJ" << std::endl;
 
@@ -187,24 +195,24 @@ void fullBuildPackage::exec() {
         std::cout << "Yan" << std::endl;
 
 std::unordered_map<std::string, std::string> replacements = {
-        {"${Target}", this->parent->GetTriplet("target")},
-        {"${Build}", this->parent->GetTriplet("builder")},
-        {"${Host}", this->parent->GetTriplet("host")},
-        {"${HostSystem}", this->parent->host},
+        {"${Target}", host->GetTriplet("target")},
+        {"${Build}", host->GetTriplet("builder")},
+        {"${Host}", host->GetTriplet("host")},
+        {"${HostSystem}", host->host},
         {"${PackageFolder}", component->path},
         {"${DistPackageFolder}", component->distPath}};
 
 
     if (component->useChroot)
     {
-      std::string mkdir = "sudo mkdir " + this->parent->host + "/tmp";
-      std::string mkdirSecond = "sudo mkdir " + this->parent->host + "/tmp/packages";
-      std::string mkdirThird = "sudo mkdir " + this->parent->host + "/tmp/packages/" + component->label;
+      std::string mkdir = "sudo mkdir " + host->host + "/tmp";
+      std::string mkdirSecond = "sudo mkdir " + host->host + "/tmp/packages";
+      std::string mkdirThird = "sudo mkdir " + host->host + "/tmp/packages/" + component->label;
       system(mkdir.c_str());
       system(mkdirSecond.c_str());
       system(mkdirThird.c_str());
 
-      std::string cmd = "cp -r " + component->path + "/* " + this->parent->host + "/tmp/packages/" + component->label;
+      std::string cmd = "cp -r " + component->path + "/* " + host->host + "/tmp/packages/" + component->label;
 
 
 
@@ -228,14 +236,14 @@ std::unordered_map<std::string, std::string> replacements = {
     if (posDernierSlash != std::string::npos)
     {
       std::string resultat = component->path.substr(posDernierSlash + 1);
-      component->distPath =  this->parent->host + "/tmp/packages/" + component->label + "/" + resultat;
+      component->distPath =  host->host + "/tmp/packages/" + component->label + "/" + resultat;
     }
 
     int returnCode = system(cmd.c_str());
     //packageToBuild->SetDiagCode("Prepare", returnCode);
 
 
-      component->distPath = this->parent->host + "/tmp/packages/" + component->label;
+      component->distPath = host->host + "/tmp/packages/" + component->label;
 
       // If décompréssé = decompression
       std::string path;
@@ -267,7 +275,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto suffix : component->compilation.configurationSuffixes)
         {
-          if (suffix.first == "all" || suffix.first == this->parent->target_arch)
+          if (suffix.first == "all" || suffix.first == host->target_arch)
           {
             cmd += suffix.second + " ";
           }
@@ -277,7 +285,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto parameter : component->compilation.configurationPrefixes)
         {
-          if (parameter.first == "all" || parameter.first == this->parent->target_arch)
+          if (parameter.first == "all" || parameter.first == host->target_arch)
           {
             cmd += parameter.second + " ";
           }
@@ -294,16 +302,16 @@ std::unordered_map<std::string, std::string> replacements = {
       component->ExecuteActions("preconfig", component);
       std::cout << "Configuration : " << configuration << std::endl;
 
-      std::string errortxt = "cd " +  this->parent->host + "/tmp/packages/" + component->label + "/" + path + "/build && touch error_output.txt'";
+      std::string errortxt = "cd " +  host->host + "/tmp/packages/" + component->label + "/" + path + "/build && touch error_output.txt'";
       configuration += " 2>error_output.txt";
 
 
 {
 
-        int result = this->parent->ExecuteCmdInChroot(configuration);
+        int result = host->ExecuteCmdInChroot(configuration);
 }
 
-      std::ifstream errorFile( this->parent->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt");
+      std::ifstream errorFile( host->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt");
       std::string errorMessage;
 
       if (component->compilation.exclusiveCustomConfigProcess == "not specified")
@@ -317,7 +325,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
           this->addCheckVerdict("configuration", "success", errorMessage);    
 
-          std::string rmOutputFile = "rm " + this->parent->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt";
+          std::string rmOutputFile = "rm " + host->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt";
           system((char *)rmOutputFile.c_str());
         }
         else
@@ -337,7 +345,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto suffix : component->compilation.compilationSuffixes)
         {
-          if (suffix.first == "all" || suffix.first == this->parent->target_arch)
+          if (suffix.first == "all" || suffix.first == host->target_arch)
           {
             cmd += suffix.second + " ";
           }
@@ -354,7 +362,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto parameter : component->compilation.compilationPrefixes)
         {
-          if (parameter.first == "all" || parameter.first == this->parent->target_arch)
+          if (parameter.first == "all" || parameter.first == host->target_arch)
           {
             cmd += parameter.second + " ";
           }
@@ -369,16 +377,16 @@ std::unordered_map<std::string, std::string> replacements = {
       }
       component->ExecuteActions("precompile", component);
       errortxt.clear();
-      errortxt = "cd " + this->parent->host + "/tmp/packages/" + component->label + "/" + path + "/build && touch error_output.txt'";
+      errortxt = "cd " + host->host + "/tmp/packages/" + component->label + "/" + path + "/build && touch error_output.txt'";
       compilation += " 2>error_output.txt";
       std::cout << "Compilation : " << compilation << std::endl;
       {
 
-      int result = this->parent->ExecuteCmdInChroot(compilation);
+      int result = host->ExecuteCmdInChroot(compilation);
       }
 
 
-      std::ifstream errorFile2(this->parent->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt");
+      std::ifstream errorFile2(host->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt");
       errorMessage.clear();
 
       if (component->compilation.exclusiveCustomCompilationProcess == "not specified")
@@ -393,7 +401,7 @@ std::unordered_map<std::string, std::string> replacements = {
           
           this->addCheckVerdict("compilation", "success", errorMessage);    
 
-          std::string rmOutputFile = "rm " + this->parent->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt";
+          std::string rmOutputFile = "rm " + host->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt";
           system((char *)rmOutputFile.c_str());
 
         }
@@ -413,7 +421,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto suffix : component->compilation.installationSuffixes)
         {
-          if (suffix.first == "all" || suffix.first == this->parent->target_arch)
+          if (suffix.first == "all" || suffix.first == host->target_arch)
           {
             cmd += suffix.second + " ";
           }
@@ -423,7 +431,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto parameter : component->compilation.installationPrefixes)
         {
-          if (parameter.first == "all" || parameter.first == this->parent->target_arch)
+          if (parameter.first == "all" || parameter.first == host->target_arch)
           {
             cmd += parameter.second + " ";
           }
@@ -443,10 +451,10 @@ std::unordered_map<std::string, std::string> replacements = {
       errortxt = "cd " + component->distPath + "/" + path + "/build && touch error_output.txt";
       installatiobn += " 2>error_output.txt";{
 
-      int result = this->parent->ExecuteCmdInChroot(installatiobn);
+      int result = host->ExecuteCmdInChroot(installatiobn);
       }
 
-      std::ifstream errorFile3(this->parent->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt");
+      std::ifstream errorFile3(host->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt");
 
       if (component->compilation.exclusiveCustomInstallationProcess == "not specified")
       {
@@ -456,7 +464,7 @@ std::unordered_map<std::string, std::string> replacements = {
           errorMessage.assign(std::istreambuf_iterator<char>(errorFile3), std::istreambuf_iterator<char>());
           errorFile3.close();
           this->addCheckVerdict("installation", "success", errorMessage);    
-          std::string rmOutputFile = "rm " + this->parent->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt";
+          std::string rmOutputFile = "rm " + host->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt";
           system((char *)rmOutputFile.c_str());
         }
         else
@@ -471,7 +479,7 @@ std::unordered_map<std::string, std::string> replacements = {
     }
     else
     {
-    std::string cmd = "cp -r " + component->path + " " + this->parent->path_datapackages;
+    std::string cmd = "cp -r " + component->path + " " + host->path_datapackages;
     system(cmd.c_str());
 
       // If décompréssé = decompression
@@ -501,7 +509,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto suffix : component->compilation.configurationPrefixes)
         {
-          if (suffix.first == "all" || suffix.first == this->parent->target_arch)
+          if (suffix.first == "all" || suffix.first == host->target_arch)
           {
             cmd += suffix.second + " ";
           }
@@ -511,7 +519,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto parameter : component->compilation.configurationSuffixes)
         {
-          if (parameter.first == "all" || parameter.first == this->parent->target_arch)
+          if (parameter.first == "all" || parameter.first == host->target_arch)
           {
             cmd += parameter.second + " ";
           }
@@ -565,7 +573,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto suffix : component->compilation.compilationPrefixes)
         {
-          if (suffix.first == "all" || suffix.first == this->parent->target_arch)
+          if (suffix.first == "all" || suffix.first == host->target_arch)
           {
             cmd += suffix.second + " ";
           }
@@ -582,7 +590,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto parameter : component->compilation.compilationSuffixes)
         {
-          if (parameter.first == "all" || parameter.first == this->parent->target_arch)
+          if (parameter.first == "all" || parameter.first == host->target_arch)
           {
             cmd += parameter.second + " ";
           }
@@ -631,7 +639,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto suffix : component->compilation.installationPrefixes)
         {
-          if (suffix.first == "all" || suffix.first == this->parent->target_arch)
+          if (suffix.first == "all" || suffix.first == host->target_arch)
           {
             cmd += suffix.second + " ";
           }
@@ -641,7 +649,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
         for (auto parameter : component->compilation.installationSuffixes)
         {
-          if (parameter.first == "all" || parameter.first == this->parent->target_arch)
+          if (parameter.first == "all" || parameter.first == host->target_arch)
           {
             cmd += parameter.second + " ";
           }

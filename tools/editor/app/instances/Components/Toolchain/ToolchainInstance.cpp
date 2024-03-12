@@ -2,11 +2,13 @@
 
 using namespace VortexMaker;
 
-ToolchainInstance::ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain)
+ToolchainInstance::ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain, InstanceFactory* _factory)
 {
     this->m_ctx = ctx;
     this->toolchain = _toolchain;
+    this->factory = _factory;
     this->toolchain->Init();
+
 
     this->Refresh();
     this->toolchain->RefreshCurrentWorkingToolchain();
@@ -155,6 +157,8 @@ std::string ToolchainInstance::render()
         this->UI_TasksEditor();
         this->UI_CurrentToolchainPreview();
         this->UI_SnapshotUtility();
+        this->UI_ManualBuild();
+        this->UI_TaskLauncher();
 
         return "rendering";
         }
@@ -205,6 +209,9 @@ void ToolchainInstance::menubar(){
                     if (ImGui::MenuItem("Task viewer", NULL, &this->show_UI_TasksEditor))
                     {
                     }
+                    if (ImGui::MenuItem("Task launcher", NULL, &this->show_UI_TaskLauncher))
+                    {
+                    }
                     if (ImGui::MenuItem("Tasklists utility", NULL, &this->show_UI_TasksEditor))
                     {
                     }
@@ -219,7 +226,7 @@ void ToolchainInstance::menubar(){
                     if (ImGui::MenuItem("Full build"))
                     {
                     }
-                    if (ImGui::MenuItem("Manual build"))
+                    if (ImGui::MenuItem("Manual build", NULL, &this->show_UI_ManualBuild))
                     {
                     }
                     ImGui::EndMenu();

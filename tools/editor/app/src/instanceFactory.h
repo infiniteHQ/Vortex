@@ -18,6 +18,9 @@
 #endif
 
 
+#ifndef ReportInstance_H
+#include "../instances/Utils/Report/ReportInstance.h"
+#endif
 
 using namespace VortexMaker;
 
@@ -28,12 +31,14 @@ class InstanceFactory {
   virtual void SpawnInstance(std::shared_ptr<PackageInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void SpawnInstance(std::shared_ptr<TasklistInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void SpawnInstance(std::shared_ptr<GPOSInstance>) {std::cout << "Not implemented" << std::endl;};
+  virtual void SpawnInstance(std::shared_ptr<ReportInstance>) {std::cout << "Not implemented" << std::endl;};
 
   virtual void UnspawnInstance(std::shared_ptr<HostInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<PackageInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<ToolchainInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<TasklistInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<GPOSInstance>) {std::cout << "Not implemented" << std::endl;};
+  virtual void UnspawnInstance(std::shared_ptr<ReportInstance>) {std::cout << "Not implemented" << std::endl;};
 };
 
 #endif

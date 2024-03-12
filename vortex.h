@@ -523,6 +523,7 @@ struct Check{
     std::string checkLog;
 };
 
+
 struct Task{
     std::string id; // to find this task from everywhere
     std::string tasktype;
@@ -607,7 +608,7 @@ std::string startTime() {
     // Result
     std::shared_ptr<hArgs> result_props;
 
-    std::shared_ptr<VxHost> parent;
+    //std::shared_ptr<VxHost> parent;
 
     virtual void init(){std::cout << "Not implemented" << std::endl;};
     virtual void retry(){std::cout << "Not implemented" << std::endl;};
@@ -767,6 +768,8 @@ struct VxPackage{
 
     VxPackageCompilation compilation;
     // Package manager profile
+
+    std::shared_ptr<Task> latestTask;
 
     std::unordered_map<std::string, std::shared_ptr<VxDiag>> diags;
 
@@ -956,14 +959,15 @@ struct VxHost{
     std::string localPackagesPath;
 
     std::string target_arch;
+    std::string targetTriplet;
+
     std::string builder_arch;
+    std::string builderTriplet;
+
     std::string host_arch;
+    std::string hostTriplet;
 
-    std::string host          = "not specified";
-
-    std::string hostTriplet             = "not specified";
-    std::string builderTriplet          = "not specified";
-    std::string targetTriplet           = "not specified";
+    std::string host          = "not specifiedcomponentt specified";
 
     std::string path_hostroot;
     std::string path_hostfactory;
@@ -984,6 +988,25 @@ struct VxHost{
     // Apres, possibilité de reprendre la tasklist en fonction des taches executées dans le current sys
 
     std::vector<TaskList> allTaskLists;
+    std::vector<std::shared_ptr<Task>> latestTasks;
+    void addLatestTask(std::shared_ptr<Task> task){
+        for(auto t : this->latestTasks){
+            if(t->id == task->id){
+                t = task;
+                return;
+            }
+        }
+        this->latestTasks.push_back(task);
+    }
+
+    std::shared_ptr<Task> getLatestTask(std::string id){
+        for(auto t : this->latestTasks){
+            if(t->id == id){
+                return t;
+            }
+        }
+    }
+    
 
     VxHostCurrentSystem currentLoadedSystem;
 
@@ -1310,18 +1333,21 @@ struct VxToolchain{
     void RefreshCurrentWorkingToolchain();
 
 
+    void ExecuteTask(Task task, hArgs args);
     std::string GetTriplet(std::string triplet_type);
+
+    bool TaskSuccedded(std::string taskID);
 
 
     void MakeSnapshot(std::string label);
 
-void MakeDistSnapshot(std::string label);
-void RetakeSnapshot(std::string snapshot_label);
+    void MakeDistSnapshot(std::string label);
+    void RetakeSnapshot(std::string snapshot_label);
 
-void RefreshSnapshots();
+    void RefreshSnapshots();
 
-void CreateCurrentToolchainSystem();
-void DeleteCurrentToolchainSystem();
+    void CreateCurrentToolchainSystem();
+    void DeleteCurrentToolchainSystem();
 
     void DeployNewCurrentSystem();
     void DeleteCurrentSystem();

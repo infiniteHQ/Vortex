@@ -22,6 +22,7 @@ static std::vector<std::shared_ptr<ToolchainInstance>> toolchainInstances;
 static std::vector<std::shared_ptr<PackageInstance>> packageInstances;
 static std::vector<std::shared_ptr<TasklistInstance>> tasklistInstances;
 static std::vector<std::shared_ptr<GPOSInstance>> gposInstances;
+static std::vector<std::shared_ptr<ReportInstance>> reportInstances;
 
 
 static void PushStyle()
@@ -77,6 +78,22 @@ class Instance : public InstanceFactory {
     gposInstances.push_back(instance);
   };
 
+  void SpawnInstance(std::shared_ptr<ReportInstance> instance) override {
+    bool alreadyExist = false;
+
+    for(auto reprtInstance : reportInstances){
+      if(reprtInstance->name == instance->task->id){
+        alreadyExist = true;
+      }
+    }
+
+    if(!alreadyExist){
+        instance->opened = true;
+        instance->name = instance->task->id;
+        reportInstances.push_back(instance);
+    }
+  };
+
 
 
   void UnspawnInstance(std::shared_ptr<TasklistInstance> instance) override {
@@ -102,6 +119,12 @@ class Instance : public InstanceFactory {
 
   void UnspawnInstance(std::shared_ptr<GPOSInstance> instance) override {
     std::string instanceName = instance->name;
+    instance = nullptr;
+  };
+
+  void UnspawnInstance(std::shared_ptr<ReportInstance> instance) override {
+    std::string instanceName = instance->name;
+    instance->name = "null";
     instance = nullptr;
   };
 
@@ -142,7 +165,8 @@ public:
     for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
     for (auto window : tasklistInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
     for (auto window : gposInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
-
+    for (auto window : reportInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
+    
     PopStyle();
     
 

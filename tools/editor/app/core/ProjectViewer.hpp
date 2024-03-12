@@ -69,7 +69,7 @@ struct MyTreeNode
 				if(ImGui::Button("Open")){
 					for(auto toolchain : ctx->IO.toolchains){
 						if(node->Name == toolchain->name){
-							std::shared_ptr<ToolchainInstance> instance = std::make_shared<ToolchainInstance>(ctx, toolchain);
+							std::shared_ptr<ToolchainInstance> instance = std::make_shared<ToolchainInstance>(ctx, toolchain, factory);
 							factory->SpawnInstance(instance);	
 						}
 					}

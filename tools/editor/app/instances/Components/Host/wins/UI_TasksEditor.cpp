@@ -126,13 +126,15 @@ void HostInstance::UI_TasksEditor()
                                 props->add("host", this->host);
                                 std::shared_ptr<Task> instancetask = VortexMaker::CreateTask(task->tasktype, task->component, "SecondTestHostTask-123", task->priority, props);
 
-                                instancetask->parent = this->host; // il faut assigner le component name ici ! il n'est pas bon pour l'instant
+                                //instancetask->parent = this->host; // il faut assigner le component name ici ! il n'est pas bon pour l'instant
                                 instancetask->state = "not_started";
                                 props->add("self", instancetask);
 
+                                this->host->addLatestTask(instancetask);
                                 this->host->currentLoadedSystem.executedTasks.push_back(instancetask);
 
                                 this->host->currentLoadedSystem.Save(this->host);
+                                
                             }
                         }
                     }

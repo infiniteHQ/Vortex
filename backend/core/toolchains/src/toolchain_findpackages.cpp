@@ -1,5 +1,5 @@
-#include "../../../vortex.h"
-#include "../../../vortex_internals.h"
+#include "../../../../vortex.h"
+#include "../../../../vortex_internals.h"
 
 
 void VxToolchain::FindPackages()
