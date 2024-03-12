@@ -129,8 +129,17 @@ void VxHost::RefreshCurrentWorkingHost()
 
 void VxToolchain::RefreshCurrentWorkingToolchain()
 {
+  // Check if this->workingPath + "/working_host.config" exists
+  if(!std::filesystem::exists(this->workingPath + "/working_host.config"))
+  {
+    std::cerr << "Error : " << this->workingPath + "/working_host.config" << " does not exists." << std::endl;
+    this->haveCurrentSys = false;
+    return;
+  }
+
   nlohmann::json data = VortexMaker::DumpJSON(this->workingPath + "/working_host.config");
   this->currentLoadedSystem.Populate(data);
+    this->haveCurrentSys = true;
 }
 
 void VxToolchain::RefreshSnapshots()

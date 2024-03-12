@@ -32,7 +32,40 @@ void VxToolchainCurrentSystem::CreateTask(std::string tasktype, std::string comp
   }
 }
 
+void VxToolchain::DeleteCurrentToolchainSystem()
+{
+  // Delete working_host directory and recreate a new one
+  std::string DeleteWorkingHost = "sudo rm -rf " + this->workingPath;
+  system(DeleteWorkingHost.c_str());
+}
 
+void VxToolchain::CreateCurrentToolchainSystem()
+{
+  this->DeleteCurrentToolchainSystem();
+  // Recréer un dossier workingPaht
+  std::string CreateWorkingHost = "sudo mkdir " + this->workingPath;
+  system(CreateWorkingHost.c_str());
+
+  // Create working_host.config into WorkingPath
+
+  VxToolchainCurrentSystem newCurrentSystem;
+  nlohmann::json working_host_config = newCurrentSystem.Extract();
+
+  std::ofstream outputFile(this->workingPath + "/working_host.config");
+
+  // Populate file with working_host_config
+  if (outputFile.is_open())
+  {
+    outputFile << std::setw(4) << working_host_config << std::endl;
+    outputFile.close();
+  }
+  else
+  {
+    std::cerr << "Error while creating the working_host.config file." << std::endl;
+  }
+
+  this->haveCurrentSys = true;
+}
 
 void VxToolchain::Init()
 {
@@ -50,7 +83,7 @@ void VxToolchain::Init()
   // Get dist working path (for CurrentWorkingToolchain)
   std::string envPath = ctx.projectPath / ctx.paths.toolchainDistFolder;
   std::string baseDir = envPath + "/" + this->name;
-  std::string crosstoolsDir = baseDir + "/" + this->GetTriplet("target");
+  std::string crosstoolsDir = baseDir + "/working_host";
   this->workingPath = crosstoolsDir;
 }
 

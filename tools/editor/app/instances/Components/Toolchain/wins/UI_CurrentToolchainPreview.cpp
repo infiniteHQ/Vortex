@@ -1,24 +1,25 @@
 #include "../ToolchainInstance.h"
 #include <array>
 
-
-static std::string formatElapsedTime(double elapsedSeconds) {
+static std::string formatElapsedTime(double elapsedSeconds)
+{
     int hours = static_cast<int>(elapsedSeconds / 3600);
     int minutes = static_cast<int>((elapsedSeconds - hours * 3600) / 60);
     int seconds = static_cast<int>(elapsedSeconds - hours * 3600 - minutes * 60);
 
     std::string formattedTime;
-    if (hours > 0) {
+    if (hours > 0)
+    {
         formattedTime += std::to_string(hours) + "h ";
     }
-    if (minutes > 0 || hours > 0) {
+    if (minutes > 0 || hours > 0)
+    {
         formattedTime += std::to_string(minutes) + "m ";
     }
     formattedTime += std::to_string(seconds) + "s";
 
     return formattedTime;
 }
-
 
 static void coloredTag(std::string name, ImVec4 color)
 {
@@ -34,8 +35,8 @@ static void idTag(std::string name)
     ImGuiStyle &style = ImGui::GetStyle();
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 0.60f)));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x, (float)(int)(style.ItemSpacing.y * 0.60f)));
-    
-    ImVec4 color(0.0f,0.0f,0.0f,0.0f);
+
+    ImVec4 color(0.0f, 0.0f, 0.0f, 0.0f);
     ImGui::PushStyleColor(ImGuiCol_Button, color);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
@@ -63,6 +64,8 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
         static ImTextureID unknowIcon = this->m_UnknowIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+        static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID saveIcon = this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID buildIcon = this->m_BuildIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -70,23 +73,39 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
         static ImTextureID trashIcon = this->m_TrashIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         static ImTextureID eyeIcon = this->m_EyeIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static bool destroyModalOpened = false;
 
-        ImGui::Begin(label.c_str(), &eyeIcon, &this->show_UI_CurrentToolchainPreview, ImGuiWindowFlags_MenuBar);
-        if (ImGui::BeginMenuBar())
         {
 
-            if (ImGui::ImageButtonWithText(buildIcon, "Chroot", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+            ImGui::Begin(label.c_str(), &eyeIcon, &this->show_UI_CurrentToolchainPreview, ImGuiWindowFlags_MenuBar);
+            if (ImGui::BeginMenuBar())
             {
-                // Save behavior
-            }
-            if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-            {
-                // Save behavior
-            }
 
-            const char *items[] = {"Filesystem", "Binaries", "Patchs", "Automations"};
-            static int item_current = 0;
-            ImGui::Combo("Type", &item_current, items, IM_ARRAYSIZE(items));
+                if (this->toolchain->haveCurrentSys == false)
+                {
+                    ImGui::Text("No working system detected.");
+
+                    if (ImGui::ImageButtonWithText(addIcon, "Create", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                    {
+                        this->toolchain->CreateCurrentToolchainSystem();
+                    }
+                }
+                else
+                {
+                    if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                    {
+                        destroyModalOpened = true;
+                    }
+                if (ImGui::ImageButtonWithText(buildIcon, "Chroot", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                {
+                    // Save behavior
+                }
+                if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                {
+                    // Save behavior
+                }
+                }
+            }
 
             ImGui::Separator();
             if (ImGui::BeginMenu("Pannels"))
@@ -102,6 +121,44 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
             ImGui::EndMenuBar();
         }
 
+
+                    if (destroyModalOpened)
+                        ImGui::OpenPopup("DestroyCurrentSys");
+
+
+if (ImGui::BeginPopupModal("DestroyCurrentSys"))
+            {
+
+                // inputs widget
+                ImGui::Text("Warning ! You will destroy the current working system, all your dist data will be erase but you will keep basic data");
+                ImGui::Text("Note: You can create a snapshot to save it before destroy it.");
+                if (ImGui::Button("Destroy", ImVec2(120, 0)))
+                {
+                    this->toolchain->DeleteCurrentToolchainSystem();
+                    this->toolchain->haveCurrentSys = false;
+                        destroyModalOpened = false;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Snapshot & Destroy", ImVec2(120, 0)))
+                {
+                    this->toolchain->MakeSnapshot("before-destroy");
+                    this->toolchain->DeleteCurrentToolchainSystem();
+                    this->toolchain->haveCurrentSys = false;
+                        destroyModalOpened = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                        destroyModalOpened = false;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
         // Left
         static int selected = 0;
 
@@ -121,11 +178,8 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
 
         ImGui::Separator();
         ImGui::SameLine();
-        static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         // Project Settings
-
-
 
         static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
@@ -224,30 +278,29 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
                         }
                         if (column == 5)
                         {
-                            std::string errorButtonID = std::to_string(this->toolchain->currentLoadedSystem.executedTasks[row]->failCounter) +"###" + std::to_string(row) + "-" + std::to_string(column);
+                            std::string errorButtonID = std::to_string(this->toolchain->currentLoadedSystem.executedTasks[row]->failCounter) + "###" + std::to_string(row) + "-" + std::to_string(column);
                             if (ImGui::ImageButtonWithText(errorIcon, errorButtonID.c_str(), ImVec2(this->m_ErrorIcon->GetWidth(), this->m_ErrorIcon->GetHeight())))
                             {
                             }
                             ImGui::SameLine();
 
-                            std::string warnButtonID = std::to_string(this->toolchain->currentLoadedSystem.executedTasks[row]->warningCounter)  +"###" + std::to_string(row) + "-" + std::to_string(column);
+                            std::string warnButtonID = std::to_string(this->toolchain->currentLoadedSystem.executedTasks[row]->warningCounter) + "###" + std::to_string(row) + "-" + std::to_string(column);
                             if (ImGui::ImageButtonWithText(warnIcon, warnButtonID.c_str(), ImVec2(this->m_ErrorIcon->GetWidth(), this->m_ErrorIcon->GetHeight())))
                             {
                             }
                             ImGui::SameLine();
 
-                            std::string successButtonID =std::to_string(this->toolchain->currentLoadedSystem.executedTasks[row]->successCounter)  +"###" + std::to_string(row) + "-" + std::to_string(column);
+                            std::string successButtonID = std::to_string(this->toolchain->currentLoadedSystem.executedTasks[row]->successCounter) + "###" + std::to_string(row) + "-" + std::to_string(column);
                             if (ImGui::ImageButtonWithText(successIcon, successButtonID.c_str(), ImVec2(this->m_ErrorIcon->GetWidth(), this->m_ErrorIcon->GetHeight())))
                             {
                             }
 
                             ImGui::SameLine();
 
-                            std::string unknowButtonID = std::to_string(this->toolchain->currentLoadedSystem.executedTasks[row]->unknowCounter) +"###" + std::to_string(row) + "-" + std::to_string(column);
+                            std::string unknowButtonID = std::to_string(this->toolchain->currentLoadedSystem.executedTasks[row]->unknowCounter) + "###" + std::to_string(row) + "-" + std::to_string(column);
                             if (ImGui::ImageButtonWithText(unknowIcon, unknowButtonID.c_str(), ImVec2(this->m_ErrorIcon->GetWidth(), this->m_ErrorIcon->GetHeight())))
                             {
                             }
-                            
                         }
                         if (column == 6)
                         {
@@ -255,9 +308,9 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
                         }
                         if (column == 7)
                         {
-    double elapsed = this->toolchain->currentLoadedSystem.executedTasks[row]->elapsedSeconds();
-    std::string formattedElapsedTime = formatElapsedTime(elapsed);
-    ImGui::Text(formattedElapsedTime.c_str());
+                            double elapsed = this->toolchain->currentLoadedSystem.executedTasks[row]->elapsedSeconds();
+                            std::string formattedElapsedTime = formatElapsedTime(elapsed);
+                            ImGui::Text(formattedElapsedTime.c_str());
                         }
                         if (column == 8)
                         {
@@ -272,7 +325,7 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
 
         if (selected == 2)
         {
-            if (ImGui::BeginTable("table_", 3, flags))
+            if (ImGui::BeginTable("table_2", 3, flags))
             {
                 ImGui::TableSetupColumn("Package", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);

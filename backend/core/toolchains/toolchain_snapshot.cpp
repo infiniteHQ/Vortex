@@ -4,14 +4,57 @@
 void VxToolchain::MakeSnapshot(std::string label)
 {
     // Create snapshot folder
-  VxContext *ctx = VortexMaker::GetCurrentContext();
-  std::string envPath = ctx->projectPath / ctx->paths.toolchainDistFolder;
-  std::string baseDir = envPath + "/" + this->name;
-  std::string snapshotsDir = baseDir + "/" + "snapshots";
-  if (mkdir(snapshotsDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+    std::string envPath = ctx->projectPath / ctx->paths.toolchainDistFolder;
+    std::string baseDir = envPath + "/" + this->name;
+    std::string snapshotsDir = baseDir + "/" + "snapshots";
 
-  this->path_hostsnapshots = snapshotsDir;
-  
+    this->RefreshSnapshots();
+    for (auto snapshot : this->snapshots)
+    {
+        if (snapshot.name == label)
+        {
+            std::cout << "Snapshot with label " << label << " already exists." << std::endl;
+
+            // détecter si le dernier charactere de label est un nombre, si oui ajouter +1 sinon ajouter _1 a la fin
+            std::string lastChar = label.substr(label.size() - 1);
+            int number = 1;
+
+            bool flag = true; // We initialise flag as true.
+            for (int i = 0; i < lastChar.length(); i++)
+            {
+                if (isdigit(lastChar[i]) == false)
+                {
+                    flag = false;
+                    number = isdigit(lastChar[i]);
+                    break;
+                }
+            }
+
+            if (flag == true)
+            { // It means that the previous for loop found each character to be a digit.
+                label.pop_back();
+                number++;
+                label += std::to_string(number);
+    std::cout << "Adding nuymber " << label << std::endl;
+            }
+            else
+            {
+                label += "-1";
+    std::cout << "Adding nuymber " << label << std::endl;
+            }
+        }
+    }
+
+    std::cout << "Creating snapshot with label " << label << std::endl;
+
+    if (mkdir(snapshotsDir.c_str(), 0777) == -1)
+    {
+        perror("Error while creating folder");
+    }
+
+    this->path_hostsnapshots = snapshotsDir;
+
     std::string path = this->path_hostsnapshots + "/" + label;
     std::string SnapshotFolderCreation = "sudo mkdir " + path;
     system(SnapshotFolderCreation.c_str());
@@ -21,11 +64,13 @@ void VxToolchain::MakeSnapshot(std::string label)
     distToolchainJson["snapshot"]["name"] = label;
     std::ofstream outputFile(path + "/snapshot.config");
 
-    if (outputFile.is_open()) {
+    if (outputFile.is_open())
+    {
         outputFile << std::setw(4) << distToolchainJson << std::endl;
         outputFile.close();
-
-    } else {
+    }
+    else
+    {
         std::cerr << "Error while creating the toolchain dist config file." << std::endl;
     }
 
@@ -33,40 +78,35 @@ void VxToolchain::MakeSnapshot(std::string label)
     std::string CopyConfig = "sudo cp " + this->workingPath + "/working_host.config " + path;
     system(CopyConfig.c_str());
 
-    std::string Compress = " cd " + this->workingPath + "/../ && sudo tar -czvf " + path + "/working_host.tar.gz "+  this->GetTriplet("target");
+    std::string Compress = " cd " + this->workingPath + "/../ && sudo tar -czvf " + path + "/working_host.tar.gz working_host";
     system(Compress.c_str());
 }
 
 void VxToolchain::RetakeSnapshot(std::string snapshot_label)
 {
-  VxContext *ctx = VortexMaker::GetCurrentContext();
-  std::string envPath = ctx->projectPath / ctx->paths.toolchainDistFolder;
-  std::string baseDir = envPath + "/" + this->name;
-  std::string snapshotsDir = baseDir + "/" + this->GetTriplet("target");
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+    std::string envPath = ctx->projectPath / ctx->paths.toolchainDistFolder;
+    std::string baseDir = envPath + "/" + this->name;
+    std::string snapshotsDir = baseDir + "/" + this->GetTriplet("target");
 
-
-        // DELETE WORKING HOST
-    // Delete working_host directory and recreate a new one
-    std::string DeleteWorkingHost = "sudo rm -rf " + this->workingPath;
-    system(DeleteWorkingHost.c_str());
+    this->DeleteCurrentToolchainSystem();
 
     // Recréer un dossier workingPaht
     std::string CreateWorkingHost = "sudo mkdir " + this->workingPath;
     system(CreateWorkingHost.c_str());
 
-
-
     // Find snapshot by label
-    for(auto snapshot : this->snapshots){
+    for (auto snapshot : this->snapshots)
+    {
         std::cout << "Snapshot name : " << snapshot.name << " " << snapshot_label << "\n";
-        if(snapshot.name == snapshot_label){
+        if (snapshot.name == snapshot_label)
+        {
             // Decompresser le tarball présent dans snapshot.path et le mettre dans workingPath
-            std::cout << "Decompressing snapshot " << snapshot.name << " o n"  << snapshot.path << std::endl;
+            std::cout << "Decompressing snapshot " << snapshot.name << " o n" << snapshot.path << std::endl;
             std::string Decompress = " cd " + snapshot.path + " && sudo tar -xzvf " + "working_host.tar.gz -C " + this->workingPath + "/../";
             system(Decompress.c_str());
         }
     }
-
 
     // Uncompress working_host tarball into main host folder
     // Set working host instance into current working host (refresh)

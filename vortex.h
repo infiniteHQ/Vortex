@@ -1257,6 +1257,8 @@ struct VxToolchain{
     bool        isCompressed            = false;
     std::string compressionMode         = "not specified";
 
+    bool haveCurrentSys;
+
 
     std::string localPackagesPath;
 
@@ -1317,6 +1319,9 @@ void MakeDistSnapshot(std::string label);
 void RetakeSnapshot(std::string snapshot_label);
 
 void RefreshSnapshots();
+
+void CreateCurrentToolchainSystem();
+void DeleteCurrentToolchainSystem();
 
     void DeployNewCurrentSystem();
     void DeleteCurrentSystem();
