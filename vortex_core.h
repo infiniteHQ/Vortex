@@ -38,16 +38,7 @@ struct SecondTestHostTask : public Task
     if (this->props)
     {
       std::shared_ptr<VxHost> host = this->props->get<std::shared_ptr<VxHost>>("host", nullptr);
-      std::shared_ptr<Task> selfinstance = this->props->get<std::shared_ptr<Task>>("self", nullptr);
-
-      if (host && selfinstance)
-      {
         host->currentLoadedSystem.Save(host);
-      }
-      else
-      {
-        std::cout << "Error: Host or self instance is null" << std::endl;
-      }
     }
     else
     {

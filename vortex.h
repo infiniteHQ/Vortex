@@ -437,7 +437,7 @@ struct hString
     void                clear() {if (Data) {delete[] Data;Data = nullptr;Size = 0;Capacity = 0;}}
     const char*         c_str() const { return Buf.Data ? Buf.Data : EmptyString; }
 
-    VORTEX_API void   append(const char* str, const char* str_end = NULL);
+    VORTEX_API void     append(const char* str, const char* str_end = NULL);
 
     inline char         operator[](int i) const { VX_ASSERT(Buf.Data != NULL); return Buf.Data[i]; }
     bool                operator==(const char* str) const {if (Buf.Data == nullptr && str == nullptr) {return true; }if (Buf.Data == nullptr || str == nullptr) {return false; }return strcmp(Buf.Data, str) == 0;}
@@ -526,8 +526,13 @@ struct Check{
 
 
 struct Task{
+
+    virtual std::shared_ptr<Task> clone() const {
+        return std::make_shared<Task>(*this);
+    }
+    
     std::string id; // to find this task from everywhere
-    std::string tasktype;
+    std::string tasktype = "unknow";
     std::string component;
     std::string state; // state of this task
     int priority;
@@ -544,6 +549,21 @@ struct Task{
         this->checkList.push_back(newCheck);
         this->unknowCounter++;
     }
+
+    void updateState(){
+        std::string _state = "unknow";
+            if(this->successCounter > 0){
+                _state = "success";
+            }
+            else if(this->warningCounter > 0){
+                _state = "warning";
+            }
+            else if(this->failCounter > 0){
+                _state = "failed";
+            }
+        this->state = _state;
+     }
+    
 
     void addCheckVerdict(std::string id, std::string result, std::string log){
         for(auto check : this->checkList){
@@ -566,6 +586,7 @@ struct Task{
       else if (check->checkResult == "unknow"){
 
       }
+      this->updateState();
             }
         }
     }

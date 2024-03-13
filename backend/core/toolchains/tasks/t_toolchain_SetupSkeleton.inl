@@ -16,6 +16,11 @@ struct Task;
 
 struct SetupSkeleton : public Task
 {
+
+    std::shared_ptr<Task> clone() const override {
+        return std::make_shared<SetupSkeleton>(*this);
+    }
+
   void init() override
   {
     this->tasktype = "SetupSkeleton";
@@ -40,7 +45,7 @@ struct SetupSkeleton : public Task
       std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
       this->addCheckVerdict("createFolders", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first");
       this->addCheckVerdict("giveFoldersToUser", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first");
-      this->finish("deps_error", props);
+      this->finish("failed", props);
       return;
     }
 
@@ -126,21 +131,25 @@ struct SetupSkeleton : public Task
     // Get all...
     this->stop();
     this->result_props = result_properties;
-    this->state = finish_state;
+
+      this->state = "unknow";
+    if(this->successCounter > 0){
+      this->state = "success";
+    }
+    
+    if(this->warningCounter > 0){
+      this->state = "warning";
+    }
+
+    if(this->failCounter > 0){
+      this->state = "failed";
+    }
+
 
     if (this->props)
     {
       std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
-      std::shared_ptr<Task> selfinstance = this->props->get<std::shared_ptr<Task>>("self", nullptr);
-
-      if (toolchain && selfinstance)
-      {
         toolchain->currentLoadedSystem.Save(toolchain);
-      }
-      else
-      {
-        std::cout << "Error: Host or self instance is null" << std::endl;
-      }
     }
     else
     {

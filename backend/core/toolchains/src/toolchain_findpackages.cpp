@@ -123,6 +123,10 @@ void VxToolchain::FindPackages()
                 }
               }
 
+              std::shared_ptr<Task> newTask = std::make_shared<Task>();
+              newTask->tasktype = "unknow";
+              newPackage->latestTask = newTask;
+
               this->packages.push_back(newPackage);
               registeredPackage->resolved = true;
             }

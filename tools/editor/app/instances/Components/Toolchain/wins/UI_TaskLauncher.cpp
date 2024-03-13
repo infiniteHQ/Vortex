@@ -1,6 +1,21 @@
 #include "../ToolchainInstance.h"
 #include <array>
 
+std::string gen_random(const int len) {
+    static const char alphanum[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+    std::string tmp_s;
+    tmp_s.reserve(len);
+
+    for (int i = 0; i < len; ++i) {
+        tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+    
+    return tmp_s;
+}
+
 void ToolchainInstance::UI_TaskLauncher()
 {
 
@@ -116,17 +131,17 @@ void ToolchainInstance::UI_TaskLauncher()
                     std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
                     props->add("toolchain", this->toolchain);
 
-                    std::shared_ptr<Task> _task = std::make_shared<Task>();
 
                     for (auto task : this->toolchain->tasks)
                     {
                         if (task->tasktype == items[item_current])
                         {
-                            _task = task;
+                            std::shared_ptr<Task> _task = task->clone();
+                            //_task = task;
                             std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
                             props->add("toolchain", this->toolchain);
 
-                            _task->id = task->id;
+                            _task->id = task->tasktype + "-" + gen_random(8);
                             _task->tasktype = task->tasktype;
                             _task->component = task->component;
                             _task->priority = task->priority;
@@ -137,6 +152,7 @@ void ToolchainInstance::UI_TaskLauncher()
                             if(this->toolchain->taskProcessor){
                                 this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
                                 this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
+                                this->toolchain->packages[row]->latestTask = _task;
                                 this->toolchain->currentLoadedSystem.Save(this->toolchain);
                             }
                             else{

@@ -163,7 +163,8 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
         static int selected = 0;
 
         std::string patchlabel = "Executed tasks (" + std::to_string(this->toolchain->currentLoadedSystem.executedTasks.size()) + ")";
-        std::array<std::string, 6> labels = {"General", patchlabel, "Package", "Filesystem", "Actions", "Scripts"};
+        std::string packagelabel = "Packages (" + std::to_string(this->toolchain->packages.size()) + ")";
+        std::array<std::string, 6> labels = {"General", patchlabel, packagelabel, "Filesystem", "Actions", "Scripts"};
 
         {
             ImGui::BeginChild("left pane", ImVec2(170, 0), true);
@@ -338,43 +339,78 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
 
         if (selected == 2)
         {
-            if (ImGui::BeginTable("table_2", 3, flags))
+            
+            if (ImGui::BeginTable("table_package", 4, flags))
             {
-                ImGui::TableSetupColumn("Package", ImGuiTableColumnFlags_WidthFixed);
-                ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
-                ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Latest action", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Latest ID", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Latest result", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableHeadersRow();
 
-                /* for (int row = 0; row < this->toolchain->currentLoadedSystem.reports.size(); row++)
-                 {
-                     if(this->toolchain->currentLoadedSystem.reports[row]->parent.task == "testpackage"){
+                for (int row = 0; row < this->toolchain->packages.size(); row++)
+                {
+                    static std::pair<char[128], char[128]> newItem;
+                    static char label[128];
 
-                     static std::pair<char[128], char[128]> newItem;
-                     static char label[128];
+                    ImGui::TableNextRow();
+                    for (int column = 0; column < 4; column++)
+                    {
+                        ImGui::TableSetColumnIndex(column);
 
-                     ImGui::TableNextRow();
-                     for (int column = 0; column < 3; column++)
-                     {
-                         ImGui::TableSetColumnIndex(column);
+                        if (column == 0)
+                        {
+                            ImGui::Text(this->toolchain->packages[row]->label.c_str());
+                        }
+                        if (column == 1)
+                        {
+                            if(this->toolchain->packages[row]->latestTask->tasktype.c_str() == "unknow"){
+                                ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 0.4f), "No action yet");
 
-                         if (column == 0)
-                         {
-                             ImGui::Text(this->toolchain->currentLoadedSystem.reports[row]->parent.component.c_str());
-                         }
-                         if (column == 1)
-                         {
-                             ImGui::Text(this->toolchain->currentLoadedSystem.reports[row]->parent.uniqueID.c_str());
-                         }
-                         if (column == 2)
-                         {
-                             ImGui::Text(this->toolchain->currentLoadedSystem.reports[row]->result.c_str());
-                         }
-                     }
-                     }
-                 }*/
+                            }
+                        }
+                        if (column == 2)
+                        {
+                            idTag(this->toolchain->packages[row]->latestTask->id);
+                        }
+                        if (column == 3)
+                        {
+                            if (this->toolchain->packages[row]->latestTask->state == "finished")
+                            {
+                                coloredTag("Finished", ImVec4(0.0f, 1.0f, 0.2f, 0.4f));
+                            }
+                            if (this->toolchain->packages[row]->latestTask->state == "success")
+                            {
+                                coloredTag("Success", ImVec4(0.0f, 1.0f, 0.2f, 0.4f));
+                            }
+                            if (this->toolchain->packages[row]->latestTask->state == "failed")
+                            {
+                                coloredTag("Failed", ImVec4(1.0f, 0.2f, 0.2f, 0.4f));
+                            }
+                            if (this->toolchain->packages[row]->latestTask->state == "paused")
+                            {
+                                coloredTag("Paused", ImVec4(0.5f, 0.5f, 0.2f, 0.4f));
+                            }
+                            if (this->toolchain->packages[row]->latestTask->state == "retry")
+                            {
+                                coloredTag("Retry", ImVec4(0.5f, 0.5f, 0.2f, 0.4f));
+                            }
+                            if (this->toolchain->packages[row]->latestTask->state == "process")
+                            {
+                                coloredTag("Processing...", ImVec4(0.8f, 0.5f, 0.5f, 0.4f));
+                            }
+                            if (this->toolchain->packages[row]->latestTask->state == "not_started")
+                            {
+                                coloredTag("Not Started", ImVec4(0.5f, 0.5f, 0.5f, 0.1f));
+                            }
+                        }
+                      
+                    }
+                }
 
                 ImGui::EndTable();
             }
+        
         }
 
         // Right

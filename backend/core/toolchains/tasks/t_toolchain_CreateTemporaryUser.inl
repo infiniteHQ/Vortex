@@ -102,7 +102,8 @@ struct CreateTemporaryUser : public Task
     }
 
     std::string cuser = "chown vortex:vortex -R " + toolchain->envPath + "/*";
-    system(cuser.c_str());
+    std::cout << cuser << std::endl;
+    //system(cuser.c_str());
   }
 
   void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties) override
@@ -115,6 +116,18 @@ struct CreateTemporaryUser : public Task
     this->result_props = result_properties;
     this->state = finish_state;
 
+      finish_state = "unknow";
+    if(this->successCounter > 0){
+      finish_state = "success";
+    }
+    
+    if(this->warningCounter > 0){
+      finish_state = "warning";
+    }
+
+    if(this->failCounter > 0){
+      finish_state = "failed";
+    }
 
     if (this->props)
     {
