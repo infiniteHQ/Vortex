@@ -245,12 +245,12 @@ std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::
 
 void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
 {
+  this->executedTasks.clear();
   this->size = jsonData["size"].get<std::string>();
 
   // Get list of packages and all reports associated
   for (auto packageReport : jsonData["taskList"])
   {
-  std::cout << "ch9999" << std::endl;
     std::shared_ptr<Task> task = std::make_shared<Task>();
 
     task->id = packageReport["t_id"].get<std::string>();

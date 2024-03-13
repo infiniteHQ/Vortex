@@ -134,9 +134,14 @@ void ToolchainInstance::UI_TaskLauncher()
                             _task->state = "not_started";
 
                             // Ajout de la tâche aux listes appropriées
-                            this->m_ctx->IO.tasksToProcess.push_back(_task);
-                            this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
-                            this->toolchain->currentLoadedSystem.Save(this->toolchain);
+                            if(this->toolchain->taskProcessor){
+                                this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
+                                this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
+                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
+                            }
+                            else{
+                                std::cout << "Failed while accessing taskToProcess" << std::endl;
+                            }
                         }
                     }
 

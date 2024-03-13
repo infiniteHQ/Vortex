@@ -108,6 +108,8 @@ void VxToolchain::RetakeSnapshot(std::string snapshot_label)
         }
     }
 
+    this->RefreshCurrentWorkingToolchain();
+
     // Uncompress working_host tarball into main host folder
     // Set working host instance into current working host (refresh)
 }

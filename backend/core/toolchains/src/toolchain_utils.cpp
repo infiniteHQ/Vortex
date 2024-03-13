@@ -6,6 +6,8 @@
 #include "../tasks/t_toolchain_CreateTemporaryUser.inl"
 
 
+
+
 void VxToolchainCurrentSystem::CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
 {
   VxContext &ctx = *CVortexMaker;
@@ -21,7 +23,7 @@ void VxToolchainCurrentSystem::CreateTask(std::string tasktype, std::string comp
       task->state = "not_started";
 
       // Ajout de la tâche aux listes appropriées
-      ctx.IO.tasksToProcess.push_back(task);
+      this->parent->taskProcessor->tasksToProcess.push_back(task);
       ctx.IO.tasks.push_back(task);
 
       this->parent->tasks.push_back(task);
@@ -60,6 +62,9 @@ void VxToolchain::DeleteCurrentToolchainSystem()
 {
   // Delete working_host directory and recreate a new one
   std::string DeleteWorkingHost = "sudo rm -rf " + this->workingPath;
+  VxToolchainCurrentSystem newCurrentSystem; // To erase
+  this->currentLoadedSystem = newCurrentSystem;
+  
   system(DeleteWorkingHost.c_str());
 }
 
@@ -109,6 +114,10 @@ void VxToolchain::Init()
   std::string baseDir = envPath + "/" + this->name;
   std::string crosstoolsDir = baseDir + "/working_host";
   this->workingPath = crosstoolsDir;
+
+
+  this->taskProcessor = std::make_shared<TaskProcessor>();
+  this->taskProcessor->startWorker();
 }
 
 std::string VxToolchain::GetTriplet(std::string triplet_type)

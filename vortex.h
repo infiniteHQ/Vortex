@@ -195,6 +195,7 @@ struct CommandOutput;
 struct VxToolchain;
 struct VxDistHost;
 struct VxDistToolchain;
+struct TaskProcessor;
 
 struct Task;
 
@@ -1329,39 +1330,28 @@ struct VxToolchain{
     std::vector<std::shared_ptr<Task>> tasks;
     std::vector<VxToolchainSnapshot> snapshots;
 
+    std::shared_ptr<TaskProcessor> taskProcessor;
 
+
+    // TO CLEAN 
     void RefreshCurrentWorkingToolchain();
-
-
     void ExecuteTask(Task task, hArgs args);
     std::string GetTriplet(std::string triplet_type);
-
     bool TaskSuccedded(std::string taskID);
-
-
     void MakeSnapshot(std::string label);
-
     void MakeDistSnapshot(std::string label);
     void RetakeSnapshot(std::string snapshot_label);
-
     void RefreshSnapshots();
-
     void CreateCurrentToolchainSystem();
     void DeleteCurrentToolchainSystem();
-
     void DeployNewCurrentSystem();
     void DeleteCurrentSystem();
-
     void Init();
-
     void PreBuild();
     void Build();
     void PostBuild();
-
     void RegisterPackage(const std::string label,const std::string emplacemement);
-
     void FindPackages();
-
     void PreparePackage(std::string packageName);
     void ConfigurePackage(std::string packageName);
     void CompilePackage(std::string packageName);
@@ -1387,12 +1377,16 @@ public:
     ~TaskProcessor();
     void processTasks();
     void markTaskCompleted(std::shared_ptr<Task> task);
+    std::vector<std::shared_ptr<Task>> tasksToProcess; // compy references of tasks to process (from "task")
+
+    void startWorker();
+    void stopWorker();
 
 private:
-    std::atomic<bool> stop;
+    bool stop;
     std::priority_queue<std::shared_ptr<Task>, std::vector<std::shared_ptr<Task>>, CompareTaskPriority> tasks;
     
-std::map<int, std::deque<std::shared_ptr<Task>>> tasksByPriority;
+    std::map<int, std::deque<std::shared_ptr<Task>>> tasksByPriority;
     std::mutex mutex;
     std::condition_variable condition;
     std::vector<std::thread> workers;

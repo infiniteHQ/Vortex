@@ -25,6 +25,7 @@ bool VortexMaker::RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nloh
   }
 
   toolchain->FindPackages();
+  toolchain->Init();
 
   ctx.IO.toolchains.push_back(toolchain);
 

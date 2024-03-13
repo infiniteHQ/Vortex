@@ -404,7 +404,7 @@ std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string 
     task->state = "not_started";
 
     // Ajout de la tâche aux listes appropriées
-    ctx.IO.tasksToProcess.push_back(task);
+    //ctx.IO.tasksToProcess.push_back(task);
     ctx.IO.tasks.push_back(task);
   }
   else
@@ -443,16 +443,24 @@ VORTEX_API void VortexMaker::CreateNewTask(std::shared_ptr<Task> task, std::stri
 // Constructeur de TaskProcessor
 TaskProcessor::TaskProcessor() : stop(false)
 {
+}
+
+// Constructeur de TaskProcessor
+TaskProcessor::~TaskProcessor()
+{
+  
+}
+
+void TaskProcessor::startWorker(){
   std::thread Thread([&]()
                      { this->processTasks(); });
   worker.swap(Thread);
 }
 
-// Destructeur de TaskProcessor
-TaskProcessor::~TaskProcessor()
-{
-  worker.join();
+void TaskProcessor::stopWorker(){
+  this->stop = true;
 }
+
 
 // Ajout d'une tâche à TaskProcessor
 
@@ -460,7 +468,7 @@ TaskProcessor::~TaskProcessor()
 void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
 {
   VxContext &ctx = *CVortexMaker;
-    ctx.IO.tasksToProcess.erase(std::remove_if(ctx.IO.tasksToProcess.begin(), ctx.IO.tasksToProcess.end(), [task](const auto& t) { return t == task; }), ctx.IO.tasksToProcess.end());
+  this->tasksToProcess.erase(std::remove_if(this->tasksToProcess.begin(), this->tasksToProcess.end(), [task](const auto& t) { return t == task; }), this->tasksToProcess.end());
   std::unique_lock<std::mutex> lock(mutex);
   task->state = "finished"; // ou "success", selon votre besoin
 }
@@ -468,21 +476,23 @@ void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
 
 #include <deque>
 #include <mutex>
+
 void TaskProcessor::processTasks()
 {
     VxContext &ctx = *CVortexMaker;
 
-    while (true)
+    while (!stop)
     {
         std::vector<std::future<void>> futures;
 
-        std::sort(ctx.IO.tasksToProcess.begin(), ctx.IO.tasksToProcess.end(), [](const std::shared_ptr<Task> &a, const std::shared_ptr<Task> &b)
+        std::sort(this->tasksToProcess.begin(), this->tasksToProcess.end(), [](const std::shared_ptr<Task> &a, const std::shared_ptr<Task> &b)
                   { return a->priority < b->priority; });
 
         int last_priority = 0;
         bool first = true;
-        for (auto task : ctx.IO.tasksToProcess)
+        for (auto task : this->tasksToProcess)
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             if (first || task->priority == last_priority)
             {
                 futures.emplace_back(std::async(std::launch::async, [this, task]()
@@ -499,33 +509,20 @@ void TaskProcessor::processTasks()
             }
             else
             {
-                for (auto &future : futures)
-                {
-                    future.get(); // Wait for the previous futures to finish
-                }
-
-                // Clear the futures vector before adding new futures
-                futures.clear();
-
-                futures.emplace_back(std::async(std::launch::async, [this, task]()
-                                                {
-                                                    if (task->state == "not_started" || task->state == "retry")
-                                                    {
-                                                        task->state = "process";
-                                                        task->exec();
-                                                        markTaskCompleted(task);
-                                                    }
-                                                }));
                 last_priority = task->priority;
             }
         }
 
-        // Wait for the remaining futures to finish
+        // Wait for all tasks launched in this iteration to complete
         for (auto &future : futures)
         {
             future.get();
         }
+
+        // Clear the futures vector for the next iteration
+        futures.clear();
     }
+
 }
 
 

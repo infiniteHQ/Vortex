@@ -133,7 +133,7 @@ static ImTextureID toolIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_L
 
                         if (column == 0)
                         {
-                            static std::string label = "Revert###" + this->toolchain->snapshots[row].name;
+                            std::string label = "Revert###" + this->toolchain->snapshots[row].name;
                             if (ImGui::ImageButtonWithText(addIcon, label.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                             {
                                 this->toolchain->RetakeSnapshot(this->toolchain->snapshots[row].name);

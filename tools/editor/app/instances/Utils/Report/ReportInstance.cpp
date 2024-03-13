@@ -187,8 +187,12 @@ std::string ReportInstance::render()
 
 
 void ReportInstance::menubar(){
-    std::string label = "Reporting task :\"" + this->task->tasktype + "\" with id : " + "\"" +this->task->id + "\"";
-    ImGui::Text(label.c_str());
+            if (ImGui::BeginMenuBar())
+            {
+                std::string label = "Reporting task :\"" + this->task->tasktype + "\" with id : " + "\"" +this->task->id + "\"";
+                ImGui::Text(label.c_str());
+                ImGui::EndMenuBar();
+            }
 
 
 }

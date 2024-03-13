@@ -159,7 +159,6 @@ struct VxIO {
   std::vector<VxDistHost>  distHosts;    
 
 
-  std::vector<std::shared_ptr<Task>> tasksToProcess; // compy referece of tasks to process (from "task")
   std::vector<std::shared_ptr<Task>> tasks;
 };
 
