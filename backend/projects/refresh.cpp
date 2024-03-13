@@ -250,7 +250,8 @@ void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
   // Get list of packages and all reports associated
   for (auto packageReport : jsonData["taskList"])
   {
-    std::shared_ptr<Task> task = TaskFactory::getInstance().createInstance(packageReport["t_tasktype"].get<std::string>().c_str());
+  std::cout << "ch9999" << std::endl;
+    std::shared_ptr<Task> task = std::make_shared<Task>();
 
     task->id = packageReport["t_id"].get<std::string>();
     task->tasktype = packageReport["t_tasktype"].get<std::string>();
@@ -313,6 +314,7 @@ void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
     this->executedTasks.push_back(task);
   }
 
+
   // Get filesystem informations
 
   // Get list of all render assets (actions, scirpts, skeletons, etc)
@@ -327,6 +329,7 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
   jsonData["taskList"] = nlohmann::json::array();
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
+// Fix : All tasks features and after : make all basic task of toolchain
   for (auto task : this->executedTasks)
   {
     std::string def = "unknow";

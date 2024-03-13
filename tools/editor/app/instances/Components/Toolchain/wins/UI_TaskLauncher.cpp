@@ -140,14 +140,6 @@ void ToolchainInstance::UI_TaskLauncher()
                         }
                     }
 
-                    _task->state = "executed";
-                    _task->id = _task->tasktype + "-ID";
-
-                    props->add("self", _task);
-
-                    this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
-                    this->toolchain->currentLoadedSystem.Save(this->toolchain);
-
                     /////////////////////
                 }
 

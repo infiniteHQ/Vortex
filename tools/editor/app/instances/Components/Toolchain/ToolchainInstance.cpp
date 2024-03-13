@@ -4,15 +4,18 @@ using namespace VortexMaker;
 
 ToolchainInstance::ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain, InstanceFactory* _factory)
 {
+  std::cout << "Test" << std::endl;
     this->m_ctx = ctx;
     this->toolchain = _toolchain;
     this->factory = _factory;
     this->toolchain->Init();
 
+  std::cout << "Test" << std::endl;
 
     this->Refresh();
     this->toolchain->RefreshCurrentWorkingToolchain();
 
+  std::cout << "Test" << std::endl;
     {
         uint32_t w, h;
         void *data = Walnut::Image::Decode(icons::i_error, icons::i_error_size, w, h);

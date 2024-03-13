@@ -26,6 +26,7 @@ struct SetupSkeleton : public Task
 
   void exec() override
   {
+    this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
@@ -42,6 +43,8 @@ struct SetupSkeleton : public Task
       this->finish("deps_error", props);
       return;
     }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     // Plutot : créer un nouveau report de cette tache
 
     // Set steps flags
@@ -111,6 +114,9 @@ struct SetupSkeleton : public Task
     if(system((char *)cmd.c_str()) == 0){
       this->addCheckVerdict("giveFoldersToUser", "success", "Everything is ok");
     }
+
+
+      this->finish("deps_error", props);
   }
 
   void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties) override

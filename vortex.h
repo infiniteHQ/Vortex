@@ -808,7 +808,7 @@ struct VxPackage{
 
 
     
-    std::string GetDiagStatus(std::string name) {};
+    std::string GetDiagStatus(std::string name);
 
     std::string GetDiagOutput(std::string name) {
         auto it = diags.find(name);
@@ -1253,23 +1253,23 @@ struct VxToolchainSnapshot{
 
 struct VxToolchain{
     // Vortex project informations
-    std::string name;
-    std::string author;
-    std::string description;
-    std::string type;
-    std::string state;
-    std::string vendor;
-    std::string platform;
-    std::string configFilePath;
+    std::string name = "unknow";
+    std::string author = "unknow";
+    std::string description = "unknow";
+    std::string type = "unknow";
+    std::string state = "unknow";
+    std::string vendor = "unknow";
+    std::string platform = "unknow";
+    std::string configFilePath = "unknow";
 
-    std::string target_arch;
-    std::string builder_arch;
-    std::string host_arch;
+    std::string target_arch = "unknow";
+    std::string builder_arch = "unknow";
+    std::string host_arch = "unknow";
 
-    std::string packages_data;
-    std::string envPath;
+    std::string packages_data = "unknow";
+    std::string envPath = "unknow";
 
-    std::string path_hostsnapshots;
+    std::string path_hostsnapshots = "unknow";
 
 
     // Low level toolchain informations

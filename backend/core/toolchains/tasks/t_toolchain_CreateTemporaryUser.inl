@@ -24,6 +24,7 @@ struct CreateTemporaryUser : public Task
 
   void exec() override
   {
+    this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
 
@@ -113,6 +114,7 @@ struct CreateTemporaryUser : public Task
     this->stop();
     this->result_props = result_properties;
     this->state = finish_state;
+
 
     if (this->props)
     {
