@@ -7,7 +7,7 @@ void ToolchainInstance::UI_ManualBuild()
     if (this->show_UI_ManualBuild)
     {
 
-        static std::string label = this->name + " - Manual Build###" + this->name + "fullbuild";
+        static std::string label = this->name + " - Manual Build###" + this->name + "manualbuild";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -20,29 +20,29 @@ void ToolchainInstance::UI_ManualBuild()
 
         ImGui::Begin(label.c_str(), &toolIcon, &this->show_UI_ManualBuild, ImGuiWindowFlags_MenuBar);
 
+            // Tab Bar
+            const char* names[4] = { "Package", "Users", "Skeleton", "Scripts" };
+            static bool opened[4] = { true, true, true, true }; // Persistent user state
         if (ImGui::BeginMenuBar())
         {
 
-            if (ImGui::ImageButtonWithText(buildIcon, "Build", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-            {
-                // Save behavior
-            }
             if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
             {
                 // Save behavior
             }
-
-            const char *items[] = {"Packages", "Scripts", "Patchs", "Automations"};
-            static int item_current = 0;
-            ImGui::Combo("Type", &item_current, items, IM_ARRAYSIZE(items));
-
             ImGui::Separator();
             if (ImGui::BeginMenu("Pannels"))
             {
-                if (ImGui::MenuItem("Options Editor"))
+                if (ImGui::MenuItem("Package", NULL, &opened[0]))
                 {
                 }
-                if (ImGui::MenuItem("Contents Window"))
+                if (ImGui::MenuItem("Users", NULL, &opened[1]))
+                {
+                }
+                if (ImGui::MenuItem("Skeleton", NULL, &opened[2]))
+                {
+                }
+                if (ImGui::MenuItem("Scripts", NULL, &opened[3]))
                 {
                 }
                 ImGui::EndMenu();
@@ -50,67 +50,72 @@ void ToolchainInstance::UI_ManualBuild()
             ImGui::EndMenuBar();
         }
 
-        // Left
-        static int selected = 0;
-        static std::array<char[128], 4> labels = {"Packages", "General View", "Logs", "Errors"};
+     // Expose a couple of the available flags. In most cases you may just call BeginTabBar() with no flags (0).
+            static ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_Reorderable | ImGuiTabBarFlags_TabListPopupButton |ImGuiTabBarFlags_FittingPolicyMask_;
 
-        {
-            ImGui::BeginChild("left pane", ImVec2(170, 0), true);
-            for (int i = 0; i < labels.size(); i++)
+        
+        
+
+            // Passing a bool* to BeginTabItem() is similar to passing one to Begin():
+            // the underlying bool will be set to false when the tab is closed.
+            if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
             {
-                if (ImGui::Selectable(labels[i], selected == i))
-                    selected = i;
-            }
-            ImGui::EndChild();
-        }
-        ImGui::SameLine();
-
-        ImGui::Separator();
-        ImGui::SameLine();
-
-        // Project Settings
-        if (selected == 0)
-        {
-                ImGui::BeginChild("Pans", ImVec2(0, 0), true);
-                ImGui::Columns(4, NULL);
+                for (int n = 0; n < IM_ARRAYSIZE(opened); n++)
+                    if (opened[n] && ImGui::BeginTabItem(names[n], &opened[n], ImGuiTabItemFlags_None))
+                    {
+                        if(opened[n] && n == 0){
 
 
-                std::vector<const char *> items;
-                for (auto chaine : this->toolchain->tasks)
+        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+            if (ImGui::BeginTable("table_", 3, flags))
+            {
+                ImGui::TableSetupColumn("Build", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableHeadersRow();
+                for (int row = 0; row < this->toolchain->packages.size(); row++)
                 {
-                    items.push_back(chaine->tasktype.c_str());
+                    static std::pair<char[128], char[128]> newItem;
+                    static char label[128];
+
+                    ImGui::TableNextRow();
+                    for (int column = 0; column < 2; column++)
+                    {
+                        ImGui::TableSetColumnIndex(column);
+
+                        if (column == 0)
+                        {
+                            if (ImGui::ImageButtonWithText(buildIcon, "Build", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            {
+                                // Config Task
+                                // Compile Task
+                                // Install Task
+                            }
+                        }
+                        if (column == 1)
+                        {
+                            ImGui::Text(this->toolchain->packages[row]->label.c_str());
+                        }
+                        if (column == 2)
+                        {
+                            ImGui::Text(this->toolchain->packages[row]->latestTask->state.c_str());
+                        }
+                    }
                 }
-                static int item_current = 0;
-                static int item_component_current = 0;
 
-
-            int i = 1;
-            for (int row = 0; row < this->toolchain->packages.size(); row++)
-            {
-                std::string label = "packageView###" + std::to_string(row) + this->toolchain->packages[row]->label + std::to_string(i);
-                ImGuiID id = ImGui::GetID(label.c_str());
-                ImGui::BeginChildFrame(id, ImVec2(0, 220), true);
-
-                // Affichage des éléments individuels
-                std::string ll = this->toolchain->packages[row]->label;
-                ImGui::Text(ll.c_str());
-
-                ImGui::Button("Build");
-
-                ImGui::EndChildFrame();
-                ImGui::NextColumn();
-
+                ImGui::EndTable();
+            
+        }
+                    }
+                        
+                        ImGui::Text("This is the %s tab!", names[n]);
+                        if (n & 1)
+                            ImGui::Text("I am an odd tab.");
+                        ImGui::EndTabItem();
+                    }
+                ImGui::EndTabBar();
             }
-                ImGui::EndChild();
-        }
-
-        if (selected == 1)
-        {
-        }
-
-        // Right
-        {
-        }
 
         ImGui::End();
     }

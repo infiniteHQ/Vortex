@@ -792,6 +792,7 @@ struct VxPackage{
     // Package manager profile
 
     std::shared_ptr<Task> latestTask;
+    std::vector<std::shared_ptr<Task>> allTasks;
 
     std::unordered_map<std::string, std::shared_ptr<VxDiag>> diags;
 

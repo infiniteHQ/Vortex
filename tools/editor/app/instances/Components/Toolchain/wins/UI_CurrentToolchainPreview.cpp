@@ -263,27 +263,27 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
                         {
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "finished")
                             {
-                                coloredTag("Finished", ImVec4(0.0f, 1.0f, 0.2f, 0.4f));
+                                coloredTag("Finished", ImVec4(0.874f, 0.635f, 0.015f, 0.7f));
                             }
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "success")
                             {
-                                coloredTag("Success", ImVec4(0.0f, 1.0f, 0.2f, 0.4f));
+                                coloredTag("Success", ImVec4(0.0f, 1.0f, 0.2f, 1.0f));
                             }
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "failed")
                             {
-                                coloredTag("Failed", ImVec4(1.0f, 0.2f, 0.2f, 0.4f));
+                                coloredTag("Failed", ImVec4(1.0f, 0.2f, 0.2f, 0.8f));
                             }
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "paused")
                             {
-                                coloredTag("Paused", ImVec4(0.5f, 0.5f, 0.2f, 0.4f));
+                                coloredTag("Paused", ImVec4(0.5f, 0.5f, 0.2f, 1.0f));
                             }
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "retry")
                             {
-                                coloredTag("Retry", ImVec4(0.5f, 0.5f, 0.2f, 0.4f));
+                                coloredTag("Retry", ImVec4(0.874f, 0.635f, 0.015f, 1.0f));
                             }
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "process")
                             {
-                                coloredTag("Processing...", ImVec4(0.8f, 0.5f, 0.5f, 0.4f));
+                                coloredTag("Processing...", ImVec4(0.8f, 0.5f, 0.5f, 1.0f));
                             }
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "not_started")
                             {

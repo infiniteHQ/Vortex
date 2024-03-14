@@ -7382,6 +7382,7 @@ static ImGuiPtrOrIndex GetTabBarRefFromTabBar(ImGuiTabBar* tab_bar)
     return ImGuiPtrOrIndex(tab_bar);
 }
 
+
 bool    ImGui::BeginTabBar(const char* str_id, ImGuiTabBarFlags flags)
 {
     ImGuiContext& g = *GImGui;
@@ -7395,6 +7396,7 @@ bool    ImGui::BeginTabBar(const char* str_id, ImGuiTabBarFlags flags)
     tab_bar->ID = id;
     return BeginTabBarEx(tab_bar, tab_bar_bb, flags | ImGuiTabBarFlags_IsFocused, NULL);
 }
+
 
 bool    ImGui::BeginTabBarEx(ImGuiTabBar* tab_bar, const ImRect& tab_bar_bb, ImGuiTabBarFlags flags, ImGuiDockNode* dock_node)
 {
@@ -7459,9 +7461,9 @@ bool    ImGui::BeginTabBarEx(ImGuiTabBar* tab_bar, const ImRect& tab_bar_bb, ImG
         const float separator_max_x = tab_bar->BarRect.Max.x + IM_FLOOR(window->WindowPadding.x * 0.5f);
         window->DrawList->AddLine(ImVec2(separator_min_x, y), ImVec2(separator_max_x, y), col, 1.0f);
     }
+
     return true;
 }
-
 void    ImGui::EndTabBar()
 {
     ImGuiContext& g = *GImGui;
@@ -8128,6 +8130,7 @@ bool    ImGui::TabItemButton(const char* label, ImGuiTabItemFlags flags)
 
 bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, ImGuiTabItemFlags flags, ImGuiWindow* docked_window)
 {
+
     // Layout whole tab bar if not already done
     if (tab_bar->WantLayout)
         TabBarLayout(tab_bar);
@@ -8382,13 +8385,19 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
     bool text_clipped;
 
     ImGuiWindow* targetWindow = FindWindowByName(label);
-    if(targetWindow->textureID != NULL){
-        TabItemLabelAndCloseButton(display_draw_list, targetWindow->textureID, bb, flags, tab_bar->FramePadding, label, id, close_button_id, tab_contents_visible, &just_closed, &text_clipped);
+
+    if(targetWindow)    
+    {
+        if(targetWindow->textureID == NULL){
+            TabItemLabelAndCloseButton(display_draw_list, bb, flags, tab_bar->FramePadding, label, id, close_button_id, tab_contents_visible, &just_closed, &text_clipped);
+        }
+        else{
+            TabItemLabelAndCloseButton(display_draw_list, targetWindow->textureID, bb, flags, tab_bar->FramePadding, label, id, close_button_id, tab_contents_visible, &just_closed, &text_clipped);
+        }
     }
     else{
         TabItemLabelAndCloseButton(display_draw_list, bb, flags, tab_bar->FramePadding, label, id, close_button_id, tab_contents_visible, &just_closed, &text_clipped);
     }
-
 
     if (just_closed && p_open != NULL)
     {

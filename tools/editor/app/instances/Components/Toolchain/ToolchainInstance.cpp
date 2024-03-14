@@ -157,7 +157,7 @@ std::string ToolchainInstance::render()
         this->UI_CurrentToolchainPreview();
         this->UI_SnapshotUtility();
         this->UI_ManualBuild();
-        this->UI_TaskLauncher();
+        this->UI_VolatileTasks();
 
         return "rendering";
         }
@@ -201,14 +201,14 @@ void ToolchainInstance::menubar(){
                     if (ImGui::MenuItem("Assets"))
                     {
                     }
+                    if (ImGui::MenuItem("Tasks", NULL, &this->show_UI_TasksEditor))
+                    {
+                    }
                     ImGui::EndMenu();
                 }
                 if (ImGui::BeginMenu("Tools"))
                 {
-                    if (ImGui::MenuItem("Task viewer", NULL, &this->show_UI_TasksEditor))
-                    {
-                    }
-                    if (ImGui::MenuItem("Task launcher", NULL, &this->show_UI_TaskLauncher))
+                    if (ImGui::MenuItem("Volatile tasks", NULL, &this->show_UI_VolatileTasks))
                     {
                     }
                     if (ImGui::MenuItem("Tasklists utility", NULL, &this->show_UI_TasksEditor))

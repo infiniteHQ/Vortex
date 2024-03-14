@@ -48,7 +48,7 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ContentWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_TasksEditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ManualBuild.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_TaskLauncher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_VolatileTasks.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_SnapshotUtility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_CurrentToolchainPreview.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ParameterWindow.cpp

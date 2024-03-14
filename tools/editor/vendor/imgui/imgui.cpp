@@ -3311,7 +3311,7 @@ ImGuiWindow::ImGuiWindow(ImGuiContext* context, const char* name) : DrawListInst
 {
     memset(this, 0, sizeof(*this));
     Name = ImStrdup(name);
-    textureID = NULL;
+    textureID = nullptr;
     NameBufLen = (int)strlen(name) + 1;
     ID = ImHashStr(name);
     IDStack.push_back(ID);

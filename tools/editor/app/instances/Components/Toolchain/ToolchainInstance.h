@@ -38,7 +38,7 @@ public:
     void UI_CurrentToolchainPreview();
     void UI_SnapshotUtility();
     void UI_ManualBuild();
-    void UI_TaskLauncher();
+    void UI_VolatileTasks();
 
     bool opened;
     bool show_UI_ContentWindow = false;
@@ -47,7 +47,7 @@ public:
     bool show_UI_CurrentToolchainPreview = false;
     bool show_UI_SnapshotUtility = false;
     bool show_UI_ManualBuild = false;
-    bool show_UI_TaskLauncher = false;
+    bool show_UI_VolatileTasks = false;
 
     InstanceFactory* factory;
 

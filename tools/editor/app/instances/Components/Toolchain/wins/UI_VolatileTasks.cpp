@@ -16,13 +16,13 @@ std::string gen_random(const int len) {
     return tmp_s;
 }
 
-void ToolchainInstance::UI_TaskLauncher()
+void ToolchainInstance::UI_VolatileTasks()
 {
 
-    if (this->show_UI_TaskLauncher)
+    if (this->show_UI_VolatileTasks)
     {
 
-        static std::string label = this->name + " - Task Launcher ###" + this->name + "fullbuild";
+        static std::string label = this->name + " - Volatile Tasks ###" + this->name + "volatiletasks";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -33,7 +33,7 @@ void ToolchainInstance::UI_TaskLauncher()
 
         static ImTextureID settingsIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        ImGui::Begin(label.c_str(), &toolIcon, &this->show_UI_TaskLauncher, ImGuiWindowFlags_MenuBar);
+        ImGui::Begin(label.c_str(), &toolIcon, &this->show_UI_VolatileTasks, ImGuiWindowFlags_MenuBar);
 
         if (ImGui::BeginMenuBar())
         {
@@ -67,12 +67,19 @@ void ToolchainInstance::UI_TaskLauncher()
 
         // Left
         static int selected = 0;
-        static std::array<char[128], 4> labels = {"Packages", "General View", "Logs", "Errors"};
+        static std::array<char[128], 7> labels = {"Packages", "Scripts", "Patchs", "Tasklists", "Configurations", "Filesytem", "Permissions"};
 
         {
             ImGui::BeginChild("left pane", ImVec2(170, 0), true);
             for (int i = 0; i < labels.size(); i++)
             {
+                if(i == 0){
+                    ImGui::TextColored(ImVec4(0.4, 0.4, 0.4, 1), "On components");
+                }
+
+                if(i == 4){ // 2 = 2/HERE/3
+                    ImGui::TextColored(ImVec4(0.4, 0.4, 0.4, 1), "On toolchain");
+                }
                 if (ImGui::Selectable(labels[i], selected == i))
                     selected = i;
             }
@@ -86,7 +93,7 @@ void ToolchainInstance::UI_TaskLauncher()
         // Project Settings
         if (selected == 0)
         {
-            ImGui::BeginChild("Pans", ImVec2(0, 0), true);
+            ImGui::BeginChild("Pans_VolatileTasks", ImVec2(0, 0), true);
             ImGui::Columns(4, NULL);
 
             std::vector<const char *> items;
