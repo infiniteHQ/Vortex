@@ -112,88 +112,214 @@ ReportInstance::ReportInstance(VxContext *ctx, std::shared_ptr<Task> _task)
     }
 };
 
-
-void ReportInstance::close(){
+void ReportInstance::close()
+{
     this->opened = false;
 }
 
-
 std::string ReportInstance::render()
-    {
-        static ImTextureID toolchainIcon = this->m_ToolchainIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+{
+    static ImTextureID toolchainIcon = this->m_ToolchainIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        if(opened){
+    if (opened)
+    {
         // Mainwindow with dockspace
         static std::string label = "Reporting task" + this->name;
         if (ImGui::Begin(label.c_str(), &toolchainIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         {
             this->menubar();
-              if (ImGui::CollapsingHeader("General report"))
+            if (ImGui::CollapsingHeader("General report"))
+            {
+
+                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                if (ImGui::CollapsingHeader("Errors"))
                 {
-                    static int i0 = 123;
-                    ImGui::InputInt("input int", &i0);
+                    if (ImGui::BeginTable("table_", 3, flags))
+                    {
+                        ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableHeadersRow();
+                        std::vector<std::shared_ptr<Check>> errors;
+                        for (auto check : this->task->checkList)
+                        {
+                            if (check->checkResult == "failed")
+                            {
+                                errors.push_back(check);
+                            }
+                        }
 
-                    static float f0 = 0.001f;
-                    ImGui::InputFloat("input float", &f0, 0.01f, 1.0f, "%.3f");
+                        for (int row = 0; row < errors.size(); row++)
+                        {
+                            static std::pair<char[128], char[128]> newItem;
+                            static char label[128];
 
-                    static double d0 = 999999.00000001;
-                    ImGui::InputDouble("input double", &d0, 0.01f, 1.0f, "%.8f");
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 2; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
 
-                    static float f1 = 1.e10f;
-                    ImGui::InputFloat("input scientific", &f1, 0.0f, 0.0f, "%e");
+                                if (column == 0)
+                                {
+                                    ImGui::Text(errors[row]->checkID.c_str());
+                                }
+                                if (column == 1)
+                                {
+                                    ImGui::Text(errors[row]->checkResult.c_str());
+                                }
+                                if (column == 2)
+                                {
+                                    ImGui::Text(errors[row]->checkLog.c_str());
+                                }
+                            }
+                        }
+
+                        ImGui::EndTable();
+                    }
                 }
-
-                if (ImGui::CollapsingHeader("Steps"))
+           
+                if (ImGui::CollapsingHeader("Warnings"))
                 {
-                    static int i0 = 123;
-                    ImGui::InputInt("input int", &i0);
+                    if (ImGui::BeginTable("table_", 3, flags))
+                    {
+                        ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableHeadersRow();
+                        static std::vector<std::shared_ptr<Check>> warnings;
+                        for (auto check : this->task->checkList)
+                        {
+                            if (check->checkResult == "warning")
+                            {
+                                warnings.push_back(check);
+                            }
+                        }
 
-                    static float f0 = 0.001f;
-                    ImGui::InputFloat("input float", &f0, 0.01f, 1.0f, "%.3f");
+                        for (int row = 0; row < warnings.size(); row++)
+                        {
+                            static std::pair<char[128], char[128]> newItem;
+                            static char label[128];
 
-                    static double d0 = 999999.00000001;
-                    ImGui::InputDouble("input double", &d0, 0.01f, 1.0f, "%.8f");
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 2; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
 
-                    static float f1 = 1.e10f;
-                    ImGui::InputFloat("input scientific", &f1, 0.0f, 0.0f, "%e");
-                }
+                                if (column == 0)
+                                {
+                                    ImGui::Text(warnings[row]->checkID.c_str());
+                                }
+                                if (column == 1)
+                                {
+                                    ImGui::Text(warnings[row]->checkResult.c_str());
+                                }
+                                if (column == 2)
+                                {
+                                    ImGui::Text(warnings[row]->checkLog.c_str());
+                                }
+                            }
+                        }
+
+                        ImGui::EndTable();
+                    }
+                }  
                 
-                if (ImGui::CollapsingHeader("Metrics"))
+                
+                if (ImGui::CollapsingHeader("Successes"))
                 {
-                    static int i0 = 123;
-                    ImGui::InputInt("input int", &i0);
+                    if (ImGui::BeginTable("table_", 3, flags))
+                    {
+                        ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableHeadersRow();
+                        static std::vector<std::shared_ptr<Check>> successes;
+                        for (auto check : this->task->checkList)
+                        {
+                            if (check->checkResult == "success")
+                            {
+                                successes.push_back(check);
+                            }
+                        }
 
-                    static float f0 = 0.001f;
-                    ImGui::InputFloat("input float", &f0, 0.01f, 1.0f, "%.3f");
+                        for (int row = 0; row < successes.size(); row++)
+                        {
+                            static std::pair<char[128], char[128]> newItem;
+                            static char label[128];
 
-                    static double d0 = 999999.00000001;
-                    ImGui::InputDouble("input double", &d0, 0.01f, 1.0f, "%.8f");
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 2; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
 
-                    static float f1 = 1.e10f;
-                    ImGui::InputFloat("input scientific", &f1, 0.0f, 0.0f, "%e");
+                                if (column == 0)
+                                {
+                                    ImGui::Text(successes[row]->checkID.c_str());
+                                }
+                                if (column == 1)
+                                {
+                                    ImGui::Text(successes[row]->checkResult.c_str());
+                                }
+                                if (column == 2)
+                                {
+                                    ImGui::Text(successes[row]->checkLog.c_str());
+                                }
+                            }
+                        }
+
+                        ImGui::EndTable();
+                    }
                 }
+            }
+
+            if (ImGui::CollapsingHeader("Steps"))
+            {
+                static int i0 = 123;
+                ImGui::InputInt("input int", &i0);
+
+                static float f0 = 0.001f;
+                ImGui::InputFloat("input float", &f0, 0.01f, 1.0f, "%.3f");
+
+                static double d0 = 999999.00000001;
+                ImGui::InputDouble("input double", &d0, 0.01f, 1.0f, "%.8f");
+
+                static float f1 = 1.e10f;
+                ImGui::InputFloat("input scientific", &f1, 0.0f, 0.0f, "%e");
+            }
+
+            if (ImGui::CollapsingHeader("Metrics"))
+            {
+                static int i0 = 123;
+                ImGui::InputInt("input int", &i0);
+
+                static float f0 = 0.001f;
+                ImGui::InputFloat("input float", &f0, 0.01f, 1.0f, "%.3f");
+
+                static double d0 = 999999.00000001;
+                ImGui::InputDouble("input double", &d0, 0.01f, 1.0f, "%.8f");
+
+                static float f1 = 1.e10f;
+                ImGui::InputFloat("input scientific", &f1, 0.0f, 0.0f, "%e");
+            }
         }
         ImGui::End();
 
-
         return "rendering";
-        }
-        else{
+    }
+    else
+    {
 
         return "closed";
     }
-    }
-
-
-
-void ReportInstance::menubar(){
-            if (ImGui::BeginMenuBar())
-            {
-                std::string label = "Reporting task :\"" + this->task->tasktype + "\" with id : " + "\"" +this->task->id + "\"";
-                ImGui::Text(label.c_str());
-                ImGui::EndMenuBar();
-            }
-
-
 }
 
+void ReportInstance::menubar()
+{
+    if (ImGui::BeginMenuBar())
+    {
+        std::string label = "Reporting task :\"" + this->task->tasktype + "\" with id : " + "\"" + this->task->id + "\"";
+        ImGui::Text(label.c_str());
+        ImGui::EndMenuBar();
+    }
+}

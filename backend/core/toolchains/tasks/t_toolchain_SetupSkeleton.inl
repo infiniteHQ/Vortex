@@ -36,7 +36,6 @@ struct SetupSkeleton : public Task
 
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
-
     this->addIdleCheck("createFolders");
     this->addIdleCheck("giveFoldersToUser");
 
@@ -120,8 +119,7 @@ struct SetupSkeleton : public Task
       this->addCheckVerdict("giveFoldersToUser", "success", "Everything is ok");
     }
 
-
-      this->finish("deps_error", props);
+    this->finish("deps_error", props);
   }
 
   void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties) override

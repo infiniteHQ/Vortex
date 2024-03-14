@@ -21,7 +21,7 @@ void ToolchainInstance::UI_ManualBuild()
         ImGui::Begin(label.c_str(), &toolIcon, &this->show_UI_ManualBuild, ImGuiWindowFlags_MenuBar);
 
             // Tab Bar
-            const char* names[4] = { "Package", "Users", "Skeleton", "Scripts" };
+            const char* names[4] = { "Packages", "Users", "Skeleton", "Scripts" };
             static bool opened[4] = { true, true, true, true }; // Persistent user state
         if (ImGui::BeginMenuBar())
         {
@@ -33,7 +33,7 @@ void ToolchainInstance::UI_ManualBuild()
             ImGui::Separator();
             if (ImGui::BeginMenu("Pannels"))
             {
-                if (ImGui::MenuItem("Package", NULL, &opened[0]))
+                if (ImGui::MenuItem("Packages", NULL, &opened[0]))
                 {
                 }
                 if (ImGui::MenuItem("Users", NULL, &opened[1]))
@@ -109,9 +109,6 @@ void ToolchainInstance::UI_ManualBuild()
         }
                     }
                         
-                        ImGui::Text("This is the %s tab!", names[n]);
-                        if (n & 1)
-                            ImGui::Text("I am an odd tab.");
                         ImGui::EndTabItem();
                     }
                 ImGui::EndTabBar();
