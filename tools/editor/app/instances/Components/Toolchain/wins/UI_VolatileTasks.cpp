@@ -150,7 +150,7 @@ void ToolchainInstance::UI_VolatileTasks()
 
                             _task->id = task->tasktype + "-" + gen_random(8);
                             _task->tasktype = task->tasktype;
-                            _task->component = task->component;
+                            _task->component = this->toolchain->packages[row]->label;
                             _task->priority = task->priority;
                             _task->props = props;
                             _task->state = "not_started";

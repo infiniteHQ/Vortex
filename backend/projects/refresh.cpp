@@ -256,6 +256,7 @@ void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
     task->id = packageReport["t_id"].get<std::string>();
     task->tasktype = packageReport["t_tasktype"].get<std::string>();
     task->priority = packageReport["t_priority"].get<int>();
+    task->component = packageReport["t_component"].get<std::string>();
     task->state = packageReport["t_state"].get<std::string>();
     task->m_TotalTime = packageReport["t_duration"].get<double>();
     task->m_StartTime = stringToTimePoint(packageReport["t_time"].get<std::string>());
@@ -264,6 +265,7 @@ void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
   {
     std::shared_ptr<Check> check = std::make_shared<Check>(); 
       check->checkResult = checks["result"].get<std::string>();
+      check->checkDirective = checks["directive"].get<std::string>();
       check->checkID = checks["id"].get<std::string>();
       check->checkLog = checks["log"].get<std::string>();
       if(check->checkResult == "success"){task->successCounter++;};
@@ -353,6 +355,7 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
       c["result"] = check->checkResult;
       c["id"] = check->checkID;
       c["log"] = check->checkLog;
+      c["directive"] = check->checkDirective;
       report["t_checklist"].push_back(c);
     }
 

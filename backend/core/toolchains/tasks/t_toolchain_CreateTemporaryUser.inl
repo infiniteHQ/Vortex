@@ -12,8 +12,59 @@
 
 struct Task;
 
+
+
+std::pair<std::string, int> exec_cmd(const std::string& cmd) {
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+
+  std::string output;
+  int returnCode = -1;
+
+  std::string _cmd = cmd;
+
+  _cmd += " 2>";
+  _cmd += ctx->projectPath;
+  _cmd += "/.vx/temp/_o.txt";
+
+      std::string path = ctx->projectPath;
+      path += "/.vx/temp/_o.txt";
+
+      returnCode = system((char *)_cmd.c_str());
+
+      std::ifstream outputFile(path);
+      output.clear();
+
+        if (outputFile.is_open())
+        {
+          output.assign(std::istreambuf_iterator<char>(outputFile), std::istreambuf_iterator<char>());
+          outputFile.close();
+          std::string clearFile = "rm ";
+          clearFile +=  ctx->projectPath;
+          clearFile += "/.vx/temp/_o.txt";
+
+
+          system((char *)clearFile.c_str());
+        }
+        else
+        {
+          std::cerr << "Impossible d'ouvrir le fichier de sortie d'erreur." << std::endl;
+          return{"null", returnCode};
+        
+      }
+      return{output, returnCode};
+}
+
+
+
+
 struct CreateTemporaryUser : public Task
 {
+
+
+    std::shared_ptr<Task> clone() const override {
+        return std::make_shared<CreateTemporaryUser>(*this);
+    }
+
   void init() override
   {
     this->tasktype = "CreateTemporaryUser";
@@ -27,26 +78,60 @@ struct CreateTemporaryUser : public Task
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
+    this->addIdleCheck("group_add_vortex");
+    this->addIdleCheck("user_add_vortex");
+    this->addIdleCheck("add_vortex_home");
+    this->addIdleCheck("give_vortex_home");
+    this->addIdleCheck("user_mod_root_to_vortex");
+    this->addIdleCheck("implement_bashrc");
 
+    {
+      std::string cmd = "ls -sdlfkhj ./";
+      auto [output, returnCode] = exec_cmd(cmd.c_str());
 
+      std::cout<< output << std::endl;
+      
+      if(returnCode == 0) this->addCheckVerdict("group_add_vortex", "success", output, cmd);
+      if(returnCode != 0) this->addCheckVerdict("group_add_vortex", "failed", output, cmd);
+    }
+    
+    {
+      std::string cmd = "useradd -s /bin/bash -g vortex -m -k /dev/null vortex"; // + " -p " + user.vxHostUser_Crypto;
+      auto [output, returnCode] = exec_cmd(cmd.c_str());
+      
+      if(returnCode == 0) this->addCheckVerdict("user_add_vortex", "success", output, cmd);
+      if(returnCode != 0) this->addCheckVerdict("user_add_vortex", "failed", output, cmd);
+    }
+    
+    {
+      std::string cmd = "mkdir -pv /home/vortex";
+      int result = system((char *)cmd.c_str());
 
-    // other assets
+      if(result == 0) this->addCheckVerdict("add_vortex_home", "success", "\"/home/vortex\" home directory added succefully!", cmd);
+      if(result != 0) this->addCheckVerdict("add_vortex_home", "failed", "\"/home/vortex\" home directory failed to be added !", cmd);
+    }
+    
+    {
+      std::string cmd = "sudo chown -v vortex:vortex  /home/vortex";
+      int result = system((char *)cmd.c_str());
 
-    std::string CMD_AddToGroup = "groupadd vortex";
-    std::string CMD_AddUser = "useradd -s /bin/bash -g vortex -m -k /dev/null vortex"; // + " -p " + user.vxHostUser_Crypto;
-    std::string CMD_CreateUserDirectory = "mkdir -pv /home/vortex";
-    std::string CMD_GiveUserDirectoryToUser = "sudo chown -v vortex:vortex  /home/vortex";
-    std::string CMD_AddToSudoers = "sudo usermod -aG root vortex";
+      if(result == 0) this->addCheckVerdict("give_vortex_home", "success", "\"/home/vortex\" given to vortex user succefully!", cmd);
+      if(result != 0) this->addCheckVerdict("give_vortex_home", "failed", "\"/home/vortex\" failed to be given to vortex user !", cmd);
+    }
+    
+    {
+      std::string cmd = "sudo usermod -aG root vortex";
+      int result = system((char *)cmd.c_str());
 
-    system((char *)CMD_AddToGroup.c_str());
-    system((char *)CMD_AddUser.c_str());
-    system((char *)CMD_CreateUserDirectory.c_str());
-    system((char *)CMD_GiveUserDirectoryToUser.c_str());
-    system((char *)CMD_AddToSudoers.c_str());
+      if(result == 0) this->addCheckVerdict("user_mod_root_to_vortex", "success", "usermod root to vortex user succefully!", cmd);
+      if(result != 0) this->addCheckVerdict("user_mod_root_to_vortex", "failed", "usermod root to vortex user failed !", cmd);
+    }
 
+    this->finish("finish", props);
+
+/*
     std::string bashprofile = "cat > ~/.bash_profile << \"EOF\" \n exec env -i HOME=$HOME TERM=$TERM PS1='\\u:\\w\\$ ' /bin/bash \n EOF";
 
     std::string bashrc = "cat > ~/.bashrc << \"EOF\" set +h \n umask 022 \n LC_ALL=POSIX \n PATH=/usr/bin \n if [ ! -L /bin ]; then PATH=/bin:" + toolchain->crosstoolsPath + "; fi \n PATH=" + toolchain->crosstoolsPath + "/tools/bin:$PATH \n CONFIG_SITE=" + toolchain->crosstoolsPath + "/usr/share/config.site \n export LFS LC_ALL LFS_TGT PATH CONFIG_SITE \n EOF";
@@ -67,17 +152,6 @@ struct CreateTemporaryUser : public Task
       package->AddDiag("configuration");
       package->AddDiag("compilation");
       package->AddDiag("installation");
-
-      for (auto action : package->actions)
-      {
-        if (action->type == "command")
-        {
-          std::string label = "action-" + action->type + "-" + action->executionSequence + "-";
-          label += action->priority;
-
-          package->AddDiag(label);
-        }
-      }
 
       std::string cmd = "cp -r " + package->path + " " + toolchain->packages_data;
 
@@ -104,44 +178,35 @@ struct CreateTemporaryUser : public Task
     std::string cuser = "chown vortex:vortex -R " + toolchain->envPath + "/*";
     std::cout << cuser << std::endl;
     //system(cuser.c_str());
+    */
   }
 
   void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties) override
   {
-
     // Get time
     // Get timer
     // Get all...
     this->stop();
     this->result_props = result_properties;
-    this->state = finish_state;
 
-      finish_state = "unknow";
+      this->state = "unknow";
     if(this->successCounter > 0){
-      finish_state = "success";
+      this->state = "success";
     }
     
     if(this->warningCounter > 0){
-      finish_state = "warning";
+      this->state = "warning";
     }
 
     if(this->failCounter > 0){
-      finish_state = "failed";
+      this->state = "failed";
     }
+
 
     if (this->props)
     {
-      std::shared_ptr<VxHost> host = this->props->get<std::shared_ptr<VxHost>>("host", nullptr);
-      std::shared_ptr<Task> selfinstance = this->props->get<std::shared_ptr<Task>>("self", nullptr);
-
-      if (host && selfinstance)
-      {
-        host->currentLoadedSystem.Save(host);
-      }
-      else
-      {
-        std::cout << "Error: Host or self instance is null" << std::endl;
-      }
+      std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+        toolchain->currentLoadedSystem.Save(toolchain);
     }
     else
     {

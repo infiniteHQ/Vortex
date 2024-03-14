@@ -151,7 +151,7 @@ void fullBuildPackage::exec() {
 
     if(!component_finded){
       std::string log = "Error : The \"" + this->component + "\" package not exist in \"" + host->name + "\" host ! ";
-      this->addCheckVerdict("deployement", "failed", log);    
+      this->addCheckVerdict("deployement", "failed", log, "none");    
       std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
       this->finish("unknow", args);
       return;
@@ -189,8 +189,8 @@ void fullBuildPackage::exec() {
     std::cout << "FLKJ" << std::endl;
 
         std::cout << "Yan2" << std::endl;
-    this->addCheckVerdict("deployement", "success", "Ok");    
-    this->addCheckVerdict("preparation", "success", "Ok");    
+    this->addCheckVerdict("deployement", "success", "Ok", "none");    
+    this->addCheckVerdict("preparation", "success", "Ok", "none");    
 
         std::cout << "Yan" << std::endl;
 
@@ -252,7 +252,7 @@ std::unordered_map<std::string, std::string> replacements = {
         path = VortexMaker::ExtractPackageWithTar(component->distPath, component->fileName);
         component->SetDiagCode("decompression", 0);
 
-        this->addCheckVerdict("decompression", "success", "Ok");    
+        this->addCheckVerdict("decompression", "success", "Ok", "none");    
       }
 
       std::string moveToBuildFolder = "cd " + component->distPath + "/" + path + " && mkdir build && cd build";
@@ -323,7 +323,7 @@ std::unordered_map<std::string, std::string> replacements = {
           component->SetDiagOutput("configuration", errorMessage);
 
 
-          this->addCheckVerdict("configuration", "success", errorMessage);    
+          this->addCheckVerdict("configuration", "success", errorMessage, "none");    
 
           std::string rmOutputFile = "rm " + host->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt";
           system((char *)rmOutputFile.c_str());
@@ -399,7 +399,7 @@ std::unordered_map<std::string, std::string> replacements = {
 
           errorFile2.close();
           
-          this->addCheckVerdict("compilation", "success", errorMessage);    
+          this->addCheckVerdict("compilation", "success", errorMessage, "none");    
 
           std::string rmOutputFile = "rm " + host->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt";
           system((char *)rmOutputFile.c_str());
@@ -463,7 +463,7 @@ std::unordered_map<std::string, std::string> replacements = {
         {
           errorMessage.assign(std::istreambuf_iterator<char>(errorFile3), std::istreambuf_iterator<char>());
           errorFile3.close();
-          this->addCheckVerdict("installation", "success", errorMessage);    
+          this->addCheckVerdict("installation", "success", errorMessage, "none");    
           std::string rmOutputFile = "rm " + host->host + "/tmp/packages/" + component->label + "/" + path + "/build/error_output.txt";
           system((char *)rmOutputFile.c_str());
         }
@@ -553,7 +553,7 @@ std::unordered_map<std::string, std::string> replacements = {
         {
           errorMessage.assign(std::istreambuf_iterator<char>(errorFile), std::istreambuf_iterator<char>());
           errorFile.close();  
-          this->addCheckVerdict("configuration", "success", errorMessage);  
+          this->addCheckVerdict("configuration", "success", errorMessage, "none");  
 
           std::string rmOutputFile = "rm " + component->distPath + "/" + path + "/build/error_output.txt";
           system((char *)rmOutputFile.c_str());
@@ -620,7 +620,7 @@ std::unordered_map<std::string, std::string> replacements = {
         {
           errorMessage.assign(std::istreambuf_iterator<char>(errorFile2), std::istreambuf_iterator<char>());
           errorFile2.close();
-          this->addCheckVerdict("compilation", "success", errorMessage); 
+          this->addCheckVerdict("compilation", "success", errorMessage, "none"); 
           std::string rmOutputFile = "rm " + component->distPath + "/" + path + "/build/error_output.txt";
           system((char *)rmOutputFile.c_str());
         }
@@ -682,7 +682,7 @@ std::unordered_map<std::string, std::string> replacements = {
         {
           errorMessage.assign(std::istreambuf_iterator<char>(errorFile3), std::istreambuf_iterator<char>());
           errorFile3.close();
-          this->addCheckVerdict("installation", "success", errorMessage); 
+          this->addCheckVerdict("installation", "success", errorMessage, "none"); 
           std::string rmOutputFile = "rm " + component->distPath + "/" + path + "/build/error_output.txt";
           system((char *)rmOutputFile.c_str());
         }
@@ -694,7 +694,7 @@ std::unordered_map<std::string, std::string> replacements = {
       }
 
       component->ExecuteActions("postinstall", component);
-          this->addCheckVerdict("post_process", "success", errorMessage); 
+          this->addCheckVerdict("post_process", "success", errorMessage, "none"); 
     }
   
     this->finish(state, finishprops);

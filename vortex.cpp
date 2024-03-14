@@ -470,7 +470,6 @@ void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
   VxContext &ctx = *CVortexMaker;
   this->tasksToProcess.erase(std::remove_if(this->tasksToProcess.begin(), this->tasksToProcess.end(), [task](const auto& t) { return t == task; }), this->tasksToProcess.end());
   std::unique_lock<std::mutex> lock(mutex);
-  task->state = "finished"; // ou "success", selon votre besoin
 }
 
 

@@ -79,19 +79,9 @@ class Instance : public InstanceFactory {
   };
 
   void SpawnInstance(std::shared_ptr<ReportInstance> instance) override {
-    bool alreadyExist = false;
-
-    for(auto reprtInstance : reportInstances){
-      if(reprtInstance->name == instance->task->id){
-        alreadyExist = true;
-      }
-    }
-
-    if(!alreadyExist){
-        instance->opened = true;
-        instance->name = instance->task->id;
-        reportInstances.push_back(instance);
-    }
+    instance->name = instance->task->id;
+    instance->opened = true;
+    reportInstances.push_back(instance);
   };
 
 

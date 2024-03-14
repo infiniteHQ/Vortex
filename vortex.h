@@ -522,6 +522,7 @@ struct Check{
     std::string checkID;
     std::string checkResult = "unknow";
     std::string checkLog;
+    std::string checkDirective;
 };
 
 
@@ -565,11 +566,12 @@ struct Task{
      }
     
 
-    void addCheckVerdict(std::string id, std::string result, std::string log){
+    void addCheckVerdict(std::string id, std::string result, std::string log, std::string directive){
         for(auto check : this->checkList){
             if(check->checkID == id){
-                check->checkLog = log;
-                check->checkResult = result;
+            check->checkLog = log;
+            check->checkResult = result;
+            check->checkDirective = directive;
                 
       if (check->checkResult == "failed"){
         this->failCounter++;

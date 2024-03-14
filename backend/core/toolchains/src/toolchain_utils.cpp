@@ -4,6 +4,7 @@
 // Import tasks
 #include "../tasks/t_toolchain_SetupSkeleton.inl"
 #include "../tasks/t_toolchain_CreateTemporaryUser.inl"
+#include "../tasks/t_toolchain_DeleteTemporaryUser.inl"
 
 
 
@@ -101,13 +102,22 @@ void VxToolchain::Init()
   VxContext &ctx = *CVortexMaker;
 
   // Add tasks types
-  std::shared_ptr<SetupSkeleton> newSetupSkeleton = std::make_shared<SetupSkeleton>();
-  newSetupSkeleton->tasktype = "SetupSkeleton";
-  this->tasks.push_back(newSetupSkeleton);
+  {
+    std::shared_ptr<SetupSkeleton> task = std::make_shared<SetupSkeleton>();
+    task->tasktype = "SetupSkeleton";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<CreateTemporaryUser> task = std::make_shared<CreateTemporaryUser>();
+    task->tasktype = "SetupSkeleton";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<DeleteTemporaryUser> task = std::make_shared<DeleteTemporaryUser>();
+    task->tasktype = "SetupSkeleton";
+    this->tasks.push_back(task);
+  }
 
-  std::shared_ptr<CreateTemporaryUser> newCreateTemporaryUser = std::make_shared<CreateTemporaryUser>();
-  newCreateTemporaryUser->tasktype = "CreateTemporaryUser";
-  this->tasks.push_back(newCreateTemporaryUser);
 
   // Get dist working path (for CurrentWorkingToolchain)
   std::string envPath = ctx.projectPath / ctx.paths.toolchainDistFolder;

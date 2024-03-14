@@ -73,6 +73,7 @@ void ToolchainInstance::UI_ManualBuild()
                 ImGui::TableSetupColumn("Build", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Progress", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableHeadersRow();
                 for (int row = 0; row < this->toolchain->packages.size(); row++)
                 {

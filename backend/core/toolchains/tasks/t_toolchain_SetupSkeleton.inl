@@ -42,8 +42,8 @@ struct SetupSkeleton : public Task
     // API to check if a task is executed and the result.
     if(!toolchain->TaskSuccedded("CreateTemporaryUser")){
       std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-      this->addCheckVerdict("createFolders", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first");
-      this->addCheckVerdict("giveFoldersToUser", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first");
+      this->addCheckVerdict("createFolders", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first", "none");
+      this->addCheckVerdict("giveFoldersToUser", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first", "none");
       this->finish("failed", props);
       return;
     }
@@ -60,18 +60,18 @@ struct SetupSkeleton : public Task
     toolchain->hostTriplet = toolchain->GetTriplet("host");
 
 
-    this->addCheckVerdict("createFolders", "success", "Everything is ok");
+    this->addCheckVerdict("createFolders", "success", "Everything is ok", "none");
     std::string baseDir = toolchain->envPath + "/" + toolchain->name;
     if (mkdir(baseDir.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + baseDir);
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + baseDir, "none");
     }
 
 
     std::string crosstoolsDir = baseDir + "/" + toolchain->GetTriplet("target");
     if (mkdir(crosstoolsDir.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + crosstoolsDir);
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + crosstoolsDir, "none");
     }
 
     toolchain->crosstoolsPath = crosstoolsDir;
@@ -80,43 +80,43 @@ struct SetupSkeleton : public Task
     std::string data = baseDir + "/data";
     if (mkdir(data.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + data);
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + data, "none");
     }
 
     toolchain->packages_data = baseDir + "/data/packages";
     if (mkdir(toolchain->packages_data.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + toolchain->packages_data);
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + toolchain->packages_data, "none");
     }
 
     std::string patchs_data = baseDir + "/data/patchs";
     if (mkdir(patchs_data.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + patchs_data);
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + patchs_data, "none");
     }
 
     std::string scripts_data = baseDir + "/data/scripts";
     if (mkdir(scripts_data.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + scripts_data);
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + scripts_data, "none");
     }
 
     std::string sysrootDir = crosstoolsDir + "/sysroot";
     toolchain->sysrootPath = sysrootDir;
     if (mkdir(sysrootDir.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + sysrootDir);
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + sysrootDir, "none");
     }
 
     std::string debugrootDir = crosstoolsDir + "/debugroot";
     if (mkdir(debugrootDir.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + debugrootDir);
+      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + debugrootDir, "none");
     }
     // Give toolchain to user
     std::string cmd = "sudo chown -v -R vortex " + baseDir + "/*";
     if(system((char *)cmd.c_str()) == 0){
-      this->addCheckVerdict("giveFoldersToUser", "success", "Everything is ok");
+      this->addCheckVerdict("giveFoldersToUser", "success", "Everything is ok", "none");
     }
 
     this->finish("deps_error", props);
