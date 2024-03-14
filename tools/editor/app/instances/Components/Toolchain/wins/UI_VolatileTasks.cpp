@@ -147,6 +147,7 @@ void ToolchainInstance::UI_VolatileTasks()
                             //_task = task;
                             std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
                             props->add("toolchain", this->toolchain);
+                            props->add("package", this->toolchain->packages[row]);
 
                             _task->id = task->tasktype + "-" + gen_random(8);
                             _task->tasktype = task->tasktype;

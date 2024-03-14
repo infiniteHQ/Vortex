@@ -5,6 +5,11 @@
 #include "../tasks/t_toolchain_SetupSkeleton.inl"
 #include "../tasks/t_toolchain_CreateTemporaryUser.inl"
 #include "../tasks/t_toolchain_DeleteTemporaryUser.inl"
+#include "../tasks/t_toolchain_BuildDistPackage.inl"
+#include "../tasks/t_toolchain_ClearDistPackage.inl"
+#include "../tasks/t_toolchain_MovePackageToDist.inl"
+#include "../tasks/t_toolchain_GiveToolchainToTemporaryUser.inl"
+#include "../tasks/t_toolchain_UncompressDistPackage.inl"
 
 
 
@@ -97,6 +102,46 @@ void VxToolchain::CreateCurrentToolchainSystem()
   this->haveCurrentSys = true;
 }
 
+std::pair<std::string, int> VxToolchain::exec_cmd(const std::string& cmd) {
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+
+  std::string output;
+  int returnCode = -1;
+
+  std::string _cmd = cmd;
+
+  _cmd += " 2>";
+  _cmd += ctx->projectPath;
+  _cmd += "/.vx/temp/_o.txt";
+
+      std::string path = ctx->projectPath;
+      path += "/.vx/temp/_o.txt";
+
+      returnCode = system((char *)_cmd.c_str());
+
+      std::ifstream outputFile(path);
+      output.clear();
+
+        if (outputFile.is_open())
+        {
+          output.assign(std::istreambuf_iterator<char>(outputFile), std::istreambuf_iterator<char>());
+          outputFile.close();
+          std::string clearFile = "rm ";
+          clearFile +=  ctx->projectPath;
+          clearFile += "/.vx/temp/_o.txt";
+
+
+          system((char *)clearFile.c_str());
+        }
+        else
+        {
+          std::cerr << "Impossible d'ouvrir le fichier de sortie d'erreur." << std::endl;
+          return{"null", returnCode};
+        
+      }
+      return{output, returnCode};
+}
+
 void VxToolchain::Init()
 {
   VxContext &ctx = *CVortexMaker;
@@ -108,13 +153,38 @@ void VxToolchain::Init()
     this->tasks.push_back(task);
   }
   {
+    std::shared_ptr<BuildDistPackage> task = std::make_shared<BuildDistPackage>();
+    task->tasktype = "BuildDistPackage";
+    this->tasks.push_back(task);
+  }
+  {
     std::shared_ptr<CreateTemporaryUser> task = std::make_shared<CreateTemporaryUser>();
-    task->tasktype = "SetupSkeleton";
+    task->tasktype = "CreateTemporaryUser";
     this->tasks.push_back(task);
   }
   {
     std::shared_ptr<DeleteTemporaryUser> task = std::make_shared<DeleteTemporaryUser>();
-    task->tasktype = "SetupSkeleton";
+    task->tasktype = "DeleteTemporaryUser";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<MovePackageToDist> task = std::make_shared<MovePackageToDist>();
+    task->tasktype = "MovePackageToDist";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<UncompressDistPackage> task = std::make_shared<UncompressDistPackage>();
+    task->tasktype = "UncompressDistPackage";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<ClearDistPackage> task = std::make_shared<ClearDistPackage>();
+    task->tasktype = "ClearDistPackage";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<GiveToolchainToTemporaryUser> task = std::make_shared<GiveToolchainToTemporaryUser>();
+    task->tasktype = "GiveToolchainToTemporaryUser";
     this->tasks.push_back(task);
   }
 

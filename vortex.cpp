@@ -337,6 +337,14 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
       std::shared_ptr<VxToolchain> toolchain = std::make_shared<VxToolchain>();
 
       toolchain->configFilePath = file;
+      toolchain->path = file;
+
+      size_t position = toolchain->path.find("/toolchain.config");
+      if (position != std::string::npos)
+      {
+        toolchain->path.erase(position, 17);
+      }
+
 
       RegisterToolchain(toolchain, filecontent);
     }

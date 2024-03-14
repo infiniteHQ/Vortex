@@ -12,15 +12,15 @@
 
 struct Task;
 
-struct DeleteTemporaryUser : public Task
+struct GiveToolchainToTemporaryUser : public Task
 {
     std::shared_ptr<Task> clone() const override {
-        return std::make_shared<DeleteTemporaryUser>(*this);
+        return std::make_shared<GiveToolchainToTemporaryUser>(*this);
     }
 
   void init() override
   {
-    this->tasktype = "DeleteTemporaryUser";
+    this->tasktype = "GiveToolchainToTemporaryUser";
   };
 
   // Récupérer un ancien report
@@ -34,25 +34,15 @@ struct DeleteTemporaryUser : public Task
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
     this->addIdleCheck("delete_vortex_user");
-    this->addIdleCheck("delete_vortex_group");
-
     {
       std::string cmd = "userdel -r vortex";
-      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
-
+      int result = system((char *)cmd.c_str());
 
       if(result == 0) this->addCheckVerdict("delete_vortex_user", "success", "Vortex user deleted succefully !", cmd);
       if(result != 0) this->addCheckVerdict("delete_vortex_user", "failed", "Vortex user failed to be deleted !", cmd);
     }
-    {
-      std::string cmd = "groupdel vortex";
-      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
 
-      if(result == 0) this->addCheckVerdict("delete_vortex_group", "success", "Vortex group deleted succefully !", cmd);
-      if(result != 0) this->addCheckVerdict("delete_vortex_group", "failed", "Vortex group failed to be deleted !", cmd);
-    }
-    
     this->finish("finish", nullptr);
   }
 

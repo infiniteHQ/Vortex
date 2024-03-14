@@ -77,6 +77,7 @@ struct SetupSkeleton : public Task
     toolchain->crosstoolsPath = crosstoolsDir;
     toolchain->workingPath = crosstoolsDir;
 
+    // All provided by default. Used by the current toolchain system
     std::string data = baseDir + "/data";
     if (mkdir(data.c_str(), 0777) == -1)
     {

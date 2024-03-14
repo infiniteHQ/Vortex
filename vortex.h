@@ -566,6 +566,15 @@ struct Task{
      }
     
 
+    /*
+        Result types :
+        - success : The check is a success
+        - warning : The check is a warning
+        - failed : The check is a failure
+        - unknow : The check is not yet processed
+        - fatal : The check is a fatal error
+    */
+   
     void addCheckVerdict(std::string id, std::string result, std::string log, std::string directive){
         for(auto check : this->checkList){
             if(check->checkID == id){
@@ -1286,6 +1295,7 @@ struct VxToolchain{
     std::string vendor = "unknow";
     std::string platform = "unknow";
     std::string configFilePath = "unknow";
+    std::string path = "unknow";
 
     std::string target_arch = "unknow";
     std::string builder_arch = "unknow";
@@ -1356,7 +1366,7 @@ struct VxToolchain{
 
     std::shared_ptr<TaskProcessor> taskProcessor;
 
-
+std::pair<std::string, int> exec_cmd(const std::string& cmd);
     // TO CLEAN 
     void RefreshCurrentWorkingToolchain();
     void ExecuteTask(Task task, hArgs args);

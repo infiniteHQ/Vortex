@@ -157,36 +157,27 @@ void fullBuildPackage::exec() {
       return;
     }
 
-    std::cout << "FLKJ" << std::endl;
     std::cout << component << std::endl;
     std::cout << component->name << std::endl;
 
 
 
 
-    std::cout << "FLKJ" << std::endl;
 
     size_t posDernierSlash = component->path.find_last_of('/');
-    std::cout << "FLKJ" << std::endl;
     if (posDernierSlash != std::string::npos)
     {
-    std::cout << "FLKJ" << std::endl;
       std::string resultat = component->path.substr(posDernierSlash + 1);
-    std::cout << "FLKJ" << std::endl;
       component->distPath = host->path_datapackages + "/" + resultat;
     }
-    std::cout << "FLKJ" << std::endl;
 
-    std::cout << "FLKJ" << std::endl;
     std::shared_ptr<hArgs> finishprops = std::make_shared<hArgs>();
     std::string state = "finished";
 
-    std::cout << "FLKJ" << std::endl;
 
   std::string cuser = "chown vortex:vortex -R " + envPath + "/*";
   system(cuser.c_str());
 
-    std::cout << "FLKJ" << std::endl;
 
         std::cout << "Yan2" << std::endl;
     this->addCheckVerdict("deployement", "success", "Ok", "none");    

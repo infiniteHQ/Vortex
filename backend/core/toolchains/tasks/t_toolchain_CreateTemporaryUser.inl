@@ -18,7 +18,7 @@ std::pair<std::string, int> exec_cmd(const std::string& cmd) {
   VxContext *ctx = VortexMaker::GetCurrentContext();
 
   std::string output;
-  int returnCode = -1;
+  int result = -1;
 
   std::string _cmd = cmd;
 
@@ -29,7 +29,7 @@ std::pair<std::string, int> exec_cmd(const std::string& cmd) {
       std::string path = ctx->projectPath;
       path += "/.vx/temp/_o.txt";
 
-      returnCode = system((char *)_cmd.c_str());
+      result = system((char *)_cmd.c_str());
 
       std::ifstream outputFile(path);
       output.clear();
@@ -48,10 +48,10 @@ std::pair<std::string, int> exec_cmd(const std::string& cmd) {
         else
         {
           std::cerr << "Impossible d'ouvrir le fichier de sortie d'erreur." << std::endl;
-          return{"null", returnCode};
+          return{"null", result};
         
       }
-      return{output, returnCode};
+      return{output, result};
 }
 
 
@@ -88,26 +88,28 @@ struct CreateTemporaryUser : public Task
     this->addIdleCheck("implement_bashrc");
 
     {
-      std::string cmd = "ls -sdlfkhj ./";
-      auto [output, returnCode] = exec_cmd(cmd.c_str());
+      std::string cmd = "groupadd vortex";
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
       std::cout<< output << std::endl;
       
-      if(returnCode == 0) this->addCheckVerdict("group_add_vortex", "success", output, cmd);
-      if(returnCode != 0) this->addCheckVerdict("group_add_vortex", "failed", output, cmd);
+      if(result == 0) this->addCheckVerdict("group_add_vortex", "success", output, cmd);
+      if(result != 0) this->addCheckVerdict("group_add_vortex", "failed", output, cmd);
     }
     
     {
       std::string cmd = "useradd -s /bin/bash -g vortex -m -k /dev/null vortex"; // + " -p " + user.vxHostUser_Crypto;
-      auto [output, returnCode] = exec_cmd(cmd.c_str());
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
       
-      if(returnCode == 0) this->addCheckVerdict("user_add_vortex", "success", output, cmd);
-      if(returnCode != 0) this->addCheckVerdict("user_add_vortex", "failed", output, cmd);
+      if(result == 0) this->addCheckVerdict("user_add_vortex", "success", output, cmd);
+      if(result != 0) this->addCheckVerdict("user_add_vortex", "failed", output, cmd);
     }
     
     {
       std::string cmd = "mkdir -pv /home/vortex";
-      int result = system((char *)cmd.c_str());
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
 
       if(result == 0) this->addCheckVerdict("add_vortex_home", "success", "\"/home/vortex\" home directory added succefully!", cmd);
       if(result != 0) this->addCheckVerdict("add_vortex_home", "failed", "\"/home/vortex\" home directory failed to be added !", cmd);
@@ -115,7 +117,9 @@ struct CreateTemporaryUser : public Task
     
     {
       std::string cmd = "sudo chown -v vortex:vortex  /home/vortex";
-      int result = system((char *)cmd.c_str());
+      
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
 
       if(result == 0) this->addCheckVerdict("give_vortex_home", "success", "\"/home/vortex\" given to vortex user succefully!", cmd);
       if(result != 0) this->addCheckVerdict("give_vortex_home", "failed", "\"/home/vortex\" failed to be given to vortex user !", cmd);
@@ -123,7 +127,9 @@ struct CreateTemporaryUser : public Task
     
     {
       std::string cmd = "sudo usermod -aG root vortex";
-      int result = system((char *)cmd.c_str());
+      
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
 
       if(result == 0) this->addCheckVerdict("user_mod_root_to_vortex", "success", "usermod root to vortex user succefully!", cmd);
       if(result != 0) this->addCheckVerdict("user_mod_root_to_vortex", "failed", "usermod root to vortex user failed !", cmd);
@@ -162,10 +168,10 @@ struct CreateTemporaryUser : public Task
         package->distPath = toolchain->packages_data + "/" + resultat;
       }
 
-      int returnCode = system(cmd.c_str());
-      package->SetDiagCode("Prepare", returnCode);
+      int result = system(cmd.c_str());
+      package->SetDiagCode("Prepare", result);
 
-      if (returnCode == 0)
+      if (result == 0)
       {
         // package->SetDiagStatus("Prepare", "Success");
       }
