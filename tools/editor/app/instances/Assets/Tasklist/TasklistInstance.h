@@ -24,6 +24,7 @@ class TasklistInstance
 {
 public:
     TasklistInstance(VxContext *ctx, std::shared_ptr<TaskList> t, std::shared_ptr<VxHost> parentHost);
+    TasklistInstance(VxContext *ctx, std::shared_ptr<TaskList> t, std::shared_ptr<VxToolchain> parentToolchain);
 
     // Content Managment 
     void Refresh();
@@ -45,7 +46,10 @@ public:
     std::shared_ptr<TaskList> tasklist;
     std::shared_ptr<TaskListSave> m_currentSave;
     ImGuiID dockspaceID;
+
     std::shared_ptr<VxHost> parentHost;
+    std::shared_ptr<VxToolchain> parentToolchain;
+    std::string parentType;
 
     std::shared_ptr<Walnut::Image> m_HostIcon;
     std::shared_ptr<Walnut::Image> m_Icon;

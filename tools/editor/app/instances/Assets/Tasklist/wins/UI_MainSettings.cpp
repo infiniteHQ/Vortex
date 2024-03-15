@@ -71,10 +71,26 @@ void TasklistInstance::UI_MainSettings()
 
                 std::vector<const char *> items_components = {"none"};
 
+                if(this->parentType == "host"){
+
                 for (auto &chaine : this->parentHost->packages)
                 {
                     items_components.push_back(chaine->name.c_str());
                 }
+
+                }
+
+
+                if(this->parentType == "toolchain"){
+
+                for (auto &chaine : this->parentToolchain->packages)
+                {
+                    items_components.push_back(chaine->name.c_str());
+                }
+
+                }
+
+
                 for (auto &chaine : this->m_ctx->IO.distHosts)
                 {
                     items_components.push_back(chaine.name.c_str());

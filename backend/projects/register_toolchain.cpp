@@ -24,9 +24,16 @@ bool VortexMaker::RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nloh
   {
     toolchain->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
   }
-
-
   toolchain->FindPackages();
+
+
+  nlohmann::json tasklists = toolchainData["content"]["tasklists"];
+  for (auto &t : tasklists)
+  {
+    toolchain->RegisterTasklist(t["label"].get<std::string>());
+  }
+  toolchain->FindTasklists();
+
   toolchain->Init();
 
   ctx.IO.toolchains.push_back(toolchain);

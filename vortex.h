@@ -1377,9 +1377,10 @@ struct VxToolchain{
     // Vector de packages
 
     std::vector<std::shared_ptr<VxPackageInterface>> registeredPackages;
-    std::vector<std::shared_ptr<VxTasklistInterface>> registeredTasklist;
+    std::vector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
 
     std::vector<std::shared_ptr<VxPackage>> packages;
+    std::vector<std::shared_ptr<TaskList>> tasklists;
     // Scripts
     // Modules & other assets..
     // Patchs
@@ -1397,7 +1398,16 @@ std::pair<std::string, int> exec_cmd_quote(const std::string& cmd);
 
     void PushSave(std::shared_ptr<ToolchainSave> save);
 
+void RegisterTasklist(const std::string label)
+{
+  std::shared_ptr<VxTasklistInterface> newTasklistInterface = std::make_shared<VxTasklistInterface>();
+  newTasklistInterface->label = label;
+  this->registeredTasklists.push_back(newTasklistInterface);
+}
+
+
     // TO CLEAN 
+    void FindTasklists();
     void Refresh();
     void RefreshCurrentWorkingToolchain();
     void ExecuteTask(Task task, hArgs args);
