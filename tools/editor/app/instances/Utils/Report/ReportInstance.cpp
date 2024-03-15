@@ -38,6 +38,13 @@ ReportInstance::ReportInstance(VxContext *ctx, std::shared_ptr<Task> _task)
         m_SaveIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
         free(data);
     }
+
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_logs, icons::i_logs_size, w, h);
+        m_FlipBookIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
     {
         uint32_t w, h;
         void *data = Walnut::Image::Decode(icons::i_eye, icons::i_eye_size, w, h);
@@ -125,13 +132,14 @@ std::string ReportInstance::render()
         static ImTextureID errorIcon = this->m_ErrorIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID warnIcon = this->m_WarningIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID successIcon = this->m_SuccessIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID flipIcon = this->m_FlipBookIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID unknowIcon = this->m_UnknowIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     if (opened)
     {
         // Mainwindow with dockspace
         static std::string label = "Reporting task" + this->task->id + "###" + this->task->id + "-reportingtask";
-        if (ImGui::Begin(label.c_str(), &toolchainIcon, &this->opened, ImGuiWindowFlags_MenuBar))
+        if (ImGui::Begin(label.c_str(), &flipIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         {
             this->menubar();
 
@@ -201,8 +209,7 @@ std::string ReportInstance::render()
 
                 if (ImGui::CollapsingHeader("Errors"))
                 {
-                    static std::string tableLabel = "table" + label;
-                    if (ImGui::BeginTable(tableLabel.c_str(), 4, flags))
+                    if (ImGui::BeginTable("table_", 4, flags))
                     {
                         ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
                         ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
@@ -243,7 +250,7 @@ std::string ReportInstance::render()
                                 }
                                 if (column == 3)
                                 {
-                                    ImGui::Text(errors[row]->checkDirective.c_str());
+                                    ImGui::TextWrapped(errors[row]->checkDirective.c_str());
                                 }
                             }
                         }
@@ -290,11 +297,11 @@ std::string ReportInstance::render()
                                 }
                                 if (column == 2)
                                 {
-                                    ImGui::Text(warnings[row]->checkLog.c_str());
+                                    ImGui::TextWrapped(warnings[row]->checkLog.c_str());
                                 }
                                 if (column == 3)
                                 {
-                                    ImGui::Text(warnings[row]->checkDirective.c_str());
+                                    ImGui::TextWrapped(warnings[row]->checkDirective.c_str());
                                 }
                             }
                         }
@@ -303,6 +310,58 @@ std::string ReportInstance::render()
                     }
                 }  
                 
+                if (ImGui::CollapsingHeader("Unknow"))
+                {
+                    if (ImGui::BeginTable("table_", 4, flags))
+                    {
+                        ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Directive", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableHeadersRow();
+                        std::vector<std::shared_ptr<Check>> unkonws;
+                        for (auto check : this->task->checkList)
+                        {
+                            if (check->checkResult == "unknow")
+                            {
+                                unkonws.push_back(check);
+                            }
+                        }
+
+                        for (int row = 0; row < unkonws.size(); row++)
+                        {
+                            static std::pair<char[128], char[128]> newItem;
+                            static char label[128];
+
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 4; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
+
+                                if (column == 0)
+                                {
+                                    ImGui::Text(unkonws[row]->checkID.c_str());
+                                }
+                                if (column == 1)
+                                {
+                                    ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), unkonws[row]->checkResult.c_str());
+                                }
+                                if (column == 2)
+                                {
+                                    
+                                    ImGui::TextWrapped(unkonws[row]->checkLog.c_str());
+                                }
+                                if (column == 3)
+                                {
+                                    ImGui::TextWrapped(unkonws[row]->checkDirective.c_str());
+                                }
+                            }
+                        }
+
+                        ImGui::EndTable();
+                    }
+                }
+           
                 
                 if (ImGui::CollapsingHeader("Successes"))
                 {
@@ -342,11 +401,11 @@ std::string ReportInstance::render()
                                 }
                                 if (column == 2)
                                 {
-                                    ImGui::Text(successes[row]->checkLog.c_str());
+                                    ImGui::TextWrapped(successes[row]->checkLog.c_str());
                                 }
                                 if (column == 3)
                                 {
-                                    ImGui::Text(successes[row]->checkDirective.c_str());
+                                    ImGui::TextWrapped(successes[row]->checkDirective.c_str());
                                 }
                             }
                         }

@@ -33,13 +33,32 @@ struct GiveToolchainToTemporaryUser : public Task
 
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
-    this->addIdleCheck("delete_vortex_user");
-    {
-      std::string cmd = "userdel -r vortex";
-      int result = system((char *)cmd.c_str());
+    this->addIdleCheck("give_vortex_package_data");
+    this->addIdleCheck("give_vortex_working_dir");
 
-      if(result == 0) this->addCheckVerdict("delete_vortex_user", "success", "Vortex user deleted succefully !", cmd);
-      if(result != 0) this->addCheckVerdict("delete_vortex_user", "failed", "Vortex user failed to be deleted !", cmd);
+
+    std::string PackageDataPath;
+    PackageDataPath += ctx->projectPath;
+    PackageDataPath += "/./.vx/dist/toolchains/" + toolchain->name + "/data/packages/";
+
+    std::string WorkingDirPath;
+    WorkingDirPath += ctx->projectPath;
+    WorkingDirPath += "/./.vx/dist/toolchains/" + toolchain->name + "/working_host/";
+
+    {
+      std::string cmd = "sudo chown -v -R vortex " + PackageDataPath + "/*";
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+    
+      if(0 == 0) this->addCheckVerdict("give_vortex_package_data", "success", "Vortex user deleted succefully !", cmd);
+      if(0 != 0) this->addCheckVerdict("give_vortex_package_data", "failed", "Vortex user failed to be deleted !", cmd);
+    }
+
+    {
+      std::string cmd = "sudo chown -v -R vortex " + WorkingDirPath + "/*";
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+    
+      if(0 == 0) this->addCheckVerdict("give_vortex_working_dir", "success", "Vortex user deleted succefully !", cmd);
+      if(0 != 0) this->addCheckVerdict("give_vortex_working_dir", "failed", "Vortex user failed to be deleted !", cmd);
     }
 
 

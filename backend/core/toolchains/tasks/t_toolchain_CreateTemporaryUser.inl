@@ -90,8 +90,6 @@ struct CreateTemporaryUser : public Task
     {
       std::string cmd = "groupadd vortex";
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
-
-      std::cout<< output << std::endl;
       
       if(result == 0) this->addCheckVerdict("group_add_vortex", "success", output, cmd);
       if(result != 0) this->addCheckVerdict("group_add_vortex", "failed", output, cmd);
@@ -111,8 +109,8 @@ struct CreateTemporaryUser : public Task
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
 
-      if(result == 0) this->addCheckVerdict("add_vortex_home", "success", "\"/home/vortex\" home directory added succefully!", cmd);
-      if(result != 0) this->addCheckVerdict("add_vortex_home", "failed", "\"/home/vortex\" home directory failed to be added !", cmd);
+      if(result == 0) this->addCheckVerdict("add_vortex_home", "success", output, cmd);
+      if(result != 0) this->addCheckVerdict("add_vortex_home", "failed", output, cmd);
     }
     
     {
@@ -121,8 +119,8 @@ struct CreateTemporaryUser : public Task
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
 
-      if(result == 0) this->addCheckVerdict("give_vortex_home", "success", "\"/home/vortex\" given to vortex user succefully!", cmd);
-      if(result != 0) this->addCheckVerdict("give_vortex_home", "failed", "\"/home/vortex\" failed to be given to vortex user !", cmd);
+      if(result == 0) this->addCheckVerdict("give_vortex_home", "success", output, cmd);
+      if(result != 0) this->addCheckVerdict("give_vortex_home", "failed", output, cmd);
     }
     
     {
@@ -131,8 +129,8 @@ struct CreateTemporaryUser : public Task
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
 
-      if(result == 0) this->addCheckVerdict("user_mod_root_to_vortex", "success", "usermod root to vortex user succefully!", cmd);
-      if(result != 0) this->addCheckVerdict("user_mod_root_to_vortex", "failed", "usermod root to vortex user failed !", cmd);
+      if(result == 0) this->addCheckVerdict("user_mod_root_to_vortex", "success", output, cmd);
+      if(result != 0) this->addCheckVerdict("user_mod_root_to_vortex", "failed", output, cmd);
     }
 
     this->finish("finish", props);

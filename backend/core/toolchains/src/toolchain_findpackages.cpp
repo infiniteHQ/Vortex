@@ -7,7 +7,7 @@ void VxToolchain::FindPackages()
   VxContext &ctx = *CVortexMaker;
 
   // Register all finded local packages
-  for (const auto &file : VortexMaker::SearchFiles(ctx.toolchainsPath + localPackagesPath, "package.config"))
+  for (const auto &file : VortexMaker::SearchFiles(ctx.toolchainsPath + "/" + this->name + "/" + localPackagesPath, "package.config"))
   {
     try
     {
@@ -37,6 +37,7 @@ void VxToolchain::FindPackages()
 
               newPackage->path = file;
               size_t position = newPackage->path.find("/package.config");
+              newPackage->configFilePath = file; 
 
               if (position != std::string::npos)
               {

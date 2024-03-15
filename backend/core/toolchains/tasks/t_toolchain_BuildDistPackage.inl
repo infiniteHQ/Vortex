@@ -58,16 +58,25 @@ struct BuildDistPackage : public Task
         {"${PackageFolder}", package->path},
         {"${DistPackageFolder}", package->distPath}};
 
+    this->addIdleCheck("create_build_folder");
     this->addIdleCheck("configure_dist_package");
     this->addIdleCheck("compile_dist_package");
     this->addIdleCheck("install_dist_package");
 
+    {
+      std::string cmd = "mkdir " + package->distPath + +"/build";
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str()); // faire un empaquetage complet
+
+      if (result == 0)this->addCheckVerdict("create_build_folder", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_build_folder", "failed", output, cmd);
+    }
+
+    {
     std::string configuration;
     if (package->compilation.exclusiveCustomConfigProcess == "not specified")
     {
 
       // Configure
-      std::string configuration;
       if (package->compilation.exclusiveCustomConfigProcess == "not specified")
       {
         std::string cmd = "";
@@ -96,18 +105,18 @@ struct BuildDistPackage : public Task
       }
       else
       {
+        std::cout << configuration << std::endl;
         configuration += "sudo -u vortex -i sh -c 'cd " + package->distPath + "/build && ";
         configuration += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomConfigProcess, replacements);
       }
     }
 
-    {
-      std::string cmd = "userdel -r vortex";
+      std::string cmd = configuration;
 
-      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+      auto [output, result] = toolchain->exec_cmd_quote(configuration.c_str()); // faire un empaquetage complet
 
-      if (result == 0)this->addCheckVerdict("configure_dist_package", "success", "Vortex user deleted succefully !", cmd);
-      if (result != 0)this->addCheckVerdict("configure_dist_package", "failed", "Vortex user failed to be deleted !", cmd);
+      if (result == 0)this->addCheckVerdict("configure_dist_package", "success", output, configuration);
+      if (result != 0)this->addCheckVerdict("configure_dist_package", "failed", output, configuration);
     }
 
     this->finish("finish", nullptr);

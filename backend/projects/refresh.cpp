@@ -405,6 +405,54 @@ nlohmann::json VxHostCurrentSystem::Extract()
   return jsonData;
 }
 
+
+// TODO : Split to little refresh functions, create a RefreshAll function.
+void VxToolchain::Refresh()
+{
+
+  nlohmann::json toolchainData = VortexMaker::DumpJSON(this->configFilePath);
+
+
+  this->name = toolchainData["toolchain"]["name"].get<std::string>();
+  this->author = toolchainData["toolchain"]["author"].get<std::string>();
+  this->description = toolchainData["toolchain"]["description"].get<std::string>();
+  this->version = toolchainData["toolchain"]["version"].get<std::string>();
+  this->type = toolchainData["toolchain"]["type"].get<std::string>();
+  this->state = toolchainData["toolchain"]["state"].get<std::string>();
+  this->vendor = toolchainData["toolchain"]["vendor"].get<std::string>();
+  this->platform = toolchainData["toolchain"]["platform"].get<std::string>();
+
+
+  this->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
+  this->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
+  this->builder_arch = toolchainData["configs"]["builder_arch"].get<std::string>();
+  this->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
+
+  this->localPackagesPath = toolchainData["data"]["packages"].get<std::string>();
+  this->localPatchsPath = toolchainData["data"]["patchs"].get<std::string>();
+  this->localScriptsPath = toolchainData["data"]["scripts"].get<std::string>();
+
+  registeredPackages.clear();
+  nlohmann::json packages = toolchainData["content"]["packages"];
+  for (auto &pkg : packages)
+  {
+    this->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
+  }
+
+  this->FindPackages();
+
+/*
+  registeredTasklists.clear();
+  nlohmann::json tasklists = toolchainData["content"]["tasklists"];
+  for (auto &t : tasklists)
+  {
+    this->RegisterTasklist(t["label"].get<std::string>());
+  }
+  this->FindTasklists();*/
+
+  //this->Init();
+}
+
 // TODO : Split to little refresh functions, create a RefreshAll function.
 void VxHost::Refresh()
 {

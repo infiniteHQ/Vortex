@@ -102,6 +102,48 @@ void VxToolchain::CreateCurrentToolchainSystem()
   this->haveCurrentSys = true;
 }
 
+std::pair<std::string, int> VxToolchain::exec_cmd_quote(const std::string& cmd) {
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+
+  std::string output;
+  int returnCode = -1;
+
+  std::string _cmd = cmd;
+
+  _cmd += "' 2>";
+  _cmd += ctx->projectPath;
+  _cmd += "/.vx/temp/_o.txt";
+  _cmd += "";
+
+      std::string path = ctx->projectPath;
+      path += "/.vx/temp/_o.txt";
+
+      returnCode = system((char *)_cmd.c_str());
+
+      std::ifstream outputFile(path);
+      output.clear();
+
+        if (outputFile.is_open())
+        {
+          output.assign(std::istreambuf_iterator<char>(outputFile), std::istreambuf_iterator<char>());
+          outputFile.close();
+          std::string clearFile = "rm ";
+          clearFile +=  ctx->projectPath;
+          clearFile += "/.vx/temp/_o.txt";
+
+
+          system((char *)clearFile.c_str());
+        }
+        else
+        {
+          std::cerr << "Impossible d'ouvrir le fichier de sortie d'erreur." << std::endl;
+          return{"Unknow log(s)", returnCode};
+        
+      }
+      return{output, returnCode};
+}
+
+
 std::pair<std::string, int> VxToolchain::exec_cmd(const std::string& cmd) {
   VxContext *ctx = VortexMaker::GetCurrentContext();
 

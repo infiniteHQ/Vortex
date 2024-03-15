@@ -68,7 +68,7 @@ void ToolchainInstance::UI_ManualBuild()
 
         static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-            if (ImGui::BeginTable("table_", 3, flags))
+            if (ImGui::BeginTable("table_manual_build", 4, flags))
             {
                 ImGui::TableSetupColumn("Build", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);

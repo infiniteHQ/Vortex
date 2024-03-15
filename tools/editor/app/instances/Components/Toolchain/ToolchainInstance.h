@@ -39,6 +39,8 @@ public:
     void UI_SnapshotUtility();
     void UI_ManualBuild();
     void UI_VolatileTasks();
+    void UI_AssetsViewer();
+    void UI_MainSettings();
 
     bool opened;
     bool show_UI_ContentWindow = false;
@@ -48,17 +50,21 @@ public:
     bool show_UI_SnapshotUtility = false;
     bool show_UI_ManualBuild = false;
     bool show_UI_VolatileTasks = false;
+    bool show_UI_AssetsViewer = false;
+    bool show_UI_MainSettings = false;
 
     InstanceFactory* factory;
 
     std::string name;
     VxContext *m_ctx;
     std::shared_ptr<VxToolchain> toolchain;
+    std::shared_ptr<ToolchainSave> m_currentSave;
     ImGuiID dockspaceID;
 
     std::shared_ptr<Walnut::Image> m_ToolchainIcon;
     std::shared_ptr<Walnut::Image> m_Icon;
     std::shared_ptr<Walnut::Image> m_EyeIcon;
+    std::shared_ptr<Walnut::Image> m_FlipBookIcon;
     std::shared_ptr<Walnut::Image> m_WarningIcon;
     std::shared_ptr<Walnut::Image> m_ErrorIcon;
     std::shared_ptr<Walnut::Image> m_SuccessIcon;

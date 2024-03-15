@@ -64,6 +64,7 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
         static ImTextureID unknowIcon = this->m_UnknowIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID flipbookIcon = this->m_FlipBookIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID saveIcon = this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -226,14 +227,14 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
 {
 
                             std::string buttonid = "Report###" + std::to_string(row) + "-" + std::to_string(column);
-                            if (ImGui::ImageButtonWithText(refreshIcon, buttonid.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            if (ImGui::ImageButtonWithText(flipbookIcon, buttonid.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                             {
 							    std::shared_ptr<ReportInstance> instance = std::make_shared<ReportInstance>(m_ctx, this->toolchain->currentLoadedSystem.executedTasks[row]);
 							    this->factory->SpawnInstance(instance);	
                             }
 }
 {
-
+/*
                             std::string buttonid = "Retry###" + std::to_string(row) + "-" + std::to_string(column);
                             if (ImGui::ImageButtonWithText(refreshIcon, buttonid.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                             {
@@ -248,7 +249,7 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
                                 this->toolchain->currentLoadedSystem.executedTasks.push_back(task);
 
                                 this->toolchain->currentLoadedSystem.Save(this->toolchain);
-                            }
+                            }*/
 }
                         }
                         if (column == 2)

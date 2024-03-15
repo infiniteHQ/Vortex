@@ -13,11 +13,6 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/src/toolchain_snapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/src/toolchain_utils.cpp
 
-    # Toolchain tasks
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_BuildPackage.inl
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_CreateTemporaryUser.inl
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/tasks/t_toolchain_SetupSkeleton.inl
-
     # Host sources
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_prebuild.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/hosts/host_build.cpp

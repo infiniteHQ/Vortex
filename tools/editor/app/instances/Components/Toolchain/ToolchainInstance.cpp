@@ -11,6 +11,7 @@ ToolchainInstance::ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain
 
     this->Refresh();
     this->toolchain->RefreshCurrentWorkingToolchain();
+    this->toolchain->RefreshSnapshots();
 
     {
         uint32_t w, h;
@@ -115,6 +116,12 @@ ToolchainInstance::ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain
         m_TrashIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
         free(data);
     }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_logs, icons::i_logs_size, w, h);
+        m_FlipBookIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
 };
 
 
@@ -158,6 +165,8 @@ std::string ToolchainInstance::render()
         this->UI_SnapshotUtility();
         this->UI_ManualBuild();
         this->UI_VolatileTasks();
+        this->UI_AssetsViewer();
+        this->UI_MainSettings();
 
         return "rendering";
         }
@@ -195,10 +204,10 @@ void ToolchainInstance::menubar(){
 
                 if (ImGui::BeginMenu("Misc"))
                 {
-                    if (ImGui::MenuItem("Settings"))
+                    if (ImGui::MenuItem("Settings", NULL, &this->show_UI_MainSettings))
                     {
                     }
-                    if (ImGui::MenuItem("Assets"))
+                    if (ImGui::MenuItem("Assets", NULL, &this->show_UI_AssetsViewer))
                     {
                     }
                     if (ImGui::MenuItem("Tasks", NULL, &this->show_UI_TasksEditor))
@@ -263,10 +272,86 @@ void ToolchainInstance::menubar(){
 
 void ToolchainInstance::Refresh()
 {
+    // Refresh host from vortex API
+    // Get all vortex infos, store into save struct and save the save struct to current save struct
+
+    // TODO: BEFORE ALL, REFRESH API INSTANCE OF THIS HOST
+
+    this->toolchain->Refresh();
+
+
     for(auto task : this->toolchain->tasks){
         task->init();
     }
-    //this->m_currentSave = refreshedCurrentSave;
+
+    std::shared_ptr<ToolchainSave> refreshedCurrentSave = std::make_shared<ToolchainSave>();
+
+    strncpy(refreshedCurrentSave->name, this->toolchain->name.c_str(), sizeof(refreshedCurrentSave->name));
+    refreshedCurrentSave->name[sizeof(refreshedCurrentSave->name) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->author, this->toolchain->author.c_str(), sizeof(refreshedCurrentSave->author));
+    refreshedCurrentSave->author[sizeof(refreshedCurrentSave->author) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->type, this->toolchain->type.c_str(), sizeof(refreshedCurrentSave->type));
+    refreshedCurrentSave->type[sizeof(refreshedCurrentSave->type) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->description, this->toolchain->description.c_str(), sizeof(refreshedCurrentSave->description));
+    refreshedCurrentSave->description[sizeof(refreshedCurrentSave->description) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->version, this->toolchain->version.c_str(), sizeof(refreshedCurrentSave->version));
+    refreshedCurrentSave->version[sizeof(refreshedCurrentSave->version) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->vendor, this->toolchain->vendor.c_str(), sizeof(refreshedCurrentSave->vendor));
+    refreshedCurrentSave->vendor[sizeof(refreshedCurrentSave->vendor) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->state, this->toolchain->state.c_str(), sizeof(refreshedCurrentSave->state));
+    refreshedCurrentSave->state[sizeof(refreshedCurrentSave->state) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->platform, this->toolchain->platform.c_str(), sizeof(refreshedCurrentSave->platform));
+    refreshedCurrentSave->platform[sizeof(refreshedCurrentSave->platform) - 1] = '\0';
+
+
+
+    strncpy(refreshedCurrentSave->host_arch, this->toolchain->host_arch.c_str(), sizeof(refreshedCurrentSave->host_arch));
+    refreshedCurrentSave->host_arch[sizeof(refreshedCurrentSave->host_arch) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->target_arch, this->toolchain->target_arch.c_str(), sizeof(refreshedCurrentSave->target_arch));
+    refreshedCurrentSave->target_arch[sizeof(refreshedCurrentSave->target_arch) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->builder_arch, this->toolchain->builder_arch.c_str(), sizeof(refreshedCurrentSave->builder_arch));
+    refreshedCurrentSave->builder_arch[sizeof(refreshedCurrentSave->builder_arch) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->compression, this->toolchain->compressionMode.c_str(), sizeof(refreshedCurrentSave->compression));
+    refreshedCurrentSave->compression[sizeof(refreshedCurrentSave->compression) - 1] = '\0';
+
+
+    strncpy(refreshedCurrentSave->localScriptsPath, this->toolchain->localScriptsPath.c_str(), sizeof(refreshedCurrentSave->localScriptsPath));
+    refreshedCurrentSave->localScriptsPath[sizeof(refreshedCurrentSave->localScriptsPath) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->localPatchsPath, this->toolchain->localPatchsPath.c_str(), sizeof(refreshedCurrentSave->localPatchsPath));
+    refreshedCurrentSave->localPatchsPath[sizeof(refreshedCurrentSave->localPatchsPath) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->localPackagePath, this->toolchain->localPackagesPath.c_str(), sizeof(refreshedCurrentSave->localPackagePath));
+    refreshedCurrentSave->localPackagePath[sizeof(refreshedCurrentSave->localPackagePath) - 1] = '\0';
+
+
+    // Output the content of buffer
+    // refreshedCurrentSave.name = this->toolchain->name;
+
+    for (auto registeredPackage : this->toolchain->registeredPackages)
+    {
+        std::pair<char[128], char[128]> package;
+
+        strncpy(package.first, registeredPackage->label.c_str(), sizeof(package.first));
+        package.first[sizeof(package.first) - 1] = '\0';
+
+        strncpy(package.second, registeredPackage->emplacement.c_str(), sizeof(package.second));
+        package.second[sizeof(package.second) - 1] = '\0';
+
+        refreshedCurrentSave->registeredPackages.push_back(package);
+    }
+
+    this->m_currentSave = refreshedCurrentSave;
 }
 
 void ToolchainInstance::Save()
@@ -274,5 +359,5 @@ void ToolchainInstance::Save()
     // Get currentSave (modified by all UI editors)
     // Set host new host variables with save contents
     // Patch json with native Vortex APi
-    //this->host->PushSave(this->m_currentSave);
+    this->toolchain->PushSave(this->m_currentSave);
 }

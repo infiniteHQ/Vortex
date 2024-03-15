@@ -177,6 +177,65 @@ void VxHost::CreatePackage(std::string label, std::string author, std::string de
     // Refresh current host
     this->Refresh();
 }
+void VxToolchain::PushSave(std::shared_ptr<ToolchainSave> save)
+{
+    VxContext &ctx = *CVortexMaker;
+    nlohmann::json toolchainData;
+    toolchainData["toolchain"]["name"] = save->name;
+    toolchainData["toolchain"]["author"] = save->author;
+    toolchainData["toolchain"]["type"] = save->type;
+    toolchainData["toolchain"]["state"] = save->state;
+    toolchainData["toolchain"]["vendor"] = save->vendor;
+    toolchainData["toolchain"]["platform"] = save->platform;
+    toolchainData["toolchain"]["version"] = save->version;
+    toolchainData["toolchain"]["description"] = save->description;
+
+    toolchainData["configs"]["target_arch"] = save->target_arch;
+    toolchainData["configs"]["host_arch"] = save->host_arch;
+    toolchainData["configs"]["builder_arch"] = save->builder_arch;
+    toolchainData["configs"]["compression"] = save->compression;
+
+    toolchainData["data"]["packages"] = save->localPackagePath;
+    toolchainData["data"]["patchs"] = save->localPatchsPath;
+    toolchainData["data"]["scripts"] = save->localScriptsPath;
+
+    nlohmann::json registeredPackagesJson;
+    for (const auto &package : save->registeredPackages)
+    {
+        nlohmann::json packageJson;
+        packageJson["label"] = std::string(package.first);
+        packageJson["origin"] = std::string(package.second);
+        registeredPackagesJson.push_back(packageJson);
+    }
+
+/*
+    nlohmann::json tasklist;
+    for (const auto &list : this->allTaskLists)
+    {
+        nlohmann::json packageJson;
+        packageJson["label"] = list.label;
+        registeredPackagesJson.push_back(packageJson);
+    }*/
+
+    nlohmann::json contents;
+    contents["packages"] = registeredPackagesJson;
+    //contents["tasklists"] = tasklist;
+
+    toolchainData["content"] = contents;
+
+    std::ofstream file(this->configFilePath);
+    if (file.is_open())
+    {
+        file << std::setw(4) << toolchainData << std::endl;
+        std::cout << "Object saved to " << this->configFilePath << std::endl;
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Unable to open file " << this->configFilePath << " for writing!" << std::endl;
+    }
+}
+
 
 void VxHost::PushSave(std::shared_ptr<HostSave> save)
 {

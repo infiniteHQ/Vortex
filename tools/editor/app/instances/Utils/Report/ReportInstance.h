@@ -53,6 +53,7 @@ public:
     std::shared_ptr<Walnut::Image> m_Icon;
     std::shared_ptr<Walnut::Image> m_EyeIcon;
     std::shared_ptr<Walnut::Image> m_WarningIcon;
+    std::shared_ptr<Walnut::Image> m_FlipBookIcon;
     std::shared_ptr<Walnut::Image> m_ErrorIcon;
     std::shared_ptr<Walnut::Image> m_SuccessIcon;
     std::shared_ptr<Walnut::Image> m_UnknowIcon;

@@ -68,7 +68,7 @@ struct SetupSkeleton : public Task
     }
 
 
-    std::string crosstoolsDir = baseDir + "/" + toolchain->GetTriplet("target");
+    std::string crosstoolsDir = baseDir + "/working_host";
     if (mkdir(crosstoolsDir.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + crosstoolsDir, "none");

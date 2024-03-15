@@ -18,6 +18,18 @@ ProjectViewer::ProjectViewer(VxContext *_ctx, InstanceFactory* _factory)
             m_ListIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
             free(data);
         }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
+        m_RefreshIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_add, icons::i_add_size, w, h);
+        m_AddIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
 }
 
 void ProjectViewer::OnImGuiRender()
@@ -26,6 +38,21 @@ void ProjectViewer::OnImGuiRender()
 
         if (ImGui::Begin("Project Viewer", &listIcon, &this->opened, ImGuiWindowFlags_MenuBar))
     this->menubar();
+
+            float oldsize = ImGui::GetFont()->Scale;
+            ImGui::GetFont()->Scale *= 1.3;
+            ImGui::PushFont(ImGui::GetFont());
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Project contents of : ");
+            ImGui::SameLine();
+            ImGui::Text(this->ctx->name.c_str());
+
+            ImGui::GetFont()->Scale = oldsize;
+            ImGui::PopFont();
+
+            ImGui::Separator();
+
+
 
     static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
     const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("A").x;
@@ -48,12 +75,22 @@ void ProjectViewer::OnImGuiRender()
 
 void ProjectViewer::menubar(){
 
+            static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
             if (ImGui::BeginMenuBar())
             {   
                 ImGui::Checkbox("Collapse all", &this->CollapseAll);
                 ImGui::Separator();
-                if (ImGui::BeginMenu("Build"))
+
+                if(ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight()))){
+                }
+                if(ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight()))){
+                }
+                ImGui::Separator();
+                if (ImGui::BeginMenu("Filters"))
                 {
+
                     if (ImGui::MenuItem("Build/Rebuild single parts"))
                     {
                     }

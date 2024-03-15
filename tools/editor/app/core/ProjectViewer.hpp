@@ -205,6 +205,8 @@ private:
 	std::vector<MyTreeNode> nodeInfos;
 
     std::shared_ptr<Walnut::Image> m_ListIcon;
+    std::shared_ptr<Walnut::Image> m_RefreshIcon;
+    std::shared_ptr<Walnut::Image> m_AddIcon;
 
 	bool CollapseAll = false;
 };

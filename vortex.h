@@ -872,6 +872,29 @@ struct VxPackage{
 };
 
 
+struct ToolchainSave{ 
+    char name[128] = "unknow";
+    char author[128] = "unknow";
+    char version[128] = "unknow";
+    char description[128] = "unknow";
+    char type[128] = "unknow";
+    char state[128] = "unknow";
+    char vendor[128] = "unknow";
+    char platform[128] = "unknow";
+
+    char host_arch[128] = "unknow";
+    char target_arch[128] = "unknow";
+    char builder_arch[128] = "unknow";
+    char compression[128] = "unknow";
+    char toolchains_compilation[128] = "unknow";
+
+
+    char localPackagePath[128] = "unknow";
+    char localScriptsPath[128] = "unknow";
+    char localPatchsPath[128] = "unknow";
+
+    std::vector<std::pair<char[128], char[128]>> registeredPackages;
+};
 
 
 struct HostSave{ 
@@ -1290,6 +1313,7 @@ struct VxToolchain{
     std::string name = "unknow";
     std::string author = "unknow";
     std::string description = "unknow";
+    std::string version;
     std::string type = "unknow";
     std::string state = "unknow";
     std::string vendor = "unknow";
@@ -1319,6 +1343,8 @@ struct VxToolchain{
 
 
     std::string localPackagesPath;
+    std::string localScriptsPath;
+    std::string localPatchsPath;
 
     
 
@@ -1367,7 +1393,12 @@ struct VxToolchain{
     std::shared_ptr<TaskProcessor> taskProcessor;
 
 std::pair<std::string, int> exec_cmd(const std::string& cmd);
+std::pair<std::string, int> exec_cmd_quote(const std::string& cmd);
+
+    void PushSave(std::shared_ptr<ToolchainSave> save);
+
     // TO CLEAN 
+    void Refresh();
     void RefreshCurrentWorkingToolchain();
     void ExecuteTask(Task task, hArgs args);
     std::string GetTriplet(std::string triplet_type);
