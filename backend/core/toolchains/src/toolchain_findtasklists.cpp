@@ -1,12 +1,20 @@
-#include "../../../vortex.h"
-#include "../../../vortex_internals.h"
+#include "../../../../vortex.h"
+#include "../../../../vortex_internals.h"
+
+
+void VxToolchain::RegisterTasklist(const std::string label)
+{
+  std::shared_ptr<VxTasklistInterface> newTasklistInterface = std::make_shared<VxTasklistInterface>();
+  newTasklistInterface->label = label;
+  registeredTasklists.push_back(newTasklistInterface);
+}
 
 void VxToolchain::FindTasklists()
 {
   VxContext &ctx = *CVortexMaker;
 
   // Register all finded local packages
-  for (const auto &file : VortexMaker::SearchFiles(ctx.hostsPath, "tasklist.config"))
+  for (const auto &file : VortexMaker::SearchFiles(ctx.toolchainsPath, "tasklist.config"))
   {
     try
     {
@@ -45,7 +53,7 @@ void VxToolchain::FindTasklists()
             {
               std::shared_ptr<Task> task = std::make_shared<Task>();
               task->tasktype = t["task"].get<std::string>();
-              //task->component = t["component"].get<std::string>();
+              task->component = t["component"].get<std::string>();
               task->priority = t["priority"].get<int>();
               newTasklist->list.push_back(task);
             }

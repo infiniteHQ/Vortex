@@ -231,6 +231,23 @@ VORTEX_API std::vector<std::string> VortexMaker::SearchFiles(const std::string &
   return fichiersTest;
 }
 
+VORTEX_API std::string VortexMaker::gen_random(int len)
+{
+    static const char alphanum[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+    std::string tmp_s;
+    tmp_s.reserve(len);
+
+    for (int i = 0; i < len; ++i)
+    {
+        tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+
+    return tmp_s;
+}
+
 VORTEX_API nlohmann::json VortexMaker::DumpJSON(const std::string &file)
 {
   std::ifstream fichier(file);
@@ -484,53 +501,39 @@ void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
 #include <deque>
 #include <mutex>
 
-void TaskProcessor::processTasks()
-{
+void TaskProcessor::processTasks() {
     VxContext &ctx = *CVortexMaker;
 
-    while (!stop)
-    {
+    while (!stop) {
         std::vector<std::future<void>> futures;
+        std::vector<std::shared_ptr<Task>> tasks;
 
-        std::sort(this->tasksToProcess.begin(), this->tasksToProcess.end(), [](const std::shared_ptr<Task> &a, const std::shared_ptr<Task> &b)
-                  { return a->priority < b->priority; });
-
-        int last_priority = 0;
-        bool first = true;
-        for (auto task : this->tasksToProcess)
         {
+            std::lock_guard<std::mutex> lock(mutex);
+            tasks = tasksToProcess;
+            tasksToProcess.clear();  // Clear processed tasks
+        }
+
+        std::sort(tasks.begin(), tasks.end(), [](const std::shared_ptr<Task> &a, const std::shared_ptr<Task> &b) {
+            return a->priority < b->priority;
+        });
+
+        for (const auto &task : tasks) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            if (first || task->priority == last_priority)
-            {
-                futures.emplace_back(std::async(std::launch::async, [this, task]()
-                                                {
-                                                    if (task->state == "not_started" || task->state == "retry")
-                                                    {
-                                                        task->state = "process";
-                                                        task->exec();
-                                                        markTaskCompleted(task);
-                                                    }
-                                                }));
-                last_priority = task->priority;
-                first = false;
-            }
-            else
-            {
-                last_priority = task->priority;
-            }
+            futures.emplace_back(std::async(std::launch::async, [this, task]() {
+                if (task->state == "not_started" || task->state == "retry") {
+                    task->state = "process";
+                    task->exec();
+                    markTaskCompleted(task);
+                }
+            }));
         }
 
         // Wait for all tasks launched in this iteration to complete
-        for (auto &future : futures)
-        {
+        for (auto &future : futures) {
             future.get();
         }
-
-        // Clear the futures vector for the next iteration
-        futures.clear();
     }
-
 }
-
 
 #endif // VORTEX_DISABLE

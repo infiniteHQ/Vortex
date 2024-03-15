@@ -64,10 +64,16 @@ void TasklistInstance::UI_MainSettings()
             {
                 static TaskSave newtask;
                 std::vector<const char *> items;
-                for (auto &chaine : this->m_ctx->taskFactory->creatorMap)
+
+
+                    // To do the same for hsots
+                if(this->parentType == "toolchain"){
+                for (auto &chaine : this->parentToolchain->tasks)
                 {
-                    items.push_back(chaine.key.c_str());
+                    items.push_back(chaine->tasktype.c_str());
                 }
+                }
+                
 
                 std::vector<const char *> items_components = {"none"};
 
@@ -76,18 +82,6 @@ void TasklistInstance::UI_MainSettings()
                 for (auto &chaine : this->parentHost->packages)
                 {
                     items_components.push_back(chaine->name.c_str());
-                }
-
-                }
-
-
-                if(this->parentType == "toolchain"){
-
-                for (auto &chaine : this->parentToolchain->packages)
-                {
-                    items_components.push_back(chaine->name.c_str());
-                }
-
                 }
 
 
@@ -109,6 +103,19 @@ void TasklistInstance::UI_MainSettings()
                 for (auto &chaine : this->m_ctx->IO.distHosts)
                 {
                     items_components.push_back(chaine.name.c_str());
+                }
+
+
+                }
+
+
+                if(this->parentType == "toolchain"){
+
+                for (auto &chaine : this->parentToolchain->packages)
+                {
+                    items_components.push_back(chaine->label.c_str());
+                }
+
                 }
 
                 static int item_current = 0;

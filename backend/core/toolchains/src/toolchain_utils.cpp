@@ -109,14 +109,15 @@ std::pair<std::string, int> VxToolchain::exec_cmd_quote(const std::string& cmd) 
   int returnCode = -1;
 
   std::string _cmd = cmd;
+  std::string uid = VortexMaker::gen_random(8);
 
   _cmd += "' 2>";
   _cmd += ctx->projectPath;
-  _cmd += "/.vx/temp/_o.txt";
+  _cmd += "/.vx/temp/" + uid + ".txt";
   _cmd += "";
 
       std::string path = ctx->projectPath;
-      path += "/.vx/temp/_o.txt";
+      path += "/.vx/temp/"+uid+".txt";
 
       returnCode = system((char *)_cmd.c_str());
 
@@ -129,7 +130,7 @@ std::pair<std::string, int> VxToolchain::exec_cmd_quote(const std::string& cmd) 
           outputFile.close();
           std::string clearFile = "rm ";
           clearFile +=  ctx->projectPath;
-          clearFile += "/.vx/temp/_o.txt";
+          clearFile += "/.vx/temp/" + uid + ".txt";
 
 
           system((char *)clearFile.c_str());
@@ -150,14 +151,15 @@ std::pair<std::string, int> VxToolchain::exec_cmd(const std::string& cmd) {
   std::string output;
   int returnCode = -1;
 
+  std::string uid = VortexMaker::gen_random(8);
   std::string _cmd = cmd;
 
   _cmd += " 2>";
   _cmd += ctx->projectPath;
-  _cmd += "/.vx/temp/_o.txt";
+  _cmd += "/.vx/temp/" + uid + ".txt";
 
       std::string path = ctx->projectPath;
-      path += "/.vx/temp/_o.txt";
+      path += "/.vx/temp/"+uid+".txt";
 
       returnCode = system((char *)_cmd.c_str());
 
@@ -170,7 +172,7 @@ std::pair<std::string, int> VxToolchain::exec_cmd(const std::string& cmd) {
           outputFile.close();
           std::string clearFile = "rm ";
           clearFile +=  ctx->projectPath;
-          clearFile += "/.vx/temp/_o.txt";
+          clearFile += "/.vx/temp/" + uid + ".txt";
 
 
           system((char *)clearFile.c_str());

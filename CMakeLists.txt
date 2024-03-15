@@ -10,6 +10,7 @@ add_executable(vortex
 
     # Toolchain sources
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/src/toolchain_findpackages.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/src/toolchain_findtasklists.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/src/toolchain_snapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/src/toolchain_utils.cpp
 

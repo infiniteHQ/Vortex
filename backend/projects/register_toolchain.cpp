@@ -17,7 +17,7 @@ bool VortexMaker::RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nloh
   toolchain->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
   toolchain->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
   toolchain->builder_arch = toolchainData["configs"]["builder_arch"].get<std::string>();
-  toolchain->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
+  //toolchain->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
 
   nlohmann::json packages = toolchainData["content"]["packages"];
   for (auto &pkg : packages)
@@ -25,7 +25,6 @@ bool VortexMaker::RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nloh
     toolchain->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
   }
   toolchain->FindPackages();
-
 
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)

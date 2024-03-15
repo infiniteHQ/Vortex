@@ -1,6 +1,9 @@
 #include "../ToolchainInstance.h"
 #include <array>
 #include <random>
+#include <mutex>
+
+
 
 void ToolchainInstance::UI_TasksEditor()
 {
@@ -118,24 +121,47 @@ void ToolchainInstance::UI_TasksEditor()
                         if (ImGui::ImageButtonWithText(buildIcon, execButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                         {
                             this->toolchain->tasklists[row]->Refresh();
-                            for (auto task : this->toolchain->tasklists[row]->list)
-                            {
-                                // this->toolchain->ExecuteTask(task, args);
+for (auto task : this->toolchain->tasklists[row]->list)
+{
+    for(auto runtime_tasks : this->toolchain->tasks)
+    {
+        if(runtime_tasks->tasktype == task->tasktype)
+        {
+            std::shared_ptr<Task> _task = runtime_tasks->clone();
+            //_task = task;
+            std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+            props->add("toolchain", this->toolchain);
+            props->add("package", this->toolchain->packages[row]);
 
-                                std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-                                props->add("host", this->toolchain);
-                                std::shared_ptr<Task> instancetask = VortexMaker::CreateTask(task->tasktype, task->component, "SecondTestHostTask-123", task->priority, props);
+            _task->id = runtime_tasks->tasktype + "-" + VortexMaker::gen_random(8);
+            _task->tasktype = runtime_tasks->tasktype;
+            _task->component = task->component;
+            _task->priority = task->priority;
+            _task->props = props;
+            _task->state = "not_started";
 
-                                //instancetask->parent = this->toolchain; // il faut assigner le component name ici ! il n'est pas bon pour l'instant
-                                instancetask->state = "not_started";
-                                props->add("self", instancetask);
+            // Ajout de la tâche aux listes appropriées
+            if (this->toolchain->taskProcessor)
+            {
+                //this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
+                //this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
+                this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
+                //this->toolchain->packages[row]->latestTask = _task;
+                this->toolchain->currentLoadedSystem.Save(this->toolchain);
 
-                                //this->toolchain->addLatestTask(instancetask);
-                                this->toolchain->currentLoadedSystem.executedTasks.push_back(instancetask);
+                {
+                    std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
+                    this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
+                }
+            }
+            else
+            {
+                std::cout << "Failed while accessing taskToProcess" << std::endl;
+            }
+        }
+    }
+}
 
-                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
-                                
-                            }
                         }
                     }
                     if (column == 1)

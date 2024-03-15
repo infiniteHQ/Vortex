@@ -263,6 +263,8 @@ namespace VortexMaker
     VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
     VORTEX_API std::string replacePlaceholders(const std::string &command, const std::unordered_map<std::string, std::string> &replacements);
 
+    VORTEX_API std::string gen_random(const int len);
+
 
     // Memory Allocators
     // - Those functions are not reliant on the current context.
@@ -1398,12 +1400,7 @@ std::pair<std::string, int> exec_cmd_quote(const std::string& cmd);
 
     void PushSave(std::shared_ptr<ToolchainSave> save);
 
-void RegisterTasklist(const std::string label)
-{
-  std::shared_ptr<VxTasklistInterface> newTasklistInterface = std::make_shared<VxTasklistInterface>();
-  newTasklistInterface->label = label;
-  this->registeredTasklists.push_back(newTasklistInterface);
-}
+void RegisterTasklist(const std::string label);
 
 
     // TO CLEAN 
@@ -1456,13 +1453,12 @@ public:
 
     void startWorker();
     void stopWorker();
+    std::atomic<bool> stop;
+    std::mutex mutex;
 
-private:
-    bool stop;
     std::priority_queue<std::shared_ptr<Task>, std::vector<std::shared_ptr<Task>>, CompareTaskPriority> tasks;
     
     std::map<int, std::deque<std::shared_ptr<Task>>> tasksByPriority;
-    std::mutex mutex;
     std::condition_variable condition;
     std::vector<std::thread> workers;
     std::thread worker;

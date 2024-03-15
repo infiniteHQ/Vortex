@@ -214,12 +214,12 @@ void VxToolchain::PushSave(std::shared_ptr<ToolchainSave> save)
     {
         nlohmann::json packageJson;
         packageJson["label"] = list->label;
-        registeredPackagesJson.push_back(packageJson);
+        tasklist.push_back(packageJson);
     }
 
     nlohmann::json contents;
     contents["packages"] = registeredPackagesJson;
-    //contents["tasklists"] = tasklist;
+    contents["tasklists"] = tasklist;
 
     toolchainData["content"] = contents;
 
