@@ -144,7 +144,12 @@ void ToolchainInstance::UI_VolatileTasks()
 
                             // Ajout de la tâche aux listes appropriées
                             if(this->toolchain->taskProcessor){
-                                this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
+
+                {
+                    std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
+                    this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
+                }
+
                                 this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
                                 this->toolchain->packages[row]->latestTask = _task;
                                 this->toolchain->currentLoadedSystem.Save(this->toolchain);

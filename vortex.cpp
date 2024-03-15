@@ -514,26 +514,36 @@ void TaskProcessor::processTasks() {
             tasksToProcess.clear();  // Clear processed tasks
         }
 
-        std::sort(tasks.begin(), tasks.end(), [](const std::shared_ptr<Task> &a, const std::shared_ptr<Task> &b) {
-            return a->priority < b->priority;
-        });
-
+        // Group tasks by priority
+        std::map<int, std::vector<std::shared_ptr<Task>>> tasksByPriority;
         for (const auto &task : tasks) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            futures.emplace_back(std::async(std::launch::async, [this, task]() {
-                if (task->state == "not_started" || task->state == "retry") {
-                    task->state = "process";
-                    task->exec();
-                    markTaskCompleted(task);
-                }
-            }));
+            tasksByPriority[task->priority].push_back(task);
         }
 
-        // Wait for all tasks launched in this iteration to complete
-        for (auto &future : futures) {
-            future.get();
+        // Iterate over priorities, from lowest to highest
+        for (const auto &[priority, tasksWithPriority] : tasksByPriority) {
+            // Execute tasks with the same priority simultaneously
+            std::vector<std::future<void>> priorityFutures;
+            for (const auto &task : tasksWithPriority) {
+                priorityFutures.emplace_back(std::async(std::launch::async, [this, task]() {
+                    if (task->state == "not_started" || task->state == "retry") {
+                        task->state = "process";
+                        task->exec();
+                        markTaskCompleted(task);
+                    }
+                }));
+            }
+
+            // Wait for all tasks of the same priority to complete
+            for (auto &future : priorityFutures) {
+                future.get();
+            }
         }
+
+        // Sleep or perform other operations if needed before next iteration
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     }
 }
+
 
 #endif // VORTEX_DISABLE
