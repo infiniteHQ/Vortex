@@ -165,7 +165,9 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
 
         std::string patchlabel = "Executed tasks (" + std::to_string(this->toolchain->currentLoadedSystem.executedTasks.size()) + ")";
         std::string packagelabel = "Packages (" + std::to_string(this->toolchain->packages.size()) + ")";
-        std::array<std::string, 6> labels = {"General", patchlabel, packagelabel, "Filesystem", "Actions", "Scripts"};
+
+        std::string variableslabel = "Variables (" + std::to_string(this->toolchain->currentLoadedSystem.variables.size()) + ")";
+        std::array<std::string, 6> labels = {"General", patchlabel, packagelabel, variableslabel, "Actions", "Scripts"};
 
         {
             ImGui::BeginChild("left pane", ImVec2(170, 0), true);
@@ -268,7 +270,7 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
                             }
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "success")
                             {
-                                coloredTag("Success", ImVec4(0.0f, 1.0f, 0.2f, 1.0f));
+                                coloredTag("Success", ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
                             }
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "failed")
                             {
@@ -406,6 +408,46 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
                             }
                         }
                       
+                    }
+                }
+
+                ImGui::EndTable();
+            }
+        
+        }
+
+        if (selected == 3)
+        {
+            
+            if (ImGui::BeginTable("table_package", 3, flags))
+            {
+                ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Task Owner", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Acutal value", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableHeadersRow();
+
+                for (int row = 0; row < this->toolchain->currentLoadedSystem.variables.size(); row++)
+                {
+                    static std::pair<char[128], char[128]> newItem;
+                    static char label[128];
+
+                    ImGui::TableNextRow();
+                    for (int column = 0; column < 3; column++)
+                    {
+                        ImGui::TableSetColumnIndex(column);
+
+                         if (column == 0)
+                                {
+                                    ImGui::Text(std::get<0>(this->toolchain->currentLoadedSystem.variables[row]).c_str());
+                                }
+                                if (column == 1)
+                                {
+                                    ImGui::TextColored(ImVec4(0.2f, 0.2f , 1.0f, 1.0f),std::get<1>(this->toolchain->currentLoadedSystem.variables[row]).c_str());
+                                }
+                                if (column == 2)
+                                {
+                                    ImGui::Text(std::get<2>(this->toolchain->currentLoadedSystem.variables[row]).c_str());
+                                }
                     }
                 }
 

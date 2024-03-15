@@ -89,7 +89,6 @@ struct CreateTemporaryUser : public Task
     this->addIdleCheck("implement_bashrc");
 
 
-    toolchain->put_varable(this, "sysroot", "CreateTemporaryUser", "/run/vortex/sysroot");
 
 
     {

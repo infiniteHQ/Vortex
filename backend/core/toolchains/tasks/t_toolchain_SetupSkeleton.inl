@@ -62,6 +62,9 @@ struct SetupSkeleton : public Task
 
     this->addCheckVerdict("createFolders", "success", "Everything is ok", "none");
     std::string baseDir = toolchain->envPath + "/" + toolchain->name;
+
+
+    toolchain->currentLoadedSystem.put_varable(this, "directory:base", "SetupSkeleton", baseDir);
     if (mkdir(baseDir.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + baseDir, "none");
@@ -69,47 +72,50 @@ struct SetupSkeleton : public Task
 
 
     std::string crosstoolsDir = baseDir + "/working_host";
+    toolchain->currentLoadedSystem.put_varable(this, "directory:working_host", "SetupSkeleton", crosstoolsDir);
     if (mkdir(crosstoolsDir.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + crosstoolsDir, "none");
     }
 
-    toolchain->crosstoolsPath = crosstoolsDir;
-    toolchain->workingPath = crosstoolsDir;
-
     // All provided by default. Used by the current toolchain system
     std::string data = baseDir + "/data";
+    toolchain->currentLoadedSystem.put_varable(this, "directory:data", "SetupSkeleton", baseDir);
     if (mkdir(data.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + data, "none");
     }
 
-    toolchain->packages_data = baseDir + "/data/packages";
+    std::string packages_data = baseDir + "/data/packages";
+    toolchain->currentLoadedSystem.put_varable(this, "directory:data_packages", "SetupSkeleton", packages_data);
     if (mkdir(toolchain->packages_data.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + toolchain->packages_data, "none");
     }
 
     std::string patchs_data = baseDir + "/data/patchs";
+    toolchain->currentLoadedSystem.put_varable(this, "directory:data_patchs", "SetupSkeleton", patchs_data);
     if (mkdir(patchs_data.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + patchs_data, "none");
     }
 
     std::string scripts_data = baseDir + "/data/scripts";
+    toolchain->currentLoadedSystem.put_varable(this, "directory:scripts_patchs", "SetupSkeleton", scripts_data);
     if (mkdir(scripts_data.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + scripts_data, "none");
     }
 
     std::string sysrootDir = crosstoolsDir + "/sysroot";
-    toolchain->sysrootPath = sysrootDir;
+    toolchain->currentLoadedSystem.put_varable(this, "directory:sysroot", "SetupSkeleton", sysrootDir);
     if (mkdir(sysrootDir.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + sysrootDir, "none");
     }
 
     std::string debugrootDir = crosstoolsDir + "/debugroot";
+    toolchain->currentLoadedSystem.put_varable(this, "directory:debugroot", "SetupSkeleton", debugrootDir);
     if (mkdir(debugrootDir.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + debugrootDir, "none");

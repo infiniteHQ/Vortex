@@ -962,6 +962,27 @@ struct VxToolchainCurrentSystem{
     void Populate(nlohmann::json jsonData); // from working_host.config
     nlohmann::json Extract();
     void Save(std::shared_ptr<VxToolchain> host);
+
+
+    // Variable Name // Required By (Task) // Value
+    std::vector<std::tuple<std::string, std::string, std::string>> variables;
+    void put_varable(Task* task, std::string name, std::string createdBy, std::string value){
+        task->created_variables.push_back(std::make_tuple(name, createdBy, value));
+        this->variables.push_back(std::make_tuple(name, createdBy, value));
+    }
+
+    // Save dans le current system les variables utilisées
+    std::tuple<std::string, std::string, std::string> get_varable(Task* task, std::string name){
+        for(auto var : this->variables){
+            if(std::get<0>(var) == name){
+                task->used_variables.push_back(var);
+                return var;
+            }
+        }
+        task->used_variables.push_back({name, "unknow", "unknow"});
+        return {name, "unknow", "unknow"};
+    }   
+
 };
 
 struct VxHostCurrentSystem{
@@ -1345,24 +1366,10 @@ struct VxToolchain{
 
     bool haveCurrentSys;
 
-    // Variable Name // Required By (Task) // Value
-    std::vector<std::tuple<std::string, std::string, std::string>> variables;
-    void put_varable(Task* task, std::string name, std::string createdBy, std::string value){
-        task->created_variables.push_back(std::make_tuple(name, createdBy, value));
-        this->variables.push_back(std::make_tuple(name, createdBy, value));
-    }
 
-    // Save dans le current system les variables utilisées
-    std::tuple<std::string, std::string, std::string> get_varable(Task* task, std::string name){
-        for(auto var : this->variables){
-            if(std::get<0>(var) == name && std::get<1>(var) == task->id){
-                task->used_variables.push_back(var);
-                return var;
-            }
-        }
-        task->used_variables.push_back({name, "unknow", "unknow"});
-        return {name, "unknow", "unknow"};
-    }   
+
+    // PERMETTRE D'UTILISER LES ${} avec les variables ci dessous !
+
 
 
     std::string localPackagesPath;

@@ -433,7 +433,7 @@ std::string ReportInstance::render()
                             static char label[128];
 
                             ImGui::TableNextRow();
-                            for (int column = 0; column < 4; column++)
+                            for (int column = 0; column < 3; column++)
                             {
                                 ImGui::TableSetColumnIndex(column);
 
@@ -473,7 +473,7 @@ std::string ReportInstance::render()
                             static char label[128];
 
                             ImGui::TableNextRow();
-                            for (int column = 0; column < 4; column++)
+                            for (int column = 0; column < 3; column++)
                             {
                                 ImGui::TableSetColumnIndex(column);
 
@@ -483,7 +483,7 @@ std::string ReportInstance::render()
                                 }
                                 if (column == 1)
                                 {
-                                    ImGui::Text(std::get<1>(this->task->created_variables[row]).c_str());
+                                    ImGui::TextColored(ImVec4(0.2f, 0.2f , 1.0f, 1.0f),std::get<1>(this->task->created_variables[row]).c_str());
                                 }
                                 if (column == 2)
                                 {

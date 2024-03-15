@@ -38,12 +38,12 @@ struct MovePackageToDist : public Task
     this->addIdleCheck("copy_package_to_dist");
     this->addIdleCheck("add_dist_path");
 
-    std::string PackageDataPath;
-    PackageDataPath += ctx->projectPath;
-    PackageDataPath += "/./.vx/dist/toolchains/" + toolchain->name + "/data/packages/";
+
+    std::tuple<std::string,std::string,std::string> v_packageData = toolchain->currentLoadedSystem.get_varable(this, "directory:data_packages");
+    std::string packageData = std::get<2>(v_packageData);
 
     {
-      std::string cmd = "cp -r " + package->path + " " + PackageDataPath;
+      std::string cmd = "cp -r " + package->path + " " + packageData;
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
       if (result == 0)this->addCheckVerdict("copy_package_to_dist", "success", output, cmd);
@@ -53,7 +53,7 @@ struct MovePackageToDist : public Task
       if (posDernierSlash != std::string::npos)
       {
         std::string resultat = package->path.substr(posDernierSlash + 1);
-        package->distPath = PackageDataPath + "/" + resultat;
+        package->distPath = packageData + "/" + resultat;
         std::string final = "The package dist output is now : \"" + package->distPath + "\"";
 
         this->addCheckVerdict("copy_package_to_dist", "success", final, "\"Get the path of master package folder, and add the path of package.\"");

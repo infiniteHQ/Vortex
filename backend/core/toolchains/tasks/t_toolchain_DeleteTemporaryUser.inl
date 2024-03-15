@@ -37,9 +37,6 @@ struct DeleteTemporaryUser : public Task
 
     this->addIdleCheck("delete_vortex_user");
 
-    std::tuple<std::string,std::string,std::string> test = toolchain->get_varable(this, "sysroot");
-    std::cout << std::get<0>(test) << std::endl;
-
     {
       std::string cmd = "userdel -r vortex";
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());

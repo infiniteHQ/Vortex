@@ -261,6 +261,17 @@ void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
     task->m_TotalTime = packageReport["t_duration"].get<double>();
     task->m_StartTime = stringToTimePoint(packageReport["t_time"].get<std::string>());
 
+    for(auto created_variables : packageReport["t_created_variables"])
+    {
+      task->created_variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
+      this->variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
+    }
+    for(auto created_variables : packageReport["t_used_variables"])
+    {
+      task->created_variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
+      this->variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
+    }
+
   for (auto checks : packageReport["t_checklist"])
   {
     std::shared_ptr<Check> check = std::make_shared<Check>(); 
@@ -313,6 +324,17 @@ void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
       task->checkList.push_back(check);
   }
 
+  for (auto checks : packageReport["t_used_variables"])
+  {
+    task->used_variables.push_back(std::make_tuple(checks["variable"].get<std::string>(), checks["owner"].get<std::string>(), checks["value"].get<std::string>()));
+  }
+
+  for (auto checks : packageReport["t_created_variables"])
+  {
+    task->created_variables.push_back(std::make_tuple(checks["variable"].get<std::string>(), checks["owner"].get<std::string>(), checks["value"].get<std::string>()));
+  }
+
+
     this->executedTasks.push_back(task);
   }
 
@@ -348,7 +370,31 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
     report["t_component"] = task->component;
 
     report["t_checklist"] = nlohmann::json::array();
+    report["t_used_variables"] = nlohmann::json::array();
+    report["t_created_variables"] = nlohmann::json::array();
 
+
+    // Variable Name // Required By (Task) // Value
+    for (auto var : task->used_variables)
+    {
+      nlohmann::json c;
+      c["variable"] = std::get<0>(var);
+      c["owner"] = std::get<1>(var);
+      c["value"] = std::get<2>(var);
+      report["t_used_variables"].push_back(c);
+    }
+
+    // Variable Name // Required By (Task) // Value
+    for (auto var : task->created_variables)
+    {
+      nlohmann::json c;
+      c["variable"] = std::get<0>(var);
+      c["owner"] = std::get<1>(var);
+      c["value"] = std::get<2>(var);
+      report["t_created_variables"].push_back(c);
+    }
+    
+    
     for (auto check : task->checkList)
     {
       nlohmann::json c;
@@ -441,14 +487,16 @@ void VxToolchain::Refresh()
 
   this->FindPackages();
 
-/*
+
   registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
   {
     this->RegisterTasklist(t["label"].get<std::string>());
   }
-  this->FindTasklists();*/
+  this->FindTasklists();
+
+
 
   //this->Init();
 }
