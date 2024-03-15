@@ -78,7 +78,8 @@ struct CreateTemporaryUser : public Task
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);    
+    
 
     this->addIdleCheck("group_add_vortex");
     this->addIdleCheck("user_add_vortex");
@@ -86,6 +87,10 @@ struct CreateTemporaryUser : public Task
     this->addIdleCheck("give_vortex_home");
     this->addIdleCheck("user_mod_root_to_vortex");
     this->addIdleCheck("implement_bashrc");
+
+
+    toolchain->put_varable(this, "sysroot", "CreateTemporaryUser", "/run/vortex/sysroot");
+
 
     {
       std::string cmd = "groupadd vortex";

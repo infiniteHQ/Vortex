@@ -538,6 +538,8 @@ struct Task{
     std::string tasktype = "unknow";
     std::string component;
     std::string state; // state of this task
+    std::vector<std::tuple<std::string, std::string, std::string>> used_variables;
+    std::vector<std::tuple<std::string, std::string, std::string>>  created_variables;
     int priority;
 
     int warningCounter = 0;
@@ -1342,6 +1344,25 @@ struct VxToolchain{
     std::string compressionMode         = "not specified";
 
     bool haveCurrentSys;
+
+    // Variable Name // Required By (Task) // Value
+    std::vector<std::tuple<std::string, std::string, std::string>> variables;
+    void put_varable(Task* task, std::string name, std::string createdBy, std::string value){
+        task->created_variables.push_back(std::make_tuple(name, createdBy, value));
+        this->variables.push_back(std::make_tuple(name, createdBy, value));
+    }
+
+    // Save dans le current system les variables utilisées
+    std::tuple<std::string, std::string, std::string> get_varable(Task* task, std::string name){
+        for(auto var : this->variables){
+            if(std::get<0>(var) == name && std::get<1>(var) == task->id){
+                task->used_variables.push_back(var);
+                return var;
+            }
+        }
+        task->used_variables.push_back({name, "unknow", "unknow"});
+        return {name, "unknow", "unknow"};
+    }   
 
 
     std::string localPackagesPath;

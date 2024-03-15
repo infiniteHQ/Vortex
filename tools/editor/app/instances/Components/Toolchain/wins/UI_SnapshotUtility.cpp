@@ -120,6 +120,7 @@ static ImTextureID toolIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_L
             ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Include Data ?", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableHeadersRow();
              for (int row = 0; row < this->toolchain->snapshots.size(); row++)
                 {
@@ -147,6 +148,11 @@ static ImTextureID toolIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_L
                         if (column == 2)
                         {
                             ImGui::Text(this->toolchain->snapshots[row].snapshotSystem.size.c_str());
+                        }
+                        if (column == 3)
+                        {
+                            static bool test;
+                            ImGui::Checkbox("Include Data", &test);
                         }
                     }
                 }

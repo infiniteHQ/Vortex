@@ -200,7 +200,7 @@ std::string ReportInstance::render()
                             {
                             }
             ImGui::Separator();
-            if (ImGui::CollapsingHeader("General report"))
+            if (ImGui::CollapsingHeader("Checks report"))
             {
                 ImGuiID id = ImGui::GetID(label.c_str());
                 ImGui::BeginChildFrame(id, ImVec2(0, 450), true);
@@ -417,21 +417,85 @@ std::string ReportInstance::render()
                 ImGui::EndChildFrame();
             }
 
-            if (ImGui::CollapsingHeader("Steps"))
-            {
-                static int i0 = 123;
-                ImGui::InputInt("input int", &i0);
+            if (ImGui::CollapsingHeader("Used Variables"))
+            {                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-                static float f0 = 0.001f;
-                ImGui::InputFloat("input float", &f0, 0.01f, 1.0f, "%.3f");
+                    if (ImGui::BeginTable("table_used_variables", 3, flags))
+                    {
+                        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Owner", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableHeadersRow();
 
-                static double d0 = 999999.00000001;
-                ImGui::InputDouble("input double", &d0, 0.01f, 1.0f, "%.8f");
+                        for (int row = 0; row < this->task->used_variables.size(); row++)
+                        {
+                            static std::pair<char[128], char[128]> newItem;
+                            static char label[128];
 
-                static float f1 = 1.e10f;
-                ImGui::InputFloat("input scientific", &f1, 0.0f, 0.0f, "%e");
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 4; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
+
+                                if (column == 0)
+                                {
+                                    ImGui::Text(std::get<0>(this->task->used_variables[row]).c_str());
+                                }
+                                if (column == 1)
+                                {
+                                    ImGui::Text(std::get<1>(this->task->used_variables[row]).c_str());
+                                }
+                                if (column == 2)
+                                {
+                                    ImGui::Text(std::get<2>(this->task->used_variables[row]).c_str());
+                                }
+                            }
+                        }
+
+                        ImGui::EndTable();
+                    
+                }
             }
 
+            if (ImGui::CollapsingHeader("Created Variables"))
+            {                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                    if (ImGui::BeginTable("table_created_variables", 3, flags))
+                    {
+                        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Owner", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableHeadersRow();
+
+                        for (int row = 0; row < this->task->created_variables.size(); row++)
+                        {
+                            static std::pair<char[128], char[128]> newItem;
+                            static char label[128];
+
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 4; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
+
+                                if (column == 0)
+                                {
+                                    ImGui::Text(std::get<0>(this->task->created_variables[row]).c_str());
+                                }
+                                if (column == 1)
+                                {
+                                    ImGui::Text(std::get<1>(this->task->created_variables[row]).c_str());
+                                }
+                                if (column == 2)
+                                {
+                                    ImGui::Text(std::get<2>(this->task->created_variables[row]).c_str());
+                                }
+                            }
+                        }
+
+                        ImGui::EndTable();
+                    
+                }
+            }
             if (ImGui::CollapsingHeader("Metrics"))
             {
                 static int i0 = 123;
