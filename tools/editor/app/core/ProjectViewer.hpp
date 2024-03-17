@@ -66,7 +66,8 @@ struct MyTreeNode
 			}
 
 			if(node->Type == "Toolchain"){
-				if(ImGui::Button("Open")){
+				std::string toolchainName = "Open###" + node->Name + "Open";
+				if(ImGui::Button(toolchainName.c_str())){
 					for(auto toolchain : ctx->IO.toolchains){
 						if(node->Name == toolchain->name){
 							std::shared_ptr<ToolchainInstance> instance = std::make_shared<ToolchainInstance>(ctx, toolchain, factory);
@@ -203,6 +204,8 @@ private:
 
 
 	std::vector<MyTreeNode> nodeInfos;
+
+	std::shared_ptr<VxToolchain> latest_toolchain;
 
     std::shared_ptr<Walnut::Image> m_ListIcon;
     std::shared_ptr<Walnut::Image> m_RefreshIcon;

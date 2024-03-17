@@ -575,6 +575,56 @@ void VxGPOSystem::Refresh()
   //this->Init();
 }
 
+VORTEX_API void VortexMaker::RefreshToolchains(){
+  VxContext &ctx = *CVortexMaker;
+
+  // clear existing dist toolchains
+  //ctx.IO.toolchains.clear();
+
+  // Toolchains
+  for (const auto &file : SearchFiles(ctx.toolchainsPath, "toolchain.config"))
+  {
+    try
+    {
+      nlohmann::json filecontent = DumpJSON(file);
+      std::shared_ptr<VxToolchain> toolchain = std::make_shared<VxToolchain>();
+
+      toolchain->configFilePath = file;
+      toolchain->path = file;
+
+      size_t position = toolchain->path.find("/toolchain.config");
+      if (position != std::string::npos)
+      {
+        toolchain->path.erase(position, 17);
+      }
+
+      bool alreadyExist = false;
+
+      for(auto alreadyRegistered : ctx.IO.toolchains)
+      {
+        if(alreadyRegistered->name == filecontent["toolchain"]["name"].get<std::string>())
+        {
+          std::cout << alreadyRegistered->name << " is already registered." << std::endl;
+          alreadyExist = true;
+        }
+      }
+
+      if(alreadyExist == true)
+      {
+        continue;
+      }
+
+      RegisterToolchain(toolchain, filecontent);
+
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << "Error : " << e.what() << std::endl;
+    }
+  }
+
+}
+
 VORTEX_API void VortexMaker::RefreshDistToolchains() // Rename to RefreshDistHostsList
 {
   VxContext &ctx = *CVortexMaker;

@@ -10,7 +10,7 @@
 bool CheckDirectory(){
     std::ifstream mainconfig("vortex.config");
     if (!mainconfig.good()) {
-        std::cout << "This directory does not contain a Vortex project. Please initialize a new project with \"vortex -I <project_name>\" or repair it." << std::endl;
+        std::cout << "This directory does not contain a Vortex project. Please initialize a new project with \"vortex --create-project <project_name>\" or repair it." << std::endl;
         return false;
     }
     return true;
@@ -20,20 +20,13 @@ VxContext* InitRuntime(){
     VxContext* ctx = VortexMaker::CreateContext();
     std::ifstream file("vortex.config");
 
-    // Vérification si le fichier existe
     if (file) {
         nlohmann::json jsonContenu;
         file >> jsonContenu;
-
-        std::cout << "Contenu JSON du fichier :" << std::endl;
-        std::cout << jsonContenu.dump(4) << std::endl;
         VortexMaker::InitProject(jsonContenu);
     } else {
     }
 
-
-    // ajouter les fichiers de config
-    // et init le projet, charger tout.
 
     return ctx;
 }
@@ -46,11 +39,7 @@ int main(int argc, char *argv[])
         std::cout << "Usage : vortex <paramater(s)...> <information(s)...>" << std::endl << std::endl;
         std::cout << "-h --help :               See all parameters" << std::endl;
         std::cout << "-g --gui :                Open the Vortex graphical interface" << std::endl;
-        std::cout << "-I --init  <...> :        Initialize a new project" << std::endl;
-        std::cout << "-i --install  <...> :     Install a new content" << std::endl;
-        std::cout << "-b --build <...> :        Build the project" << std::endl;
-        std::cout << "-a --add <...> :          Add a content (packages, tools, libs, toolchains...)" << std::endl;
-        std::cout << "-p --preview <...> :      Preview final component(s) of the project" << std::endl << std::endl;
+        std::cout << "-cp --create-project  <...> :        Create a new project" << std::endl;
         std::cout << "Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. " << std::endl << std::endl;
     }
     else
@@ -61,6 +50,33 @@ int main(int argc, char *argv[])
             std::cout << "Press a key and hit ENTER to continue ..." << std::endl;
             std::string ui;
             std::cin >> ui;
+        }
+        if (std::string(argv[1]) == "-cp" || std::string(argv[1]) == "--create-project")
+        {
+            if (argc < 3)
+            {
+                std::cout << "Usage : vortex -cp <project_name>" << std::endl;
+                std::cout << "Or : vortex --create-project <project_name>" << std::endl;
+            }
+            else
+            {   
+                VxContext* ctx = VortexMaker::CreateContext();
+                std::cout << "Creating a new project..." << std::endl;
+                std::string project_name = std::string(argv[2]);
+                std::string current_path = std::filesystem::current_path();
+
+                std::cout << "Creating the project..." << std::endl;
+                VortexMaker::CreateProject(project_name, current_path);
+            }
+        }
+        {
+            if(!CheckDirectory()){return 1;};
+            std::cout << "Opening the graphical interface..." << std::endl;
+
+            std::thread receiveThread;
+            std::thread Thread([&]() { VortexMaker::DebugTools(argc, argv, InitRuntime()); });
+            receiveThread.swap(Thread);
+            receiveThread.join();
         }
         if (std::string(argv[1]) == "-g" || std::string(argv[1]) == "--gui")
         {

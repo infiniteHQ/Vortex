@@ -51,7 +51,7 @@ static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE
   
         // Left
         static int selected = 0;
-        static std::array<char[128], 4> labels = {"Project Settings", "Configuration", "Production", "Maintenance"};
+        static std::array<char[128], 5> labels = {"Project Settings", "Configuration", "Production", "Maintenance", "Danger zone"};
 
 
         {
@@ -109,6 +109,25 @@ static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE
             ImGui::EndGroup();
 
         }
+
+        if(selected == 4){
+
+            ImGui::BeginGroup();
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(9.0f, 9.0f));
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
+            ImGui::Text("Delete Toolchain");
+            ImGui::Separator();
+
+            ImGui::PopStyleVar(2);
+            if (ImGui::ColorButton("Delete", ImVec4(1.0f, 0.2f, 0.2f, 1.0f))) {
+                VortexMaker::DeleteToolchain(this->toolchain);
+                this->opened = false;
+            }
+            ImGui::SameLine();
+            ImGui::EndGroup();
+
+        }
+
 
         // Right
         {

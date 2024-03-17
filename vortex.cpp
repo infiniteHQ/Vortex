@@ -298,6 +298,128 @@ void hString::append(const char *str, const char *str_end)
   Buf[write_off - 1 + len] = 0;
 }
 
+
+ void VortexMaker::CreateProject(std::string name, std::string path){
+  
+  std::string projectPath;
+
+  // Creating main project folder
+  {
+    projectPath = path + "/" + name + "/";
+    std::string cmd = "mkdir "  +projectPath;
+    system(cmd.c_str());
+  }
+
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "touch "  + projectPath + "/vortex.config";
+    system(cmd.c_str());
+  }
+   nlohmann::json j;
+      j["project"]["author"] = "unknow";
+      j["project"]["description"] = "This is a toolchain";
+      j["project"]["name"] = name;
+      j["project"]["type"] = "???";
+      j["project"]["version"] = "1.0.0";
+
+      j["data"]["toolchains"] = "./.vx/data/toolchains/";
+      j["data"]["hosts"] = "./.vx/data/hosts/";
+      j["data"]["gpos"] = "./.vx/data/gpos/";
+      j["data"]["packages"] = "./.vx/data/packages/";
+
+      j["dist"]["toolchains"] = "./.vx/dist/toolchains/";
+      j["dist"]["gpos"] = "./.vx/dist/gpos/";
+      j["dist"]["packages"] = "./.vx/dist/packages/";
+      j["dist"]["hosts"] = "./.vx/dist/hosts/";
+
+      // Store this into toolchain.config
+      std::ofstream o(projectPath + "/vortex.config");
+      o << std::setw(4) << j << std::endl;
+      o.close();
+
+  // Data
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/data";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/data/hosts";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/data/kernels";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/data/libs";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/data/gpos";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/data/packages";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/data/skeletons";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/data/toolchains";
+    system(cmd.c_str());
+  }
+
+
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/config";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/dist";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/hosts";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/gpos";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/kernels";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/libs";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/packages";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/skeletons";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/toolchains";
+    system(cmd.c_str());
+  }
+
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/temp";
+    system(cmd.c_str());
+  }
+
+
+}
+
 bool VortexMaker::DebugCheckVersionAndDataLayout(const char *version)
 {
   bool error = false;
@@ -315,7 +437,7 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
 
   ctx.author = main_configs["project"]["author"].get<std::string>();
   ctx.description = main_configs["project"]["description"].get<std::string>();
-  ctx.label = main_configs["project"]["label"].get<std::string>();
+  ctx.label = main_configs["project"]["name"].get<std::string>();
   ctx.name = main_configs["project"]["name"].get<std::string>();
   ctx.type = main_configs["project"]["type"].get<std::string>();
   ctx.version = main_configs["project"]["version"].get<std::string>();
@@ -325,10 +447,13 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
   ctx.gposPath = main_configs["data"]["gpos"].get<std::string>();
   ctx.hostsPath = main_configs["data"]["hosts"].get<std::string>();
 
-  ctx.paths.toolchainDistFolder = main_configs["dists"]["toolchains"].get<std::string>();
-  ctx.paths.hostDistFolder = main_configs["dists"]["hosts"].get<std::string>();
+  ctx.paths.toolchainDistFolder = main_configs["dist"]["toolchains"].get<std::string>();
+  ctx.paths.hostDistFolder = main_configs["dist"]["hosts"].get<std::string>();
 
   ctx.projectPath = fs::current_path();
+
+
+  std::cout << "Project name : " << ctx.name << std::endl;
 
   // Packages
   /*
@@ -345,31 +470,6 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
     }
   }*/
 
-  // Toolchains
-  for (const auto &file : SearchFiles(ctx.toolchainsPath, "toolchain.config"))
-  {
-    try
-    {
-      nlohmann::json filecontent = DumpJSON(file);
-      std::shared_ptr<VxToolchain> toolchain = std::make_shared<VxToolchain>();
-
-      toolchain->configFilePath = file;
-      toolchain->path = file;
-
-      size_t position = toolchain->path.find("/toolchain.config");
-      if (position != std::string::npos)
-      {
-        toolchain->path.erase(position, 17);
-      }
-
-
-      RegisterToolchain(toolchain, filecontent);
-    }
-    catch (const std::exception &e)
-    {
-      std::cerr << "Error : " << e.what() << std::endl;
-    }
-  }
 
   // Hosts
   for (const auto &file : SearchFiles(ctx.hostsPath, "host.config"))
@@ -407,6 +507,7 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
     }
   }
 
+  VortexMaker::RefreshToolchains();
   VortexMaker::RefreshDistToolchains();
   VortexMaker::RefreshDistHosts();
 }
@@ -496,6 +597,133 @@ void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
   this->tasksToProcess.erase(std::remove_if(this->tasksToProcess.begin(), this->tasksToProcess.end(), [task](const auto& t) { return t == task; }), this->tasksToProcess.end());
   std::unique_lock<std::mutex> lock(mutex);
 }
+
+
+void VortexMaker::DeleteToolchain(std::shared_ptr<VxToolchain> toolchain){
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+    std::string toolchain_path = ctx->projectPath;
+    toolchain_path += "/.vx/data/toolchains/" + toolchain->name;
+
+    std::string toolchain_distpath = ctx->projectPath;
+    toolchain_distpath += "/.vx/dist/toolchains/" + toolchain->name;
+
+
+    // Create package.config into the baseDir folder
+    
+    // Verify if the toolchain_path is not empty
+    if (toolchain_path != "") {
+        std::string cmd = "rm -rf " + toolchain_path + "";
+        system(cmd.c_str());
+    }
+
+
+    if (toolchain_distpath != "") {
+        std::string cmd = "rm -rf " + toolchain_distpath + "";
+        system(cmd.c_str());
+    }
+
+    ctx->IO.toolchains.erase(std::remove(ctx->IO.toolchains.begin(), ctx->IO.toolchains.end(), toolchain), ctx->IO.toolchains.end());
+
+  VortexMaker::RefreshToolchains();
+
+}
+
+void VortexMaker::CreateToolchain(std::string name, std::string author){
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+
+
+    std::string new_toolchain_path = ctx->projectPath;
+    new_toolchain_path += "/.vx/data/toolchains/" + name;
+
+    std::string new_toolchain_distpath = ctx->projectPath;
+    new_toolchain_distpath += "/.vx/dist/toolchains/" + name;
+
+
+    // Create package.config into the baseDir folder
+    {
+        std::string cmd = "mkdir " + new_toolchain_path + "/";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "touch " + new_toolchain_path + "/toolchain.config";
+        system(cmd.c_str());
+    }
+
+    {
+        std::string cmd = "mkdir " + new_toolchain_path + "/data";
+        system(cmd.c_str());
+    }
+
+    {
+        std::string cmd = "mkdir " + new_toolchain_path + "/data/packages";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_toolchain_path + "/data/patchs";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_toolchain_path + "/data/scripts";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_toolchain_path + "/data/tasklists";
+        system(cmd.c_str());
+    }
+
+
+    {
+        std::string cmd = "mkdir " + new_toolchain_distpath + "/";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_toolchain_distpath + "/data";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_toolchain_distpath + "/snapshots";
+        system(cmd.c_str());
+    }
+
+
+
+
+      // Create json object and store it into  "touch " + envPath + "/toolchain.config"
+      nlohmann::json j;
+      j["toolchain"]["author"] = author;
+      j["toolchain"]["description"] = "This is a toolchain";
+      j["toolchain"]["name"] = name;
+      j["toolchain"]["platform"] = "???";
+      j["toolchain"]["state"] = "???";
+      j["toolchain"]["type"] = "toolchain";
+      j["toolchain"]["vendor"] = "???";
+      j["toolchain"]["version"] = "1.0.0";
+
+      j["data"]["packages"] = "./data/packages/";
+      j["data"]["patchs"] = "./data/patchs/";
+      j["data"]["scripts"] = "./data/scripts/";
+
+      j["content"]["packages"] = nlohmann::json::array();
+      j["content"]["patchs"] = nlohmann::json::array();
+      j["content"]["tasklists"] = nlohmann::json::array();
+      
+      j["configs"]["builder_arch"] = "???";
+      j["configs"]["host_arch"] = "???";
+      j["configs"]["target_arch"] = "???";
+      j["configs"]["compression"] = "???";
+
+      // Store this into toolchain.config
+      std::ofstream o(new_toolchain_path + "/toolchain.config");
+      o << std::setw(4) << j << std::endl;
+      o.close();
+  VortexMaker::RefreshToolchains();
+      
+
+    // Refresh current host
+    //this->
+}
+
+
 
 
 #include <deque>
