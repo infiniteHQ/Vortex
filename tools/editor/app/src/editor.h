@@ -23,6 +23,7 @@ static std::vector<std::shared_ptr<PackageInstance>> packageInstances;
 static std::vector<std::shared_ptr<TasklistInstance>> tasklistInstances;
 static std::vector<std::shared_ptr<GPOSInstance>> gposInstances;
 static std::vector<std::shared_ptr<ReportInstance>> reportInstances;
+static std::vector<std::shared_ptr<TextEditor>> texteditorInstances;
 
 
 static void PushStyle()
@@ -84,7 +85,17 @@ class Instance : public InstanceFactory {
     reportInstances.push_back(instance);
   };
 
+  void SpawnInstance(std::shared_ptr<TextEditor> instance) override {
+    instance->name = VortexMaker::gen_random(6);
+    instance->opened = true;
+    texteditorInstances.push_back(instance);
+  };
 
+
+  void UnspawnInstance(std::shared_ptr<TextEditor> instance) override {
+    std::string instanceName = instance->name;
+    instance = nullptr;
+  };
 
   void UnspawnInstance(std::shared_ptr<TasklistInstance> instance) override {
     std::string instanceName = instance->name;
@@ -157,6 +168,7 @@ public:
     for (auto window : tasklistInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : gposInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : reportInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
+    for (auto window : texteditorInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     
     PopStyle();
     

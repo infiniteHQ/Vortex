@@ -56,6 +56,7 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ParameterWindow.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/Report/ReportInstance.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/TextEditor/TextEditor.cpp
 )
 
 

@@ -9,6 +9,8 @@
 #include "../instances/Components/Toolchain/ToolchainInstance.h"
 #include "../instances/Components/GPOS/GPOSInstance.h"
 
+#include "../instances/Utils/TextEditor/TextEditor.hpp"
+
 #ifndef PackageInstance_H
 #include "../instances/Assets/Package/PackageInstance.h"
 #endif
@@ -32,6 +34,7 @@ class InstanceFactory {
   virtual void SpawnInstance(std::shared_ptr<TasklistInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void SpawnInstance(std::shared_ptr<GPOSInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void SpawnInstance(std::shared_ptr<ReportInstance>) {std::cout << "Not implemented" << std::endl;};
+  virtual void SpawnInstance(std::shared_ptr<TextEditor>) {std::cout << "Not implemented" << std::endl;};
 
   virtual void UnspawnInstance(std::shared_ptr<HostInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<PackageInstance>) {std::cout << "Not implemented" << std::endl;};
@@ -39,6 +42,7 @@ class InstanceFactory {
   virtual void UnspawnInstance(std::shared_ptr<TasklistInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<GPOSInstance>) {std::cout << "Not implemented" << std::endl;};
   virtual void UnspawnInstance(std::shared_ptr<ReportInstance>) {std::cout << "Not implemented" << std::endl;};
+  virtual void UnspawnInstance(std::shared_ptr<TextEditor>) {std::cout << "Not implemented" << std::endl;};
 };
 
 #endif

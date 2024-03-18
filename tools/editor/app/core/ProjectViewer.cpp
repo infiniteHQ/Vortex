@@ -89,6 +89,14 @@ void ProjectViewer::menubar()
         {
             ImGui::OpenPopup("CreationMenu");
         }
+        if (ImGui::ImageButtonWithText(addIcon, "WriteConfig", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+        {
+            std::string path = ctx->projectPath;
+            path += "/vortex.config";
+			std::shared_ptr<TextEditor> instance = std::make_shared<TextEditor>(ctx, path);
+			factory->SpawnInstance(instance);	
+            
+        }
         ImGui::Separator();
         if (ImGui::BeginMenu("Filters"))
         {

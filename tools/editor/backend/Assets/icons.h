@@ -52,6 +52,9 @@ struct icons {
     static const uint8_t i_error[];
     static const size_t i_error_size;
 
+    static const uint8_t i_textedit[];
+    static const size_t i_textedit_size;
+
     static const uint8_t i_warn[];
     static const size_t i_warn_size;
 
