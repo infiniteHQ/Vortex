@@ -76,7 +76,6 @@ void HostInstance::UI_AssetsViewer()
 
                             if (ImGui::ImageButtonWithText(packageIcon, openButtonID.c_str(), ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
                             {
-                                std::cout << "Opening " << currentPackage->name << std::endl;
 							    std::shared_ptr<PackageInstance> instance = std::make_shared<PackageInstance>(m_ctx, currentPackage);
 							    this->factory->SpawnInstance(instance);	
                             }

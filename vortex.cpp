@@ -453,8 +453,6 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
   ctx.projectPath = fs::current_path();
 
 
-  std::cout << "Project name : " << ctx.name << std::endl;
-
   // Packages
   /*
   for (const auto &file : SearchFiles(ctx.packagesPath, "package.config"))
@@ -471,23 +469,6 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
   }*/
 
 
-  // Hosts
-  for (const auto &file : SearchFiles(ctx.hostsPath, "host.config"))
-  {
-    try
-    {
-      nlohmann::json filecontent = DumpJSON(file);
-      std::shared_ptr<VxHost> host = std::make_shared<VxHost>();
-
-      host->configFilePath = file;
-
-      RegisterHost(host, filecontent);
-    }
-    catch (const std::exception &e)
-    {
-      std::cerr << "Error : " << e.what() << std::endl;
-    }
-  }
 
   // Hosts
   for (const auto &file : SearchFiles(ctx.gposPath, "gpos.config"))
@@ -507,6 +488,7 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
     }
   }
 
+  VortexMaker::RefreshHosts();
   VortexMaker::RefreshToolchains();
   VortexMaker::RefreshDistToolchains();
   VortexMaker::RefreshDistHosts();
@@ -598,6 +580,33 @@ void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
   std::unique_lock<std::mutex> lock(mutex);
 }
 
+void VortexMaker::DeleteHost(std::shared_ptr<VxHost> host){
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+    std::string host_path = ctx->projectPath;
+    host_path += "/.vx/data/hosts/" + host->name;
+
+    std::string host_distpath = ctx->projectPath;
+    host_distpath += "/.vx/dist/hosts/" + host->name;
+
+    
+    // Verify if the toolchain_path is not empty
+    if (host_path != "") {
+        std::string cmd = "rm -rf " + host_path + "";
+        system(cmd.c_str());
+    }
+
+
+    if (host_distpath != "") {
+        std::string cmd = "rm -rf " + host_distpath + "";
+        system(cmd.c_str());
+    }
+
+    ctx->IO.hosts.erase(std::remove(ctx->IO.hosts.begin(), ctx->IO.hosts.end(), host), ctx->IO.hosts.end());
+
+  VortexMaker::RefreshToolchains();
+
+}
+
 
 void VortexMaker::DeleteToolchain(std::shared_ptr<VxToolchain> toolchain){
     VxContext *ctx = VortexMaker::GetCurrentContext();
@@ -625,6 +634,106 @@ void VortexMaker::DeleteToolchain(std::shared_ptr<VxToolchain> toolchain){
     ctx->IO.toolchains.erase(std::remove(ctx->IO.toolchains.begin(), ctx->IO.toolchains.end(), toolchain), ctx->IO.toolchains.end());
 
   VortexMaker::RefreshToolchains();
+
+}
+
+
+void VortexMaker::CreateHost(std::string name, std::string author){
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+
+    std::string new_host_path = ctx->projectPath;
+    new_host_path += "/.vx/data/hosts/" + name;
+
+    std::string new_toolchain_distpath = ctx->projectPath;
+    new_toolchain_distpath += "/.vx/dist/hosts/" + name;
+
+
+
+    // Create package.config into the baseDir folder
+    {
+        std::string cmd = "mkdir " + new_host_path + "/";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "touch " + new_host_path + "/host.config";
+        system(cmd.c_str());
+    }
+
+    {
+        std::string cmd = "mkdir " + new_host_path + "/data";
+        system(cmd.c_str());
+    }
+
+    {
+        std::string cmd = "mkdir " + new_host_path + "/data/packages";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_host_path + "/data/patchs";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_host_path + "/data/scripts";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_host_path + "/data/tasklists";
+        system(cmd.c_str());
+    }
+
+
+    {
+        std::string cmd = "mkdir " + new_toolchain_distpath + "/";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "touch " + new_toolchain_distpath + "/host.dist.config";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_toolchain_distpath + "/data";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_toolchain_distpath + "/snapshots";
+        system(cmd.c_str());
+    }
+
+
+
+
+      // Create json object and store it into  "touch " + envPath + "/toolchain.config"
+      nlohmann::json j;
+      j["host"]["author"] = author;
+      j["host"]["description"] = "This is a toolchain";
+      j["host"]["name"] = name;
+      j["host"]["platform"] = "???";
+      j["host"]["state"] = "???";
+      j["host"]["type"] = "toolchain";
+      j["host"]["vendor"] = "???";
+      j["host"]["version"] = "1.0.0";
+
+      j["data"]["packages"] = "./data/packages/";
+      j["data"]["patchs"] = "./data/patchs/";
+      j["data"]["scripts"] = "./data/scripts/";
+
+      j["content"]["packages"] = nlohmann::json::array();
+      j["content"]["patchs"] = nlohmann::json::array();
+      j["content"]["tasklists"] = nlohmann::json::array();
+      
+      j["build"]["use_toolchain"] = "???";
+
+      j["configs"]["builder_arch"] = "???";
+      j["configs"]["host_arch"] = "???";
+      j["configs"]["target_arch"] = "???";
+      j["configs"]["compression"] = "???";
+
+      // Store this into toolchain.config
+      std::ofstream o(new_host_path + "/host.config");
+      o << std::setw(4) << j << std::endl;
+      o.close();
+
+      VortexMaker::RefreshHosts();
 
 }
 
@@ -674,6 +783,10 @@ void VortexMaker::CreateToolchain(std::string name, std::string author){
 
     {
         std::string cmd = "mkdir " + new_toolchain_distpath + "/";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "touch " + new_toolchain_distpath + "/toolchain.dist.config";
         system(cmd.c_str());
     }
     {

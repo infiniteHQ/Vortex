@@ -231,14 +231,16 @@ namespace VortexMaker
 
     VORTEX_API void             InitProject(nlohmann::json main_config);
 
-    VORTEX_API void             RefreshHost();
+    VORTEX_API void             RefreshHosts();
     VORTEX_API void             RefreshDistToolchains();
     VORTEX_API void             RefreshToolchains();
     VORTEX_API void             RefreshDistHosts();
 
     VORTEX_API void             CreateToolchain(std::string name, std::string author);
+    VORTEX_API void             CreateHost(std::string name, std::string author);
     VORTEX_API void             CreateProject(std::string name, std::string path);
 
+    VORTEX_API void             DeleteHost(std::shared_ptr<VxHost> host);
     VORTEX_API void             DeleteToolchain(std::shared_ptr<VxToolchain> toolchain);
     VORTEX_API void             CreateHost();
     VORTEX_API void             CreateGPOS();
@@ -1063,6 +1065,8 @@ struct VxHost{
     std::string path_hostfactory;
     std::string path_datapackages;
     std::string path_hostsnapshots;
+
+    bool haveCurrentSys;
 
     std::string GetTriplet(std::string triplet_type);
 

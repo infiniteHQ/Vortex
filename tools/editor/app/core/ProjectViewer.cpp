@@ -87,7 +87,6 @@ void ProjectViewer::menubar()
         }
         if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
         {
-            std::cout << "Add button clicked" << std::endl;
             ImGui::OpenPopup("CreationMenu");
         }
         ImGui::Separator();
@@ -103,7 +102,8 @@ void ProjectViewer::menubar()
             ImGui::EndMenu();
         }
 
-        static bool open_edit_popup = false;
+        static bool open_CreateToolchain = false;
+        static bool open_CreateHost = false;
         static bool open_confirm_popup = false;
         if (open_confirm_popup)
         {
@@ -135,9 +135,44 @@ void ProjectViewer::menubar()
         if (open_confirm_popup)
             ImGui::OpenPopup("ToolchainCreated");
 
-        if (open_edit_popup)
+
+            if (open_CreateHost)
         {
-            if (ImGui::BeginPopupModal("CreatePackage"))
+            if (ImGui::BeginPopupModal("Create New Host"))
+            {
+                // 3 text inputs
+                static char label[128] = "";
+                static char author[128] = "";
+                // inputs widget
+                ImGui::InputText("Name", label, IM_ARRAYSIZE(label));
+                ImGui::InputText("Author", author, IM_ARRAYSIZE(author));
+
+                // Call CreatePackage function from VxHost
+                if (ImGui::Button("Create", ImVec2(120, 0)))
+                {
+                    std::string _label = label;
+                    std::string _author = author;
+
+                    VortexMaker::CreateHost(_label, _author);
+
+                    // open_confirm_popup = true;
+                    open_CreateHost = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                    open_CreateHost = false;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+        }
+
+        if (open_CreateToolchain)
+        {
+            if (ImGui::BeginPopupModal("Create New Toolchain"))
             {
                 // 3 text inputs
                 static char label[128] = "";
@@ -155,7 +190,13 @@ void ProjectViewer::menubar()
                     VortexMaker::CreateToolchain(_label, _author);
 
                     // open_confirm_popup = true;
-                    open_edit_popup = false;
+                    open_CreateToolchain = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                    open_CreateToolchain = false;
                     ImGui::CloseCurrentPopup();
                 }
 
@@ -163,8 +204,12 @@ void ProjectViewer::menubar()
             }
         }
 
-        if (open_edit_popup)
-            ImGui::OpenPopup("CreatePackage");
+        if (open_CreateToolchain)
+            ImGui::OpenPopup("Create New Toolchain");
+
+        if (open_CreateHost)
+            ImGui::OpenPopup("Create New Host");
+
 
         if (ImGui::BeginPopupModal("CreationMenu", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
@@ -179,10 +224,15 @@ void ProjectViewer::menubar()
             if (ImGui::Button("Toolchain", ImVec2(-1, 50)))
             {
 
-                open_edit_popup = true;
+                open_CreateToolchain = true;
                 ImGui::CloseCurrentPopup();
             }
-            ImGui::Button("Host", ImVec2(-1, 50));
+            if (ImGui::Button("Host", ImVec2(-1, 50)))
+            {
+
+                open_CreateHost = true;
+                ImGui::CloseCurrentPopup();
+            }
             ImGui::Button("Package", ImVec2(-1, 50));
 
             // Image button with text with full width
@@ -211,7 +261,7 @@ void ProjectViewer::menubar()
                 if (ImGui::Button("Toolchain", ImVec2(-1, 0)))
                 {
 
-                    open_edit_popup = true;
+                    open_CreateToolchain = true;
                     ImGui::CloseCurrentPopup();
                 }
             }

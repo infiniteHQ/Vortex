@@ -151,12 +151,12 @@ public:
       projectViewer.OnImGuiRender();
     }
     // Instances
-    for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}    
+    for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}    
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
-    for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
-    for (auto window : tasklistInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
-    for (auto window : gposInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
-    for (auto window : reportInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window); std::cout << "Destroy instance" << std::endl;};}
+    for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
+    for (auto window : tasklistInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
+    for (auto window : gposInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
+    for (auto window : reportInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     
     PopStyle();
     

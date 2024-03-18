@@ -123,8 +123,17 @@ void VxPackage::Refresh()
 
 void VxHost::RefreshCurrentWorkingHost()
 {
+  // Check if this->workingPath + "/working_host.config" exists
+  if(!std::filesystem::exists(this->path_hostroot + "/working_host.config"))
+  {
+    std::cerr << "Error : " << this->path_hostroot + "/working_host.config" << " does not exists." << std::endl;
+    this->haveCurrentSys = false;
+    return;
+  }
+
   nlohmann::json data = VortexMaker::DumpJSON(this->path_hostroot + "/working_host.config");
   this->currentLoadedSystem.Populate(data);
+    this->haveCurrentSys = true;
 }
 
 void VxToolchain::RefreshCurrentWorkingToolchain()
@@ -187,6 +196,15 @@ void VxToolchain::RefreshSnapshots()
 
 void VxHost::RefreshSnapshots()
 {
+    // Create snapshot folder
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+  std::string envPath = ctx->projectPath / ctx->paths.hostDistFolder;
+  std::string baseDir = envPath + "/" + this->name;
+  std::string snapshotsDir = baseDir + "/" + "snapshots";
+  if (mkdir(snapshotsDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+
+  this->path_hostsnapshots = snapshotsDir;
+
   this->snapshots.clear();
   // Dist Toolchains
   for (const auto &file : VortexMaker::SearchFiles(this->path_hostsnapshots, "snapshot.config"))
@@ -514,9 +532,11 @@ void VxHost::Refresh()
   this->state = toolchainData["host"]["state"].get<std::string>();
   this->vendor = toolchainData["host"]["vendor"].get<std::string>();
   this->platform = toolchainData["host"]["platform"].get<std::string>();
-  this->host_arch = toolchainData["host"]["host_arch"].get<std::string>();
-  this->target_arch = toolchainData["host"]["target_arch"].get<std::string>();
-  this->toolchainToUse = toolchainData["build"]["useToolchain"].get<std::string>();
+
+  this->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
+  this->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
+  
+  this->toolchainToUse = toolchainData["build"]["use_toolchain"].get<std::string>();
 
   this->localPackagesPath = toolchainData["data"]["packages"].get<std::string>();
   this->localPatchsPath = toolchainData["data"]["patchs"].get<std::string>();
@@ -622,6 +642,46 @@ VORTEX_API void VortexMaker::RefreshToolchains(){
       std::cerr << "Error : " << e.what() << std::endl;
     }
   }
+
+}
+
+VORTEX_API void VortexMaker::RefreshHosts(){
+  VxContext &ctx = *CVortexMaker;
+
+  // Hosts
+  for (const auto &file : SearchFiles(ctx.hostsPath, "host.config"))
+  {
+    try
+    {
+      nlohmann::json filecontent = DumpJSON(file);
+      std::shared_ptr<VxHost> host = std::make_shared<VxHost>();
+
+      host->configFilePath = file;
+      bool alreadyExist = false;
+
+      for(auto alreadyRegistered : ctx.IO.hosts)
+      {
+        if(alreadyRegistered->name == filecontent["host"]["name"].get<std::string>())
+        {
+          std::cout << alreadyRegistered->name << " is already registered." << std::endl;
+          alreadyExist = true;
+        }
+      }
+
+      if(alreadyExist == true)
+      {
+        continue;
+      }
+
+      RegisterHost(host, filecontent);
+
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << "Error : " << e.what() << std::endl;
+    }
+  }
+
 
 }
 

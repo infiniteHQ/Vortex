@@ -157,10 +157,6 @@ public:
 		}
 		int gpos_size = Gpos.size();
 
-		std::cout << hosts_size << std::endl;
-		std::cout << toolchains_size << std::endl;
-
-
 		std::vector<MyTreeNode> nodes = {
 			{this->ctx->name.c_str(), "Project", 	-1, 1, 2}, // 0
 			{"Components", "...", 					-1, 3, 4},				// 1
