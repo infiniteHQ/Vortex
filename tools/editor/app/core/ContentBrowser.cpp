@@ -10,7 +10,6 @@
     ContentBrowserPanel::ContentBrowserPanel()
 		: m_BaseDirectory("../../"), m_CurrentDirectory(m_BaseDirectory)
 	{
-
 		{
 			uint32_t w, h;
 			void* data = Walnut::Image::Decode(icons::i_FolderIcon, icons::i_FolderIcon_size, w, h);
@@ -26,6 +25,8 @@
 			free(data);
 		}
 	}
+
+	
 
 	void ContentBrowserPanel::OnImGuiRender()
 	{
