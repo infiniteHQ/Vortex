@@ -67,6 +67,21 @@ struct MyTreeNode
 				ImGui::SameLine();
 			}
 
+
+			if(node->Type == "Package"){
+				std::string gposName = "Open###" + node->Name + "Open";
+				if(ImGui::Button(gposName.c_str())){
+					for(auto package: ctx->IO.packages){
+						if(node->Name == package->name){
+							std::shared_ptr<PackageInstance> instance = std::make_shared<PackageInstance>(ctx, package);
+							factory->SpawnInstance(instance);	
+						}
+					}
+
+				}
+				ImGui::SameLine();
+			}
+
 			if(node->Type == "Toolchain"){
 				std::string toolchainName = "Open###" + node->Name + "Open";
 				if(ImGui::Button(toolchainName.c_str())){
@@ -100,6 +115,7 @@ public:
 
 	void refreshContents()
 	{
+
 		// Tout faire ici dans le vecteur
 		std::vector<MyTreeNode> _nodeInfos = {
 			{"Root", "Folder", -1, 1, 4},									 // 0
@@ -118,7 +134,6 @@ public:
 
 			// Ajoutez le reste des données ici...
 		};
-
 
 		std::vector<MyTreeNode> Hosts = {};
 		for(auto host : ctx->IO.hosts){
@@ -159,18 +174,32 @@ public:
 		}
 		int gpos_size = Gpos.size();
 
+
+		std::vector<MyTreeNode> Packages = {};
+		for(auto package : ctx->IO.packages){
+			MyTreeNode nodePackage;
+			nodePackage.Name = (char*)package->name.c_str();
+			nodePackage.Size = 1024;
+			nodePackage.Type = "Package";
+			nodePackage.ChildCount = -1;
+			nodePackage.ChildIdx = -1;
+			Packages.push_back(nodePackage);
+		}
+		int package_size = Packages.size();
+
+
 		std::vector<MyTreeNode> nodes = {
 			{this->ctx->name.c_str(), "Project", 	-1, 1, 2}, // 0
-			{"Components", "...", 					-1, 3, 4},				// 1
+			{"Components", "...", 					-1, 3, 3},				// 1
 			{"Assets", "...", 						-1, 6, 3},						// 2
 
-			{"Hosts", "Group", 						9, 9, 				hosts_size},						// 1
-			{"Toolchains", "Group", 				9 + hosts_size, 9 + hosts_size, 	toolchains_size},				// 1
-			{"GPOS", "Group", 						9 + gpos_size + hosts_size, 9 + gpos_size + hosts_size,  gpos_size},				// 1
+			{"Hosts", "...", 						-1, 9, 									hosts_size},						// 1
+			{"Toolchains", "...", 					-1, 9 + hosts_size, 					toolchains_size},				// 1
+			{"GPOS", "...", 						-1, 9 + toolchains_size + hosts_size,  	gpos_size},				// 1
 
-			{"Packages", "Group" 					-1, 1, 1},						// 2
-			{"Scripts", "Group" 					-1, 1, 1},						// 2
-			{"Patchs", "Group" 						-1, 1, 1},						// 2
+			{"Packages", "...", 					-1, 9 + toolchains_size + hosts_size + gpos_size, package_size},						// 2
+			{"Scripts", "..." 						-1, 1, 1},						// 2
+			{"Patchs", "..." 						-1, 1, 1},						// 2
 
 			// Host 1
 			// Toolchain 1
@@ -189,6 +218,10 @@ public:
 
 		for(auto systems : Gpos){
 			nodes.push_back({systems.Name, systems.Type, systems.Size, systems.ChildIdx, systems.ChildCount});
+		}
+
+		for(auto package : Packages){
+			nodes.push_back({package.Name, package.Type, package.Size, package.ChildIdx, package.ChildCount});
 		}
 
 		this->nodeInfos = nodes;

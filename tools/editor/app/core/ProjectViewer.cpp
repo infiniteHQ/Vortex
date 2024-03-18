@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+static int item_current = 0;
+
 ProjectViewer::ProjectViewer(VxContext *_ctx, InstanceFactory *_factory)
 {
     this->ctx = _ctx;
@@ -52,7 +54,9 @@ void ProjectViewer::OnImGuiRender()
 
     ImGui::Separator();
 
-    static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
+   
+    if(item_current == 0){
+         static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
     const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("A").x;
     if (ImGui::BeginTable("3ways", 3, flags))
     {
@@ -66,6 +70,91 @@ void ProjectViewer::OnImGuiRender()
 
         ImGui::EndTable();
     }
+    }
+    if(item_current == 1){
+
+            {
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Hosts : ");
+            int height = 0;
+            if(this->ctx->IO.hosts.size() < 4)height = 220;
+            if(this->ctx->IO.hosts.size() < 8 && this->ctx->IO.hosts.size() > 4)height = 440;
+            if(this->ctx->IO.hosts.size() < 12 && this->ctx->IO.hosts.size() > 8)height = 880;
+            if(this->ctx->IO.hosts.size() < 16 && this->ctx->IO.hosts.size() > 12)height = 1100;
+            
+            
+            ImGui::BeginChild("Pans_VolatileTasks", ImVec2(-1, height), true);
+            ImGui::Columns(4, NULL);
+
+            int i = 0;
+
+            for (int row = 0; row < this->ctx->IO.hosts.size(); row++)
+            {
+                std::string label = "packageView###" + std::to_string(row) + this->ctx->IO.hosts[row]->name + std::to_string(i);
+                ImGuiID id = ImGui::GetID(label.c_str());
+                ImGui::BeginChildFrame(id, ImVec2(0, 200), true);
+
+                // Affichage des éléments individuels
+                std::string ll = this->ctx->IO.hosts[row]->name;
+                ImGui::Text(ll.c_str());
+
+               
+
+                if (ImGui::Button("Open", ImVec2(-1, 35)))
+                {
+
+                }
+
+                ImGui::EndChildFrame();
+                ImGui::NextColumn();
+            }
+            ImGui::EndChild();
+            }
+
+
+
+
+            {
+
+            int i = 0;
+            int height = 0;
+            if(this->ctx->IO.toolchains.size() < 4)height = 220;
+            if(this->ctx->IO.toolchains.size() < 7 && this->ctx->IO.toolchains.size() > 4)height = 440;
+            if(this->ctx->IO.toolchains.size() < 11 && this->ctx->IO.toolchains.size() > 8)height = 880;
+            if(this->ctx->IO.toolchains.size() < 15 && this->ctx->IO.toolchains.size() > 12)height = 1100;
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Toolchain : ");
+            ImGui::BeginChild("Pans_VolatileTasksToolchains", ImVec2(-1, height), true);
+            ImGui::Columns(4, NULL);
+
+            for (int row = 0; row < this->ctx->IO.toolchains.size(); row++)
+            {
+                std::string label = "packageView###" + std::to_string(row) + this->ctx->IO.toolchains[row]->name + std::to_string(i);
+                ImGuiID id = ImGui::GetID(label.c_str());
+                ImGui::BeginChildFrame(id, ImVec2(0, 200), true);
+
+                // Affichage des éléments individuels
+                std::string ll = this->ctx->IO.toolchains[row]->name;
+                ImGui::Text(ll.c_str());
+
+               
+
+				std::string toolchainName = "Open###" + this->ctx->IO.toolchains[row]->name + "Open";
+				if(ImGui::Button(toolchainName.c_str(), ImVec2(-1, 35))){
+							std::shared_ptr<ToolchainInstance> instance = std::make_shared<ToolchainInstance>(ctx, this->ctx->IO.toolchains[row], factory);
+							factory->SpawnInstance(instance);	
+						
+					
+
+				}
+                ImGui::EndChildFrame();
+                ImGui::NextColumn();
+            }
+            ImGui::EndChild();
+            }
+    
+    }
+
 
     ImGui::End();
 }
@@ -78,7 +167,12 @@ void ProjectViewer::menubar()
 
     if (ImGui::BeginMenuBar())
     {
-        ImGui::Checkbox("Collapse all", &this->CollapseAll);
+
+
+            const char *items[] = {"Treev iew", "Cards view"};
+
+            ImGui::Combo("View", &item_current, items, IM_ARRAYSIZE(items));
+
         ImGui::Separator();
 
         if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
@@ -92,7 +186,7 @@ void ProjectViewer::menubar()
         if (ImGui::ImageButtonWithText(addIcon, "WriteConfig", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
         {
             std::string path = ctx->projectPath;
-            path += "/vortex.config";
+            path += "/main.cpp";
 			std::shared_ptr<TextEditor> instance = std::make_shared<TextEditor>(ctx, path);
 			factory->SpawnInstance(instance);	
             

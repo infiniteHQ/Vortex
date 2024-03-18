@@ -194,6 +194,7 @@ struct VxGPOSystem;
 struct CommandOutput;
 struct VxToolchain;
 struct VxDistHost;
+struct VxPackage;
 struct VxDistToolchain;
 struct TaskProcessor;
 
@@ -236,8 +237,10 @@ namespace VortexMaker
     VORTEX_API void             RefreshToolchains();
     VORTEX_API void             RefreshGpos();
     VORTEX_API void             RefreshDistHosts();
+    VORTEX_API void             RefreshPackages();
 
     VORTEX_API void             CreateToolchain(std::string name, std::string author);
+    VORTEX_API void             CreateCreate(std::string name, std::string pathOfTarball);
     VORTEX_API void             CreateHost(std::string name, std::string author);
     VORTEX_API void             CreateGpos(std::string name, std::string author);
     VORTEX_API void             CreateProject(std::string name, std::string path);
@@ -261,6 +264,7 @@ namespace VortexMaker
     VORTEX_API nlohmann::json DumpJSON(const std::string& file);
 
 
+    VORTEX_API bool RegisterPackage(std::shared_ptr<VxPackage> newPackage, nlohmann::json toolchainData);
     VORTEX_API bool RegisterDistHost(VxDistHost host, nlohmann::json packageData);
     VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
     VORTEX_API bool RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nlohmann::json toolchainData);

@@ -452,26 +452,7 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
 
   ctx.projectPath = fs::current_path();
 
-
-  // Packages
-  /*
-  for (const auto &file : SearchFiles(ctx.packagesPath, "package.config"))
-  {
-    try
-    {
-      nlohmann::json filecontent = DumpJSON(file);
-      RegisterPackage(filecontent);
-    }
-    catch (const std::exception &e)
-    {
-      std::cerr << "Error : " << e.what() << std::endl;
-    }
-  }*/
-
-
-
-
-
+  VortexMaker::RefreshPackages();
   VortexMaker::RefreshGpos();
   VortexMaker::RefreshHosts();
   VortexMaker::RefreshToolchains();
@@ -849,6 +830,68 @@ void VortexMaker::CreateHost(std::string name, std::string author){
       o.close();
 
       VortexMaker::RefreshHosts();
+
+}
+
+
+void CreateCreate(std::string name, std::string pathOfTarball){
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+
+
+    std::string new_package_path = ctx->projectPath;
+    new_package_path += "/.vx/data/packages/" + name;
+
+    {
+        std::string cmd = "mkdir " + new_package_path + "/";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "touch " + new_package_path + "/package.config";
+        system(cmd.c_str());
+    }
+
+ nlohmann::json j;
+      j["package"]["name"] = name;
+      j["package"]["author"] = "???";
+      j["package"]["description"] = "???";
+      j["package"]["label"] = "???";
+      j["package"]["clear_after_process"] = false;
+      j["package"]["priority"] = 1;
+      j["package"]["compressed"] = "???";
+      j["package"]["filename"] = "???";
+
+      j["data"]["packages"] = "./data/packages/";
+      j["data"]["patchs"] = "./data/patchs/";
+      j["data"]["scripts"] = "./data/scripts/";
+
+      j["assets"] = nlohmann::json::array();
+      j["actions"] = nlohmann::json::array();
+
+      j["parameters"]["customOutput"] = "???";
+      j["parameters"]["useOnlyCustomConfigurationProcess"] = "not specified";
+      j["parameters"]["useOnlyCustomCompilationProcess"] = "not specified";
+      j["parameters"]["useOnlyCustomInstallationProcess"] = "not specified";
+      j["parameters"]["useCompilationOptimization"] = true;
+
+
+      j["compilation"]["configurationSuffixes"] = nlohmann::json::array();
+      j["compilation"]["configurationPrefixes"] = nlohmann::json::array();
+      j["compilation"]["compilationSuffixes"] = nlohmann::json::array();
+      j["compilation"]["compilationPrefixes"] = nlohmann::json::array();
+      j["compilation"]["installationSuffixes"] = nlohmann::json::array();
+      j["compilation"]["installationPrefixes"] = nlohmann::json::array();
+      
+      j["configs"]["builder_arch"] = "???";
+      j["configs"]["host_arch"] = "???";
+      j["configs"]["target_arch"] = "???";
+      j["configs"]["compression"] = "???";
+
+      // Store this into toolchain.config
+      std::ofstream o(new_package_path + "/package.config");
+      o << std::setw(4) << j << std::endl;
+      o.close();
+  VortexMaker::RefreshPackages();
+
 
 }
 

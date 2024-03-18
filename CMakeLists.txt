@@ -38,6 +38,7 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disttoolchain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_host.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_toolchain.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_package.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_gpos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disthost.cpp
     # Utils sources

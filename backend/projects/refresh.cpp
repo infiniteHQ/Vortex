@@ -121,46 +121,49 @@ void VxPackage::Refresh()
   }
 }
 
-
-
 void VxHost::RefreshCurrentWorkingHost()
 {
   // Check if this->workingPath + "/working_host.config" exists
-  if(!std::filesystem::exists(this->path_hostroot + "/working_host.config"))
+  if (!std::filesystem::exists(this->path_hostroot + "/working_host.config"))
   {
-    std::cerr << "Error : " << this->path_hostroot + "/working_host.config" << " does not exists." << std::endl;
+    std::cerr << "Error : " << this->path_hostroot + "/working_host.config"
+              << " does not exists." << std::endl;
     this->haveCurrentSys = false;
     return;
   }
 
   nlohmann::json data = VortexMaker::DumpJSON(this->path_hostroot + "/working_host.config");
   this->currentLoadedSystem.Populate(data);
-    this->haveCurrentSys = true;
+  this->haveCurrentSys = true;
 }
 
 void VxToolchain::RefreshCurrentWorkingToolchain()
 {
   // Check if this->workingPath + "/working_host.config" exists
-  if(!std::filesystem::exists(this->workingPath + "/working_host.config"))
+  if (!std::filesystem::exists(this->workingPath + "/working_host.config"))
   {
-    std::cerr << "Error : " << this->workingPath + "/working_host.config" << " does not exists." << std::endl;
+    std::cerr << "Error : " << this->workingPath + "/working_host.config"
+              << " does not exists." << std::endl;
     this->haveCurrentSys = false;
     return;
   }
 
   nlohmann::json data = VortexMaker::DumpJSON(this->workingPath + "/working_host.config");
   this->currentLoadedSystem.Populate(data);
-    this->haveCurrentSys = true;
+  this->haveCurrentSys = true;
 }
 
 void VxToolchain::RefreshSnapshots()
 {
-    // Create snapshot folder
+  // Create snapshot folder
   VxContext *ctx = VortexMaker::GetCurrentContext();
   std::string envPath = ctx->projectPath / ctx->paths.toolchainDistFolder;
   std::string baseDir = envPath + "/" + this->name;
   std::string snapshotsDir = baseDir + "/" + "snapshots";
-  if (mkdir(snapshotsDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+  if (mkdir(snapshotsDir.c_str(), 0777) == -1)
+  {
+    perror("Error while creating folder");
+  }
 
   this->path_hostsnapshots = snapshotsDir;
 
@@ -195,15 +198,17 @@ void VxToolchain::RefreshSnapshots()
   }
 }
 
-
 void VxHost::RefreshSnapshots()
 {
-    // Create snapshot folder
+  // Create snapshot folder
   VxContext *ctx = VortexMaker::GetCurrentContext();
   std::string envPath = ctx->projectPath / ctx->paths.hostDistFolder;
   std::string baseDir = envPath + "/" + this->name;
   std::string snapshotsDir = baseDir + "/" + "snapshots";
-  if (mkdir(snapshotsDir.c_str(), 0777) == -1){perror("Error while creating folder");}
+  if (mkdir(snapshotsDir.c_str(), 0777) == -1)
+  {
+    perror("Error while creating folder");
+  }
 
   this->path_hostsnapshots = snapshotsDir;
 
@@ -237,31 +242,33 @@ void VxHost::RefreshSnapshots()
   }
 }
 
-std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::string& timeString) {
-    // Création du flux de chaînes pour la conversion
-    std::istringstream ss(timeString);
+std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::string &timeString)
+{
+  // Création du flux de chaînes pour la conversion
+  std::istringstream ss(timeString);
 
-    // Déclaration et initialisation de la structure tm pour stocker les composants du temps
-    std::tm tm = {};
+  // Déclaration et initialisation de la structure tm pour stocker les composants du temps
+  std::tm tm = {};
 
-    // Utilisation de std::get_time pour extraire les composants du temps de la chaîne
-    ss >> std::get_time(&tm, "%a %b %d %H:%M:%S %Y");
+  // Utilisation de std::get_time pour extraire les composants du temps de la chaîne
+  ss >> std::get_time(&tm, "%a %b %d %H:%M:%S %Y");
 
-    // Vérification si l'extraction a réussi
-    if (ss.fail()) {
-        throw std::runtime_error("Failed to parse the time string.");
-    }
+  // Vérification si l'extraction a réussi
+  if (ss.fail())
+  {
+    throw std::runtime_error("Failed to parse the time string.");
+  }
 
-    // Convertir la structure tm en un point de temps
-    std::time_t time = std::mktime(&tm);
-    if (time == -1) {
-        throw std::runtime_error("Failed to convert time structure.");
-    }
+  // Convertir la structure tm en un point de temps
+  std::time_t time = std::mktime(&tm);
+  if (time == -1)
+  {
+    throw std::runtime_error("Failed to convert time structure.");
+  }
 
-    // Création du point de temps à partir du temps depuis l'époque
-    return std::chrono::system_clock::from_time_t(time);
+  // Création du point de temps à partir du temps depuis l'époque
+  return std::chrono::system_clock::from_time_t(time);
 }
-
 
 void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
 {
@@ -281,30 +288,42 @@ void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
     task->m_TotalTime = packageReport["t_duration"].get<double>();
     task->m_StartTime = stringToTimePoint(packageReport["t_time"].get<std::string>());
 
-    for(auto created_variables : packageReport["t_created_variables"])
+    for (auto created_variables : packageReport["t_created_variables"])
     {
       task->created_variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
       this->variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
     }
-    for(auto created_variables : packageReport["t_used_variables"])
+    for (auto created_variables : packageReport["t_used_variables"])
     {
       task->created_variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
       this->variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
     }
 
-  for (auto checks : packageReport["t_checklist"])
-  {
-    std::shared_ptr<Check> check = std::make_shared<Check>(); 
+    for (auto checks : packageReport["t_checklist"])
+    {
+      std::shared_ptr<Check> check = std::make_shared<Check>();
       check->checkResult = checks["result"].get<std::string>();
       check->checkDirective = checks["directive"].get<std::string>();
       check->checkID = checks["id"].get<std::string>();
       check->checkLog = checks["log"].get<std::string>();
-      if(check->checkResult == "success"){task->successCounter++;};
-      if(check->checkResult == "failed"){task->failCounter++;};
-      if(check->checkResult == "warning"){task->warningCounter++;};
-      if(check->checkResult == "unknow"){task->unknowCounter++;};
+      if (check->checkResult == "success")
+      {
+        task->successCounter++;
+      };
+      if (check->checkResult == "failed")
+      {
+        task->failCounter++;
+      };
+      if (check->checkResult == "warning")
+      {
+        task->warningCounter++;
+      };
+      if (check->checkResult == "unknow")
+      {
+        task->unknowCounter++;
+      };
       task->checkList.push_back(check);
-  }
+    }
 
     this->executedTasks.push_back(task);
   }
@@ -313,7 +332,6 @@ void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
 
   // Get list of all render assets (actions, scirpts, skeletons, etc)
 } // from working_host.config
-
 
 void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
 {
@@ -331,39 +349,48 @@ void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
     task->m_TotalTime = packageReport["t_duration"].get<double>();
     task->m_StartTime = stringToTimePoint(packageReport["t_time"].get<std::string>());
 
-  for (auto checks : packageReport["t_checklist"])
-  {
-    std::shared_ptr<Check> check = std::make_shared<Check>(); 
+    for (auto checks : packageReport["t_checklist"])
+    {
+      std::shared_ptr<Check> check = std::make_shared<Check>();
       check->checkResult = checks["result"].get<std::string>();
       check->checkID = checks["id"].get<std::string>();
       check->checkLog = checks["log"].get<std::string>();
-      if(check->checkResult == "success"){task->successCounter++;};
-      if(check->checkResult == "failed"){task->failCounter++;};
-      if(check->checkResult == "warning"){task->warningCounter++;};
-      if(check->checkResult == "unknow"){task->unknowCounter++;};
+      if (check->checkResult == "success")
+      {
+        task->successCounter++;
+      };
+      if (check->checkResult == "failed")
+      {
+        task->failCounter++;
+      };
+      if (check->checkResult == "warning")
+      {
+        task->warningCounter++;
+      };
+      if (check->checkResult == "unknow")
+      {
+        task->unknowCounter++;
+      };
       task->checkList.push_back(check);
-  }
+    }
 
-  for (auto checks : packageReport["t_used_variables"])
-  {
-    task->used_variables.push_back(std::make_tuple(checks["variable"].get<std::string>(), checks["owner"].get<std::string>(), checks["value"].get<std::string>()));
-  }
+    for (auto checks : packageReport["t_used_variables"])
+    {
+      task->used_variables.push_back(std::make_tuple(checks["variable"].get<std::string>(), checks["owner"].get<std::string>(), checks["value"].get<std::string>()));
+    }
 
-  for (auto checks : packageReport["t_created_variables"])
-  {
-    task->created_variables.push_back(std::make_tuple(checks["variable"].get<std::string>(), checks["owner"].get<std::string>(), checks["value"].get<std::string>()));
-  }
-
+    for (auto checks : packageReport["t_created_variables"])
+    {
+      task->created_variables.push_back(std::make_tuple(checks["variable"].get<std::string>(), checks["owner"].get<std::string>(), checks["value"].get<std::string>()));
+    }
 
     this->executedTasks.push_back(task);
   }
-
 
   // Get filesystem informations
 
   // Get list of all render assets (actions, scirpts, skeletons, etc)
 } // from working_host.config
-
 
 nlohmann::json VxToolchainCurrentSystem::Extract()
 {
@@ -373,7 +400,7 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
   jsonData["taskList"] = nlohmann::json::array();
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
-// Fix : All tasks features and after : make all basic task of toolchain
+  // Fix : All tasks features and after : make all basic task of toolchain
   for (auto task : this->executedTasks)
   {
     std::string def = "unknow";
@@ -392,7 +419,6 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
     report["t_checklist"] = nlohmann::json::array();
     report["t_used_variables"] = nlohmann::json::array();
     report["t_created_variables"] = nlohmann::json::array();
-
 
     // Variable Name // Required By (Task) // Value
     for (auto var : task->used_variables)
@@ -413,8 +439,7 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
       c["value"] = std::get<2>(var);
       report["t_created_variables"].push_back(c);
     }
-    
-    
+
     for (auto check : task->checkList)
     {
       nlohmann::json c;
@@ -471,13 +496,11 @@ nlohmann::json VxHostCurrentSystem::Extract()
   return jsonData;
 }
 
-
 // TODO : Split to little refresh functions, create a RefreshAll function.
 void VxToolchain::Refresh()
 {
 
   nlohmann::json toolchainData = VortexMaker::DumpJSON(this->configFilePath);
-
 
   this->name = toolchainData["toolchain"]["name"].get<std::string>();
   this->author = toolchainData["toolchain"]["author"].get<std::string>();
@@ -487,7 +510,6 @@ void VxToolchain::Refresh()
   this->state = toolchainData["toolchain"]["state"].get<std::string>();
   this->vendor = toolchainData["toolchain"]["vendor"].get<std::string>();
   this->platform = toolchainData["toolchain"]["platform"].get<std::string>();
-
 
   this->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
   this->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
@@ -507,7 +529,6 @@ void VxToolchain::Refresh()
 
   this->FindPackages();
 
-
   registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
@@ -516,9 +537,7 @@ void VxToolchain::Refresh()
   }
   this->FindTasklists();
 
-
-
-  //this->Init();
+  // this->Init();
 }
 
 // TODO : Split to little refresh functions, create a RefreshAll function.
@@ -594,14 +613,15 @@ void VxGPOSystem::Refresh()
   }
   this->FindTasklists();
 
-  //this->Init();
+  // this->Init();
 }
 
-VORTEX_API void VortexMaker::RefreshToolchains(){
+VORTEX_API void VortexMaker::RefreshToolchains()
+{
   VxContext &ctx = *CVortexMaker;
 
   // clear existing dist toolchains
-  //ctx.IO.toolchains.clear();
+  // ctx.IO.toolchains.clear();
 
   // Toolchains
   for (const auto &file : SearchFiles(ctx.toolchainsPath, "toolchain.config"))
@@ -622,38 +642,35 @@ VORTEX_API void VortexMaker::RefreshToolchains(){
 
       bool alreadyExist = false;
 
-      for(auto alreadyRegistered : ctx.IO.toolchains)
+      for (auto alreadyRegistered : ctx.IO.toolchains)
       {
-        if(alreadyRegistered->name == filecontent["toolchain"]["name"].get<std::string>())
+        if (alreadyRegistered->name == filecontent["toolchain"]["name"].get<std::string>())
         {
           std::cout << alreadyRegistered->name << " is already registered." << std::endl;
           alreadyExist = true;
         }
       }
 
-      if(alreadyExist == true)
+      if (alreadyExist == true)
       {
         continue;
       }
 
       RegisterToolchain(toolchain, filecontent);
-
     }
     catch (const std::exception &e)
     {
       std::cerr << "Error : " << e.what() << std::endl;
     }
   }
-
 }
 
-
-void VortexMaker::RefreshGpos(){
+void VortexMaker::RefreshGpos()
+{
 
   VxContext &ctx = *CVortexMaker;
 
-
-    // Hosts
+  // Hosts
   for (const auto &file : SearchFiles(ctx.gposPath, "gpos.config"))
   {
     try
@@ -664,16 +681,16 @@ void VortexMaker::RefreshGpos(){
       gpos->configFilePath = file;
       bool alreadyExist = false;
 
-      for(auto alreadyRegistered : ctx.IO.gpoSystems)
+      for (auto alreadyRegistered : ctx.IO.gpoSystems)
       {
-        if(alreadyRegistered->name == filecontent["gpos"]["name"].get<std::string>())
+        if (alreadyRegistered->name == filecontent["gpos"]["name"].get<std::string>())
         {
           std::cout << alreadyRegistered->name << " is already registered." << std::endl;
           alreadyExist = true;
         }
       }
 
-      if(alreadyExist == true)
+      if (alreadyExist == true)
       {
         continue;
       }
@@ -687,7 +704,48 @@ void VortexMaker::RefreshGpos(){
   }
 }
 
-VORTEX_API void VortexMaker::RefreshHosts(){
+VORTEX_API void VortexMaker::RefreshPackages()
+{
+  VxContext &ctx = *CVortexMaker;
+
+  // Hosts
+  for (const auto &file : SearchFiles(ctx.packagesPath, "package.config"))
+  {
+    try
+    {
+      nlohmann::json filecontent = DumpJSON(file);
+      std::shared_ptr<VxPackage> newPackage = std::make_shared<VxPackage>();
+
+      newPackage->path = file;
+      newPackage->configFilePath = file;
+
+      bool alreadyExist = false;
+
+      for (auto alreadyRegistered : ctx.IO.hosts)
+      {
+        if (alreadyRegistered->name == filecontent["package"]["name"].get<std::string>())
+        {
+          std::cout << alreadyRegistered->name << " is already registered." << std::endl;
+          alreadyExist = true;
+        }
+      }
+
+      if (alreadyExist == true)
+      {
+        continue;
+      }
+
+      RegisterPackage(newPackage, filecontent);
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << "Error : " << e.what() << std::endl;
+    }
+  }
+}
+
+VORTEX_API void VortexMaker::RefreshHosts()
+{
   VxContext &ctx = *CVortexMaker;
 
   // Hosts
@@ -701,30 +759,27 @@ VORTEX_API void VortexMaker::RefreshHosts(){
       host->configFilePath = file;
       bool alreadyExist = false;
 
-      for(auto alreadyRegistered : ctx.IO.hosts)
+      for (auto alreadyRegistered : ctx.IO.hosts)
       {
-        if(alreadyRegistered->name == filecontent["host"]["name"].get<std::string>())
+        if (alreadyRegistered->name == filecontent["host"]["name"].get<std::string>())
         {
           std::cout << alreadyRegistered->name << " is already registered." << std::endl;
           alreadyExist = true;
         }
       }
 
-      if(alreadyExist == true)
+      if (alreadyExist == true)
       {
         continue;
       }
 
       RegisterHost(host, filecontent);
-
     }
     catch (const std::exception &e)
     {
       std::cerr << "Error : " << e.what() << std::endl;
     }
   }
-
-
 }
 
 VORTEX_API void VortexMaker::RefreshDistToolchains() // Rename to RefreshDistHostsList

@@ -1178,6 +1178,7 @@ std::string TextEditor::render(){
 
 	if(opened){
 
+
     static ImTextureID icon = this->m_MainIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static std::string label = "Text Editor " + this->name + "###" + this->name + "-editor";
         if (ImGui::Begin(label.c_str(), &icon, &this->opened, ImGuiWindowFlags_MenuBar))

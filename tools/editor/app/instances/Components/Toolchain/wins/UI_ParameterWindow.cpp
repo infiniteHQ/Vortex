@@ -5,7 +5,7 @@ void ToolchainInstance::UI_ParametersWindow()
     if (this->show_UI_ParametersWindow)
     {
 
-        static std::string label = this->name + " - Task editor";
+        static std::string label = this->name + " - Parameters ###" + this->name + "Parameters";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
         if (ImGui::Begin(label.c_str()))
         {
