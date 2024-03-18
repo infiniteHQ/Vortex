@@ -11,7 +11,7 @@ bool VortexMaker::RegisterGPOS(std::shared_ptr<VxGPOSystem> gpos, nlohmann::json
   gpos->state = toolchainData["gpos"]["state"].get<std::string>();
   gpos->vendor = toolchainData["gpos"]["vendor"].get<std::string>();
   gpos->platform = toolchainData["gpos"]["platform"].get<std::string>();
-  gpos->target_arch = toolchainData["gpos"]["target_arch"].get<std::string>();
+  gpos->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
 
   // Register file emplacement
 

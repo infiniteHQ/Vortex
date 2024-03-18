@@ -161,18 +161,6 @@ void VxHost::PreBuild()
         LD = VortexMaker::replacePlaceholders(LD, replacements);
         STRIP = VortexMaker::replacePlaceholders(STRIP, replacements);
         RANLIB = VortexMaker::replacePlaceholders(RANLIB, replacements);
-
-        std::cout << system(Bashrc.c_str());
-        std::cout << system(CC.c_str());
-        std::cout << system(CXX.c_str());
-        std::cout << system(AR.c_str());
-        std::cout << system(AS.c_str());
-        std::cout << system(RANLIB.c_str());
-        std::cout << system(LD.c_str());
-        std::cout << system(STRIP.c_str());
-        std::cout << Bashrc << std::endl;
-
-
         // FAIRE PLUTOT UN PATH QUE LES ELEMERNTS
 
     }

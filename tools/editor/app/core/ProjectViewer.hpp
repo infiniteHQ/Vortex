@@ -41,7 +41,8 @@ struct MyTreeNode
 		{
 
 			if(node->Type == "Host"){
-				if(ImGui::Button("Open")){
+				std::string hostName = "Open###" + node->Name + "Open";
+				if(ImGui::Button(hostName.c_str())){
 					for(auto host : ctx->IO.hosts){
 						if(node->Name == host->name){
 							std::shared_ptr<HostInstance> instance = std::make_shared<HostInstance>(ctx, host, factory);
@@ -53,7 +54,8 @@ struct MyTreeNode
 				ImGui::SameLine();
 			}
 			if(node->Type == "GPOS"){
-				if(ImGui::Button("Open")){
+				std::string gposName = "Open###" + node->Name + "Open";
+				if(ImGui::Button(gposName.c_str())){
 					for(auto gpos: ctx->IO.gpoSystems){
 						if(node->Name == gpos->name){
 							std::shared_ptr<GPOSInstance> instance = std::make_shared<GPOSInstance>(ctx, gpos, factory);

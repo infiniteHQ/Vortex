@@ -86,8 +86,6 @@ struct UncompressDistPackage : public Task
       package->path = foldername;
     }
 
-    std::cout << "Pathname : " << package->distPath + package->path << std::endl;
-
 
     this->finish("finish", nullptr);
   }

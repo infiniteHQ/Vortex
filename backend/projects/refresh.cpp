@@ -121,6 +121,8 @@ void VxPackage::Refresh()
   }
 }
 
+
+
 void VxHost::RefreshCurrentWorkingHost()
 {
   // Check if this->workingPath + "/working_host.config" exists
@@ -535,7 +537,7 @@ void VxHost::Refresh()
 
   this->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
   this->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
-  
+
   this->toolchainToUse = toolchainData["build"]["use_toolchain"].get<std::string>();
 
   this->localPackagesPath = toolchainData["data"]["packages"].get<std::string>();
@@ -571,7 +573,7 @@ void VxGPOSystem::Refresh()
   this->state = gposData["gpos"]["state"].get<std::string>();
   this->vendor = gposData["gpos"]["vendor"].get<std::string>();
   this->platform = gposData["gpos"]["platform"].get<std::string>();
-  this->target_arch = gposData["gpos"]["target_arch"].get<std::string>();
+  this->target_arch = gposData["configs"]["target_arch"].get<std::string>();
 
   this->localPackagesPath = gposData["data"]["packages"].get<std::string>();
   this->localPatchsPath = gposData["data"]["patchs"].get<std::string>();
@@ -643,6 +645,46 @@ VORTEX_API void VortexMaker::RefreshToolchains(){
     }
   }
 
+}
+
+
+void VortexMaker::RefreshGpos(){
+
+  VxContext &ctx = *CVortexMaker;
+
+
+    // Hosts
+  for (const auto &file : SearchFiles(ctx.gposPath, "gpos.config"))
+  {
+    try
+    {
+      nlohmann::json filecontent = DumpJSON(file);
+      std::shared_ptr<VxGPOSystem> gpos = std::make_shared<VxGPOSystem>();
+
+      gpos->configFilePath = file;
+      bool alreadyExist = false;
+
+      for(auto alreadyRegistered : ctx.IO.gpoSystems)
+      {
+        if(alreadyRegistered->name == filecontent["gpos"]["name"].get<std::string>())
+        {
+          std::cout << alreadyRegistered->name << " is already registered." << std::endl;
+          alreadyExist = true;
+        }
+      }
+
+      if(alreadyExist == true)
+      {
+        continue;
+      }
+
+      RegisterGPOS(gpos, filecontent);
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << "Error : " << e.what() << std::endl;
+    }
+  }
 }
 
 VORTEX_API void VortexMaker::RefreshHosts(){

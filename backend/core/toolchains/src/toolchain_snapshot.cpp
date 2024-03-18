@@ -36,17 +36,14 @@ void VxToolchain::MakeSnapshot(std::string label)
                 label.pop_back();
                 number++;
                 label += std::to_string(number);
-    std::cout << "Adding nuymber " << label << std::endl;
             }
             else
             {
                 label += "-1";
-    std::cout << "Adding nuymber " << label << std::endl;
             }
         }
     }
 
-    std::cout << "Creating snapshot with label " << label << std::endl;
 
     if (mkdir(snapshotsDir.c_str(), 0777) == -1)
     {
@@ -98,11 +95,9 @@ void VxToolchain::RetakeSnapshot(std::string snapshot_label)
     // Find snapshot by label
     for (auto snapshot : this->snapshots)
     {
-        std::cout << "Snapshot name : " << snapshot.name << " " << snapshot_label << "\n";
         if (snapshot.name == snapshot_label)
         {
             // Decompresser le tarball présent dans snapshot.path et le mettre dans workingPath
-            std::cout << "Decompressing snapshot " << snapshot.name << " o n" << snapshot.path << std::endl;
             std::string Decompress = " cd " + snapshot.path + " && sudo tar -xzvf " + "working_host.tar.gz -C " + this->workingPath + "/../";
             system(Decompress.c_str());
         }

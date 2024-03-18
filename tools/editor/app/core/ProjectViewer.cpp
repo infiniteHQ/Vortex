@@ -104,6 +104,7 @@ void ProjectViewer::menubar()
 
         static bool open_CreateToolchain = false;
         static bool open_CreateHost = false;
+        static bool open_CreateGpos = false;
         static bool open_confirm_popup = false;
         if (open_confirm_popup)
         {
@@ -170,6 +171,41 @@ void ProjectViewer::menubar()
             }
         }
 
+       if (open_CreateGpos)
+        {
+            if (ImGui::BeginPopupModal("Create New GPOS"))
+            {
+                // 3 text inputs
+                static char label[128] = "";
+                static char author[128] = "";
+                // inputs widget
+                ImGui::InputText("Name", label, IM_ARRAYSIZE(label));
+                ImGui::InputText("Author", author, IM_ARRAYSIZE(author));
+
+                // Call CreatePackage function from VxHost
+                if (ImGui::Button("Create", ImVec2(120, 0)))
+                {
+                    std::string _label = label;
+                    std::string _author = author;
+
+                    VortexMaker::CreateGpos(_label, _author);
+
+                    // open_confirm_popup = true;
+                    open_CreateGpos = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                    open_CreateGpos = false;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+        }
+
+
         if (open_CreateToolchain)
         {
             if (ImGui::BeginPopupModal("Create New Toolchain"))
@@ -210,6 +246,9 @@ void ProjectViewer::menubar()
         if (open_CreateHost)
             ImGui::OpenPopup("Create New Host");
 
+        if (open_CreateGpos)
+            ImGui::OpenPopup("Create New GPOS");
+
 
         if (ImGui::BeginPopupModal("CreationMenu", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
@@ -220,17 +259,19 @@ void ProjectViewer::menubar()
             ImGui::Text("Create Basic Component");
             ImGui::Separator();
             // button with full width
-            ImGui::Button("GPOS", ImVec2(-1, 50));
             if (ImGui::Button("Toolchain", ImVec2(-1, 50)))
             {
-
                 open_CreateToolchain = true;
                 ImGui::CloseCurrentPopup();
             }
             if (ImGui::Button("Host", ImVec2(-1, 50)))
             {
-
                 open_CreateHost = true;
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::Button("General purpose system (GPOS)", ImVec2(-1, 50)))
+            {
+                open_CreateGpos = true;
                 ImGui::CloseCurrentPopup();
             }
             ImGui::Button("Package", ImVec2(-1, 50));

@@ -470,24 +470,9 @@ VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
 
 
 
-  // Hosts
-  for (const auto &file : SearchFiles(ctx.gposPath, "gpos.config"))
-  {
-    try
-    {
-      nlohmann::json filecontent = DumpJSON(file);
-      std::shared_ptr<VxGPOSystem> gpos = std::make_shared<VxGPOSystem>();
 
-      gpos->configFilePath = file;
 
-      RegisterGPOS(gpos, filecontent);
-    }
-    catch (const std::exception &e)
-    {
-      std::cerr << "Error : " << e.what() << std::endl;
-    }
-  }
-
+  VortexMaker::RefreshGpos();
   VortexMaker::RefreshHosts();
   VortexMaker::RefreshToolchains();
   VortexMaker::RefreshDistToolchains();
@@ -604,6 +589,136 @@ void VortexMaker::DeleteHost(std::shared_ptr<VxHost> host){
     ctx->IO.hosts.erase(std::remove(ctx->IO.hosts.begin(), ctx->IO.hosts.end(), host), ctx->IO.hosts.end());
 
   VortexMaker::RefreshToolchains();
+
+}
+
+
+
+void VortexMaker::DeleteGpos(std::shared_ptr<VxGPOSystem> gpos){
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+    std::string gpos_path = ctx->projectPath;
+    gpos_path += "/.vx/data/gpos/" + gpos->name;
+
+    std::string gpos_distpath = ctx->projectPath;
+    gpos_distpath += "/.vx/dist/gpos/" + gpos->name;
+
+
+    // Create package.config into the baseDir folder
+    
+    // Verify if the toolchain_path is not empty
+    if (gpos_path != "") {
+        std::string cmd = "rm -rf " + gpos_path + "";
+        system(cmd.c_str());
+    }
+
+
+    if (gpos_distpath != "") {
+        std::string cmd = "rm -rf " + gpos_distpath + "";
+        system(cmd.c_str());
+    }
+
+    ctx->IO.gpoSystems.erase(std::remove(ctx->IO.gpoSystems.begin(), ctx->IO.gpoSystems.end(), gpos), ctx->IO.gpoSystems.end());
+
+  VortexMaker::RefreshGpos();
+
+}
+
+
+
+
+void VortexMaker::CreateGpos(std::string name, std::string author){
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+
+    std::string new_gpos_path = ctx->projectPath;
+    new_gpos_path += "/.vx/data/gpos/" + name;
+
+    std::string new_gpos_distpath = ctx->projectPath;
+    new_gpos_distpath += "/.vx/dist/gpos/" + name;
+
+
+
+    // Create package.config into the baseDir folder
+    {
+        std::string cmd = "mkdir " + new_gpos_path + "/";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "touch " + new_gpos_path + "/gpos.config";
+        system(cmd.c_str());
+    }
+
+    {
+        std::string cmd = "mkdir " + new_gpos_path + "/data";
+        system(cmd.c_str());
+    }
+
+    {
+        std::string cmd = "mkdir " + new_gpos_path + "/data/packages";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_gpos_path + "/data/patchs";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_gpos_path + "/data/scripts";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_gpos_path + "/data/tasklists";
+        system(cmd.c_str());
+    }
+
+
+    {
+        std::string cmd = "mkdir " + new_gpos_distpath + "/";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "touch " + new_gpos_distpath + "/gpos.dist.config";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_gpos_distpath + "/data";
+        system(cmd.c_str());
+    }
+    {
+        std::string cmd = "mkdir " + new_gpos_distpath + "/snapshots";
+        system(cmd.c_str());
+    }
+
+      // Create json object and store it into  "touch " + envPath + "/toolchain.config"
+      nlohmann::json j;
+      j["gpos"]["author"] = author;
+      j["gpos"]["description"] = "This is a toolchain";
+      j["gpos"]["name"] = name;
+      j["gpos"]["platform"] = "???";
+      j["gpos"]["state"] = "???";
+      j["gpos"]["type"] = "toolchain";
+      j["gpos"]["vendor"] = "???";
+      j["gpos"]["version"] = "1.0.0";
+
+      j["data"]["packages"] = "./data/packages/";
+      j["data"]["patchs"] = "./data/patchs/";
+      j["data"]["scripts"] = "./data/scripts/";
+
+      j["content"]["packages"] = nlohmann::json::array();
+      j["content"]["patchs"] = nlohmann::json::array();
+      j["content"]["tasklists"] = nlohmann::json::array();
+      
+      j["build"]["use_toolchain"] = "???";
+
+      j["configs"]["builder_arch"] = "???";
+      j["configs"]["host_arch"] = "???";
+      j["configs"]["target_arch"] = "???";
+      j["configs"]["compression"] = "???";
+
+      // Store this into toolchain.config
+      std::ofstream o(new_gpos_path + "/gpos.config");
+      o << std::setw(4) << j << std::endl;
+      o.close();
+
+      VortexMaker::RefreshGpos();
 
 }
 

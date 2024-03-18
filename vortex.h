@@ -234,16 +234,18 @@ namespace VortexMaker
     VORTEX_API void             RefreshHosts();
     VORTEX_API void             RefreshDistToolchains();
     VORTEX_API void             RefreshToolchains();
+    VORTEX_API void             RefreshGpos();
     VORTEX_API void             RefreshDistHosts();
 
     VORTEX_API void             CreateToolchain(std::string name, std::string author);
     VORTEX_API void             CreateHost(std::string name, std::string author);
+    VORTEX_API void             CreateGpos(std::string name, std::string author);
     VORTEX_API void             CreateProject(std::string name, std::string path);
 
     VORTEX_API void             DeleteHost(std::shared_ptr<VxHost> host);
+    VORTEX_API void             DeleteGpos(std::shared_ptr<VxGPOSystem> gpos);
     VORTEX_API void             DeleteToolchain(std::shared_ptr<VxToolchain> toolchain);
     VORTEX_API void             CreateHost();
-    VORTEX_API void             CreateGPOS();
 
     VORTEX_API std::shared_ptr<Task>             CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
 
@@ -635,7 +637,6 @@ std::string startTime() {
 
     void start()
     {
-        std::cout << "Started" << std::endl;
         this->m_StartTime = std::chrono::system_clock::now();
         this->state = "process";
         this->m_bRunning = true;
