@@ -250,6 +250,8 @@ void ToolchainInstance::menubar(){
                 ImGui::Separator();
 
                 if(ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight()))){
+                
+            ImGui::OpenPopup("Add a composant");
                 }
 
         if (ImGui::ImageButtonWithText(eyeIcon, "Preview", ImVec2(this->m_EyeIcon->GetWidth(), this->m_EyeIcon->GetHeight())))
@@ -264,6 +266,152 @@ void ToolchainInstance::menubar(){
                 if(ImGui::ImageButtonWithText(settingsIcon, "Settings", ImVec2(this->m_SettingsIcon->GetWidth(), this->m_SettingsIcon->GetHeight()))){
                     //Save behavior
                 }
+
+
+        static bool open_ImportationMenu = false;
+
+        if(open_ImportationMenu) {
+                   if (ImGui::BeginPopupModal("Import content(s)", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+
+            ImGui::Text("From this project");
+            ImGui::Separator();
+
+            // Image button with text with full width
+
+            ImGui::Text("Create Advanced Component");
+            ImGui::Separator();
+
+            if (ImGui::CollapsingHeader("Import package(s)"))
+            {
+                for(auto package : this->m_ctx->IO.packages){
+                    if (ImGui::Button(package->label.c_str(), ImVec2(-1, 0)))
+                    {
+                        std::pair<char[128],char[128]> pair;
+                        std::strcpy(pair.first, package->label.c_str());
+                        std::strcpy(pair.second, "global");
+                        this->m_currentSave->registeredPackages.push_back(pair);
+                        this->Save();
+
+                        this->Refresh();
+
+                    open_ImportationMenu = false;
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
+            }
+
+            // static int unused_i = 0;
+            // ImGui::Combo("Combo", &unused_i, "Delete\0Delete harder\0");
+
+            if (ImGui::Button("OK", ImVec2(120, 0)))
+            {
+                    open_ImportationMenu = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                    open_ImportationMenu = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
+            
+        }
+
+        if (open_ImportationMenu)
+            ImGui::OpenPopup("Import content(s)");
+
+
+
+        if (ImGui::BeginPopupModal("Add a composant", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Get content");
+            ImGui::Separator();
+            if(ImGui::Button("Import...", ImVec2(-1, 0))){
+
+                    open_ImportationMenu = true;
+                    ImGui::CloseCurrentPopup();
+
+            }
+
+            ImGui::Text("Create Basic Component");
+            ImGui::Separator();
+            // button with full width
+            if (ImGui::Button("Toolchain", ImVec2(-1, 50)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::Button("Host", ImVec2(-1, 50)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::Button("General purpose system (GPOS)", ImVec2(-1, 50)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::Button("Package", ImVec2(-1, 50));
+
+            // Image button with text with full width
+
+            ImGui::Text("Create Advanced Component");
+            ImGui::Separator();
+
+            if (ImGui::CollapsingHeader("Packages & Tarballs"))
+            {
+                ImGui::Button("Package (P)", ImVec2(-1, 0));
+                ImGui::Button("Package Manager Package (PMP)", ImVec2(-1, 0));
+                ImGui::Button("Update Package", ImVec2(-1, 0));
+                ImGui::Button("Strapper", ImVec2(-1, 0));
+            }
+
+            if (ImGui::CollapsingHeader("Systems"))
+            {
+                ImGui::Button("General Purpose Operating System (GPOS)", ImVec2(-1, 0));
+                ImGui::Button("Real Time Operating System (RTOS)", ImVec2(-1, 0));
+                ImGui::Button("Embedded Operating System (EOS)", ImVec2(-1, 0));
+                ImGui::Button("Embedded Application (EA)", ImVec2(-1, 0));
+            }
+
+            if (ImGui::CollapsingHeader("Toolchains"))
+            {
+                if (ImGui::Button("Toolchain", ImVec2(-1, 0)))
+                {
+
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+
+            if (ImGui::CollapsingHeader("Debug tools"))
+            {
+                ImGui::Button("Chrooter", ImVec2(-1, 0));
+                ImGui::Button("Testers", ImVec2(-1, 0));
+            }
+
+            // static int unused_i = 0;
+            // ImGui::Combo("Combo", &unused_i, "Delete\0Delete harder\0");
+
+            static bool dont_ask_me_next_time = false;
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+            ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
+            ImGui::PopStyleVar();
+
+            if (ImGui::Button("OK", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
                 ImGui::EndMenuBar();
             }
             

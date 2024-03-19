@@ -8240,21 +8240,19 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
 
     // Layout
     const bool is_central_section = (tab->Flags & ImGuiTabItemFlags_SectionMask_) == 0;
-    tab->Width += 30.0f;
+    tab->Width += 50.0f;
     
     size.x = tab->Width;
     if (is_central_section){
-
-    tab_bar->BarRect.Min.x += 30.0f;
+        tab_bar->BarRect.Max.x += 30.0f;
         window->DC.CursorPos = tab_bar->BarRect.Min + ImVec2(IM_FLOOR(tab->Offset - tab_bar->ScrollingAnim), 0.0f);
     }
     else{
-    tab_bar->BarRect.Min.x += 30.0f;
-
+        tab_bar->BarRect.Max.x += 30.0f;
         window->DC.CursorPos = tab_bar->BarRect.Min + ImVec2(tab->Offset, 0.0f);
     }
     ImVec2 pos = window->DC.CursorPos;
-    ImRect bb(pos, pos + size);
+    ImRect bb(pos + ImVec2(50.0f, 0.0f), pos + size);
 
     // We don't have CPU clipping primitives to clip the CloseButton (until it becomes a texture), so need to add an extra draw call (temporary in the case of vertical animation)
     const bool want_clip_rect = is_central_section && (bb.Min.x < tab_bar->ScrollingRectMinX || bb.Max.x > tab_bar->ScrollingRectMaxX);

@@ -141,6 +141,35 @@ void VxHost::FindPackages()
             }
           }
         }
+        else if (registeredPackage->emplacement == "global")
+        {
+          // Recupérer les packages du ctx.
+
+          for(auto package : ctx.IO.packages){
+            if(package->label == filecontent["package"]["label"].get<std::string>()){
+
+            bool already_registered = false;
+            for (auto registered_package : this->packages)
+            {
+              if (filecontent["package"]["label"].get<std::string>() == registered_package->label)
+              {
+                already_registered = true;
+              }
+            }
+
+            if (!already_registered)
+            {
+              std::shared_ptr<VxPackage> newPackage = std::make_shared<VxPackage>(*package);
+
+              this->packages.push_back(newPackage);
+              registeredPackage->resolved = true;
+            }
+
+            }
+          }
+
+        }
+
       }
     }
     catch (const std::exception &e)

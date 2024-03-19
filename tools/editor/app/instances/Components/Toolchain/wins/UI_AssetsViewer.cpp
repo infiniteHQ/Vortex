@@ -1,7 +1,6 @@
 #include "../ToolchainInstance.h"
 #include "../../../Assets/Package/PackageInstance.h"
 
-
 static bool compareLabels(const std::shared_ptr<VxPackage> &obj, const std::string &label)
 {
     return obj->label == label;
@@ -11,7 +10,7 @@ void ToolchainInstance::UI_AssetsViewer()
 {
     if (this->show_UI_AssetsViewer)
     {
-        static std::string label = this->name + " - Assets Viewer###" +  this->name + "assetsviewer";
+        static std::string label = this->name + " - Assets Viewer###" + this->name + "assetsviewer";
         ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_FirstUseEver);
         static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID databaseIcon = this->m_DatabaseIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -54,13 +53,20 @@ void ToolchainInstance::UI_AssetsViewer()
             ImGui::TableSetupColumn("Place", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed);
             ImGui::TableHeadersRow();
+
             for (int row = 0; row < this->m_currentSave->registeredPackages.size(); row++)
             {
-                         auto it = std::find_if(this->toolchain->packages.begin(), this->toolchain->packages.end(),
-                                               [&](const std::shared_ptr<VxPackage> &obj)
-                                               { return compareLabels(obj, this->m_currentSave->registeredPackages[row].first); });
 
-                        std::shared_ptr<VxPackage> currentPackage = *it;
+                auto it = std::find_if(this->toolchain->packages.begin(), this->toolchain->packages.end(),
+                                       [&](const std::shared_ptr<VxPackage> &obj)
+                                       { return compareLabels(obj, this->m_currentSave->registeredPackages[row].first); });
+
+                std::shared_ptr<VxPackage> currentPackage;
+
+                if (it != this->toolchain->packages.end())
+                {
+                    currentPackage = *it;
+                }
 
                 ImGui::TableNextRow();
                 for (int column = 0; column < 4; column++)
@@ -71,14 +77,14 @@ void ToolchainInstance::UI_AssetsViewer()
                         if (it != this->toolchain->packages.end())
                         {
 
-                        ImGui::TableSetColumnIndex(column);   std::string openButtonID = "Open###" + std::to_string(row) + "-" + std::to_string(column);
-
+                            ImGui::TableSetColumnIndex(column);
+                            std::string openButtonID = "Open###" + std::to_string(row) + "-" + std::to_string(column);
 
                             if (ImGui::ImageButtonWithText(packageIcon, openButtonID.c_str(), ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
                             {
                                 std::cout << "Opening " << currentPackage->name << std::endl;
-							    std::shared_ptr<PackageInstance> instance = std::make_shared<PackageInstance>(m_ctx, currentPackage);
-							    this->factory->SpawnInstance(instance);	
+                                std::shared_ptr<PackageInstance> instance = std::make_shared<PackageInstance>(m_ctx, currentPackage);
+                                this->factory->SpawnInstance(instance);
                             }
                             // Vous pouvez faire d'autres opérations avec l'élément trouvé ici
                         }
@@ -90,7 +96,6 @@ void ToolchainInstance::UI_AssetsViewer()
                                 // Save behavior
                             }
                         }
-
                     }
 
                     if (column == 1)
@@ -102,7 +107,7 @@ void ToolchainInstance::UI_AssetsViewer()
                     if (column == 3)
                         if (it != this->toolchain->packages.end())
                         {
-                        ImGui::Text(currentPackage->compilation.compilationCommand.c_str());
+                            ImGui::Text(currentPackage->compilation.compilationCommand.c_str());
                         }
                 }
             }

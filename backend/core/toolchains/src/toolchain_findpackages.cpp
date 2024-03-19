@@ -133,6 +133,7 @@ void VxToolchain::FindPackages()
             }
           }
         }
+        
       }
     }
     catch (const std::exception &e)
@@ -144,12 +145,43 @@ void VxToolchain::FindPackages()
   std::sort(this->packages.begin(), this->packages.end(), [](const std::shared_ptr<VxPackage> &a, const std::shared_ptr<VxPackage> &b)
             { return a->priority < b->priority; });
 
-  // Register global packages
-  for (auto registeredPackage : this->registeredPackages)
-  {
-    if (registeredPackage->emplacement == "global")
-    {
-      // Recupérer les packages du ctx.
-    }
-  }
+
+      for (auto registeredPackage : this->registeredPackages)
+      {
+
+
+        if (registeredPackage->emplacement == "global")
+        {
+          // Recupérer les packages du ctx.
+
+            std::cout << "package->label : " << ctx.IO.packages.size() << "\n";
+          for(auto package : ctx.IO.packages){
+            if(package->label == registeredPackage->label){
+            std::cout << "finded ! \n";
+
+            bool already_registered = false;
+            for (auto registered_package : this->packages)
+            {
+              if (registeredPackage->label == registered_package->label)
+              {
+                already_registered = true;
+              }
+            }
+
+            if (!already_registered)
+            {
+              std::shared_ptr<VxPackage> newPackage = package;
+
+              this->packages.push_back(newPackage);
+              registeredPackage->resolved = true;
+            }
+
+            }
+          }
+
+        }
+      
+
+      }
+
 }

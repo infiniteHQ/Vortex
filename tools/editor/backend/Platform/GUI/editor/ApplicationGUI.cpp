@@ -446,24 +446,26 @@ namespace Walnut
 			glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 		}
 
-		GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
-		const GLFWvidmode *videoMode = glfwGetVideoMode(primaryMonitor);
-
-		int monitorX, monitorY;
-		glfwGetMonitorPos(primaryMonitor, &monitorX, &monitorY);
-
-
-		m_WindowHandle = glfwCreateWindow(m_Specification.Width, m_Specification.Height, m_Specification.Name.c_str(), NULL, NULL);
-
-		if (m_Specification.CenterWindow)
+		if (m_Specification.CustomTitlebar)
 		{
-			glfwSetWindowPos(m_WindowHandle,
-							 monitorX + (videoMode->width - m_Specification.Width) / 2,
-							 monitorY + (videoMode->height - m_Specification.Height) / 2);
 
-			glfwSetWindowAttrib(m_WindowHandle, GLFW_RESIZABLE, m_Specification.WindowResizeable ? GLFW_TRUE : GLFW_FALSE);
+			GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
+			const GLFWvidmode *videoMode = glfwGetVideoMode(primaryMonitor);
+
+			int monitorX, monitorY;
+			glfwGetMonitorPos(primaryMonitor, &monitorX, &monitorY);
+
+			m_WindowHandle = glfwCreateWindow(m_Specification.Width, m_Specification.Height, m_Specification.Name.c_str(), NULL, NULL);
+
+			if (m_Specification.CenterWindow)
+			{
+				glfwSetWindowPos(m_WindowHandle,
+								 monitorX + (videoMode->width - m_Specification.Width) / 2,
+								 monitorY + (videoMode->height - m_Specification.Height) / 2);
+
+				glfwSetWindowAttrib(m_WindowHandle, GLFW_RESIZABLE, m_Specification.WindowResizeable ? GLFW_TRUE : GLFW_FALSE);
+			}
 		}
-
 		glfwShowWindow(m_WindowHandle);
 
 		// Setup Vulkan
@@ -719,49 +721,82 @@ namespace Walnut
 
 		m_TitleBarHovered = ImGui::IsItemHovered();
 
-	// Inside your ImGui rendering code
+// Inside your Application class
 
-// Initialize a static variable to keep track of dragging state
-static bool isDraggingWindow = false;
-static ImVec2 windowDragStartPos;
-static ImVec2 windowPos; // Initialize windowPos with an initial position
+// Initialize a static variable to keep track of click state
+static bool isFirstClick = true;
+static double lastClickTime = -1;
 
-// Title bar drag area
-ImGui::SetCursorPos(ImVec2(windowPadding.x, windowPadding.y + titlebarVerticalOffset)); // Reset cursor pos
-ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
-
-m_TitleBarHovered = ImGui::IsItemHovered();
-
-// Handle mouse click in the title bar area
+// Inside your UI_DrawTitlebar function
 if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-    isDraggingWindow = true;
-    windowDragStartPos = ImGui::GetMousePos();
+    double currentTime = ImGui::GetTime();
+    if (isFirstClick || (currentTime - lastClickTime > 0.3)) {
+        // First click or time between clicks is greater than 0.3 seconds
+        isFirstClick = false;
+        lastClickTime = currentTime;
+    } else {
+        // Double-click detected
+        isFirstClick = true;
+        lastClickTime = -1;
+
+        // Perform window maximization or restoration
+        if (isMaximized) {
+            glfwRestoreWindow(m_WindowHandle);
+        } else {
+            glfwMaximizeWindow(m_WindowHandle);
+        }
+    }
 }
 
-// Handle dragging behavior
-	if(!isMaximized){
-		
-if (isDraggingWindow) {
-    ImVec2 delta;
-    delta.x = ImGui::GetMousePos().x - windowDragStartPos.x;
-    delta.y = ImGui::GetMousePos().y - windowDragStartPos.y;
-    // Update window position
-    windowPos.x += delta.x; // Update windowPos
-    windowPos.y += delta.y;
-    // Update drag start position for the next frame
-    windowDragStartPos = ImGui::GetMousePos();
+		// Inside your ImGui rendering code
 
+		// Initialize a static variable to keep track of dragging state
+		static bool isDraggingWindow = false;
+		static ImVec2 windowDragStartPos;
 
-	if(!isMaximized)
-		glfwSetWindowPos(m_WindowHandle, static_cast<int>(windowPos.x), static_cast<int>(windowPos.y));
-}
-	}
+		int windowPosX, windowPosY;
+		glfwGetWindowPos(m_WindowHandle, &windowPosX, &windowPosY);
+		static ImVec2 windowPos{static_cast<float>(windowPosX), static_cast<float>(windowPosY)};
 
+		// Title bar drag area
+		ImGui::SetCursorPos(ImVec2(windowPadding.x, windowPadding.y + titlebarVerticalOffset)); // Reset cursor pos
+		ImGui::InvisibleButton("##titleBarDragZone", ImVec2(w - buttonsAreaWidth, titlebarHeight));
 
-// Reset dragging state when mouse button is released
-if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
-    isDraggingWindow = false;
-}
+		m_TitleBarHovered = ImGui::IsItemHovered();
+
+		// Handle mouse click in the title bar area
+		if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		{
+			isDraggingWindow = true;
+			windowDragStartPos = ImGui::GetMousePos();
+		}
+
+		// Handle dragging behavior
+		if (!isMaximized)
+		{
+
+			if (isDraggingWindow)
+			{
+				ImVec2 delta;
+				delta.x = ImGui::GetMousePos().x - windowDragStartPos.x;
+				delta.y = ImGui::GetMousePos().y - windowDragStartPos.y;
+				// Update window position
+				windowPos.x += delta.x; // Update windowPos
+				windowPos.y += delta.y;
+				// Update drag start position for the next frame
+				windowDragStartPos = ImGui::GetMousePos();
+
+				if (!isMaximized)
+					glfwSetWindowPos(m_WindowHandle, static_cast<int>(windowPos.x), static_cast<int>(windowPos.y));
+			}
+		}
+
+		// Reset dragging state when mouse button is released
+		if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+		{
+			isDraggingWindow = false;
+		}
+
 		if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 
 			if (isMaximized)
@@ -804,62 +839,66 @@ if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
 		const float buttonWidth = 14.0f;
 		const float buttonHeight = 14.0f;
 
-		// Minimize Button
-
-		ImGui::Spring();
-		UI::ShiftCursorY(8.0f);
+		if (m_Specification.CustomTitlebar)
 		{
-			const int iconWidth = m_IconMinimize->GetWidth();
-			const int iconHeight = m_IconMinimize->GetHeight();
-			const float padY = (buttonHeight - (float)iconHeight) / 2.0f;
-			if (ImGui::InvisibleButton("Minimize", ImVec2(buttonWidth, buttonHeight)))
+
+			// Minimize Button
+
+			ImGui::Spring();
+			UI::ShiftCursorY(8.0f);
 			{
-				// TODO: move this stuff to a better place, like Window class
-				if (m_WindowHandle)
+				const int iconWidth = m_IconMinimize->GetWidth();
+				const int iconHeight = m_IconMinimize->GetHeight();
+				const float padY = (buttonHeight - (float)iconHeight) / 2.0f;
+				if (ImGui::InvisibleButton("Minimize", ImVec2(buttonWidth, buttonHeight)))
 				{
-					Application::Get().QueueEvent([windowHandle = m_WindowHandle]()
-												  { glfwIconifyWindow(windowHandle); });
+					// TODO: move this stuff to a better place, like Window class
+					if (m_WindowHandle)
+					{
+						Application::Get().QueueEvent([windowHandle = m_WindowHandle]()
+													  { glfwIconifyWindow(windowHandle); });
+					}
 				}
+
+				UI::DrawButtonImage(m_IconMinimize, buttonColN, buttonColH, buttonColP, UI::RectExpanded(UI::GetItemRect(), 0.0f, -padY));
 			}
 
-			UI::DrawButtonImage(m_IconMinimize, buttonColN, buttonColH, buttonColP, UI::RectExpanded(UI::GetItemRect(), 0.0f, -padY));
-		}
-
-		// Maximize Button
-		ImGui::Spring(-1.0f, 17.0f);
-		UI::ShiftCursorY(8.0f);
-		{
-			const int iconWidth = m_IconMaximize->GetWidth();
-			const int iconHeight = m_IconMaximize->GetHeight();
-
-			const bool isMaximized = IsMaximized();
-
-			if (ImGui::InvisibleButton("Maximize", ImVec2(buttonWidth, buttonHeight)))
+			// Maximize Button
+			ImGui::Spring(-1.0f, 17.0f);
+			UI::ShiftCursorY(8.0f);
 			{
-				Application::Get().QueueEvent([isMaximized, windowHandle = m_WindowHandle]()
-											  {
+				const int iconWidth = m_IconMaximize->GetWidth();
+				const int iconHeight = m_IconMaximize->GetHeight();
+
+				const bool isMaximized = IsMaximized();
+
+				if (ImGui::InvisibleButton("Maximize", ImVec2(buttonWidth, buttonHeight)))
+				{
+					Application::Get().QueueEvent([isMaximized, windowHandle = m_WindowHandle]()
+												  {
 					if (isMaximized)
 						glfwRestoreWindow(windowHandle);
 					else
 						glfwMaximizeWindow(windowHandle); });
+				}
+
+				UI::DrawButtonImage(isMaximized ? m_IconRestore : m_IconMaximize, buttonColN, buttonColH, buttonColP);
 			}
 
-			UI::DrawButtonImage(isMaximized ? m_IconRestore : m_IconMaximize, buttonColN, buttonColH, buttonColP);
+			// Close Button
+			ImGui::Spring(-1.0f, 15.0f);
+			UI::ShiftCursorY(8.0f);
+			{
+				const int iconWidth = m_IconClose->GetWidth();
+				const int iconHeight = m_IconClose->GetHeight();
+				if (ImGui::InvisibleButton("Close", ImVec2(buttonWidth, buttonHeight)))
+					Application::Get().Close();
+
+				UI::DrawButtonImage(m_IconClose, UI::Colors::Theme::text, UI::Colors::ColorWithMultipliedValue(UI::Colors::Theme::text, 1.4f), buttonColP);
+			}
+
+			ImGui::Spring(-1.0f, 18.0f);
 		}
-
-		// Close Button
-		ImGui::Spring(-1.0f, 15.0f);
-		UI::ShiftCursorY(8.0f);
-		{
-			const int iconWidth = m_IconClose->GetWidth();
-			const int iconHeight = m_IconClose->GetHeight();
-			if (ImGui::InvisibleButton("Close", ImVec2(buttonWidth, buttonHeight)))
-				Application::Get().Close();
-
-			UI::DrawButtonImage(m_IconClose, UI::Colors::Theme::text, UI::Colors::ColorWithMultipliedValue(UI::Colors::Theme::text, 1.4f), buttonColP);
-		}
-
-		ImGui::Spring(-1.0f, 18.0f);
 		ImGui::EndHorizontal();
 
 		outTitlebarHeight = titlebarHeight;
