@@ -2,6 +2,8 @@ Vortex Maker
 =====
 Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. 
 
+![VortexMaker Editor](./.github/imgs/editor.png)
+
 ## Build & Installation
 ```
 git clone https://github.com/infiniteHQ/VortexMaker.git
@@ -27,9 +29,9 @@ Usage : vortex <paramater(s)...> <information(s)...>
 ##### Create your first project
 For this example, let's initialize a project with a sample, such as a basic Linux operating system.
 
-*vortex -I \<project_name\> \<template\>*
+*vortex -cp \<project_name\> \<template\>*
 ```
-vortex -I MySystem linux_os
+vortex -cp MySystem linux_os
 ```
 This command will create a system called *MySystem* based on *linux_os* template.
 
