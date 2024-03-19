@@ -8177,7 +8177,7 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
         tab_is_new = true;
     }
     tab_bar->LastTabItemIdx = (ImS16)tab_bar->Tabs.index_from_ptr(tab);
-    tab->ContentWidth = size.x + 30.0f;
+    tab->ContentWidth = size.x;
     tab->BeginOrder = tab_bar->TabsActiveCount++;
 
     const bool tab_bar_appearing = (tab_bar->PrevFrameVisible + 1 < g.FrameCount);
@@ -8240,19 +8240,18 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
 
     // Layout
     const bool is_central_section = (tab->Flags & ImGuiTabItemFlags_SectionMask_) == 0;
-    tab->Width += 50.0f;
+   // tab->Width += 10.0f;
     
     size.x = tab->Width;
     if (is_central_section){
-        tab_bar->BarRect.Max.x += 30.0f;
         window->DC.CursorPos = tab_bar->BarRect.Min + ImVec2(IM_FLOOR(tab->Offset - tab_bar->ScrollingAnim), 0.0f);
     }
     else{
-        tab_bar->BarRect.Max.x += 30.0f;
         window->DC.CursorPos = tab_bar->BarRect.Min + ImVec2(tab->Offset, 0.0f);
     }
+    
     ImVec2 pos = window->DC.CursorPos;
-    ImRect bb(pos + ImVec2(50.0f, 0.0f), pos + size);
+    ImRect bb(pos, pos + size);
 
     // We don't have CPU clipping primitives to clip the CloseButton (until it becomes a texture), so need to add an extra draw call (temporary in the case of vertical animation)
     const bool want_clip_rect = is_central_section && (bb.Min.x < tab_bar->ScrollingRectMinX || bb.Max.x > tab_bar->ScrollingRectMaxX);
@@ -8260,7 +8259,7 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
         PushClipRect(ImVec2(ImMax(bb.Min.x, tab_bar->ScrollingRectMinX), bb.Min.y - 1), ImVec2(tab_bar->ScrollingRectMaxX, bb.Max.y), true);
 
     ImVec2 backup_cursor_max_pos = window->DC.CursorMaxPos;
-    ItemSize(bb.GetSize(), style.FramePadding.y);
+    ItemSize(bb.GetSize() , style.FramePadding.y);
     window->DC.CursorMaxPos = backup_cursor_max_pos;
     if (!ItemAdd(bb, id))
     {
@@ -8463,7 +8462,7 @@ ImVec2 ImGui::TabItemCalcSize(const char* label, bool has_close_button)
         size.x += g.Style.FramePadding.x + (g.Style.ItemInnerSpacing.x + g.FontSize); // We use Y intentionally to fit the close button circle.
     else
         size.x += g.Style.FramePadding.x + 1.0f;
-    return ImVec2(ImMin(size.x, TabBarCalcMaxTabWidth()), size.y);
+    return ImVec2(ImMin(size.x + 45.0f, TabBarCalcMaxTabWidth()), size.y);
 }
 
 void ImGui::TabItemBackground(ImDrawList* draw_list, const ImRect& bb, ImGuiTabItemFlags flags, ImU32 col)
