@@ -8,7 +8,7 @@ void ToolchainInstance::UI_VolatileTasks()
     if (this->show_UI_VolatileTasks)
     {
 
-        static std::string label = this->name + " - Volatile Tasks ###" + this->name + "volatiletasks";
+         std::string label = this->name + " - Volatile Tasks ###" + this->name + "volatiletasks";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

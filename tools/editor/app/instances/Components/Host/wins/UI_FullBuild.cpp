@@ -7,7 +7,7 @@ void HostInstance::UI_FullBuild()
     if (this->show_UI_FullBuild)
     {
 
-        static std::string label = this->name + " - Full Build###" +  this->name +"fullbuild";
+         std::string label = this->name + " - Full Build###" +  this->name +"fullbuild";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

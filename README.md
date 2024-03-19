@@ -1,10 +1,49 @@
 Vortex Maker
 =====
-Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. 
+
+<p align="center">Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. </p>
 
 ![VortexMaker Editor](./.github/imgs/editor.png)
 
+## General Features
+- Operating systems creation tools
+- Embedded systems creation tools
+- Embedded apps creation tools
+- Independant components creation tools (toolchains, packages, scripts, etc...)
+- Pre/production & Post/Production tools
+- Maintenance tools
+- Update tools
+
+### All Features 
+- #### Projects
+    - Project gestion & saves handle
+    - Export to production
+    - Easy collaboration
+- ####  Toolchains
+    - Toolchain development (manage packages, scripts and tasks)
+    - Toolchain compilation
+    - Toolchain debugging (gdb, testers, etc...)
+- #### Hosts & Build Environments
+    - Host development (packages, skeletons, routines, etc...)
+    - Host compilation (from a toolchain for exemple)
+    - Host linking and final components build
+    - Host debugging runtime
+- #### General Purpose Operating Systems (GPOS)
+    - System development
+    - 
+
+
+- Operating Systems, Embedded Filesystems & Embbeded app creation
+- Full toolchain creation
+- Complete package & tarball creation
+- Advanced snapshot/recovery of a project
+- Production tools
+
+
+
 ## Build & Installation
+
+#### Linux/Unix Build
 ```
 git clone https://github.com/infiniteHQ/VortexMaker.git
 cd VortexMaker
@@ -12,6 +51,18 @@ mkdir build && cd build
 cmake ..
 sudo make install
 ```
+
+
+#### Linux Distributions
+```
+```
+
+#### Windows
+```
+Download Release and run vortex_maker.exe (TODO)
+```
+
+
 
 ## Usage
 Usage : vortex <paramater(s)...> <information(s)...>

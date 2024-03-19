@@ -5,7 +5,7 @@ void ToolchainInstance::UI_ContentWindow()
     if (this->show_UI_ContentWindow)
     {
 
-        static std::string label = this->name + " - Content Window";
+         std::string label = this->name + " - Content Window";
         ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_FirstUseEver);
         if (ImGui::Begin(label.c_str()))
         {

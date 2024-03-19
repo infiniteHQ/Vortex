@@ -7,7 +7,7 @@ void HostInstance::UI_SnapshotUtility()
     if (this->show_UI_SnapshotUtility)
     {
 
-        static std::string label = this->name + " - Snapshot Utility###" +  this->name + "snapshotutility";
+         std::string label = this->name + " - Snapshot Utility###" +  this->name + "snapshotutility";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

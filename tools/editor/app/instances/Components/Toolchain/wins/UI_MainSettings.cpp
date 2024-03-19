@@ -7,7 +7,7 @@ void ToolchainInstance::UI_MainSettings()
     if (this->show_UI_MainSettings)
     {
 
-        static std::string label = this->name + " - Toolchain Settings###" +  this->name + "mainsettings";
+         std::string label = this->name + " - Toolchain Settings###" +  this->name + "mainsettings";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

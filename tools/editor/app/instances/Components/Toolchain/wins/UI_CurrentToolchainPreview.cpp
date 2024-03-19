@@ -53,7 +53,7 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
     if (this->show_UI_CurrentToolchainPreview)
     {
 
-        static std::string label = this->name + " - Preview Current Host###" + this->name + "previewcurrenttoolchain";
+         std::string label = this->toolchain->name + " - Preview Current Host###" + this->toolchain->name + "previewcurrenttoolchain";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static std::thread receiveThread;

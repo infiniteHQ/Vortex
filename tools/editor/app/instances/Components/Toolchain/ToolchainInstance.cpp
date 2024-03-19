@@ -134,12 +134,12 @@ std::string ToolchainInstance::render()
     {
         static ImTextureID toolchainIcon = this->m_ToolchainIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        if(opened){
-        this->dockspaceID = ImGui::GetID(this->name.c_str());
+        if(&this->opened){
+        this->dockspaceID = ImGui::GetID(this->toolchain->name.c_str());
         static ImGuiIO &io = ImGui::GetIO();
 
         // Mainwindow with dockspace
-        if (ImGui::Begin(name.c_str(), &toolchainIcon, &this->opened, ImGuiWindowFlags_MenuBar))
+        if (ImGui::Begin(this->toolchain->name.c_str(), &toolchainIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         {
             this->menubar();
             

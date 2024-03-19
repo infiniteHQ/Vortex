@@ -10,7 +10,7 @@ void ToolchainInstance::UI_AssetsViewer()
 {
     if (this->show_UI_AssetsViewer)
     {
-        static std::string label = this->name + " - Assets Viewer###" + this->name + "assetsviewer";
+         std::string label = this->name + " - Assets Viewer###" + this->name + "assetsviewer";
         ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_FirstUseEver);
         static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID databaseIcon = this->m_DatabaseIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

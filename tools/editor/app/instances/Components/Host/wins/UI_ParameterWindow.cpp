@@ -4,7 +4,7 @@ void HostInstance::UI_ParametersWindow(){
         if (this->show_UI_ParametersWindow)
         {
 
-            static std::string label = this->name + " - Parameters Window###" +  this->name + "parameters";
+             std::string label = this->name + " - Parameters Window###" +  this->name + "parameters";
             ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
             if (ImGui::Begin(label.c_str()))
             {
