@@ -154,10 +154,8 @@ void VxToolchain::FindPackages()
         {
           // Recupérer les packages du ctx.
 
-            std::cout << "package->label : " << ctx.IO.packages.size() << "\n";
           for(auto package : ctx.IO.packages){
             if(package->label == registeredPackage->label){
-            std::cout << "finded ! \n";
 
             bool already_registered = false;
             for (auto registered_package : this->packages)

@@ -735,7 +735,7 @@ VORTEX_API void VortexMaker::RefreshPackages()
         continue;
       }
 
-      RegisterPackage(newPackage, filecontent);
+      RegisterPackage(file, newPackage, filecontent);
     }
     catch (const std::exception &e)
     {

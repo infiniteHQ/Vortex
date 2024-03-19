@@ -1,18 +1,20 @@
 #include "../../vortex.h"
 #include "../../vortex_internals.h"
 
-bool VortexMaker::RegisterPackage(std::shared_ptr<VxPackage> newPackage, nlohmann::json filecontent)
+bool VortexMaker::RegisterPackage(std::string filepath, std::shared_ptr<VxPackage> newPackage, nlohmann::json filecontent)
 {
     VxContext* ctx = VortexMaker::GetCurrentContext(); 
 
-    // newPackage->path = file;
+    newPackage->path = filepath;
     size_t position = newPackage->path.find("/package.config");
-    // newPackage->configFilePath = file;
+    newPackage->configFilePath = filepath;
 
     if (position != std::string::npos)
     {
         newPackage->path.erase(position, 17);
     }
+
+    // Demain fix definitivement toutes les taches de base d'une toolchain.
 
     newPackage->label = filecontent["package"]["label"].get<std::string>();
     newPackage->fileName = filecontent["package"]["filename"].get<std::string>();

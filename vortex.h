@@ -264,7 +264,7 @@ namespace VortexMaker
     VORTEX_API nlohmann::json DumpJSON(const std::string& file);
 
 
-    VORTEX_API bool RegisterPackage(std::shared_ptr<VxPackage> newPackage, nlohmann::json toolchainData);
+    VORTEX_API bool RegisterPackage(std::string filepath, std::shared_ptr<VxPackage> newPackage, nlohmann::json toolchainData);
     VORTEX_API bool RegisterDistHost(VxDistHost host, nlohmann::json packageData);
     VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
     VORTEX_API bool RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nlohmann::json toolchainData);

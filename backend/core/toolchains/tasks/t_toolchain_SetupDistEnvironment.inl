@@ -14,16 +14,16 @@
 
 struct Task;
 
-struct SetupSkeleton : public Task
+struct SetupDistEnvironment : public Task
 {
 
     std::shared_ptr<Task> clone() const override {
-        return std::make_shared<SetupSkeleton>(*this);
+        return std::make_shared<SetupDistEnvironment>(*this);
     }
 
   void init() override
   {
-    this->tasktype = "SetupSkeleton";
+    this->tasktype = "SetupDistEnvironment";
   };
 
   // Récupérer un ancien report
@@ -42,8 +42,8 @@ struct SetupSkeleton : public Task
     // API to check if a task is executed and the result.
     if(!toolchain->TaskSuccedded("CreateTemporaryUser")){
       std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-      this->addCheckVerdict("createFolders", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first", "none");
-      this->addCheckVerdict("giveFoldersToUser", "failed", "To run \"SetupSkeleton\" you need to run \"CreateTemporaryUser\" first", "none");
+      this->addCheckVerdict("createFolders", "failed", "To run \"SetupDistEnvironment\" you need to run \"CreateTemporaryUser\" first", "none");
+      this->addCheckVerdict("giveFoldersToUser", "failed", "To run \"SetupDistEnvironment\" you need to run \"CreateTemporaryUser\" first", "none");
       this->finish("failed", props);
       return;
     }
@@ -64,7 +64,7 @@ struct SetupSkeleton : public Task
     std::string baseDir = toolchain->envPath + "/" + toolchain->name;
 
 
-    toolchain->currentLoadedSystem.put_varable(this, "directory:base", "SetupSkeleton", baseDir);
+    toolchain->currentLoadedSystem.put_varable(this, "directory:base", "SetupDistEnvironment", baseDir);
     if (mkdir(baseDir.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + baseDir, "none");
@@ -72,7 +72,7 @@ struct SetupSkeleton : public Task
 
 
     std::string crosstoolsDir = baseDir + "/working_host";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:working_host", "SetupSkeleton", crosstoolsDir);
+    toolchain->currentLoadedSystem.put_varable(this, "directory:working_host", "SetupDistEnvironment", crosstoolsDir);
     if (mkdir(crosstoolsDir.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + crosstoolsDir, "none");
@@ -80,42 +80,42 @@ struct SetupSkeleton : public Task
 
     // All provided by default. Used by the current toolchain system
     std::string data = baseDir + "/data";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:data", "SetupSkeleton", baseDir);
+    toolchain->currentLoadedSystem.put_varable(this, "directory:data", "SetupDistEnvironment", baseDir);
     if (mkdir(data.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + data, "none");
     }
 
     std::string packages_data = baseDir + "/data/packages";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:data_packages", "SetupSkeleton", packages_data);
+    toolchain->currentLoadedSystem.put_varable(this, "directory:data_packages", "SetupDistEnvironment", packages_data);
     if (mkdir(toolchain->packages_data.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + toolchain->packages_data, "none");
     }
 
     std::string patchs_data = baseDir + "/data/patchs";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:data_patchs", "SetupSkeleton", patchs_data);
+    toolchain->currentLoadedSystem.put_varable(this, "directory:data_patchs", "SetupDistEnvironment", patchs_data);
     if (mkdir(patchs_data.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + patchs_data, "none");
     }
 
     std::string scripts_data = baseDir + "/data/scripts";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:scripts_patchs", "SetupSkeleton", scripts_data);
+    toolchain->currentLoadedSystem.put_varable(this, "directory:scripts_patchs", "SetupDistEnvironment", scripts_data);
     if (mkdir(scripts_data.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + scripts_data, "none");
     }
 
     std::string sysrootDir = crosstoolsDir + "/sysroot";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:sysroot", "SetupSkeleton", sysrootDir);
+    toolchain->currentLoadedSystem.put_varable(this, "directory:sysroot", "SetupDistEnvironment", sysrootDir);
     if (mkdir(sysrootDir.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + sysrootDir, "none");
     }
 
     std::string debugrootDir = crosstoolsDir + "/debugroot";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:debugroot", "SetupSkeleton", debugrootDir);
+    toolchain->currentLoadedSystem.put_varable(this, "directory:debugroot", "SetupDistEnvironment", debugrootDir);
     if (mkdir(debugrootDir.c_str(), 0777) == -1)
     {
       this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + debugrootDir, "none");

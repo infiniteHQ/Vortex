@@ -2,7 +2,7 @@
 #include "../../../../vortex_internals.h"
 
 // Import tasks
-#include "../tasks/t_toolchain_SetupSkeleton.inl"
+#include "../tasks/t_toolchain_SetupDistEnvironment.inl"
 #include "../tasks/t_toolchain_CreateTemporaryUser.inl"
 #include "../tasks/t_toolchain_DeleteTemporaryUser.inl"
 #include "../tasks/t_toolchain_BuildDistPackage.inl"
@@ -192,8 +192,8 @@ void VxToolchain::Init()
 
   // Add tasks types
   {
-    std::shared_ptr<SetupSkeleton> task = std::make_shared<SetupSkeleton>();
-    task->tasktype = "SetupSkeleton";
+    std::shared_ptr<SetupDistEnvironment> task = std::make_shared<SetupDistEnvironment>();
+    task->tasktype = "SetupDistEnvironment";
     this->tasks.push_back(task);
   }
   {
