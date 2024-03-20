@@ -52,15 +52,15 @@ void VxPackage::Refresh()
   this->actions.clear();
   for (auto action : filecontent["actions"])
   {
-    if (action["type"].get<std::string>() == "command")
-    {
+    //if (action["type"].get<std::string>() == "command")
+    //{
       std::shared_ptr<VXPackage_Action> newAction = std::make_shared<VXPackage_Action>();
       newAction->type = action["type"].get<std::string>();
       newAction->priority = action["priority"].get<int>();
       newAction->executionSequence = action["sequence"].get<std::string>();
       newAction->command = action["command"].get<std::string>();
       this->actions.push_back(newAction);
-    }
+   // }
   }
 
   std::sort(this->actions.begin(), this->actions.end(), [](const std::shared_ptr<VXPackage_Action> &a, const std::shared_ptr<VXPackage_Action> &b)

@@ -58,13 +58,8 @@ struct InstallDistPackage : public Task
     */
 
 
-    {
-      std::string cmd = "mkdir " + working_path + +"/build";
-      auto [output, result] = toolchain->exec_cmd(cmd.c_str()); // faire un empaquetage complet
 
-      if (result == 0)this->addCheckVerdict("create_build_folder", "success", output, cmd);
-      if (result != 0)this->addCheckVerdict("create_build_folder", "failed", output, cmd);
-    }
+    package->ExecuteActions("pre_installation", package);
 
     {
     std::string configuration;
@@ -214,7 +209,7 @@ struct InstallDistPackage : public Task
       if (result != 0)this->addCheckVerdict("compile_dist_package", "failed", output, installation);
     }
 
-
+    package->ExecuteActions("post_installation", package);
 
     this->finish("finish", nullptr);
   }

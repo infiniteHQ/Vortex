@@ -39,6 +39,7 @@ add_library(editor
     
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/PackageInstance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/wins/UI_MainSettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/wins/UI_ActionsEditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/wins/UI_CompilationArguments.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Tasklist/wins/UI_MainSettings.cpp

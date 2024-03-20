@@ -491,7 +491,7 @@ std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string 
 
 void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package)
 {
-  for (auto action : this->actions)
+  for (auto action : package->actions)
   {
     if (sequence == action->executionSequence)
     {
@@ -499,7 +499,7 @@ void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> 
       {
 
         std::string cmd = "";
-        cmd += "cd " + package->distPath + "/" + package->path + "/build && " + action->command;
+        cmd += "cd " + package->distPath + "/build && " + action->command;
 
         std::string label = "action-" + action->type + "-" + action->executionSequence + "-";
         label += action->priority;

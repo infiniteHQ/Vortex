@@ -8,7 +8,7 @@ void PackageInstance::UI_CompilationArguments()
     if (this->show_UI_CompilationArguments)
     {
 
-     std::string label = this->name + " - Compilations Arguments###" +  this->name;
+     std::string label = this->name + " - Compilations Arguments###" +  this->name+ " - Compilations Arguments";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

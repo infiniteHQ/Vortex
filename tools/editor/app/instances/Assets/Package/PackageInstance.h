@@ -35,10 +35,12 @@ public:
 
     void UI_MainSettings();
     void UI_CompilationArguments();
+    void UI_ActionsEditor();
 
     bool opened;
     bool show_UI_MainSettings = false;
     bool show_UI_CompilationArguments = false;
+    bool show_UI_ActionsEditor = false;
 
 
     std::string name;

@@ -39,6 +39,17 @@ void VxPackage::PushSave(std::shared_ptr<PackageSave> save)
     packageData["parameters"]["useOnlyCustomInstallationProcess"] = save->useOnlyCustomInstallationProcess;
     packageData["parameters"]["useCompilationOptimization"] = save->useCompilationOptimization;
 
+    packageData["actions"] = nlohmann::json::array();
+    
+    for(auto action : save->actions){
+        nlohmann::json actionJson;
+        actionJson["type"] = action.type;
+        actionJson["priority"] = action.priority;
+        actionJson["sequence"] = action.sequence;
+        actionJson["command"] = action.command;
+        packageData["actions"].push_back(actionJson);
+    }   
+
     // Initialize arrays
     nlohmann::json objJson;
     objJson["configurationPrefixes"] = nlohmann::json::array();

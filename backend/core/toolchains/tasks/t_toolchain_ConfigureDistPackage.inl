@@ -56,6 +56,8 @@ struct ConfigureDistPackage : public Task
         Faire pleins de taches singulières (config, give etc, et faire des plus grosses taches qui controllent et qui call les petites taches)
     
     */
+    package->distPath = working_path;
+    package->ExecuteActions("pre_configuration", package);
 
 
     {
@@ -104,6 +106,9 @@ struct ConfigureDistPackage : public Task
       if (result == 0)this->addCheckVerdict("configure_dist_package", "success", output, configuration);
       if (result != 0)this->addCheckVerdict("configure_dist_package", "failed", output, configuration);
     }
+
+
+    package->ExecuteActions("post_configuration", package);
 
     this->finish("finish", nullptr);
   }

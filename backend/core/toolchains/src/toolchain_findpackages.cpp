@@ -76,7 +76,7 @@ void VxToolchain::FindPackages()
                   newAction->type = action["type"].get<std::string>();
                   newAction->priority = action["priority"].get<int>();
                   newAction->executionSequence = action["sequence"].get<std::string>();
-                  newAction->command = action["command"].get<std::string>();
+                  newAction->command = action["command"].get<std::string>(); // TODO : if type == command
                   newPackage->actions.push_back(newAction);
                 }
               }

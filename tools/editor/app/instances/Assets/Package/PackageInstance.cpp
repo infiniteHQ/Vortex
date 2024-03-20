@@ -119,6 +119,7 @@ std::string PackageInstance::render()
         // All Windows of this instances :
         this->UI_MainSettings();
         this->UI_CompilationArguments();
+        this->UI_ActionsEditor();
 
 
         return "rendering";
@@ -157,6 +158,9 @@ void PackageInstance::menubar()
             {
             }
             if (ImGui::MenuItem("Compilation Arguments", NULL, &this->show_UI_CompilationArguments))
+            {
+            }
+            if (ImGui::MenuItem("Actions editor", NULL, &this->show_UI_ActionsEditor))
             {
             }
             ImGui::EndMenu();

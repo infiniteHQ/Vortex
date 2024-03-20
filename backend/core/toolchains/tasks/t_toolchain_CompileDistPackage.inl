@@ -53,6 +53,9 @@ struct CompileDistPackage : public Task
     this->addIdleCheck("compile_dist_package");
     this->addIdleCheck("install_dist_package");
 
+
+    package->ExecuteActions("pre_compilation", package);
+
     {
     std::string compilation;
     if (package->compilation.exclusiveCustomConfigProcess == "not specified")
@@ -106,6 +109,7 @@ struct CompileDistPackage : public Task
       if (result != 0)this->addCheckVerdict("compile_dist_package", "failed", output, compilation);
     }
 
+    package->ExecuteActions("post_compilation", package);
     this->finish("finish", nullptr);
   }
 
