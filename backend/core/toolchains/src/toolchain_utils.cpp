@@ -5,13 +5,20 @@
 #include "../tasks/t_toolchain_SetupDistEnvironment.inl"
 #include "../tasks/t_toolchain_CreateTemporaryUser.inl"
 #include "../tasks/t_toolchain_DeleteTemporaryUser.inl"
-#include "../tasks/t_toolchain_BuildDistPackage.inl"
 #include "../tasks/t_toolchain_ClearDistPackage.inl"
 #include "../tasks/t_toolchain_MovePackageToDist.inl"
 #include "../tasks/t_toolchain_GiveToolchainToTemporaryUser.inl"
 #include "../tasks/t_toolchain_UncompressDistPackage.inl"
 
+// Packages Building in toolchjain
+#include "../tasks/t_toolchain_CreateBuildEnv.inl"
+#include "../tasks/t_toolchain_BuildDistPackage.inl"
+#include "../tasks/t_toolchain_ConfigureDistPackage.inl"
+#include "../tasks/t_toolchain_CompileDistPackage.inl"
+#include "../tasks/t_toolchain_InstallDistPackage.inl"
 
+
+#include "../tasks/t_toolchain_ExecuteTaskList.inl"
 
 
 void VxToolchainCurrentSystem::CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
@@ -202,8 +209,33 @@ void VxToolchain::Init()
     this->tasks.push_back(task);
   }
   {
+    std::shared_ptr<ExecuteTaskList> task = std::make_shared<ExecuteTaskList>();
+    task->tasktype = "ExecuteTaskList";
+    this->tasks.push_back(task);
+  }
+  {
     std::shared_ptr<CreateTemporaryUser> task = std::make_shared<CreateTemporaryUser>();
     task->tasktype = "CreateTemporaryUser";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<CreateBuildEnv> task = std::make_shared<CreateBuildEnv>();
+    task->tasktype = "CreateBuildEnv";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<InstallDistPackage> task = std::make_shared<InstallDistPackage>();
+    task->tasktype = "InstallDistPackage";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<CompileDistPackage> task = std::make_shared<CompileDistPackage>();
+    task->tasktype = "CompileDistPackage";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<ConfigureDistPackage> task = std::make_shared<ConfigureDistPackage>();
+    task->tasktype = "ConfigureDistPackage";
     this->tasks.push_back(task);
   }
   {

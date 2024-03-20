@@ -169,8 +169,97 @@ void ToolchainInstance::UI_VolatileTasks()
             ImGui::EndChild();
         }
 
-        if (selected == 1)
+        // Project Settings
+        if (selected == 3)
         {
+            ImGui::BeginChild("Pans_VolatileTasks", ImVec2(0, 0), true);
+            ImGui::Columns(4, NULL);
+
+            std::vector<const char *> items;
+            for (auto chaine : this->toolchain->tasks)
+            {
+                items.push_back(chaine->tasktype.c_str());
+            }
+            static int item_current = 0;
+            static int item_component_current = 0;
+
+            int i = 1;
+            for (int row = 0; row < this->toolchain->tasklists.size(); row++)
+            {
+                std::string label = "packageView###" + std::to_string(row) + this->toolchain->tasklists[row]->label + std::to_string(i);
+                ImGuiID id = ImGui::GetID(label.c_str());
+                ImGui::BeginChildFrame(id, ImVec2(0, 220), true);
+
+                // Affichage des éléments individuels
+                std::string ll = this->toolchain->tasklists[row]->label;
+                ImGui::Text(ll.c_str());
+
+                if (ImGui::BeginCombo("Task", items[item_current]))
+                {
+                    for (int i = 0; i < items.size(); ++i)
+                    {
+                        bool is_selected = (item_current == i);
+                        if (ImGui::Selectable(items[i], is_selected))
+                        {
+                            item_current = i; // Met à jour l'ID de l'élément sélectionné
+                        }
+                        if (is_selected)
+                        {
+                            ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+
+                if (ImGui::Button("Build"))
+                {
+
+                    std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+                    props->add("toolchain", this->toolchain);
+
+
+                    for (auto task : this->toolchain->tasks)
+                    {
+                        if (task->tasktype == items[item_current])
+                        {
+                            std::shared_ptr<Task> _task = task->clone();
+                            //_task = task;
+                            std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+                            props->add("toolchain", this->toolchain);
+                            props->add("tasklist", this->toolchain->tasklists[row]);
+
+                            _task->id = task->tasktype + "-" + VortexMaker::gen_random(8);
+                            _task->tasktype = task->tasktype;
+                            _task->component = this->toolchain->packages[row]->label;
+                            _task->priority = task->priority;
+                            _task->props = props;
+                            _task->state = "not_started";
+
+                            // Ajout de la tâche aux listes appropriées
+                            if(this->toolchain->taskProcessor){
+
+                {
+                    std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
+                    this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
+                }
+
+                                this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
+                                this->toolchain->packages[row]->latestTask = _task;
+                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
+                            }
+                            else{
+                                std::cout << "Failed while accessing taskToProcess" << std::endl;
+                            }
+                        }
+                    }
+
+                    /////////////////////
+                }
+
+                ImGui::EndChildFrame();
+                ImGui::NextColumn();
+            }
+            ImGui::EndChild();
         }
 
         // Right
