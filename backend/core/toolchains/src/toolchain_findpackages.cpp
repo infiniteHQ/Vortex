@@ -41,7 +41,7 @@ void VxToolchain::FindPackages()
 
               if (position != std::string::npos)
               {
-                newPackage->path.erase(position, 17);
+                newPackage->path.erase(position, 15);
               }
 
               newPackage->label = filecontent["package"]["label"].get<std::string>();

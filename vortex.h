@@ -803,6 +803,7 @@ struct VxPackage{
 
 
     std::string path = "unknow"; // Path to package
+    std::string origin = "unknow"; // Path to package
     std::string distPath = "unknow"; // Path to package
     std::string fileName = "unknow"; // Path to package
     std::string compressed = "unknow"; // Path to package

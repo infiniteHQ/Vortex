@@ -51,8 +51,10 @@ struct UncompressDistPackage : public Task
 
     std::string path;
 
+        
+
     {
-      std::string cmd = "cd " + package->distPath + " && sudo tar -xvf " + package->fileName;
+      std::string cmd = "cd " + std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package:"+package->name+"")) + " && sudo tar -xvf " + package->fileName;
       
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
@@ -63,8 +65,6 @@ struct UncompressDistPackage : public Task
 
 
     size_t lastSlashPos = package->fileName.find_last_of('/');
-    if (lastSlashPos != std::string::npos)
-    {
       std::string foldername = package->fileName.substr(lastSlashPos + 1);
 
       size_t extensionPos = foldername.rfind(".tar.xz");
@@ -83,8 +83,8 @@ struct UncompressDistPackage : public Task
         foldername.erase(extensionPosThird);
       }
 
-      package->path = foldername;
-    }
+        toolchain->currentLoadedSystem.put_varable(this, "dist_path:package_uncompressed:"+package->name+"", "SetupDistEnvironment", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package:"+package->name+"")) + "/" + foldername);
+    
 
 
     this->finish("finish", nullptr);

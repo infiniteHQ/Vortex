@@ -36,8 +36,14 @@ struct SetupDistEnvironment : public Task
 
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
-    this->addIdleCheck("createFolders");
-    this->addIdleCheck("giveFoldersToUser");
+    this->addIdleCheck("create_folder:base");
+    this->addIdleCheck("create_folder:package_data");
+    this->addIdleCheck("create_folder:patchs_data");
+    this->addIdleCheck("create_folder:scripts_data");
+    this->addIdleCheck("create_folder:working_host");
+    this->addIdleCheck("create_folder:working_host_debugroot");
+    this->addIdleCheck("create_folder:working_host_sysroot");
+
 
     // API to check if a task is executed and the result.
     if(!toolchain->TaskSuccedded("CreateTemporaryUser")){
@@ -48,7 +54,6 @@ struct SetupDistEnvironment : public Task
       return;
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     // Plutot : créer un nouveau report de cette tache
 
     // Set steps flags
@@ -79,54 +84,92 @@ struct SetupDistEnvironment : public Task
     }
 
     // All provided by default. Used by the current toolchain system
-    std::string data = baseDir + "/data";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:data", "SetupDistEnvironment", baseDir);
-    if (mkdir(data.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + data, "none");
+      std::string path = baseDir + "/data";
+      toolchain->currentLoadedSystem.put_varable(this, "directory:data", "SetupDistEnvironment", path);
+
+      std::string cmd = "mkdir " + baseDir;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)this->addCheckVerdict("create_folder:data", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_folder:data", "failed", output, cmd);
     }
 
-    std::string packages_data = baseDir + "/data/packages";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:data_packages", "SetupDistEnvironment", packages_data);
-    if (mkdir(toolchain->packages_data.c_str(), 0777) == -1)
+
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + toolchain->packages_data, "none");
+      std::string path = baseDir + "/data/packages";
+      toolchain->currentLoadedSystem.put_varable(this, "directory:data_packages", "SetupDistEnvironment", path);
+
+      std::string cmd = "mkdir " + path;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)this->addCheckVerdict("create_folder:packages_data", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_folder:packages_data", "failed", output, cmd);
     }
 
-    std::string patchs_data = baseDir + "/data/patchs";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:data_patchs", "SetupDistEnvironment", patchs_data);
-    if (mkdir(patchs_data.c_str(), 0777) == -1)
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + patchs_data, "none");
+      std::string path = baseDir + "/data/scripts";
+      toolchain->currentLoadedSystem.put_varable(this, "directory:data_scripts", "SetupDistEnvironment", path);
+
+      std::string cmd = "mkdir " + path;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)this->addCheckVerdict("create_folder:packages_data", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_folder:packages_data", "failed", output, cmd);
     }
 
-    std::string scripts_data = baseDir + "/data/scripts";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:scripts_patchs", "SetupDistEnvironment", scripts_data);
-    if (mkdir(scripts_data.c_str(), 0777) == -1)
+
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + scripts_data, "none");
+      std::string path = baseDir + "/data/patchs";
+      toolchain->currentLoadedSystem.put_varable(this, "directory:data_scripts", "SetupDistEnvironment", path);
+
+      std::string cmd = "mkdir " + path;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)this->addCheckVerdict("create_folder:patchs_data", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_folder:patchs_data", "failed", output, cmd);
     }
 
-    std::string sysrootDir = crosstoolsDir + "/sysroot";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:sysroot", "SetupDistEnvironment", sysrootDir);
-    if (mkdir(sysrootDir.c_str(), 0777) == -1)
+
+
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + sysrootDir, "none");
+      std::string path = baseDir + "/data/patchs";
+      toolchain->currentLoadedSystem.put_varable(this, "directory:data_scripts", "SetupDistEnvironment", path);
+
+      std::string cmd = "mkdir " + path;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)this->addCheckVerdict("create_folder:patchs_data", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_folder:patchs_data", "failed", output, cmd);
     }
 
-    std::string debugrootDir = crosstoolsDir + "/debugroot";
-    toolchain->currentLoadedSystem.put_varable(this, "directory:debugroot", "SetupDistEnvironment", debugrootDir);
-    if (mkdir(debugrootDir.c_str(), 0777) == -1)
+
+
+
     {
-      this->addCheckVerdict("createFolders", "failed", "Error while creating folder : " + debugrootDir, "none");
-    }
-    // Give toolchain to user
-    std::string cmd = "sudo chown -v -R vortex " + baseDir + "/*";
-    if(system((char *)cmd.c_str()) == 0){
-      this->addCheckVerdict("giveFoldersToUser", "success", "Everything is ok", "none");
+      std::string path = crosstoolsDir + "/sysroot";
+      toolchain->currentLoadedSystem.put_varable(this, "directory:sysroot", "SetupDistEnvironment", path);
+
+      std::string cmd = "mkdir " + path;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)this->addCheckVerdict("create_folder:working_host_sysroot", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_folder:working_host_sysroot", "failed", output, cmd);
     }
 
-    this->finish("deps_error", props);
+    {
+      std::string path = crosstoolsDir + "/debugroot";
+      toolchain->currentLoadedSystem.put_varable(this, "directory:debugroot", "SetupDistEnvironment", path);
+
+      std::string cmd = "mkdir " + path;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)this->addCheckVerdict("create_folder:working_host_debugroot", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_folder:working_host_debugroot", "failed", output, cmd);
+    }
+
+
+    this->finish("success", props);
   }
 
   void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties) override

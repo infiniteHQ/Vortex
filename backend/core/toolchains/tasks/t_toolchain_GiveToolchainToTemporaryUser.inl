@@ -39,14 +39,14 @@ struct GiveToolchainToTemporaryUser : public Task
 
     std::string PackageDataPath;
     PackageDataPath += ctx->projectPath;
-    PackageDataPath += "/./.vx/dist/toolchains/" + toolchain->name + "/data/packages/";
+    PackageDataPath += "/./.vx/dist/toolchains/" + toolchain->name + "/data";
 
     std::string WorkingDirPath;
     WorkingDirPath += ctx->projectPath;
-    WorkingDirPath += "/./.vx/dist/toolchains/" + toolchain->name + "/working_host/";
+    WorkingDirPath += "/./.vx/dist/toolchains/" + toolchain->name + "/working_host";
 
     {
-      std::string cmd = "sudo chown -v -R vortex " + PackageDataPath + "/*";
+      std::string cmd = "sudo chown -v -R vortex:vortex " + PackageDataPath;
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
     
       if(0 == 0) this->addCheckVerdict("give_vortex_package_data", "success", "Vortex user deleted succefully !", cmd);
@@ -54,7 +54,7 @@ struct GiveToolchainToTemporaryUser : public Task
     }
 
     {
-      std::string cmd = "sudo chown -v -R vortex " + WorkingDirPath + "/*";
+      std::string cmd = "sudo chown -v -R vortex:vortex " + WorkingDirPath;
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
     
       if(0 == 0) this->addCheckVerdict("give_vortex_working_dir", "success", "Vortex user deleted succefully !", cmd);

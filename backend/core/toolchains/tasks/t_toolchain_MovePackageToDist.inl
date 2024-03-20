@@ -55,6 +55,10 @@ struct MovePackageToDist : public Task
       {
         std::string resultat = package->path.substr(posDernierSlash + 1);
         package->distPath = packageData + "/" + resultat;
+
+
+        toolchain->currentLoadedSystem.put_varable(this, "dist_path:package:"+package->name+"", "SetupDistEnvironment", package->distPath);
+
         std::string final = "The package dist output is now : \"" + package->distPath + "\"";
 
         this->addCheckVerdict("copy_package_to_dist", "success", final, "\"Get the path of master package folder, and add the path of package.\"");

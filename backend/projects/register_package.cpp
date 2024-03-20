@@ -14,7 +14,6 @@ bool VortexMaker::RegisterPackage(std::string filepath, std::shared_ptr<VxPackag
         newPackage->path.erase(position, 17);
     }
 
-    // Demain fix definitivement toutes les taches de base d'une toolchain.
 
     newPackage->label = filecontent["package"]["label"].get<std::string>();
     newPackage->fileName = filecontent["package"]["filename"].get<std::string>();

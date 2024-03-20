@@ -13,7 +13,18 @@ static void fillArray(const std::vector<std::pair<char[128], char[128]>> &pairs,
 
 void VxPackage::PushSave(std::shared_ptr<PackageSave> save)
 {
+    VxContext *ctx = VortexMaker::GetCurrentContext();
     nlohmann::json packageData;
+
+    std::cout << this->path << std::endl;
+
+    std::string tempPath;
+    size_t lastSlashPos = path.find_last_of('/');
+    
+    if (lastSlashPos != std::string::npos) {
+        tempPath = this->path.substr(0, lastSlashPos);
+    } 
+
     packageData["package"]["name"] = save->name;
     packageData["package"]["author"] = save->author;
     packageData["package"]["description"] = save->description;
@@ -58,6 +69,11 @@ void VxPackage::PushSave(std::shared_ptr<PackageSave> save)
     {
         std::cerr << "Unable to open file " << this->configFilePath << " for writing!" << std::endl;
     }
+
+
+    // change name of folder 
+    std::string cmd = "mv " + this->path + " " + tempPath + "/" + save->name;
+    system(cmd.c_str());
 }
 
 void TaskList::PushSave(std::shared_ptr<TaskListSave> save)
