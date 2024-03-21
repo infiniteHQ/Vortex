@@ -16,7 +16,9 @@ void ToolchainInstance::UI_VolatileTasks()
         static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID buildIcon = this->m_BuildIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID toolIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
+        static ImTextureID trashIcon = this->m_TrashIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID settingsIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
         ImGui::Begin(label.c_str(), &toolIcon, &this->show_UI_VolatileTasks, ImGuiWindowFlags_MenuBar);
@@ -57,7 +59,6 @@ void ToolchainInstance::UI_VolatileTasks()
         const char *names[2] = {"Task selector", "Launcher"};
         static bool opened[2] = {true, true}; // Persistent user state
 
-
         if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
         {
             for (int n = 0; n < IM_ARRAYSIZE(opened); n++)
@@ -97,7 +98,6 @@ void ToolchainInstance::UI_VolatileTasks()
                         if (selected == 0)
                         {
                             ImGui::BeginChild("Pans_VolatileTasks", ImVec2(0, 0), true);
-
 
                             ImGui::Columns(3, NULL);
 
@@ -278,16 +278,14 @@ void ToolchainInstance::UI_VolatileTasks()
                                         {
                                             std::shared_ptr<Task> _task = task->clone();
                                             //_task = task;
-                                            std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-                                            props->add("toolchain", this->toolchain);
-                                            props->add("packages", this->toolchain->packages[row]);
-                                            props->add("tasklist", this->toolchain->tasklists[row]);
 
                                             _task->id = task->tasktype + "-" + VortexMaker::gen_random(8);
                                             _task->tasktype = task->tasktype;
                                             _task->component = this->toolchain->packages[row]->label;
                                             _task->priority = task->priority;
-                                            _task->props = props;
+                                            _task->props->add("toolchain", this->toolchain);
+                                            _task->props->add("packages", this->toolchain->packages[row]);
+                                            _task->props->add("tasklist", this->toolchain->tasklists[row]);
                                             _task->state = "not_started";
 
                                             selectedTask = _task;
@@ -357,31 +355,142 @@ void ToolchainInstance::UI_VolatileTasks()
 
                         ImGui::BeginChild("Pans_VolatileTasks", ImVec2(0, 0), true);
 
-                        ImGuiID selectedId = ImGui::GetID("selectedView");
-                        ImGui::BeginChildFrame(selectedId, ImVec2(0, 200), true);
+                        if (ImGui::ImageButtonWithText(buildIcon, "Exec", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                        { // Ajout de la tâche aux listes appropriées
+                            if (this->toolchain->taskProcessor)
+                            {
+
+                                {
+                                    std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
+                                    this->toolchain->taskProcessor->tasksToProcess.push_back(selectedTask);
+                                }
+
+                                this->toolchain->currentLoadedSystem.executedTasks.push_back(selectedTask);
+                                // this->toolchain->packages[row]->latestTask = _task;
+                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
+                            }
+                            else
+                            {
+                                std::cout << "Failed while accessing taskToProcess" << std::endl;
+                            }
+                        }
+
+                        float oldsize = ImGui::GetFont()->Scale;
+                        ImGui::GetFont()->Scale *= 1.3;
+                        ImGui::PushFont(ImGui::GetFont());
+
+                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Task :");
 
                         if (selectedTask != NULL)
                         {
-                            std::string selectedLabel = "Selected : " + selectedTask->tasktype;
-                            ImGui::Text(selectedLabel.c_str());
-                            ImGui::Text("Parameters : ");
+                            ImGui::Text(selectedTask->tasktype.c_str());
+                        }
+                        else
+                        {
+                            ImGui::Text("No task selected.");
+                        }
 
-                            ImGui::Text("Needed props : ");
-                            for (auto neededProps : selectedTask->neededProps)
-                            {
-                                ImGui::Text(neededProps.c_str());
-                            }
+                        ImGui::GetFont()->Scale = oldsize;
+                        ImGui::PopFont();
 
-                            ImGui::Text("Needed variables : ");
-                            for (auto neededVariables : selectedTask->neededVariables)
-                            {
-                                ImGui::Text(neededVariables.c_str());
-                            }
+                        ImGuiID selectedId = ImGui::GetID("selectedView");
+                        ImGui::BeginChildFrame(selectedId, ImVec2(0, 0), true);
+
+                        if (selectedTask != NULL)
+                        {
 
                             static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-                            if (ImGui::BeginTable("table1", 2, flags))
+                            ImGui::Text("Needed Variables : ");
+                            if (ImGui::BeginTable("table1", 1, flags))
                             {
+                                ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                                ImGui::TableHeadersRow();
+
+                                for (int row = 0; row < selectedTask->neededVariables.size(); row++)
+                                {
+                                    ImGui::TableNextRow();
+                                    for (int column = 0; column < 1; column++)
+                                    {
+                                        ImGui::TableSetColumnIndex(column);
+                                        if (column == 0)
+                                        {
+
+                                            ImGui::TextColored(ImVec4(0.2f, 0.2f, 1.0f, 1.0), selectedTask->neededVariables[row].c_str());
+                                        }
+                                    }
+                                }
+                                ImGui::EndTable();
+                            }
+
+                            ImGui::Text("Needed Props : ");
+                            if (ImGui::BeginTable("table1", 1, flags))
+                            {
+                                ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                                ImGui::TableHeadersRow();
+
+                                for (int row = 0; row < selectedTask->neededProps.size(); row++)
+                                {
+                                    ImGui::TableNextRow();
+                                    for (int column = 0; column < 1; column++)
+                                    {
+                                        ImGui::TableSetColumnIndex(column);
+                                        if (column == 0)
+                                        {
+
+                                            ImGui::TextColored(ImVec4(0.2f, 0.2f, 1.0f, 1.0), selectedTask->neededProps[row].c_str());
+                                        }
+                                    }
+                                }
+                                ImGui::EndTable();
+                            }
+
+                            ImGui::Text("Loaded props : ");
+                            if (ImGui::BeginTable("table3", 3, flags))
+                            {
+                                ImGui::TableSetupColumn("Add", ImGuiTableColumnFlags_WidthFixed);
+                                ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                                ImGui::TableSetupColumn("Reference", ImGuiTableColumnFlags_WidthStretch);
+                                ImGui::TableHeadersRow();
+
+                                char newPropName[128];
+                                char newPropReference[128];
+
+                                for (int row = 0; row < 1; row++)
+                                {
+                                    ImGui::TableNextRow();
+                                    for (int column = 0; column < 3; column++)
+                                    {
+
+                                        ImGui::TableSetColumnIndex(column);
+
+                                        if (column == 0)
+                                        {
+
+                                            if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                                            {
+                                                // Config Task
+                                                // Compile Task
+                                                // Install Task
+                                            }
+                                        }
+
+                                        if (column == 1)
+                                        {
+                                            ImGui::InputText("Name", newPropName, 128);
+                                        }
+
+                                        if (column == 2)
+                                        {
+                                            ImGui::InputText("Reference", newPropReference, 128);
+                                        }
+                                    }
+                                }
+                                ImGui::EndTable();
+                            }
+                            if (ImGui::BeginTable("table3", 3, flags))
+                            {
+                                ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
                                 ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
                                 ImGui::TableSetupColumn("Reference", ImGuiTableColumnFlags_WidthStretch);
                                 ImGui::TableHeadersRow();
@@ -392,30 +501,52 @@ void ToolchainInstance::UI_VolatileTasks()
                                     for (int column = 0; column < 3; column++)
                                     {
 
+                                        ImGui::TableSetColumnIndex(column);
+
+                                        if (column == 0)
+                                        {
+
+                                            if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                                            {
+                                                // Config Task
+                                                // Compile Task
+                                                // Install Task
+                                            }
+                                        }
+
                                         if (column == 1)
+                                        {
+
                                             ImGui::Text(selectedTask->props->registered_arguments[row].c_str());
+                                        }
 
                                         if (column == 2)
                                         {
-                                            // ImGui::Text(selectedTask->props->get<void*>(selectedTask->props->registered_arguments[row], voiauto).c_str());
+                                            if (selectedTask->props->registered_arguments[row] == "toolchain")
+                                            {
+                                                ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), selectedTask->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str());
+                                            }
+                                            if (selectedTask->props->registered_arguments[row] == "package")
+                                            {
+                                                ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), selectedTask->props->get<std::shared_ptr<VxPackage>>("package", nullptr)->name.c_str());
+                                            }
                                         }
                                     }
                                 }
                                 ImGui::EndTable();
                             }
-                            
                         }
-                            else
-                            {
-                                ImGui::Text("No selected task yet.");
-                                ImGui::Text("Please selecte a task, associated with a component (a package, or other asset...).");
-                            }
-                            ImGui::EndChildFrame();
-                            ImGui::EndChild();
+                        else
+                        {
+                            ImGui::Text("No selected task yet.");
+                            ImGui::Text("Please selecte a task, associated with a component (a package, or other asset...).");
+                        }
+                        ImGui::EndChildFrame();
+                        ImGui::EndChild();
                     }
                     ImGui::EndTabItem();
                 }
-                ImGui::EndTabBar();
+            ImGui::EndTabBar();
         }
 
         ImGui::End();

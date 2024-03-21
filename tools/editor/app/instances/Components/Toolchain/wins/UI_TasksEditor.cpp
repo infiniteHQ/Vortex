@@ -4,6 +4,27 @@
 #include <mutex>
 
 
+/*
+         IDEM QUE volatile tasks
+
+         - Selectionner une tasklist
+         - Possibilité de prévisualiser toutes les taches
+         - Récupérer l'ensemble des props et des variables requises
+         - Ajouter/Retirer les props chargés par défauts
+
+
+         // L'initialisation des props de taches se fait au dernier moment
+
+
+         // Tasklists -> EXEC -> Tasklist
+
+
+        // Plus tard : Taskgraph // Tasklist avec une prog nodable (conditions, fonctions customs, etc...)
+
+
+*/
+
+
 
 void ToolchainInstance::UI_TasksEditor()
 {
