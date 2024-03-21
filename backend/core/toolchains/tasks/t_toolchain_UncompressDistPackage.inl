@@ -28,19 +28,13 @@ struct UncompressDistPackage : public Task
 
   void exec() override
   {
+
+    
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);    std::shared_ptr<VxPackage> package;// = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
-
-    for(auto p : toolchain->packages){
-      if(p->name == this->component){
-        package = p;
-      }
-      else{
-        this->finish("failed", nullptr);
-      }
-    }
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
 
 
 

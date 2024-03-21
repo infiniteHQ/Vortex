@@ -552,6 +552,11 @@ struct Task{
     
     std::string id; // to find this task from everywhere
     std::string tasktype = "unknow";
+
+    std::vector<std::string> neededVariables; // Only data view
+    std::vector<std::string> neededProps; // Only data view
+
+
     std::string component;
     std::string state; // state of this task
     std::vector<std::tuple<std::string, std::string, std::string>> used_variables;

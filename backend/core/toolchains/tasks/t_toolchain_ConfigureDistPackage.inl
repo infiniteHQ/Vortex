@@ -32,18 +32,14 @@ struct ConfigureDistPackage : public Task
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
-    std::shared_ptr<VxPackage> package;// = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
 
-    for(auto p : toolchain->packages){
-      if(p->name == this->component){
-        package = p;
-      }
-      else{
-        this->finish("failed", nullptr);
-      }
+    if(!this->ifProps({"package", "toolchain"})){
+      this->finish("failed", nullptr);
     }
+
+    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
     std::string working_path = std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package_uncompressed:"+package->name + ""));
 

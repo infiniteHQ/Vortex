@@ -524,10 +524,11 @@ std::string ReportInstance::render()
                                 }
                                 if (column == 1)
                                 {
-                                    if(this->task->depsChecks[row].second.c_str() == "missing"){
+                                    if(this->task->depsChecks[row].second == "missing"){
                                         ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "missing");
                                     }
-                                    else if(this->task->depsChecks[row].second.c_str() == "satisfied"){
+                                    
+                                    if(this->task->depsChecks[row].second == "satisfied"){
                                         ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "satisfied");
                                     }
                                     //ImGui::Text(this->task->depsChecks[row].second.c_str());
