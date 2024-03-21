@@ -34,9 +34,28 @@ struct ConfigureDistPackage : public Task
 
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
-    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+    std::shared_ptr<VxPackage> package;// = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+
+    for(auto p : toolchain->packages){
+      if(p->name == this->component){
+        package = p;
+      }
+      else{
+        this->finish("failed", nullptr);
+      }
+    }
 
     std::string working_path = std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package_uncompressed:"+package->name + ""));
+
+
+    // API to check if a task is executed and the result.
+    if(!toolchain->TaskSuccedded("CreateTemporaryUser")){
+      std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+      this->addCheckVerdict("createFolders", "failed", "To run \"SetupDistEnvironment\" you need to run \"CreateTemporaryUser\" first", "none");
+      this->addCheckVerdict("giveFoldersToUser", "failed", "To run \"SetupDistEnvironment\" you need to run \"CreateTemporaryUser\" first", "none");
+      this->finish("failed", props);
+      return;
+    }
 
     std::unordered_map<std::string, std::string> replacements = {
         {"${Target}", toolchain->targetTriplet},

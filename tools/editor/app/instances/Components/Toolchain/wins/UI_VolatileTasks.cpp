@@ -226,6 +226,7 @@ void ToolchainInstance::UI_VolatileTasks()
                             //_task = task;
                             std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
                             props->add("toolchain", this->toolchain);
+                            props->add("packages", this->toolchain->packages[row]);
                             props->add("tasklist", this->toolchain->tasklists[row]);
 
                             _task->id = task->tasktype + "-" + VortexMaker::gen_random(8);

@@ -515,6 +515,7 @@ public:
 
     ~hArgs() {for (const auto& pair : arguments) {delete pair.value;}}
 
+    hVector<hString> registered_arguments;
 private:
     class ArgumentBase {public: virtual ~ArgumentBase() = default;};
 
@@ -527,7 +528,6 @@ private:
         T storedValue;
     };
 
-    hVector<hString> registered_arguments;
     hMap<hString, ArgumentBase*> arguments;
 };
 //=============================================================================
@@ -620,6 +620,47 @@ struct Task{
       this->updateState();
             }
         }
+    }
+
+    std::vector<std::pair<std::string, std::string>> depsChecks;
+    
+
+    bool ifProps(std::vector<std::string> propsname){
+        int satisfied = 0;
+        for(auto prop : propsname){
+            satisfied++;
+        }
+
+
+        for(auto prop : this->props->registered_arguments){
+            for(auto _p : propsname){
+
+                this->depsChecks.push_back(std::make_pair(_p, "missing"));
+                if(prop.c_str() == _p){
+                    satisfied--;
+                    this->depsChecks.pop_back();
+                    this->depsChecks.push_back(std::make_pair(_p, "satisfied"));
+                    continue;
+                }
+                this->depsChecks.pop_back();
+            }
+        }
+        
+        if(satisfied == 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    bool ifProp(std::string propname){
+        for(auto prop : this->props->registered_arguments){
+            if(prop.c_str() == propname){
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -914,6 +955,7 @@ struct ToolchainSave{
     char localPatchsPath[128] = "unknow";
 
     std::vector<std::pair<char[128], char[128]>> registeredPackages;
+    std::vector<std::pair<char[128], char[128]>> registeredTasklists;
 };
 
 
@@ -1445,6 +1487,9 @@ std::pair<std::string, int> exec_cmd(const std::string& cmd);
 std::pair<std::string, int> exec_cmd_quote(const std::string& cmd);
 
     void PushSave(std::shared_ptr<ToolchainSave> save);
+
+void CreateTasklist(std::string name, std::shared_ptr<ToolchainSave> save);
+    void DeleteTasklist(std::string name);
 
 void RegisterTasklist(const std::string label);
 

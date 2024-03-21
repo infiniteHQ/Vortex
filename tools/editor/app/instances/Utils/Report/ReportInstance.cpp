@@ -496,6 +496,53 @@ std::string ReportInstance::render()
                     
                 }
             }
+            
+            
+
+            if (ImGui::CollapsingHeader("Props"))
+            {                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                    if (ImGui::BeginTable("prop_name", 2, flags))
+                    {
+                        ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableHeadersRow();
+
+                        for (int row = 0; row < this->task->depsChecks.size(); row++)
+                        {
+                            static std::pair<char[128], char[128]> newItem;
+                            static char label[128];
+
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 2; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
+
+                                if (column == 0)
+                                {
+                                    ImGui::Text(this->task->depsChecks[row].first.c_str());
+                                }
+                                if (column == 1)
+                                {
+                                    if(this->task->depsChecks[row].second.c_str() == "missing"){
+                                        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "missing");
+                                    }
+                                    else if(this->task->depsChecks[row].second.c_str() == "satisfied"){
+                                        ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "satisfied");
+                                    }
+                                    //ImGui::Text(this->task->depsChecks[row].second.c_str());
+                                }
+                            }
+                        }
+
+                        ImGui::EndTable();
+                    
+                }
+            }
+
+            
+            
+            
             if (ImGui::CollapsingHeader("Metrics"))
             {
                 static int i0 = 123;

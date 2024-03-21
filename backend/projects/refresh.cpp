@@ -499,7 +499,6 @@ nlohmann::json VxHostCurrentSystem::Extract()
 // TODO : Split to little refresh functions, create a RefreshAll function.
 void VxToolchain::Refresh()
 {
-
   nlohmann::json toolchainData = VortexMaker::DumpJSON(this->configFilePath);
 
   this->name = toolchainData["toolchain"]["name"].get<std::string>();

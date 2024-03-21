@@ -390,3 +390,58 @@ void VxToolchain::RegisterPackage(const std::string label, const std::string emp
   newPackageInterface->resolved = false;
   registeredPackages.push_back(newPackageInterface);
 }
+
+
+void VxToolchain::CreateTasklist(std::string name, std::shared_ptr<ToolchainSave> save){
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+
+
+    std::string path = ctx->projectPath.c_str();
+    path += "/.vx/data/toolchains/" + this->name + "/data/tasklists/" + name;
+
+  // Create the tasklist folder
+  {
+    std::string cmd = "mkdir " + path;
+    system(cmd.c_str());
+  }
+
+  {
+    // Create the tasklist config file
+    std::string cmd = "touch " + path + "/tasklist.config";
+    system(cmd.c_str());
+  }
+
+  // Populate config file
+  {
+    nlohmann::json tasklist_config;
+    tasklist_config["label"] = name;
+    tasklist_config["tasks"] = nlohmann::json::array();
+
+      // Store this into toolchain.config
+      std::ofstream o(path + "/tasklist.config");
+      o << std::setw(4) << tasklist_config << std::endl;
+      o.close();
+
+    //VortexMaker::RefreshToolchains();
+  }
+
+}
+
+void VxToolchain::DeleteTasklist(std::string name){
+
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+
+
+    std::string path = ctx->projectPath.c_str();
+    path += "/.vx/data/toolchain/" + this->name + "/data/tasklists/" + name;
+
+  // Create the tasklist folder
+  {
+    std::string cmd = "rm -rf " + path;
+    system(cmd.c_str());
+  }
+  
+  VortexMaker::RefreshToolchains();
+
+
+}

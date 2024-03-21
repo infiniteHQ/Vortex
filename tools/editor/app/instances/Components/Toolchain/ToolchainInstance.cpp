@@ -269,11 +269,11 @@ void ToolchainInstance::menubar(){
 
 
         static bool open_ImportationMenu = false;
+        static bool open_CreateTaskList = false;
 
         if(open_ImportationMenu) {
                    if (ImGui::BeginPopupModal("Import content(s)", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-
+                      {
             ImGui::Text("From this project");
             ImGui::Separator();
 
@@ -318,6 +318,42 @@ void ToolchainInstance::menubar(){
             }
             ImGui::EndPopup();
         }
+                   
+        }
+
+        if(open_CreateTaskList) {
+                   if (ImGui::BeginPopupModal("Create new Tasklist", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+
+
+                // 3 text inputs
+                static std::pair<char[128],char[128]> pair;
+                // inputs widget
+                ImGui::InputText("Tasklist Name", pair.first, IM_ARRAYSIZE(pair.first));
+                //std::string _TasklistName = TasklistName;
+            
+
+            // static int unused_i = 0;
+            // ImGui::Combo("Combo", &unused_i, "Delete\0Delete harder\0");
+
+            if (ImGui::Button("Create", ImVec2(120, 0)))
+            {
+                this->toolchain->CreateTasklist(pair.first, this->m_currentSave); 
+                this->m_currentSave->registeredTasklists.push_back(pair);
+                this->Save();
+                this->Refresh();
+                    open_CreateTaskList = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                    open_CreateTaskList = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
 
             
         }
@@ -325,6 +361,8 @@ void ToolchainInstance::menubar(){
         if (open_ImportationMenu)
             ImGui::OpenPopup("Import content(s)");
 
+        if (open_CreateTaskList)
+            ImGui::OpenPopup("Create new Tasklist");
 
 
         if (ImGui::BeginPopupModal("Add a composant", NULL, ImGuiWindowFlags_AlwaysAutoResize))
@@ -340,64 +378,21 @@ void ToolchainInstance::menubar(){
 
             ImGui::Text("Create Basic Component");
             ImGui::Separator();
-            // button with full width
-            if (ImGui::Button("Toolchain", ImVec2(-1, 50)))
-            {
-                ImGui::CloseCurrentPopup();
-            }
-            if (ImGui::Button("Host", ImVec2(-1, 50)))
-            {
-                ImGui::CloseCurrentPopup();
-            }
-            if (ImGui::Button("General purpose system (GPOS)", ImVec2(-1, 50)))
-            {
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::Button("Package", ImVec2(-1, 50));
-
             // Image button with text with full width
 
             ImGui::Text("Create Advanced Component");
             ImGui::Separator();
 
-            if (ImGui::CollapsingHeader("Packages & Tarballs"))
+            if (ImGui::CollapsingHeader("Tasklists"))
             {
-                ImGui::Button("Package (P)", ImVec2(-1, 0));
-                ImGui::Button("Package Manager Package (PMP)", ImVec2(-1, 0));
-                ImGui::Button("Update Package", ImVec2(-1, 0));
-                ImGui::Button("Strapper", ImVec2(-1, 0));
-            }
-
-            if (ImGui::CollapsingHeader("Systems"))
-            {
-                ImGui::Button("General Purpose Operating System (GPOS)", ImVec2(-1, 0));
-                ImGui::Button("Real Time Operating System (RTOS)", ImVec2(-1, 0));
-                ImGui::Button("Embedded Operating System (EOS)", ImVec2(-1, 0));
-                ImGui::Button("Embedded Application (EA)", ImVec2(-1, 0));
-            }
-
-            if (ImGui::CollapsingHeader("Toolchains"))
-            {
-                if (ImGui::Button("Toolchain", ImVec2(-1, 0)))
-                {
-
+            if(ImGui::Button("Tasklist (TL)", ImVec2(-1, 0))){
+                    open_CreateTaskList = true;
                     ImGui::CloseCurrentPopup();
-                }
             }
 
-            if (ImGui::CollapsingHeader("Debug tools"))
-            {
-                ImGui::Button("Chrooter", ImVec2(-1, 0));
-                ImGui::Button("Testers", ImVec2(-1, 0));
             }
 
-            // static int unused_i = 0;
-            // ImGui::Combo("Combo", &unused_i, "Delete\0Delete harder\0");
 
-            static bool dont_ask_me_next_time = false;
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-            ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
-            ImGui::PopStyleVar();
 
             if (ImGui::Button("OK", ImVec2(120, 0)))
             {
@@ -498,6 +493,16 @@ void ToolchainInstance::Refresh()
 
         refreshedCurrentSave->registeredPackages.push_back(package);
     }
+
+    for(auto registeredTasklists : this->toolchain->registeredTasklists){
+        std::pair<char[128], char[128]> tasklist;
+
+        strncpy(tasklist.first, registeredTasklists->label.c_str(), sizeof(tasklist.first));
+        tasklist.first[sizeof(tasklist.first) - 1] = '\0';
+
+
+        refreshedCurrentSave->registeredTasklists.push_back(tasklist);
+    }   
 
     this->m_currentSave = refreshedCurrentSave;
 }

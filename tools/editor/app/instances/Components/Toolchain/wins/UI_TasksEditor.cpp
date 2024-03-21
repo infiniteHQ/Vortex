@@ -131,7 +131,7 @@ for (auto task : this->toolchain->tasklists[row]->list)
             //_task = task;
             std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
             props->add("toolchain", this->toolchain);
-            props->add("package", this->toolchain->packages[row]);
+            //props->add("package", this->toolchain->packages[row]);
 
             _task->id = runtime_tasks->tasktype + "-" + VortexMaker::gen_random(8);
             _task->tasktype = runtime_tasks->tasktype;

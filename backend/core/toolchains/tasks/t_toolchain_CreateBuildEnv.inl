@@ -35,7 +35,17 @@ struct CreateBuildEnv : public Task
 
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
-    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+    // Tout faire via les props infinis
+    std::shared_ptr<VxPackage> package;// = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+
+    for(auto p : toolchain->packages){
+      if(p->name == this->component){
+        package = p;
+      }
+      else{
+        this->finish("failed", nullptr);
+      }
+    }
 
     std::string working_path = std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package_uncompressed:"+package->name + ""));
 

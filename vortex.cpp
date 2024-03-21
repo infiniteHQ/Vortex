@@ -510,6 +510,9 @@ void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> 
   }
 }
 
+// Demain : Finir l'edition complete des packages et de la toolchains (y compris les configuration de target de la toolchain, etc...)
+// Preparer la beta !!
+
 VORTEX_API void VortexMaker::CreateNewTask(std::shared_ptr<Task> task, std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
 {
 }

@@ -60,10 +60,9 @@ std::pair<std::string, int> exec_cmd(const std::string& cmd) {
 struct CreateTemporaryUser : public Task
 {
 
-
-    std::shared_ptr<Task> clone() const override {
-        return std::make_shared<CreateTemporaryUser>(*this);
-    }
+  std::shared_ptr<Task> clone() const override {
+    return std::make_shared<CreateTemporaryUser>(*this);
+  }
 
   void init() override
   {
@@ -81,15 +80,20 @@ struct CreateTemporaryUser : public Task
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);    
     
 
+    this->addIdleCheck("check_task_deps");
     this->addIdleCheck("group_add_vortex");
     this->addIdleCheck("user_add_vortex");
     this->addIdleCheck("add_vortex_home");
     this->addIdleCheck("give_vortex_home");
     this->addIdleCheck("user_mod_root_to_vortex");
     this->addIdleCheck("implement_bashrc");
-
-
-
+    
+/*
+    if(!this->ifProp("package")){
+      this->finish("failed", nullptr);
+      this->addCheckVerdict("check_task_deps", "failed", "package prop cannot be read !", "When trying to get \"package\"");
+    };
+*/
 
     {
       std::string cmd = "groupadd vortex";

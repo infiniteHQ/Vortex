@@ -32,11 +32,37 @@ struct MovePackageToDist : public Task
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
-    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+    std::shared_ptr<VxToolchain> toolchain;// = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+    std::shared_ptr<VxPackage> package;// = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+
 
     this->addIdleCheck("copy_package_to_dist");
+    this->addIdleCheck("check_task_deps");
     this->addIdleCheck("add_dist_path");
+
+    if(!this->ifProps({"package", "toolchain"})){
+      this->finish("failed", nullptr);
+    }
+
+
+      package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+      toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+/*
+    if(!this->ifProp("package")){
+      this->addCheckVerdict("check_task_deps", "failed", "package prop cannot be read !", "When trying to get \"package\"");
+      this->finish("failed", nullptr);
+    }
+    else{
+    }
+
+    if(!this->ifProp("toolchain")){
+      this->addCheckVerdict("check_task_deps", "failed", "toolchain prop cannot be read !", "When trying to get \"toolchain\"");
+      this->finish("failed", nullptr);
+    }
+    else{
+    }*/
+
+
 
 
     std::tuple<std::string,std::string,std::string> v_packageData = toolchain->currentLoadedSystem.get_varable(this, "directory:data_packages");
