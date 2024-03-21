@@ -1076,6 +1076,9 @@ struct TaskList{
     std::string configFilePath;
     std::string label;
     std::vector<std::shared_ptr<Task>> list;
+
+    std::shared_ptr<hArgs> props;
+
     void Refresh();
     void PushSave(std::shared_ptr<TaskListSave> save);
 };
