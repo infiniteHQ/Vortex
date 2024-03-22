@@ -22,6 +22,17 @@ struct CompileDistPackage : public Task
   void init() override
   {
     this->tasktype = "CompileDistPackage";
+
+    // Props used by task execution
+    this->neededProps.push_back("package");
+    this->neededProps.push_back("toolchain");
+
+    this->addIdleCheck("create_build_folder");
+    this->addIdleCheck("configure_dist_package");
+    this->addIdleCheck("compile_dist_package");
+    this->addIdleCheck("install_dist_package");
+
+
   };
 
 
@@ -34,10 +45,7 @@ struct CompileDistPackage : public Task
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
 
-
-    if(!this->ifProps({"package", "toolchain"})){
-      this->finish("failed", nullptr);
-    }
+    if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
 
     std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
@@ -52,12 +60,6 @@ struct CompileDistPackage : public Task
         {"${Sysroot}", toolchain->sysrootPath},
         {"${PackageFolder}", package->path},
         {"${DistPackageFolder}", working_path}};
-
-    this->addIdleCheck("create_build_folder");
-    this->addIdleCheck("configure_dist_package");
-    this->addIdleCheck("compile_dist_package");
-    this->addIdleCheck("install_dist_package");
-
 
     package->ExecuteActions("pre_compilation", package);
 

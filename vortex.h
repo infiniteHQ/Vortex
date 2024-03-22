@@ -513,6 +513,15 @@ public:
     template<typename T> void add(const hString& tag, T value) {arguments[tag] = new ArgumentHolder<T>(value); registered_arguments.push_back(tag);}
     template<typename T> T get(const hString& tag, const T& defaultT) const {if(registered_arguments.contains(tag)){auto it = arguments.find(tag); return dynamic_cast<ArgumentHolder<T>*>(it)->getValue();}return defaultT;}
 
+    void remove(const hString& tag) {
+        if (arguments.find(tag)) {
+            auto it = arguments.find(tag);
+            delete it;
+            arguments.remove(tag);
+            registered_arguments.erase(std::remove(registered_arguments.begin(), registered_arguments.end(), tag), registered_arguments.end());
+        }
+    }
+
     ~hArgs() {for (const auto& pair : arguments) {delete pair.value;}}
 
     hVector<hString> registered_arguments;

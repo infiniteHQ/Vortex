@@ -28,10 +28,17 @@ struct GiveToolchainToTemporaryUser : public Task
 
   void exec() override
   {
+    std::cout << "GiveToolchainToTemporaryUser" << std::endl;
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
+
+    if(!this->ifProps({"toolchain"})){
+      this->finish("failed", nullptr);
+    }
+
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+
 
     this->addIdleCheck("give_vortex_package_data");
     this->addIdleCheck("give_vortex_working_dir");

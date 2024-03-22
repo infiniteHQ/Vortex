@@ -21,6 +21,17 @@ struct UncompressDistPackage : public Task
   void init() override
   {
     this->tasktype = "UncompressDistPackage";
+
+    // Props used by task execution
+    this->neededProps.push_back("package");
+    this->neededProps.push_back("toolchain");
+
+    // Variables needed by task execution
+    this->neededVariables.push_back("dist_path:package:\[package_name\]");
+
+    // Checklist
+    this->addIdleCheck("uncompress");
+    this->addIdleCheck("set_final_path");
   };
 
   // Récupérer un ancien report
@@ -32,14 +43,14 @@ struct UncompressDistPackage : public Task
     
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
+    
 
-    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+
+    if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
+
     std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
-
-
-    this->addIdleCheck("uncompress");
-    this->addIdleCheck("set_final_path");
 
     // API to check if a task is executed and the result.
     if(!toolchain->TaskSuccedded("MovePackageToDist")){

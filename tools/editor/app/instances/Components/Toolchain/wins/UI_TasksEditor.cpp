@@ -30,6 +30,17 @@ void ToolchainInstance::UI_TasksEditor()
     {
         static std::shared_ptr<TaskList> selectedTasklist;
 
+        static bool packagePropAdded = false;
+        static bool toolchainPropAdded = false;
+
+        std::vector<const char *> packages_items = {"none"};
+        static int packages_items_current = 0;
+
+        for (auto &chaine : this->toolchain->packages)
+        {
+            packages_items.push_back(chaine->name.c_str());
+        }
+
         std::string label = this->name + " - Tasks Editor###" + this->name + "taskseditor";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
@@ -153,65 +164,46 @@ void ToolchainInstance::UI_TasksEditor()
                                     {
                                         if (ImGui::ImageButtonWithText(buildIcon, execButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                                         {
+                                            toolchainPropAdded = false;
+                                            packagePropAdded = false;
+
                                             this->toolchain->tasklists[row]->Refresh();
 
                                             for (auto task : this->toolchain->tasklists[row]->list)
                                             {
-                                                // Récup tout les props 
+                                                // Récup tout les props
 
-                                                std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-                                                props->add("toolchain", this->toolchain);
                                                 selectedTasklist = this->toolchain->tasklists[row];
-                                                selectedTasklist->props = props;
-                                                /*
-                                                for (auto runtime_tasks : this->toolchain->tasks)
+                                                for (auto task : this->toolchain->tasklists[row]->list)
                                                 {
-                                                    if (runtime_tasks->tasktype == task->tasktype)
+                                                    std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+                                                    for (auto runtime_tasks : this->toolchain->tasks)
                                                     {
-                                                        std::shared_ptr<Task> _task = runtime_tasks->clone();
-
-                                                        _task->props = props; // Props de la tasklist
-
-                                                        std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-                                                        props->add("toolchain", this->toolchain);
-
-                                                        for (auto component : this->toolchain->packages)
+                                                        if (runtime_tasks->tasktype == task->tasktype)
                                                         {
-                                                            if (component->name == task->component)
+
+                                                            std::shared_ptr<Task> _task = runtime_tasks->clone();
+                                                            _task->init();
+
+                                                            for (auto prop : _task->neededProps)
                                                             {
-                                                                props->add("package", component);
+                                                                if (prop == "toolchain" && !toolchainPropAdded)
+                                                                {
+                                                                    props->add("toolchain", this->toolchain);
+                                                                    selectedTasklist->props = props;
+                                                                    toolchainPropAdded = true;
+                                                                }
+                                                                else if (prop == "package" && !packagePropAdded)
+                                                                {
+                                                                   // props->remove<std::shared_ptr<VxPackage>>("package");
+                                                                    props->add("package", nullptr); // Or, add the default element of the tasklist
+                                                                    selectedTasklist->props = props;
+                                                                    packagePropAdded = true;
+                                                                }
                                                             }
-                                                        }
-
-                                                        _task->id = runtime_tasks->tasktype + "-" + VortexMaker::gen_random(8);
-                                                        _task->tasktype = runtime_tasks->tasktype;
-                                                        _task->component = task->component;
-                                                        _task->priority = task->priority;
-                                                        _task->state = "not_started";
-
-                                                        // Ajout de la tâche aux listes appropriées
-                                                        if (this->toolchain->taskProcessor)
-                                                        {
-                                                            // this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
-                                                            // this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
-                                                            this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
-                                                            // this->toolchain->packages[row]->latestTask = _task;
-                                                            this->toolchain->currentLoadedSystem.Save(this->toolchain);
-
-                                                            {
-                                                                std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
-                                                                this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            std::cout << "Failed while accessing taskToProcess" << std::endl;
                                                         }
                                                     }
                                                 }
-
-
-                                                */
                                             }
                                         }
                                     }
@@ -256,39 +248,42 @@ void ToolchainInstance::UI_TasksEditor()
                             if (this->toolchain->taskProcessor)
                             {
 
+                                // this->toolchain->tasklists[row]->Refresh();
                                 for (auto task : selectedTasklist->list)
                                 {
-                                    
-                                        std::shared_ptr<Task> _task = task->clone();
-
-                                        selectedTasklist->props->add("toolchain", this->toolchain);
-
-                                        _task->init();
-
-                                        _task->id = task->tasktype + "-" + VortexMaker::gen_random(8);
-                                        _task->tasktype = task->tasktype;
-                                        _task->priority = task->priority;
-                                        _task->props = selectedTasklist->props;
-                                        _task->state = "not_started";
-                                        
-
-                                        if (this->toolchain->taskProcessor)
+                                    for (auto runtime_tasks : this->toolchain->tasks)
+                                    {
+                                        if (runtime_tasks->tasktype == task->tasktype)
                                         {
+                                            std::shared_ptr<Task> _task = runtime_tasks->clone();
+                                            _task->id = runtime_tasks->tasktype + "-" + VortexMaker::gen_random(8);
+                                            _task->tasktype = runtime_tasks->tasktype;
+                                            _task->component = task->component;
+                                            _task->priority = task->priority;
+                                            _task->props = selectedTasklist->props;
+                                            _task->state = "not_started";
 
-                                            
-                                                std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
-                                                this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
-                                            
+                                            for (auto prop : _task->props->registered_arguments)
+                                            {
+                                                std::cout << prop.c_str() << " : " << std::endl;
+                                            }
 
-                                            this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
-                                            // this->toolchain->packages[row]->latestTask = _task;
-                                            this->toolchain->currentLoadedSystem.Save(this->toolchain);
+                                            if (this->toolchain->taskProcessor)
+                                            {
+                                                this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
+                                                {
+                                                    std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
+                                                    this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
+                                                }
+
+                                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
+                                            }
+                                            else
+                                            {
+                                                std::cout << "Failed while accessing taskToProcess" << std::endl;
+                                            }
                                         }
-                                        else
-                                        {
-                                            std::cout << "Failed while accessing taskToProcess" << std::endl;
-                                        }
-                                    
+                                    }
                                 }
                             }
                             else
@@ -351,17 +346,17 @@ void ToolchainInstance::UI_TasksEditor()
                                                 // Compile Task
                                                 // Install Task
 
+                                                if (newPropName == "package")
+                                                {
 
-                                                if(newPropName == "package"){
-
-                                                for(auto package : this->toolchain->packages){
-                                                    std::cout << package->name.c_str() << "w/"<<  newPropReference <<  std::endl;
-                                                    if(package->name == newPropReference){
-                                                        selectedTasklist->props->add(newPropName, package);
+                                                    for (auto package : this->toolchain->packages)
+                                                    {
+                                                        if (package->name == newPropReference)
+                                                        {
+                                                            selectedTasklist->props->add(newPropName, package);
+                                                        }
                                                     }
                                                 }
-                                                }
-
                                             }
                                         }
 
@@ -396,8 +391,11 @@ void ToolchainInstance::UI_TasksEditor()
                                         if (column == 0)
                                         {
 
-                                            if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                                            if (ImGui::ImageButtonWithText(trashIcon, "Save", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                                             {
+                                                if (selectedTasklist->props->registered_arguments[row] == "package")
+                                                {
+                                                }
                                                 // Config Task
                                                 // Compile Task
                                                 // Install Task
@@ -412,13 +410,65 @@ void ToolchainInstance::UI_TasksEditor()
 
                                         if (column == 2)
                                         {
-                                            if (selectedTasklist->props->registered_arguments[row] == "toolchain")
-                                            {
-                                                ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), selectedTasklist->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str());
-                                            }
                                             if (selectedTasklist->props->registered_arguments[row] == "package")
                                             {
-                                                ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), selectedTasklist->props->get<std::shared_ptr<VxPackage>>("package", nullptr)->name.c_str());
+
+                                                // packages_items_current = 0;
+
+                                                if (ImGui::BeginCombo("Packages", packages_items[packages_items_current]))
+                                                {
+                                                    for (int i = 0; i < packages_items.size(); ++i)
+                                                    {
+                                                        bool is_selected = (packages_items_current == i);
+                                                        if (ImGui::Selectable(packages_items[i], is_selected))
+                                                        {
+                                                            packages_items_current = i;
+
+                                                            for (auto package : this->toolchain->packages)
+                                                            {
+                                                                std::cout << package->name.c_str() << " </" << packages_items[packages_items_current] << std::endl;
+                                                                if (package->name == packages_items[packages_items_current])
+                                                                {
+                                                                        bool alreadyRegistered = false;
+                                                                    for (auto alreadyRegisteredProps : selectedTasklist->props->registered_arguments)
+                                                                    {
+                                                                        if (alreadyRegisteredProps == packages_items[packages_items_current])
+                                                                        {
+                                                                            alreadyRegistered = true;
+                                                                        }
+                                                                    }
+
+                                                                        if(!alreadyRegistered){
+
+                                                                            std::cout << "Add " << package << std::endl;
+                                                                            selectedTasklist->props->remove("package");
+                                                                            selectedTasklist->props->add("package", package);
+
+                                                                            std::cout << "Task package name is " << selectedTasklist->props->get<std::shared_ptr<VxPackage>>("package", nullptr)->name.c_str() << std::endl;
+
+                                                                        }
+                                                                }
+                                                            }
+                                                        }
+                                                        if (is_selected)
+                                                        {
+                                                            ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
+                                                        }
+                                                    }
+                                                    ImGui::EndCombo();
+                                                }
+                                            }
+
+                                            if (selectedTasklist->props->registered_arguments[row] == "toolchain")
+                                            {
+                                                if (selectedTasklist->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str() == this->toolchain->name.c_str())
+                                                {
+                                                    ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), "this");
+                                                }
+                                                else
+                                                {
+                                                    ImGui::Text(selectedTasklist->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str());
+                                                }
                                             }
                                         }
                                     }

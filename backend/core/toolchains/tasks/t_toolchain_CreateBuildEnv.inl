@@ -22,6 +22,16 @@ struct CreateBuildEnv : public Task
   void init() override
   {
     this->tasktype = "CreateBuildEnv";
+
+    // Props used by task execution
+    this->neededProps.push_back("package");
+    this->neededProps.push_back("toolchain");
+
+    // Variables needed by task execution
+    this->neededVariables.push_back("dist_path:package_uncompressed:\[package_name\]");
+
+    // Checklist
+    this->addIdleCheck("create_build_folder");
   };
 
 
@@ -34,12 +44,12 @@ struct CreateBuildEnv : public Task
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
 
-    if(!this->ifProps({"package", "toolchain"})){
-      this->finish("failed", nullptr);
-    }
+    if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
 
     std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+
+
     std::string working_path = std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package_uncompressed:"+package->name + ""));
 
     std::unordered_map<std::string, std::string> replacements = {

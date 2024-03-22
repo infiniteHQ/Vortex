@@ -22,6 +22,20 @@ struct ConfigureDistPackage : public Task
   void init() override
   {
     this->tasktype = "ConfigureDistPackage";
+
+    // Props used by task execution
+    this->neededProps.push_back("package");
+    this->neededProps.push_back("toolchain");
+
+    // Variables needed by task execution
+    //this->neededVariables.push_back("dist_path:package:\[package_name\]");
+
+    // Checklist
+
+    this->addIdleCheck("create_build_folder");
+    this->addIdleCheck("configure_dist_package");
+    this->addIdleCheck("compile_dist_package");
+    this->addIdleCheck("install_dist_package");
   };
 
   // Récupérer un ancien report
@@ -34,9 +48,8 @@ struct ConfigureDistPackage : public Task
 
 
 
-    if(!this->ifProps({"package", "toolchain"})){
-      this->finish("failed", nullptr);
-    }
+
+    if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
 
     std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
@@ -61,11 +74,6 @@ struct ConfigureDistPackage : public Task
         {"${Sysroot}", toolchain->sysrootPath},
         {"${PackageFolder}", package->path},
         {"${DistPackageFolder}", working_path}};
-
-    this->addIdleCheck("create_build_folder");
-    this->addIdleCheck("configure_dist_package");
-    this->addIdleCheck("compile_dist_package");
-    this->addIdleCheck("install_dist_package");
 
     /*
         Faire pleins de taches singulières (config, give etc, et faire des plus grosses taches qui controllent et qui call les petites taches)

@@ -34,7 +34,12 @@ struct SetupDistEnvironment : public Task
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
+
+    if(!this->ifProps({"toolchain"})){
+      this->finish("failed", nullptr);
+    }
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+
 
     this->addIdleCheck("create_folder:base");
     this->addIdleCheck("create_folder:package_data");
