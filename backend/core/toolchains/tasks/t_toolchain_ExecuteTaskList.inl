@@ -22,19 +22,21 @@ struct ExecuteTaskList : public Task
   void init() override
   {
     this->tasktype = "ExecuteTaskList";
+
+    
+
+    // Props used by task execution
+    this->neededProps.push_back("package");
+    this->neededProps.push_back("toolchain");
+    this->neededProps.push_back("tasklist");
+
+
+
+    this->addIdleCheck("create_build_folder");
+    this->addIdleCheck("configure_dist_package");
+    this->addIdleCheck("compile_dist_package");
+    this->addIdleCheck("install_dist_package");
   };
-
-
-
-// Pour demain :
-/*
-  - Finir toutes les tasks de toolchain
-
-*/
-
-
-
-
 
 
   // Récupérer un ancien report
@@ -45,9 +47,12 @@ struct ExecuteTaskList : public Task
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
+    if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
+
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
     std::shared_ptr<TaskList> tasklist = this->props->get<std::shared_ptr<TaskList>>("tasklist", nullptr);
+    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
 
 
             for (auto task : tasklist->list)
@@ -60,6 +65,8 @@ struct ExecuteTaskList : public Task
             //_task = task;
             std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
             props->add("toolchain", toolchain);
+            props->add("tasklist", tasklist);
+            props->add("package", package);
             //props->add("package", toolchain->packages[row]);
 
             _task->id = runtime_tasks->tasktype + "-" + VortexMaker::gen_random(8);

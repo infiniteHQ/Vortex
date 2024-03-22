@@ -290,6 +290,18 @@ void TasklistInstance::Refresh()
         strncpy(newtask.component, task->component.c_str(), sizeof(newtask.component));
         newtask.component[sizeof(newtask.component) - 1] = '\0';
 
+        for(auto env_prop : task->env_props){
+            std::pair<char[128], char[128]> newenvprop;
+
+            strncpy(newenvprop.first, env_prop.first.c_str(), sizeof(newenvprop.first));
+            newenvprop.first[sizeof(newenvprop.first) - 1] = '\0';
+
+            strncpy(newenvprop.second, env_prop.second.c_str(), sizeof(newenvprop.second));
+            newenvprop.second[sizeof(newenvprop.second) - 1] = '\0';
+
+            newtask.env_props.push_back(newenvprop);
+        }
+
         refreshedCurrentSave->list.push_back(newtask);
     }
 

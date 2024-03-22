@@ -54,7 +54,13 @@ void VxToolchain::FindTasklists()
               std::shared_ptr<Task> task = std::make_shared<Task>();
               task->tasktype = t["task"].get<std::string>();
               task->component = t["component"].get<std::string>();
+
+              for(auto env_props : t["env_props"]){
+                task->env_props.push_back({env_props["type"].get<std::string>(), env_props["prop"].get<std::string>()});
+              }
+
               task->priority = t["priority"].get<int>();
+
               newTasklist->list.push_back(task);
             }
 

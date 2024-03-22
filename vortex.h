@@ -562,8 +562,13 @@ struct Task{
     std::string id; // to find this task from everywhere
     std::string tasktype = "unknow";
 
+
+
     std::vector<std::string> neededVariables; // Only data view
+
+
     std::vector<std::string> neededProps; // Only data view
+    std::vector<std::pair<std::string, std::string>> env_props; // To resolve and store in " std::shared_ptr<hArgs> props"
 
 
     std::string component;
@@ -636,7 +641,27 @@ struct Task{
         }
     }
 
+    // type // state
     std::vector<std::pair<std::string, std::string>> depsChecks;
+    // type // name
+    std::vector<std::pair<std::string, std::string>> depsChecksSpec;
+
+
+    /// Permettre de voir les name des packages, 
+
+    std::shared_ptr<VxPackage> getPackageProp(std::string name){
+        std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+        if(package != nullptr){
+            std::pair<std::string, std::string> dep = {name, package->name};
+            this->depsChecksSpec.push_back(dep);
+        }
+        else{
+            std::shared_ptr<VxPackage> unknowPackage = std::make_shared<VxPackage>();
+            unknowPackage->name = "unknow";
+            return unknowPackage;
+        }
+        return package;
+    }
     
 
     bool ifProps(std::vector<std::string> propsname){
@@ -792,12 +817,18 @@ struct VxDiag{
 struct TaskSave{
     char task[128];
     char component[128];
+
+    //        type,     component       example : package, P_GCC-12.0
+    std::vector<std::pair<char[128],char[128]>> env_props;
+
+
     int priority = - 1;
 
 };
 
 struct TaskListSave {
     char label[128] = "unknow";
+
     std::vector<TaskSave> list;
 
 };

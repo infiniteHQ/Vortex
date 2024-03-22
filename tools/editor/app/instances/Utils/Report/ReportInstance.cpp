@@ -506,6 +506,7 @@ std::string ReportInstance::render()
                     {
                         ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthFixed);
                         ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
+                        ImGui::TableSetupColumn("Name/Label", ImGuiTableColumnFlags_WidthFixed);
                         ImGui::TableHeadersRow();
 
                         for (int row = 0; row < this->task->depsChecks.size(); row++)
@@ -514,7 +515,7 @@ std::string ReportInstance::render()
                             static char label[128];
 
                             ImGui::TableNextRow();
-                            for (int column = 0; column < 2; column++)
+                            for (int column = 0; column < 3; column++)
                             {
                                 ImGui::TableSetColumnIndex(column);
 
@@ -532,6 +533,14 @@ std::string ReportInstance::render()
                                         ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.2f, 1.0f), "satisfied");
                                     }
                                     //ImGui::Text(this->task->depsChecks[row].second.c_str());
+                                }
+                                if (column == 0)
+                                {
+                                    for(auto envProp : this->task->depsChecksSpec){
+                                        if(envProp.first == this->task->depsChecks[row].first){
+                                            ImGui::Text(envProp.second.c_str());
+                                        }
+                                    }
                                 }
                             }
                         }

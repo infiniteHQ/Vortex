@@ -100,6 +100,15 @@ void TaskList::PushSave(std::shared_ptr<TaskListSave> save)
         t["component"] = task.component;
         t["priority"] = task.priority;
         t["task"] = task.task;
+        t["env_props"] = nlohmann::json::array();
+
+        for(auto env_prop : task.env_props){
+            nlohmann::json env;
+            env["type"] = env_prop.first;
+            env["prop"] = env_prop.second;
+            t["env_props"].push_back(env);
+        }
+
         data["tasks"].push_back(t);
     }
 

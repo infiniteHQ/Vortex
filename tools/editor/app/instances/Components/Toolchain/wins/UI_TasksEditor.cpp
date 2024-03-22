@@ -185,6 +185,7 @@ void ToolchainInstance::UI_TasksEditor()
                                                             std::shared_ptr<Task> _task = runtime_tasks->clone();
                                                             _task->init();
 
+
                                                             for (auto prop : _task->neededProps)
                                                             {
                                                                 if (prop == "toolchain" && !toolchainPropAdded)
@@ -195,10 +196,13 @@ void ToolchainInstance::UI_TasksEditor()
                                                                 }
                                                                 else if (prop == "package" && !packagePropAdded)
                                                                 {
+
                                                                    // props->remove<std::shared_ptr<VxPackage>>("package");
                                                                     props->add("package", nullptr); // Or, add the default element of the tasklist
                                                                     selectedTasklist->props = props;
                                                                     packagePropAdded = true;
+
+                                                                
                                                                 }
                                                             }
                                                         }
@@ -260,8 +264,40 @@ void ToolchainInstance::UI_TasksEditor()
                                             _task->tasktype = runtime_tasks->tasktype;
                                             _task->component = task->component;
                                             _task->priority = task->priority;
-                                            _task->props = selectedTasklist->props;
+                                            _task->props = selectedTasklist->props; // Props are from the tasklist conf
                                             _task->state = "not_started";
+
+
+                                            for(auto env_prop: _task->env_props)
+                                            {
+                                                if(env_prop.first == "package"){
+                                                    for(auto package : this->toolchain->packages){
+                                                        if(package->name == env_prop.second){
+                                                            _task->props->remove("package");
+                                                            _task->props->add("package", package);
+                                                        }
+                                                    }
+                                                }
+                                                if(env_prop.first == "toolchain"){
+                                                    for(auto toolchain : this->m_ctx->IO.toolchains){
+                                                        if(toolchain->name == env_prop.second){
+                                                            _task->props->remove("toolchain");
+                                                            _task->props->add("toolchain", toolchain);
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+
+                                            /*
+                                                    Initialiser les props par la conf globale (de la tasklist)
+                                                    Essayer d'ecraser par une conf plus proche (de la task).
+                                            
+                                            
+                                            
+                                            
+                                            */
+
 
                                             for (auto prop : _task->props->registered_arguments)
                                             {
@@ -319,60 +355,7 @@ void ToolchainInstance::UI_TasksEditor()
                             static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
                             ImGui::Text("Loaded props : ");
-                            if (ImGui::BeginTable("table3", 3, flags))
-                            {
-                                ImGui::TableSetupColumn("Add", ImGuiTableColumnFlags_WidthFixed);
-                                ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
-                                ImGui::TableSetupColumn("Reference", ImGuiTableColumnFlags_WidthStretch);
-                                ImGui::TableHeadersRow();
-
-                                static char newPropName[128];
-                                static char newPropReference[128];
-
-                                for (int row = 0; row < 1; row++)
-                                {
-                                    ImGui::TableNextRow();
-                                    for (int column = 0; column < 3; column++)
-                                    {
-
-                                        ImGui::TableSetColumnIndex(column);
-
-                                        if (column == 0)
-                                        {
-
-                                            if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-                                            {
-                                                // Config Task
-                                                // Compile Task
-                                                // Install Task
-
-                                                if (newPropName == "package")
-                                                {
-
-                                                    for (auto package : this->toolchain->packages)
-                                                    {
-                                                        if (package->name == newPropReference)
-                                                        {
-                                                            selectedTasklist->props->add(newPropName, package);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        if (column == 1)
-                                        {
-                                            ImGui::InputText("Name", newPropName, 128);
-                                        }
-
-                                        if (column == 2)
-                                        {
-                                            ImGui::InputText("Reference", newPropReference, 128);
-                                        }
-                                    }
-                                }
-                                ImGui::EndTable();
-                            }
+                          
                             if (ImGui::BeginTable("table3", 3, flags))
                             {
                                 ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
