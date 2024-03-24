@@ -14,7 +14,7 @@ void VxToolchain::MakeSnapshot(std::string label)
     {
         if (snapshot.name == label)
         {
-            std::cout << "Snapshot with label " << label << " already exists." << std::endl;
+            VortexMaker::LogError("Core", "Snapshot with label " + label + " already exists.");
 
             // détecter si le dernier charactere de label est un nombre, si oui ajouter +1 sinon ajouter _1 a la fin
             std::string lastChar = label.substr(label.size() - 1);

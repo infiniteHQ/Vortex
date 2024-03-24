@@ -186,6 +186,33 @@ void ToolchainInstance::UI_TasksEditor()
                                                             _task->init();
 
 
+
+                                            for(auto env_prop: task->env_props)
+                                            {
+                                                if(env_prop.first == "package"){
+                                                    for(auto package : this->toolchain->packages){
+                                                        if(package->name == env_prop.second){
+                                                            //props->remove("package");
+                                                            props->add("package", package);
+                                                                    selectedTasklist->props = props;
+                                                                    packagePropAdded = true;
+
+                                                        }
+                                                    }
+                                                }
+                                                if(env_prop.first == "toolchain"){
+                                                    for(auto toolchain : this->m_ctx->IO.toolchains){
+                                                        if(toolchain->name == env_prop.second){
+                                                           //props->remove("toolchain");
+                                                            props->add("toolchain", toolchain);
+                                                                    selectedTasklist->props = props;
+                                                                    toolchainPropAdded = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+
                                                             for (auto prop : _task->neededProps)
                                                             {
                                                                 if (prop == "toolchain" && !toolchainPropAdded)
@@ -268,27 +295,6 @@ void ToolchainInstance::UI_TasksEditor()
                                             _task->state = "not_started";
 
 
-                                            for(auto env_prop: _task->env_props)
-                                            {
-                                                if(env_prop.first == "package"){
-                                                    for(auto package : this->toolchain->packages){
-                                                        if(package->name == env_prop.second){
-                                                            _task->props->remove("package");
-                                                            _task->props->add("package", package);
-                                                        }
-                                                    }
-                                                }
-                                                if(env_prop.first == "toolchain"){
-                                                    for(auto toolchain : this->m_ctx->IO.toolchains){
-                                                        if(toolchain->name == env_prop.second){
-                                                            _task->props->remove("toolchain");
-                                                            _task->props->add("toolchain", toolchain);
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-
                                             /*
                                                     Initialiser les props par la conf globale (de la tasklist)
                                                     Essayer d'ecraser par une conf plus proche (de la task).
@@ -299,10 +305,6 @@ void ToolchainInstance::UI_TasksEditor()
                                             */
 
 
-                                            for (auto prop : _task->props->registered_arguments)
-                                            {
-                                                std::cout << prop.c_str() << " : " << std::endl;
-                                            }
 
                                             if (this->toolchain->taskProcessor)
                                             {

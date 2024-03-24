@@ -505,8 +505,10 @@ nlohmann::json VxHostCurrentSystem::Extract()
 // TODO : Split to little refresh functions, create a RefreshAll function.
 void VxToolchain::Refresh()
 {
+  VortexMaker::LogInfo("Core", "Refreshing toolchain " + this->name + " from " + this->configFilePath);
   nlohmann::json toolchainData = VortexMaker::DumpJSON(this->configFilePath);
 
+  VortexMaker::LogInfo("Core", "Getting toolchain \"toolchain\" datas from " + this->configFilePath);
   this->name = toolchainData["toolchain"]["name"].get<std::string>();
   this->author = toolchainData["toolchain"]["author"].get<std::string>();
   this->description = toolchainData["toolchain"]["description"].get<std::string>();
@@ -516,15 +518,18 @@ void VxToolchain::Refresh()
   this->vendor = toolchainData["toolchain"]["vendor"].get<std::string>();
   this->platform = toolchainData["toolchain"]["platform"].get<std::string>();
 
+  VortexMaker::LogInfo("Core", "Getting toolchain \"configs\" datas from " + this->configFilePath);
   this->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
   this->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
   this->builder_arch = toolchainData["configs"]["builder_arch"].get<std::string>();
   this->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
 
+  VortexMaker::LogInfo("Core", "Getting toolchain \"data\" informations from " + this->configFilePath);
   this->localPackagesPath = toolchainData["data"]["packages"].get<std::string>();
   this->localPatchsPath = toolchainData["data"]["patchs"].get<std::string>();
   this->localScriptsPath = toolchainData["data"]["scripts"].get<std::string>();
 
+  VortexMaker::LogInfo("Core", "Refreshing packages asset of " + this->name);
   registeredPackages.clear();
   nlohmann::json packages = toolchainData["content"]["packages"];
   for (auto &pkg : packages)
@@ -532,16 +537,20 @@ void VxToolchain::Refresh()
     this->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
   }
 
+  VortexMaker::LogInfo("Core", "Finding packages asset of " + this->name);
   this->FindPackages();
 
+  VortexMaker::LogInfo("Core", "Refreshing tasklists asset of " + this->name);
   registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
   {
     this->RegisterTasklist(t["label"].get<std::string>());
   }
+  VortexMaker::LogInfo("Core", "Finding tasklists asset of " + this->name);
   this->FindTasklists();
 
+  VortexMaker::LogInfo("Core", "Refreshing toolchain " + this->name + " is finish !");
   // this->Init();
 }
 
@@ -651,7 +660,7 @@ VORTEX_API void VortexMaker::RefreshToolchains()
       {
         if (alreadyRegistered->name == filecontent["toolchain"]["name"].get<std::string>())
         {
-          std::cout << alreadyRegistered->name << " is already registered." << std::endl;
+          VortexMaker::LogError("Core", alreadyRegistered->name + " is already registered.");
           alreadyExist = true;
         }
       }
@@ -690,7 +699,7 @@ void VortexMaker::RefreshGpos()
       {
         if (alreadyRegistered->name == filecontent["gpos"]["name"].get<std::string>())
         {
-          std::cout << alreadyRegistered->name << " is already registered." << std::endl;
+          VortexMaker::LogError("Core", alreadyRegistered->name + " is already registered.");
           alreadyExist = true;
         }
       }
@@ -730,7 +739,7 @@ VORTEX_API void VortexMaker::RefreshPackages()
       {
         if (alreadyRegistered->name == filecontent["package"]["name"].get<std::string>())
         {
-          std::cout << alreadyRegistered->name << " is already registered." << std::endl;
+          VortexMaker::LogError("Core", alreadyRegistered->name + " is already registered.");
           alreadyExist = true;
         }
       }
@@ -768,7 +777,6 @@ VORTEX_API void VortexMaker::RefreshHosts()
       {
         if (alreadyRegistered->name == filecontent["host"]["name"].get<std::string>())
         {
-          std::cout << alreadyRegistered->name << " is already registered." << std::endl;
           alreadyExist = true;
         }
       }

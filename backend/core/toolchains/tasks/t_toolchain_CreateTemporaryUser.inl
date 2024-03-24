@@ -66,7 +66,6 @@ struct CreateTemporaryUser : public Task
 
     // Props used by task execution
     this->neededProps.push_back("toolchain");
-    this->neededProps.push_back("package");
 
     // Variables needed by task execution
 
@@ -88,12 +87,11 @@ struct CreateTemporaryUser : public Task
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    if (!this->ifProps({"toolchain", "package"}))
+    if (!this->ifProps(this->neededProps))
     {
       this->finish("fatal", nullptr);
     }
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
-    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
 
     {
       std::string cmd = "groupadd vortex";

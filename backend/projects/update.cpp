@@ -16,8 +16,6 @@ void VxPackage::PushSave(std::shared_ptr<PackageSave> save)
     VxContext *ctx = VortexMaker::GetCurrentContext();
     nlohmann::json packageData;
 
-    std::cout << this->path << std::endl;
-
     std::string tempPath;
     size_t lastSlashPos = path.find_last_of('/');
     
@@ -73,12 +71,12 @@ void VxPackage::PushSave(std::shared_ptr<PackageSave> save)
     if (file.is_open())
     {
         file << std::setw(4) << packageData << std::endl;
-        std::cout << "Object saved to " << this->configFilePath << std::endl;
+          VortexMaker::LogInfo("Core", "Object saved to " + this->configFilePath);
         file.close();
     }
     else
     {
-        std::cerr << "Unable to open file " << this->configFilePath << " for writing!" << std::endl;
+          VortexMaker::LogError("Core", "Unable to open file " + this->configFilePath + " for writing!");
     }
 
 
@@ -116,12 +114,13 @@ void TaskList::PushSave(std::shared_ptr<TaskListSave> save)
     if (file.is_open())
     {
         file << std::setw(4) << data << std::endl;
-        std::cout << "Object saved to " << this->configFilePath << std::endl;
+
+          VortexMaker::LogInfo("Core", "Object saved to " + this->configFilePath);
         file.close();
     }
     else
     {
-        std::cerr << "Unable to open file " << this->configFilePath << " for writing!" << std::endl;
+        VortexMaker::LogError("Core", "Unable to open file " +  this->configFilePath + " for writing!");
     }
 }
 
@@ -132,13 +131,13 @@ void VxHostCurrentSystem::Save(std::shared_ptr<VxHost> parent)
     if (file.is_open())
     {
         file << std::setw(4) << data << std::endl;
-        std::cout << "Object saved to " << parent->path_hostroot + "/working_host.config" << std::endl;
+          VortexMaker::LogInfo("Core", "Object saved to " + parent->path_hostroot + "/working_host.config");
         file.close();
     }
     else
     {
-        std::cerr << "Unable to open file " << parent->path_hostroot + "/working_host.config"
-                  << " for writing!" << std::endl;
+
+        VortexMaker::LogError("Core", "Unable to open file " + parent->path_hostroot + "/working_host.config"+" for writing!");
     }
 }
 
@@ -149,13 +148,12 @@ void VxToolchainCurrentSystem::Save(std::shared_ptr<VxToolchain> parent)
     if (file.is_open())
     {
         file << std::setw(4) << data << std::endl;
-        std::cout << "Object saved to " << parent->workingPath + "/working_host.config" << std::endl;
+          VortexMaker::LogInfo("Core", "Object saved to " + parent->workingPath + "/working_host.config");
         file.close();
     }
     else
     {
-        std::cerr << "Unable to open file " << parent->workingPath + "/working_host.config"
-                  << " for writing!" << std::endl;
+        VortexMaker::LogError("Core", "Unable to open file " + parent->workingPath + "/working_host.config"+" for writing!");
     }
 }
 
@@ -164,15 +162,10 @@ void VxHost::CreatePackage(std::string label, std::string author, std::string de
 
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    std::cout << label << std::endl;
-    std::cout << author << std::endl;
-    std::cout << pathToTarball << std::endl;
-
 
     std::string envPath = ctx->projectPath;
     envPath + "/.vx/data/hosts/" + ctx->hostsPath;
     std::string baseDir = envPath + "/" + this->localPackagesPath + "/" + label;
-    std::cout << baseDir << std::endl;
 
 
     // Move tarball
@@ -263,12 +256,12 @@ void VxToolchain::PushSave(std::shared_ptr<ToolchainSave> save)
     if (file.is_open())
     {
         file << std::setw(4) << toolchainData << std::endl;
-        std::cout << "Object saved to " << this->configFilePath << std::endl;
+          VortexMaker::LogInfo("Core", "Object saved to " + this->configFilePath);
         file.close();
     }
     else
     {
-        std::cerr << "Unable to open file " << this->configFilePath << " for writing!" << std::endl;
+        VortexMaker::LogError("Core", "Unable to open file " + this->configFilePath + " for writing!");
     }
 }
 
@@ -320,11 +313,11 @@ void VxHost::PushSave(std::shared_ptr<HostSave> save)
     if (file.is_open())
     {
         file << std::setw(4) << toolchainData << std::endl;
-        std::cout << "Object saved to " << this->configFilePath << std::endl;
+          VortexMaker::LogInfo("Core", "Object saved to " + this->configFilePath);
         file.close();
     }
     else
     {
-        std::cerr << "Unable to open file " << this->configFilePath << " for writing!" << std::endl;
+          VortexMaker::LogInfo("Core", "Unable to open file " + this->configFilePath + " for writing!");
     }
 }

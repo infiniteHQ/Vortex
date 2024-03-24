@@ -420,13 +420,16 @@ void ToolchainInstance::Refresh()
 
     // TODO: BEFORE ALL, REFRESH API INSTANCE OF THIS HOST
 
+  VortexMaker::LogInfo("Core", "Start refreshing " + this->name);
     this->toolchain->Refresh();
 
 
+  VortexMaker::LogInfo("Core", "Init core tasks of " + this->name);
     for(auto task : this->toolchain->tasks){
         task->init();
     }
 
+  VortexMaker::LogInfo("Core", "Load a new save " + this->name);
     std::shared_ptr<ToolchainSave> refreshedCurrentSave = std::make_shared<ToolchainSave>();
 
     strncpy(refreshedCurrentSave->name, this->toolchain->name.c_str(), sizeof(refreshedCurrentSave->name));
@@ -509,6 +512,7 @@ void ToolchainInstance::Refresh()
 
 void ToolchainInstance::Save()
 {
+  VortexMaker::LogInfo("Core", "Save... " + this->name);
     // Get currentSave (modified by all UI editors)
     // Set host new host variables with save contents
     // Patch json with native Vortex APi

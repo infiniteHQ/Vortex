@@ -1048,4 +1048,40 @@ void TaskProcessor::processTasks() {
 }
 
 
+
+
+
+VORTEX_API void VortexMaker::LogInfo(std::string scope, std::string message){
+    VxContext &ctx = *CVortexMaker;
+    if(ctx.logger){
+      spdlog::info("[" + scope + "] -> "+ message);
+    }
+
+}
+
+VORTEX_API void VortexMaker::LogWarn(std::string scope, std::string message){
+    VxContext &ctx = *CVortexMaker;
+    if(ctx.logger){
+      spdlog::warn("[" + scope + "] -> "+ message);
+    }
+
+}
+
+VORTEX_API void VortexMaker::LogError(std::string scope, std::string message){
+    VxContext &ctx = *CVortexMaker;
+    if(ctx.logger){
+      spdlog::error("[" + scope + "] -> " + message);
+    }
+
+}
+
+VORTEX_API void VortexMaker::LogFatal(std::string scope, std::string message){
+    VxContext &ctx = *CVortexMaker;
+    if(ctx.logger){
+      spdlog::critical("[" + scope + "] -> "+ message);
+    }
+
+}
+
+
 #endif // VORTEX_DISABLE

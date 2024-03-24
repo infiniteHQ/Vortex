@@ -16,8 +16,10 @@ bool CheckDirectory(){
     return true;
 }
 
-VxContext* InitRuntime(){ 
+VxContext* InitRuntime(bool logger){ 
+    std::cout << "Initializing runtime..." << std::endl;
     VxContext* ctx = VortexMaker::CreateContext();
+    ctx->logger = logger;
     std::ifstream file("vortex.config");
 
     if (file) {
@@ -51,7 +53,7 @@ int main(int argc, char *argv[])
             std::string ui;
             std::cin >> ui;
         }
-        if (std::string(argv[1]) == "-cp" || std::string(argv[1]) == "--create-project")
+        else if (std::string(argv[1]) == "-cp" || std::string(argv[1]) == "--create-project")
         {
             if (argc < 3)
             {
@@ -69,26 +71,28 @@ int main(int argc, char *argv[])
                 VortexMaker::CreateProject(project_name, current_path);
             }
         }
+        else if (std::string(argv[1]) == "-g" || std::string(argv[1]) == "--gui")
         {
             if(!CheckDirectory()){return 1;};
             std::cout << "Opening the graphical interface..." << std::endl;
 
             std::thread receiveThread;
-            std::thread Thread([&]() { VortexMaker::DebugTools(argc, argv, InitRuntime()); });
-            receiveThread.swap(Thread);
-            receiveThread.join();
-        }
-        if (std::string(argv[1]) == "-g" || std::string(argv[1]) == "--gui")
-        {
-            if(!CheckDirectory()){return 1;};
-            std::cout << "Opening the graphical interface..." << std::endl;
+            try{
+            if (std::string(argv[2]) == "-v"){
+                std::thread Thread([&]() { VortexMaker::DebugTools(argc, argv, InitRuntime(true)); });
+                receiveThread.swap(Thread);
+            }
+            }
+            catch(std::exception e){
+                std::thread Thread([&]() { VortexMaker::DebugTools(argc, argv, InitRuntime(false)); });
+                receiveThread.swap(Thread);
 
-            std::thread receiveThread;
-            std::thread Thread([&]() { VortexMaker::DebugTools(argc, argv, InitRuntime()); });
-            receiveThread.swap(Thread);
+            }
+
+            
             receiveThread.join();
         }
-        if (std::string(argv[1]) == "-test" || std::string(argv[1]) == "--test")
+        else if (std::string(argv[1]) == "-test" || std::string(argv[1]) == "--test")
         {
             if(!CheckDirectory()){return 1;};
             std::cout << "Opening the graphical interface..." << std::endl;

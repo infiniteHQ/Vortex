@@ -185,6 +185,7 @@ struct VxPaths {
 //-----------------------------------------------------------------------------
 struct VxContext {
   bool                              initialized;
+  bool                              logger;
   VxIO                              IO;
   VortexMakerDebugAllocInfo         debugAllocInfo;
   

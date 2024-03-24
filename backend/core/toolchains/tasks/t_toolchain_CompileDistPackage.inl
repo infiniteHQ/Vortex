@@ -47,7 +47,7 @@ struct CompileDistPackage : public Task
 
     if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
 
-    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+    std::shared_ptr<VxPackage> package = this->getPackageProp();
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
     std::string working_path = std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package_uncompressed:"+package->name + ""));

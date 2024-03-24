@@ -24,6 +24,19 @@ struct SetupDistEnvironment : public Task
   void init() override
   {
     this->tasktype = "SetupDistEnvironment";
+
+    // Props used by task execution
+    this->neededProps.push_back("toolchain");
+
+    // Variables needed by task execution
+
+    this->addIdleCheck("create_folder:base");
+    this->addIdleCheck("create_folder:package_data");
+    this->addIdleCheck("create_folder:patchs_data");
+    this->addIdleCheck("create_folder:scripts_data");
+    this->addIdleCheck("create_folder:working_host");
+    this->addIdleCheck("create_folder:working_host_debugroot");
+    this->addIdleCheck("create_folder:working_host_sysroot");
   };
 
   // Récupérer un ancien report
@@ -35,19 +48,11 @@ struct SetupDistEnvironment : public Task
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
 
-    if(!this->ifProps({"toolchain"})){
+    if(!this->ifProps(this->neededProps)){
       this->finish("failed", nullptr);
     }
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
-
-    this->addIdleCheck("create_folder:base");
-    this->addIdleCheck("create_folder:package_data");
-    this->addIdleCheck("create_folder:patchs_data");
-    this->addIdleCheck("create_folder:scripts_data");
-    this->addIdleCheck("create_folder:working_host");
-    this->addIdleCheck("create_folder:working_host_debugroot");
-    this->addIdleCheck("create_folder:working_host_sysroot");
 
 
     // API to check if a task is executed and the result.

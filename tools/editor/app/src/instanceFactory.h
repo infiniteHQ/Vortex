@@ -28,21 +28,21 @@ using namespace VortexMaker;
 
 class InstanceFactory {
   public:
-  virtual void SpawnInstance(std::shared_ptr<HostInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void SpawnInstance(std::shared_ptr<ToolchainInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void SpawnInstance(std::shared_ptr<PackageInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void SpawnInstance(std::shared_ptr<TasklistInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void SpawnInstance(std::shared_ptr<GPOSInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void SpawnInstance(std::shared_ptr<ReportInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void SpawnInstance(std::shared_ptr<TextEditor>) {std::cout << "Not implemented" << std::endl;};
+  virtual void SpawnInstance(std::shared_ptr<HostInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void SpawnInstance(std::shared_ptr<ToolchainInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void SpawnInstance(std::shared_ptr<PackageInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void SpawnInstance(std::shared_ptr<TasklistInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void SpawnInstance(std::shared_ptr<GPOSInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void SpawnInstance(std::shared_ptr<ReportInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void SpawnInstance(std::shared_ptr<TextEditor>) {VortexMaker::LogError("Core", "Core task not implemented !");};
 
-  virtual void UnspawnInstance(std::shared_ptr<HostInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void UnspawnInstance(std::shared_ptr<PackageInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void UnspawnInstance(std::shared_ptr<ToolchainInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void UnspawnInstance(std::shared_ptr<TasklistInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void UnspawnInstance(std::shared_ptr<GPOSInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void UnspawnInstance(std::shared_ptr<ReportInstance>) {std::cout << "Not implemented" << std::endl;};
-  virtual void UnspawnInstance(std::shared_ptr<TextEditor>) {std::cout << "Not implemented" << std::endl;};
+  virtual void UnspawnInstance(std::shared_ptr<HostInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void UnspawnInstance(std::shared_ptr<PackageInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void UnspawnInstance(std::shared_ptr<ToolchainInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void UnspawnInstance(std::shared_ptr<TasklistInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void UnspawnInstance(std::shared_ptr<GPOSInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void UnspawnInstance(std::shared_ptr<ReportInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void UnspawnInstance(std::shared_ptr<TextEditor>) {VortexMaker::LogError("Core", "Core task not implemented !");};
 };
 
 #endif

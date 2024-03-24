@@ -89,6 +89,7 @@
 #include <format>
 #include <iostream>
 #include <string>
+#include <spdlog/spdlog.h>
 
 #include <thread>
 #include <vector>
@@ -165,15 +166,6 @@ namespace fs = std::filesystem;
 #pragma GCC diagnostic ignored "-Wclass-memaccess"  // [__GNUC__ >= 8] warning: 'memset/memcpy' clearing/writing an object of type 'xxxx' with no trivial copy-assignment; use assignment or value-initialization instead
 #endif
 
-#ifndef USE_LOG
-#define Vx_LOG(_LOG)
-#endif
-
-#ifdef USE_LOG
-#include <iostream>
-#define Vx_LOG(_LOG) std::cout << _LOG << std::endl;
-#endif
-
 //_____________________________________________________________________________
 
 
@@ -238,6 +230,12 @@ namespace VortexMaker
     VORTEX_API void             RefreshGpos();
     VORTEX_API void             RefreshDistHosts();
     VORTEX_API void             RefreshPackages();
+
+
+    VORTEX_API void             LogInfo(std::string scope, std::string message);
+    VORTEX_API void             LogWarn(std::string scope, std::string message);
+    VORTEX_API void             LogError(std::string scope, std::string message);
+    VORTEX_API void             LogFatal(std::string scope, std::string message);
 
     VORTEX_API void             CreateToolchain(std::string name, std::string author);
     VORTEX_API void             CreateCreate(std::string name, std::string pathOfTarball);
@@ -553,203 +551,6 @@ struct Check{
 };
 
 
-struct Task{
-
-    virtual std::shared_ptr<Task> clone() const {
-        return std::make_shared<Task>(*this);
-    }
-    
-    std::string id; // to find this task from everywhere
-    std::string tasktype = "unknow";
-
-
-
-    std::vector<std::string> neededVariables; // Only data view
-
-
-    std::vector<std::string> neededProps; // Only data view
-    std::vector<std::pair<std::string, std::string>> env_props; // To resolve and store in " std::shared_ptr<hArgs> props"
-
-
-    std::string component;
-    std::string state; // state of this task
-    std::vector<std::tuple<std::string, std::string, std::string>> used_variables;
-    std::vector<std::tuple<std::string, std::string, std::string>>  created_variables;
-    int priority;
-
-    int warningCounter = 0;
-    int failCounter = 0;
-    int unknowCounter = 0;
-    int successCounter = 0;
-
-    std::vector<std::shared_ptr<Check>> checkList;
-    void addIdleCheck(std::string id){
-        std::shared_ptr<Check> newCheck = std::make_shared<Check>();
-        newCheck->checkID = id;
-        this->checkList.push_back(newCheck);
-        this->unknowCounter++;
-    }
-
-    void updateState(){
-        std::string _state = "unknow";
-            if(this->successCounter > 0){
-                _state = "success";
-            }
-            else if(this->warningCounter > 0){
-                _state = "warning";
-            }
-            else if(this->failCounter > 0){
-                _state = "failed";
-            }
-        this->state = _state;
-     }
-    
-
-    /*
-        Result types :
-        - success : The check is a success
-        - warning : The check is a warning
-        - failed : The check is a failure
-        - unknow : The check is not yet processed
-        - fatal : The check is a fatal error
-    */
-   
-    void addCheckVerdict(std::string id, std::string result, std::string log, std::string directive){
-        for(auto check : this->checkList){
-            if(check->checkID == id){
-            check->checkLog = log;
-            check->checkResult = result;
-            check->checkDirective = directive;
-                
-      if (check->checkResult == "failed"){
-        this->failCounter++;
-        this->unknowCounter--;
-      }
-      else if (check->checkResult == "success"){
-        this->successCounter++;
-        this->unknowCounter--;
-      }
-      else if (check->checkResult == "warning"){
-        this->warningCounter++;
-        this->unknowCounter--;
-      }
-      else if (check->checkResult == "unknow"){
-
-      }
-      this->updateState();
-            }
-        }
-    }
-
-    // type // state
-    std::vector<std::pair<std::string, std::string>> depsChecks;
-    // type // name
-    std::vector<std::pair<std::string, std::string>> depsChecksSpec;
-
-
-    /// Permettre de voir les name des packages, 
-
-    std::shared_ptr<VxPackage> getPackageProp(std::string name){
-        std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
-        if(package != nullptr){
-            std::pair<std::string, std::string> dep = {name, package->name};
-            this->depsChecksSpec.push_back(dep);
-        }
-        else{
-            std::shared_ptr<VxPackage> unknowPackage = std::make_shared<VxPackage>();
-            unknowPackage->name = "unknow";
-            return unknowPackage;
-        }
-        return package;
-    }
-    
-
-    bool ifProps(std::vector<std::string> propsname){
-        int satisfied = 0;
-        for(auto prop : propsname){
-            satisfied++;
-        }
-
-
-        for(auto prop : this->props->registered_arguments){
-            for(auto _p : propsname){
-
-                this->depsChecks.push_back(std::make_pair(_p, "missing"));
-                if(prop.c_str() == _p){
-                    satisfied--;
-                    this->depsChecks.pop_back();
-                    this->depsChecks.push_back(std::make_pair(_p, "satisfied"));
-                    continue;
-                }
-                this->depsChecks.pop_back();
-            }
-        }
-        
-        if(satisfied == 0){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    bool ifProp(std::string propname){
-        for(auto prop : this->props->registered_arguments){
-            if(prop.c_str() == propname){
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    std::chrono::time_point<std::chrono::system_clock> m_StartTime;
-    std::chrono::time_point<std::chrono::system_clock> m_EndTime;
-    double m_TotalTime;
-    bool                                               m_bRunning = false;
-
-
-    double elapsedMilliseconds(){std::chrono::time_point<std::chrono::system_clock> endTime;if(m_bRunning){endTime = std::chrono::system_clock::now();}else{endTime = m_EndTime;}return std::chrono::duration_cast<std::chrono::milliseconds>(endTime - m_StartTime).count();}
-    double elapsedSeconds(){return elapsedMilliseconds() / 1000.0;}
-
-std::string startTime() {
-    std::time_t t = std::chrono::system_clock::to_time_t(this->m_StartTime);
-    std::string ts = std::ctime(&t);
-    ts.resize(ts.size()-1);
-    return ts;
-}
-
-    void start()
-    {
-        this->m_StartTime = std::chrono::system_clock::now();
-        this->state = "process";
-        this->m_bRunning = true;
-    }
-    
-    void stop()
-    {
-        this->m_EndTime = std::chrono::system_clock::now();
-        this->m_bRunning = false;
-        this->m_TotalTime = elapsedSeconds();
-    }
-
-    
-    // Custom args
-    std::shared_ptr<hArgs> props;
-
-    // Result
-    std::shared_ptr<hArgs> result_props;
-
-    //std::shared_ptr<VxHost> parent;
-
-    virtual void init(){std::cout << "Not implemented" << std::endl;};
-    virtual void retry(){std::cout << "Not implemented" << std::endl;};
-    virtual void exec(){std::cout << "Not implemented" << std::endl;};
-    virtual void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties){std::cout << "Not implemented" << std::endl;};
-};
-
-
-
 struct VxPackageInterface{
     std::string emplacement;
     std::string label;
@@ -1049,6 +850,217 @@ struct VxActionReport{
 };
 
 
+struct Task{
+
+    virtual std::shared_ptr<Task> clone() const {
+        return std::make_shared<Task>(*this);
+    }
+    
+    std::string id; // to find this task from everywhere
+    std::string tasktype = "unknow";
+
+
+
+    std::vector<std::string> neededVariables; // Only data view
+
+
+    std::vector<std::string> neededProps; // Only data view
+    std::vector<std::pair<std::string, std::string>> env_props; // To resolve and store in " std::shared_ptr<hArgs> props"
+
+
+    std::string component;
+    std::string state; // state of this task
+    std::vector<std::tuple<std::string, std::string, std::string>> used_variables;
+    std::vector<std::tuple<std::string, std::string, std::string>>  created_variables;
+    int priority;
+
+    int warningCounter = 0;
+    int failCounter = 0;
+    int unknowCounter = 0;
+    int successCounter = 0;
+
+    std::vector<std::shared_ptr<Check>> checkList;
+    void addIdleCheck(std::string id){
+        std::shared_ptr<Check> newCheck = std::make_shared<Check>();
+        newCheck->checkID = id;
+        this->checkList.push_back(newCheck);
+        this->unknowCounter++;
+    }
+
+    void updateState(){
+        std::string _state = "unknow";
+            if(this->successCounter > 0){
+                _state = "success";
+            }
+            else if(this->warningCounter > 0){
+                _state = "warning";
+            }
+            else if(this->failCounter > 0){
+                _state = "failed";
+            }
+        this->state = _state;
+     }
+    
+
+    /*
+        Result types :
+        - success : The check is a success
+        - warning : The check is a warning
+        - failed : The check is a failure
+        - unknow : The check is not yet processed
+        - fatal : The check is a fatal error
+    */
+   
+    void addCheckVerdict(std::string id, std::string result, std::string log, std::string directive){
+        for(auto check : this->checkList){
+            if(check->checkID == id){
+            check->checkLog = log;
+            check->checkResult = result;
+            check->checkDirective = directive;
+                
+      if (check->checkResult == "failed"){
+        this->failCounter++;
+        this->unknowCounter--;
+      }
+      else if (check->checkResult == "success"){
+        this->successCounter++;
+        this->unknowCounter--;
+      }
+      else if (check->checkResult == "warning"){
+        this->warningCounter++;
+        this->unknowCounter--;
+      }
+      else if (check->checkResult == "unknow"){
+
+      }
+      this->updateState();
+            }
+        }
+    }
+
+    // type // state
+    std::vector<std::pair<std::string, std::string>> depsChecks;
+    // type // name
+    std::vector<std::pair<std::string, std::string>> depsChecksSpec;
+
+
+    /// Permettre de voir les name des packages, 
+
+    std::shared_ptr<VxPackage> getPackageProp(){
+        std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+        if(package != nullptr){
+            std::pair<std::string, std::string> dep;
+            dep.first = "package";
+            dep.second = package->name;
+            this->depsChecksSpec.push_back(dep);
+        }
+        else{
+            std::shared_ptr<VxPackage> unknowPackage = std::make_shared<VxPackage>();
+            unknowPackage->name = "unknow";
+            return unknowPackage;
+        }
+        return package;
+    }
+    
+    // Pour la prochaine fois
+    /*
+        refAIRE UNE TOOLCHAINE FONCTIONNELLE
+        Reprendre toutes les tasklists de Newtoolchains
+        Regler le core dumped juste apres l'execution de la task qui se produit surement dans ifProps (apres modification d'un props de plus bas niveau)
+        Faire une save de la toolchain au cas ou okyus 
+        Finir la toolchain et video !!
+    
+    
+    */
+
+    bool ifProps(std::vector<std::string> propsname){
+        int satisfied = 0;
+        for(auto prop : propsname){
+            satisfied++;
+        }
+
+        for(auto prop : this->props->registered_arguments){
+            for(auto _p : propsname){
+
+                this->depsChecks.push_back(std::make_pair(_p, "missing"));
+                if(prop.c_str() == _p){
+                    satisfied--;
+                    this->depsChecks.pop_back();
+                    this->depsChecks.push_back(std::make_pair(_p, "satisfied"));
+                    continue;
+                }
+                this->depsChecks.pop_back();
+            }
+        }
+        
+        if(satisfied == 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    bool ifProp(std::string propname){
+        for(auto prop : this->props->registered_arguments){
+            if(prop.c_str() == propname){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    std::chrono::time_point<std::chrono::system_clock> m_StartTime;
+    std::chrono::time_point<std::chrono::system_clock> m_EndTime;
+    double m_TotalTime;
+    bool                                               m_bRunning = false;
+
+
+    double elapsedMilliseconds(){std::chrono::time_point<std::chrono::system_clock> endTime;if(m_bRunning){endTime = std::chrono::system_clock::now();}else{endTime = m_EndTime;}return std::chrono::duration_cast<std::chrono::milliseconds>(endTime - m_StartTime).count();}
+    double elapsedSeconds(){return elapsedMilliseconds() / 1000.0;}
+
+std::string startTime() {
+    std::time_t t = std::chrono::system_clock::to_time_t(this->m_StartTime);
+    std::string ts = std::ctime(&t);
+    ts.resize(ts.size()-1);
+    return ts;
+}
+
+    void start()
+    {
+        this->m_StartTime = std::chrono::system_clock::now();
+        this->state = "process";
+        this->m_bRunning = true;
+    }
+    
+    void stop()
+    {
+        this->m_EndTime = std::chrono::system_clock::now();
+        this->m_bRunning = false;
+        this->m_TotalTime = elapsedSeconds();
+    }
+
+    
+    // Custom args
+    std::shared_ptr<hArgs> props;
+
+    // Result
+    std::shared_ptr<hArgs> result_props;
+
+    //std::shared_ptr<VxHost> parent;
+
+    virtual void init(){VortexMaker::LogError("Core", "Core task not implemented !");};
+    virtual void retry(){VortexMaker::LogError("Core", "Core task not implemented !");};
+    virtual void exec(){VortexMaker::LogError("Core", "Core task not implemented !");};
+    virtual void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties){VortexMaker::LogError("Core", "Core task not implemented !");};
+};
+
+
+
+
+
+
 struct VxToolchainCurrentSystem{
     std::string lastUpdate;
     std::string size;
@@ -1273,6 +1285,7 @@ struct VxHost{
 
 
 };
+
 
 
 struct VxGPOSystem{

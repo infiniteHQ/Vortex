@@ -502,7 +502,7 @@ std::string ReportInstance::render()
             if (ImGui::CollapsingHeader("Props"))
             {                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-                    if (ImGui::BeginTable("prop_name", 2, flags))
+                    if (ImGui::BeginTable("prop_name", 3, flags))
                     {
                         ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthFixed);
                         ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
@@ -534,12 +534,19 @@ std::string ReportInstance::render()
                                     }
                                     //ImGui::Text(this->task->depsChecks[row].second.c_str());
                                 }
-                                if (column == 0)
+                                if (column == 2)
                                 {
+                                    bool finded = false;
                                     for(auto envProp : this->task->depsChecksSpec){
                                         if(envProp.first == this->task->depsChecks[row].first){
+                                            finded = true;
                                             ImGui::Text(envProp.second.c_str());
+                                            ImGui::Text("XXX");
                                         }
+                                    }
+                                    
+                                    if(!finded){
+                                            ImGui::Text("???");
                                     }
                                 }
                             }
