@@ -238,6 +238,8 @@ void TasklistInstance::UI_MainSettings()
                             ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthFixed);
                             ImGui::TableHeadersRow();
 
+                            
+
                             for (int srow = 0; srow < 1; srow++)
                             {
                                 ImGui::TableNextRow();
@@ -256,22 +258,25 @@ void TasklistInstance::UI_MainSettings()
                                     }
                                     if (column == 1)
                                     {
-                                        std::string label = "###" + std::to_string(row) + "-" + std::to_string(column) + "-component";
-                                        label += std::to_string(row);
-                                        ImGui::InputText(label.c_str(), newEnvProps.first, 128);
+                                        // Unique ID for label 
+                                        static std::string rd = VortexMaker::gen_random(6);
+                                        std::string name = "###Type"+std::to_string(row);
+                                        spdlog::critical(name);
+                                        ImGui::InputText(name.c_str(), newEnvProps.first, 128);
                                     }
                                     if (column == 2)
                                     {
-                                        std::string label = "###" + std::to_string(row) + "-" + std::to_string(column) + "-component";
-                                        label += std::to_string(row);
-                                        ImGui::InputText(label.c_str(), newEnvProps.second, 128);
+                                        // Unique ID for label 
+                                        std::string name = "###PROP"+std::to_string(row);
+                                        spdlog::critical(name);
+                                        ImGui::InputText(name.c_str(), newEnvProps.second, 128);
                                     }
                                 }
                             }
 
                             ImGui::EndTable();
                         }
-                        if (ImGui::BeginTable("table_f", 3, flags))
+                        if (ImGui::BeginTable("table_", 3, flags))
                         {
                             ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
                             ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed);
@@ -284,7 +289,7 @@ void TasklistInstance::UI_MainSettings()
                                 for (int column = 0; column < 3; column++)
                                 {
                                     ImGui::TableSetColumnIndex(column);
-                                    std::string deleteButtonID = "Delete###" + std::to_string(row) + "-" + std::to_string(column);
+                                    std::string deleteButtonID = "Delete###" + std::to_string(srow) + "-" + std::to_string(column) + m_currentSave->list[row].task;
 
                                     if (column == 0)
                                     {
@@ -297,13 +302,13 @@ void TasklistInstance::UI_MainSettings()
                                     if (column == 1)
                                     {
                                         std::string name = this->m_currentSave->list[row].task;
-                                        std::string label = "Prop###" + name + std::to_string(row) + "-PropFinal" + std::to_string(column);
-                                        ImGui::InputText(label.c_str(), m_currentSave->list[row].env_props[row].second, 128);
+                                        std::string label = "Prop###1" + name + std::to_string(row) + "-PropFinal" + std::to_string(column) + m_currentSave->list[row].task;
+                                        ImGui::InputText(label.c_str(), m_currentSave->list[row].env_props[row].first, 128);
                                     }
                                     if (column == 2)
                                     {
                                         std::string name = this->m_currentSave->list[row].task;
-                                        std::string label = "Prop###" + name + std::to_string(row) + "-PropFinal" + std::to_string(column);
+                                        std::string label = "Prop###2" + name + std::to_string(row) + "-PropFinal" + std::to_string(column) + m_currentSave->list[row].task;
                                         ImGui::InputText(label.c_str(), m_currentSave->list[row].env_props[row].second, 128);
                                     }
                                 }

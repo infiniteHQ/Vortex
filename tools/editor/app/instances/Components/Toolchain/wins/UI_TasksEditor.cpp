@@ -3,6 +3,14 @@
 #include <random>
 #include <mutex>
 
+
+/*
+
+TODO: Improuve the composant/props system for more flexibility and modularity.
+
+
+*/
+
 /*
          IDEM QUE volatile tasks
 
@@ -173,17 +181,6 @@ void ToolchainInstance::UI_TasksEditor()
                                                 packagePropAdded = false;
                                                 toolchainPropAdded = false;
 
-                                                spdlog::error("----");
-                                                spdlog::warn(task->tasktype);
-                                                spdlog::warn(task->component);
-                                                for(auto i : task->env_props){
-                                                spdlog::error("//////////");
-                                                    spdlog::warn(i.first);
-                                                    spdlog::warn(i.second);
-                                                spdlog::error("//////////");
-
-                                                }
-
                                                 for (auto runtime_tasks : this->toolchain->tasks)
                                                 {
                                                     if (runtime_tasks->tasktype == task->tasktype)
@@ -201,15 +198,13 @@ void ToolchainInstance::UI_TasksEditor()
 
 
                                                                 for(auto tasklist : this->toolchain->tasklists){
-                                                                    if(task->component == tasklist->label){
-                                                                        spdlog::error("Include " + tasklist->label);                                               
+                                                                    if(task->component == tasklist->label){                                            
                                                                         _props->add("tasklist", tasklist); // Or, add the default element of the tasklist
                                                                     }
                                                                 }
 
                                                                 for(auto package : this->toolchain->packages){
-                                                                    if(task->component == package->label){
-                                                                        spdlog::error("Include " + package->name);                                               
+                                                                    if(task->component == package->label){                                           
                                                                         _props->add("package", package); // Or, add the default element of the tasklist
                                                                     }
                                                                 }
@@ -223,9 +218,7 @@ void ToolchainInstance::UI_TasksEditor()
                                                                     std::cout << "Package name " << package->name << " " << env_prop.second << std::endl;
                                                                     if (package->name == env_prop.second)
                                                                     {
-                                                                        spdlog::info("Add package");
                                                                         _props->add("package", package);
-                                                                        spdlog::info("Add package");
                                                                         packagePropAdded = true;
                                                                     }
                                                                 }
@@ -236,10 +229,7 @@ void ToolchainInstance::UI_TasksEditor()
                                                                 {
                                                                     if (toolchain->name == env_prop.second)
                                                                     {
-                                                                        // props->remove("toolchain");
-                                                                        spdlog::info("Add toolchain");
                                                                         _props->add("toolchain", toolchain);
-                                                                        spdlog::info("Add toolchain");
                                                                         toolchainPropAdded = true;
                                                                     }
                                                                 }
@@ -250,14 +240,12 @@ void ToolchainInstance::UI_TasksEditor()
                                                         {
                                                             if (prop == "toolchain" && !toolchainPropAdded)
                                                             {
-                                                                spdlog::info("Add Stoolchain");
                                                                 _props->add("toolchain", this->toolchain);
                                                                 toolchainPropAdded = true;
                                                             }
                                                             else if (prop == "package" && !packagePropAdded)
                                                             {
 
-                                                                spdlog::info("Add SPackage");
                                                                 std::shared_ptr<VxPackage> _package = std::make_shared<VxPackage>();
                                                                 _package->name = "none";
                                                                 _props->add("package", _package); // Or, add the default element of the tasklist
@@ -266,7 +254,6 @@ void ToolchainInstance::UI_TasksEditor()
                                                             else if (prop == "tasklist" && !tasklistPropAdded)
                                                             {
 
-                                                                spdlog::info("Add STasklist");
                                                                 std::shared_ptr<TaskList> _tasklist = std::make_shared<TaskList>();
                                                                 _tasklist->label = "none";
 
@@ -407,7 +394,6 @@ void ToolchainInstance::UI_TasksEditor()
                             {
                                 std::string taskLabel = "Loaded props of task " + selectedTasklist->list[task]->tasktype;
                                 ImGui::Text(taskLabel.c_str());
-                                std::cout << "Val " << selectedTasklist->list[task]->props << std::endl;
                                 if (ImGui::BeginTable("table3", 3, flags))
                                 {
                                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
@@ -415,12 +401,9 @@ void ToolchainInstance::UI_TasksEditor()
                                     ImGui::TableSetupColumn("Reference", ImGuiTableColumnFlags_WidthStretch);
                                     ImGui::TableHeadersRow();
 
-                                    std::cout << "Size index " << selectedTasklist->list[task]->props->registered_arguments.size() << std::endl;
                                     for (int row = 0; row < selectedTasklist->list[task]->props->registered_arguments.size(); row++)
                                     {
 
-                                        spdlog::warn(selectedTasklist->list[task]->tasktype);                                        
-                                        spdlog::warn(selectedTasklist->list[task]->props->registered_arguments[row].c_str());
                                         ImGui::TableNextRow();
                                         for (int column = 0; column < 3; column++)
                                         {
@@ -461,7 +444,7 @@ void ToolchainInstance::UI_TasksEditor()
                                                     std::shared_ptr<VxPackage> package = selectedTasklist->list[task]->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
                                                     if (package != nullptr)
                                                     {
-                                                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0), package->name.c_str());
+                                                        //ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0), package->name.c_str());
                                                     }
                                                     else
                                                     {
@@ -526,6 +509,14 @@ void ToolchainInstance::UI_TasksEditor()
                                                             ImGui::Text(selectedTasklist->list[task]->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str());
                                                         }
                                                     }
+
+
+                                                    if (selectedTasklist->list[task]->props->registered_arguments[row] == "env_props")
+                                                    {
+                                                            ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), "current env props");
+                                                    
+                                                    }
+                                               
                                                
 
                                                 if (selectedTasklist->list[task]->props->registered_arguments[row] == "tasklist")
@@ -552,7 +543,7 @@ void ToolchainInstance::UI_TasksEditor()
                                                         std::shared_ptr<TaskList> tasklist = selectedTasklist->list[task]->props->get<std::shared_ptr<TaskList>>("tasklist", nullptr);
                                                         if (tasklist != nullptr)
                                                         {
-                                                            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0), tasklist->label.c_str());
+                                                            //ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0), tasklist->label.c_str());
                                                         }
                                                         else
                                                         {
