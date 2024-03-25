@@ -25,8 +25,8 @@ struct MovePackageToDist : public Task
     this->tasktype = "MovePackageToDist";
 
     // Props used by task execution
-    this->neededProps.push_back("package");
     this->neededProps.push_back("toolchain");
+    this->neededProps.push_back("package");
 
     // Variables needed by task execution
     this->neededVariables.push_back("dist_path:package:\[package_name\]");
@@ -43,22 +43,17 @@ struct MovePackageToDist : public Task
   void exec() override
   {
     this->start();
-    std::cout << "MovePackageToDist" << std::endl;
     VxContext *ctx = VortexMaker::GetCurrentContext();
-    std::cout << "MovePackageToDist" << std::endl;
 
-    if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
+    if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);} // Here
 
-    std::cout << "MovePackageToDist" << std::endl;
-    std::shared_ptr<VxPackage> package = this->getPackageProp();
-    std::cout << "MovePackageToDist" << std::endl;
-    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);    
+    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
 
     std::tuple<std::string,std::string,std::string> v_packageData = toolchain->currentLoadedSystem.get_varable(this, "directory:data_packages");
     std::string packageData = std::get<2>(v_packageData);
 
 
-    std::cout << "MovePackageToDist" << std::endl;
     {
       std::string cmd = "cp -r " + package->path + " " + packageData;
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());

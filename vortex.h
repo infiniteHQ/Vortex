@@ -946,21 +946,7 @@ struct Task{
 
     /// Permettre de voir les name des packages, 
 
-    std::shared_ptr<VxPackage> getPackageProp(){
-        std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
-        if(package != nullptr){
-            std::pair<std::string, std::string> dep;
-            dep.first = "package";
-            dep.second = package->name;
-            this->depsChecksSpec.push_back(dep);
-        }
-        else{
-            std::shared_ptr<VxPackage> unknowPackage = std::make_shared<VxPackage>();
-            unknowPackage->name = "unknow";
-            return unknowPackage;
-        }
-        return package;
-    }
+
     
     // Pour la prochaine fois
     /*
@@ -973,33 +959,47 @@ struct Task{
     
     */
 
-    bool ifProps(std::vector<std::string> propsname){
-        int satisfied = 0;
-        for(auto prop : propsname){
-            satisfied++;
-        }
 
-        for(auto prop : this->props->registered_arguments){
-            for(auto _p : propsname){
+bool ifProps(const std::vector<std::string>& propsname) {
+    int satisfied = 0;
+    int total = propsname.size(); // Nombre total de propriétés à vérifier
 
-                this->depsChecks.push_back(std::make_pair(_p, "missing"));
-                if(prop.c_str() == _p){
-                    satisfied--;
-                    this->depsChecks.pop_back();
-                    this->depsChecks.push_back(std::make_pair(_p, "satisfied"));
-                    continue;
-                }
-                this->depsChecks.pop_back();
+    // Effacer le contenu précédent de depsChecks
+    this->depsChecks.clear();
+
+    // Parcourir chaque propriété à vérifier
+    for (const auto& prop : propsname) {
+        bool propFound = false;
+
+        // Convertir hString en std::string pour la comparaison
+        std::string propStr = prop;
+
+        // Vérifier si la propriété est dans la liste des arguments enregistrés
+        for (const auto& registeredArg : this->props->registered_arguments) {
+            // Convertir hString en std::string pour la comparaison
+            std::string registeredArgStr = registeredArg.c_str();
+
+            if (registeredArgStr == propStr) {
+                satisfied++; // Si la propriété est trouvée, incrémenter le compteur de propriétés satisfaites
+                this->depsChecks.push_back({propStr, "satisfied"});
+                VortexMaker::LogInfo("Core", "New prop found, state: " + std::to_string(satisfied) + "/" + std::to_string(total) + " props found.");
+                propFound = true;
+                break;
             }
         }
-        
-        if(satisfied == 0){
-            return true;
-        }
-        else{
-            return false;
+
+        // Si la propriété n'est pas trouvée, la marquer comme manquante
+        if (!propFound) {
+            this->depsChecks.push_back({propStr, "missing"});
         }
     }
+
+    VortexMaker::LogInfo("Core", "Added " + std::to_string(total) + " props to check.");
+
+    // Vérifier si toutes les propriétés sont satisfaites
+    return (satisfied == total);
+}
+
 
     bool ifProp(std::string propname){
         for(auto prop : this->props->registered_arguments){

@@ -21,6 +21,11 @@ struct GiveToolchainToTemporaryUser : public Task
   void init() override
   {
     this->tasktype = "GiveToolchainToTemporaryUser";
+
+    this->neededProps.push_back("toolchain");
+
+    this->addIdleCheck("give_vortex_package_data");
+    this->addIdleCheck("give_vortex_working_dir");
   };
 
   // Récupérer un ancien report
@@ -33,15 +38,11 @@ struct GiveToolchainToTemporaryUser : public Task
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
 
-    if(!this->ifProps({"toolchain"})){
-      this->finish("failed", nullptr);
-    }
-
-    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
-
-
-    this->addIdleCheck("give_vortex_package_data");
-    this->addIdleCheck("give_vortex_working_dir");
+    if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);} // Here
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);    
+      
+    std::tuple<std::string,std::string,std::string> v_packageData = toolchain->currentLoadedSystem.get_varable(this, "directory:data_packages");
+    std::string packageData = std::get<2>(v_packageData);
 
 
     std::string PackageDataPath;
@@ -53,7 +54,7 @@ struct GiveToolchainToTemporaryUser : public Task
     WorkingDirPath += "/./.vx/dist/toolchains/" + toolchain->name + "/working_host";
 
     {
-      std::string cmd = "sudo chown -v -R vortex:vortex " + PackageDataPath;
+      std::string cmd = "sudo chown -v -R vortex:vortex " + packageData;
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
     
       if(0 == 0) this->addCheckVerdict("give_vortex_package_data", "success", "Vortex user deleted succefully !", cmd);

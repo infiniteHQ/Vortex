@@ -46,7 +46,7 @@ struct CreateBuildEnv : public Task
 
     if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
 
-    std::shared_ptr<VxPackage> package = this->getPackageProp();
+    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
 
 

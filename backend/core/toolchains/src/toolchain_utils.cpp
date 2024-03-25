@@ -265,6 +265,9 @@ void VxToolchain::Init()
   }
 
 
+  // Load all custom tasks from plugins
+
+
   // Get dist working path (for CurrentWorkingToolchain)
   std::string envPath = ctx.projectPath / ctx.paths.toolchainDistFolder;
   std::string baseDir = envPath + "/" + this->name;
