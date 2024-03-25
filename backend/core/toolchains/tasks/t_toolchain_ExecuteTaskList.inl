@@ -23,21 +23,16 @@ struct ExecuteTaskList : public Task
   {
     this->tasktype = "ExecuteTaskList";
 
-    
-
     // Props used by task execution
-    this->neededProps.push_back("package");
+    // this->neededProps.push_back("package");
     this->neededProps.push_back("toolchain");
     this->neededProps.push_back("tasklist");
-
-
 
     this->addIdleCheck("create_build_folder");
     this->addIdleCheck("configure_dist_package");
     this->addIdleCheck("compile_dist_package");
     this->addIdleCheck("install_dist_package");
   };
-
 
   // Récupérer un ancien report
   void retry() override{};
@@ -47,63 +42,111 @@ struct ExecuteTaskList : public Task
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
+    if (!this->ifProps(this->neededProps))
+    {
+      this->finish("fatal", nullptr);
+    }
 
-    if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
+    std::vector<std::pair<std::string, std::string>> env_props = this->props->get<std::vector<std::pair<std::string, std::string>>>("env_props", {{"null", "null"}});
 
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
     std::shared_ptr<TaskList> tasklist = this->props->get<std::shared_ptr<TaskList>>("tasklist", nullptr);
-    std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+
+    // Import env_props // Lower priority than props
+    // Component can be attached in a dedicated component space for more simplicity
 
 
-            for (auto task : tasklist->list)
-{
-    for(auto runtime_tasks : toolchain->tasks)
+    // std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+
+    // Get All env prop and load it
+
+    for (auto task : tasklist->list)
     {
-        if(runtime_tasks->tasktype == task->tasktype)
+      for (auto runtime_tasks : toolchain->tasks)
+      {
+        if (runtime_tasks->tasktype == task->tasktype)
         {
-            std::shared_ptr<Task> _task = runtime_tasks->clone();
-            //_task = task;
-            std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-            props->add("toolchain", toolchain);
-            props->add("tasklist", tasklist);
-            props->add("package", package);
-            //props->add("package", toolchain->packages[row]);
+          std::shared_ptr<Task> _task = runtime_tasks->clone();
+          //_task = task;
+          std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+          props->add("toolchain", toolchain);
+          props->add("tasklist", tasklist);
+          _task->env_props = env_props;
+          // props->add("package", package);
+          // props->add("package", toolchain->packages[row]);
 
-            _task->id = runtime_tasks->tasktype + "-" + VortexMaker::gen_random(8);
-            _task->tasktype = runtime_tasks->tasktype;
-            _task->component = task->component;
-            _task->priority = task->priority;
-            _task->props = props;
-            _task->state = "not_started";
+          _task->id = runtime_tasks->tasktype + "-" + VortexMaker::gen_random(8);
+          _task->tasktype = runtime_tasks->tasktype;
+          _task->component = task->component;
+          _task->priority = task->priority;
 
-            // Ajout de la tâche aux listes appropriées
-            if (toolchain->taskProcessor)
+          bool packagePropAdded = false;
+          bool toolchainPropAdded = false;
+
+            spdlog::critical(env_props.size());
+          for (auto env_prop : env_props)
+          {
+            spdlog::critical(env_prop.first);
+          }
+
+          for (auto env_prop : env_props)
+          {
+            std::cout << "Processing " << env_prop.first << " " << env_prop.second << std::endl;
+            if (env_prop.first == "package")
             {
-                //toolchain->taskProcessor->tasksToProcess.push_back(_task);
-                //toolchain->taskProcessor->tasksToProcess.push_back(_task);
-                toolchain->currentLoadedSystem.executedTasks.push_back(_task);
-                //toolchain->packages[row]->latestTask = _task;
-                toolchain->currentLoadedSystem.Save(toolchain);
-
+              for (auto package : toolchain->packages)
+              {
+                std::cout << "Package name " << package->name << " " << env_prop.second << std::endl;
+                if (package->name == env_prop.second)
                 {
-                    std::lock_guard<std::mutex> lock(toolchain->taskProcessor->mutex);
-                    toolchain->taskProcessor->tasksToProcess.push_back(_task);
+                  spdlog::info("Add package");
+                  props->add("package", package);
+                  spdlog::info("Add package");
+                  packagePropAdded = true;
                 }
+              }
             }
-            else
+            else if (env_prop.first == "toolchain")
             {
-                std::cout << "Failed while accessing taskToProcess" << std::endl;
+              for (auto toolchain : ctx->IO.toolchains)
+              {
+                if (toolchain->name == env_prop.second)
+                {
+                  // props->remove("toolchain");
+                  spdlog::info("Add toolchain");
+                  props->add("toolchain", toolchain);
+                  spdlog::info("Add toolchain");
+                  toolchainPropAdded = true;
+                }
+              }
             }
+          }
+
+
+          _task->props = props;
+          _task->state = "not_started";
+
+          // Ajout de la tâche aux listes appropriées
+          if (toolchain->taskProcessor)
+          {
+            // toolchain->taskProcessor->tasksToProcess.push_back(_task);
+            // toolchain->taskProcessor->tasksToProcess.push_back(_task);
+            toolchain->currentLoadedSystem.executedTasks.push_back(_task);
+            // toolchain->packages[row]->latestTask = _task;
+            toolchain->currentLoadedSystem.Save(toolchain);
+
+            {
+              std::lock_guard<std::mutex> lock(toolchain->taskProcessor->mutex);
+              toolchain->taskProcessor->tasksToProcess.push_back(_task);
+            }
+          }
+          else
+          {
+            std::cout << "Failed while accessing taskToProcess" << std::endl;
+          }
         }
+      }
     }
-}
-
-
-
-
-
-
-
 
     this->finish("finish", nullptr);
   }

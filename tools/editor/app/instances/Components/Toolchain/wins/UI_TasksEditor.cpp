@@ -32,6 +32,7 @@ void ToolchainInstance::UI_TasksEditor()
         static std::shared_ptr<TaskList> selectedTasklist;
         static bool packagePropAdded = false;
         static bool toolchainPropAdded = false;
+        static bool tasklistPropAdded = false;
 
         std::string label = this->name + " - Tasks Editor###" + this->name + "taskseditor";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
@@ -172,6 +173,17 @@ void ToolchainInstance::UI_TasksEditor()
                                                 packagePropAdded = false;
                                                 toolchainPropAdded = false;
 
+                                                spdlog::error("----");
+                                                spdlog::warn(task->tasktype);
+                                                spdlog::warn(task->component);
+                                                for(auto i : task->env_props){
+                                                spdlog::error("//////////");
+                                                    spdlog::warn(i.first);
+                                                    spdlog::warn(i.second);
+                                                spdlog::error("//////////");
+
+                                                }
+
                                                 for (auto runtime_tasks : this->toolchain->tasks)
                                                 {
                                                     if (runtime_tasks->tasktype == task->tasktype)
@@ -186,9 +198,24 @@ void ToolchainInstance::UI_TasksEditor()
                                                         // task->init();
                                                         // task->props = std::make_shared<hArgs>();
 
+
+
+                                                                for(auto tasklist : this->toolchain->tasklists){
+                                                                    if(task->component == tasklist->label){
+                                                                        spdlog::error("Include " + tasklist->label);                                               
+                                                                        _props->add("tasklist", tasklist); // Or, add the default element of the tasklist
+                                                                    }
+                                                                }
+
+                                                                for(auto package : this->toolchain->packages){
+                                                                    if(task->component == package->label){
+                                                                        spdlog::error("Include " + package->name);                                               
+                                                                        _props->add("package", package); // Or, add the default element of the tasklist
+                                                                    }
+                                                                }
                                                         for (auto env_prop : task->env_props)
                                                         {
-                                                                    std::cout << "Processing " << env_prop.first << " " << env_prop.second << std::endl;
+                                                            std::cout << "Processing " << env_prop.first << " " << env_prop.second << std::endl;
                                                             if (env_prop.first == "package")
                                                             {
                                                                 for (auto package : this->toolchain->packages)
@@ -203,7 +230,7 @@ void ToolchainInstance::UI_TasksEditor()
                                                                     }
                                                                 }
                                                             }
-                                                            if (env_prop.first == "toolchain")
+                                                            else if (env_prop.first == "toolchain")
                                                             {
                                                                 for (auto toolchain : this->m_ctx->IO.toolchains)
                                                                 {
@@ -236,7 +263,19 @@ void ToolchainInstance::UI_TasksEditor()
                                                                 _props->add("package", _package); // Or, add the default element of the tasklist
                                                                 packagePropAdded = true;
                                                             }
+                                                            else if (prop == "tasklist" && !tasklistPropAdded)
+                                                            {
+
+                                                                spdlog::info("Add STasklist");
+                                                                std::shared_ptr<TaskList> _tasklist = std::make_shared<TaskList>();
+                                                                _tasklist->label = "none";
+
+
+                                                                tasklistPropAdded = true;
+                                                            }
                                                         }
+
+                                                        _props->add("env_props", task->env_props);
                                                         _task->props = _props;
                                                         selectedTasklist->list.push_back(_task);
                                                         std::cout << _task->tasktype << _task->props << std::endl;
@@ -290,45 +329,44 @@ void ToolchainInstance::UI_TasksEditor()
                                 for (auto task : selectedTasklist->list)
                                 {
 
-                                    //std::shared_ptr<Task> _task = runtime_tasks->clone();
-                                            task->id = task->tasktype + "-" + VortexMaker::gen_random(8);
-                                            //_task->tasktype = runtime_tasks->tasktype;
-                                            //_task->component = task->component;
-                                            //_task->priority = task->priority;
-                                            //_task->props = task->props; // Props are from the tasklist conf
-                                            task->state = "not_started";
-                                            std::cout << task->props << std::endl;
+                                    // std::shared_ptr<Task> _task = runtime_tasks->clone();
+                                    task->id = task->tasktype + "-" + VortexMaker::gen_random(8);
+                                    //_task->tasktype = runtime_tasks->tasktype;
+                                    //_task->component = task->component;
+                                    //_task->priority = task->priority;
+                                    //_task->props = task->props; // Props are from the tasklist conf
+                                    task->state = "not_started";
 
-                                            /*
-                                                    Initialiser les props par la conf globale (de la tasklist)
-                                                    Essayer d'ecraser par une conf plus proche (de la task).
-
+                                    /*
+                                            Initialiser les props par la conf globale (de la tasklist)
+                                            Essayer d'ecraser par une conf plus proche (de la task).
 
 
 
-                                            */
 
-                                            if (this->toolchain->taskProcessor)
-                                            {
-                                                this->toolchain->currentLoadedSystem.executedTasks.push_back(task);
-                                                {
-                                                    std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
-                                                    this->toolchain->taskProcessor->tasksToProcess.push_back(task);
-                                                }
+                                    */
 
-                                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
-                                            }
-                                            else
-                                            {
-                                                std::cout << "Failed while accessing taskToProcess" << std::endl;
-                                            }
+                                    if (this->toolchain->taskProcessor)
+                                    {
+                                        this->toolchain->currentLoadedSystem.executedTasks.push_back(task);
+                                        {
+                                            std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
+                                            this->toolchain->taskProcessor->tasksToProcess.push_back(task);
+                                        }
+
+                                        this->toolchain->currentLoadedSystem.Save(this->toolchain);
+                                    }
+                                    else
+                                    {
+                                        std::cout << "Failed while accessing taskToProcess" << std::endl;
+                                    }
 
                                     /*
                                     for (auto runtime_tasks : this->toolchain->tasks)
                                     {
                                         if (runtime_tasks->tasktype == task->tasktype)
                                         {
-                                            
+
                                         }
                                     }*/
                                 }
@@ -380,6 +418,9 @@ void ToolchainInstance::UI_TasksEditor()
                                     std::cout << "Size index " << selectedTasklist->list[task]->props->registered_arguments.size() << std::endl;
                                     for (int row = 0; row < selectedTasklist->list[task]->props->registered_arguments.size(); row++)
                                     {
+
+                                        spdlog::warn(selectedTasklist->list[task]->tasktype);                                        
+                                        spdlog::warn(selectedTasklist->list[task]->props->registered_arguments[row].c_str());
                                         ImGui::TableNextRow();
                                         for (int column = 0; column < 3; column++)
                                         {
@@ -396,150 +437,173 @@ void ToolchainInstance::UI_TasksEditor()
                                             }
                                             if (column == 2)
                                             {
-                                                
+
                                                 if (selectedTasklist->list[task]->props->registered_arguments[row] == "package")
                                                 {
-                                                    /*std::vector<const char *> packages_items = {"none"};
+                                                    std::vector<const char *> packages_items = {"none"};
 
-                                                    for (auto &chaine : this->toolchain->packages)
+
+                                                    int packages_items_current = 0;
+
+                                                    for (int i = 0; i < this->toolchain->packages.size(); i++)
                                                     {
-                                                        packages_items.push_back(chaine->name.c_str());
-                                                    }
-                                                    static int packages_items_current = 0;
-                                                    std::string label = "Package###" + std::to_string(task) + "-" + std::to_string(row);
-                                                    if (ImGui::BeginCombo(label.c_str(), packages_items[packages_items_current]))
-                                                    {
-                                                        for (int i = 0; i < packages_items.size(); ++i)
+                                                        if (this->toolchain->packages[i]->name == selectedTasklist->list[task]->props->get<std::shared_ptr<VxPackage>>("package", nullptr)->name)
                                                         {
-                                                            bool is_selected = (packages_items_current == i);
-                                                            if (ImGui::Selectable(packages_items[i], is_selected))
-                                                            {
-                                                                packages_items_current = i;
-
-                                                                for (auto package : this->toolchain->packages)
-                                                                {
-                                                                    std::cout << package->name.c_str() << " </" << packages_items[packages_items_current] << std::endl;
-                                                                    if (package->name == packages_items[packages_items_current])
-                                                                    {
-                                                                        bool alreadyRegistered = false;
-                                                                        for (auto alreadyRegisteredProps : selectedTasklist->list[task]->props->registered_arguments)
-                                                                        {
-                                                                            if (alreadyRegisteredProps == packages_items[packages_items_current])
-                                                                            {
-                                                                                alreadyRegistered = true;
-                                                                            }
-                                                                        }
-
-                                                                        if (!alreadyRegistered)
-                                                                        {
-
-                                                                            std::cout << "Add " << package << std::endl;
-                                                                            selectedTasklist->list[task]->props->remove("package");
-                                                                            selectedTasklist->list[task]->props->add("package", package);
-
-                                                                            std::cout << "Task package name is " << selectedTasklist->list[task]->props->get<std::shared_ptr<VxPackage>>("package", nullptr)->name.c_str() << std::endl;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                            if (is_selected)
-                                                            {
-                                                                ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
-                                                            }
+                                                            packages_items_current = i + 1;
                                                         }
-                                                        ImGui::EndCombo();
-                                                    }*/
-
-                                                std::vector<const char *> packages_items = {"none"};
-
-                                                std::cout << "Check" << std::endl;
-
-                                                int packages_items_current = 0;
-
-                                                for(int i = 0; i < this->toolchain->packages.size(); i++){
-                                                    if(this->toolchain->packages[i]->name == selectedTasklist->list[task]->props->get<std::shared_ptr<VxPackage>>("package", nullptr)->name){
-                                                        packages_items_current = i + 1;
                                                     }
-                                                }
 
                                                     for (auto &chaine : this->toolchain->packages)
                                                     {
                                                         packages_items.push_back(chaine->name.c_str());
                                                     }
 
-                                                if (selectedTasklist->list[task]->props->registered_arguments[row] == "package")
-                                                {
                                                     std::shared_ptr<VxPackage> package = selectedTasklist->list[task]->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
-                                                    if(package != nullptr){
+                                                    if (package != nullptr)
+                                                    {
                                                         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0), package->name.c_str());
-                                                    }
-                                                    else{
-                                                        ImGui::Text("none");
-
-                                                    }
-
-
-
-                                                    // 1
-                                                    /// 2 O++
-                                                    //// 3 X
-
-                                                    if (ImGui::BeginCombo(label.c_str(), packages_items[packages_items_current]))
-                                                    {
-                                                        for (int i = 0; i < packages_items.size(); ++i)
-                                                        {
-                                                            bool is_selected = (packages_items_current == i);
-                                                            if (ImGui::Selectable(packages_items[i], is_selected))
-                                                            {
-                                                                packages_items_current = i;
-
-                                                                for (auto package : this->toolchain->packages)
-                                                                {
-                                                                    std::cout << package->name.c_str() << " </" << packages_items[packages_items_current] << std::endl;
-                                                                    if (package->name == packages_items[packages_items_current])
-                                                                    {
-                                                                        bool alreadyRegistered = false;
-                                                                        for (auto alreadyRegisteredProps : selectedTasklist->list[task]->props->registered_arguments)
-                                                                        {
-                                                                            if (alreadyRegisteredProps == packages_items[packages_items_current])
-                                                                            {
-                                                                                alreadyRegistered = true;
-                                                                            }
-                                                                        }
-
-                                                                        if (!alreadyRegistered)
-                                                                        {
-
-                                                                            std::cout << "Add " << package << std::endl;
-                                                                            selectedTasklist->list[task]->props->remove("package");
-                                                                            selectedTasklist->list[task]->props->add("package", package);
-
-                                                                            std::cout << "Task package name is " << selectedTasklist->list[task]->props->get<std::shared_ptr<VxPackage>>("package", nullptr)->name.c_str() << std::endl;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                            if (is_selected)
-                                                            {
-                                                                ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
-                                                            }
-                                                        }
-                                                        ImGui::EndCombo();
-                                                    }
-                                             
-                                                }
-                                                }
-                                                if (selectedTasklist->list[task]->props->registered_arguments[row] == "toolchain")
-                                                {
-                                                    if (selectedTasklist->list[task]->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str() == this->toolchain->name.c_str())
-                                                    {
-                                                        ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), "this");
                                                     }
                                                     else
                                                     {
-                                                        ImGui::Text(selectedTasklist->list[task]->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str());
+                                                        ImGui::Text("none");
+                                                    }
+
+                                                        std::string packages = "Packages###" + std::to_string(task) + "-" + std::to_string(row);
+
+                                                    if (ImGui::BeginCombo(packages.c_str(), packages_items[packages_items_current]))
+                                                    {
+                                                        for (int i = 0; i < packages_items.size(); ++i)
+                                                        {
+                                                            bool is_selected = (packages_items_current == i);
+                                                            if (ImGui::Selectable(packages_items[i], is_selected))
+                                                            {
+                                                                packages_items_current = i;
+
+                                                                for (auto package : this->toolchain->packages)
+                                                                {
+                                                                    std::cout << package->name.c_str() << " </" << packages_items[packages_items_current] << std::endl;
+                                                                    if (package->name == packages_items[packages_items_current])
+                                                                    {
+                                                                        bool alreadyRegistered = false;
+                                                                        for (auto alreadyRegisteredProps : selectedTasklist->list[task]->props->registered_arguments)
+                                                                        {
+                                                                            if (alreadyRegisteredProps == packages_items[packages_items_current])
+                                                                            {
+                                                                                alreadyRegistered = true;
+                                                                            }
+                                                                        }
+
+                                                                        if (!alreadyRegistered)
+                                                                        {
+
+                                                                            std::cout << "Add " << package << std::endl;
+                                                                            selectedTasklist->list[task]->props->remove("package");
+                                                                            selectedTasklist->list[task]->props->add("package", package);
+
+                                                                            std::cout << "Task package name is " << selectedTasklist->list[task]->props->get<std::shared_ptr<VxPackage>>("package", nullptr)->name.c_str() << std::endl;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            if (is_selected)
+                                                            {
+                                                                ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
+                                                            }
+                                                        }
+                                                        ImGui::EndCombo();
                                                     }
                                                 }
+
+
+                                                    if (selectedTasklist->list[task]->props->registered_arguments[row] == "toolchain")
+                                                    {
+                                                        if (selectedTasklist->list[task]->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str() == this->toolchain->name.c_str())
+                                                        {
+                                                            ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), "this");
+                                                        }
+                                                        else
+                                                        {
+                                                            ImGui::Text(selectedTasklist->list[task]->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str());
+                                                        }
+                                                    }
+                                               
+
+                                                if (selectedTasklist->list[task]->props->registered_arguments[row] == "tasklist")
+                                                {
+                                                    std::vector<const char *> tasklists_items = {"none"};
+
+                                                    int tasklist_items_current = 0;
+
+                                                    for (auto &chaine : this->toolchain->tasklists)
+                                                    {
+                                                        tasklists_items.push_back(chaine->label.c_str());
+                                                    }
+
+                                                    for (int i = 0; i < this->toolchain->tasklists.size(); i++)
+                                                    {
+                                                        if (this->toolchain->tasklists[i]->label == selectedTasklist->list[task]->props->get<std::shared_ptr<TaskList>>("tasklist", nullptr)->label)
+                                                        {
+                                                            tasklist_items_current = i + 1;
+                                                        }
+                                                    }
+
+                                                    if (selectedTasklist->list[task]->props->registered_arguments[row] == "tasklist")
+                                                    {
+                                                        std::shared_ptr<TaskList> tasklist = selectedTasklist->list[task]->props->get<std::shared_ptr<TaskList>>("tasklist", nullptr);
+                                                        if (tasklist != nullptr)
+                                                        {
+                                                            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0), tasklist->label.c_str());
+                                                        }
+                                                        else
+                                                        {
+                                                            ImGui::Text("none");
+                                                        }
+                                                        std::string label = "Tasklist###" + std::to_string(task) + "-" + std::to_string(row);
+
+                                                        if (ImGui::BeginCombo(label.c_str(), tasklists_items[tasklist_items_current]))
+                                                        {
+                                                            for (int i = 0; i < tasklists_items.size(); ++i)
+                                                            {
+                                                                bool is_selected = (tasklist_items_current == i);
+                                                                if (ImGui::Selectable(tasklists_items[i], is_selected))
+                                                                {
+                                                                    tasklist_items_current = i;
+
+                                                                    for (auto tasklist : this->toolchain->tasklists)
+                                                                    {
+                                                                        std::cout << tasklist->label.c_str() << " </" << tasklists_items[tasklist_items_current] << std::endl;
+                                                                        if (tasklist->label == tasklists_items[tasklist_items_current])
+                                                                        {
+                                                                            bool alreadyRegistered = false;
+                                                                            for (auto alreadyRegisteredProps : selectedTasklist->list[task]->props->registered_arguments)
+                                                                            {
+                                                                                if (alreadyRegisteredProps == tasklists_items[tasklist_items_current])
+                                                                                {
+                                                                                    alreadyRegistered = true;
+                                                                                }
+                                                                            }
+
+                                                                            if (!alreadyRegistered)
+                                                                            {
+
+                                                                                std::cout << "Add " << tasklist << std::endl;
+                                                                                selectedTasklist->list[task]->props->remove("tasklist");
+                                                                                selectedTasklist->list[task]->props->add("tasklist", tasklist);
+
+                                                                                std::cout << "Task tasklist name is " << selectedTasklist->list[task]->props->get<std::shared_ptr<TaskList>>("tasklist", nullptr)->label.c_str() << std::endl;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                if (is_selected)
+                                                                {
+                                                                    ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
+                                                                }
+                                                            }
+                                                            ImGui::EndCombo();
+                                                        }
+                                                    }
+                                                     }
                                             }
                                         }
                                     }

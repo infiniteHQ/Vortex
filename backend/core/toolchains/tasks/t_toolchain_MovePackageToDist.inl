@@ -47,12 +47,22 @@ struct MovePackageToDist : public Task
 
     if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);} // Here
 
-    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);    
+    std::cout << "MovePackageToDist" << std::endl;
+
+    std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr); 
+    this->depsChecksSpec.push_back({"toolchain",toolchain->name});
+    std::cout << "MovePackageToDist" << std::endl;
+ 
     std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+    this->depsChecksSpec.push_back({"package",package->name});
+    std::cout << "MovePackageToDist" << std::endl;
+ 
 
     std::tuple<std::string,std::string,std::string> v_packageData = toolchain->currentLoadedSystem.get_varable(this, "directory:data_packages");
     std::string packageData = std::get<2>(v_packageData);
 
+
+    std::cout << "MovePackageToDist" << std::endl;
 
     {
       std::string cmd = "cp -r " + package->path + " " + packageData;

@@ -47,7 +47,11 @@ struct InstallDistPackage : public Task
     if(!this->ifProps(this->neededProps)){this->finish("fatal", nullptr);}
 
     std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
+    this->depsChecksSpec.push_back({"package",package->name});
+
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
+    this->depsChecksSpec.push_back({"toolchain",toolchain->name});
+
 
     std::string working_path = std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package_uncompressed:"+package->name + ""));
 

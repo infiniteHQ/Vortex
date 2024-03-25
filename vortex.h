@@ -962,25 +962,20 @@ struct Task{
 
 bool ifProps(const std::vector<std::string>& propsname) {
     int satisfied = 0;
-    int total = propsname.size(); // Nombre total de propriétés à vérifier
+    int total = propsname.size();
 
-    // Effacer le contenu précédent de depsChecks
     this->depsChecks.clear();
 
-    // Parcourir chaque propriété à vérifier
     for (const auto& prop : propsname) {
         bool propFound = false;
 
-        // Convertir hString en std::string pour la comparaison
         std::string propStr = prop;
 
-        // Vérifier si la propriété est dans la liste des arguments enregistrés
         for (const auto& registeredArg : this->props->registered_arguments) {
-            // Convertir hString en std::string pour la comparaison
             std::string registeredArgStr = registeredArg.c_str();
 
             if (registeredArgStr == propStr) {
-                satisfied++; // Si la propriété est trouvée, incrémenter le compteur de propriétés satisfaites
+                satisfied++; 
                 this->depsChecks.push_back({propStr, "satisfied"});
                 VortexMaker::LogInfo("Core", "New prop found, state: " + std::to_string(satisfied) + "/" + std::to_string(total) + " props found.");
                 propFound = true;
@@ -988,7 +983,6 @@ bool ifProps(const std::vector<std::string>& propsname) {
             }
         }
 
-        // Si la propriété n'est pas trouvée, la marquer comme manquante
         if (!propFound) {
             this->depsChecks.push_back({propStr, "missing"});
         }
