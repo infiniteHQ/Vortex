@@ -535,6 +535,10 @@ void VxToolchain::Refresh()
   this->host_cpu = toolchainData["configs"]["host_cpu"].get<std::string>();
   this->host_fpu = toolchainData["configs"]["host_fpu"].get<std::string>();
 
+  this->toolchain_type = toolchainData["configs"]["toolchain_type"].get<std::string>();
+
+
+
   this->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
 
   VortexMaker::LogInfo("Core", "Getting toolchain \"data\" informations from " + this->configFilePath);

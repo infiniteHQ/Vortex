@@ -982,8 +982,25 @@ void VortexMaker::CreateToolchain(std::string name, std::string author){
       j["content"]["tasklists"] = nlohmann::json::array();
       
       j["configs"]["builder_arch"] = "???";
+      j["configs"]["builder_platform"] = "???";
+      j["configs"]["builder_vendor"] = "???";
+      j["configs"]["builder_cpu"] = "???";
+      j["configs"]["builder_fpu"] = "???";
+      
       j["configs"]["host_arch"] = "???";
+      j["configs"]["host_platform"] = "???";
+      j["configs"]["host_vendor"] = "???";
+      j["configs"]["host_cpu"] = "???";
+      j["configs"]["host_fpu"] = "???";
+
       j["configs"]["target_arch"] = "???";
+      j["configs"]["target_platform"] = "???";
+      j["configs"]["target_vendor"] = "???";
+      j["configs"]["target_cpu"] = "???";
+      j["configs"]["target_fpu"] = "???";
+
+      j["configs"]["toolchain_type"] = "???";
+       
       j["configs"]["compression"] = "???";
 
       // Store this into toolchain.config

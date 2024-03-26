@@ -32,9 +32,9 @@ void VxPackage::PushSave(std::shared_ptr<PackageSave> save)
     packageData["package"]["compressed"] = save->compressed;
     packageData["package"]["filename"] = save->filename;
 
-    packageData["parameters"]["useOnlyCustomConfigurationProcess"] = save->useOnlyCustomConfigurationProcess;
-    packageData["parameters"]["useOnlyCustomCompilationProcess"] = save->useOnlyCustomCompilationProcess;
-    packageData["parameters"]["useOnlyCustomInstallationProcess"] = save->useOnlyCustomInstallationProcess;
+    packageData["parameters"]["useOnlyCustomConfigurationProcess"] = save->configurationExclusiveCommand;
+    packageData["parameters"]["useOnlyCustomCompilationProcess"] = save->compilationExclusiveCommand;
+    packageData["parameters"]["useOnlyCustomInstallationProcess"] = save->installationExclusiveCommand;
     packageData["parameters"]["useCompilationOptimization"] = save->useCompilationOptimization;
 
     packageData["actions"] = nlohmann::json::array();
@@ -216,6 +216,9 @@ void VxToolchain::PushSave(std::shared_ptr<ToolchainSave> save)
     toolchainData["toolchain"]["state"] = save->state;
     toolchainData["toolchain"]["version"] = save->version;
     toolchainData["toolchain"]["description"] = save->description;
+
+
+    toolchainData["configs"]["toolchain_type"] = save->toolchain_type; 
 
     toolchainData["configs"]["target_arch"] = save->target_arch; 
     toolchainData["configs"]["target_vendor"] = save->target_vendor; 

@@ -102,9 +102,9 @@ static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE
             ImGui::Text("General Informations");
             ImGui::Separator();
 
-            static char buf1[128] = ""; ImGui::InputText("Deuxiemme",     buf1, 128);
-            static char buf2[128] = ""; ImGui::InputText("Host Author",     buf2, 128);
-            static char buf3[128] = ""; ImGui::InputText("Host Version",     buf3, 128);
+            ImGui::InputText("Custom compilation command",     this->m_currentSave->compilationExclusiveCommand, 128);
+            ImGui::InputText("Custom configuration command",     this->m_currentSave->configurationExclusiveCommand, 128);
+            ImGui::InputText("Custom installation command",     this->m_currentSave->installationExclusiveCommand, 128);
 
             ImGui::PopStyleVar(2);
             if (ImGui::Button("Revert")) {}

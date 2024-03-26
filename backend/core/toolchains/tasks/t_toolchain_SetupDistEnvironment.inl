@@ -181,7 +181,7 @@ struct SetupDistEnvironment : public Task
 
 
       toolchain->currentLoadedSystem.put_varable(this, "toolchain:target_triplet", "SetupDistEnvironment", toolchain->GetTriplet("target"));
-      toolchain->currentLoadedSystem.put_varable(this, "toolchain:build_triplet", "SetupDistEnvironment", toolchain->GetTriplet("build"));
+      toolchain->currentLoadedSystem.put_varable(this, "toolchain:build_triplet", "SetupDistEnvironment", toolchain->GetTriplet("builder"));
       toolchain->currentLoadedSystem.put_varable(this, "toolchain:host_triplet", "SetupDistEnvironment", toolchain->GetTriplet("host"));
 
     this->finish("success", props);

@@ -61,9 +61,9 @@ struct CompileDistPackage : public Task
     std::string working_path = std::get<2>(v_packageData);
 
     std::unordered_map<std::string, std::string> replacements = {
-        {"${Target}", toolchain->targetTriplet},
-        {"${Build}", toolchain->builderTriplet},
-        {"${Host}", toolchain->hostTriplet},
+        {"${Target}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:target_triplet"))},
+        {"${Build}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:build_triplet"))},
+        {"${Host}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:host_triplet"))},
         {"${WorkingHost}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "directory:working_host"))},
         {"${Sysroot}", toolchain->sysrootPath},
         {"${PackageFolder}", package->path},
@@ -93,7 +93,7 @@ struct CompileDistPackage : public Task
 
       if (package->compilation.useCompilationOptimization)
       {
-        cmd += " make -j6";
+        cmd += " make -j6 ";
       }
       else
       {

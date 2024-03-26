@@ -666,15 +666,15 @@ struct PackageSave{
     
     std::vector<std::pair<char[128], char[128]>> configurationPrefixes;
     std::vector<std::pair<char[128], char[128]>> configurationSuffixes;
-    std::string configurationExclusiveCommand;
+    char configurationExclusiveCommand[128];
 
     std::vector<std::pair<char[128], char[128]>> compilationPrefixes;
     std::vector<std::pair<char[128], char[128]>> compilationSuffixes;
-    std::string compilationExclusiveCommand;
+    char compilationExclusiveCommand[128];
 
     std::vector<std::pair<char[128], char[128]>> installationPrefixes;
     std::vector<std::pair<char[128], char[128]>> installationSuffixes;
-    std::string installationExclusiveCommand;
+    char installationExclusiveCommand[128];
 
     std::vector<PackageActionSave> actions;
 
@@ -805,6 +805,7 @@ struct ToolchainSave{
     char target_cpu[128] = "unknow";
     char target_fpu[128] = "unknow";
 
+    char toolchain_type[128] = "unknow";
 
     char compression[128] = "unknow";
     char toolchains_compilation[128] = "unknow";
@@ -1493,6 +1494,9 @@ struct VxToolchain{
     std::string host_platform = "unknow";
     std::string host_cpu = "unknow";
     std::string host_fpu = "unknow";
+
+
+    std::string toolchain_type = "unknow";
 
 
     std::string packages_data = "unknow";

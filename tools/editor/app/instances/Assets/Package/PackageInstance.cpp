@@ -357,6 +357,17 @@ void PackageInstance::Refresh()
         refreshedCurrentSave->installationSuffixes.push_back(package);
     }
 
+
+
+    strncpy(refreshedCurrentSave->compilationExclusiveCommand, this->package->compilation.exclusiveCustomCompilationProcess.c_str(), sizeof(refreshedCurrentSave->compilationExclusiveCommand));
+    refreshedCurrentSave->compilationExclusiveCommand[sizeof(refreshedCurrentSave->compilationExclusiveCommand) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->configurationExclusiveCommand, this->package->compilation.exclusiveCustomConfigProcess.c_str(), sizeof(refreshedCurrentSave->configurationExclusiveCommand));
+    refreshedCurrentSave->configurationExclusiveCommand[sizeof(refreshedCurrentSave->configurationExclusiveCommand) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->installationExclusiveCommand, this->package->compilation.exclusiveCustomInstallationProcess.c_str(), sizeof(refreshedCurrentSave->installationExclusiveCommand));
+    refreshedCurrentSave->installationExclusiveCommand[sizeof(refreshedCurrentSave->installationExclusiveCommand) - 1] = '\0';
+
     ////////////////////////////////////
 
     for (auto action : this->package->actions)

@@ -299,87 +299,42 @@ std::string VxToolchain::GetTriplet(std::string triplet_type)
   if (triplet_type == "target")
   {
 
-    if (this->type == "native")
-    {
-      return NativeTriplet;
-    }
-    else if (this->type == "cross")
-    {
-      return NativeTriplet;
-    }
-    else if (this->type == "cross-native" || this->type == "canadian" || this->type == "custom")
-    {
-      std::string SpecifiedTriplet;
+   
+      std::string triplet;
 
-      SpecifiedTriplet += this->target_arch;
-      SpecifiedTriplet += "-";
-      SpecifiedTriplet += this->vendor;
-      SpecifiedTriplet += "-";
-      SpecifiedTriplet += this->platform;
+      triplet += this->target_arch;
+      triplet += "-";
+      triplet += this->target_vendor;
+      triplet += "-";
+      triplet += this->target_platform;
 
-      return SpecifiedTriplet;
-    }
-    else
-    {
-      return "unknow";
-    }
+      return triplet;
   }
   else if (triplet_type == "builder")
   {
+      std::string triplet;
 
-    if (this->type == "native")
-    {
-      return NativeTriplet;
-    }
-    else if (this->type == "cross")
-    {
-      // return crosstoolchain wanted arch
-    }
-    else if (this->type == "cross-native")
-    {
-      // return crosstoolchain wanted arch
-    }
-    else if (this->type == "canadian")
-    {
-      // return crosstoolchain wanted arch
-    }
-    else if (this->type == "custom")
-    {
-      // -> Return Custom triplet
-    }
-    else
-    {
-      return "unknow";
-    }
+      triplet += this->builder_arch;
+      triplet += "-";
+      triplet += this->builder_vendor;
+      triplet += "-";
+      triplet += this->builder_platform;
+
+      return triplet;
   }
 
   if (triplet_type == "host")
   {
 
-    if (this->type == "native")
-    {
-      return NativeTriplet;
-    }
-    else if (this->type == "cross")
-    {
-      // return crosstoolchain wanted arch
-    }
-    else if (this->type == "cross-native")
-    {
-      // return crosstoolchain wanted arch
-    }
-    else if (this->type == "canadian")
-    {
-      // return crosstoolchain wanted arch
-    }
-    else if (this->type == "custom")
-    {
-      // -> Return Custom triplet
-    }
-    else
-    {
-      return "unknow";
-    }
+      std::string triplet;
+
+      triplet += this->host_arch;
+      triplet += "-";
+      triplet += this->host_vendor;
+      triplet += "-";
+      triplet += this->host_platform;
+
+      return triplet;
   }
 
   return "unknow";
