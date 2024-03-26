@@ -28,10 +28,7 @@ struct ExecuteTaskList : public Task
     this->neededProps.push_back("toolchain");
     this->neededProps.push_back("tasklist");
 
-    this->addIdleCheck("create_build_folder");
-    this->addIdleCheck("configure_dist_package");
-    this->addIdleCheck("compile_dist_package");
-    this->addIdleCheck("install_dist_package");
+    this->addIdleCheck("finished");
   };
 
   // Récupérer un ancien report
@@ -60,6 +57,10 @@ struct ExecuteTaskList : public Task
 
     // Get All env prop and load it
 
+    this->state = "processing";
+    std::vector<std::string> taskids;
+
+    toolchain->taskProcessor->stop = true;
     for (auto task : tasklist->list)
     {
       for (auto runtime_tasks : toolchain->tasks)
@@ -76,6 +77,8 @@ struct ExecuteTaskList : public Task
           // props->add("package", toolchain->packages[row]);
 
           _task->id = runtime_tasks->tasktype + "-" + VortexMaker::gen_random(8);
+          taskids.push_back(_task->id);
+
           _task->tasktype = runtime_tasks->tasktype;
           _task->component = task->component;
           _task->priority = task->priority;
@@ -148,6 +151,10 @@ struct ExecuteTaskList : public Task
       }
     }
 
+    toolchain->taskProcessor->stop = false;
+
+
+    this->addCheckVerdict("finished", "success", "none", "none");
     this->finish("finish", nullptr);
   }
 

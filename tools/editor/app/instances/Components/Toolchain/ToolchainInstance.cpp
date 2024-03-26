@@ -447,25 +447,63 @@ void ToolchainInstance::Refresh()
     strncpy(refreshedCurrentSave->version, this->toolchain->version.c_str(), sizeof(refreshedCurrentSave->version));
     refreshedCurrentSave->version[sizeof(refreshedCurrentSave->version) - 1] = '\0';
 
-    strncpy(refreshedCurrentSave->vendor, this->toolchain->vendor.c_str(), sizeof(refreshedCurrentSave->vendor));
-    refreshedCurrentSave->vendor[sizeof(refreshedCurrentSave->vendor) - 1] = '\0';
 
     strncpy(refreshedCurrentSave->state, this->toolchain->state.c_str(), sizeof(refreshedCurrentSave->state));
     refreshedCurrentSave->state[sizeof(refreshedCurrentSave->state) - 1] = '\0';
-
-    strncpy(refreshedCurrentSave->platform, this->toolchain->platform.c_str(), sizeof(refreshedCurrentSave->platform));
-    refreshedCurrentSave->platform[sizeof(refreshedCurrentSave->platform) - 1] = '\0';
 
 
 
     strncpy(refreshedCurrentSave->host_arch, this->toolchain->host_arch.c_str(), sizeof(refreshedCurrentSave->host_arch));
     refreshedCurrentSave->host_arch[sizeof(refreshedCurrentSave->host_arch) - 1] = '\0';
 
+    strncpy(refreshedCurrentSave->host_vendor, this->toolchain->host_vendor.c_str(), sizeof(refreshedCurrentSave->host_vendor));
+    refreshedCurrentSave->host_vendor[sizeof(refreshedCurrentSave->host_vendor) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->host_platform, this->toolchain->host_platform.c_str(), sizeof(refreshedCurrentSave->host_platform));
+    refreshedCurrentSave->host_platform[sizeof(refreshedCurrentSave->host_platform) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->host_cpu, this->toolchain->host_cpu.c_str(), sizeof(refreshedCurrentSave->host_cpu));
+    refreshedCurrentSave->host_cpu[sizeof(refreshedCurrentSave->host_cpu) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->host_fpu, this->toolchain->host_fpu.c_str(), sizeof(refreshedCurrentSave->host_fpu));
+    refreshedCurrentSave->host_fpu[sizeof(refreshedCurrentSave->host_fpu) - 1] = '\0';
+
+
+
     strncpy(refreshedCurrentSave->target_arch, this->toolchain->target_arch.c_str(), sizeof(refreshedCurrentSave->target_arch));
     refreshedCurrentSave->target_arch[sizeof(refreshedCurrentSave->target_arch) - 1] = '\0';
+    
+    strncpy(refreshedCurrentSave->target_vendor, this->toolchain->target_vendor.c_str(), sizeof(refreshedCurrentSave->target_vendor));
+    refreshedCurrentSave->target_vendor[sizeof(refreshedCurrentSave->target_vendor) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->target_platform, this->toolchain->target_platform.c_str(), sizeof(refreshedCurrentSave->target_platform));
+    refreshedCurrentSave->target_platform[sizeof(refreshedCurrentSave->target_platform) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->target_cpu, this->toolchain->target_cpu.c_str(), sizeof(refreshedCurrentSave->target_cpu));
+    refreshedCurrentSave->target_cpu[sizeof(refreshedCurrentSave->target_cpu) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->target_fpu, this->toolchain->target_fpu.c_str(), sizeof(refreshedCurrentSave->target_fpu));
+    refreshedCurrentSave->target_fpu[sizeof(refreshedCurrentSave->target_fpu) - 1] = '\0';
+
+
 
     strncpy(refreshedCurrentSave->builder_arch, this->toolchain->builder_arch.c_str(), sizeof(refreshedCurrentSave->builder_arch));
     refreshedCurrentSave->builder_arch[sizeof(refreshedCurrentSave->builder_arch) - 1] = '\0';
+    
+    strncpy(refreshedCurrentSave->builder_vendor, this->toolchain->builder_vendor.c_str(), sizeof(refreshedCurrentSave->builder_vendor));
+    refreshedCurrentSave->builder_vendor[sizeof(refreshedCurrentSave->builder_vendor) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->builder_platform, this->toolchain->builder_platform.c_str(), sizeof(refreshedCurrentSave->builder_platform));
+    refreshedCurrentSave->builder_platform[sizeof(refreshedCurrentSave->builder_platform) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->builder_cpu, this->toolchain->builder_cpu.c_str(), sizeof(refreshedCurrentSave->builder_cpu));
+    refreshedCurrentSave->builder_cpu[sizeof(refreshedCurrentSave->builder_cpu) - 1] = '\0';
+
+    strncpy(refreshedCurrentSave->builder_fpu, this->toolchain->builder_fpu.c_str(), sizeof(refreshedCurrentSave->builder_fpu));
+    refreshedCurrentSave->builder_fpu[sizeof(refreshedCurrentSave->builder_fpu) - 1] = '\0';
+
+
+
 
     strncpy(refreshedCurrentSave->compression, this->toolchain->compressionMode.c_str(), sizeof(refreshedCurrentSave->compression));
     refreshedCurrentSave->compression[sizeof(refreshedCurrentSave->compression) - 1] = '\0';

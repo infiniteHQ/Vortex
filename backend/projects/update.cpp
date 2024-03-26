@@ -214,14 +214,27 @@ void VxToolchain::PushSave(std::shared_ptr<ToolchainSave> save)
     toolchainData["toolchain"]["author"] = save->author;
     toolchainData["toolchain"]["type"] = save->type;
     toolchainData["toolchain"]["state"] = save->state;
-    toolchainData["toolchain"]["vendor"] = save->vendor;
-    toolchainData["toolchain"]["platform"] = save->platform;
     toolchainData["toolchain"]["version"] = save->version;
     toolchainData["toolchain"]["description"] = save->description;
 
-    toolchainData["configs"]["target_arch"] = save->target_arch;
-    toolchainData["configs"]["host_arch"] = save->host_arch;
-    toolchainData["configs"]["builder_arch"] = save->builder_arch;
+    toolchainData["configs"]["target_arch"] = save->target_arch; 
+    toolchainData["configs"]["target_vendor"] = save->target_vendor; 
+    toolchainData["configs"]["target_platform"] = save->target_platform; 
+    toolchainData["configs"]["target_cpu"] = save->target_cpu; 
+    toolchainData["configs"]["target_fpu"] = save->target_fpu; 
+
+    toolchainData["configs"]["builder_arch"] = save->builder_arch; 
+    toolchainData["configs"]["builder_vendor"] = save->builder_vendor; 
+    toolchainData["configs"]["builder_platform"] = save->builder_platform; 
+    toolchainData["configs"]["builder_cpu"] = save->builder_cpu; 
+    toolchainData["configs"]["builder_fpu"] = save->builder_fpu; 
+
+    toolchainData["configs"]["host_arch"] = save->host_arch; 
+    toolchainData["configs"]["host_vendor"] = save->host_vendor; 
+    toolchainData["configs"]["host_platform"] = save->host_platform; 
+    toolchainData["configs"]["host_cpu"] = save->host_cpu; 
+    toolchainData["configs"]["host_fpu"] = save->host_fpu; 
+
     toolchainData["configs"]["compression"] = save->compression;
 
     toolchainData["data"]["packages"] = save->localPackagePath;

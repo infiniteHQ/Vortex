@@ -786,12 +786,26 @@ struct ToolchainSave{
     char description[128] = "unknow";
     char type[128] = "unknow";
     char state[128] = "unknow";
-    char vendor[128] = "unknow";
-    char platform[128] = "unknow";
 
     char host_arch[128] = "unknow";
-    char target_arch[128] = "unknow";
+    char host_vendor[128] = "unknow";
+    char host_platform[128] = "unknow";
+    char host_cpu[128] = "unknow";
+    char host_fpu[128] = "unknow";
+
     char builder_arch[128] = "unknow";
+    char builder_vendor[128] = "unknow";
+    char builder_platform[128] = "unknow";
+    char builder_cpu[128] = "unknow";
+    char builder_fpu[128] = "unknow";
+
+    char target_arch[128] = "unknow";
+    char target_vendor[128] = "unknow";
+    char target_platform[128] = "unknow";
+    char target_cpu[128] = "unknow";
+    char target_fpu[128] = "unknow";
+
+
     char compression[128] = "unknow";
     char toolchains_compilation[128] = "unknow";
 
@@ -1461,9 +1475,25 @@ struct VxToolchain{
     std::string configFilePath = "unknow";
     std::string path = "unknow";
 
-    std::string target_arch = "unknow";
+
     std::string builder_arch = "unknow";
+    std::string builder_vendor = "unknow";
+    std::string builder_platform = "unknow";
+    std::string builder_cpu = "unknow";
+    std::string builder_fpu = "unknow";
+
+    std::string target_arch = "unknow";
+    std::string target_vendor = "unknow";
+    std::string target_platform = "unknow";
+    std::string target_cpu = "unknow";
+    std::string target_fpu = "unknow";
+
     std::string host_arch = "unknow";
+    std::string host_vendor = "unknow";
+    std::string host_platform = "unknow";
+    std::string host_cpu = "unknow";
+    std::string host_fpu = "unknow";
+
 
     std::string packages_data = "unknow";
     std::string envPath = "unknow";
@@ -1600,6 +1630,7 @@ public:
     void startWorker();
     void stopWorker();
     std::atomic<bool> stop;
+    std::atomic<bool> running;
     std::mutex mutex;
 
     std::priority_queue<std::shared_ptr<Task>, std::vector<std::shared_ptr<Task>>, CompareTaskPriority> tasks;

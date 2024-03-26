@@ -280,6 +280,10 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
                             {
                                 coloredTag("Paused", ImVec4(0.5f, 0.5f, 0.2f, 1.0f));
                             }
+                            if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "waiting")
+                            {
+                                coloredTag("Waiting", ImVec4(0.5f, 0.5f, 0.2f, 1.0f));
+                            }
                             if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "retry")
                             {
                                 coloredTag("Retry", ImVec4(0.874f, 0.635f, 0.015f, 1.0f));

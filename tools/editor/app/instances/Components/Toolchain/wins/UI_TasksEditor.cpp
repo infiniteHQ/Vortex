@@ -312,6 +312,12 @@ void ToolchainInstance::UI_TasksEditor()
                             if (this->toolchain->taskProcessor)
                             {
 
+
+                                    if (this->toolchain->taskProcessor)
+                                    {
+                                        this->toolchain->taskProcessor->stop = true;
+                                    }
+
                                 // this->toolchain->tasklists[row]->Refresh();
                                 for (auto task : selectedTasklist->list)
                                 {
@@ -357,6 +363,15 @@ void ToolchainInstance::UI_TasksEditor()
                                         }
                                     }*/
                                 }
+                            
+                            
+
+                                    if (this->toolchain->taskProcessor)
+                                    {
+                                        this->toolchain->taskProcessor->stop = false;
+                                    }
+                            
+                            
                             }
                             else
                             {

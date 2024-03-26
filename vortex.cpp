@@ -1005,6 +1005,9 @@ void VortexMaker::CreateToolchain(std::string name, std::string author){
 
 void TaskProcessor::processTasks() {
     VxContext &ctx = *CVortexMaker;
+    this->running = true;
+
+    while(running){
 
     while (!stop) {
         std::vector<std::future<void>> futures;
@@ -1013,7 +1016,7 @@ void TaskProcessor::processTasks() {
         {
             std::lock_guard<std::mutex> lock(mutex);
             tasks = tasksToProcess;
-            tasksToProcess.clear();  // Clear processed tasks
+            //tasksToProcess.clear();  // Clear processed tasks
         }
 
         // Group tasks by priority
@@ -1026,6 +1029,8 @@ void TaskProcessor::processTasks() {
         for (const auto &[priority, tasksWithPriority] : tasksByPriority) {
             // Execute tasks with the same priority simultaneously
             std::vector<std::future<void>> priorityFutures;
+
+
             for (const auto &task : tasksWithPriority) {
                 priorityFutures.emplace_back(std::async(std::launch::async, [this, task]() {
                     if (task->state == "not_started" || task->state == "retry") {
@@ -1040,10 +1045,14 @@ void TaskProcessor::processTasks() {
             for (auto &future : priorityFutures) {
                 future.get();
             }
-        }
 
+                break;
+        }
+    
         // Sleep or perform other operations if needed before next iteration
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
     }
 }
 

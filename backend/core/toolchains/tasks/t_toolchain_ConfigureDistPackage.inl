@@ -69,9 +69,9 @@ struct ConfigureDistPackage : public Task
     }
 
     std::unordered_map<std::string, std::string> replacements = {
-        {"${Target}", toolchain->targetTriplet},
-        {"${Build}", toolchain->builderTriplet},
-        {"${Host}", toolchain->hostTriplet},
+        {"${Target}",std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:target_triplet"))},
+        {"${Build}",std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:build_triplet"))},
+        {"${Host}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:host_triplet"))},
         {"${WorkingHost}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "directory:working_host"))},
         {"${Sysroot}", toolchain->sysrootPath},
         {"${PackageFolder}", package->path},

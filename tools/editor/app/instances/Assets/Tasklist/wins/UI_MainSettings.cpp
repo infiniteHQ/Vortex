@@ -2,6 +2,17 @@
 #include <array>
 #include <random>
 
+
+/*
+Tomorrow : 
+    - Refaire la toolchin fonctionnelle
+    - Ajouter toutes les configurations du build (target, arch, packaging, export...)
+    - Continuer avec les hosts...
+
+
+
+*/
+
 void TasklistInstance::UI_MainSettings()
 {
 
@@ -35,6 +46,15 @@ void TasklistInstance::UI_MainSettings()
             {
                 this->Refresh();
             }
+            if (ImGui::ImageButtonWithText(refreshIcon, "Sort", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+            {
+
+  std::sort(m_currentSave->list.begin(), m_currentSave->list.end(), [](const TaskSave &a, const TaskSave &b)
+            { return a.priority < b.priority; });
+            }
+
+
+
 
             ImGui::Separator();
             if (ImGui::BeginMenu("Pannels"))
@@ -303,13 +323,13 @@ void TasklistInstance::UI_MainSettings()
                                     {
                                         std::string name = this->m_currentSave->list[row].task;
                                         std::string label = "Prop###1" + name + std::to_string(row) + "-PropFinal" + std::to_string(column) + m_currentSave->list[row].task;
-                                        ImGui::InputText(label.c_str(), m_currentSave->list[row].env_props[row].first, 128);
+                                        ImGui::InputText(label.c_str(), m_currentSave->list[row].env_props[srow].first, 128);
                                     }
                                     if (column == 2)
                                     {
                                         std::string name = this->m_currentSave->list[row].task;
                                         std::string label = "Prop###2" + name + std::to_string(row) + "-PropFinal" + std::to_string(column) + m_currentSave->list[row].task;
-                                        ImGui::InputText(label.c_str(), m_currentSave->list[row].env_props[row].second, 128);
+                                        ImGui::InputText(label.c_str(), m_currentSave->list[row].env_props[srow].second, 128);
                                     }
                                 }
                             }

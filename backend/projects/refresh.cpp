@@ -515,13 +515,26 @@ void VxToolchain::Refresh()
   this->version = toolchainData["toolchain"]["version"].get<std::string>();
   this->type = toolchainData["toolchain"]["type"].get<std::string>();
   this->state = toolchainData["toolchain"]["state"].get<std::string>();
-  this->vendor = toolchainData["toolchain"]["vendor"].get<std::string>();
-  this->platform = toolchainData["toolchain"]["platform"].get<std::string>();
 
   VortexMaker::LogInfo("Core", "Getting toolchain \"configs\" datas from " + this->configFilePath);
-  this->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
-  this->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
+  this->builder_vendor = toolchainData["configs"]["builder_vendor"].get<std::string>();
   this->builder_arch = toolchainData["configs"]["builder_arch"].get<std::string>();
+  this->builder_platform = toolchainData["configs"]["builder_platform"].get<std::string>();
+  this->builder_cpu = toolchainData["configs"]["builder_cpu"].get<std::string>();
+  this->builder_fpu = toolchainData["configs"]["builder_fpu"].get<std::string>();
+
+  this->target_vendor = toolchainData["configs"]["target_vendor"].get<std::string>();
+  this->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
+  this->target_platform = toolchainData["configs"]["target_platform"].get<std::string>();
+  this->target_cpu = toolchainData["configs"]["target_cpu"].get<std::string>();
+  this->target_fpu = toolchainData["configs"]["target_fpu"].get<std::string>();
+
+  this->host_vendor = toolchainData["configs"]["host_vendor"].get<std::string>();
+  this->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
+  this->host_platform = toolchainData["configs"]["host_platform"].get<std::string>();
+  this->host_cpu = toolchainData["configs"]["host_cpu"].get<std::string>();
+  this->host_fpu = toolchainData["configs"]["host_fpu"].get<std::string>();
+
   this->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
 
   VortexMaker::LogInfo("Core", "Getting toolchain \"data\" informations from " + this->configFilePath);

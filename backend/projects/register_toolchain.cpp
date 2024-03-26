@@ -11,12 +11,25 @@ bool VortexMaker::RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nloh
   toolchain->description = toolchainData["toolchain"]["description"].get<std::string>();
   toolchain->version = toolchainData["toolchain"]["version"].get<std::string>();
   toolchain->state = toolchainData["toolchain"]["state"].get<std::string>();
-  toolchain->vendor = toolchainData["toolchain"]["vendor"].get<std::string>();
-  toolchain->platform = toolchainData["toolchain"]["platform"].get<std::string>();
 
-  toolchain->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
-  toolchain->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
+  toolchain->builder_vendor = toolchainData["configs"]["builder_vendor"].get<std::string>();
   toolchain->builder_arch = toolchainData["configs"]["builder_arch"].get<std::string>();
+  toolchain->builder_platform = toolchainData["configs"]["builder_platform"].get<std::string>();
+  toolchain->builder_cpu = toolchainData["configs"]["builder_cpu"].get<std::string>();
+  toolchain->builder_fpu = toolchainData["configs"]["builder_fpu"].get<std::string>();
+
+  toolchain->target_vendor = toolchainData["configs"]["target_vendor"].get<std::string>();
+  toolchain->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
+  toolchain->target_platform = toolchainData["configs"]["target_platform"].get<std::string>();
+  toolchain->target_cpu = toolchainData["configs"]["target_cpu"].get<std::string>();
+  toolchain->target_fpu = toolchainData["configs"]["target_fpu"].get<std::string>();
+
+  toolchain->host_vendor = toolchainData["configs"]["host_vendor"].get<std::string>();
+  toolchain->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
+  toolchain->host_platform = toolchainData["configs"]["host_platform"].get<std::string>();
+  toolchain->host_cpu = toolchainData["configs"]["host_cpu"].get<std::string>();
+  toolchain->host_fpu = toolchainData["configs"]["host_fpu"].get<std::string>();
+
   //toolchain->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
 
   nlohmann::json packages = toolchainData["content"]["packages"];
