@@ -29,7 +29,6 @@ void ToolchainInstance::UI_TasksEditor()
         static bool toolchainPropAdded = false;
         static bool tasklistPropAdded = false;
 
-        std::string label = this->name + " - Tasks Editor###" + this->name + "taskseditor";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static ImTextureID editIcon = this->m_EditIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -44,6 +43,7 @@ void ToolchainInstance::UI_TasksEditor()
 
         static ImTextureID settingsIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
+        std::string label = this->name + " - Tasks Editor###" + this->name + "taskseditor";
         ImGui::Begin(label.c_str(), &editIcon, &this->show_UI_MainSettings, ImGuiWindowFlags_MenuBar);
 
         static int item_current = 0;

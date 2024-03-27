@@ -102,7 +102,12 @@ void ToolchainInstance::UI_ManualBuild()
                         {
                             ImGui::Text(this->toolchain->packages[row]->latestTask->state.c_str());
                         }
+                        if(column == 3){
+                            float progress = 0.5f;
+                            ImGui::ProgressBar(progress, ImVec2(0.0f, 0.0f));
+                            ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
                     }
+                        }
                 }
 
                 ImGui::EndTable();

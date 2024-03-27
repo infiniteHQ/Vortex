@@ -39,6 +39,7 @@ public:
     void UI_SnapshotUtility();
     void UI_ManualBuild();
     void UI_VolatileTasks();
+    void UI_FullBuild();
     void UI_AssetsViewer();
     void UI_MainSettings();
 
@@ -49,6 +50,7 @@ public:
     bool show_UI_CurrentToolchainPreview = false;
     bool show_UI_SnapshotUtility = false;
     bool show_UI_ManualBuild = false;
+    bool show_UI_FullBuild = false;
     bool show_UI_VolatileTasks = false;
     bool show_UI_AssetsViewer = false;
     bool show_UI_MainSettings = false;

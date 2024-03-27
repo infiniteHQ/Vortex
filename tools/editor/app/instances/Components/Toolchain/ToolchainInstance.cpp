@@ -167,6 +167,7 @@ std::string ToolchainInstance::render()
         this->UI_VolatileTasks();
         this->UI_AssetsViewer();
         this->UI_MainSettings();
+        this->UI_FullBuild();
 
         return "rendering";
         }
@@ -231,7 +232,7 @@ void ToolchainInstance::menubar(){
                 ImGui::Separator();
                 if (ImGui::BeginMenu("Build"))
                 {
-                    if (ImGui::MenuItem("Full build"))
+                    if (ImGui::MenuItem("Full build", NULL, &this->show_UI_FullBuild))
                     {
                     }
                     if (ImGui::MenuItem("Manual build", NULL, &this->show_UI_ManualBuild))

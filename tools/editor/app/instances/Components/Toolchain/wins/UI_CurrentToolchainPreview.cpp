@@ -1,4 +1,5 @@
 #include "../ToolchainInstance.h"
+#include "../../../../../backend/Platform/GUI/editor/UI/Spinner.h"
 #include <array>
 
 static std::string formatElapsedTime(double elapsedSeconds)
@@ -21,6 +22,38 @@ static std::string formatElapsedTime(double elapsedSeconds)
     return formattedTime;
 }
 
+float cookProgress(std::shared_ptr<Task> task){
+    int completedCount = task->successCounter + task->failCounter + task->warningCounter;
+    int totalCount = completedCount + task->unknowCounter;
+
+    if (totalCount == 0) {
+        return 0.0f; // Si aucune tâche n'est présente, le progrès est de 0%
+    } else {
+        return static_cast<float>(completedCount) / totalCount; // Pourcentage de tâches accomplies
+    }
+}
+
+
+static void coloredText(std::string name, ImVec4 color)
+{
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 0.1f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.5f, 0.5f, 0.1f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5f, 0.5f, 0.5f, 0.1f));
+    ImGui::PushStyleColor(ImGuiCol_Text, color);
+    ImGui::Button(name.c_str());
+    ImGui::PopStyleColor(4);
+}
+
+static void labelTag(std::string name)
+{
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    ImGui::Button(name.c_str());
+    ImGui::PopStyleColor(4);
+}
+
 static void coloredTag(std::string name, ImVec4 color)
 {
     ImGui::PushStyleColor(ImGuiCol_Button, color);
@@ -29,6 +62,15 @@ static void coloredTag(std::string name, ImVec4 color)
     ImGui::Button(name.c_str());
     ImGui::PopStyleColor(3);
 }
+
+static void progressBar(float progress){
+
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.324f, 0.511f, 0.929f, 1.0f));
+    ImGui::ProgressBar(progress, ImVec2(0.0f, 0.0f));
+    ImGui::PopStyleColor(1);
+}
+
+
 
 static void idTag(std::string name)
 {
@@ -57,6 +99,9 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
         static std::thread receiveThread;
+
+        static bool advancedView;
+        static bool lowColorView = true;
 
         static ImTextureID errorIcon = this->m_ErrorIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID warnIcon = this->m_WarningIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -109,9 +154,12 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
             }
 
             ImGui::Separator();
-            if (ImGui::BeginMenu("Pannels"))
+            if (ImGui::BeginMenu("Options"))
             {
-                if (ImGui::MenuItem("Options Editor"))
+                if (ImGui::MenuItem("Advanced view", NULL, &advancedView))
+                {
+                }
+                if (ImGui::MenuItem("Low Color view", NULL, &lowColorView))
                 {
                 }
                 if (ImGui::MenuItem("Contents Window"))
@@ -189,7 +237,10 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
 
         if (selected == 1)
         {
-            if (ImGui::BeginTable("table_", 9, flags))
+            // Advanced mode : (Make a boolean with a simple mod (only, name, state & progress))
+
+            if(advancedView){
+                            if (ImGui::BeginTable("table_", 9, flags))
             {
                 ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Retry", ImGuiTableColumnFlags_WidthFixed);
@@ -341,6 +392,133 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
                 }
 
                 ImGui::EndTable();
+            }
+        
+            }
+            else{ // Simple mode
+
+
+                            if (ImGui::BeginTable("table_", 4, flags))
+            {
+                ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Progress", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableHeadersRow();
+
+                for (int row = 0; row < this->toolchain->currentLoadedSystem.executedTasks.size(); row++)
+                {
+                    static std::pair<char[128], char[128]> newItem;
+                    static char label[128];
+
+                    ImGui::TableNextRow();
+                    for (int column = 0; column < 4; column++)
+                    {
+                        ImGui::TableSetColumnIndex(column);
+
+                        if (column == 0)
+                        {
+                            std::string deleteButtonID = "Delete###" + std::to_string(row) + "-" + std::to_string(column);
+                            if (ImGui::ImageButtonWithText(trashIcon, deleteButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                            {
+                                std::swap(this->toolchain->currentLoadedSystem.executedTasks[row], this->toolchain->currentLoadedSystem.executedTasks.back());
+                                this->toolchain->currentLoadedSystem.executedTasks.pop_back();
+                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
+                            }
+                        }
+                        if (column == 1)
+                        {
+                            labelTag(this->toolchain->currentLoadedSystem.executedTasks[row]->tasktype.c_str());
+                            //ImGui::Text(this->toolchain->currentLoadedSystem.executedTasks[row]->tasktype.c_str());
+                        }
+                        if (column == 2)
+                        {
+                            if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "finished")
+                            {
+                                if(lowColorView){
+                                    coloredText("Finished", ImVec4(0.874f, 0.635f, 0.015f, 0.7f));
+
+                                }
+                                else{
+                                    coloredTag("Finished", ImVec4(0.874f, 0.635f, 0.015f, 0.7f));
+                                }
+                            }
+                            if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "success")
+                            {
+                                if(lowColorView){
+                                    coloredText("Success", ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
+
+                                }
+                                else{
+                                coloredTag("Success", ImVec4(0.3f, 1.0f, 0.3f, 1.0f));
+                                }
+                            }
+                            if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "failed")
+                            {
+                                if(lowColorView){
+                                    coloredText("Failed", ImVec4(1.0f, 0.2f, 0.2f, 0.8f));
+
+                                }
+                                else{
+                                coloredTag("Failed", ImVec4(1.0f, 0.2f, 0.2f, 0.8f));
+                                }
+                            }
+                            if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "paused")
+                            {
+                                if(lowColorView){
+                                    coloredText("Paused", ImVec4(0.5f, 0.5f, 0.2f, 1.0f));
+
+                                }
+                                else{
+                                coloredTag("Paused", ImVec4(0.5f, 0.5f, 0.2f, 1.0f));
+                                }
+                            }
+                            if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "waiting")
+                            {
+                                if(lowColorView){
+                                    coloredText("Waiting", ImVec4(0.5f, 0.5f, 0.2f, 1.0f));
+
+                                }
+                                else{
+                                coloredTag("Waiting", ImVec4(0.5f, 0.5f, 0.2f, 1.0f));
+                                }
+                            }
+                            if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "retry")
+                            {
+                                if(lowColorView){
+                                    coloredText("Retry", ImVec4(0.874f, 0.635f, 0.015f, 1.0f));
+
+                                }
+                                else{
+                                coloredTag("Retry", ImVec4(0.874f, 0.635f, 0.015f, 1.0f));
+                                }
+                            }
+                            if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "process")
+                            {
+                                //coloredTag("Processing...", ImVec4(0.8f, 0.5f, 0.5f, 1.0f));
+                                const ImU32 col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+                                const ImU32 bg = ImGui::GetColorU32(ImGuiCol_Button);
+                                ImGui::Spinner("##spinner", 6, 3, col);
+                            }
+                            if (this->toolchain->currentLoadedSystem.executedTasks[row]->state == "not_started")
+                            {
+                                coloredTag("Not Started", ImVec4(0.5f, 0.5f, 0.5f, 0.1f));
+                            }
+                        }
+                        if (column == 3)
+                        {
+                            float progress = cookProgress(this->toolchain->currentLoadedSystem.executedTasks[row]);
+
+progressBar(progress);
+
+                        }
+                    }
+                }
+
+                ImGui::EndTable();
+            }
+        
+
             }
         }
 
