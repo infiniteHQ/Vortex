@@ -30,6 +30,7 @@
 #include "ImGui/Roboto-Regular.embed"
 #include "ImGui/Roboto-Bold.embed"
 #include "ImGui/Roboto-Italic.embed"
+#include "ImGui/Hack-Regular.embed"
 
 extern bool g_ApplicationRunning;
 
@@ -567,9 +568,13 @@ namespace Walnut
 		ImFontConfig fontConfig;
 		fontConfig.FontDataOwnedByAtlas = false;
 		ImFont *robotoFont = io.Fonts->AddFontFromMemoryTTF((void *)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
+		ImFont *hackFont = io.Fonts->AddFontFromMemoryTTF((void *)g_HackRegular, sizeof(g_HackRegular), 20.0f, &fontConfig);
 		s_Fonts["Default"] = robotoFont;
 		s_Fonts["Bold"] = io.Fonts->AddFontFromMemoryTTF((void *)g_RobotoBold, sizeof(g_RobotoBold), 20.0f, &fontConfig);
 		s_Fonts["Italic"] = io.Fonts->AddFontFromMemoryTTF((void *)g_RobotoItalic, sizeof(g_RobotoItalic), 20.0f, &fontConfig);
+		s_Fonts["HackRegular"] = io.Fonts->AddFontFromMemoryTTF((void *)g_HackRegular, sizeof(g_HackRegular), 20.0f, &fontConfig);
+
+		
 		io.FontDefault = robotoFont;
 
 		// Upload Fonts

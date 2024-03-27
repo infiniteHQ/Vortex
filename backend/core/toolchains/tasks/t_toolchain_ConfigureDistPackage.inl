@@ -124,6 +124,12 @@ struct ConfigureDistPackage : public Task
         configuration += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomConfigProcess, replacements);
       }
     }
+    else
+      {
+        configuration += "sudo -u vortex -i sh -c 'cd " + working_path + "/build && ";
+        configuration += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomConfigProcess, replacements);
+      }
+
 
 
       auto [output, result] = toolchain->exec_cmd_quote(configuration.c_str()); // faire un empaquetage complet

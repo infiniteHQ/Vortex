@@ -138,7 +138,7 @@ std::string ReportInstance::render()
     if (opened)
     {
         // Mainwindow with dockspace
-        static std::string label = "Reporting task" + this->task->id + "###" + this->task->id + "-reportingtask";
+        std::string label = "Reporting task" + this->task->id + "###" + this->task->id + "-reportingtask";
         if (ImGui::Begin(label.c_str(), &flipIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         {
             this->menubar();
@@ -227,8 +227,6 @@ std::string ReportInstance::render()
 
                         for (int row = 0; row < errors.size(); row++)
                         {
-                            static std::pair<char[128], char[128]> newItem;
-                            static char label[128];
 
                             ImGui::TableNextRow();
                             for (int column = 0; column < 4; column++)
@@ -381,8 +379,10 @@ std::string ReportInstance::render()
                             }
                         }
 
+
                         for (int row = 0; row < successes.size(); row++)
                         {
+                        std::cout << label << " << " << successes[row] << std::endl;
                             static std::pair<char[128], char[128]> newItem;
                             static char label[128];
 
@@ -541,7 +541,6 @@ std::string ReportInstance::render()
                                         if(envProp.first == this->task->depsChecks[row].first){
                                             finded = true;
                                             ImGui::Text(envProp.second.c_str());
-                                            ImGui::Text("XXX");
                                         }
                                     }
                                     

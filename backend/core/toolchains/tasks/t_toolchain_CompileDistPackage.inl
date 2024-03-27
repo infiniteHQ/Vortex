@@ -73,11 +73,11 @@ struct CompileDistPackage : public Task
 
     {
     std::string compilation;
-    if (package->compilation.exclusiveCustomConfigProcess == "not specified")
+    if (package->compilation.exclusiveCustomCompilationProcess == "not specified")
     {
 
       // Configure
-      if (package->compilation.exclusiveCustomConfigProcess == "not specified")
+      if (package->compilation.exclusiveCustomCompilationProcess == "not specified")
       {
         std::string cmd = "";
 
@@ -113,9 +113,14 @@ struct CompileDistPackage : public Task
       else
       {
         compilation += "sudo -u vortex -i sh -c 'cd " + working_path + "/build && ";
-        compilation += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomConfigProcess, replacements);
+        compilation += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomCompilationProcess, replacements);
       }
-    }
+    }      
+    else
+      {
+        compilation += "sudo -u vortex -i sh -c 'cd " + working_path + "/build && ";
+        compilation += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomCompilationProcess, replacements);
+      }
 
 
       auto [output, result] = toolchain->exec_cmd_quote(compilation.c_str()); // faire un empaquetage complet

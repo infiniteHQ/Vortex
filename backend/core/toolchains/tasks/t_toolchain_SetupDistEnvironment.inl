@@ -154,7 +154,28 @@ struct SetupDistEnvironment : public Task
     }
 
 
+    {
+      std::string path = crosstoolsDir + "/usr";
+      toolchain->currentLoadedSystem.put_varable(this, "directory:sysroot", "SetupDistEnvironment", path);
 
+      std::string cmd = "mkdir " + path;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)this->addCheckVerdict("create_folder:working_host_sysroot", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_folder:working_host_sysroot", "failed", output, cmd);
+    }
+
+
+    {
+      std::string path = crosstoolsDir + "/usr/include";
+      toolchain->currentLoadedSystem.put_varable(this, "directory:sysroot", "SetupDistEnvironment", path);
+
+      std::string cmd = "mkdir " + path;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)this->addCheckVerdict("create_folder:working_host_sysroot", "success", output, cmd);
+      if (result != 0)this->addCheckVerdict("create_folder:working_host_sysroot", "failed", output, cmd);
+    }
 
     {
       std::string path = crosstoolsDir + "/sysroot";

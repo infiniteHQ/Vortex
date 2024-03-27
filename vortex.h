@@ -887,6 +887,10 @@ struct Task{
     std::string state; // state of this task
     std::vector<std::tuple<std::string, std::string, std::string>> used_variables;
     std::vector<std::tuple<std::string, std::string, std::string>>  created_variables;
+    
+
+
+
     int priority;
 
     int warningCounter = 0;

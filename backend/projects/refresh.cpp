@@ -446,6 +446,8 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
       report["t_created_variables"].push_back(c);
     }
 
+    // TODO: Add props to checklist
+
     for (auto check : task->checkList)
     {
       nlohmann::json c;
