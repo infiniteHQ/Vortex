@@ -15,8 +15,14 @@
 #include "../instances/Assets/Package/PackageInstance.h"
 #endif
 
+
 #ifndef TasklistInstance_H
 #include "../instances/Assets/Tasklist/TasklistInstance.h"
+#endif
+
+
+#ifndef ScriptInstance_H
+#include "../instances/Assets/Script/ScriptInstance.h"
 #endif
 
 
@@ -35,6 +41,7 @@ class InstanceFactory {
   virtual void SpawnInstance(std::shared_ptr<GPOSInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
   virtual void SpawnInstance(std::shared_ptr<ReportInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
   virtual void SpawnInstance(std::shared_ptr<TextEditor>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void SpawnInstance(std::shared_ptr<ScriptInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
 
   virtual void UnspawnInstance(std::shared_ptr<HostInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
   virtual void UnspawnInstance(std::shared_ptr<PackageInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
@@ -43,6 +50,7 @@ class InstanceFactory {
   virtual void UnspawnInstance(std::shared_ptr<GPOSInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
   virtual void UnspawnInstance(std::shared_ptr<ReportInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
   virtual void UnspawnInstance(std::shared_ptr<TextEditor>) {VortexMaker::LogError("Core", "Core task not implemented !");};
+  virtual void UnspawnInstance(std::shared_ptr<ScriptInstance>) {VortexMaker::LogError("Core", "Core task not implemented !");};
 };
 
 #endif

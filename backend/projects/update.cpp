@@ -206,6 +206,37 @@ void VxHost::CreatePackage(std::string label, std::string author, std::string de
     // Refresh current host
     this->Refresh();
 }
+
+
+void VxToolchain::PushDistSave(std::shared_ptr<VxDistToolchainSave> save)
+{
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+
+    nlohmann::json toolchainData;
+    toolchainData["configs"]["AR"] = save->AR_value;
+    toolchainData["configs"]["AS"] = save->AS_value;
+    toolchainData["configs"]["CC"] = save->CC_value;
+    toolchainData["configs"]["CXX"] = save->CXX_value;
+    toolchainData["configs"]["LD"] = save->LD_value;
+    toolchainData["configs"]["RANLIB"] = save->RANLIB_value;
+    toolchainData["configs"]["STRIP"] = save->STRIP_value;
+
+    std::string distPath = ctx->projectPath;
+    distPath += "/" + ctx->paths.toolchainDistFolder + "/" + this->name + "/toolchain.dist.config";
+
+    std::ofstream file(distPath);
+    if (file.is_open())
+    {
+        file << std::setw(4) << toolchainData << std::endl;
+          VortexMaker::LogInfo("Core", "Object saved to " + distPath);
+        file.close();
+    }
+    else
+    {
+        VortexMaker::LogError("Core", "Unable to open file " + distPath + " for writing!");
+    }
+}
+
 void VxToolchain::PushSave(std::shared_ptr<ToolchainSave> save)
 {
     VxContext &ctx = *CVortexMaker;

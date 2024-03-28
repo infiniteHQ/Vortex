@@ -505,6 +505,28 @@ nlohmann::json VxHostCurrentSystem::Extract()
 }
 
 // TODO : Split to little refresh functions, create a RefreshAll function.
+// TODO : This need to go in toolchains core folder
+
+
+void VxToolchain::RefreshDistConfig(){
+
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+
+  std::string distPath = ctx->projectPath;
+  distPath += "/" + ctx->paths.toolchainDistFolder + "/" + this->name + "/toolchain.dist.config";
+
+  nlohmann::json toolchainData = VortexMaker::DumpJSON(distPath);
+
+  this->distToolchain.AR = toolchainData["configs"]["AR"].get<std::string>();
+  this->distToolchain.AS = toolchainData["configs"]["AS"].get<std::string>();
+  this->distToolchain.CC = toolchainData["configs"]["CC"].get<std::string>();
+  this->distToolchain.CXX = toolchainData["configs"]["CXX"].get<std::string>();
+  this->distToolchain.LD = toolchainData["configs"]["LD"].get<std::string>();
+  this->distToolchain.RANLIB = toolchainData["configs"]["RANLIB"].get<std::string>();
+  this->distToolchain.STRIP = toolchainData["configs"]["STRIP"].get<std::string>();
+
+}
+
 void VxToolchain::Refresh()
 {
   VortexMaker::LogInfo("Core", "Refreshing toolchain " + this->name + " from " + this->configFilePath);
@@ -568,6 +590,7 @@ void VxToolchain::Refresh()
   }
   VortexMaker::LogInfo("Core", "Finding tasklists asset of " + this->name);
   this->FindTasklists();
+
 
   VortexMaker::LogInfo("Core", "Refreshing toolchain " + this->name + " is finish !");
   // this->Init();
@@ -748,6 +771,46 @@ void VortexMaker::RefreshGpos()
       }
 
       RegisterGPOS(gpos, filecontent);
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << "Error : " << e.what() << std::endl;
+    }
+  }
+}
+
+VORTEX_API void VortexMaker::RefreshScripts()
+{
+  VxContext &ctx = *CVortexMaker;
+
+  // Hosts
+  for (const auto &file : SearchFiles(ctx.scriptsPath, "script.config"))
+  {
+    try
+    {
+      nlohmann::json filecontent = DumpJSON(file);
+      std::shared_ptr<VxScript> newScript = std::make_shared<VxScript>();
+
+      newScript->path = file;
+      newScript->configFilePath = file;
+
+      bool alreadyExist = false;
+
+      for (auto alreadyRegistered : ctx.IO.scripts)
+      {
+        if (alreadyRegistered->name == filecontent["script"]["name"].get<std::string>())
+        {
+          VortexMaker::LogError("Core", alreadyRegistered->name + " is already registered.");
+          alreadyExist = true;
+        }
+      }
+
+      if (alreadyExist == true)
+      {
+        continue;
+      }
+
+      RegisterScript(newScript, filecontent);
     }
     catch (const std::exception &e)
     {

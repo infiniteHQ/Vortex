@@ -50,7 +50,7 @@ void ToolchainInstance::UI_MainSettings()
 
         // Left
         static int selected = 0;
-        static std::array<char[128], 5> labels = {"Project Settings", "Configuration", "Production", "Maintenance", "Danger zone"};
+        static std::array<char[128], 5> labels = {"Project Settings", "Configuration", "Dist Configs", "Maintenance", "Danger zone"};
 
         {
             ImGui::BeginChild("left pane", ImVec2(170, 0), true);
@@ -100,7 +100,6 @@ void ToolchainInstance::UI_MainSettings()
             ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
             ImGui::Text("General Informations");
             ImGui::Separator();
-
 
             // TODO : Fix gcc and all toolchain components, add scripts assets and specifiy package (P_) as a make package
             // All dist for toolchain and add this logic for host & gpos.
@@ -369,6 +368,36 @@ void ToolchainInstance::UI_MainSettings()
             }
             ImGui::EndGroup();
         }
+
+        // Project Settings
+        if (selected == 2)
+        {
+
+            ImGui::BeginGroup();
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(9.0f, 9.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
+            ImGui::Text("Dist configurations");
+            ImGui::Separator();
+
+            ImGui::InputText("AR Value", this->m_currentDistSave->AR_value, 128);
+            ImGui::InputText("AS Value", this->m_currentDistSave->AS_value, 128);
+            ImGui::InputText("CC Value", this->m_currentDistSave->CC_value, 128);
+            ImGui::InputText("CXX Value", this->m_currentDistSave->CXX_value, 128);
+            ImGui::InputText("LD Value", this->m_currentDistSave->LD_value, 128);
+            ImGui::InputText("RANLIB Value", this->m_currentDistSave->RANLIB_value, 128);
+            ImGui::InputText("STRIP Value", this->m_currentDistSave->STRIP_value, 128);
+
+            ImGui::PopStyleVar(2);
+            if (ImGui::Button("Revert"))
+            {
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Save"))
+            {
+            }
+            ImGui::EndGroup();
+        }
+
 
         if (selected == 4)
         {

@@ -26,6 +26,7 @@ static std::vector<std::shared_ptr<TasklistInstance>> tasklistInstances;
 static std::vector<std::shared_ptr<GPOSInstance>> gposInstances;
 static std::vector<std::shared_ptr<ReportInstance>> reportInstances;
 static std::vector<std::shared_ptr<TextEditor>> texteditorInstances;
+static std::vector<std::shared_ptr<ScriptInstance>> scriptInstances;
 
 
 static void PushStyle()
@@ -93,6 +94,17 @@ class Instance : public InstanceFactory {
     texteditorInstances.push_back(instance);
   };
 
+  void SpawnInstance(std::shared_ptr<ScriptInstance> instance) override {
+    instance->name = instance->script->name;
+    instance->opened = true;
+    scriptInstances.push_back(instance);
+  };
+
+
+  void UnspawnInstance(std::shared_ptr<ScriptInstance> instance) override {
+    std::string instanceName = instance->name;
+    instance = nullptr;
+  };
 
   void UnspawnInstance(std::shared_ptr<TextEditor> instance) override {
     std::string instanceName = instance->name;
@@ -151,23 +163,13 @@ public:
     PushStyle();
 
     ImGui::ShowDemoWindow();
-        /**
-         * Notifications Rendering Start
-        */
-
-        // Notifications style setup
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f); // Disable round borders
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f); // Disable borders
-
-        // Notifications color setup
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.10f, 0.10f, 0.10f, 1.00f)); // Background color
-
+    
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f); 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f); 
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.10f, 0.10f, 0.10f, 1.00f));
     ImGui::RenderNotifications();
-        //——————————————————————————————— WARNING ———————————————————————————————
-        // Argument MUST match the amount of ImGui::PushStyleVar() calls 
-        ImGui::PopStyleVar(2);
-        // Argument MUST match the amount of ImGui::PushStyleColor() calls 
-        ImGui::PopStyleColor(1);
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor(1);
 
 
     if (this->ShowContentBrowser)
@@ -189,6 +191,7 @@ public:
     for (auto window : gposInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : reportInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : texteditorInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
+    for (auto window : scriptInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     
     PopStyle();
     

@@ -61,6 +61,7 @@ public:
     VxContext *m_ctx;
     std::shared_ptr<VxToolchain> toolchain;
     std::shared_ptr<ToolchainSave> m_currentSave;
+    std::shared_ptr<VxDistToolchainSave> m_currentDistSave;
     ImGuiID dockspaceID;
 
     std::shared_ptr<Walnut::Image> m_ToolchainIcon;

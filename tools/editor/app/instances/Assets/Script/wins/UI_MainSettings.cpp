@@ -79,11 +79,6 @@ static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE
 
             ImGui::InputText("Package Name",     this->m_currentSave->name, 128);
             ImGui::InputText("Package Author",     this->m_currentSave->author, 128);
-            ImGui::InputText("Package Description",     this->m_currentSave->description, 128);
-            ImGui::InputInt("Package Priority",     &this->m_currentSave->priority);
-            ImGui::InputText("Package Compressed",     this->m_currentSave->compressed, 128);
-            ImGui::InputText("Package Filename",     this->m_currentSave->filename, 128);
-            ImGui::InputText("Package Label",     this->m_currentSave->label, 128);
 
 
             ImGui::PopStyleVar(2);
@@ -101,10 +96,6 @@ static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
             ImGui::Text("General Informations");
             ImGui::Separator();
-
-            ImGui::InputText("Custom compilation command",     this->m_currentSave->compilationExclusiveCommand, 128);
-            ImGui::InputText("Custom configuration command",     this->m_currentSave->configurationExclusiveCommand, 128);
-            ImGui::InputText("Custom installation command",     this->m_currentSave->installationExclusiveCommand, 128);
 
             ImGui::PopStyleVar(2);
             if (ImGui::Button("Revert")) {}

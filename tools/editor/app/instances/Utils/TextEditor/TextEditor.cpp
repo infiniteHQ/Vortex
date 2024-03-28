@@ -51,14 +51,7 @@ TextEditor::TextEditor(VxContext *ctx, std::string PathToFile)
 {
 	this->m_ctx = ctx;
 	this->opened = true;
-	// Get text from file from path
-	std::ifstream file(PathToFile);
-
-	// convert file to string
-	std::string str((std::istreambuf_iterator<char>(file)),
-		std::istreambuf_iterator<char>());
-
-	this->SetText(str);
+	this->SwitchToFile(PathToFile);
 
 
     {
@@ -75,6 +68,19 @@ TextEditor::TextEditor(VxContext *ctx, std::string PathToFile)
 
 TextEditor::~TextEditor()
 {
+}
+
+
+void TextEditor::SwitchToFile(std::string PathToFile){
+	// Get text from file from path
+	std::ifstream file(PathToFile);
+
+	// convert file to string
+	std::string str((std::istreambuf_iterator<char>(file)),
+		std::istreambuf_iterator<char>());
+
+	this->SetText(str);
+
 }
 
 void TextEditor::SetLanguageDefinition(const LanguageDefinition & aLanguageDef)

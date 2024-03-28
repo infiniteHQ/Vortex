@@ -205,6 +205,7 @@ void ProjectViewer::menubar()
         }
 
         static bool open_CreateToolchain = false;
+        static bool open_CreateScript = false;
         static bool open_CreateHost = false;
         static bool open_CreateGpos = false;
         static bool open_confirm_popup = false;
@@ -306,6 +307,39 @@ void ProjectViewer::menubar()
                 ImGui::EndPopup();
             }
         }
+ if (open_CreateScript)
+        {
+            if (ImGui::BeginPopupModal("Create New Script"))
+            {
+                // 3 text inputs
+                static char label[128] = "";
+                static char author[128] = "";
+                // inputs widget
+                ImGui::InputText("Name", label, IM_ARRAYSIZE(label));
+                ImGui::InputText("Author", author, IM_ARRAYSIZE(author));
+
+                // Call CreatePackage function from VxHost
+                if (ImGui::Button("Create", ImVec2(120, 0)))
+                {
+                    std::string _label = label;
+                    std::string _author = author;
+
+                    VortexMaker::CreateScript(_label, _author);
+
+                    // open_confirm_popup = true;
+                    open_CreateScript = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                    open_CreateScript = false;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+        }
 
 
         if (open_CreateToolchain)
@@ -351,6 +385,8 @@ void ProjectViewer::menubar()
         if (open_CreateGpos)
             ImGui::OpenPopup("Create New GPOS");
 
+        if (open_CreateScript)
+            ImGui::OpenPopup("Create New Script");
 
         if (ImGui::BeginPopupModal("CreationMenu", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
@@ -399,11 +435,19 @@ void ProjectViewer::menubar()
                 ImGui::Button("Embedded Application (EA)", ImVec2(-1, 0));
             }
 
+            if (ImGui::CollapsingHeader("Scripting"))
+            {
+                if (ImGui::Button("Simple Script", ImVec2(-1, 0)))
+                {
+                    open_CreateScript = true;
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+
             if (ImGui::CollapsingHeader("Toolchains"))
             {
                 if (ImGui::Button("Toolchain", ImVec2(-1, 0)))
                 {
-
                     open_CreateToolchain = true;
                     ImGui::CloseCurrentPopup();
                 }

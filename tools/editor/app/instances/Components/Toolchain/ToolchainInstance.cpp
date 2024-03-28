@@ -423,6 +423,8 @@ void ToolchainInstance::Refresh()
 
   VortexMaker::LogInfo("Core", "Start refreshing " + this->name);
     this->toolchain->Refresh();
+    this->toolchain->RefreshDistConfig();
+    // Refresh dist
 
 
   VortexMaker::LogInfo("Core", "Init core tasks of " + this->name);
@@ -432,6 +434,7 @@ void ToolchainInstance::Refresh()
 
   VortexMaker::LogInfo("Core", "Load a new save " + this->name);
     std::shared_ptr<ToolchainSave> refreshedCurrentSave = std::make_shared<ToolchainSave>();
+    std::shared_ptr<VxDistToolchainSave> refreshedCurrentDistSave = std::make_shared<VxDistToolchainSave>();
 
     strncpy(refreshedCurrentSave->name, this->toolchain->name.c_str(), sizeof(refreshedCurrentSave->name));
     refreshedCurrentSave->name[sizeof(refreshedCurrentSave->name) - 1] = '\0';
@@ -546,7 +549,32 @@ void ToolchainInstance::Refresh()
         refreshedCurrentSave->registeredTasklists.push_back(tasklist);
     }   
 
+
+
+    strncpy(refreshedCurrentDistSave->AR_value, this->toolchain->distToolchain.AR.c_str(), sizeof(refreshedCurrentDistSave->AR_value));
+    refreshedCurrentDistSave->AR_value[sizeof(refreshedCurrentDistSave->AR_value) - 1] = '\0';
+
+    strncpy(refreshedCurrentDistSave->AS_value, this->toolchain->distToolchain.AS.c_str(), sizeof(refreshedCurrentDistSave->AS_value));
+    refreshedCurrentDistSave->AS_value[sizeof(refreshedCurrentDistSave->AS_value) - 1] = '\0';
+
+    strncpy(refreshedCurrentDistSave->CC_value, this->toolchain->distToolchain.CC.c_str(), sizeof(refreshedCurrentDistSave->CC_value));
+    refreshedCurrentDistSave->CC_value[sizeof(refreshedCurrentDistSave->CC_value) - 1] = '\0';
+
+    strncpy(refreshedCurrentDistSave->CXX_value, this->toolchain->distToolchain.CXX.c_str(), sizeof(refreshedCurrentDistSave->CXX_value));
+    refreshedCurrentDistSave->CXX_value[sizeof(refreshedCurrentDistSave->CXX_value) - 1] = '\0';
+
+    strncpy(refreshedCurrentDistSave->LD_value, this->toolchain->distToolchain.LD.c_str(), sizeof(refreshedCurrentDistSave->LD_value));
+    refreshedCurrentDistSave->LD_value[sizeof(refreshedCurrentDistSave->LD_value) - 1] = '\0';
+
+    strncpy(refreshedCurrentDistSave->RANLIB_value, this->toolchain->distToolchain.RANLIB.c_str(), sizeof(refreshedCurrentDistSave->RANLIB_value));
+    refreshedCurrentDistSave->RANLIB_value[sizeof(refreshedCurrentDistSave->RANLIB_value) - 1] = '\0';
+
+    strncpy(refreshedCurrentDistSave->STRIP_value, this->toolchain->distToolchain.STRIP.c_str(), sizeof(refreshedCurrentDistSave->STRIP_value));
+    refreshedCurrentDistSave->STRIP_value[sizeof(refreshedCurrentDistSave->STRIP_value) - 1] = '\0';
+
+
     this->m_currentSave = refreshedCurrentSave;
+    this->m_currentDistSave = refreshedCurrentDistSave;
 }
 
 void ToolchainInstance::Save()
@@ -556,4 +584,5 @@ void ToolchainInstance::Save()
     // Set host new host variables with save contents
     // Patch json with native Vortex APi
     this->toolchain->PushSave(this->m_currentSave);
+    this->toolchain->PushDistSave(this->m_currentDistSave);
 }

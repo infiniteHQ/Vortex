@@ -196,6 +196,8 @@ void VxToolchain::Init()
 {
   VxContext &ctx = *CVortexMaker;
 
+  // TODO: Take all tasks at root, and check if a task has toolchain type, if yes, include it.
+
   // Add tasks types
   {
     std::shared_ptr<SetupDistEnvironment> task = std::make_shared<SetupDistEnvironment>();

@@ -4,6 +4,7 @@
 #include "../../backend/Platform/GUI/editor/Image.h"
 #include "../../backend/Platform/GUI/editor/UI/UI.h"
 #include "../../vendor/imgui/imgui.h"
+#include "../../vendor/imgui/imgui_internal.h"
 #include "../../vendor/stb-image/stb_image.h"
 
 #include "../../backend/Assets/icons.h"
@@ -22,7 +23,7 @@ class InstanceFactory;
 class ScriptInstance
 {
 public:
-    ScriptInstance(VxContext *ctx, std::shared_ptr<VxPackage> _package);
+    ScriptInstance(VxContext *ctx, std::shared_ptr<VxScript> script);
 
     // Content Managment 
     void Refresh();
@@ -34,22 +35,22 @@ public:
     void menubar();
 
     void UI_MainSettings();
-    void UI_CompilationArguments();
-    void UI_ActionsEditor();
+    void UI_TextEditor();
 
     bool opened;
     bool show_UI_MainSettings = false;
     bool show_UI_CompilationArguments = false;
     bool show_UI_ActionsEditor = false;
-
+    bool show_UI_TextEditor = false;
 
     std::string name;
     VxContext *m_ctx;
-    std::shared_ptr<VxPackage> package;
-    std::shared_ptr<PackageSave> m_currentSave;
+    std::shared_ptr<VxScript> script;
+    std::shared_ptr<VxScriptSave> m_currentSave;
     ImGuiID dockspaceID;
+    std::shared_ptr<TextEditor> editor;
 
-    std::shared_ptr<Walnut::Image> m_HostIcon;
+    std::shared_ptr<Walnut::Image> m_ScriptIcon;
     std::shared_ptr<Walnut::Image> m_Icon;
     std::shared_ptr<Walnut::Image> m_SaveIcon;
     std::shared_ptr<Walnut::Image> m_RefreshIcon;

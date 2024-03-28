@@ -185,6 +185,7 @@ struct VxGPOSystem;
 
 struct CommandOutput;
 struct VxToolchain;
+struct VxScript;
 struct VxDistHost;
 struct VxPackage;
 struct VxDistToolchain;
@@ -230,6 +231,7 @@ namespace VortexMaker
     VORTEX_API void             RefreshGpos();
     VORTEX_API void             RefreshDistHosts();
     VORTEX_API void             RefreshPackages();
+    VORTEX_API void             RefreshScripts();
 
 
     VORTEX_API void             LogInfo(std::string scope, std::string message);
@@ -242,6 +244,7 @@ namespace VortexMaker
     VORTEX_API void             CreateHost(std::string name, std::string author);
     VORTEX_API void             CreateGpos(std::string name, std::string author);
     VORTEX_API void             CreateProject(std::string name, std::string path);
+    VORTEX_API void             CreateScript(std::string name, std::string author);
 
     VORTEX_API void             DeleteHost(std::shared_ptr<VxHost> host);
     VORTEX_API void             DeleteGpos(std::shared_ptr<VxGPOSystem> gpos);
@@ -264,6 +267,7 @@ namespace VortexMaker
 
     VORTEX_API bool RegisterPackage(std::string filepath, std::shared_ptr<VxPackage> newPackage, nlohmann::json toolchainData);
     VORTEX_API bool RegisterDistHost(VxDistHost host, nlohmann::json packageData);
+    VORTEX_API bool RegisterScript(std::shared_ptr<VxScript> script, nlohmann::json packageData);
     VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
     VORTEX_API bool RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nlohmann::json toolchainData);
     VORTEX_API bool RegisterHost(std::shared_ptr<VxHost> host, nlohmann::json toolchainData);
@@ -681,6 +685,24 @@ struct PackageSave{
 
 };
 
+struct VxScriptSave{
+    char name[128] = "unknow";
+    char author[128] = "unknow";
+
+};
+
+struct VxScript{
+    std::string name = "unknow"; // Proper name of the script
+    std::string author = "unknow"; // Proper name of the script
+    std::string description = "unknow";  // Short description of the script
+    std::string configFilePath = "unknow";  // Short description of the script
+
+
+    std::string path = "unknow"; // Path to script
+
+    void Refresh();
+    void PushSave(std::shared_ptr<VxScriptSave> save);
+};
 
 struct VxPackage{
     std::string name = "unknow"; // Proper name of the package
@@ -1410,28 +1432,6 @@ struct VxGPOSystem{
 
 
 
-struct VxDistToolchain{
-    // Vortex project informations
-    std::string name;
-    std::string author;
-    std::string target;
-    std::string description;
-    std::string type;
-    std::string state;
-    std::string path;
-    std::string vendor;
-    std::string platform;
-
-
-    std::string CC;
-    std::string CXX;
-    std::string AR;
-    std::string AS;
-    std::string RANLIB;
-    std::string LD;
-    std::string STRIP;
-    
-};
 
 struct VxDistHost{
     // Vortex project informations
@@ -1464,6 +1464,40 @@ struct VxToolchainSnapshot{
     std::string path;
 
     VxToolchainCurrentSystem snapshotSystem; // to import from 
+};
+
+
+struct VxDistToolchainSave{
+    char CC_value[128];
+    char CXX_value[128];
+    char AR_value[128];
+    char AS_value[128];
+    char RANLIB_value[128];
+    char LD_value[128];
+    char STRIP_value[128];
+};
+
+struct VxDistToolchain{
+    // Vortex project informations
+    std::string name;
+    std::string author;
+    std::string target;
+    std::string description;
+    std::string type;
+    std::string state;
+    std::string path;
+    std::string vendor;
+    std::string platform;
+
+
+    std::string CC;
+    std::string CXX;
+    std::string AR;
+    std::string AS;
+    std::string RANLIB;
+    std::string LD;
+    std::string STRIP;
+    
 };
 
 
@@ -1580,16 +1614,22 @@ std::pair<std::string, int> exec_cmd(const std::string& cmd);
 std::pair<std::string, int> exec_cmd_quote(const std::string& cmd);
 
     void PushSave(std::shared_ptr<ToolchainSave> save);
+    void PushDistSave(std::shared_ptr<VxDistToolchainSave> save);
+
+    VxDistToolchain distToolchain;
 
 void CreateTasklist(std::string name, std::shared_ptr<ToolchainSave> save);
     void DeleteTasklist(std::string name);
 
 void RegisterTasklist(const std::string label);
 
+    void PushDistSave();
+
 
     // TO CLEAN 
     void FindTasklists();
     void Refresh();
+    void RefreshDistConfig();
     void RefreshCurrentWorkingToolchain();
     void ExecuteTask(Task task, hArgs args);
     std::string GetTriplet(std::string triplet_type);

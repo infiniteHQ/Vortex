@@ -4,6 +4,9 @@ project(vortex)
 
 add_executable(vortex
 
+    # Scripts sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/scripts/src/script_utils.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_prebuild.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_build.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/core/toolchains/toolchain_postbuild.cpp
@@ -38,6 +41,7 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disttoolchain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_host.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_toolchain.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_script.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_package.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_gpos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/projects/register_disthost.cpp

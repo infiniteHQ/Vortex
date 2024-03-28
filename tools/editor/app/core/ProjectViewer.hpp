@@ -82,6 +82,21 @@ struct MyTreeNode
 				ImGui::SameLine();
 			}
 
+			if(node->Type == "Script"){
+				std::string gposName = "Open###" + node->Name + "Open";
+				if(ImGui::Button(gposName.c_str())){
+					for(auto script: ctx->IO.scripts){
+						if(node->Name == script->name){
+							std::shared_ptr<ScriptInstance> instance = std::make_shared<ScriptInstance>(ctx, script);
+							factory->SpawnInstance(instance);	
+						}
+					}
+
+				}
+				ImGui::SameLine();
+			}
+			
+
 			if(node->Type == "Toolchain"){
 				std::string toolchainName = "Open###" + node->Name + "Open";
 				if(ImGui::Button(toolchainName.c_str())){
@@ -188,6 +203,19 @@ public:
 		int package_size = Packages.size();
 
 
+		std::vector<MyTreeNode> Scripts = {};
+		for(auto script : ctx->IO.scripts){
+			MyTreeNode nodePackage;
+			nodePackage.Name = (char*)script->name.c_str();
+			nodePackage.Size = 1024;
+			nodePackage.Type = "Script";
+			nodePackage.ChildCount = -1;
+			nodePackage.ChildIdx = -1;
+			Scripts.push_back(nodePackage);
+		}
+		int scripts_size = Scripts.size();
+
+
 		std::vector<MyTreeNode> nodes = {
 			{this->ctx->name.c_str(), "Project", 	-1, 1, 2}, // 0
 			{"Components", "...", 					-1, 3, 3},				// 1
@@ -197,8 +225,8 @@ public:
 			{"Toolchains", "...", 					-1, 9 + hosts_size, 					toolchains_size},				// 1
 			{"GPOS", "...", 						-1, 9 + toolchains_size + hosts_size,  	gpos_size},				// 1
 
-			{"Packages", "...", 					-1, 9 + toolchains_size + hosts_size + gpos_size, package_size},						// 2
-			{"Scripts", "..." 						-1, 1, 1},						// 2
+			{"Packages", "...", 					-1, 9 + toolchains_size + hosts_size + gpos_size, 					package_size},						// 2
+			{"Scripts", "...", 						-1, 9 + package_size + toolchains_size + hosts_size + gpos_size, 	scripts_size},						// 2
 			{"Patchs", "..." 						-1, 1, 1},						// 2
 
 			// Host 1
@@ -222,6 +250,10 @@ public:
 
 		for(auto package : Packages){
 			nodes.push_back({package.Name, package.Type, package.Size, package.ChildIdx, package.ChildCount});
+		}
+
+		for(auto script : Scripts){
+			nodes.push_back({script.Name, script.Type, script.Size, script.ChildIdx, script.ChildCount});
 		}
 
 		this->nodeInfos = nodes;
