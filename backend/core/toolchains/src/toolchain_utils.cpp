@@ -17,6 +17,8 @@
 #include "../tasks/packages/T_P_CompilePackage.inl"
 #include "../tasks/packages/T_P_InstallPackage.inl"
 #include "../tasks/tasklists/T_TL_ExecuteTasklist.inl"
+#include "../tasks/testing/T_T_CheckCompiler.inl"
+#include "../tasks/utils/T_U_LoadToolchain.inl"
 
 
 
@@ -199,6 +201,17 @@ void VxToolchain::Init()
   // TODO: Take all tasks at root, and check if a task has toolchain type, if yes, include it.
 
   // Add tasks types
+  
+  {
+    std::shared_ptr<T_T_CheckCompiler> task = std::make_shared<T_T_CheckCompiler>();
+    task->tasktype = "T_T_CheckCompiler";
+    this->tasks.push_back(task);
+  }
+  {
+    std::shared_ptr<T_U_LoadToolchain> task = std::make_shared<T_U_LoadToolchain>();
+    task->tasktype = "T_U_LoadToolchain";
+    this->tasks.push_back(task);
+  }
   {
     std::shared_ptr<SetupDistEnvironment> task = std::make_shared<SetupDistEnvironment>();
     task->tasktype = "SetupDistEnvironment";

@@ -12,16 +12,16 @@
 
 struct Task;
 
-struct T_P_ConfigurePackage : public Task
+struct T_T_CheckCompiler : public Task
 {
   std::shared_ptr<Task> clone() const override
   {
-    return std::make_shared<T_P_ConfigurePackage>(*this);
+    return std::make_shared<T_T_CheckCompiler>(*this);
   }
 
   void init() override
   {
-    this->tasktype = "T_P_ConfigurePackage";
+    this->tasktype = "T_T_CheckCompiler";
 
     // Props used by task execution
     this->neededProps.push_back("toolchain");
@@ -31,10 +31,11 @@ struct T_P_ConfigurePackage : public Task
 
     // Checklist
 
-    this->addIdleCheck("load_dist_toolchain");
-    this->addIdleCheck("test_links");
-    this->addIdleCheck("test_ld");
-    this->addIdleCheck("test_compiler");
+    this->addIdleCheck("create_temp_env");
+    this->addIdleCheck("create_c_file");
+    this->addIdleCheck("populate_c_file");
+    this->addIdleCheck("compile_c_file");
+    this->addIdleCheck("test_output");
   };
 
   // Récupérer un ancien report
@@ -52,6 +53,86 @@ struct T_P_ConfigurePackage : public Task
 
     // Load dist toolchain (bash rc, etc...)
 
+    std::string tempPath = ctx->projectPath; 
+    tempPath += "/.vx/temp/" + toolchain->name;
+
+    {
+      std::string cmd = "mkdir " + tempPath;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("create_temp_env", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("create_temp_env", "failed", output, cmd);
+    }
+
+
+    {
+      std::string cmd = "touch " + tempPath + "/main.c";
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("create_c_file", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("create_c_file", "failed", output, cmd);
+    }
+
+    {
+      std::string cmd = "sudo echo \"int main(){return42;}\" >> " + tempPath + "/main.c";
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("populate_c_file", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("populate_c_file", "failed", output, cmd);
+    }
+
+    {
+      std::string cmd = "sudo echo \"#!/bin/sh \n \\$CC main.c -o " + tempPath + "/main \n echo \"Le compilateur utilisé est : $CC\"\" >> " + tempPath + "/main.sh";
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("populate_c_file", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("populate_c_file", "failed", output, cmd);
+    }
+
+    {
+      std::string cmd = "sudo chown -R vortex:vortex " + tempPath;
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("populate_c_file", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("populate_c_file", "failed", output, cmd);
+    }
+
+    // CC est egal a " " dans le script généré ! Fix ça, puis finir avec d'autres tests, build et test auto, puis passer a la suite.
+
+
+    {
+      std::string cmd = "sudo -u vortex -i sh -c 'cd " + tempPath + " && bash main.sh";
+      auto [output, result] = toolchain->exec_cmd_quote(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("compile_c_file", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("compile_c_file", "failed", output, cmd);
+    }
+
+
+    {
+      std::string cmd = "sudo ./" + tempPath + "/main";
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 42)
+        this->addCheckVerdict("test_output", "success", output, cmd);
+      if (result != 42)
+        this->addCheckVerdict("test_output", "failed", output, cmd);
+    }
+
+
+      std::string cmd = "sudo echo \"CC=" + toolchain->distToolchain.CC + "\" >> /home/vortex/.bashrc";
 
 
     this->addCheckVerdict("exec_post_configuration", "success", "none", "Seems to be ok.");
