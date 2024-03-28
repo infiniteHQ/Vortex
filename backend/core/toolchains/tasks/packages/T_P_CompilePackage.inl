@@ -1,27 +1,25 @@
-// Toolchain task API
-// Task : buildPackage
-// Date : 03/11/2024
-// Author : Diego Moreno
-
-/*
-    Description :
-*/
-
 #include "../../../../vortex.h"
 #include "../../../../vortex_internals.h"
 
 struct Task;
 
-struct CompileDistPackage : public Task
+/**
+ * @brief This task is used to compile a package with make or with a custom method.
+ * Corresponding asset : "Package" with conventionnal identifier "P_".
+ * 
+ * @author Diego E. Moreno <d@infinite.si>
+ * @name T_P_CompilePackage
+*/
+struct T_P_CompilePackage : public Task
 {
   std::shared_ptr<Task> clone() const override
   {
-    return std::make_shared<CompileDistPackage>(*this);
+    return std::make_shared<T_P_CompilePackage>(*this);
   }
 
   void init() override
   {
-    this->tasktype = "CompileDistPackage";
+    this->tasktype = "T_P_CompilePackage";
 
     // Props used by task execution
     this->neededProps.push_back("package");
@@ -30,10 +28,10 @@ struct CompileDistPackage : public Task
 
     this->neededVariables.push_back("dist_path:package_uncompressed:[package_name]");
 
-    this->addIdleCheck("create_build_folder");
-    this->addIdleCheck("configure_dist_package");
+    this->addIdleCheck("find_package");
+    this->addIdleCheck("exec_pre_compilation");
     this->addIdleCheck("compile_dist_package");
-    this->addIdleCheck("install_dist_package");
+    this->addIdleCheck("exec_post_compilation");
 
 
   };
@@ -53,6 +51,10 @@ struct CompileDistPackage : public Task
     std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
     this->depsChecksSpec.push_back({"package",package->name});
 
+    if(package != nullptr){
+      this->addCheckVerdict("find_package", "success", "none", "Seems to be ok.");
+    }
+
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
     this->depsChecksSpec.push_back({"toolchain",toolchain->name});
 
@@ -70,6 +72,7 @@ struct CompileDistPackage : public Task
         {"${DistPackageFolder}", working_path}};
 
     package->ExecuteActions("pre_compilation", package);
+    this->addCheckVerdict("exec_pre_compilation", "success", "none", "Seems to be ok.");
 
     {
     std::string compilation;
@@ -130,6 +133,8 @@ struct CompileDistPackage : public Task
     }
 
     package->ExecuteActions("post_compilation", package);
+    this->addCheckVerdict("exec_post_compilation", "success", "none", "Seems to be ok.");
+
     this->finish("finish", nullptr);
   }
 

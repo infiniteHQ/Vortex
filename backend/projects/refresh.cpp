@@ -649,6 +649,25 @@ void VxGPOSystem::Refresh()
   // this->Init();
 }
 
+
+
+/*
+TODO apres-midi : 
+
+- Asset script, execution, variables export, etc...
+- Full build overview (executing TL_Main, get working_host infos, & test)
+- Testing tools (toolchain executable test, lib checks, functions (strip, ld, etc...))
+- After : Make a monolithic P_GCC package
+- After After : Host, GPOS/Embedded.
+
+*/
+
+
+
+
+
+
+
 VORTEX_API void VortexMaker::RefreshToolchains()
 {
   VxContext &ctx = *CVortexMaker;

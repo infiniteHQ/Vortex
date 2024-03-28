@@ -13,12 +13,11 @@
 // Packages Building in toolchjain
 #include "../tasks/t_toolchain_CreateBuildEnv.inl"
 #include "../tasks/t_toolchain_BuildDistPackage.inl"
-#include "../tasks/t_toolchain_ConfigureDistPackage.inl"
-#include "../tasks/t_toolchain_CompileDistPackage.inl"
-#include "../tasks/t_toolchain_InstallDistPackage.inl"
+#include "../tasks/packages/T_P_ConfigurePackage.inl"
+#include "../tasks/packages/T_P_CompilePackage.inl"
+#include "../tasks/packages/T_P_InstallPackage.inl"
+#include "../tasks/tasklists/T_TL_ExecuteTasklist.inl"
 
-
-#include "../tasks/t_toolchain_ExecuteTaskList.inl"
 
 
 void VxToolchainCurrentSystem::CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
@@ -209,8 +208,8 @@ void VxToolchain::Init()
     this->tasks.push_back(task);
   }
   {
-    std::shared_ptr<ExecuteTaskList> task = std::make_shared<ExecuteTaskList>();
-    task->tasktype = "ExecuteTaskList";
+    std::shared_ptr<T_TL_ExecuteTasklist> task = std::make_shared<T_TL_ExecuteTasklist>();
+    task->tasktype = "T_TL_ExecuteTasklist";
     this->tasks.push_back(task);
   }
   {
@@ -224,18 +223,18 @@ void VxToolchain::Init()
     this->tasks.push_back(task);
   }
   {
-    std::shared_ptr<InstallDistPackage> task = std::make_shared<InstallDistPackage>();
-    task->tasktype = "InstallDistPackage";
+    std::shared_ptr<T_P_InstallPackage> task = std::make_shared<T_P_InstallPackage>();
+    task->tasktype = "T_P_InstallPackage";
     this->tasks.push_back(task);
   }
   {
-    std::shared_ptr<CompileDistPackage> task = std::make_shared<CompileDistPackage>();
-    task->tasktype = "CompileDistPackage";
+    std::shared_ptr<T_P_CompilePackage> task = std::make_shared<T_P_CompilePackage>();
+    task->tasktype = "T_P_CompilePackage";
     this->tasks.push_back(task);
   }
   {
-    std::shared_ptr<ConfigureDistPackage> task = std::make_shared<ConfigureDistPackage>();
-    task->tasktype = "ConfigureDistPackage";
+    std::shared_ptr<T_P_ConfigurePackage> task = std::make_shared<T_P_ConfigurePackage>();
+    task->tasktype = "T_P_ConfigurePackage";
     this->tasks.push_back(task);
   }
   {

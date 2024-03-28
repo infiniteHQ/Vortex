@@ -96,6 +96,7 @@ struct UncompressDistPackage : public Task
 
         toolchain->currentLoadedSystem.put_varable(this, "dist_path:package_uncompressed:"+package->name+"", "SetupDistEnvironment", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package:"+package->name+"")) + "/" + foldername);
     
+    this->addCheckVerdict("set_final_path", "success", "none", "Seems to be ok.");
 
 
     this->finish("finish", nullptr);

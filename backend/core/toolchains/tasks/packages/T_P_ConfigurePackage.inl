@@ -12,28 +12,30 @@
 
 struct Task;
 
-struct InstallDistPackage : public Task
+struct T_P_ConfigurePackage : public Task
 {
   std::shared_ptr<Task> clone() const override
   {
-    return std::make_shared<InstallDistPackage>(*this);
+    return std::make_shared<T_P_ConfigurePackage>(*this);
   }
 
   void init() override
   {
-    this->tasktype = "InstallDistPackage";
-    
+    this->tasktype = "T_P_ConfigurePackage";
 
     // Props used by task execution
     this->neededProps.push_back("package");
     this->neededProps.push_back("toolchain");
 
+    // Variables needed by task execution
+    //this->neededVariables.push_back("dist_path:package:\[package_name\]");
 
+    // Checklist
 
-    this->addIdleCheck("create_build_folder");
+    this->addIdleCheck("find_package");
+    this->addIdleCheck("exec_pre_configuration");
     this->addIdleCheck("configure_dist_package");
-    this->addIdleCheck("compile_dist_package");
-    this->addIdleCheck("install_dist_package");
+    this->addIdleCheck("exec_post_configuration");
   };
 
   // Récupérer un ancien report
@@ -49,15 +51,28 @@ struct InstallDistPackage : public Task
     std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
     this->depsChecksSpec.push_back({"package",package->name});
 
+    if(package != nullptr){
+      this->addCheckVerdict("find_package", "success", "none", "Seems to be ok.");
+    }
+
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
     this->depsChecksSpec.push_back({"toolchain",toolchain->name});
 
-
     std::string working_path = std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package_uncompressed:"+package->name + ""));
 
+
+    // API to check if a task is executed and the result.
+    if(!toolchain->TaskSuccedded("CreateTemporaryUser")){
+      std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+      this->addCheckVerdict("createFolders", "failed", "To run \"SetupDistEnvironment\" you need to run \"CreateTemporaryUser\" first", "none");
+      this->addCheckVerdict("giveFoldersToUser", "failed", "To run \"SetupDistEnvironment\" you need to run \"CreateTemporaryUser\" first", "none");
+      this->finish("failed", props);
+      return;
+    }
+
     std::unordered_map<std::string, std::string> replacements = {
-        {"${Target}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:target_triplet"))},
-        {"${Build}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:build_triplet"))},
+        {"${Target}",std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:target_triplet"))},
+        {"${Build}",std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:build_triplet"))},
         {"${Host}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "toolchain:host_triplet"))},
         {"${WorkingHost}", std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "directory:working_host"))},
         {"${Sysroot}", toolchain->sysrootPath},
@@ -68,24 +83,24 @@ struct InstallDistPackage : public Task
         Faire pleins de taches singulières (config, give etc, et faire des plus grosses taches qui controllent et qui call les petites taches)
     
     */
+    package->distPath = working_path;
+    package->ExecuteActions("pre_configuration", package);
+    this->addCheckVerdict("exec_pre_configuration", "success", "none", "Seems to be ok.");
 
 
-
-    package->ExecuteActions("pre_installation", package);
-
-     {
-    std::string installation;
-    if (package->compilation.exclusiveCustomInstallationProcess == "not specified")
+    {
+    std::string configuration;
+    if (package->compilation.exclusiveCustomConfigProcess == "not specified")
     {
 
       // Configure
-      if (package->compilation.exclusiveCustomInstallationProcess == "not specified")
+      if (package->compilation.exclusiveCustomConfigProcess == "not specified")
       {
         std::string cmd = "";
 
         cmd += "sudo -u vortex -i sh -c 'cd " + working_path + +"/build && ";
 
-        for (auto suffix : package->compilation.installationPrefixes)
+        for (auto suffix : package->compilation.configurationPrefixes)
         {
           if (suffix.first == "all" || suffix.first == toolchain->target_arch)
           {
@@ -93,9 +108,9 @@ struct InstallDistPackage : public Task
           }
         }
 
-      cmd += " make install ";
+        cmd += "../configure ";
 
-        for (auto parameter : package->compilation.installationSuffixes)
+        for (auto parameter : package->compilation.configurationSuffixes)
         {
           if (parameter.first == "all" || parameter.first == toolchain->target_arch)
           {
@@ -103,28 +118,32 @@ struct InstallDistPackage : public Task
           }
         }
 
-        installation = VortexMaker::replacePlaceholders(cmd, replacements);
+        configuration = VortexMaker::replacePlaceholders(cmd, replacements);
       }
       else
       {
-        installation += "sudo -u vortex -i sh -c 'cd " + working_path + "/build && ";
-        installation += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomInstallationProcess, replacements);
+        std::cout << configuration << std::endl;
+        configuration += "sudo -u vortex -i sh -c 'cd " + working_path + "/build && ";
+        configuration += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomConfigProcess, replacements);
       }
     }
     else
       {
-        installation += "sudo -u vortex -i sh -c 'cd " + working_path + "/build && ";
-        installation += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomInstallationProcess, replacements);
+        configuration += "sudo -u vortex -i sh -c 'cd " + working_path + "/build && ";
+        configuration += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomConfigProcess, replacements);
       }
 
 
-      auto [output, result] = toolchain->exec_cmd_quote(installation.c_str()); // faire un empaquetage complet
 
-      if (result == 0)this->addCheckVerdict("compile_dist_package", "success", output, installation);
-      if (result != 0)this->addCheckVerdict("compile_dist_package", "failed", output, installation);
+      auto [output, result] = toolchain->exec_cmd_quote(configuration.c_str()); // faire un empaquetage complet
+
+      if (result == 0)this->addCheckVerdict("configure_dist_package", "success", output, configuration);
+      if (result != 0)this->addCheckVerdict("configure_dist_package", "failed", output, configuration);
     }
 
-    package->ExecuteActions("post_installation", package);
+
+    package->ExecuteActions("post_configuration", package);
+    this->addCheckVerdict("exec_post_configuration", "success", "none", "Seems to be ok.");
 
     this->finish("finish", nullptr);
   }

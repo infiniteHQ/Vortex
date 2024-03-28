@@ -200,7 +200,7 @@ std::string ReportInstance::render()
                             {
                             }
             ImGui::Separator();
-            if (ImGui::CollapsingHeader("Checks report"))
+            if (ImGui::CollapsingHeader("Checks report", &errorIcon, NULL))
             {
                 ImGuiID id = ImGui::GetID(label.c_str());
                 ImGui::BeginChildFrame(id, ImVec2(0, 450), true);
