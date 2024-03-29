@@ -78,8 +78,9 @@ struct T_T_CheckCompiler : public Task
     }
     
     {
-      std::string cmd = "sudo echo \"int main(){return 42;}\" >> " + tempPath + "/main.c";
+      std::string cmd = "sudo echo \"int main(){return 0;}\" >> " + tempPath + "/main.c";
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
 
       if (result == 0)
         this->addCheckVerdict("populate_c_file", "success", output, cmd);
@@ -122,12 +123,13 @@ struct T_T_CheckCompiler : public Task
 
 
     {
-      std::string cmd = "sudo -u vortex -i sh -c 'cd " + tempPath + " && ./main";
-      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+      std::string cmd = "sudo -u vortex -i sh -c ' "+tempPath+"/main";
+      auto [output, result] = toolchain->exec_cmd_quote(cmd.c_str());
 
-      if (result == 42)
+      std::cout << "Result: " << result << std::endl;
+      if (result == 0)
         this->addCheckVerdict("test_output", "success", output, cmd);
-      if (result != 42)
+      if (result != 0)
         this->addCheckVerdict("test_output", "failed", output, cmd);
     }
 
