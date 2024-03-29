@@ -55,6 +55,9 @@ struct T_P_InstallPackage : public Task
     this->depsChecksSpec.push_back({"toolchain",toolchain->name});
 
 
+    std::shared_ptr<Task> t = std::make_shared<Task>(*this);
+    package->allTasks.push_back(t);
+    package->latestTask = t;
     std::string working_path = std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package_uncompressed:"+package->name + ""));
 
     std::unordered_map<std::string, std::string> replacements = {

@@ -1,6 +1,6 @@
 #include "../ToolchainInstance.h"
-#include "../../../../../backend/Platform/GUI/editor/UI/Spinner.h"
 #include <array>
+#include "../../backend/Platform/GUI/editor/UI/Spinner.h"
 
 static std::string formatElapsedTime(double elapsedSeconds)
 {
@@ -27,9 +27,9 @@ float cookProgress(std::shared_ptr<Task> task){
     int totalCount = completedCount + task->unknowCounter;
 
     if (totalCount == 0) {
-        return 0.0f; // Si aucune tâche n'est présente, le progrès est de 0%
+        return 0.0f; 
     } else {
-        return static_cast<float>(completedCount) / totalCount; // Pourcentage de tâches accomplies
+        return static_cast<float>(completedCount) / totalCount;
     }
 }
 
@@ -134,6 +134,11 @@ void ToolchainInstance::UI_CurrentToolchainPreview()
                     if (ImGui::ImageButtonWithText(addIcon, "Create", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                     {
                         this->toolchain->CreateCurrentToolchainSystem();
+                    }
+                    if (ImGui::ImageButtonWithText(addIcon, "Import", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+                    {
+                        // TODO :Ask the root of third party toolchain, scan it to find target options & params and init it. (Copy FS, populate working_host...)
+                        //this->toolchain->CreateCurrentToolchainSystem();
                     }
                 }
                 else

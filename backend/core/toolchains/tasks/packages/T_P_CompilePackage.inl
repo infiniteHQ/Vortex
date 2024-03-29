@@ -51,6 +51,10 @@ struct T_P_CompilePackage : public Task
     std::shared_ptr<VxPackage> package = this->props->get<std::shared_ptr<VxPackage>>("package", nullptr);
     this->depsChecksSpec.push_back({"package",package->name});
 
+    std::shared_ptr<Task> t = std::make_shared<Task>(*this);
+    package->allTasks.push_back(t);
+    package->latestTask = t;
+
     if(package != nullptr){
       this->addCheckVerdict("find_package", "success", "none", "Seems to be ok.");
     }

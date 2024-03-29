@@ -364,6 +364,7 @@ void ToolchainInstance::UI_VolatileTasks()
                                     std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
                                     this->toolchain->taskProcessor->tasksToProcess.push_back(selectedTask);
                                 }
+                                
 
                                 this->toolchain->currentLoadedSystem.executedTasks.push_back(selectedTask);
                                 // this->toolchain->packages[row]->latestTask = _task;

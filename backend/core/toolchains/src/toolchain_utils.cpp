@@ -92,6 +92,7 @@ void VxToolchain::CreateCurrentToolchainSystem()
   // Create working_host.config into WorkingPath
 
   VxToolchainCurrentSystem newCurrentSystem;
+  newCurrentSystem.parent = std::make_shared<VxToolchain>(*this);
   nlohmann::json working_host_config = newCurrentSystem.Extract();
 
   std::ofstream outputFile(this->workingPath + "/working_host.config");

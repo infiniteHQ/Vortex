@@ -2,6 +2,9 @@
 #include "../../../../../vendor/imgui/imgui.h"
 #include "../../../../../vendor/imgui/imgui_internal.h"
 
+#ifndef Spinner_H
+#define Spinner_H
+
 namespace ImGui {
     
     bool BufferingBar(const char* label, float value,  const ImVec2& size_arg, const ImU32& bg_col, const ImU32& fg_col) {
@@ -87,3 +90,4 @@ namespace ImGui {
     }
     
 }
+#endif

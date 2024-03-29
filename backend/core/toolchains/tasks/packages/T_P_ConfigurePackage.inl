@@ -60,6 +60,9 @@ struct T_P_ConfigurePackage : public Task
 
     std::string working_path = std::get<2>(toolchain->currentLoadedSystem.get_varable(this, "dist_path:package_uncompressed:"+package->name + ""));
 
+    std::shared_ptr<Task> t = std::make_shared<Task>(*this);
+    package->allTasks.push_back(t);
+    package->latestTask = t;
 
     // API to check if a task is executed and the result.
     if(!toolchain->TaskSuccedded("CreateTemporaryUser")){

@@ -35,6 +35,7 @@ struct T_T_CheckCompiler : public Task
     this->addIdleCheck("create_c_file");
     this->addIdleCheck("populate_c_file");
     this->addIdleCheck("compile_c_file");
+    this->addIdleCheck("give_c_file");
     this->addIdleCheck("test_output");
   };
 
@@ -50,6 +51,8 @@ struct T_T_CheckCompiler : public Task
 
     std::shared_ptr<VxToolchain> toolchain = this->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr);
     this->depsChecksSpec.push_back({"toolchain",toolchain->name});
+
+
 
     // Load dist toolchain (bash rc, etc...)
 
@@ -93,9 +96,9 @@ struct T_T_CheckCompiler : public Task
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
       if (result == 0)
-        this->addCheckVerdict("populate_c_file", "success", output, cmd);
+        this->addCheckVerdict("compile_c_file", "success", output, cmd);
       if (result != 0)
-        this->addCheckVerdict("populate_c_file", "failed", output, cmd);
+        this->addCheckVerdict("compile_c_file", "failed", output, cmd);
     }
 
     {
@@ -116,9 +119,9 @@ struct T_T_CheckCompiler : public Task
       auto [output, result] = toolchain->exec_cmd_quote(cmd.c_str());
 
       if (result == 0)
-        this->addCheckVerdict("compile_c_file", "success", output, cmd);
+        this->addCheckVerdict("give_c_file", "success", output, cmd);
       if (result != 0)
-        this->addCheckVerdict("compile_c_file", "failed", output, cmd);
+        this->addCheckVerdict("give_c_file", "failed", output, cmd);
     }
 
 

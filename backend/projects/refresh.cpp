@@ -155,6 +155,7 @@ void VxToolchain::RefreshCurrentWorkingToolchain()
   }
 
   nlohmann::json data = VortexMaker::DumpJSON(this->workingPath + "/working_host.config");
+  this->currentLoadedSystem.parent = std::make_shared<VxToolchain>(*this);
   this->currentLoadedSystem.Populate(data);
   this->haveCurrentSys = true;
 }
@@ -334,6 +335,29 @@ void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
     this->executedTasks.push_back(task);
   }
 
+    for (auto packageReport : jsonData["packageList"])
+    {
+      for (auto package : this->parent->packages)
+      {
+        if (package->name == packageReport["p_name"].get<std::string>())
+        {
+          for (auto task : this->executedTasks)
+          {
+            for (auto taskid : packageReport["p_tasklist"])
+            {
+              if (task->id == taskid.get<std::string>())
+              {
+                package->allTasks.push_back(task);
+              }
+              if (task->id == packageReport["p_latest_taskid"].get<std::string>())
+              {
+                package->latestTask = task;
+              }
+            }
+          }
+        }
+      }
+    }
   // Get filesystem informations
 
   // Get list of all render assets (actions, scirpts, skeletons, etc)
@@ -402,10 +426,34 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
 {
   VxContext &ctx = *CVortexMaker;
   nlohmann::json jsonData;
+
   jsonData["size"] = this->size;
   jsonData["taskList"] = nlohmann::json::array();
+  jsonData["packageList"] = nlohmann::json::array();
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
+      std::cout << "Package : " << std::endl;
+
+    for (auto package : this->parent->packages)
+    {
+      std::cout << "Package : " << package->name << std::endl;
+      nlohmann::json report;
+      report["p_name"] = package->name;
+      std::cout << "Package : " << package->name << std::endl;
+      report["p_latest_taskid"] = package->latestTask->id;
+      std::cout << "Package : " << package->name << std::endl;
+      report["p_tasklist"] = nlohmann::json::array();
+      std::cout << "Package : " << package->name << std::endl;
+      for (auto task : package->allTasks)
+      {
+      std::cout << "Package : " << package->name << std::endl;
+        report["p_tasklist"].push_back(task->id);
+      }
+      std::cout << "Package : " << package->name << std::endl;
+      jsonData["packageList"].push_back(report);
+    }
+
+      std::cout << "00 : " << std::endl;
   // Fix : All tasks features and after : make all basic task of toolchain
   for (auto task : this->executedTasks)
   {
@@ -507,8 +555,8 @@ nlohmann::json VxHostCurrentSystem::Extract()
 // TODO : Split to little refresh functions, create a RefreshAll function.
 // TODO : This need to go in toolchains core folder
 
-
-void VxToolchain::RefreshDistConfig(){
+void VxToolchain::RefreshDistConfig()
+{
 
   VxContext *ctx = VortexMaker::GetCurrentContext();
 
@@ -524,7 +572,6 @@ void VxToolchain::RefreshDistConfig(){
   this->distToolchain.LD = toolchainData["configs"]["LD"].get<std::string>();
   this->distToolchain.RANLIB = toolchainData["configs"]["RANLIB"].get<std::string>();
   this->distToolchain.STRIP = toolchainData["configs"]["STRIP"].get<std::string>();
-
 }
 
 void VxToolchain::Refresh()
@@ -561,8 +608,6 @@ void VxToolchain::Refresh()
 
   this->toolchain_type = toolchainData["configs"]["toolchain_type"].get<std::string>();
 
-
-
   this->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
 
   VortexMaker::LogInfo("Core", "Getting toolchain \"data\" informations from " + this->configFilePath);
@@ -590,7 +635,6 @@ void VxToolchain::Refresh()
   }
   VortexMaker::LogInfo("Core", "Finding tasklists asset of " + this->name);
   this->FindTasklists();
-
 
   VortexMaker::LogInfo("Core", "Refreshing toolchain " + this->name + " is finish !");
   // this->Init();
@@ -672,10 +716,8 @@ void VxGPOSystem::Refresh()
   // this->Init();
 }
 
-
-
 /*
-TODO apres-midi : 
+TODO apres-midi :
 
 - Asset script, execution, variables export, etc...
 - Full build overview (executing TL_Main, get working_host infos, & test)
@@ -684,12 +726,6 @@ TODO apres-midi :
 - After After : Host, GPOS/Embedded.
 
 */
-
-
-
-
-
-
 
 VORTEX_API void VortexMaker::RefreshToolchains()
 {

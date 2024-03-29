@@ -178,6 +178,7 @@ void ToolchainInstance::UI_TasksEditor()
                                                         _task->priority = task->priority;
                                                         _task->tasktype = task->tasktype;
                                                         _task->component = task->component;
+
                                                         // task = runtime_tasks->clone();
                                                         // task->init();
                                                         // task->props = std::make_shared<hArgs>();
@@ -250,6 +251,7 @@ void ToolchainInstance::UI_TasksEditor()
                                                         }
 
                                                         _props->add("env_props", task->env_props);
+                                                        
                                                         _task->props = _props;
                                                         selectedTasklist->list.push_back(_task);
                                                         std::cout << _task->tasktype << _task->props << std::endl;
@@ -333,7 +335,7 @@ void ToolchainInstance::UI_TasksEditor()
                                             std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
                                             this->toolchain->taskProcessor->tasksToProcess.push_back(task);
                                         }
-
+                                        this->toolchain->currentLoadedSystem.parent = this->toolchain;
                                         this->toolchain->currentLoadedSystem.Save(this->toolchain);
                                     }
                                     else

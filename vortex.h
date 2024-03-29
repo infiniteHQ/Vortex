@@ -1563,6 +1563,7 @@ struct VxToolchain{
     std::string localScriptsPath;
     std::string localPatchsPath;
 
+    std::vector<std::shared_ptr<Task>> allTasks;
     
 
         // -> Toolchain Sysroot Path
