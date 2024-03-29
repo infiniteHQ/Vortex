@@ -76,9 +76,9 @@ struct T_T_CheckCompiler : public Task
       if (result != 0)
         this->addCheckVerdict("create_c_file", "failed", output, cmd);
     }
-
+    
     {
-      std::string cmd = "sudo echo \"int main(){return42;}\" >> " + tempPath + "/main.c";
+      std::string cmd = "sudo echo \"int main(){return 42;}\" >> " + tempPath + "/main.c";
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
       if (result == 0)
@@ -88,7 +88,7 @@ struct T_T_CheckCompiler : public Task
     }
 
     {
-      std::string cmd = "sudo echo \"#!/bin/sh \n \\$CC main.c -o " + tempPath + "/main \n echo \"Le compilateur utilisé est : $CC\"\" >> " + tempPath + "/main.sh";
+      std::string cmd = "sudo echo \"#!/bin/sh \n \\$CC main.c -o main \n echo \"Le compilateur utilisé est : \\$CC\" \n cat ~/.bashrc \" >> " + tempPath + "/main.sh";
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
       if (result == 0)
@@ -122,7 +122,7 @@ struct T_T_CheckCompiler : public Task
 
 
     {
-      std::string cmd = "sudo ./" + tempPath + "/main";
+      std::string cmd = "sudo -u vortex -i sh -c 'cd " + tempPath + " && ./main";
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
       if (result == 42)
@@ -132,7 +132,7 @@ struct T_T_CheckCompiler : public Task
     }
 
 
-      std::string cmd = "sudo echo \"CC=" + toolchain->distToolchain.CC + "\" >> /home/vortex/.bashrc";
+
 
 
     this->addCheckVerdict("exec_post_configuration", "success", "none", "Seems to be ok.");

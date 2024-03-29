@@ -85,6 +85,19 @@ struct T_U_LoadToolchain : public Task
 
 
     {
+      std::string cmd = "sudo echo \"export CC='" + toolchain->distToolchain.CC + "'\" >> /home/vortex/.bash_profile";
+      cmd = VortexMaker::replacePlaceholders(cmd, replacements);
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("echo_bashrc_cc", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("echo_bashrc_cc", "failed", output, cmd);
+    }
+
+
+
+    {
       std::string cmd = "sudo echo \"CXX='" + toolchain->distToolchain.CXX + "'\" >> /home/vortex/.bashrc";
       cmd = VortexMaker::replacePlaceholders(cmd, replacements);
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
@@ -159,6 +172,48 @@ struct T_U_LoadToolchain : public Task
       if (result != 0)
         this->addCheckVerdict("echo_bashrc_ld", "failed", output, cmd);
     }
+
+    {
+      std::string cmd = "source /home/vortex/.bashrc";
+      cmd = VortexMaker::replacePlaceholders(cmd, replacements);
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("echo_bashrc_ld", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("echo_bashrc_ld", "failed", output, cmd);
+    }
+    {
+      std::string cmd = "source /home/vortex/.bash_profile";
+      cmd = VortexMaker::replacePlaceholders(cmd, replacements);
+      auto [output, result] = toolchain->exec_cmd(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("echo_bashrc_ld", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("echo_bashrc_ld", "failed", output, cmd);
+    }
+    {
+      std::string cmd = "sudo -u vortex -i sh -c 'source /home/vortex/.bash_profile";
+      cmd = VortexMaker::replacePlaceholders(cmd, replacements);
+      auto [output, result] = toolchain->exec_cmd_quote(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("echo_bashrc_cc", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("echo_bashrc_cc", "failed", output, cmd);
+    }
+    {
+      std::string cmd = "sudo -u vortex -i sh -c 'source /home/vortex/.bashrc";
+      cmd = VortexMaker::replacePlaceholders(cmd, replacements);
+      auto [output, result] = toolchain->exec_cmd_quote(cmd.c_str());
+
+      if (result == 0)
+        this->addCheckVerdict("echo_bashrc_cc", "success", output, cmd);
+      if (result != 0)
+        this->addCheckVerdict("echo_bashrc_cc", "failed", output, cmd);
+    }
+
 
     this->addCheckVerdict("finished", "success", "none", "none");
     this->finish("finish", nullptr);
