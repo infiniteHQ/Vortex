@@ -1166,7 +1166,18 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 		HandleMouseInputs();
 
 	ColorizeInternal();
-	Render();
+
+
+    ImGuiContext& g = *GImGui;
+    ImFontAtlas* atlas = g.IO.Fonts;
+    ImFont* font = atlas->Fonts[2];
+    ImFont* fontold = atlas->Fonts[1];
+    ImGui::GetIO().FontDefault = font;
+    ImGui::PushFont(font);
+	Render();    
+	ImGui::PopFont();
+
+    ImGui::GetIO().FontDefault = fontold;
 
 	if (mHandleKeyboardInputs)
 		ImGui::PopAllowKeyboardFocus();

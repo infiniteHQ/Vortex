@@ -31,6 +31,7 @@
 #include "ImGui/Roboto-Bold.embed"
 #include "ImGui/Roboto-Italic.embed"
 #include "ImGui/Hack-Regular.embed"
+#include "ImGui/Inconsolatas.embed"
 
 extern bool g_ApplicationRunning;
 
@@ -569,7 +570,13 @@ namespace Walnut
 		fontConfig.FontDataOwnedByAtlas = false;
 		ImFont *robotoFont = io.Fonts->AddFontFromMemoryTTF((void *)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
 		ImFont *hackFont = io.Fonts->AddFontFromMemoryTTF((void *)g_HackRegular, sizeof(g_HackRegular), 20.0f, &fontConfig);
+
+		ImFontConfig fontConfigExtra;
+		fontConfigExtra.GlyphExtraSpacing.x = 1.3f;
+		ImFont *inconsolatas = io.Fonts->AddFontFromMemoryTTF((void *)g_Inconsolatas, sizeof(g_Inconsolatas), 20.0f, &fontConfigExtra);
+
 		s_Fonts["Default"] = hackFont;
+		s_Fonts["Inconsolatas"] = inconsolatas;
 		s_Fonts["Bold"] = io.Fonts->AddFontFromMemoryTTF((void *)g_RobotoBold, sizeof(g_RobotoBold), 20.0f, &fontConfig);
 		s_Fonts["Italic"] = io.Fonts->AddFontFromMemoryTTF((void *)g_RobotoItalic, sizeof(g_RobotoItalic), 20.0f, &fontConfig);
 		s_Fonts["HackRegular"] = io.Fonts->AddFontFromMemoryTTF((void *)g_HackRegular, sizeof(g_HackRegular), 20.0f, &fontConfig);

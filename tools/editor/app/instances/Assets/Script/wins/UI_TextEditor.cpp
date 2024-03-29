@@ -8,11 +8,11 @@ namespace fs = std::filesystem;
 
 class NodeTree {
 public:
-    NodeTree(const std::filesystem::path& rootDirectory) 
+    NodeTree(const std::string& rootDirectory) 
         : m_RootDirectory(rootDirectory), m_CurrentDirectory(rootDirectory) {}
 
     void OnImGuiRender();
-    std::filesystem::path m_SelectedDirectory;
+    std::string m_SelectedDirectory;
 
 private:
     void RenderNode(const std::filesystem::path& nodePath);
@@ -32,8 +32,8 @@ void NodeTree::RenderNode(const std::filesystem::path& nodePath) {
             } else {
                 ImGui::Bullet();
                 if(ImGui::Selectable(entryName.c_str())){
-                    m_SelectedDirectory =  m_CurrentDirectory.c_str() + '/';
-                    m_SelectedDirectory += entryName;
+                    m_SelectedDirectory =  m_CurrentDirectory;
+                    m_SelectedDirectory += "/" + entryName;
                     std::cout << "Selected: " << m_SelectedDirectory << std::endl;
                 }
             }
@@ -75,30 +75,35 @@ void ScriptInstance::UI_TextEditor()
         if (ImGui::BeginMenuBar())
         {
 
-            if (ImGui::ImageButtonWithText(saveIcon, "Save", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+            if (ImGui::BeginMenu("File"))
             {
-                this->Save();
-            }
-            if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-            {
-                this->Refresh();
-            }
-
-            const char *items[] = {"Packages", "Scripts", "Patchs", "Automations"};
-            static int item_current = 0;
-            ImGui::Combo("Type", &item_current, items, IM_ARRAYSIZE(items));
-
-            ImGui::Separator();
-            if (ImGui::BeginMenu("Pannels"))
-            {
-                if (ImGui::MenuItem("Options Editor"))
+                if (ImGui::MenuItem("Save", "CTRL+S"))
                 {
                 }
-                if (ImGui::MenuItem("Contents Window"))
+                if (ImGui::MenuItem("Save As.."))
                 {
+                }
+                if (ImGui::MenuItem("Close"))
+                {
+                    this->show_UI_TextEditor = false;
                 }
                 ImGui::EndMenu();
             }
+            ImGui::Separator();
+            ImGui::Text("Opened editors :");
+
+            if (ImGui::ImageButtonWithText(editIcon, "MyScript.sh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+            {
+            }
+            if (ImGui::ImageButtonWithText(editIcon, "Tes.sh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+            {
+            }
+            if (ImGui::ImageButtonWithText(editIcon, "sdfs.sh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
+            {
+            }
+            
+
+
             ImGui::EndMenuBar();
         }
 
@@ -108,6 +113,13 @@ void ScriptInstance::UI_TextEditor()
 
         static std::string currentPath = this->script->path;
         static std::string old = "?";
+
+        static float f = 10.0f;
+
+        ImGui::InputInt("mTabSize", &this->editor->mTabSize);
+        ImGui::InputFloat("mLineSpacing", &this->editor->mLineSpacing);
+        ImGui::InputFloat("GlyphExtraSpacing", &f);
+
 
         if (ImGui::GetIO().MouseClicked[1])
         {
@@ -124,12 +136,13 @@ void ScriptInstance::UI_TextEditor()
             static NodeTree tree(currentPath);
             old = currentPath;
 
+
             if(tree.m_SelectedDirectory != "" && tree.m_SelectedDirectory != currentPath){
                 currentPath = tree.m_SelectedDirectory;
+            this->editor->SwitchToFile(currentPath);
+
             }
 
-
-            this->editor->SwitchToFile(currentPath);
 
             tree.OnImGuiRender();
             

@@ -287,6 +287,8 @@ public:
 	static const Palette& GetDarkPalette();
 	static const Palette& GetLightPalette();
 	static const Palette& GetRetroBluePalette();
+	float mLineSpacing;
+	int mTabSize;
 
 private:
 	typedef std::vector<std::pair<std::regex, PaletteIndex>> RegexList;
@@ -370,13 +372,12 @@ private:
 	void HandleMouseInputs();
 	void Render();
 
-	float mLineSpacing;
+
 	Lines mLines;
 	EditorState mState;
 	UndoBuffer mUndoBuffer;
 	int mUndoIndex;
 
-	int mTabSize;
 	bool mOverwrite;
 	bool mReadOnly;
 	bool mWithinRender;

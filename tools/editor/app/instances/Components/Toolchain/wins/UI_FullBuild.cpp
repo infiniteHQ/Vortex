@@ -31,16 +31,6 @@ static void coloredText(std::string name, ImVec4 color)
 }
 
 
-float cookProgress(std::shared_ptr<Task> task){
-    int completedCount = task->successCounter + task->failCounter + task->warningCounter;
-    int totalCount = completedCount + task->unknowCounter;
-
-    if (totalCount == 0) {
-        return 0.0f; 
-    } else {
-        return static_cast<float>(completedCount) / totalCount;
-    }
-}
 
 
 
