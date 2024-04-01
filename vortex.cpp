@@ -327,6 +327,7 @@ void hString::append(const char *str, const char *str_end)
 
       j["data"]["toolchains"] = "./.vx/data/toolchains/";
       j["data"]["hosts"] = "./.vx/data/hosts/";
+      j["data"]["scripts"] = "./.vx/data/scripts/";
       j["data"]["gpos"] = "./.vx/data/gpos/";
       j["data"]["packages"] = "./.vx/data/packages/";
 
@@ -359,6 +360,10 @@ void hString::append(const char *str, const char *str_end)
   }
   {
     std::string cmd = "mkdir "  + projectPath + "/.vx/data/gpos";
+    system(cmd.c_str());
+  }
+  {
+    std::string cmd = "mkdir "  + projectPath + "/.vx/data/scripts";
     system(cmd.c_str());
   }
   {
