@@ -87,7 +87,7 @@ struct MyTreeNode
 				if(ImGui::Button(gposName.c_str())){
 					for(auto script: ctx->IO.scripts){
 						if(node->Name == script->name){
-							std::shared_ptr<ScriptInstance> instance = std::make_shared<ScriptInstance>(ctx, script);
+							std::shared_ptr<ScriptInstance> instance = std::make_shared<ScriptInstance>(ctx, script, factory);
 							factory->SpawnInstance(instance);	
 						}
 					}

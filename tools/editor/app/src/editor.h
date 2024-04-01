@@ -27,7 +27,7 @@ static std::vector<std::shared_ptr<PackageInstance>> packageInstances;
 static std::vector<std::shared_ptr<TasklistInstance>> tasklistInstances;
 static std::vector<std::shared_ptr<GPOSInstance>> gposInstances;
 static std::vector<std::shared_ptr<ReportInstance>> reportInstances;
-static std::vector<std::shared_ptr<TextEditor>> texteditorInstances;
+static std::vector<std::shared_ptr<TextEditorInstance>> texteditorInstances;
 static std::vector<std::shared_ptr<ScriptInstance>> scriptInstances;
 
 
@@ -90,7 +90,7 @@ class Instance : public InstanceFactory {
     reportInstances.push_back(instance);
   };
 
-  void SpawnInstance(std::shared_ptr<TextEditor> instance) override {
+  void SpawnInstance(std::shared_ptr<TextEditorInstance> instance) override {
     instance->name = VortexMaker::gen_random(6);
     instance->opened = true;
     texteditorInstances.push_back(instance);
@@ -108,7 +108,7 @@ class Instance : public InstanceFactory {
     instance = nullptr;
   };
 
-  void UnspawnInstance(std::shared_ptr<TextEditor> instance) override {
+  void UnspawnInstance(std::shared_ptr<TextEditorInstance> instance) override {
     std::string instanceName = instance->name;
     instance = nullptr;
   };
@@ -208,6 +208,7 @@ public:
     win->setup(host);
     instanciedWindows.push_back(win);
   }
+
 
   VxContext *m_ctx;
 

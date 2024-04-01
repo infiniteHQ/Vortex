@@ -8,8 +8,9 @@ namespace fs = std::filesystem;
 
 class NodeTree {
 public:
-    NodeTree(const std::string& rootDirectory) 
-        : m_RootDirectory(rootDirectory), m_CurrentDirectory(rootDirectory) {}
+    NodeTree(const std::string& rootDirectory, std::shared_ptr<ScriptInstance> instance) 
+        :m_RootDirectory(rootDirectory), m_CurrentDirectory(rootDirectory), m_Instance(instance) 
+        {};
 
     void OnImGuiRender();
     std::string m_SelectedDirectory;
@@ -19,6 +20,8 @@ private:
     
     std::filesystem::path m_RootDirectory;
     std::filesystem::path m_CurrentDirectory;
+
+    std::shared_ptr<ScriptInstance> m_Instance;
 };
 
 void NodeTree::RenderNode(const std::filesystem::path& nodePath) {
@@ -35,6 +38,10 @@ void NodeTree::RenderNode(const std::filesystem::path& nodePath) {
                     m_SelectedDirectory =  m_CurrentDirectory;
                     m_SelectedDirectory += "/" + entryName;
                     std::cout << "Selected: " << m_SelectedDirectory << std::endl;
+
+				    std::shared_ptr<TextEditorInstance> instance = std::make_shared<TextEditorInstance>(this->m_Instance->m_ctx, m_SelectedDirectory);
+				    this->m_Instance->factory->SpawnInstance(instance);	
+
                 }
             }
         }
@@ -55,10 +62,10 @@ void NodeTree::OnImGuiRender() {
 }
 
 
-void ScriptInstance::UI_TextEditor()
+void ScriptInstance::UI_FileBrowser()
 {
 
-    if (this->show_UI_TextEditor)
+    if (this->show_UI_FileBrowser)
     {
 
         std::string label = this->name + " - Script Settings###" + this->name + " - Compilations Arguments";
@@ -70,7 +77,7 @@ void ScriptInstance::UI_TextEditor()
 
         static ImTextureID settingsIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        ImGui::Begin(label.c_str(), &editIcon, &this->show_UI_TextEditor, ImGuiWindowFlags_MenuBar);
+        ImGui::Begin(label.c_str(), &editIcon, &this->show_UI_FileBrowser, ImGuiWindowFlags_MenuBar);
 
         if (ImGui::BeginMenuBar())
         {
@@ -85,7 +92,7 @@ void ScriptInstance::UI_TextEditor()
                 }
                 if (ImGui::MenuItem("Close"))
                 {
-                    this->show_UI_TextEditor = false;
+                    this->show_UI_FileBrowser = false;
                 }
                 ImGui::EndMenu();
             }
@@ -107,60 +114,19 @@ void ScriptInstance::UI_TextEditor()
             ImGui::EndMenuBar();
         }
 
-        // Left
-        static int selected = 0;
-        static std::array<char[128], 4> labels = {"Project Settings", "Configuration", "Production", "Maintenance"};
-
         static std::string currentPath = this->script->path;
         static std::string old = "?";
 
-        static float f = 10.0f;
-
-        ImGui::InputInt("mTabSize", &this->editor->mTabSize);
-        ImGui::InputFloat("mLineSpacing", &this->editor->mLineSpacing);
-        ImGui::InputFloat("GlyphExtraSpacing", &f);
-
-
-        if (ImGui::GetIO().MouseClicked[1])
         {
-            ImGuiContext &g = *GImGui;
-            if (g.OpenPopupStack.size() > 0)
-                g.OpenPopupStack.pop_back();
-
-            ImGui::OpenPopup("test");
-        }
-
-        {
-            ImGui::BeginChild("left pane", ImVec2(500, 0), true);
-
-            static NodeTree tree(currentPath);
-            old = currentPath;
-
-
-            if(tree.m_SelectedDirectory != "" && tree.m_SelectedDirectory != currentPath){
-                currentPath = tree.m_SelectedDirectory;
-            this->editor->SwitchToFile(currentPath);
-
-            }
+            ImGui::BeginChild("left pane", ImVec2(0, 0), true);
+            static std::shared_ptr<ScriptInstance> instance = std::make_shared<ScriptInstance>(*this);
+            static NodeTree tree(currentPath, instance);
 
 
             tree.OnImGuiRender();
             
 
-
-
             ImGui::EndChild();
-        }
-
-        ImGui::SameLine();
-
-        // ImGui::BeginChild("Right pane", ImVec2(0, 0), true);
-        this->editor->Render("##Editor");
-        
-        // ImGui::EndChild();
-
-        // Right
-        {
         }
 
         ImGui::End();

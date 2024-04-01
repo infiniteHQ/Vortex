@@ -1,17 +1,17 @@
 #include "ScriptInstance.h"
-
 using namespace VortexMaker;
 
-ScriptInstance::ScriptInstance(VxContext *ctx, std::shared_ptr<VxScript> _script)
+
+ScriptInstance::ScriptInstance(VxContext *ctx, std::shared_ptr<VxScript> _script, InstanceFactory* _factory)
 {
     this->m_ctx = ctx;
     this->script = _script;
 
     this->Refresh();
+    this->factory = _factory;
 
-    this->editor = std::make_shared<TextEditor>(ctx, this->script->path + "/pool/main.sh");
-
-
+    
+    
     {
         uint32_t w, h;
         void *data = Walnut::Image::Decode(icons::i_save, icons::i_save_size, w, h);
@@ -90,6 +90,8 @@ std::string ScriptInstance::render()
     if (this->opened)
     {
 
+
+
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID packageIcon = this->m_PackageIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID scriptIcon = this->m_ScriptIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -103,6 +105,8 @@ std::string ScriptInstance::render()
             static ImGuiWindow *window = ImGui::GetCurrentWindow();
 
             this->menubar();
+
+
 
             ImGui::FindWindowByName(name.c_str())->textureID = &scriptIcon;
 
@@ -122,8 +126,7 @@ std::string ScriptInstance::render()
 
         // All Windows of this instances :
         this->UI_MainSettings();
-        this->UI_TextEditor();
-
+        this->UI_FileBrowser();
 
         return "rendering";
     }
@@ -155,9 +158,11 @@ void ScriptInstance::menubar()
 
         ImGui::Separator();
 
+
+
         if (ImGui::BeginMenu("Pannels"))
         {
-            if (ImGui::MenuItem("Text Editor", NULL, &this->show_UI_TextEditor))
+            if (ImGui::MenuItem("Browser", NULL, &this->show_UI_FileBrowser))
             {
             }
             if (ImGui::MenuItem("Main Settings", NULL, &this->show_UI_MainSettings))

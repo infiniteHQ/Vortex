@@ -6,6 +6,7 @@
 #define ICONS_
 
 struct icons {
+
     // Project Icons
     static const uint8_t i_gpos[];
     static const size_t i_gpos_size;

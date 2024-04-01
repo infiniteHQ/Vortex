@@ -11,7 +11,9 @@
 
 #include "../../../../vortex.h"
 
+
 #include "../../../src/instanceFactory.h"
+#include "../../../instances/Utils/TextEditor/TextEditorInstance.h"
 
 #ifndef ScriptInstance_H
 #define ScriptInstance_H
@@ -19,11 +21,10 @@
 using namespace VortexMaker;
 class InstanceFactory;
 
-
 class ScriptInstance
 {
 public:
-    ScriptInstance(VxContext *ctx, std::shared_ptr<VxScript> script);
+    ScriptInstance(VxContext *ctx, std::shared_ptr<VxScript> script, InstanceFactory* factory);
 
     // Content Managment 
     void Refresh();
@@ -35,13 +36,15 @@ public:
     void menubar();
 
     void UI_MainSettings();
-    void UI_TextEditor();
+    void UI_FileBrowser();
 
     bool opened;
     bool show_UI_MainSettings = false;
     bool show_UI_CompilationArguments = false;
     bool show_UI_ActionsEditor = false;
-    bool show_UI_TextEditor = false;
+    bool show_UI_FileBrowser = false;
+    bool show_UI_DirectoryTreeView = true;
+    bool show_UI_DirectoryFinder = false;
 
     std::string name;
     VxContext *m_ctx;
@@ -49,6 +52,8 @@ public:
     std::shared_ptr<VxScriptSave> m_currentSave;
     ImGuiID dockspaceID;
     std::shared_ptr<TextEditor> editor;
+    InstanceFactory* factory;
+
 
     std::shared_ptr<Walnut::Image> m_ScriptIcon;
     std::shared_ptr<Walnut::Image> m_Icon;

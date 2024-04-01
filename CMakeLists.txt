@@ -70,3 +70,4 @@ target_link_libraries(vortex PRIVATE nlohmann_json::nlohmann_json)
 
 # Install executable to /bin
 install(TARGETS vortex DESTINATION /bin)
+install(TARGETS vortex DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)

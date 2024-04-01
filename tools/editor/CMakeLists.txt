@@ -38,8 +38,8 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/GPOS/wins/UI_MainSettings.cpp
     
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Script/wins/UI_MainSettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Script/wins/UI_FileBrowser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Script/ScriptInstance.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Script/wins/UI_TextEditor.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/PackageInstance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/wins/UI_MainSettings.cpp
@@ -63,6 +63,7 @@ add_library(editor
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/Report/ReportInstance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/TextEditor/TextEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/TextEditor/TextEditorInstance.cpp
 )
 
 
