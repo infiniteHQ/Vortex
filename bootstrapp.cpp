@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include <filesystem>
 
 bool CheckDirectory()
 {
@@ -54,23 +54,7 @@ int main(int argc, char *argv[])
                 std::string cmd = "touch " + projectPath + "/vortex.config";
                 system(cmd.c_str());
             }
-            nlohmann::json j;
-            j["project"]["author"] = "unknow";
-            j["project"]["description"] = "This is a toolchain";
-            j["project"]["name"] = argv[2];
-            j["project"]["type"] = "???";
-            j["project"]["version"] = "1.0.0";
-
-            j["data"]["toolchains"] = "./.vx/data/toolchains/";
-            j["data"]["hosts"] = "./.vx/data/hosts/";
-            j["data"]["scripts"] = "./.vx/data/scripts/";
-            j["data"]["gpos"] = "./.vx/data/gpos/";
-            j["data"]["packages"] = "./.vx/data/packages/";
-
-            j["dist"]["toolchains"] = "./.vx/dist/toolchains/";
-            j["dist"]["gpos"] = "./.vx/dist/gpos/";
-            j["dist"]["packages"] = "./.vx/dist/packages/";
-            j["dist"]["hosts"] = "./.vx/dist/hosts/";
+            std::string j = "{\"project\":{\"author\":\"unknow\",\"description\":\"This is a toolchain\",\"name\":\"" + project_name + "\",\"type\":\"???\",\"version\":\"1.0.0\"},\"data\":{\"toolchains\":\"./.vx/data/toolchains/\",\"hosts\":\"./.vx/data/hosts/\",\"scripts\":\"./.vx/data/scripts/\",\"gpos\":\"./.vx/data/gpos/\",\"packages\":\"./.vx/data/packages/\"},\"dist\":{\"toolchains\":\"./.vx/dist/toolchains/\",\"gpos\":\"./.vx/dist/gpos/\",\"packages\":\"./.vx/dist/packages/\",\"hosts\":\"./.vx/dist/hosts/\"}}";
 
             // Store this into toolchain.config
             std::ofstream o(projectPath + "/vortex.config");
