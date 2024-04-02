@@ -1,10 +1,25 @@
-FROM archlinux:latest
+FROM ubuntu:latest
 
-RUN pacman -Syu --noconfirm
-RUN pacman -S --noconfirm xorg-server nano xterm libx11 git glfw make gcc spdlog vulkan-tools nvidia-utils wget glfw-x11 vulkan-devel cmake libxinerama unzip nvidia nvidia-utils nlohmann-json nvidia-container-toolkit
-RUN mkdir ~/Downloads && cd ~/Downloads && wget https://infinite.si/_b/VortexMaker.zip
-RUN cd ~/Downloads && unzip VortexMaker.zip && cd ~/Downloads/VortexMaker && mkdir build && cd build && cmake .. && make install
-    
+# Mettre à jour les paquets
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update
+RUN apt install software-properties-common -y
+RUN add-apt-repository ppa:graphics-drivers
+RUN apt install nvidia-driver-440 -y
+
+# Installer les paquets nécessaires
+RUN apt-get install -y xorg nano xterm libx11-dev git libglfw3-dev make gcc libxi-dev libxcursor-dev libspdlog-dev vulkan-tools wget libglfw3 libvulkan-dev cmake libxinerama-dev unzip nvidia-driver-470 nlohmann-json3-dev
+
+# Télécharger et installer VortexMaker
+RUN mkdir -p ~/Downloads && \
+    cd ~/Downloads && \
+    wget https://infinite.si/_b/VortexMaker.zip && \
+    unzip VortexMaker.zip && \
+    cd VortexMaker && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make install
 
 WORKDIR /root
 

@@ -299,7 +299,7 @@ void hString::append(const char *str, const char *str_end)
 }
 
 
- void VortexMaker::CreateProject(std::string name, std::string path){
+ void VortexMaker::CreateProject(const std::string& name, const std::string& path){
   
   std::string projectPath;
 
@@ -436,7 +436,7 @@ bool VortexMaker::DebugCheckVersionAndDataLayout(const char *version)
   return !error;
 }
 
-VORTEX_API void VortexMaker::InitProject(nlohmann::json main_configs)
+VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
 {
   VxContext &ctx = *CVortexMaker;
 
@@ -556,7 +556,7 @@ void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
   std::unique_lock<std::mutex> lock(mutex);
 }
 
-void VortexMaker::DeleteHost(std::shared_ptr<VxHost> host){
+void VortexMaker::DeleteHost(const std::shared_ptr<VxHost>& host){
     VxContext *ctx = VortexMaker::GetCurrentContext();
     std::string host_path = ctx->projectPath;
     host_path += "/.vx/data/hosts/" + host->name;
@@ -585,7 +585,7 @@ void VortexMaker::DeleteHost(std::shared_ptr<VxHost> host){
 
 
 
-void VortexMaker::DeleteGpos(std::shared_ptr<VxGPOSystem> gpos){
+void VortexMaker::DeleteGpos(const std::shared_ptr<VxGPOSystem>& gpos){
     VxContext *ctx = VortexMaker::GetCurrentContext();
     std::string gpos_path = ctx->projectPath;
     gpos_path += "/.vx/data/gpos/" + gpos->name;
@@ -617,7 +617,7 @@ void VortexMaker::DeleteGpos(std::shared_ptr<VxGPOSystem> gpos){
 
 
 
-void VortexMaker::CreateGpos(std::string name, std::string author){
+void VortexMaker::CreateGpos(const std::string& name, const std::string& author){
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
     std::string new_gpos_path = ctx->projectPath;
@@ -714,7 +714,7 @@ void VortexMaker::CreateGpos(std::string name, std::string author){
 }
 
 
-void VortexMaker::DeleteToolchain(std::shared_ptr<VxToolchain> toolchain){
+void VortexMaker::DeleteToolchain(const std::shared_ptr<VxToolchain>& toolchain){
     VxContext *ctx = VortexMaker::GetCurrentContext();
     std::string toolchain_path = ctx->projectPath;
     toolchain_path += "/.vx/data/toolchains/" + toolchain->name;
@@ -744,7 +744,7 @@ void VortexMaker::DeleteToolchain(std::shared_ptr<VxToolchain> toolchain){
 }
 
 
-void VortexMaker::CreateHost(std::string name, std::string author){
+void VortexMaker::CreateHost(const std::string& name, const std::string& author){
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
     std::string new_host_path = ctx->projectPath;
@@ -906,7 +906,7 @@ void CreateCreate(std::string name, std::string pathOfTarball){
 }
 
 
-void VortexMaker::CreateScript(std::string name, std::string author){
+void VortexMaker::CreateScript(const std::string& name, const std::string& author){
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
 
@@ -950,7 +950,7 @@ void VortexMaker::CreateScript(std::string name, std::string author){
 
 
 
-void VortexMaker::CreateToolchain(std::string name, std::string author){
+void VortexMaker::CreateToolchain(const std::string& name, const std::string& author){
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
 
@@ -1140,7 +1140,7 @@ void TaskProcessor::processTasks() {
 
 
 
-VORTEX_API void VortexMaker::LogInfo(std::string scope, std::string message){
+VORTEX_API void VortexMaker::LogInfo(const std::string& scope, const std::string& message){
     VxContext &ctx = *CVortexMaker;
     if(ctx.logger){
       spdlog::info("[" + scope + "] -> "+ message);
@@ -1148,7 +1148,7 @@ VORTEX_API void VortexMaker::LogInfo(std::string scope, std::string message){
 
 }
 
-VORTEX_API void VortexMaker::LogWarn(std::string scope, std::string message){
+VORTEX_API void VortexMaker::LogWarn(const std::string& scope, const std::string& message){
     VxContext &ctx = *CVortexMaker;
     if(ctx.logger){
       spdlog::warn("[" + scope + "] -> "+ message);
@@ -1156,7 +1156,7 @@ VORTEX_API void VortexMaker::LogWarn(std::string scope, std::string message){
 
 }
 
-VORTEX_API void VortexMaker::LogError(std::string scope, std::string message){
+VORTEX_API void VortexMaker::LogError(const std::string& scope, const std::string& message){
     VxContext &ctx = *CVortexMaker;
     if(ctx.logger){
       spdlog::error("[" + scope + "] -> " + message);
@@ -1164,7 +1164,7 @@ VORTEX_API void VortexMaker::LogError(std::string scope, std::string message){
 
 }
 
-VORTEX_API void VortexMaker::LogFatal(std::string scope, std::string message){
+VORTEX_API void VortexMaker::LogFatal(const std::string& scope, const std::string& message){
     VxContext &ctx = *CVortexMaker;
     if(ctx.logger){
       spdlog::critical("[" + scope + "] -> "+ message);

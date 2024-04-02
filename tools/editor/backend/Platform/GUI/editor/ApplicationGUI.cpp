@@ -13,6 +13,7 @@
 #include "../../../../vendor/imgui//backends/imgui_impl_vulkan.h"
 
 #include <stdio.h>	// printf, fprintf
+#include <thread> 	// thread
 #include <stdlib.h> // abort
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN

@@ -86,36 +86,18 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <chrono>
-#include <format>
 #include <iostream>
 #include <string>
 #include <spdlog/spdlog.h>
-
 #include <thread>
 #include <vector>
 #include <algorithm>
 #include <mutex>
 #include <condition_variable>
-
-
 #include <future>
-
 #include <thread>
 
 namespace fs = std::filesystem;
-
-#ifdef USE_REGISTERING
-#include <chrono>
-#endif // USE_REGISTERING
-
-#ifdef USE_HSP
-#include <openssl/rsa.h>
-#include <openssl/pem.h>
-#include <openssl/aes.h>
-#include <openssl/evp.h>
-#include <openssl/rand.h>
-#endif
-
 
 #ifndef VORTEX_API
 #define VORTEX_API
@@ -223,7 +205,7 @@ namespace VortexMaker
     VORTEX_API void             SetCurrentContext(VxContext* context);
     VORTEX_API void             Initialize();
 
-    VORTEX_API void             InitProject(nlohmann::json main_config);
+    VORTEX_API void             InitProject(const nlohmann::json& main_config);
 
     VORTEX_API void             RefreshHosts();
     VORTEX_API void             RefreshDistToolchains();
@@ -234,24 +216,24 @@ namespace VortexMaker
     VORTEX_API void             RefreshScripts();
 
 
-    VORTEX_API void             LogInfo(std::string scope, std::string message);
-    VORTEX_API void             LogWarn(std::string scope, std::string message);
-    VORTEX_API void             LogError(std::string scope, std::string message);
-    VORTEX_API void             LogFatal(std::string scope, std::string message);
+    VORTEX_API void             LogInfo(const std::string& scope, const std::string& message);
+    VORTEX_API void             LogWarn(const std::string& scope, const std::string& message);
+    VORTEX_API void             LogError(const std::string& scope, const std::string& message);
+    VORTEX_API void             LogFatal(const std::string& scope, const std::string& message);
 
-    VORTEX_API void             CreateToolchain(std::string name, std::string author);
-    VORTEX_API void             CreateCreate(std::string name, std::string pathOfTarball);
-    VORTEX_API void             CreateHost(std::string name, std::string author);
-    VORTEX_API void             CreateGpos(std::string name, std::string author);
-    VORTEX_API void             CreateProject(std::string name, std::string path);
-    VORTEX_API void             CreateScript(std::string name, std::string author);
+    VORTEX_API void             CreateToolchain(const std::string& name, const std::string& author);
+    VORTEX_API void             CreateCreate(const std::string& name, const std::string& pathOfTarball);
+    VORTEX_API void             CreateHost(const std::string& name, const std::string& author);
+    VORTEX_API void             CreateGpos(const std::string& name, const std::string& author);
+    VORTEX_API void             CreateProject(const std::string& name, const std::string& path);
+    VORTEX_API void             CreateScript(const std::string& name, const std::string& author);
 
-    VORTEX_API void             DeleteHost(std::shared_ptr<VxHost> host);
-    VORTEX_API void             DeleteGpos(std::shared_ptr<VxGPOSystem> gpos);
-    VORTEX_API void             DeleteToolchain(std::shared_ptr<VxToolchain> toolchain);
+    VORTEX_API void             DeleteHost(const std::shared_ptr<VxHost>& host);
+    VORTEX_API void             DeleteGpos(const std::shared_ptr<VxGPOSystem>& gpos);
+    VORTEX_API void             DeleteToolchain(const std::shared_ptr<VxToolchain>& toolchain);
     VORTEX_API void             CreateHost();
 
-    VORTEX_API std::shared_ptr<Task>             CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
+    VORTEX_API std::shared_ptr<Task>             CreateTask(const std::string tasktype, const std::string component, const std::string uniqueID, int priority, const std::shared_ptr<hArgs> props);
 
     bool                        DebugCheckVersionAndDataLayout(const char* version);
 
