@@ -12,7 +12,10 @@ ENV DISPLAY=:0
 ENV XDG_RUNTIME_DIR=/run/user/1000
 
 
-CMD ["/bin/sh", "-c", "nvidia-smi && cd /root/vx/test && vortex -g"]
-VOLUME build/vx:/root/vx
+CMD ["/bin/sh", "-c", "cd /root/vx/ && vortex -g"]
+#VOLUME build/vx:/root/vx Add with command in /root/vx. Handle it directly whatever origin of this project.
 VOLUME /run/user/
 VOLUME /tmp/.X11-unix
+
+
+# BUILD : sudo docker build --no-cache -t vortex .
