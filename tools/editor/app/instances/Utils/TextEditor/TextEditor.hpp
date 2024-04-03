@@ -20,7 +20,7 @@
 
 #include "../../backend/Assets/icons.h"
 
-#include "../../../../vortex.h"
+#include "../../../../src/vortex.h"
 
 class TextEditor
 {

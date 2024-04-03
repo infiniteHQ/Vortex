@@ -11,7 +11,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_library(editor
     # API
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../vortex.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../src/vortex.cpp
 
     # editor requirements
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/ImGui/ImGuiTheme.cpp

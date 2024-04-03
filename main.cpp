@@ -5,7 +5,7 @@
 
 
 #include "./tools/editor/app/src/editor.h"
-#include "./vortex.h"
+#include "./src/vortex.h"
 
 bool CheckDirectory(){
     std::ifstream mainconfig("vortex.config");
@@ -33,6 +33,9 @@ VxContext* InitRuntime(bool logger){
     return ctx;
 }
 
+/**
+ * @brief : Entry point of main Vortex runtime command.
+*/
 int main(int argc, char *argv[])
 {
     if (argc < 2)
