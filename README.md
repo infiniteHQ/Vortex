@@ -3,8 +3,8 @@
 <a href="https://infinite.si">
   <h1 align="center">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="./.github/imgs/banner-light.png">
-      <img height="100px" src="./.github/imgs/banner-dark.png">
+      <source media="(prefers-color-scheme: dark)" srcset="./.github/imgs/banner-dark.png">
+      <img height="250px" src="./.github/imgs/banner-light.png">
     </picture>
   </h1>
 </a>
