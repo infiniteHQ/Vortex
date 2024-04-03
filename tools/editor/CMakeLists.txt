@@ -82,3 +82,5 @@ target_link_libraries(editor PUBLIC imgui)
 target_link_libraries(editor PUBLIC glm)
 target_link_libraries(editor PUBLIC stbimage)
 target_link_libraries(editor PUBLIC spdlog::spdlog)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/icon.png DESTINATION /usr/include/vortex)

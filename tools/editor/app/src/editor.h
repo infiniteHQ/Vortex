@@ -251,6 +251,7 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
   std::string name = exampleLayer->m_ctx->name + " - Vortex Editor";
   spec.Name = name;
   spec.CustomTitlebar = true;
+  spec.IconPath =  "icon.png";
 
   Walnut::Application *app = new Walnut::Application(spec);
 

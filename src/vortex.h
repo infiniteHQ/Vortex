@@ -71,6 +71,8 @@
 #include <future>
 #include <thread>
 
+#include "./core/toolchains/toolchain.h"
+
 namespace fs = std::filesystem;
 
 #ifndef VORTEX_API

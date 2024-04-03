@@ -14,6 +14,7 @@
 
 <p align="center">Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. </p>
 
+<p align="center">Vortex est conçu pour apporter des outils puissants aux créateurs et aux makers afin de leurs permettre de créer de nombreux projets.</p>
 
 ## General Features
 - Operating systems creation tools

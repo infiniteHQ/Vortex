@@ -479,14 +479,17 @@ namespace Walnut
 		}
 
 		// Set icon
-		GLFWimage icon;
-		int channels;
+		GLFWimage icon[1];
+		int channels = 0;
 		if (!m_Specification.IconPath.empty())
 		{
-			std::string iconPathStr = m_Specification.IconPath.string();
-			icon.pixels = stbi_load(iconPathStr.c_str(), &icon.width, &icon.height, &channels, 4);
-			glfwSetWindowIcon(m_WindowHandle, 1, &icon);
-			stbi_image_free(icon.pixels);
+			icon[0].pixels = stbi_load("/usr/include/vortex/icon.png", &icon[0].width, &icon[0].height, &channels, 4);
+			glfwSetWindowIcon(m_WindowHandle, 1, icon);
+			stbi_image_free(icon[0].pixels);
+		}
+		else{
+
+			std::cout << "Ignore icon" << std::endl;
 		}
 
 		glfwSetWindowUserPointer(m_WindowHandle, this);
