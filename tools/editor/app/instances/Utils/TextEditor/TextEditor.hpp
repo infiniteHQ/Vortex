@@ -25,6 +25,17 @@
 class TextEditor
 {
 public:
+
+
+	enum class PaletteId
+	{
+		Dark, Light, Mariana, RetroBlue
+	};
+	enum class LanguageDefinitionId
+	{
+		None, Cpp, C, Cs, Python, Lua, Json, Sql, AngelScript, Glsl, Hlsl
+	};
+
 	enum class PaletteIndex
 	{
 		Default,
@@ -249,7 +260,20 @@ public:
 
 	inline void SetShowWhitespaces(bool aValue) { mShowWhitespaces = aValue; }
 	inline bool IsShowingWhitespaces() const { return mShowWhitespaces; }
+	
 
+	inline void SetReadOnlyEnabled(bool aValue) { mReadOnly = aValue; }
+	inline bool IsReadOnlyEnabled() const { return mReadOnly; }
+	inline void SetAutoIndentEnabled(bool aValue) { mAutoIndent = aValue; }
+	inline bool IsAutoIndentEnabled() const { return mAutoIndent; }
+	inline void SetShowWhitespacesEnabled(bool aValue) { mShowWhitespaces = aValue; }
+	inline bool IsShowWhitespacesEnabled() const { return mShowWhitespaces; }
+	inline void SetShowLineNumbersEnabled(bool aValue) { mShowLineNumbers = aValue; }
+	inline bool IsShowLineNumbersEnabled() const { return mShowLineNumbers; }
+	inline void SetShortTabsEnabled(bool aValue) { mShortTabs = aValue; }
+	inline bool IsShortTabsEnabled() const { return mShortTabs; }
+	inline int GetLineCount() const { return mLines.size(); }
+	inline bool IsOverwriteEnabled() const { return mOverwrite; }
 	void SetTabSize(int aValue);
 	inline int GetTabSize() const { return mTabSize; }
 
@@ -266,6 +290,7 @@ public:
 	void MoveBottom(bool aSelect = false);
 	void MoveHome(bool aSelect = false);
 	void MoveEnd(bool aSelect = false);
+	
 
 	void SetSelectionStart(const Coordinates& aPosition);
 	void SetSelectionEnd(const Coordinates& aPosition);
@@ -287,8 +312,16 @@ public:
 	static const Palette& GetDarkPalette();
 	static const Palette& GetLightPalette();
 	static const Palette& GetRetroBluePalette();
-	float mLineSpacing;
+	//float mLineSpacing;
 	int mTabSize;
+
+
+
+	float mLineSpacing = 1.0f;
+	bool mAutoIndent = true;
+	bool mShowLineNumbers = true;
+	bool mShortTabs = false;
+
 
 private:
 	typedef std::vector<std::pair<std::regex, PaletteIndex>> RegexList;
@@ -371,6 +404,7 @@ private:
 	void HandleKeyboardInputs();
 	void HandleMouseInputs();
 	void Render();
+
 
 
 	Lines mLines;

@@ -128,6 +128,10 @@ std::string ScriptInstance::render()
         this->UI_MainSettings();
         this->UI_FileBrowser();
 
+    for (auto window : this->textInstances){
+        if(window->render() == "closed"){this->UnspawnInstance(window);};
+    }
+
         return "rendering";
     }
     else
@@ -260,3 +264,22 @@ void ScriptInstance::Save()
     // Patch json with native Vortex APi
     this->script->PushSave(this->m_currentSave);
 }
+
+
+  void ScriptInstance::SpawnInstance(std::shared_ptr<TextEditorInstance> instance) {
+    for(auto i : this->textInstances){
+      if(i->textFilePath == instance->textFilePath){
+        VortexMaker::LogError("Core", i->textFilePath + " already opened !");
+        return;
+      }
+    }
+    instance->name = instance->textFilePath;
+    instance->opened = true;
+    this->textInstances.push_back(instance);
+  };
+
+
+  void ScriptInstance::UnspawnInstance(std::shared_ptr<TextEditorInstance> instance) {
+    std::string instanceName = instance->name;
+    instance = nullptr;
+  };

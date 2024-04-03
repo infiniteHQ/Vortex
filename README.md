@@ -1,9 +1,12 @@
-Vortex Maker
-=====
+
+
+  <img src="./.github/imgs/banner.png" alt="Image" style="display: block; margin: 0 auto; margin-bottom: 12px; width: 50%;">
+
+![VortexMaker Editor](./.github/imgs/editor.png)
+
 
 <p align="center">Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. </p>
 
-![VortexMaker Editor](./.github/imgs/editor.png)
 
 ## General Features
 - Operating systems creation tools

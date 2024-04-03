@@ -91,7 +91,13 @@ class Instance : public InstanceFactory {
   };
 
   void SpawnInstance(std::shared_ptr<TextEditorInstance> instance) override {
-    instance->name = VortexMaker::gen_random(6);
+    for(auto i : texteditorInstances){
+      if(i->textFilePath == instance->textFilePath){
+        VortexMaker::LogError("Core", i->textFilePath + " already opened !");
+        return;
+      }
+    }
+    instance->name = instance->textFilePath;
     instance->opened = true;
     texteditorInstances.push_back(instance);
   };

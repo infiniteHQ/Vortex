@@ -174,18 +174,19 @@ void TextEditorInstance::menubar()
 {
     if (ImGui::BeginMenuBar())
     {
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("Save", "Ctrl+S"))
-            {
-            }
-            if (ImGui::MenuItem("Undo", "Ctrl+Z"))
-            {
-            }
-            if (ImGui::MenuItem("Redo", "Ctrl+Y"))
-            {
-            }
-            ImGui::EndMenu();
+      if (ImGui::BeginMenu("File"))
+		{
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("View"))
+		{
+			ImGui::EndMenu();
+			
         }
     
     ImGui::EndMenuBar();

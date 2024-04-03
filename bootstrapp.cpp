@@ -31,17 +31,63 @@ int main(int argc, char *argv[])
     {
         if (std::string(argv[1]) == "-cp" || std::string(argv[1]) == "--create-project")
         {
-            if(!argv[2]){
+            if (!argv[2])
+            {
                 std::cout << "Please provide a project name" << std::endl;
+                std::cout << "Usage : vortex -cp \"name\" <template>" << std::endl;
+            }
+#ifdef _WIN32
+            std::string project_name = argv[2];
+            fs::path current_path = fs::current_path();
+            fs::path projectPath = current_path / project_name;
+
+            // Creating main project folder
+            fs::create_directory(projectPath);
+
+            // Creating .vx folder
+            fs::path vxPath = projectPath / ".vx";
+            fs::create_directory(vxPath);
+
+            // Creating vortex.config file
+            std::ofstream config_file(projectPath / "vortex.config");
+            if (config_file.is_open())
+            {
+                std::string j = "{\"project\":{\"author\":\"unknown\",\"description\":\"This is a toolchain\",\"name\":\"" + project_name + "\",\"type\":\"???\",\"version\":\"1.0.0\"},\"data\":{\"toolchains\":\"./.vx/data/toolchains/\",\"hosts\":\"./.vx/data/hosts/\",\"scripts\":\"./.vx/data/scripts/\",\"gpos\":\"./.vx/data/gpos/\",\"packages\":\"./.vx/data/packages/\"},\"dist\":{\"toolchains\":\"./.vx/dist/toolchains/\",\"gpos\":\"./.vx/dist/gpos/\",\"packages\":\"./.vx/dist/packages/\",\"hosts\":\"./.vx/dist/hosts/\"}}";
+                config_file << j << std::endl;
+                config_file.close();
             }
 
-                std::string project_name = std::string(argv[2]);
-                std::string current_path = std::filesystem::current_path();
-                std::string projectPath;
+            // Creating data directories
+            fs::create_directories(vxPath / "data/hosts");
+            fs::create_directories(vxPath / "data/kernels");
+            fs::create_directories(vxPath / "data/libs");
+            fs::create_directories(vxPath / "data/gpos");
+            fs::create_directories(vxPath / "data/scripts");
+            fs::create_directories(vxPath / "data/packages");
+            fs::create_directories(vxPath / "data/skeletons");
+            fs::create_directories(vxPath / "data/toolchains");
+
+            // Creating dist directories
+            fs::create_directories(vxPath / "dist/hosts");
+            fs::create_directories(vxPath / "dist/gpos");
+            fs::create_directories(vxPath / "dist/kernels");
+            fs::create_directories(vxPath / "dist/libs");
+            fs::create_directories(vxPath / "dist/packages");
+            fs::create_directories(vxPath / "dist/skeletons");
+            fs::create_directories(vxPath / "dist/toolchains");
+
+            // Creating temp directory
+            fs::create_directories(vxPath / "temp");
+#endif
+
+#ifdef __linux__
+            std::string project_name = std::string(argv[2]);
+            std::string current_path = std::filesystem::current_path();
+            std::string projectPath;
 
             // Creating main project folder
             {
-                projectPath = current_path + "/" +project_name + "/";
+                projectPath = current_path + "/" + project_name + "/";
                 std::string cmd = "mkdir " + projectPath;
                 system(cmd.c_str());
             }
@@ -140,6 +186,7 @@ int main(int argc, char *argv[])
                 std::string cmd = "mkdir " + projectPath + "/.vx/temp";
                 system(cmd.c_str());
             }
+#endif
         }
         else if (std::string(argv[1]) == "-g" || std::string(argv[1]) == "--gui")
         {
@@ -154,9 +201,10 @@ int main(int argc, char *argv[])
 #ifdef __APPLE__
 #endif
 
+#ifdef __linux__
             // Linux
-                std::string current_path = std::filesystem::current_path();
-            std::string docker_command = "sudo docker run -it --gpus=all --rm -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -v "+current_path+":/root/vx -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all vortex";
+            std::string current_path = std::filesystem::current_path();
+            std::string docker_command = "xhost + && sudo docker run -it --gpus=all --rm -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -v " + current_path + ":/root/vx -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all vortex";
 
             int status = std::system(docker_command.c_str());
 
@@ -168,6 +216,8 @@ int main(int argc, char *argv[])
             {
                 std::cerr << "Erreur lors de l'exécution de la commande." << std::endl;
             }
+
+#endif
         }
     }
 

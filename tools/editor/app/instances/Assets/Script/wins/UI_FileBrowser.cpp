@@ -8,7 +8,7 @@ namespace fs = std::filesystem;
 
 class NodeTree {
 public:
-    NodeTree(const std::string& rootDirectory, std::shared_ptr<ScriptInstance> instance) 
+    NodeTree(const std::string& rootDirectory, ScriptInstance* instance) 
         :m_RootDirectory(rootDirectory), m_CurrentDirectory(rootDirectory), m_Instance(instance) 
         {};
 
@@ -21,7 +21,7 @@ private:
     std::filesystem::path m_RootDirectory;
     std::filesystem::path m_CurrentDirectory;
 
-    std::shared_ptr<ScriptInstance> m_Instance;
+    ScriptInstance* m_Instance;
 };
 
 void NodeTree::RenderNode(const std::filesystem::path& nodePath) {
@@ -40,7 +40,7 @@ void NodeTree::RenderNode(const std::filesystem::path& nodePath) {
                     std::cout << "Selected: " << m_SelectedDirectory << std::endl;
 
 				    std::shared_ptr<TextEditorInstance> instance = std::make_shared<TextEditorInstance>(this->m_Instance->m_ctx, m_SelectedDirectory);
-				    this->m_Instance->factory->SpawnInstance(instance);	
+				    this->m_Instance->SpawnInstance(instance);	
 
                 }
             }
@@ -50,15 +50,12 @@ void NodeTree::RenderNode(const std::filesystem::path& nodePath) {
 }
 
 void NodeTree::OnImGuiRender() {
-
     if (m_CurrentDirectory != m_RootDirectory) {
         if (ImGui::Button("<-")) {
             m_CurrentDirectory = m_CurrentDirectory.parent_path();
         }
     }
-
     RenderNode(m_CurrentDirectory);
-
 }
 
 
@@ -97,18 +94,6 @@ void ScriptInstance::UI_FileBrowser()
                 ImGui::EndMenu();
             }
             ImGui::Separator();
-            ImGui::Text("Opened editors :");
-
-            if (ImGui::ImageButtonWithText(editIcon, "MyScript.sh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-            {
-            }
-            if (ImGui::ImageButtonWithText(editIcon, "Tes.sh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-            {
-            }
-            if (ImGui::ImageButtonWithText(editIcon, "sdfs.sh", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
-            {
-            }
-            
 
 
             ImGui::EndMenuBar();
@@ -116,18 +101,11 @@ void ScriptInstance::UI_FileBrowser()
 
         static std::string currentPath = this->script->path;
         static std::string old = "?";
-
-        {
-            ImGui::BeginChild("left pane", ImVec2(0, 0), true);
-            static std::shared_ptr<ScriptInstance> instance = std::make_shared<ScriptInstance>(*this);
-            static NodeTree tree(currentPath, instance);
+        static NodeTree tree(currentPath, this);
 
 
-            tree.OnImGuiRender();
+        tree.OnImGuiRender();
             
-
-            ImGui::EndChild();
-        }
 
         ImGui::End();
     }

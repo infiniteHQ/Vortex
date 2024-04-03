@@ -21,6 +21,8 @@
 using namespace VortexMaker;
 class InstanceFactory;
 
+
+
 class ScriptInstance
 {
 public:
@@ -38,6 +40,10 @@ public:
     void UI_MainSettings();
     void UI_FileBrowser();
 
+
+  void SpawnInstance(std::shared_ptr<TextEditorInstance> instance);
+  void UnspawnInstance(std::shared_ptr<TextEditorInstance> instance);
+
     bool opened;
     bool show_UI_MainSettings = false;
     bool show_UI_CompilationArguments = false;
@@ -54,6 +60,8 @@ public:
     std::shared_ptr<TextEditor> editor;
     InstanceFactory* factory;
 
+
+    std::vector<std::shared_ptr<TextEditorInstance>> textInstances;
 
     std::shared_ptr<Walnut::Image> m_ScriptIcon;
     std::shared_ptr<Walnut::Image> m_Icon;

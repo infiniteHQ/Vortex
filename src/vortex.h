@@ -8,7 +8,7 @@
 // Versions & Build identification
 //_____________________________________________________________________________
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if VORTEX_VERSION_NUM >= 12345')
-#define VORTEX_VERSION       "1.0"
+#define VORTEX_VERSION       "1.1"
 #define VORTEX_VERSION_NUM   10000
 
 //_____________________________________________________________________________
@@ -165,7 +165,7 @@ typedef void    (*VortexMakerMemFreeFunc)(void* ptr, void* user_data);          
 
 
 //_____________________________________________________________________________
-// [SECTION] VortexMaker end-use API functions
+// [SECTION] VortexMaker API
 //_____________________________________________________________________________
 // Note for all VortexMaker internals modifications ! : Please considere 
 // (Note that VortexMaker:: being a namespace, you can add extra VortexMaker:: functions 
@@ -173,6 +173,7 @@ typedef void    (*VortexMakerMemFreeFunc)(void* ptr, void* user_data);          
 //_____________________________________________________________________________
 namespace VortexMaker
 {
+    // Main project/context manipulation
     VORTEX_API VxContext*       CreateContext();
     VORTEX_API void             DestroyContext(VxContext* context = NULL);
     VORTEX_API VxContext*       GetCurrentContext();
@@ -181,6 +182,7 @@ namespace VortexMaker
 
     VORTEX_API void             InitProject(const nlohmann::json& main_config);
 
+    // Legacy component refreshing
     VORTEX_API void             RefreshHosts();
     VORTEX_API void             RefreshDistToolchains();
     VORTEX_API void             RefreshToolchains();
@@ -189,12 +191,13 @@ namespace VortexMaker
     VORTEX_API void             RefreshPackages();
     VORTEX_API void             RefreshScripts();
 
-
+    // Logger functions
     VORTEX_API void             LogInfo(const std::string& scope, const std::string& message);
     VORTEX_API void             LogWarn(const std::string& scope, const std::string& message);
     VORTEX_API void             LogError(const std::string& scope, const std::string& message);
     VORTEX_API void             LogFatal(const std::string& scope, const std::string& message);
 
+    // Legacy components creation
     VORTEX_API void             CreateToolchain(const std::string& name, const std::string& author);
     VORTEX_API void             CreateCreate(const std::string& name, const std::string& pathOfTarball);
     VORTEX_API void             CreateHost(const std::string& name, const std::string& author);
@@ -202,6 +205,7 @@ namespace VortexMaker
     VORTEX_API void             CreateProject(const std::string& name, const std::string& path);
     VORTEX_API void             CreateScript(const std::string& name, const std::string& author);
 
+    // Legacy components deletion
     VORTEX_API void             DeleteHost(const std::shared_ptr<VxHost>& host);
     VORTEX_API void             DeleteGpos(const std::shared_ptr<VxGPOSystem>& gpos);
     VORTEX_API void             DeleteToolchain(const std::shared_ptr<VxToolchain>& toolchain);
@@ -433,34 +437,6 @@ struct hString
     size_t Capacity;
 
 };
-//=============================================================================
-
-//=============================================================================
-//  h64
-//=============================================================================
-struct h64
-{
-    hString encode;
-    hString decode;
-};
-
-//=============================================================================
-
-#include <chrono>
-struct hTime
-{
-    static hString GetCurrentTimestamp();
-};
-
-
-//=============================================================================
-//  h64
-//=============================================================================
-struct hEncrypt
-{
-    
-};
-
 //=============================================================================
 
 //=============================================================================
