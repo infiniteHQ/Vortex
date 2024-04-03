@@ -1,6 +1,13 @@
 
 
-  <img src="./.github/imgs/banner.png" alt="Image" style="display: block; margin: 0 auto; margin-bottom: 12px; width: 50%;">
+<a href="https://infinite.si">
+  <h1 align="center">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="./.github/imgs/banner-light.png">
+      <img height="100px" src="./.github/imgs/banner-dark.png">
+    </picture>
+  </h1>
+</a>
 
 ![VortexMaker Editor](./.github/imgs/editor.png)
 
