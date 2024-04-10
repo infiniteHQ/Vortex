@@ -5,7 +5,7 @@
 
 
 #include "./tools/editor/app/src/editor.h"
-#include "./src/vortex.h"
+#include "./main/include/vortex.h"
 
 bool CheckDirectory(){
     std::ifstream mainconfig("vortex.config");

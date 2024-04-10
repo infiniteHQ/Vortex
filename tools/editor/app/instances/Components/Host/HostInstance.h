@@ -8,8 +8,8 @@
 
 #include "../../backend/Assets/icons.h"
 
-#include "../../../../src/vortex.h"
-#include "../../../../src/vortex_internals.h"
+#include "../../../../main/include/vortex.h"
+#include "../../../../main/include/vortex_internals.h"
 
 #include "../../../src/instanceFactory.h"
 

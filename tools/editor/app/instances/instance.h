@@ -11,8 +11,8 @@
 
 #include "../../backend/Assets/icons.h"
 
-#include "../../../../src/vortex.h"
-#include "../../../../src/vortex_core.h"
+#include "../../../../main/include/vortex.h"
+#include "../../../../main/include/vortex_core.h"
 
 #ifndef InstanceWindow_H
 #define InstanceWindow_H

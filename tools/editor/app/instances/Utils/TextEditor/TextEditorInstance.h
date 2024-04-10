@@ -7,7 +7,7 @@
 #include "../../vendor/stb-image/stb_image.h"
 
 #include "../../backend/Assets/icons.h"
-#include "../../../../src/vortex.h"
+#include "../../../../main/include/vortex.h"
 
 #include "./TextEditor.hpp"
 

@@ -8,7 +8,7 @@
 
 #include "../../backend/Assets/icons.h"
 
-#include "../../../../src/vortex.h"
+#include "../../../../main/include/vortex.h"
 
 #ifndef ReportInstance_H
 #define ReportInstance_H
