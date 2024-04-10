@@ -1,5 +1,5 @@
-#include "../../../../main/include/vortex.h"
-#include "../../../../main/include/vortex_internals.h"
+#include "../../../../include/vortex.h"
+#include "../../../../include/vortex_internals.h"
 
 struct Task;
 

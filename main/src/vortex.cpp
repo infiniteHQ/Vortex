@@ -61,45 +61,100 @@ static VortexMakerMemAllocFunc CVxAllocatorAllocFunc = MallocWrapper;
 static VortexMakerMemFreeFunc CVxAllocatorFreeFunc = FreeWrapper;
 static void *CVxAllocatorUserData = NULL;
 
-//-----------------------------------------------------------------------------
-// [Context Function: CreateContext] => Create a context for a VortexMaker use
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
+/**
+ * @brief CreateContext creates a new Vortex context.
+ * 
+ * This function creates a new Vortex context and initializes it. It ensures memory safety
+ * by properly managing memory allocation and context switching.
+ * 
+ * @return A pointer to the newly created Vortex context.
+ */
 VORTEX_API VxContext *VortexMaker::CreateContext()
 {
-  /*
-  VxContext *context = new VxContext();
-  // Vx_NEW
-  // malloc(sizeof(context));
-  SetCurrentContext(context);
-  return context;
-  */
-
+  // Save the previous context before creating a new one
   VxContext *prev_ctx = GetCurrentContext();
-  VxContext *ctx = VX_NEW(VxContext);
-  SetCurrentContext(ctx);
-  Initialize();
-  if (prev_ctx != NULL)
-    SetCurrentContext(
-        prev_ctx); // Restore previous context if any, else keep new one.
 
+  // Allocate memory for the new context
+  VxContext *ctx = VX_NEW(VxContext);
+
+  // Set the current context to the newly created context
+  SetCurrentContext(ctx);
+
+  // Initialize the new context
+  Initialize();
+
+  // Restore the previous context if it exists
+  if (prev_ctx != nullptr)
+    SetCurrentContext(prev_ctx);
+  
+  // Return the pointer to the newly created context
   return ctx;
 }
 
-//-----------------------------------------------------------------------------
-// [Context Function: SetCurrentContext] => Set the main context
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
+
+/**
+ * @brief SetCurrentContext sets the current Vortex context.
+ * 
+ * This function sets the current Vortex context to the provided context pointer. 
+ * It offers flexibility by allowing custom thread-based context control if enabled.
+ * 
+ * @param ctx A pointer to the Vortex context to be set as the current context.
+ */
 void VortexMaker::SetCurrentContext(VxContext *ctx)
 {
 #ifdef USE_CURRENT_CONTEXT_FUNC
-  USE_CURRENT_CONTEXT_FUNC(ctx); // For custom thread-based hackery you may want
-                                 // to have control over this.
+  // If custom thread-based control is enabled, call the custom function
+  USE_CURRENT_CONTEXT_FUNC(ctx);
 #else
+  // Otherwise, set the current context directly
   CVortexMaker = ctx;
 #endif
 }
+
+
+/**
+ * @brief DestroyContext destroys a Vortex context.
+ * 
+ * This function destroys the specified Vortex context. If no context is provided,
+ * it destroys the current context. It ensures proper context switching and memory deallocation.
+ * 
+ * @param ctx A pointer to the Vortex context to be destroyed. If nullptr, the current context will be destroyed.
+ */
+VORTEX_API void VortexMaker::DestroyContext(VxContext *ctx)
+{
+  // Save the previous context before destroying the specified context
+  VxContext *prev_ctx = GetCurrentContext();
+
+  // If no context is provided, destroy the current context
+  if (ctx == nullptr)
+    ctx = prev_ctx;
+
+  // Set the current context to the one to be destroyed
+  SetCurrentContext(ctx);
+
+  // If the previous context is different from the one to be destroyed, restore it
+  SetCurrentContext((prev_ctx != ctx) ? prev_ctx : nullptr);
+
+  // Deallocate memory for the context
+  VX_DELETE(ctx);
+}
+
+
+/**
+ * @brief Initialize initializes the VortexMaker.
+ * 
+ * This function initializes the VortexMaker by setting the initialized flag in the context.
+ */
+VORTEX_API void VortexMaker::Initialize()
+{
+  // Get the reference to the Vortex context
+  VxContext &ctx = *CVortexMaker;
+  
+  // Set initialized flags
+  ctx.initialized = true;
+}
+
+
 
 //-----------------------------------------------------------------------------
 
@@ -124,19 +179,7 @@ void VortexMaker::GetAllocatorFunctions(VortexMakerMemAllocFunc *p_alloc_func,
   *p_user_data = CVxAllocatorUserData;
 }
 
-//-----------------------------------------------------------------------------
-// [Context Function: GetCurrentContext] => Get the current main context
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-VORTEX_API void VortexMaker::DestroyContext(VxContext *ctx)
-{
-  VxContext *prev_ctx = GetCurrentContext();
-  if (ctx == NULL) //-V1051
-    ctx = prev_ctx;
-  SetCurrentContext(ctx);
-  SetCurrentContext((prev_ctx != ctx) ? prev_ctx : NULL);
-  VX_DELETE(ctx);
-}
+
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -145,18 +188,6 @@ VORTEX_API void VortexMaker::DestroyContext(VxContext *ctx)
 //-----------------------------------------------------------------------------
 VORTEX_API VxContext *VortexMaker::GetCurrentContext() { return CVortexMaker; }
 //-----------------------------------------------------------------------------
-
-VORTEX_API void VortexMaker::Initialize()
-{
-  VxContext &ctx = *CVortexMaker;
-
-  ctx.taskFactory = &TaskFactory::getInstance();
-
-  
-
-  // Set initialized flags
-  ctx.initialized = true;
-}
 
 // IM_ALLOC() == ImGui::MemAlloc()
 void *VortexMaker::MemAlloc(size_t size)
@@ -209,61 +240,7 @@ void VortexMaker::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
   }*/
 }
 
-std::string SearchFilesRecursive(const fs::path &chemin, const std::string &filename, std::vector<std::string> &file)
-{
-  for (const auto &entry : fs::directory_iterator(chemin))
-  {
-    if (entry.is_regular_file() && entry.path().filename().string().find(filename) != std::string::npos)
-    {
-      file.push_back(entry.path().string());
-      return entry.path().string();
-    }
-    else if (entry.is_directory())
-    {
-      SearchFilesRecursive(entry.path(), filename, file);
-    }
-  }
-  return "null";
-}
 
-VORTEX_API std::vector<std::string> VortexMaker::SearchFiles(const std::string &path, const std::string &filename)
-{
-  std::vector<std::string> fichiersTest;
-  SearchFilesRecursive(fs::current_path() / path, filename, fichiersTest);
-  return fichiersTest;
-}
-
-VORTEX_API std::string VortexMaker::gen_random(int len)
-{
-    static const char alphanum[] =
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";
-    std::string tmp_s;
-    tmp_s.reserve(len);
-
-    for (int i = 0; i < len; ++i)
-    {
-        tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
-    }
-
-    return tmp_s;
-}
-
-VORTEX_API nlohmann::json VortexMaker::DumpJSON(const std::string &file)
-{
-  std::ifstream fichier(file);
-
-  if (!fichier.is_open())
-  {
-    throw std::runtime_error("Error while opening file " + file);
-  }
-
-  nlohmann::json json_data;
-  fichier >> json_data;
-
-  return json_data;
-}
 
 //-----------------------------------------------------------------------------
 // [SECTION] ImGuiTextBuffer, ImGuiTextIndex
@@ -300,133 +277,6 @@ void hString::append(const char *str, const char *str_end)
   Buf[write_off - 1 + len] = 0;
 }
 
-
- void VortexMaker::CreateProject(const std::string& name, const std::string& path){
-  
-  std::string projectPath;
-
-  // Creating main project folder
-  {
-    projectPath = path + "/" + name + "/";
-    std::string cmd = "mkdir "  +projectPath;
-    system(cmd.c_str());
-  }
-
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "touch "  + projectPath + "/vortex.config";
-    system(cmd.c_str());
-  }
-   nlohmann::json j;
-      j["project"]["author"] = "unknow";
-      j["project"]["description"] = "This is a toolchain";
-      j["project"]["name"] = name;
-      j["project"]["type"] = "???";
-      j["project"]["version"] = "1.0.0";
-
-      j["data"]["toolchains"] = "./.vx/data/toolchains/";
-      j["data"]["hosts"] = "./.vx/data/hosts/";
-      j["data"]["scripts"] = "./.vx/data/scripts/";
-      j["data"]["gpos"] = "./.vx/data/gpos/";
-      j["data"]["packages"] = "./.vx/data/packages/";
-
-      j["dist"]["toolchains"] = "./.vx/dist/toolchains/";
-      j["dist"]["gpos"] = "./.vx/dist/gpos/";
-      j["dist"]["packages"] = "./.vx/dist/packages/";
-      j["dist"]["hosts"] = "./.vx/dist/hosts/";
-
-      // Store this into toolchain.config
-      std::ofstream o(projectPath + "/vortex.config");
-      o << std::setw(4) << j << std::endl;
-      o.close();
-
-  // Data
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/data";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/data/hosts";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/data/kernels";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/data/libs";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/data/gpos";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/data/scripts";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/data/packages";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/data/skeletons";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/data/toolchains";
-    system(cmd.c_str());
-  }
-
-
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/config";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/dist";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/hosts";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/gpos";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/kernels";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/libs";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/packages";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/skeletons";
-    system(cmd.c_str());
-  }
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/dist/toolchains";
-    system(cmd.c_str());
-  }
-
-  {
-    std::string cmd = "mkdir "  + projectPath + "/.vx/temp";
-    system(cmd.c_str());
-  }
-
-
-}
-
 bool VortexMaker::DebugCheckVersionAndDataLayout(const char *version)
 {
   bool error = false;
@@ -438,36 +288,6 @@ bool VortexMaker::DebugCheckVersionAndDataLayout(const char *version)
   return !error;
 }
 
-VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
-{
-  VxContext &ctx = *CVortexMaker;
-
-  ctx.author = main_configs["project"]["author"].get<std::string>();
-  ctx.description = main_configs["project"]["description"].get<std::string>();
-  ctx.label = main_configs["project"]["name"].get<std::string>();
-  ctx.name = main_configs["project"]["name"].get<std::string>();
-  ctx.type = main_configs["project"]["type"].get<std::string>();
-  ctx.version = main_configs["project"]["version"].get<std::string>();
-
-  ctx.packagesPath = main_configs["data"]["packages"].get<std::string>();
-  ctx.toolchainsPath = main_configs["data"]["toolchains"].get<std::string>();
-  ctx.gposPath = main_configs["data"]["gpos"].get<std::string>();
-  ctx.gposPath = main_configs["data"]["scripts"].get<std::string>();
-  ctx.hostsPath = main_configs["data"]["hosts"].get<std::string>();
-
-  ctx.paths.toolchainDistFolder = main_configs["dist"]["toolchains"].get<std::string>();
-  ctx.paths.hostDistFolder = main_configs["dist"]["hosts"].get<std::string>();
-
-  ctx.projectPath = fs::current_path();
-
-  VortexMaker::RefreshPackages();
-  VortexMaker::RefreshGpos();
-  VortexMaker::RefreshHosts();
-  VortexMaker::RefreshToolchains();
-  VortexMaker::RefreshDistToolchains();
-  VortexMaker::RefreshScripts();
-  VortexMaker::RefreshDistHosts();
-}
 
 // Correction de la fonction CreateTask
 std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
@@ -1141,39 +961,6 @@ void TaskProcessor::processTasks() {
 
 
 
-
-VORTEX_API void VortexMaker::LogInfo(const std::string& scope, const std::string& message){
-    // Add metrics to vortex context
-    VxContext &ctx = *CVortexMaker;
-    if(ctx.logger){
-      spdlog::info("[" + scope + "] -> "+ message);
-    }
-
-}
-
-VORTEX_API void VortexMaker::LogWarn(const std::string& scope, const std::string& message){
-    VxContext &ctx = *CVortexMaker;
-    if(ctx.logger){
-      spdlog::warn("[" + scope + "] -> "+ message);
-    }
-
-}
-
-VORTEX_API void VortexMaker::LogError(const std::string& scope, const std::string& message){
-    VxContext &ctx = *CVortexMaker;
-    if(ctx.logger){
-      spdlog::error("[" + scope + "] -> " + message);
-    }
-
-}
-
-VORTEX_API void VortexMaker::LogFatal(const std::string& scope, const std::string& message){
-    VxContext &ctx = *CVortexMaker;
-    if(ctx.logger){
-      spdlog::critical("[" + scope + "] -> "+ message);
-    }
-
-}
 
 // TODO after : Module loading system, plugins loader. 
 

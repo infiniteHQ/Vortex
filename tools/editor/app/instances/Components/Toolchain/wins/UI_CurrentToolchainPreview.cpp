@@ -1,6 +1,5 @@
 #include "../ToolchainInstance.h"
 #include <array>
-#include "../../backend/Platform/GUI/editor/UI/Spinner.h"
 
 static std::string formatElapsedTime(double elapsedSeconds)
 {

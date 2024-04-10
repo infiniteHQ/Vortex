@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../../../../../vendor/imgui/imgui.h"
-#include <glm/glm.hpp>
+#include "../../../../../../../main/include/vortex.h"
 
 namespace Walnut::UI {
 

@@ -1,12 +1,5 @@
 #include "ContentBrowser.hpp"
-#include "../../vendor/imgui/imgui.h"
-#include "../../backend/Platform/GUI/editor/Image.h"
-#include "../../backend/Platform/GUI/editor/UI/UI.h"
-
-
-#include <iostream>
 	
-    
     ContentBrowserPanel::ContentBrowserPanel()
 		: m_BaseDirectory("../../"), m_CurrentDirectory(m_BaseDirectory)
 	{

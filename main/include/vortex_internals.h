@@ -19,7 +19,6 @@
 // [SECTION] Header mess
 //_____________________________________________________________________________
 // Includes
-#include <random>
 
 #ifndef VORTEX_VERSION
 #include "vortex.h"
@@ -172,11 +171,6 @@ struct VxPaths {
 };
 
 
-#include <iostream>
-#include <thread>
-#include <vector>
-#include <mutex>
-#include <condition_variable>
 
 //-----------------------------------------------------------------------------
 // (Context) VortexMakerContext => Main VortexMaker context.

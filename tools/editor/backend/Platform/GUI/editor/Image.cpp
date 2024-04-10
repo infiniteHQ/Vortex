@@ -1,12 +1,7 @@
 #include "Image.h"
 
-#include "../../../../vendor/imgui/imgui.h"
-#include "../../../../vendor/imgui/backends/imgui_impl_vulkan.h"
-
 #include "ApplicationGUI.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "../../../../vendor/stb-image/stb_image.h"
 
 namespace Walnut {
 

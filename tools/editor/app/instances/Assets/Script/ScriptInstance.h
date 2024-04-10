@@ -1,18 +1,11 @@
-// UI (with imgui)
-#include "../../backend/Source/editor/Application.h"
-#include "../../backend/Platform/GUI/editor/ImGui/ImGuiTheme.h"
-#include "../../backend/Platform/GUI/editor/Image.h"
-#include "../../backend/Platform/GUI/editor/UI/UI.h"
-#include "../../vendor/imgui/imgui.h"
-#include "../../vendor/imgui/imgui_internal.h"
-#include "../../vendor/stb-image/stb_image.h"
 
-#include "../../backend/Assets/icons.h"
-
-#include "../../../../main/include/vortex.h"
-
-
+#include "../../../../backend/Source/editor/Application.h"
+#include "../../../../backend/Platform/GUI/editor/ImGui/ImGuiTheme.h"
+#include "../../../../backend/Platform/GUI/editor/Image.h"
+#include "../../../../backend/Platform/GUI/editor/UI/UI.h"
+#include "../../../../backend/Assets/icons.h"
 #include "../../../src/instanceFactory.h"
+#include "../../../../../../main/include/vortex.h"
 #include "../../../instances/Utils/TextEditor/TextEditorInstance.h"
 
 #ifndef ScriptInstance_H

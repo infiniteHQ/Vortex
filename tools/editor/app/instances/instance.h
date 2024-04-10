@@ -6,9 +6,6 @@
 #include "../../backend/Platform/GUI/editor/UI/Notification.h"
 #include "../../backend/Platform/GUI/editor/UI/IconsFontAwesome6.h"
 
-#include "../../vendor/imgui/imgui.h"
-#include "../../vendor/stb-image/stb_image.h"
-
 #include "../../backend/Assets/icons.h"
 
 #include "../../../../main/include/vortex.h"

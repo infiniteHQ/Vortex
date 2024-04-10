@@ -1,5 +1,4 @@
 #include "ProjectViewer.hpp"
-#include "../../vendor/imgui/imgui.h"
 #include "../../backend/Platform/GUI/editor/Image.h"
 #include "../../backend/Platform/GUI/editor/UI/UI.h"
 

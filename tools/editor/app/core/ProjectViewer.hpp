@@ -1,8 +1,5 @@
-
-
-#include <filesystem>
-#include "../../../../../main/include/vortex.h"
-#include "../../../../../main/include/vortex_internals.h"
+#include "../../../../main/include/vortex.h"
+#include "../../../../main/include/vortex_internals.h"
 #include "../../backend/Platform/GUI/editor/Image.h"
 
 #include "../instances/Components/Host/HostInstance.h"

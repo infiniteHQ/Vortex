@@ -2,8 +2,7 @@
 
 #include "../Image.h"
 
-#include "../../../../../vendor/imgui/imgui.h"
-#include "../../../../../vendor/imgui/imgui_internal.h"
+#include "../../../../../../../main/include/vortex.h"
 
 #include <memory>
 

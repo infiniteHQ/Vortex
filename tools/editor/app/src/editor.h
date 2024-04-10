@@ -1,3 +1,5 @@
+
+
 // UI (with imgui)
 #include "../../backend/Source/editor/Application.h"
 #include "../../backend/Source/editor/EntryPoint.h"
@@ -6,8 +8,6 @@
 #include "../../backend/Platform/GUI/editor/UI/Notification.h"
 #include "../../backend/Platform/GUI/editor/UI/IconsFontAwesome6.h"
 
-
-#include "../../vendor/imgui/imgui.h"
 #include "../instances/instance.h"
 #include "../instances/Components/Host/HostInstance.h"
 #include "../instances/Components/Toolchain/ToolchainInstance.h"

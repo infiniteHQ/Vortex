@@ -52,6 +52,15 @@ add_executable(vortex
 
     # Base of vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/logger/logger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/json/dump.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/filesystem/searcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/project/create_project.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/project/init_project.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/random/random.cpp
+
+
+
 	main.cpp
 )
 

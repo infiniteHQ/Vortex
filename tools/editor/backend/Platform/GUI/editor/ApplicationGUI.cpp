@@ -7,11 +7,6 @@
 // Adapted from Dear ImGui Vulkan example
 //
 
-#include "../../../../vendor/imgui/imgui_internal.h"
-
-#include "../../../../vendor/imgui/backends/imgui_impl_glfw.h"
-#include "../../../../vendor/imgui//backends/imgui_impl_vulkan.h"
-
 #include <stdio.h>	// printf, fprintf
 #include <thread> 	// thread
 #include <stdlib.h> // abort
@@ -22,8 +17,6 @@
 #include <glm/glm.hpp>
 
 #include "ImGui/ImGuiTheme.h"
-
-#include "../../../../vendor/stb-image/stb_image.h"
 
 #include <iostream>
 

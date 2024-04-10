@@ -70,8 +70,17 @@
 #include <condition_variable>
 #include <future>
 #include <thread>
+#include <random>
+#include <dlfcn.h>
+#include <dirent.h>
 
-#include "../core/toolchains/toolchain.h"
+#include "../../lib/imgui/imgui.h"
+#include "../../lib/imgui/imgui_internal.h"
+#include "../../lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../../lib/imgui/backends/imgui_impl_glfw.h"
+#include "../../lib/stb-image/stb_image.h"
+#include "../../lib/glm/glm/glm.hpp"
+#include "../../lib/glfw/include/GLFW/glfw3.h"
 
 namespace fs = std::filesystem;
 
@@ -176,13 +185,33 @@ typedef void    (*VortexMakerMemFreeFunc)(void* ptr, void* user_data);          
 namespace VortexMaker
 {
     // Main project/context manipulation
-    VORTEX_API VxContext*       CreateContext();
-    VORTEX_API void             DestroyContext(VxContext* context = NULL);
-    VORTEX_API VxContext*       GetCurrentContext();
-    VORTEX_API void             SetCurrentContext(VxContext* context);
+    // Definitions : /src/vortex.cpp
+    VORTEX_API VxContext*           CreateContext();
+    VORTEX_API void                 DestroyContext(VxContext* context = NULL);
+    VORTEX_API VxContext*           GetCurrentContext();
+    VORTEX_API void                 SetCurrentContext(VxContext* context);
+    
+    // Logger functions
+    // Definitions : /src/vortex/logger/logger.cpp
+    VORTEX_API void                 LogInfo(const std::string& scope, const std::string& message);
+    #define VXINFO(scope, message)  LogInfo(scope, message);
+
+    VORTEX_API void                 LogWarn(const std::string& scope, const std::string& message);
+    #define VXWARN(scope, message)  LogWarn(scope, message);
+    
+    VORTEX_API void                 LogError(const std::string& scope, const std::string& message);
+    #define VXERROR(scope, message) LogError(scope, message);
+
+    VORTEX_API void                 LogFatal(const std::string& scope, const std::string& message);
+    #define VXFATAL(scope, message) LogFatal(scope, message);
+
     VORTEX_API void             Initialize();
 
     VORTEX_API void             InitProject(const nlohmann::json& main_config);
+
+
+    VORTEX_API std::vector<std::string> SearchFiles(const std::string& path, const std::string& filename);
+    VORTEX_API std::string SearchFilesRecursive(const fs::path &chemin, const std::string &filename, std::vector<std::string> &file);
 
     // Legacy component refreshing
     VORTEX_API void             RefreshHosts();
@@ -192,15 +221,6 @@ namespace VortexMaker
     VORTEX_API void             RefreshDistHosts();
     VORTEX_API void             RefreshPackages();
     VORTEX_API void             RefreshScripts();
-
-    // Logger functions
-    VORTEX_API void                 LogInfo(const std::string& scope, const std::string& message);
-    #define VXINFO(scope, message)  LogInfo(scope, message);
-
-    VORTEX_API void             LogWarn(const std::string& scope, const std::string& message);
-    VORTEX_API void             LogError(const std::string& scope, const std::string& message);
-    VORTEX_API void             LogFatal(const std::string& scope, const std::string& message);
-
     // Legacy components creation
     VORTEX_API void             CreateToolchain(const std::string& name, const std::string& author);
     VORTEX_API void             CreateCreate(const std::string& name, const std::string& pathOfTarball);
@@ -224,7 +244,6 @@ namespace VortexMaker
     VORTEX_API void             MoveAllContent();
     VORTEX_API void             CopyAllContent();
     VORTEX_API void             ExecuteCommand();
-    VORTEX_API std::vector<std::string> SearchFiles(const std::string& path, const std::string& filename);
 
     VORTEX_API nlohmann::json DumpJSON(const std::string& file);
 

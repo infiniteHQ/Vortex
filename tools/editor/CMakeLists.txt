@@ -16,6 +16,7 @@ add_library(editor
     # editor requirements
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/ImGui/ImGuiTheme.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/UI/UI.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/UI/Spinner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/ApplicationGUI.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/Image.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/Source/editor/Core/Log.cpp
@@ -73,10 +74,10 @@ add_library(editor
 # editor requirements
 find_package(Vulkan REQUIRED)
 find_package(spdlog REQUIRED)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw glfw_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/glm glm_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui imgui_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/stb-image stb_image_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/glfw glfw_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/glm glm_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/imgui imgui_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/stb-image stb_image_build)
 target_link_libraries(editor PUBLIC Vulkan::Vulkan)
 target_link_libraries(editor PUBLIC glfw)
 target_link_libraries(editor PUBLIC imgui)

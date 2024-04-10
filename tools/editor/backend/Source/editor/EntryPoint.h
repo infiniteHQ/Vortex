@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../../../../main/include/vortex.h"
 #include "../../../../../main/include/vortex_internals.h"
 
 namespace Walnut {

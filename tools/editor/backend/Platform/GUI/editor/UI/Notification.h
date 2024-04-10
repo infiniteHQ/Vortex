@@ -19,8 +19,8 @@
 #include <chrono>			// For the notifications timed dissmiss
 #include <functional>		// For storing the code, which executest on the button click in the notification
 
-#include "imgui.h"
-#include "imgui_internal.h"
+#include "../../../../../../../main/include/vortex.h"
+
 
 #include "IconsFontAwesome6.h"
 

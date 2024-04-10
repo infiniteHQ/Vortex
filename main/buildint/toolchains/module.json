@@ -1,0 +1,10 @@
+{
+    "type":"editor_module",
+    "name":"vortex.modules.builtin.toolchains",
+    "proper_name":"Toolchains Module",
+    "version":"1.0.0",
+    "author":"Infinite Tech",
+    "contributors":["Diego","Other"],
+    "path":"./build/libplugin.so",
+    "description":"A very sampel"
+}
