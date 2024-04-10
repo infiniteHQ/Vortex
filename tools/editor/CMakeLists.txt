@@ -32,6 +32,7 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_SnapshotUtility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_CurrentHostPreview.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_TasksEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_VolatileTasks.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/HostInstance.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/GPOS/GPOSInstance.cpp

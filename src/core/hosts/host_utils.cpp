@@ -1,5 +1,6 @@
 #include "../../../src/vortex.h"
 #include "../../../src/vortex_internals.h"
+#include "./tasks/utils/H_U_LoadToolchain.inl"
 
 void VxHost::ExecuteTask(Task t, hArgs args){
 /*
@@ -56,6 +57,75 @@ void VxHost::RegisterTasklist(const std::string label)
   std::shared_ptr<VxTasklistInterface> newTasklistInterface = std::make_shared<VxTasklistInterface>();
   newTasklistInterface->label = label;
   registeredTasklists.push_back(newTasklistInterface);
+}
+
+
+void VxHost::DeleteCurrentHostSystem()
+{
+  // Delete working_host directory and recreate a new one
+  std::string DeleteWorkingHost = "sudo rm -rf " + this->workingPath;
+  VxHostCurrentSystem newCurrentSystem; // To erase
+  this->currentLoadedSystem = newCurrentSystem;
+  
+  system(DeleteWorkingHost.c_str());
+}
+
+void VxHost::CreateCurrentHostSystem()
+{
+  this->DeleteCurrentHostSystem();
+  // Recréer un dossier workingPaht
+  std::string CreateWorkingHost = "sudo mkdir " + this->workingPath;
+  system(CreateWorkingHost.c_str());
+
+  // Create working_host.config into WorkingPath
+
+  VxHostCurrentSystem newCurrentSystem;
+  newCurrentSystem.parent = std::make_shared<VxHost>(*this);
+  nlohmann::json working_host_config = newCurrentSystem.Extract();
+
+  std::ofstream outputFile(this->workingPath + "/working_host.config");
+
+  // Populate file with working_host_config
+  if (outputFile.is_open())
+  {
+    outputFile << std::setw(4) << working_host_config << std::endl;
+    outputFile.close();
+  }
+  else
+  {
+    std::cerr << "Error while creating the working_host.config file." << std::endl;
+  }
+
+  this->haveCurrentSys = true;
+}
+
+
+void VxHost::Init()
+{
+  VxContext &ctx = *CVortexMaker;
+
+  // TODO: Take all tasks at root, and check if a task has toolchain type, if yes, include it.
+
+  // Add tasks types
+  {
+    std::shared_ptr<H_U_LoadToolchain> task = std::make_shared<H_U_LoadToolchain>();
+    task->tasktype = "H_U_LoadToolchain";
+    this->tasks.push_back(task);
+  }
+
+
+  // Load all custom tasks from plugins
+
+
+  // Get dist working path (for CurrentWorkingToolchain)
+  std::string envPath = ctx.projectPath / ctx.paths.toolchainDistFolder;
+  std::string baseDir = envPath + "/" + this->name;
+  std::string crosstoolsDir = baseDir + "/working_host";
+  this->workingPath = crosstoolsDir;
+
+
+  this->taskProcessor = std::make_shared<TaskProcessor>();
+  this->taskProcessor->startWorker();
 }
 
 int VxHost::ExecuteCmdInChroot(std::string cmd)

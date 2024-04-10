@@ -1074,6 +1074,7 @@ struct VxHostCurrentSystem{
     std::string size;
 
     std::vector<std::shared_ptr<Task>> executedTasks;
+    std::shared_ptr<VxHost> parent;
 
     std::vector<VxPackageReport> packageReports;
     std::vector<VxActionReport> actionReports;
@@ -1084,6 +1085,24 @@ struct VxHostCurrentSystem{
     void Populate(nlohmann::json jsonData); // from working_host.config
     nlohmann::json Extract();
     void Save(std::shared_ptr<VxHost> host);
+    // Variable Name // Required By (Task) // Value
+    std::vector<std::tuple<std::string, std::string, std::string>> variables;
+    void put_varable(Task* task, std::string name, std::string createdBy, std::string value){
+        task->created_variables.push_back(std::make_tuple(name, createdBy, value));
+        this->variables.push_back(std::make_tuple(name, createdBy, value));
+    }
+
+    // Save dans le current system les variables utilisées
+    std::tuple<std::string, std::string, std::string> get_varable(Task* task, std::string name){
+        for(auto var : this->variables){
+            if(std::get<0>(var) == name){
+                task->used_variables.push_back(var);
+                return var;
+            }
+        }
+        task->used_variables.push_back({name, "unknow", "unknow"});
+        return {name, "unknow", "unknow"};
+    }   
 };
 
 struct VxHostSnapshot{
@@ -1116,6 +1135,7 @@ struct VxHost{
     std::string vendor;
     std::string platform;
     std::string configFilePath;
+    std::string workingPath;
 
     std::string localPackagePath;
     std::string localScriptsPath;
@@ -1181,6 +1201,12 @@ struct VxHost{
 
     VxHostCurrentSystem currentLoadedSystem;
 
+    std::vector<std::shared_ptr<Task>> tasks;
+    std::shared_ptr<TaskProcessor> taskProcessor;
+
+    std::pair<std::string, int> exec_cmd(const std::string& cmd);
+    std::pair<std::string, int> exec_cmd_quote(const std::string& cmd);
+
     void CreatePackage(std::string label, std::string author, std::string description, std::string pathToTarball, std::shared_ptr<HostSave> save);
 
     void Init();
@@ -1205,6 +1231,10 @@ struct VxHost{
     void RegisterTasklist(const std::string label);
     void FindPackages();
     void FindTasklists();
+
+
+    void CreateCurrentHostSystem();
+    void DeleteCurrentHostSystem();
 
     /////////////////////////////////////////////////////////////////////////////
 

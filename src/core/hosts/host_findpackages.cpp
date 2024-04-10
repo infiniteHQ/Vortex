@@ -6,15 +6,12 @@ void VxHost::FindPackages()
   VxContext &ctx = *CVortexMaker;
 
   // Register all finded local packages
-  for (const auto &file : VortexMaker::SearchFiles(ctx.hostsPath, "package.config"))
+  for (const auto &file : VortexMaker::SearchFiles(ctx.toolchainsPath + "/" + this->name + "/" + localPackagesPath, "package.config"))
   {
     try
     {
-
       nlohmann::json filecontent = VortexMaker::DumpJSON(file);
-      // VxPackage newPackage;
-
-      // newPackage.configFilePath = file;
+      VxPackage newPackage;
 
       // Get packages infos
 
@@ -39,29 +36,19 @@ void VxHost::FindPackages()
 
               newPackage->path = file;
               size_t position = newPackage->path.find("/package.config");
+              newPackage->configFilePath = file; 
 
               if (position != std::string::npos)
               {
-                newPackage->path.erase(position, 17);
+                newPackage->path.erase(position, 15);
               }
 
-              newPackage->configFilePath = file;
               newPackage->label = filecontent["package"]["label"].get<std::string>();
               newPackage->fileName = filecontent["package"]["filename"].get<std::string>();
               newPackage->description = filecontent["package"]["description"].get<std::string>();
               newPackage->name = filecontent["package"]["name"].get<std::string>();
               newPackage->compressed = filecontent["package"]["compressed"].get<std::string>();
               newPackage->priority = filecontent["package"]["priority"].get<int>();
-              newPackage->useChroot = false;
-              try
-              {
-                newPackage->useChroot = filecontent["parameters"]["useChroot"].get<bool>();
-              }
-              catch (std::exception e)
-              {
-                e.what();
-              };
-
               newPackage->compilation.useCompilationOptimization = filecontent["parameters"]["useCompilationOptimization"].get<bool>();
               newPackage->compilation.exclusiveCustomCompilationProcess = filecontent["parameters"]["useOnlyCustomCompilationProcess"].get<std::string>();
               newPackage->compilation.exclusiveCustomConfigProcess = filecontent["parameters"]["useOnlyCustomConfigurationProcess"].get<std::string>();
@@ -88,7 +75,7 @@ void VxHost::FindPackages()
                   newAction->type = action["type"].get<std::string>();
                   newAction->priority = action["priority"].get<int>();
                   newAction->executionSequence = action["sequence"].get<std::string>();
-                  newAction->command = action["command"].get<std::string>();
+                  newAction->command = action["command"].get<std::string>(); // TODO : if type == command
                   newPackage->actions.push_back(newAction);
                 }
               }
@@ -136,40 +123,16 @@ void VxHost::FindPackages()
                 }
               }
 
+              std::shared_ptr<Task> newTask = std::make_shared<Task>();
+              newTask->tasktype = "unknow";
+              newPackage->latestTask = newTask;
+
               this->packages.push_back(newPackage);
               registeredPackage->resolved = true;
             }
           }
         }
-        else if (registeredPackage->emplacement == "global")
-        {
-          // Recupérer les packages du ctx.
-
-          for(auto package : ctx.IO.packages){
-            if(package->label == filecontent["package"]["label"].get<std::string>()){
-
-            bool already_registered = false;
-            for (auto registered_package : this->packages)
-            {
-              if (filecontent["package"]["label"].get<std::string>() == registered_package->label)
-              {
-                already_registered = true;
-              }
-            }
-
-            if (!already_registered)
-            {
-              std::shared_ptr<VxPackage> newPackage = std::make_shared<VxPackage>(*package);
-
-              this->packages.push_back(newPackage);
-              registeredPackage->resolved = true;
-            }
-
-            }
-          }
-
-        }
-
+        
       }
     }
     catch (const std::exception &e)
@@ -181,12 +144,41 @@ void VxHost::FindPackages()
   std::sort(this->packages.begin(), this->packages.end(), [](const std::shared_ptr<VxPackage> &a, const std::shared_ptr<VxPackage> &b)
             { return a->priority < b->priority; });
 
-  // Register global packages
-  for (auto registeredPackage : this->registeredPackages)
-  {
-    if (registeredPackage->emplacement == "global")
-    {
-      // Recupérer les packages du ctx.
-    }
-  }
+
+      for (auto registeredPackage : this->registeredPackages)
+      {
+
+
+        if (registeredPackage->emplacement == "global")
+        {
+          // Recupérer les packages du ctx.
+
+          for(auto package : ctx.IO.packages){
+            if(package->label == registeredPackage->label){
+
+            bool already_registered = false;
+            for (auto registered_package : this->packages)
+            {
+              if (registeredPackage->label == registered_package->label)
+              {
+                already_registered = true;
+              }
+            }
+
+            if (!already_registered)
+            {
+              std::shared_ptr<VxPackage> newPackage = package;
+
+              this->packages.push_back(newPackage);
+              registeredPackage->resolved = true;
+            }
+
+            }
+          }
+
+        }
+      
+
+      }
+
 }

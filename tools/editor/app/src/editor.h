@@ -268,35 +268,25 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
       ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Edit")) {
-      if (ImGui::MenuItem("Exit")) {
+      if (ImGui::MenuItem("Project Settings", "Main configurations of this project")) {
+        app->Close();
+      }
+      ImGui::Separator();
+      if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project")) {
         app->Close();
       }
       ImGui::EndMenu();
     }
 
     if (ImGui::BeginMenu("Window")) {
-      for(auto host : ctx->IO.hosts){
-        static std::string label = "Open" + host->name;
-
-      if (ImGui::MenuItem(label.c_str())) {
-        std::shared_ptr<InstanceWindow> window = std::make_shared<InstanceWindow>(ctx);
-        std::string label = "test_";
-        label += number;
-        number++;
-        std::shared_ptr<VxHost> hostToOpen = std::make_shared<VxHost>();
-        exampleLayer->AddInstanceOfWindow(window, label, hostToOpen);
-
+      if (ImGui::MenuItem("Show bottom toolbar", "Get some usefull tools in a bottom bar.")) {
+        app->Close();
       }
-
+      if (ImGui::MenuItem("Show simplified header", "Reduce the size of header")) {
+        
+        app->m_Specification.CustomTitlebar = !app->m_Specification.CustomTitlebar;
       }
-      /*
-      if (ImGui::MenuItem("CreateInstance")) {
-        std::shared_ptr<InstanceWindow> window = std::make_shared<InstanceWindow>(ctx);
-        std::string label = "test_";
-        label += number;
-        number++;
-        exampleLayer->AddInstanceOfWindow(window, label, host);
-      }*/
+   
       ImGui::EndMenu();
     }
 
@@ -312,6 +302,19 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
     }
 
     if (ImGui::BeginMenu("Help")) {
+      if (ImGui::MenuItem("News", "Get latest Vortex news")) {
+        app->Close();
+      }
+      if (ImGui::MenuItem("Community", "Join a community of creators")) {
+        app->Close();
+      }
+      if (ImGui::MenuItem("Tutorials", "Get bunch of tutorials")) {
+        app->Close();
+      }
+      if (ImGui::MenuItem("Documentation", "See official documentation of Vortex Maker")) {
+        app->Close();
+      }
+      ImGui::Separator();
       if (ImGui::MenuItem("Exit")) {
         app->Close();
       }

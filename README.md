@@ -25,7 +25,6 @@
 - Maintenance tools
 - Update tools
 
-### All Features 
 - #### Projects
     - Project gestion & saves handle
     - Export to production
@@ -40,8 +39,7 @@
     - Host linking and final components build
     - Host debugging runtime
 - #### General Purpose Operating Systems (GPOS)
-    - System development
-    - 
+    - System development & production
 
 
 - Operating Systems, Embedded Filesystems & Embbeded app creation
@@ -66,13 +64,6 @@ sudo make install
 
 #### Linux Distributions
 ```
-```
-
-#### Windows
-```
-Download Release and run vortex_maker.exe (TODO)
-```
-
 
 
 ## Usage

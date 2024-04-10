@@ -23,6 +23,12 @@ HostInstance::HostInstance(VxContext *ctx, std::shared_ptr<VxHost> _host, Instan
     }
     {
         uint32_t w, h;
+        void *data = Walnut::Image::Decode(icons::i_error, icons::i_error_size, w, h);
+        m_FlipBookIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
         void *data = Walnut::Image::Decode(icons::i_warn, icons::i_warn_size, w, h);
         m_WarningIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
         free(data);
@@ -168,6 +174,7 @@ std::string HostInstance::render()
         this->UI_SnapshotUtility();
         this->UI_CurrentHostPreview();
         this->UI_TasksEditor();
+        this->UI_VolatileTasks();
 
         return "rendering";
     }
@@ -219,6 +226,9 @@ void HostInstance::menubar()
             if (ImGui::MenuItem("Snapshots utility", "All saves of this host", &this->show_UI_SnapshotUtility))
             {
             }
+            if (ImGui::MenuItem("Volatile tasks", "See and execute single task(s)", &this->show_UI_VolatileTasks))
+            {
+            }
             ImGui::EndMenu();
         }
         ImGui::Separator();
@@ -247,7 +257,7 @@ void HostInstance::menubar()
 
         if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
         {
-            ImGui::OpenPopup("CreateNew");
+            ImGui::OpenPopup("Add a composant");
         }
 
         if (ImGui::ImageButtonWithText(eyeIcon, "Preview", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
@@ -260,75 +270,131 @@ void HostInstance::menubar()
         {
             // Save behavior
         }
+        static bool open_ImportationMenu = false;
+        static bool open_CreateTaskList = false;
 
-        static bool open_edit_popup = false;
-
-        if (open_edit_popup)
-        {
-            if (ImGui::BeginPopupModal("CreatePackage"))
-            {
-                // 3 text inputs
-                static char label[128] = "";
-                static char author[128] = "";
-                static char description[128] = "";
-                static char pathToTarball[128] = "";
-
-                // inputs widget
-                ImGui::InputText("Name", label, IM_ARRAYSIZE(label));
-                ImGui::InputText("Author", author, IM_ARRAYSIZE(author));
-                ImGui::InputText("Description", description, IM_ARRAYSIZE(description));
-                ImGui::InputText("Tarball Path", pathToTarball, IM_ARRAYSIZE(pathToTarball));
-
-                // Call CreatePackage function from VxHost
-                if (ImGui::Button("Create", ImVec2(120, 0)))
-                {
-                    std::string _label = label;
-                    std::string _author = author;
-                    std::string _description = description;
-                    std::string _pathToTarball = pathToTarball;
-                    this->host->CreatePackage(_label, _author, _description, _pathToTarball, this->m_currentSave);
-                    ImGui::CloseCurrentPopup();
-                }
-
-                ImGui::EndPopup();
-            }
-        }
-
-        if (open_edit_popup)
-            ImGui::OpenPopup("CreatePackage");
-
-        if (ImGui::BeginPopupModal("CreateNew", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-            ImGui::Text("Get content");
+        if(open_ImportationMenu) {
+                   if (ImGui::BeginPopupModal("Import content(s)", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+                      {
+            ImGui::Text("From this project");
             ImGui::Separator();
 
-            ImGui::Text("Create Basic Component");
-            ImGui::Separator();
-            if (ImGui::ImageButtonWithText(eyeIcon, "Package", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
-            {
-                open_edit_popup = true;
-                ImGui::CloseCurrentPopup();
-            }
-            if (ImGui::ImageButtonWithText(eyeIcon, "Script", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
-            {
-            }
-            if (ImGui::ImageButtonWithText(eyeIcon, "Tasklist", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
-            {
-            }
+            // Image button with text with full width
 
             ImGui::Text("Create Advanced Component");
             ImGui::Separator();
-            if (ImGui::ImageButtonWithText(eyeIcon, "Chrooter", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+
+            if (ImGui::CollapsingHeader("Import package(s)"))
             {
+                for(auto package : this->m_ctx->IO.packages){
+                    if (ImGui::Button(package->label.c_str(), ImVec2(-1, 0)))
+                    {
+                        std::pair<char[128],char[128]> pair;
+                        std::strcpy(pair.first, package->label.c_str());
+                        std::strcpy(pair.second, "global");
+                        this->m_currentSave->registeredPackages.push_back(pair);
+                        this->Save();
+
+                        this->Refresh();
+
+                    open_ImportationMenu = false;
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
             }
 
             // static int unused_i = 0;
             // ImGui::Combo("Combo", &unused_i, "Delete\0Delete harder\0");
 
-            static bool dont_ask_me_next_time = false;
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-            ImGui::Checkbox("Don't ask me next time", &dont_ask_me_next_time);
-            ImGui::PopStyleVar();
+            if (ImGui::Button("OK", ImVec2(120, 0)))
+            {
+                    open_ImportationMenu = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                    open_ImportationMenu = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+                   
+        }
+
+        if(open_CreateTaskList) {
+                   if (ImGui::BeginPopupModal("Create new Tasklist", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+
+
+                // 3 text inputs
+                static std::pair<char[128],char[128]> pair;
+                // inputs widget
+                ImGui::InputText("Tasklist Name", pair.first, IM_ARRAYSIZE(pair.first));
+                //std::string _TasklistName = TasklistName;
+            
+
+            // static int unused_i = 0;
+            // ImGui::Combo("Combo", &unused_i, "Delete\0Delete harder\0");
+/*
+            if (ImGui::Button("Create", ImVec2(120, 0)))
+            {
+                this->host->CreateTasklist(pair.first, this->m_currentSave); 
+                this->m_currentSave->registeredTasklists.push_back(pair);
+                this->Save();
+                this->Refresh();
+                    open_CreateTaskList = false;
+                ImGui::CloseCurrentPopup();
+            }*/
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                    open_CreateTaskList = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
+            
+        }
+
+        if (open_ImportationMenu)
+            ImGui::OpenPopup("Import content(s)");
+
+        if (open_CreateTaskList)
+            ImGui::OpenPopup("Create new Tasklist");
+
+
+        if (ImGui::BeginPopupModal("Add a composant", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Get content");
+            ImGui::Separator();
+            if(ImGui::Button("Import...", ImVec2(-1, 0))){
+
+                    open_ImportationMenu = true;
+                    ImGui::CloseCurrentPopup();
+
+            }
+
+            ImGui::Text("Create Basic Component");
+            ImGui::Separator();
+            // Image button with text with full width
+
+            ImGui::Text("Create Advanced Component");
+            ImGui::Separator();
+
+            if (ImGui::CollapsingHeader("Tasklists"))
+            {
+            if(ImGui::Button("Tasklist (TL)", ImVec2(-1, 0))){
+                    open_CreateTaskList = true;
+                    ImGui::CloseCurrentPopup();
+            }
+
+            }
+
+
 
             if (ImGui::Button("OK", ImVec2(120, 0)))
             {

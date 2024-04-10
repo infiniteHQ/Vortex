@@ -130,15 +130,16 @@ void VxPackage::Refresh()
 void VxHost::RefreshCurrentWorkingHost()
 {
   // Check if this->workingPath + "/working_host.config" exists
-  if (!std::filesystem::exists(this->path_hostroot + "/working_host.config"))
+  if (!std::filesystem::exists(this->workingPath + "/working_host.config"))
   {
-    std::cerr << "Error : " << this->path_hostroot + "/working_host.config"
+    std::cerr << "Error : " << this->workingPath + "/working_host.config"
               << " does not exists." << std::endl;
     this->haveCurrentSys = false;
     return;
   }
 
-  nlohmann::json data = VortexMaker::DumpJSON(this->path_hostroot + "/working_host.config");
+  nlohmann::json data = VortexMaker::DumpJSON(this->workingPath + "/working_host.config");
+    this->currentLoadedSystem.parent = std::make_shared<VxHost>(*this);
   this->currentLoadedSystem.Populate(data);
   this->haveCurrentSys = true;
 }
@@ -365,24 +366,38 @@ void VxToolchainCurrentSystem::Populate(nlohmann::json jsonData)
 
 void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
 {
+  this->executedTasks.clear();
   this->size = jsonData["size"].get<std::string>();
 
   // Get list of packages and all reports associated
   for (auto packageReport : jsonData["taskList"])
   {
-    std::shared_ptr<Task> task = TaskFactory::getInstance().createInstance(packageReport["t_tasktype"].get<std::string>().c_str());
+    std::shared_ptr<Task> task = std::make_shared<Task>();
 
     task->id = packageReport["t_id"].get<std::string>();
     task->tasktype = packageReport["t_tasktype"].get<std::string>();
     task->priority = packageReport["t_priority"].get<int>();
+    task->component = packageReport["t_component"].get<std::string>();
     task->state = packageReport["t_state"].get<std::string>();
     task->m_TotalTime = packageReport["t_duration"].get<double>();
     task->m_StartTime = stringToTimePoint(packageReport["t_time"].get<std::string>());
+
+    for (auto created_variables : packageReport["t_created_variables"])
+    {
+      task->created_variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
+      this->variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
+    }
+    for (auto created_variables : packageReport["t_used_variables"])
+    {
+      task->created_variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
+      this->variables.push_back(std::make_tuple(created_variables["variable"].get<std::string>(), created_variables["owner"].get<std::string>(), created_variables["value"].get<std::string>()));
+    }
 
     for (auto checks : packageReport["t_checklist"])
     {
       std::shared_ptr<Check> check = std::make_shared<Check>();
       check->checkResult = checks["result"].get<std::string>();
+      check->checkDirective = checks["directive"].get<std::string>();
       check->checkID = checks["id"].get<std::string>();
       check->checkLog = checks["log"].get<std::string>();
       if (check->checkResult == "success")
@@ -404,19 +419,32 @@ void VxHostCurrentSystem::Populate(nlohmann::json jsonData)
       task->checkList.push_back(check);
     }
 
-    for (auto checks : packageReport["t_used_variables"])
-    {
-      task->used_variables.push_back(std::make_tuple(checks["variable"].get<std::string>(), checks["owner"].get<std::string>(), checks["value"].get<std::string>()));
-    }
-
-    for (auto checks : packageReport["t_created_variables"])
-    {
-      task->created_variables.push_back(std::make_tuple(checks["variable"].get<std::string>(), checks["owner"].get<std::string>(), checks["value"].get<std::string>()));
-    }
-
     this->executedTasks.push_back(task);
   }
 
+    for (auto packageReport : jsonData["packageList"])
+    {
+      for (auto package : this->parent->packages)
+      {
+        if (package->name == packageReport["p_name"].get<std::string>())
+        {
+          for (auto task : this->executedTasks)
+          {
+            for (auto taskid : packageReport["p_tasklist"])
+            {
+              if (task->id == taskid.get<std::string>())
+              {
+                package->allTasks.push_back(task);
+              }
+              if (task->id == packageReport["p_latest_taskid"].get<std::string>())
+              {
+                package->latestTask = task;
+              }
+            }
+          }
+        }
+      }
+    }
   // Get filesystem informations
 
   // Get list of all render assets (actions, scirpts, skeletons, etc)

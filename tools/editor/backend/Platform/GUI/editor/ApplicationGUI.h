@@ -84,6 +84,9 @@ namespace Walnut {
 		{
 			m_EventQueue.push(func);
 		}
+
+		ApplicationSpecification m_Specification;
+		
 	private:
 		void Init();
 		void Shutdown();
@@ -92,7 +95,6 @@ namespace Walnut {
 		void UI_DrawTitlebar(float& outTitlebarHeight);
 		void UI_DrawMenubar();
 	private:
-		ApplicationSpecification m_Specification;
 		GLFWwindow* m_WindowHandle = nullptr;
 		bool m_Running = false;
 		

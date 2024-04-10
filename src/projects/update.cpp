@@ -127,17 +127,17 @@ void TaskList::PushSave(std::shared_ptr<TaskListSave> save)
 void VxHostCurrentSystem::Save(std::shared_ptr<VxHost> parent)
 {
     nlohmann::json data = this->Extract();
-    std::ofstream file(parent->path_hostroot + "/working_host.config");
+    std::ofstream file(parent->workingPath + "/working_host.config");
     if (file.is_open())
     {
         file << std::setw(4) << data << std::endl;
-          VortexMaker::LogInfo("Core", "Object saved to " + parent->path_hostroot + "/working_host.config");
+          VortexMaker::LogInfo("Core", "Object saved to " + parent->workingPath + "/working_host.config");
         file.close();
     }
     else
     {
 
-        VortexMaker::LogError("Core", "Unable to open file " + parent->path_hostroot + "/working_host.config"+" for writing!");
+        VortexMaker::LogError("Core", "Unable to open file " + parent->workingPath + "/working_host.config"+" for writing!");
     }
 }
 

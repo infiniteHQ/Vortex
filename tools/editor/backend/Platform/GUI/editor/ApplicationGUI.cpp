@@ -487,10 +487,6 @@ namespace Walnut
 			glfwSetWindowIcon(m_WindowHandle, 1, icon);
 			stbi_image_free(icon[0].pixels);
 		}
-		else{
-
-			std::cout << "Ignore icon" << std::endl;
-		}
 
 		glfwSetWindowUserPointer(m_WindowHandle, this);
 		glfwSetTitlebarHitTestCallback(m_WindowHandle, [](GLFWwindow *window, int x, int y, int *hit)

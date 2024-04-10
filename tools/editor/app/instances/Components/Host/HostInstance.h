@@ -43,6 +43,7 @@ public:
     void UI_SnapshotUtility();
     void UI_CurrentHostPreview();
     void UI_TasksEditor();
+    void UI_VolatileTasks();
 
 
 
@@ -55,6 +56,7 @@ public:
     bool show_UI_SnapshotUtility = false;
     bool show_UI_CurrentHostPreview = false;
     bool show_UI_TasksEditor = false;
+    bool show_UI_VolatileTasks = false;
 
     std::thread receiveThread;
 
@@ -73,6 +75,7 @@ public:
     std::shared_ptr<Walnut::Image> m_ErrorIcon;
     std::shared_ptr<Walnut::Image> m_SuccessIcon;
     std::shared_ptr<Walnut::Image> m_UnknowIcon;
+    std::shared_ptr<Walnut::Image> m_FlipBookIcon;
     std::shared_ptr<Walnut::Image> m_TaskListIcon;
     std::shared_ptr<Walnut::Image> m_SaveIcon;
     std::shared_ptr<Walnut::Image> m_RefreshIcon;

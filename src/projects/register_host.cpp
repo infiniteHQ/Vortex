@@ -12,8 +12,8 @@ bool VortexMaker::RegisterHost(std::shared_ptr<VxHost> host, nlohmann::json tool
   host->vendor = toolchainData["host"]["vendor"].get<std::string>();
   host->platform = toolchainData["host"]["platform"].get<std::string>();
 
-  host->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
-  host->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
+  //host->host_arch = toolchainData["configs"]["host_arch"].get<std::string>();
+  //host->target_arch = toolchainData["configs"]["target_arch"].get<std::string>();
 
   host->toolchainToUse = toolchainData["build"]["use_toolchain"].get<std::string>();
 

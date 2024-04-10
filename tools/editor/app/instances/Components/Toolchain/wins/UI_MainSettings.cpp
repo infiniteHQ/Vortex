@@ -128,6 +128,7 @@ void ToolchainInstance::UI_MainSettings()
                 "mips64el-n32",
                 "mips64r6el-n32",
                 "nios2",
+                "i686",
                 "openrisc",
                 "powerpc-440fp",
                 "powerpc-e300c3",
