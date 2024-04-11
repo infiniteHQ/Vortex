@@ -1,10 +1,11 @@
 {
     "type":"em_instanciable",
     "name":"vortex.modules.builtin.toolchains",
-    "proper_name":"Toolchains Module",
+    "proper_name":"Toolchains creator",
     "version":"1.0.0",
     "author":"Infinite Tech",
-    "contributors":["Diego","Other"],
+    "contributors":["Diego","Other","Other","Other","Other"],
     "path":"./build/libplugin.so",
+    "picture":"./assets/logo.png",
     "description":"A very sampel"
 }

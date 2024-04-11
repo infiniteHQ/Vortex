@@ -32,7 +32,7 @@ void ModuleManager::OnImGuiRender()
 {
     static ImTextureID listIcon = this->m_ListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    if (ImGui::Begin("Project Viewer", &listIcon, &this->opened, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Modules manager", &listIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         this->menubar();
 
     float oldsize = ImGui::GetFont()->Scale;
@@ -48,38 +48,178 @@ void ModuleManager::OnImGuiRender()
 
     ImGui::Separator();
 
+    // Left
+    static int selected = 0;
+    static std::array<char[128], 3> labels = {"Instances", "Utils", "Workers"};
 
-        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
-
-        if (ImGui::BeginTable("table1", 4, flags))
+    {
+        ImGui::BeginChild("left pane", ImVec2(230, -1), true);
+        for (int i = 0; i < labels.size(); i++)
         {
-            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Place", ImGuiTableColumnFlags_WidthStretch);
-            ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableHeadersRow();
+            if (i == 0)
+            {
+                std::string label = "All modules (" + std::to_string(this->ctx->IO.em.size()) + ")";
+                ImGui::TextColored(ImVec4(0.4, 0.4, 0.4, 1), label.c_str());
+            }
 
-            for (int row = 0; row < this->ctx->IO.em.size(); row++)
+            std::string label;
+
+            switch (i)
+            {
+            case 0:
             {
 
-                ImGui::TableNextRow();
-                for (int column = 0; column < 4; column++)
+                int number;
+                for (auto em : this->ctx->IO.em)
                 {
-                    ImGui::TableSetColumnIndex(column);
-                    if (column == 0){
-                        
-                        ImGui::Text(this->ctx->IO.em[row]->m_name.c_str());
-                       // static ImTextureID emIcon =this->ctx->IO.em[row]->m_module_icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-                       // if (ImGui::ImageButtonWithText(emIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
-                       // {
-                       //     this->refreshContents();
-                       // }
+                    if (em->m_type == "em_instanciable")
+                    {
+                        number++;
+                    }
+                }
+                label = labels[i];
+                label += " (";
+                label += number;
+                label += ")";
+            }
+            case 1:
+            {
+
+                int number;
+                for (auto em : this->ctx->IO.em)
+                {
+                    if (em->m_type == "other...")
+                    {
+                        number++;
+                    }
+                }
+                label = labels[i];
+                label += " (";
+                label += number;
+                label += ")";
+            }
+            case 2:
+            {
+
+                int number;
+                for (auto em : this->ctx->IO.em)
+                {
+                    if (em->m_type == "other..")
+                    {
+                        number++;
+                    }
+                }
+                label = labels[i];
+                label += " (";
+                label += number;
+                label += ")";
+            }
+            }
+
+            label += "##";
+            label += labels[i];
+
+            if (ImGui::Selectable(label.c_str(), selected == i))
+                selected = i;
+        }
+        ImGui::EndChild();
+    }
+    ImGui::SameLine();
+    ImGui::Separator();
+    ImGui::SameLine();
+
+    for (int row = 0; row < this->ctx->IO.em.size(); row++)
+    {
+        switch (selected)
+        {
+        case 1:
+        {
+            if (this->ctx->IO.em[row]->m_type == "em_instanciable")
+            {
+
+                std::string childLabel = "module##" + this->ctx->IO.em[row]->m_name;
+                
+                ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 200), true);
+
+                static ImTextureID addIcon;
+                {
+                    std::shared_ptr<Walnut::Image> _icon;
+                    uint32_t w, h;
+                    void *data = Walnut::Image::Decode(this->ctx->IO.em[row]->m_logo, this->ctx->IO.em[row]->m_logo_size, w, h);
+                    _icon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+                    free(data);
+                    addIcon = _icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                }
+
+                if(addIcon){
+
+                    ImGui::Image(addIcon, ImVec2(50,50));
+                    ImGui::SameLine();
+                }
+
+
+                {
+
+                    float oldsize = ImGui::GetFont()->Scale;
+                    ImGui::GetFont()->Scale *= 1.3;
+                    ImGui::PushFont(ImGui::GetFont());
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), this->ctx->IO.em[row]->m_name.c_str());
+
+                    ImGui::GetFont()->Scale = oldsize;
+                    ImGui::PopFont();
+                }
+
+                {
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) : ");
+                    ImGui::SameLine();
+                    ImGui::Text(this->ctx->IO.em[row]->m_author.c_str());
+                }
+
+                {
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Description : ");
+                    ImGui::SameLine();
+                    ImGui::Text(this->ctx->IO.em[row]->m_description.c_str());
+                }
+
+                {
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Contributors : ");
+                    int i = 0;
+                    for (auto contributor : this->ctx->IO.em[row]->m_contributors)
+                    {
+                        i++;
+                        if (i <= 3)
+                        {
+                            if (i < this->ctx->IO.em[row]->m_contributors.size())
+                            {
+                                ImGui::SameLine();
+                                std::string contri = contributor + ",";
+                                ImGui::Text(contri.c_str());
+                            }
+                            else
+                            {
+                                ImGui::SameLine();
+                                ImGui::Text(contributor.c_str());
+                            }
+                        }
+                        else
+                        {
+                            ImGui::SameLine();
+                            int counter = this->ctx->IO.em[row]->m_contributors.size() - 3;
+                            std::string label = " and " + std::to_string(counter) + " other...";
+                            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), label.c_str());
+                            break;
+                        }
                     }
                 }
             }
-            ImGui::EndTable();
+            ImGui::EndChild();
         }
-
+        }
+    }
 
     ImGui::End();
 }
@@ -93,10 +233,9 @@ void ModuleManager::menubar()
     if (ImGui::BeginMenuBar())
     {
 
+        const char *items[] = {"Treev iew", "Cards view"};
 
-            const char *items[] = {"Treev iew", "Cards view"};
-
-            ImGui::Combo("View", &item_current, items, IM_ARRAYSIZE(items));
+        ImGui::Combo("View", &item_current, items, IM_ARRAYSIZE(items));
 
         ImGui::Separator();
 
@@ -155,8 +294,7 @@ void ModuleManager::menubar()
         if (open_confirm_popup)
             ImGui::OpenPopup("ToolchainCreated");
 
-
-            if (open_CreateHost)
+        if (open_CreateHost)
         {
             if (ImGui::BeginPopupModal("Create New Host"))
             {
@@ -190,7 +328,7 @@ void ModuleManager::menubar()
             }
         }
 
-       if (open_CreateGpos)
+        if (open_CreateGpos)
         {
             if (ImGui::BeginPopupModal("Create New GPOS"))
             {
@@ -223,7 +361,7 @@ void ModuleManager::menubar()
                 ImGui::EndPopup();
             }
         }
- if (open_CreateScript)
+        if (open_CreateScript)
         {
             if (ImGui::BeginPopupModal("Create New Script"))
             {
@@ -256,7 +394,6 @@ void ModuleManager::menubar()
                 ImGui::EndPopup();
             }
         }
-
 
         if (open_CreateToolchain)
         {

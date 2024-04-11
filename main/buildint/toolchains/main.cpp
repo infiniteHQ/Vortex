@@ -10,7 +10,8 @@ public:
     {
         std::cout << "Plugin One Example executed" << std::endl;
 
-        this->m_name = "SuperMode";
+        this->m_logo = icons::_i;        
+        this->m_logo_size = icons::_i_size;
     }
     void render() override
     {
