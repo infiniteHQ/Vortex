@@ -1,12 +1,12 @@
 // UI (with imgui)
-#include "../../backend/Source/editor/Application.h"
-#include "../../backend/Platform/GUI/editor/ImGui/ImGuiTheme.h"
-#include "../../backend/Platform/GUI/editor/Image.h"
-#include "../../backend/Platform/GUI/editor/UI/UI.h"
-#include "../../backend/Platform/GUI/editor/UI/Notification.h"
-#include "../../backend/Platform/GUI/editor/UI/IconsFontAwesome6.h"
+#include "../../../lib/uikit/Source/editor/Application.h"
+#include "../../../lib/uikit/Platform/GUI/editor/ImGui/ImGuiTheme.h"
+#include "../../../lib/uikit/Platform/GUI/editor/Image.h"
+#include "../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
+#include "../../../lib/uikit/Platform/GUI/editor/UI/Notification.h"
+#include "../../../lib/uikit/Platform/GUI/editor/UI/IconsFontAwesome6.h"
+#include "../../../lib/uikit/Assets/icons.h"
 
-#include "../../backend/Assets/icons.h"
 
 #include "../../../../main/include/vortex.h"
 #include "../../../../main/include/vortex_core.h"

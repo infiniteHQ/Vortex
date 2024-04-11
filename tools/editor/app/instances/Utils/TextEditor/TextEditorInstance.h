@@ -1,7 +1,10 @@
 
-#include "../../../../backend/Assets/icons.h"
 #include "../../../src/instanceFactory.h"
-#include "../../../../../../main/include/vortex.h"
+#include "../../../../../../lib/uikit/Source/editor/Application.h"
+#include "../../../../../../lib/uikit/Platform/GUI/editor/ImGui/ImGuiTheme.h"
+#include "../../../../../../lib/uikit/Platform/GUI/editor/Image.h"
+#include "../../../../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
+#include "../../../../../../lib/uikit/Assets/icons.h"
 #include "./TextEditor.hpp"
 
 class TextEditor;

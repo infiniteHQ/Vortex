@@ -1,5 +1,6 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
+#include "../../../include/modules/load.h"
 
 /**
  * @brief Initialize project settings based on provided JSON configurations.
@@ -34,12 +35,23 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     // Set project path to current working directory
     ctx.projectPath = fs::current_path();
 
+
+    VortexMaker::LoadEditorModules(ctx.projectPath, ctx.IO.em_handles, ctx.IO.em);
+    
+
+
+    // TODO : On a dedicated function
+    for(auto em : ctx.IO.em)
+    {
+        em->execute();
+    }
+
     // Refresh various project components
-    VortexMaker::RefreshPackages();
-    VortexMaker::RefreshGpos();
-    VortexMaker::RefreshHosts();
-    VortexMaker::RefreshToolchains();
-    VortexMaker::RefreshDistToolchains();
-    VortexMaker::RefreshScripts();
-    VortexMaker::RefreshDistHosts();
+    //VortexMaker::RefreshPackages();
+    //VortexMaker::RefreshGpos();
+    //VortexMaker::RefreshHosts();
+    //VortexMaker::RefreshToolchains();
+    //VortexMaker::RefreshDistToolchains();
+    //VortexMaker::RefreshScripts();
+    //VortexMaker::RefreshDistHosts();
 }

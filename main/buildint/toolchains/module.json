@@ -1,5 +1,5 @@
 {
-    "type":"editor_module",
+    "type":"em_instanciable",
     "name":"vortex.modules.builtin.toolchains",
     "proper_name":"Toolchains Module",
     "version":"1.0.0",

@@ -161,6 +161,11 @@ struct VxIO {
 
 
   std::vector<std::shared_ptr<Task>> tasks;
+
+
+  // EM / Editor Modules
+  std::vector<void *> em_handles;
+  std::vector<std::shared_ptr<ModuleInterface>> em;
 };
 
 

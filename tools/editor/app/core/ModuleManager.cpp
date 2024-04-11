@@ -1,15 +1,13 @@
-#include "ProjectViewer.hpp"
+#include "ModuleManager.hpp"
 
 #include <iostream>
 
 static int item_current = 0;
 
-ProjectViewer::ProjectViewer(VxContext *_ctx, InstanceFactory *_factory)
+ModuleManager::ModuleManager(VxContext *_ctx, InstanceFactory *_factory)
 {
     this->ctx = _ctx;
     this->factory = _factory;
-    this->refreshContents();
-
     {
         uint32_t w, h;
         void *data = Walnut::Image::Decode(icons::i_list, icons::i_list_size, w, h);
@@ -30,11 +28,10 @@ ProjectViewer::ProjectViewer(VxContext *_ctx, InstanceFactory *_factory)
     }
 }
 
-void ProjectViewer::OnImGuiRender()
+void ModuleManager::OnImGuiRender()
 {
     static ImTextureID listIcon = this->m_ListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    this->refreshContents();
     if (ImGui::Begin("Project Viewer", &listIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         this->menubar();
 
@@ -51,112 +48,43 @@ void ProjectViewer::OnImGuiRender()
 
     ImGui::Separator();
 
-   
-    if(item_current == 0){
-         static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
-    const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("A").x;
-    if (ImGui::BeginTable("3ways", 3, flags))
-    {
-        // The first column will use the default _WidthStretch when ScrollX is Off and _WidthFixed when ScrollX is On
-        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
-        ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 12.0f);
-        ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 18.0f);
-        ImGui::TableHeadersRow();
 
-        MyTreeNode::DisplayNode(&nodeInfos[0], nodeInfos, factory, ctx);
+        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-        ImGui::EndTable();
-    }
-    }
-    if(item_current == 1){
+        if (ImGui::BeginTable("table1", 4, flags))
+        {
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Place", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableHeadersRow();
 
+            for (int row = 0; row < this->ctx->IO.em.size(); row++)
             {
 
-            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Hosts : ");
-            int height = 0;
-            if(this->ctx->IO.hosts.size() < 4)height = 220;
-            if(this->ctx->IO.hosts.size() < 8 && this->ctx->IO.hosts.size() > 4)height = 440;
-            if(this->ctx->IO.hosts.size() < 12 && this->ctx->IO.hosts.size() > 8)height = 880;
-            if(this->ctx->IO.hosts.size() < 16 && this->ctx->IO.hosts.size() > 12)height = 1100;
-            
-            
-            ImGui::BeginChild("Pans_VolatileTasks", ImVec2(-1, height), true);
-            ImGui::Columns(4, NULL);
-
-            int i = 0;
-
-            for (int row = 0; row < this->ctx->IO.hosts.size(); row++)
-            {
-                std::string label = "packageView###" + std::to_string(row) + this->ctx->IO.hosts[row]->name + std::to_string(i);
-                ImGuiID id = ImGui::GetID(label.c_str());
-                ImGui::BeginChildFrame(id, ImVec2(0, 200), true);
-
-                // Affichage des éléments individuels
-                std::string ll = this->ctx->IO.hosts[row]->name;
-                ImGui::Text(ll.c_str());
-
-               
-
-                if (ImGui::Button("Open", ImVec2(-1, 35)))
+                ImGui::TableNextRow();
+                for (int column = 0; column < 4; column++)
                 {
-
+                    ImGui::TableSetColumnIndex(column);
+                    if (column == 0){
+                        
+                        ImGui::Text(this->ctx->IO.em[row]->m_name.c_str());
+                       // static ImTextureID emIcon =this->ctx->IO.em[row]->m_module_icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                       // if (ImGui::ImageButtonWithText(emIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                       // {
+                       //     this->refreshContents();
+                       // }
+                    }
                 }
-
-                ImGui::EndChildFrame();
-                ImGui::NextColumn();
             }
-            ImGui::EndChild();
-            }
-
-
-
-
-            {
-
-            int i = 0;
-            int height = 0;
-            if(this->ctx->IO.toolchains.size() < 4)height = 220;
-            if(this->ctx->IO.toolchains.size() < 7 && this->ctx->IO.toolchains.size() > 4)height = 440;
-            if(this->ctx->IO.toolchains.size() < 11 && this->ctx->IO.toolchains.size() > 8)height = 880;
-            if(this->ctx->IO.toolchains.size() < 15 && this->ctx->IO.toolchains.size() > 12)height = 1100;
-
-            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Toolchain : ");
-            ImGui::BeginChild("Pans_VolatileTasksToolchains", ImVec2(-1, height), true);
-            ImGui::Columns(4, NULL);
-
-            for (int row = 0; row < this->ctx->IO.toolchains.size(); row++)
-            {
-                std::string label = "packageView###" + std::to_string(row) + this->ctx->IO.toolchains[row]->name + std::to_string(i);
-                ImGuiID id = ImGui::GetID(label.c_str());
-                ImGui::BeginChildFrame(id, ImVec2(0, 200), true);
-
-                // Affichage des éléments individuels
-                std::string ll = this->ctx->IO.toolchains[row]->name;
-                ImGui::Text(ll.c_str());
-
-               
-
-				std::string toolchainName = "Open###" + this->ctx->IO.toolchains[row]->name + "Open";
-				if(ImGui::Button(toolchainName.c_str(), ImVec2(-1, 35))){
-							std::shared_ptr<ToolchainInstance> instance = std::make_shared<ToolchainInstance>(ctx, this->ctx->IO.toolchains[row], factory);
-							factory->SpawnInstance(instance);	
-						
-					
-
-				}
-                ImGui::EndChildFrame();
-                ImGui::NextColumn();
-            }
-            ImGui::EndChild();
-            }
-    
-    }
+            ImGui::EndTable();
+        }
 
 
     ImGui::End();
 }
 
-void ProjectViewer::menubar()
+void ModuleManager::menubar()
 {
 
     static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -174,7 +102,6 @@ void ProjectViewer::menubar()
 
         if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
         {
-            this->refreshContents();
         }
         if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
         {

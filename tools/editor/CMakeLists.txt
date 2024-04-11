@@ -14,16 +14,17 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/../../main/src/vortex.cpp
 
     # editor requirements
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/ImGui/ImGuiTheme.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/UI/UI.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/UI/Spinner.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/ApplicationGUI.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/Image.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/Source/editor/Core/Log.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/Assets/icons.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/ImGui/ImGuiTheme.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/UI/UI.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/UI/Spinner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/ApplicationGUI.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/Image.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Source/editor/Core/Log.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Assets/icons.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ContentBrowser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectViewer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ModuleManager.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_ContentWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_MainSettings.cpp
@@ -71,6 +72,8 @@ add_library(editor
 
 
 
+target_include_directories(editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
+
 # editor requirements
 find_package(Vulkan REQUIRED)
 find_package(spdlog REQUIRED)
@@ -85,4 +88,4 @@ target_link_libraries(editor PUBLIC glm)
 target_link_libraries(editor PUBLIC stbimage)
 target_link_libraries(editor PUBLIC spdlog::spdlog)
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/backend/Platform/GUI/editor/icon.png DESTINATION /usr/include/vortex)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/icon.png DESTINATION /usr/include/vortex)

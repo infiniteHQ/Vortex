@@ -1,18 +1,31 @@
-// plugin_example.cpp
-#include <iostream>
-#include "../../include/modules/interface.h"
+#include "../../include/vortex.h"
+#include "./include/ToolchainInstance.h"
 
-class ToolchainsModule : public ModuleInterface {
+static std::vector<std::shared_ptr<ToolchainInstance>> instances;
+
+class ToolchainsModule : public ModuleInterface
+{
 public:
-    void execute() override {
+    void execute() override
+    {
         std::cout << "Plugin One Example executed" << std::endl;
+
+        this->m_name = "SuperMode";
     }
-    void render() override {
-        std::cout << "GUI rendering" << std::endl;
+    void render() override
+    {
+        for (auto instance : instances)
+        {
+            if (instance->render() == "closed")
+            {
+            };
+        }
     }
 };
 
-
-extern "C" ModuleInterface* create_editor_module() {
+extern "C" ModuleInterface *create_em()
+{
     return new ToolchainsModule();
 }
+
+// Initialiser les modules dans le contexte depuis le vortex.config

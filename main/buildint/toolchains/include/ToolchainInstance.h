@@ -1,22 +1,18 @@
 
-#include "../../../../../../lib/uikit/Source/editor/Application.h"
-#include "../../../../../../lib/uikit/Platform/GUI/editor/ImGui/ImGuiTheme.h"
-#include "../../../../../../lib/uikit/Platform/GUI/editor/Image.h"
-#include "../../../../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
-#include "../../../../../../lib/uikit/Platform/GUI/editor/UI/Spinner.h"
-#include "../../../../../../lib/uikit/Assets/icons.h"
-#include "../../../src/instanceFactory.h"
-#include "../../../../../../main/include/vortex.h"
+#include "../../../../lib/uikit/uikit.h"
+#include "../../../../main/include/vortex.h"
+#include "../../../../main/include/vortex_internals.h"
+#include "../assets/icons.h"
 
-#ifndef ToolchainInstance_H
-#define ToolchainInstance_H
+#ifndef ToolchainModulesInstance_H
+#define ToolchainModulesInstance_H
 
 using namespace VortexMaker;
 
 class ToolchainInstance
 {
 public:
-    ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain, InstanceFactory* factory);
+    ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain);
 
     std::string render();
     void close();
@@ -51,7 +47,7 @@ public:
     bool show_UI_AssetsViewer = false;
     bool show_UI_MainSettings = false;
 
-    InstanceFactory* factory;
+    //InstanceFactory* factory;
 
     std::string name;
     VxContext *m_ctx;
@@ -81,4 +77,4 @@ public:
     std::shared_ptr<Walnut::Image> m_FolderIcon;
 };
 
-#endif // ToolchainInstance_H
+#endif // ToolchainModulesInstance_H

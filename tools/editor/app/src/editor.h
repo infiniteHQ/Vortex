@@ -1,18 +1,20 @@
 
 
 // UI (with imgui)
-#include "../../backend/Source/editor/Application.h"
-#include "../../backend/Source/editor/EntryPoint.h"
-#include "../../backend/Platform/GUI/editor/Image.h"
-#include "../../backend/Platform/GUI/editor/UI/UI.h"
-#include "../../backend/Platform/GUI/editor/UI/Notification.h"
-#include "../../backend/Platform/GUI/editor/UI/IconsFontAwesome6.h"
+#include "../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
+#include "../../../lib/uikit/Source/editor/Application.h"
+#include "../../../lib/uikit/Source/editor/EntryPoint.h"
+#include "../../../lib/uikit/Platform/GUI/editor/Image.h"
+#include "../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
+#include "../../../lib/uikit/Platform/GUI/editor/UI/Notification.h"
+#include "../../../lib/uikit/Platform/GUI/editor/UI/IconsFontAwesome6.h"
 
 #include "../instances/instance.h"
 #include "../instances/Components/Host/HostInstance.h"
 #include "../instances/Components/Toolchain/ToolchainInstance.h"
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
+#include "../core/ModuleManager.hpp"
 
 
 #include "./instanceFactory.h"
@@ -191,6 +193,13 @@ public:
       static ProjectViewer projectViewer(this->m_ctx, &factory);
       projectViewer.OnImGuiRender();
     }
+
+
+    if (this->ShowModulesManager)
+    {
+      static ModuleManager moduleManager(this->m_ctx, &factory);
+      moduleManager.OnImGuiRender();
+    }
     // Instances
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}    
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
@@ -225,6 +234,7 @@ TaskProcessor taskProcessor;
   std::thread receiveThread;
   bool ShowContentBrowser = false;
   bool ShowProjectViewer = false;
+  bool ShowModulesManager = false;
   bool ShowProjectSettings = false;
 
   Instance factory;
@@ -275,6 +285,9 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
       if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project")) {
         app->Close();
       }
+            if (ImGui::MenuItem("Manage Modules", "Project file manager", &exampleLayer->ShowModulesManager))
+            {
+            }
       ImGui::EndMenu();
     }
 

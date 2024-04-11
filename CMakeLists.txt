@@ -58,6 +58,8 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/project/create_project.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/project/init_project.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/random/random.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/modules/load.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/modules/modules.cpp
 
 
 
