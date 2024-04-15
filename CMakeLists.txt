@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(vortex)
 
+file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
+
 add_executable(vortex
 
     # Scripts sources
@@ -45,24 +47,15 @@ add_executable(vortex
     ${CMAKE_CURRENT_SOURCE_DIR}/main/projects/register_package.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main/projects/register_gpos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main/projects/register_disthost.cpp
+
+    
     # Utils sources
     ${CMAKE_CURRENT_SOURCE_DIR}/main/utils/extract_package.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main/utils/replace_placeholders.cpp
 
 
     # Base of vortex
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/logger/logger.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/json/dump.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/filesystem/searcher.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/project/create_project.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/project/init_project.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/vortex/random/random.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/modules/load.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src/modules/modules.cpp
-
-
-
+    ${VORTEX_SOURCES}
 	main.cpp
 )
 

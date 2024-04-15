@@ -69,12 +69,14 @@ namespace VortexMaker
                     try
                     {
                         module->m_name = json_data["name"].get<std::string>();
-                        module->m_proper_name = json_data["name"].get<std::string>();
+                        module->m_auto_exec = json_data["auto_exec"].get<bool>();
+                        module->m_proper_name = json_data["proper_name"].get<std::string>();
                         module->m_type = json_data["type"].get<std::string>();
                         module->m_version = json_data["version"].get<std::string>();
                         module->m_description = json_data["description"].get<std::string>();
                         module->m_picture = json_data["picture"].get<std::string>();
                         module->m_author = json_data["author"].get<std::string>();
+                        module->m_group = json_data["group"].get<std::string>();
                         module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
                     }
                     catch (std::exception e)

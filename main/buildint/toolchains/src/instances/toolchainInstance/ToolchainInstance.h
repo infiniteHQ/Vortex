@@ -1,20 +1,20 @@
 
-#include "../../../../lib/uikit/uikit.h"
-#include "../../../../main/include/vortex.h"
-#include "../assets/icons.h"
-#include "../../../../main/include/vortex_internals.h"
+#include "../../../../../../lib/uikit/uikit.h"
+#include "../../../../../../main/include/vortex.h"
+#include "../../../assets/icons.h"
+#include "../../../../../../main/include/vortex_internals.h"
 
 #ifndef ToolchainModulesInstance_H
 #define ToolchainModulesInstance_H
 
 using namespace VortexMaker;
 
-class ToolchainInstance
+class ToolchainInstance : public ModuleRenderInstance
 {
 public:
     ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain);
 
-    std::string render();
+    void render() override;
     void close();
 
     void menubar();

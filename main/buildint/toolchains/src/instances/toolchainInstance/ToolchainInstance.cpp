@@ -1,4 +1,4 @@
-#include "../include/ToolchainInstance.h"
+#include "ToolchainInstance.h"
 
 using namespace VortexMaker;
 
@@ -127,11 +127,10 @@ void ToolchainInstance::close(){
 }
 
 
-std::string ToolchainInstance::render()
+void ToolchainInstance::render()
     {
         static ImTextureID toolchainIcon = this->m_ToolchainIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-        if(&this->opened){
         this->dockspaceID = ImGui::GetID(this->toolchain->name.c_str());
         static ImGuiIO &io = ImGui::GetIO();
 
@@ -165,13 +164,6 @@ std::string ToolchainInstance::render()
         this->UI_AssetsViewer();
         this->UI_MainSettings();
         this->UI_FullBuild();
-
-        return "rendering";
-        }
-        else{
-
-        return "closed";
-    }
     }
 
 

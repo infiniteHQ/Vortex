@@ -28,6 +28,7 @@ private:
     std::shared_ptr<Walnut::Image> m_ListIcon;
     std::shared_ptr<Walnut::Image> m_RefreshIcon;
     std::shared_ptr<Walnut::Image> m_AddIcon;
+    std::shared_ptr<Walnut::Image> m_TrashIcon;
 
 	bool CollapseAll = false;
 };

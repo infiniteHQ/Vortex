@@ -32,6 +32,8 @@ static std::vector<std::shared_ptr<ReportInstance>> reportInstances;
 static std::vector<std::shared_ptr<TextEditorInstance>> texteditorInstances;
 static std::vector<std::shared_ptr<ScriptInstance>> scriptInstances;
 
+static std::vector<std::shared_ptr<ModuleDetails>> moduleDetailsInstances;
+
 
 static void PushStyle()
 {
@@ -111,10 +113,24 @@ class Instance : public InstanceFactory {
   };
 
 
+
+  void SpawnInstance(std::shared_ptr<ModuleDetails> instance) override {
+    instance->name = instance->m_module->m_name;
+    instance->opened = true;
+    moduleDetailsInstances.push_back(instance);
+  };
+
+  void UnspawnInstance(std::shared_ptr<ModuleDetails> instance) override {
+    std::string instanceName = instance->name;
+    instance = nullptr;
+  };
+
+
   void UnspawnInstance(std::shared_ptr<ScriptInstance> instance) override {
     std::string instanceName = instance->name;
     instance = nullptr;
   };
+
 
   void UnspawnInstance(std::shared_ptr<TextEditorInstance> instance) override {
     std::string instanceName = instance->name;
@@ -200,7 +216,8 @@ public:
       static ModuleManager moduleManager(this->m_ctx, &factory);
       moduleManager.OnImGuiRender();
     }
-    // Instances
+
+    // Instances [OBSOLETE]
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}    
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
@@ -209,6 +226,21 @@ public:
     for (auto window : reportInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : texteditorInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : scriptInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
+
+
+    for (auto window : moduleDetailsInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
+
+    // Modules rendering
+    for(auto em : this->m_ctx->IO.em)
+    {
+        // Main renderer channel
+        em->render();
+
+        // Subinstances renderers
+        for(auto instance : em->GetModuleRenderInstances()){
+          instance->render();
+        }
+    }
     
     PopStyle();
     
@@ -285,7 +317,7 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
       if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project")) {
         app->Close();
       }
-            if (ImGui::MenuItem("Manage Modules", "Project file manager", &exampleLayer->ShowModulesManager))
+            if (ImGui::MenuItem("Manage modules", "Project file manager", &exampleLayer->ShowModulesManager))
             {
             }
       ImGui::EndMenu();

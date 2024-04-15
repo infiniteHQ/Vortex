@@ -23,6 +23,9 @@
 #ifndef VORTEX_VERSION
 #include "vortex.h"
 #endif
+
+
+#include "./modules/interface.h"
 //_____________________________________________________________________________
 
 
