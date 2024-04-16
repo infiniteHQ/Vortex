@@ -2,6 +2,7 @@
 #include "../../../include/vortex_internals.h"
 #include "../../../include/modules/load.h"
 
+
 /**
  * @brief Initialize project settings based on provided JSON configurations.
  * 
@@ -47,12 +48,15 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     // TODO : On a dedicated function
     for(auto em : ctx.IO.em)
     {
-        em->execute();
+        if(em->m_auto_exec){
+            em->execute();
+        }
     }
 
 
     VortexMaker::DeployEvent(args, "test");
     VortexMaker::CallModuleEvent(args, "test", "vortex.modules.builtin.toolchains");
+    VortexMaker::CallModuleEvent(args, "test", "vortex.modules.builtin.toolchains", Callbackreturn);
 
     // Refresh various project components
     //VortexMaker::RefreshPackages();

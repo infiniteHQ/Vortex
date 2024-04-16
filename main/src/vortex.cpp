@@ -973,6 +973,21 @@ VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs>& args, con
 }
 
 
+
+VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, void(*callback)(std::shared_ptr<hArgs> args)){
+    VxContext &ctx = *CVortexMaker;
+    for(auto em : ctx.IO.em){
+      for(auto output_event : em->m_output_events){
+        if(output_event->m_name == event_name){
+          output_event->m_foo(args);
+          callback(args);
+        }
+      }
+    }
+}
+
+
+
 VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name){
     VxContext &ctx = *CVortexMaker;
     for(auto em : ctx.IO.em){
@@ -990,6 +1005,24 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs>& args,
     }
 }
 
+
+VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name, void(*callback)(std::shared_ptr<hArgs> args)){
+    VxContext &ctx = *CVortexMaker;
+    for(auto em : ctx.IO.em){
+
+      if(em->m_name == module_name){
+      for(auto input_events : em->m_input_events){
+
+        if(input_events->m_name == event_name){
+            input_events->m_foo(args);
+            callback(args);
+        }
+
+      }
+      }
+
+    }
+}
 
 
 

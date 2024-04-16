@@ -212,7 +212,9 @@ namespace VortexMaker
 
 
     VORTEX_API void             DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name);
+    VORTEX_API void             DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, void(*callback)(std::shared_ptr<hArgs> args));
     VORTEX_API void             CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name);
+    VORTEX_API void             CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name, void(*callback)(std::shared_ptr<hArgs> args));
 
 
     VORTEX_API std::vector<std::string> SearchFiles(const std::string& path, const std::string& filename);

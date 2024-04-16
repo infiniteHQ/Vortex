@@ -9,6 +9,7 @@ static std::shared_ptr<hArgs> arguments;
 void TestOutputEvent(std::shared_ptr<hArgs> args){
     if(args != NULL){
         std::cout << "TestOutputEvent trigerred ! With message : " << args->get<const char*>("message", "default") <<  std::endl;
+        args->add("result", "ARRIBA");
     }
 }
 
@@ -16,6 +17,7 @@ void TestOutputEvent(std::shared_ptr<hArgs> args){
 void TestInputEvent(std::shared_ptr<hArgs> args){
     if(args != NULL){
         std::cout << "TestInputEvent trigerred ! With message : " << args->get<const char*>("message", "default") <<  std::endl;
+        args->add("result", "ARRIBA");
     }
 }
 
