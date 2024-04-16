@@ -127,6 +127,12 @@ public:
     virtual void execute()  = 0;
     virtual void render()   = 0;
 
+    void OnInputEvent();
+    void OnOutputEvent();
+    
+    void AddInputEventHandler();
+    void AddOutputEventHandler();
+
     template<typename T>
     void AddArg(const std::string& key, T value)
     {
