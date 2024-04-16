@@ -960,6 +960,37 @@ void TaskProcessor::processTasks() {
 
 
 
+VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name){
+    VxContext &ctx = *CVortexMaker;
+    for(auto em : ctx.IO.em){
+      for(auto output_event : em->m_output_events){
+        if(output_event->m_name == event_name){
+          output_event->m_foo(args);
+        }
+      }
+    }
+  
+}
+
+
+VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name){
+    VxContext &ctx = *CVortexMaker;
+    for(auto em : ctx.IO.em){
+
+      if(em->m_name == module_name){
+      for(auto input_events : em->m_input_events){
+
+        if(input_events->m_name == event_name){
+            input_events->m_foo(args);
+        }
+
+      }
+      }
+
+    }
+}
+
+
 
 
 // TODO after : Module loading system, plugins loader. 

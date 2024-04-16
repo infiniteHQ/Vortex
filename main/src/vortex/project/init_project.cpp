@@ -37,6 +37,10 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
 
 
     VortexMaker::LoadEditorModules(ctx.projectPath, ctx.IO.em_handles, ctx.IO.em);
+
+    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+    args->add("message", "It's workininin !");
+
     
 
 
@@ -45,6 +49,10 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     {
         em->execute();
     }
+
+
+    VortexMaker::DeployEvent(args, "test");
+    VortexMaker::CallModuleEvent(args, "test", "vortex.modules.builtin.toolchains");
 
     // Refresh various project components
     //VortexMaker::RefreshPackages();

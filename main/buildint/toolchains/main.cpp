@@ -6,6 +6,19 @@
 static std::shared_ptr<hArgs> arguments;
 
 
+void TestOutputEvent(std::shared_ptr<hArgs> args){
+    if(args != NULL){
+        std::cout << "TestOutputEvent trigerred ! With message : " << args->get<const char*>("message", "default") <<  std::endl;
+    }
+}
+
+
+void TestInputEvent(std::shared_ptr<hArgs> args){
+    if(args != NULL){
+        std::cout << "TestInputEvent trigerred ! With message : " << args->get<const char*>("message", "default") <<  std::endl;
+    }
+}
+
 void HelloTest(){
     if(arguments != NULL){
         std::cout << "Hello " << " et " << arguments->get<const char*>("ToolchainsModule.name", "default") << std::endl;
@@ -30,6 +43,10 @@ public:
         
         // Adding functions
         this->AddFunction(HelloTest, "HelloTest");
+        
+        // Adding events
+        this->AddInputEvent(TestInputEvent, "test");
+        this->AddOutputEvent(TestOutputEvent, "test");
 
         // Render instance
         //this->AddModuleRenderInstance(ToolchainInstance(nullptr, nullptr));

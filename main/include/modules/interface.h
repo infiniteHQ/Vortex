@@ -82,7 +82,13 @@ public:
 class ModuleInputEvent
 {
 public:
-    virtual void execute() = 0;
+
+    ModuleInputEvent(void(*foo)(std::shared_ptr<hArgs> args), const std::string& name) {this->m_foo = foo; this->m_name = name;};
+    
+    virtual void execute(){};
+
+    void(*m_foo)(std::shared_ptr<hArgs> args);
+    std::string m_name;
 };
 
 /**
@@ -91,8 +97,14 @@ public:
 class ModuleOutputEvent
 {
 public:
+    ModuleOutputEvent(void(*foo)(std::shared_ptr<hArgs> args), const std::string& name) {this->m_foo = foo; this->m_name = name;};
     virtual void execute() {};
+
+    void(*m_foo)(std::shared_ptr<hArgs> args);
+    std::string m_name;
 };
+
+
 
 class ModuleDummyFunction
 {
@@ -177,6 +189,25 @@ public:
         this->m_functions.push_back(p_function);
     }
 
+
+    /**
+     * @brief Other elements can exec event that added here
+    */
+    void AddInputEvent(void (*item)(std::shared_ptr<hArgs> args), const std::string& name)
+    {
+        std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
+        this->m_input_events.push_back(p_event);
+    }
+
+    /**
+     * @brief When other elements, modules or plugin deploy a event indireclty, function that added here can handle this remote event 
+    */
+    void AddOutputEvent(void (*item)(std::shared_ptr<hArgs> args), const std::string& name)
+    {
+        std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(item, name);
+        this->m_output_events.push_back(p_event);
+    }
+
     // GetReturn get in args "FunctionName.params.return"
     // GetReturn get in args "InputEvent.params.return"
 
@@ -188,9 +219,23 @@ public:
                 foo->m_foo();
             }
         }
+    }
 
+    void ExecInputEvent(const std::string& name, std::shared_ptr<hArgs> args){
+        for(auto event : this->m_input_events){
+            if(event->m_name == name){
+                event->m_foo(args);
+            }
+        }
     }
     
+    void ExecOutputEvent(const std::string& name, std::shared_ptr<hArgs> args){
+        for(auto event : this->m_output_events){
+            if(event->m_name == name){
+                event->m_foo(args);
+            }
+        }
+    }
 
     template<typename T>
     void AddModuleItemParam(const void *item, std::pair<std::string, T> parameter);
@@ -219,14 +264,14 @@ public:
 
     // std::shared_ptr<Walnut::Image> m_module_icon;
     std::vector<std::shared_ptr<ModuleFunction>> m_functions;
+    std::vector<std::shared_ptr<ModuleOutputEvent>> m_output_events;
+    std::vector<std::shared_ptr<ModuleInputEvent>> m_input_events;
 
 private:
     
 
     std::vector<std::shared_ptr<ModuleDummyFunction>> m_dummy_functions;
-    std::vector<std::shared_ptr<ModuleInputEvent>> m_input_events;
     std::vector<std::shared_ptr<ModuleRenderInstance>> m_render_instances;
-    std::vector<std::shared_ptr<ModuleOutputEvent>> m_output_events;
 
 };
 
