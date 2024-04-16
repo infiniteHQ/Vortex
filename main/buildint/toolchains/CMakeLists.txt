@@ -1,26 +1,21 @@
 cmake_minimum_required(VERSION 3.0)
 project(module)
 
+# Inclure la bibliothèque partagée vortex_shared
+find_library(VORTEX_SHARED_LIBRARY vortex_shared HINTS /lib)
 
-file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../../src/*.cpp")
+# Vérifier si la bibliothèque a été trouvée
+if(NOT VORTEX_SHARED_LIBRARY)
+    message(FATAL_ERROR "Please build/install the vortex core before compiling modules !")
+endif()
 
 
 # Sources du plugin
 set(SOURCES
     main.cpp
     src/instances/toolchainInstance/ToolchainInstance.cpp
-    #src/wins/UI_VolatileTasks.cpp
-    #src/wins/UI_TasksEditor.cpp                - Use the Tasks module
-    #src/wins/UI_SnapshotUtility.cpp
-    #src/wins/UI_ParameterWindow.cpp
-    #src/wins/UI_ManualBuild.cpp
     src/instances/toolchainInstance/wins/UI_MainSettings.cpp
-    #src/wins/UI_FullBuild.cpp
-    #src/wins/UI_CurrentToolchainPreview.cpp    - Use the Reporter module
     src/instances/toolchainInstance/wins/UI_ContentWindow.cpp
-    #src/wins/UI_AssetsViewer.cpp
-
-    ${VORTEX_SOURCES}
 )
 
 # Création de la bibliothèque partagée (.so)
@@ -28,3 +23,6 @@ add_library(module SHARED ${SOURCES})
 
 # Option de compilation
 target_compile_options(module PRIVATE -Wall -Wextra)
+
+# Liaison avec la bibliothèque partagée vortex_shared
+target_link_libraries(module PRIVATE ${VORTEX_SHARED_LIBRARY})
