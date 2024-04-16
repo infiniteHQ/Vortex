@@ -138,6 +138,9 @@ void ModuleManager::OnImGuiRender()
     ImGui::Separator();
     ImGui::SameLine();
 
+                                std::string label = "packhhqsdsdageView###";
+                                ImGuiID id = ImGui::GetID(label.c_str());
+                ImGui::BeginChildFrame(id, ImVec2(0, 0), true);
     for (int row = 0; row < this->ctx->IO.em.size(); row++)
     {
         switch (selected)
@@ -234,7 +237,7 @@ void ModuleManager::OnImGuiRender()
         }
         }
     }
-
+    ImGui::EndChildFrame();
     ImGui::End();
 }
 
