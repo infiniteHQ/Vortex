@@ -1,13 +1,13 @@
-#include "../ToolchainInstance.h"
+#include "../ToolchainRenderInstance.h"
 
-void ToolchainInstance::UI_ContentWindow()
+void ToolchainRenderInstance::UI_ContentWindow()
 {
     if (this->show_UI_ContentWindow)
     {
 
          std::string label = this->name + " - Content Window";
         ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_FirstUseEver);
-        if (ImGui::Begin(label.c_str()))
+        if (ImGui::Begin(label.c_str(), &this->show_UI_ContentWindow))
         {
             static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 

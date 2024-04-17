@@ -242,7 +242,7 @@ public:
     
     void AddModuleOutputEvent(const ModuleOutputEvent& event);
     void AddModuleInputEvent(const ModuleInputEvent& event);
-    void AddModuleRenderInstance(const ModuleRenderInstance& event);
+    void AddModuleRenderInstance(const std::shared_ptr<ModuleRenderInstance> &event);
     void AddModuleFunction(const ModuleFunction& event);
     std::vector<std::shared_ptr<ModuleRenderInstance>> GetModuleRenderInstances() {return this->m_render_instances;};
 

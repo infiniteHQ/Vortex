@@ -1,13 +1,13 @@
-#include "../ToolchainInstance.h"
+#include "../ToolchainRenderInstance.h"
 
-void ToolchainInstance::UI_ParametersWindow()
+void ToolchainRenderInstance::UI_ParametersWindow()
 {
     if (this->show_UI_ParametersWindow)
     {
 
          std::string label = this->name + " - Parameters ###" + this->name + "Parameters";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
-        if (ImGui::Begin(label.c_str()))
+        if (ImGui::Begin(label.c_str(), &this->show_UI_ParametersWindow))
         {
             static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 

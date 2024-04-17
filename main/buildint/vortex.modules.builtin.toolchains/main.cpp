@@ -1,6 +1,12 @@
 #include "../../include/vortex.h"
-#include "./src/instances/toolchainInstance/ToolchainInstance.h"
-#include "./src/toolchain/toolchain.h"
+#include "./src/instances/toolchainInstance/ToolchainRenderInstance.h"
+#include "./src/toolchain.h"
+
+
+#ifndef CToolchainModule
+ModuleCTX *CToolchainModule = NULL;
+#endif
+
 
 // Module context ptr, including variables of functions, call at any moments wit convention : HelloTest.someParam or HelloTest.return
 static std::shared_ptr<hArgs> arguments;
@@ -27,6 +33,14 @@ void HelloTest(){
     }
 }
 
+
+ void CreateModuleContext(){
+  ModuleCTX *ctx = VX_NEW(ModuleCTX);
+  CToolchainModule = ctx;
+}
+
+
+
 // TODO : Documentation des apis & vortex install "modulname" & vortex register (current dir)
 // TODO : Toolchains & task reconsitution & VIDEO
 
@@ -38,6 +52,7 @@ public:
     */
     void execute() override
     {
+        CreateModuleContext();
         CToolchainModule->m_interface = std::make_shared<ModuleInterface>(*this);
         
         // Add main args
@@ -54,14 +69,12 @@ public:
         //this->AddOutputEvent(TestOutputEvent, "test");
 
         // Render instance
-        //this->AddModuleRenderInstance(ToolchainInstance(nullptr, nullptr));
+        //this->AddModuleRenderInstance(ToolchainRenderInstance(nullptr, nullptr));
 
         arguments = this->m_args;
 
-        std::cout << "TEst" << std::endl;
-        this->ExecFunction("RegisterToolchains");
-        std::cout << "TEst" << std::endl;
 
+        this->ExecFunction("RegisterToolchains");
         // Adding events
 
     }
@@ -71,10 +84,21 @@ public:
     */
     void render() override
     {
-        std::cout << CToolchainModule->m_toolchains.size()<< std::endl;
+        
 		ImGui::Begin("Contefgghnt SQDQSD");
-        for(auto toolchains : CToolchainModule->m_toolchains){
-            ImGui::Text(toolchains->name.c_str());
+            std::cout << CToolchainModule->m_toolchains.size() << std::endl;
+        for(auto toolchain : CToolchainModule->m_toolchains){
+            ImGui::Text(toolchain->name.c_str());
+            ImGui::SameLine();
+            std::string label = "Open ###" + toolchain->name;
+            if(ImGui::Button(label.c_str())){
+                VxContext* ctx = VortexMaker::GetCurrentContext();
+                std::shared_ptr<ToolchainRenderInstance> instance = std::make_shared<ToolchainRenderInstance>(ctx, toolchain);
+				//factory->SpawnInstance(instance);	
+                instance->name = toolchain->name;
+                this->AddModuleRenderInstance(instance);
+
+            }
         }
         ImGui::End();
         // "Launcher" of regitered toolchains
@@ -84,7 +108,7 @@ public:
         // Get instance, open it and create a render instance
 
         // Ctx (from module), Toolchain
-        ToolchainInstance instance(VortexMaker::GetCurrentContext(), nullptr);
+        ToolchainRenderInstance instance(VortexMaker::GetCurrentContext(), nullptr);
         this->AddModuleRenderInstance(instance);
     }*/
 };

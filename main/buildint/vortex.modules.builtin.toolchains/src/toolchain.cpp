@@ -325,21 +325,21 @@ void Toolchain::Refresh()
   nlohmann::json packages = toolchainData["content"]["packages"];
   for (auto &pkg : packages)
   {
-    this->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
+    //this->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
   }
 
   VortexMaker::LogInfo("Core", "Finding packages asset of " + this->name);
-  this->FindPackages();
+  //this->FindPackages();
 
   VortexMaker::LogInfo("Core", "Refreshing tasklists asset of " + this->name);
   registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
   {
-    this->RegisterTasklist(t["label"].get<std::string>());
+    //this->RegisterTasklist(t["label"].get<std::string>());
   }
   VortexMaker::LogInfo("Core", "Finding tasklists asset of " + this->name);
-  this->FindTasklists();
+ // this->FindTasklists();
 
   VortexMaker::LogInfo("Core", "Refreshing toolchain " + this->name + " is finish !");
   // this->Init();
@@ -538,9 +538,6 @@ TOOLCHAIN_MODULE_API bool ToolchainModule::RegisterNewToolchain(std::shared_ptr<
   //toolchain->FindTasklists();
 
   toolchain->Init();
-
-  std::cout << CToolchainModule << std::endl;
-  std::cout << toolchain << std::endl;
 
   CToolchainModule->m_toolchains.push_back(toolchain);
 

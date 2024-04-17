@@ -412,8 +412,8 @@ void ToolchainInstance::UI_MainSettings()
             ImGui::PopStyleVar(2);
             if (ImGui::ColorButton("Delete", ImVec4(1.0f, 0.2f, 0.2f, 1.0f)))
             {
-                VortexMaker::DeleteToolchain(this->toolchain);
-                this->opened = false;
+                //VortexMaker::DeleteToolchain(this->toolchain);
+                //this->opened = false;
             }
             ImGui::SameLine();
             ImGui::EndGroup();

@@ -1,8 +1,8 @@
-#include "ToolchainInstance.h"
+#include "ToolchainRenderInstance.h"
 
 using namespace VortexMaker;
 
-ToolchainInstance::ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain)
+ToolchainRenderInstance::ToolchainRenderInstance(VxContext *ctx, std::shared_ptr<Toolchain> _toolchain)
 {
     this->m_ctx = ctx;
     this->toolchain = _toolchain;
@@ -122,12 +122,12 @@ ToolchainInstance::ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain
 };
 
 
-void ToolchainInstance::close(){
+void ToolchainRenderInstance::close(){
     this->opened = false;
 }
 
 
-void ToolchainInstance::render()
+void ToolchainRenderInstance::render()
     {
         static ImTextureID toolchainIcon = this->m_ToolchainIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -156,19 +156,11 @@ void ToolchainInstance::render()
         // All Windows of this instances :
         this->UI_ParametersWindow();
         this->UI_ContentWindow();
-        this->UI_TasksEditor();
-        this->UI_CurrentToolchainPreview();
-        this->UI_SnapshotUtility();
-        this->UI_ManualBuild();
-        this->UI_VolatileTasks();
-        this->UI_AssetsViewer();
-        this->UI_MainSettings();
-        this->UI_FullBuild();
     }
 
 
 
-void ToolchainInstance::menubar(){
+void ToolchainRenderInstance::menubar(){
 
 
             if (ImGui::BeginMenuBar())
@@ -201,6 +193,12 @@ void ToolchainInstance::menubar(){
                     {
                     }
                     if (ImGui::MenuItem("Tasks", NULL, &this->show_UI_TasksEditor))
+                    {
+                    }
+                    if (ImGui::MenuItem("Content", NULL, &this->show_UI_ContentWindow))
+                    {
+                    }
+                    if (ImGui::MenuItem("Params", NULL, &this->show_UI_ParametersWindow))
                     {
                     }
                     ImGui::EndMenu();
@@ -403,7 +401,7 @@ void ToolchainInstance::menubar(){
     }
 
 
-void ToolchainInstance::Refresh()
+void ToolchainRenderInstance::Refresh()
 {
     // Refresh host from vortex API
     // Get all vortex infos, store into save struct and save the save struct to current save struct
@@ -566,7 +564,7 @@ void ToolchainInstance::Refresh()
     this->m_currentDistSave = refreshedCurrentDistSave;
 }
 
-void ToolchainInstance::Save()
+void ToolchainRenderInstance::Save()
 {
   VortexMaker::LogInfo("Core", "Save... " + this->name);
     // Get currentSave (modified by all UI editors)

@@ -3,16 +3,17 @@
 #include "../../../../../../main/include/vortex.h"
 #include "../../../assets/icons.h"
 #include "../../../../../../main/include/vortex_internals.h"
+#include "../../toolchain.h"
 
 #ifndef ToolchainModulesInstance_H
 #define ToolchainModulesInstance_H
 
 using namespace VortexMaker;
 
-class ToolchainInstance : public ModuleRenderInstance
+class ToolchainRenderInstance : public ModuleRenderInstance
 {
 public:
-    ToolchainInstance(VxContext *ctx, std::shared_ptr<VxToolchain> _toolchain);
+    ToolchainRenderInstance(VxContext *ctx, std::shared_ptr<Toolchain> _toolchain);
 
     void render() override;
     void close();
@@ -51,7 +52,7 @@ public:
 
     std::string name;
     VxContext *m_ctx;
-    std::shared_ptr<VxToolchain> toolchain;
+    std::shared_ptr<Toolchain> toolchain;
     std::shared_ptr<ToolchainSave> m_currentSave;
     std::shared_ptr<VxDistToolchainSave> m_currentDistSave;
     ImGuiID dockspaceID;

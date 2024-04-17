@@ -25,8 +25,8 @@ void ModuleInterface::AddModuleInputEvent(const ModuleInputEvent &event)
 {
 }
 
-void ModuleInterface::AddModuleRenderInstance(const ModuleRenderInstance &event)
+void ModuleInterface::AddModuleRenderInstance(const std::shared_ptr<ModuleRenderInstance> &event)
 {
-    std::shared_ptr<ModuleRenderInstance> p_event = std::make_shared<ModuleRenderInstance>(event);
-    this->m_render_instances.push_back(p_event);
+   // std::shared_ptr<ModuleRenderInstance> p_event = std::make_shared<ModuleRenderInstance>(event);
+    this->m_render_instances.push_back(event);
 }

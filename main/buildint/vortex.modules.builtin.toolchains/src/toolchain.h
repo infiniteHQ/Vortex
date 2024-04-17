@@ -1,19 +1,24 @@
-#include "../../../../include/vortex.h"
-#include "../../../../include/vortex_internals.h"
+#include "../../../include/vortex.h"
+#include "../../../include/vortex_internals.h"
 
-class ModuleCTX;
-static std::shared_ptr<ModuleCTX> CToolchainModule = std::make_shared<ModuleCTX>();
 
 #ifndef __TOOLCHAIN__MODULE_H__
 #define __TOOLCHAIN__MODULE_H__
 
 class Toolchain;
-
+struct ModuleCTX
+{
+  std::vector<std::shared_ptr<Toolchain>> m_toolchains;    
+  std::shared_ptr<ModuleInterface>        m_interface;
+};
 
 #ifndef TOOLCHAIN_MODULE_API
 #define TOOLCHAIN_MODULE_API
 #endif
 
+#ifndef CToolchainModule
+extern TOOLCHAIN_MODULE_API ModuleCTX *CToolchainModule; // Current implicit context pointer
+#endif
 
 namespace ToolchainModule{
     TOOLCHAIN_MODULE_API bool RegisterNewToolchain(std::shared_ptr<Toolchain> toolchain, nlohmann::json toolchainData);
@@ -218,11 +223,6 @@ struct Toolchain
 
 
 
-struct ModuleCTX
-{
-  std::vector<std::shared_ptr<Toolchain>> m_toolchains;    
-  std::shared_ptr<ModuleInterface>        m_interface;
-};
 
 
 static void Register()
@@ -273,6 +273,7 @@ static void Register()
     }
   }
 }
+
 
 
 #endif // __TOOLCHAIN__MODULE_H__

@@ -13,10 +13,11 @@ endif()
 # Sources du plugin
 set(SOURCES
     main.cpp
-    src/toolchain.cpp
-    src/instances/toolchainInstance/ToolchainRenderInstance.cpp
-    src/instances/toolchainInstance/wins/UI_ParameterWindow.cpp
-    src/instances/toolchainInstance/wins/UI_ContentWindow.cpp
+    src/module.cpp
+    src/instances/packageInstance/PackageRenderInstance.cpp
+    src/instances/packageInstance/wins/UI_ActionsEditor.cpp
+    src/instances/packageInstance/wins/UI_CompilationArguments.cpp
+    src/instances/packageInstance/wins/UI_MainSettings.cpp
 )
 
 # Création de la bibliothèque partagée (.so)
