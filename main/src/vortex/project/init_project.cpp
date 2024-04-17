@@ -35,15 +35,26 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     // Set project path to current working directory
     ctx.projectPath = fs::current_path();
 
+            ctx.logger = true;
 
+    // Load modules installed in the current project
     VortexMaker::LoadEditorModules(ctx.projectPath, ctx.IO.em_handles, ctx.IO.em);
-
-    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
-    args->add("message", "It's workininin !");
-
     // TODO : On a dedicated function
     for(auto em : ctx.IO.em)
     {
+        {
+            // Set the module data path
+            std::string datapath = ctx.projectPath;
+            datapath += "/.vx/data/" + em->m_name;
+            em->m_datapath = datapath;
+
+            // Try to create the datapath folder (if not exist yet)
+            std::string cmd = "sudo mkdir ";
+            cmd += datapath.c_str();
+            system(cmd.c_str());
+        }
+
+        // If the module is a autoexecution module, execute it now.
         if(em->m_auto_exec){
             em->execute();
         }

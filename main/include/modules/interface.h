@@ -136,8 +136,8 @@ class ModuleInterface
     // Module API (declarations needs to be here)
 public:
     virtual ~ModuleInterface() {}
-    virtual void execute()  = 0;
-    virtual void render()   = 0;
+    virtual void execute()  {};
+    virtual void render()   {};
 
     void OnInputEvent();
     void OnOutputEvent();
@@ -247,6 +247,7 @@ public:
     std::vector<std::shared_ptr<ModuleRenderInstance>> GetModuleRenderInstances() {return this->m_render_instances;};
 
     std::shared_ptr<hArgs> m_args;
+    std::string m_datapath;
 public:
     std::string m_type;
     std::string m_proper_name;

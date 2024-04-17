@@ -2,6 +2,30 @@
 #include "../../include/vortex_internals.h"
 #include "../../include/modules/load.h"
 
+// Fonction pour lire le contenu d'un fichier en hexadécimal
+std::string readFileAsHex(const std::string &filePath)
+{
+    std::ifstream file(filePath, std::ios::binary);
+    if (!file)
+    {
+        // Gestion de l'erreur si le fichier ne peut pas être ouvert
+        return "";
+    }
+
+    // Lecture du contenu du fichier dans un std::vector<uint8_t>
+    std::vector<uint8_t> buffer(std::istreambuf_iterator<char>(file), {});
+
+    // Convertir le contenu en hexadécimal
+    std::ostringstream oss;
+    oss << std::hex << std::setfill('0');
+    for (uint8_t byte : buffer)
+    {
+        oss << std::setw(2) << static_cast<int>(byte);
+    }
+
+    return oss.str();
+}
+
 namespace VortexMaker
 {
 
@@ -63,28 +87,46 @@ namespace VortexMaker
                     }
 
                     // Create an instance of the module
-                    std::shared_ptr<ModuleInterface> module(create_em());
+                    std::shared_ptr<ModuleInterface> new_module(create_em());
 
                     // Try to fetch module informations from module.json
                     try
                     {
-                        module->m_name = json_data["name"].get<std::string>();
-                        module->m_auto_exec = json_data["auto_exec"].get<bool>();
-                        module->m_proper_name = json_data["proper_name"].get<std::string>();
-                        module->m_type = json_data["type"].get<std::string>();
-                        module->m_version = json_data["version"].get<std::string>();
-                        module->m_description = json_data["description"].get<std::string>();
-                        module->m_picture = json_data["picture"].get<std::string>();
-                        module->m_author = json_data["author"].get<std::string>();
-                        module->m_group = json_data["group"].get<std::string>();
-                        module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+                        new_module->m_name = json_data["name"].get<std::string>();
+                        new_module->m_auto_exec = json_data["auto_exec"].get<bool>();
+                        new_module->m_proper_name = json_data["proper_name"].get<std::string>();
+                        new_module->m_type = json_data["type"].get<std::string>();
+                        new_module->m_version = json_data["version"].get<std::string>();
+                        new_module->m_description = json_data["description"].get<std::string>();
+                        new_module->m_picture = json_data["picture"].get<std::string>();
+
+                        std::string logoPath = path + "/" + new_module->m_picture;
+
+                        // Lecture du contenu du fichier en hexadécimal
+                        std::string logoHex = readFileAsHex(logoPath);
+
+                        // Taille du fichier
+                        std::ifstream file(logoPath, std::ios::binary | std::ios::ate);
+                        if (!file)
+                        {
+                            // Gestion de l'erreur si le fichier ne peut pas être ouvert
+                        }
+                        size_t fileSize = file.tellg();
+
+                        // Utilisation des données lues
+                        const uint8_t *m_logo = reinterpret_cast<const uint8_t *>(logoHex.c_str());
+                        size_t m_logo_size = logoHex.size() / 2; // Taille en nombre d'octets
+
+                        new_module->m_author = json_data["author"].get<std::string>();
+                        new_module->m_group = json_data["group"].get<std::string>();
+                        new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
                     }
                     catch (std::exception e)
                     {
                         std::cerr << e.what() << std::endl;
                     }
 
-                    if (!module)
+                    if (!new_module)
                     {
                         // Print error if failed to create module instance
                         std::cerr << "Failed to create module instance" << std::endl;
@@ -93,7 +135,7 @@ namespace VortexMaker
                     }
 
                     // Store the module instance and handle
-                    modules.push_back(module);
+                    modules.push_back(new_module);
                     modules_handlers.push_back(handle);
                 }
             }

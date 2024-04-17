@@ -2,19 +2,15 @@
     "type": "em_instanciable",
     "group": "Core",
     "name": "vortex.modules.builtin.toolchains",
-    "proper_name": "Toolchains builder",
+    "proper_name": "Toolchains",
     "auto_exec": true,
     "version": "1.0.0",
     "author": "Infinite Tech",
     "contributors": [
-        "Diego",
-        "Other",
-        "Other",
-        "Other",
-        "Other"
+        "Diego E. Moreno <d@infinite.si>"
     ],
     "deps": [
-        "vortex.modules.builtin.tasks"
+        {"name":"vortex.modules.builtin.tasks", "version": "1.0"}
     ],
     "compatibility": [
         "1.0",

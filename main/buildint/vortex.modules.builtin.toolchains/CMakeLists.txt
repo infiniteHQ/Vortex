@@ -13,6 +13,7 @@ endif()
 # Sources du plugin
 set(SOURCES
     main.cpp
+    src/toolchain/toolchain.cpp
     src/instances/toolchainInstance/ToolchainInstance.cpp
     src/instances/toolchainInstance/wins/UI_MainSettings.cpp
     src/instances/toolchainInstance/wins/UI_ContentWindow.cpp

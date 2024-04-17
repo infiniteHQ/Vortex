@@ -1,6 +1,6 @@
 #include "../../include/vortex.h"
 #include "./src/instances/toolchainInstance/ToolchainInstance.h"
-#include "./src/functions/OpenToolchain.hpp"
+#include "./src/toolchain/toolchain.h"
 
 // Module context ptr, including variables of functions, call at any moments wit convention : HelloTest.someParam or HelloTest.return
 static std::shared_ptr<hArgs> arguments;
@@ -27,7 +27,8 @@ void HelloTest(){
     }
 }
 
-// TODO : Events, Load static lib, Finish Toolchain system
+// TODO : Documentation des apis & vortex install "modulname" & vortex register (current dir)
+// TODO : Toolchains & task reconsitution & VIDEO
 
 class ToolchainsModule : public ModuleInterface
 {
@@ -37,6 +38,8 @@ public:
     */
     void execute() override
     {
+        CToolchainModule->m_interface = std::make_shared<ModuleInterface>(*this);
+        
         // Add main args
         this->AddArg<const char*>("chainsModule.name", "ToolchainsModule");
 
@@ -44,18 +47,20 @@ public:
         this->AddLogo(icons::_i,icons::_i_size);
         
         // Adding functions
-        this->AddFunction(HelloTest, "HelloTest");
+        this->AddFunction(Register, "RegisterToolchains");
         
         // Adding events
-        this->AddInputEvent(TestInputEvent, "test");
-        this->AddOutputEvent(TestOutputEvent, "test");
+        //this->AddInputEvent(TestInputEvent, "test");
+        //this->AddOutputEvent(TestOutputEvent, "test");
 
         // Render instance
         //this->AddModuleRenderInstance(ToolchainInstance(nullptr, nullptr));
 
         arguments = this->m_args;
 
-        this->ExecFunction("HelloTest");
+        std::cout << "TEst" << std::endl;
+        this->ExecFunction("RegisterToolchains");
+        std::cout << "TEst" << std::endl;
 
         // Adding events
 
@@ -66,6 +71,12 @@ public:
     */
     void render() override
     {
+        std::cout << CToolchainModule->m_toolchains.size()<< std::endl;
+		ImGui::Begin("Contefgghnt SQDQSD");
+        for(auto toolchains : CToolchainModule->m_toolchains){
+            ImGui::Text(toolchains->name.c_str());
+        }
+        ImGui::End();
         // "Launcher" of regitered toolchains
     }
 /*

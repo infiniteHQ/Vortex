@@ -23,13 +23,13 @@ void TestInputEvent(std::shared_ptr<hArgs> args){
 
 void HelloTest(){
     if(arguments != NULL){
-        std::cout << "Hello " << " et " << arguments->get<const char*>("ToolchainsModule.name", "default") << std::endl;
+        std::cout << "Hello " << " et " << arguments->get<const char*>("TasksModules.name", "default") << std::endl;
     }
 }
 
 // TODO : Events, Load static lib, Finish Toolchain system
 
-class ToolchainsModule : public ModuleInterface
+class TasksModules : public ModuleInterface
 {
 public:
     /**
@@ -38,7 +38,8 @@ public:
     void execute() override
     {
         // Add main args
-        this->AddArg<const char*>("chainsModule.name", "ToolchainsModule");
+        this->AddArg<const char*>("TasksModules.name", "TasksModules");
+        this->AddArg<const char*>("TasksModules.executedAt", "TasksModules");
 
         // Add logo
         this->AddLogo(icons::_i,icons::_i_size);
@@ -80,7 +81,7 @@ public:
 
 extern "C" ModuleInterface *create_em()
 {
-    return new ToolchainsModule();
+    return new TasksModules();
 }
 
 // Initialiser les modules dans le contexte depuis le vortex.config
