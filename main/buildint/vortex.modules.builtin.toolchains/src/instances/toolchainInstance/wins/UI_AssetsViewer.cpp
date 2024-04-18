@@ -89,7 +89,7 @@ void ToolchainRenderInstance::UI_AssetsViewer()
                                 //instance->name = currentPackage->name;
                                 //CToolchainModule->m_interface->AddModuleRenderInstance(instance);
                                 std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
-                                args->add("package", currentPackage);
+                                args->add<std::shared_ptr<Package>>("package", currentPackage);
                                 VortexMaker::CallModuleEvent(args, "LaunchPackageInterface", "vortex.modules.builtin.packages");
 
                                 // TODO: Call inpu event of PackagesModule (RenderEditorInstanceOfPackage)

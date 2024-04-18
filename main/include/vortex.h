@@ -847,7 +847,7 @@ struct VxActionReport{
     std::string report;
 };
 
-
+/*
 struct Task{
 
     virtual std::shared_ptr<Task> clone() const {
@@ -911,7 +911,7 @@ struct Task{
         - failed : The check is a failure
         - unknow : The check is not yet processed
         - fatal : The check is a fatal error
-    */
+    *
    
     void addCheckVerdict(std::string id, std::string result, std::string log, std::string directive){
         for(auto check : this->checkList){
@@ -959,7 +959,7 @@ struct Task{
         Finir la toolchain et video !!
     
     
-    */
+    *
 
 
 bool ifProps(const std::vector<std::string>& propsname) {
@@ -1052,11 +1052,11 @@ std::string startTime() {
     virtual void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties){VortexMaker::LogError("Core", "Core task not implemented !");};
 };
 
+*/
 
 
 
-
-
+/*
 struct VxHostCurrentSystem{
     std::string lastUpdate;
     std::string size;
@@ -1091,13 +1091,13 @@ struct VxHostCurrentSystem{
         task->used_variables.push_back({name, "unknow", "unknow"});
         return {name, "unknow", "unknow"};
     }   
-};
+};*/
 
 struct VxHostSnapshot{
     std::string date;
     std::string name;
 
-    VxHostCurrentSystem snapshotSystem; // to import from 
+   // VxHostCurrentSystem snapshotSystem; // to import from 
 };
 
 struct TaskList{
@@ -1110,7 +1110,7 @@ struct TaskList{
     void Refresh();
     void PushSave(std::shared_ptr<TaskListSave> save);
 };
-
+/*
 // Task list, uniquement ici, pour les snapshots, possibilité de reprendre la task list, et de reasseyer tout les précédents echecs
 struct VxHost{
     // Vortex project informations
@@ -1273,8 +1273,8 @@ struct VxHost{
 
 };
 
-
-
+*/
+/*
 struct VxGPOSystem{
     // Vortex project informations
     std::string name;
@@ -1381,7 +1381,7 @@ struct VxGPOSystem{
 
 };
 
-
+*/
 
 
 
@@ -1602,37 +1602,6 @@ void RegisterTasklist(const std::string label);
 }; 
 */
 
-#include <queue>
-
-// Comparateur pour trier les tâches par priorité
-struct CompareTaskPriority {
-    bool operator()(const std::shared_ptr<Task>& task1, const std::shared_ptr<Task>& task2) const {
-        return task1->priority > task2->priority; // Priorité plus élevée a un indice plus bas
-    }
-};
-
-// Déclaration anticipée de la classe TaskProcessor
-class TaskProcessor {
-public:
-    TaskProcessor();
-    ~TaskProcessor();
-    void processTasks();
-    void markTaskCompleted(std::shared_ptr<Task> task);
-    std::vector<std::shared_ptr<Task>> tasksToProcess; // compy references of tasks to process (from "task")
-
-    void startWorker();
-    void stopWorker();
-    std::atomic<bool> stop;
-    std::atomic<bool> running;
-    std::mutex mutex;
-
-    std::priority_queue<std::shared_ptr<Task>, std::vector<std::shared_ptr<Task>>, CompareTaskPriority> tasks;
-    
-    std::map<int, std::deque<std::shared_ptr<Task>>> tasksByPriority;
-    std::condition_variable condition;
-    std::vector<std::thread> workers;
-    std::thread worker;
-};
 
 
 //_____________________________________________________________________________

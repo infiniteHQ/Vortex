@@ -290,6 +290,7 @@ bool VortexMaker::DebugCheckVersionAndDataLayout(const char *version)
 
 
 // Correction de la fonction CreateTask
+/*
 std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
 {
   VxContext &ctx = *CVortexMaker;
@@ -317,6 +318,8 @@ std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string 
 
   return task;
 }
+*/
+
 /*
 void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package)
 {
@@ -346,37 +349,6 @@ VORTEX_API void VortexMaker::CreateNewTask(std::shared_ptr<Task> task, std::stri
 {
 }
 
-// Constructeur de TaskProcessor
-TaskProcessor::TaskProcessor() : stop(false)
-{
-}
-
-// Constructeur de TaskProcessor
-TaskProcessor::~TaskProcessor()
-{
-  
-}
-
-void TaskProcessor::startWorker(){
-  std::thread Thread([&]()
-                     { this->processTasks(); });
-  worker.swap(Thread);
-}
-
-void TaskProcessor::stopWorker(){
-  this->stop = true;
-}
-
-
-// Ajout d'une tâche à TaskProcessor
-
-// Marque une tâche comme terminée
-void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
-{
-  VxContext &ctx = *CVortexMaker;
-  this->tasksToProcess.erase(std::remove_if(this->tasksToProcess.begin(), this->tasksToProcess.end(), [task](const auto& t) { return t == task; }), this->tasksToProcess.end());
-  std::unique_lock<std::mutex> lock(mutex);
-}
 /*
 void VortexMaker::DeleteHost(const std::shared_ptr<VxHost>& host){
     VxContext *ctx = VortexMaker::GetCurrentContext();
@@ -911,61 +883,6 @@ void VortexMaker::CreateToolchain(const std::string& name, const std::string& au
     //this->
 }
 */
-
-
-
-void TaskProcessor::processTasks() {
-    VxContext &ctx = *CVortexMaker;
-    this->running = true;
-
-    while(running){
-
-    while (!stop) {
-        std::vector<std::future<void>> futures;
-        std::vector<std::shared_ptr<Task>> tasks;
-
-        {
-            std::lock_guard<std::mutex> lock(mutex);
-            tasks = tasksToProcess;
-            //tasksToProcess.clear();  // Clear processed tasks
-        }
-
-        // Group tasks by priority
-        std::map<int, std::vector<std::shared_ptr<Task>>> tasksByPriority;
-        for (const auto &task : tasks) {
-            tasksByPriority[task->priority].push_back(task);
-        }
-
-        // Iterate over priorities, from lowest to highest
-        for (const auto &[priority, tasksWithPriority] : tasksByPriority) {
-            // Execute tasks with the same priority simultaneously
-            std::vector<std::future<void>> priorityFutures;
-
-
-            for (const auto &task : tasksWithPriority) {
-                priorityFutures.emplace_back(std::async(std::launch::async, [this, task]() {
-                    if (task->state == "not_started" || task->state == "retry") {
-                        task->state = "process";
-                        task->exec();
-                        markTaskCompleted(task);
-                    }
-                }));
-            }
-
-            // Wait for all tasks of the same priority to complete
-            for (auto &future : priorityFutures) {
-                future.get();
-            }
-
-            break;
-        }
-    
-        // Sleep or perform other operations if needed before next iteration
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-
-    }
-}
 
 
 

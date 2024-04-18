@@ -513,7 +513,7 @@ void ToolchainRenderInstance::Refresh()
 
     // Output the content of buffer
     // refreshedCurrentSave.name = this->toolchain->name;
-    /* FIXME
+   
     for (auto registeredPackage : this->toolchain->registeredPackages)
     {
         std::pair<char[128], char[128]> package;
@@ -526,7 +526,7 @@ void ToolchainRenderInstance::Refresh()
 
         refreshedCurrentSave->registeredPackages.push_back(package);
     }
-
+/*
     for(auto registeredTasklists : this->toolchain->registeredTasklists){
         std::pair<char[128], char[128]> tasklist;
 

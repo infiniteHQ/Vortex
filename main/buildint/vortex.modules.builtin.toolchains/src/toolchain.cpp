@@ -1,6 +1,5 @@
 #include "toolchain.h"
 
-
 static std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::string &timeString)
 {
   // Création du flux de chaînes pour la conversion
@@ -29,7 +28,6 @@ static std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(cons
   return std::chrono::system_clock::from_time_t(time);
 }
 
-
 nlohmann::json ToolchainCurrentSystem::Extract()
 {
   VxContext &ctx = *CVortexMaker;
@@ -41,17 +39,17 @@ nlohmann::json ToolchainCurrentSystem::Extract()
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
   for (auto package : this->parent->packages)
+  {
+    nlohmann::json report;
+    report["p_name"] = package->name;
+    report["p_latest_taskid"] = package->latestTask->id;
+    report["p_tasklist"] = nlohmann::json::array();
+    for (auto task : package->allTasks)
     {
-      nlohmann::json report;
-      report["p_name"] = package->name;
-      report["p_latest_taskid"] = package->latestTask->id;
-      report["p_tasklist"] = nlohmann::json::array();
-      for (auto task : package->allTasks)
-      {
-        report["p_tasklist"].push_back(task->id);
-      }
-      jsonData["packageList"].push_back(report);
+      report["p_tasklist"].push_back(task->id);
     }
+    jsonData["packageList"].push_back(report);
+  }
 
   // Fix : All tasks features and after : make all basic task of toolchain
   for (auto task : this->executedTasks)
@@ -169,34 +167,33 @@ void ToolchainCurrentSystem::Populate(nlohmann::json jsonData)
     this->executedTasks.push_back(task);
   }
 
-    for (auto packageReport : jsonData["packageList"])
-    {
+  for (auto packageReport : jsonData["packageList"])
+  {
     for (auto package : this->parent->packages)
+    {
+      if (package->name == packageReport["p_name"].get<std::string>())
       {
-        if (package->name == packageReport["p_name"].get<std::string>())
+        for (auto task : this->executedTasks)
         {
-          for (auto task : this->executedTasks)
+          for (auto taskid : packageReport["p_tasklist"])
           {
-            for (auto taskid : packageReport["p_tasklist"])
+            if (task->id == taskid.get<std::string>())
             {
-              if (task->id == taskid.get<std::string>())
-              {
-                package->allTasks.push_back(task);
-              }
-              if (task->id == packageReport["p_latest_taskid"].get<std::string>())
-              {
-                package->latestTask = task;
-              }
+              package->allTasks.push_back(task);
+            }
+            if (task->id == packageReport["p_latest_taskid"].get<std::string>())
+            {
+              package->latestTask = task;
             }
           }
         }
       }
     }
+  }
   // Get filesystem informations
 
   // Get list of all render assets (actions, scirpts, skeletons, etc)
 } // from working_host.config
-
 
 void Toolchain::RefreshCurrentWorkingToolchain()
 {
@@ -321,151 +318,162 @@ void Toolchain::Refresh()
   this->localScriptsPath = toolchainData["data"]["scripts"].get<std::string>();
 
   VortexMaker::LogInfo("Core", "Refreshing packages asset of " + this->name);
-  //registeredPackages.clear();
+  registeredPackages.clear();
   nlohmann::json packages = toolchainData["content"]["packages"];
   for (auto &pkg : packages)
   {
-    //this->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
+
+    std::shared_ptr<PackageInterface> newPackageInterface = std::make_shared<PackageInterface>();
+    newPackageInterface->label = pkg["label"].get<std::string>();
+    newPackageInterface->emplacement = pkg["origin"].get<std::string>();
+    newPackageInterface->resolved = false;
+    registeredPackages.push_back(newPackageInterface);
   }
 
   VortexMaker::LogInfo("Core", "Finding packages asset of " + this->name);
-  //this->FindPackages();
+
+  // this->FindPackages();
+  {
+    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+    args->add("packages", this->packages);
+    args->add("list", this->registeredPackages);
+
+    VortexMaker::CallModuleEvent(args, "FindPackages", "vortex.modules.builtin.packages");
+
+    this->packages = args->get<std::vector<std::shared_ptr<Package>>>("packages", this->packages);
+    this->registeredPackages = args->get<std::vector<std::shared_ptr<PackageInterface>>>("list", this->registeredPackages);
+  }
 
   VortexMaker::LogInfo("Core", "Refreshing tasklists asset of " + this->name);
-  //registeredTasklists.clear();
+  // registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
   {
-    //this->RegisterTasklist(t["label"].get<std::string>());
+    // this->RegisterTasklist(t["label"].get<std::string>());
   }
   VortexMaker::LogInfo("Core", "Finding tasklists asset of " + this->name);
- // this->FindTasklists();
+  // this->FindTasklists();
 
   VortexMaker::LogInfo("Core", "Refreshing toolchain " + this->name + " is finish !");
   // this->Init();
 }
 
-
 void ToolchainCurrentSystem::Save(std::shared_ptr<Toolchain> parent)
 {
-    nlohmann::json data = this->Extract();
-    std::ofstream file(parent->workingPath + "/working_host.config");
-    if (file.is_open())
-    {
-        file << std::setw(4) << data << std::endl;
-          VortexMaker::LogInfo("Core", "Object saved to " + parent->workingPath + "/working_host.config");
-        file.close();
-    }
-    else
-    {
-        VortexMaker::LogError("Core", "Unable to open file " + parent->workingPath + "/working_host.config"+" for writing!");
-    }
+  nlohmann::json data = this->Extract();
+  std::ofstream file(parent->workingPath + "/working_host.config");
+  if (file.is_open())
+  {
+    file << std::setw(4) << data << std::endl;
+    VortexMaker::LogInfo("Core", "Object saved to " + parent->workingPath + "/working_host.config");
+    file.close();
+  }
+  else
+  {
+    VortexMaker::LogError("Core", "Unable to open file " + parent->workingPath + "/working_host.config" + " for writing!");
+  }
 }
-
 
 void Toolchain::PushSave(std::shared_ptr<ToolchainSave> save)
 {
-    VxContext &ctx = *CVortexMaker;
-    nlohmann::json toolchainData;
-    toolchainData["toolchain"]["name"] = save->name;
-    toolchainData["toolchain"]["author"] = save->author;
-    toolchainData["toolchain"]["type"] = save->type;
-    toolchainData["toolchain"]["state"] = save->state;
-    toolchainData["toolchain"]["version"] = save->version;
-    toolchainData["toolchain"]["description"] = save->description;
+  VxContext &ctx = *CVortexMaker;
+  nlohmann::json toolchainData;
+  toolchainData["toolchain"]["name"] = save->name;
+  toolchainData["toolchain"]["author"] = save->author;
+  toolchainData["toolchain"]["type"] = save->type;
+  toolchainData["toolchain"]["state"] = save->state;
+  toolchainData["toolchain"]["version"] = save->version;
+  toolchainData["toolchain"]["description"] = save->description;
 
+  toolchainData["configs"]["toolchain_type"] = save->toolchain_type;
 
-    toolchainData["configs"]["toolchain_type"] = save->toolchain_type; 
+  toolchainData["configs"]["target_arch"] = save->target_arch;
+  toolchainData["configs"]["target_vendor"] = save->target_vendor;
+  toolchainData["configs"]["target_platform"] = save->target_platform;
+  toolchainData["configs"]["target_cpu"] = save->target_cpu;
+  toolchainData["configs"]["target_fpu"] = save->target_fpu;
 
-    toolchainData["configs"]["target_arch"] = save->target_arch; 
-    toolchainData["configs"]["target_vendor"] = save->target_vendor; 
-    toolchainData["configs"]["target_platform"] = save->target_platform; 
-    toolchainData["configs"]["target_cpu"] = save->target_cpu; 
-    toolchainData["configs"]["target_fpu"] = save->target_fpu; 
+  toolchainData["configs"]["builder_arch"] = save->builder_arch;
+  toolchainData["configs"]["builder_vendor"] = save->builder_vendor;
+  toolchainData["configs"]["builder_platform"] = save->builder_platform;
+  toolchainData["configs"]["builder_cpu"] = save->builder_cpu;
+  toolchainData["configs"]["builder_fpu"] = save->builder_fpu;
 
-    toolchainData["configs"]["builder_arch"] = save->builder_arch; 
-    toolchainData["configs"]["builder_vendor"] = save->builder_vendor; 
-    toolchainData["configs"]["builder_platform"] = save->builder_platform; 
-    toolchainData["configs"]["builder_cpu"] = save->builder_cpu; 
-    toolchainData["configs"]["builder_fpu"] = save->builder_fpu; 
+  toolchainData["configs"]["host_arch"] = save->host_arch;
+  toolchainData["configs"]["host_vendor"] = save->host_vendor;
+  toolchainData["configs"]["host_platform"] = save->host_platform;
+  toolchainData["configs"]["host_cpu"] = save->host_cpu;
+  toolchainData["configs"]["host_fpu"] = save->host_fpu;
 
-    toolchainData["configs"]["host_arch"] = save->host_arch; 
-    toolchainData["configs"]["host_vendor"] = save->host_vendor; 
-    toolchainData["configs"]["host_platform"] = save->host_platform; 
-    toolchainData["configs"]["host_cpu"] = save->host_cpu; 
-    toolchainData["configs"]["host_fpu"] = save->host_fpu; 
+  toolchainData["configs"]["compression"] = save->compression;
 
-    toolchainData["configs"]["compression"] = save->compression;
+  toolchainData["data"]["packages"] = save->localPackagePath;
+  toolchainData["data"]["patchs"] = save->localPatchsPath;
+  toolchainData["data"]["scripts"] = save->localScriptsPath;
 
-    toolchainData["data"]["packages"] = save->localPackagePath;
-    toolchainData["data"]["patchs"] = save->localPatchsPath;
-    toolchainData["data"]["scripts"] = save->localScriptsPath;
+  nlohmann::json registeredPackagesJson;
+  for (const auto &package : save->registeredPackages)
+  {
+    nlohmann::json packageJson;
+    packageJson["label"] = std::string(package.first);
+    packageJson["origin"] = std::string(package.second);
+    registeredPackagesJson.push_back(packageJson);
+  }
 
-    nlohmann::json registeredPackagesJson;
-    for (const auto &package : save->registeredPackages)
-    {
-        nlohmann::json packageJson;
-        packageJson["label"] = std::string(package.first);
-        packageJson["origin"] = std::string(package.second);
-        registeredPackagesJson.push_back(packageJson);
-    }
+  nlohmann::json tasklist;
+  for (const auto &list : save->registeredTasklists)
+  {
+    nlohmann::json packageJson;
+    packageJson["label"] = list.first;
+    tasklist.push_back(packageJson);
+  }
 
+  nlohmann::json contents;
+  contents["packages"] = registeredPackagesJson;
+  contents["tasklists"] = tasklist;
 
-    nlohmann::json tasklist;
-    for (const auto &list : save->registeredTasklists)
-    {
-        nlohmann::json packageJson;
-        packageJson["label"] = list.first;
-        tasklist.push_back(packageJson);
-    }
+  toolchainData["content"] = contents;
 
-    nlohmann::json contents;
-    contents["packages"] = registeredPackagesJson;
-    contents["tasklists"] = tasklist;
-
-    toolchainData["content"] = contents;
-
-    std::ofstream file(this->configFilePath);
-    if (file.is_open())
-    {
-        file << std::setw(4) << toolchainData << std::endl;
-          VortexMaker::LogInfo("Core", "Object saved to " + this->configFilePath);
-        file.close();
-    }
-    else
-    {
-        VortexMaker::LogError("Core", "Unable to open file " + this->configFilePath + " for writing!");
-    }
+  std::ofstream file(this->configFilePath);
+  if (file.is_open())
+  {
+    file << std::setw(4) << toolchainData << std::endl;
+    VortexMaker::LogInfo("Core", "Object saved to " + this->configFilePath);
+    file.close();
+  }
+  else
+  {
+    VortexMaker::LogError("Core", "Unable to open file " + this->configFilePath + " for writing!");
+  }
 }
-
 
 void Toolchain::PushDistSave(std::shared_ptr<VxDistToolchainSave> save)
 {
-    VxContext *ctx = VortexMaker::GetCurrentContext();
-    //TODO Also push metrics, actual packages and states, and all usefull information about a toolchain build
-    nlohmann::json toolchainData;
-    toolchainData["configs"]["AR"] = save->AR_value;
-    toolchainData["configs"]["AS"] = save->AS_value;
-    toolchainData["configs"]["CC"] = save->CC_value;
-    toolchainData["configs"]["CXX"] = save->CXX_value;
-    toolchainData["configs"]["LD"] = save->LD_value;
-    toolchainData["configs"]["RANLIB"] = save->RANLIB_value;
-    toolchainData["configs"]["STRIP"] = save->STRIP_value;
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+  // TODO Also push metrics, actual packages and states, and all usefull information about a toolchain build
+  nlohmann::json toolchainData;
+  toolchainData["configs"]["AR"] = save->AR_value;
+  toolchainData["configs"]["AS"] = save->AS_value;
+  toolchainData["configs"]["CC"] = save->CC_value;
+  toolchainData["configs"]["CXX"] = save->CXX_value;
+  toolchainData["configs"]["LD"] = save->LD_value;
+  toolchainData["configs"]["RANLIB"] = save->RANLIB_value;
+  toolchainData["configs"]["STRIP"] = save->STRIP_value;
 
-    std::string distPath = ctx->projectPath;
-    distPath += "/" + ctx->paths.toolchainDistFolder + "/" + this->name + "/toolchain.dist.config";
+  std::string distPath = ctx->projectPath;
+  distPath += "/" + ctx->paths.toolchainDistFolder + "/" + this->name + "/toolchain.dist.config";
 
-    std::ofstream file(distPath);
-    if (file.is_open())
-    {
-        file << std::setw(4) << toolchainData << std::endl;
-          VortexMaker::LogInfo("Core", "Object saved to " + distPath);
-        file.close();
-    }
-    else
-    {
-        VortexMaker::LogError("Core", "Unable to open file " + distPath + " for writing!");
-    }
+  std::ofstream file(distPath);
+  if (file.is_open())
+  {
+    file << std::setw(4) << toolchainData << std::endl;
+    VortexMaker::LogInfo("Core", "Object saved to " + distPath);
+    file.close();
+  }
+  else
+  {
+    VortexMaker::LogError("Core", "Unable to open file " + distPath + " for writing!");
+  }
 }
 
 void Toolchain::Init()
@@ -475,11 +483,8 @@ void Toolchain::Init()
   // TODO: Take all tasks at root, and check if a task has toolchain type, if yes, include it.
 
   // Add tasks types
- 
-
 
   // Load all custom tasks from plugins
-
 
   // Get dist working path (for CurrentWorkingToolchain)
   std::string envPath = ctx.projectPath / ctx.paths.toolchainDistFolder;
@@ -487,15 +492,14 @@ void Toolchain::Init()
   std::string crosstoolsDir = baseDir + "/working_host";
   this->workingPath = crosstoolsDir;
 
-
-  //this->taskProcessor = std::make_shared<TaskProcessor>();
-  //this->taskProcessor->startWorker();
+  // this->taskProcessor = std::make_shared<TaskProcessor>();
+  // this->taskProcessor->startWorker();
 }
 
 TOOLCHAIN_MODULE_API bool ToolchainModule::RegisterNewToolchain(std::shared_ptr<Toolchain> toolchain, nlohmann::json toolchainData)
 {
   VxContext &ctx = *CVortexMaker;
-  
+
   toolchain->name = toolchainData["toolchain"]["name"].get<std::string>();
   toolchain->author = toolchainData["toolchain"]["author"].get<std::string>();
   toolchain->type = toolchainData["toolchain"]["type"].get<std::string>();
@@ -521,21 +525,36 @@ TOOLCHAIN_MODULE_API bool ToolchainModule::RegisterNewToolchain(std::shared_ptr<
   toolchain->host_cpu = toolchainData["configs"]["host_cpu"].get<std::string>();
   toolchain->host_fpu = toolchainData["configs"]["host_fpu"].get<std::string>();
 
-  //toolchain->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
+  // toolchain->compressionMode = toolchainData["configs"]["compression"].get<std::string>();
 
   nlohmann::json packages = toolchainData["content"]["packages"];
   for (auto &pkg : packages)
   {
-  //  toolchain->RegisterPackage(pkg["label"].get<std::string>(), pkg["origin"].get<std::string>());
+    std::shared_ptr<PackageInterface> newPackageInterface = std::make_shared<PackageInterface>();
+    newPackageInterface->label = pkg["label"].get<std::string>();
+    newPackageInterface->emplacement = pkg["origin"].get<std::string>();
+    newPackageInterface->resolved = false;
+    toolchain->registeredPackages.push_back(newPackageInterface);
   }
-  //toolchain->FindPackages();
+  // this->FindPackages();
+  {
+    VortexMaker::LogInfo("Core", "Finding packages asset of " + toolchain->name);
+    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+    args->add("packages", toolchain->packages);
+    args->add("list", toolchain->registeredPackages);
+
+    VortexMaker::CallModuleEvent(args, "FindPackages", "vortex.modules.builtin.packages");
+
+    toolchain->packages = args->get<std::vector<std::shared_ptr<Package>>>("packages", toolchain->packages);
+    toolchain->registeredPackages = args->get<std::vector<std::shared_ptr<PackageInterface>>>("list", toolchain->registeredPackages);
+  };
 
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
   {
-    //toolchain->RegisterTasklist(t["label"].get<std::string>());
+
   }
-  //toolchain->FindTasklists();
+
 
   toolchain->Init();
 
@@ -543,6 +562,5 @@ TOOLCHAIN_MODULE_API bool ToolchainModule::RegisterNewToolchain(std::shared_ptr<
 
   return true;
 }
-
 
 // MODULE FUNCTION

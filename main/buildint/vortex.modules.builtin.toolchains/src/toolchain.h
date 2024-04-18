@@ -235,7 +235,7 @@ static void RegisterToolchains()
   VxContext &ctx = *CVortexMaker;
 
   // clear existing dist toolchains
-  // ctx.IO.toolchains.clear();
+  CToolchainModule->m_toolchains.clear();
 
   // Toolchains
   for (const auto &file : VortexMaker::SearchFiles(CToolchainModule->m_interface->m_datapath, "toolchain.config"))

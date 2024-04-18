@@ -9,6 +9,7 @@
 
 
 #include "../../../../main/include/vortex.h"
+#include "../../../../main/include/vortex_internals.h"
 #include "../../../../main/include/vortex_core.h"
 
 #ifndef InstanceWindow_H

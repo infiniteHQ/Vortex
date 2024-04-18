@@ -9,7 +9,7 @@ class Package;
 struct PackagesModuleCTX
 {
   std::vector<std::shared_ptr<Package>>  m_packages;    
-  std::shared_ptr<ModuleInterface>        m_interface;
+  std::shared_ptr<ModuleInterface>       m_interface;
 };
 
 #ifndef PACKAGE_MODULE_API

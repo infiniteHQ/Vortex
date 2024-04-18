@@ -48,7 +48,7 @@ void ModuleManager::OnImGuiRender()
 
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Module of ");
     ImGui::SameLine();
-    //ImGui::Text(this->ctx->name.c_str());
+    ImGui::Text(this->ctx->name.c_str());
 
     ImGui::GetFont()->Scale = oldsize;
     ImGui::PopFont();
@@ -61,7 +61,7 @@ void ModuleManager::OnImGuiRender()
 
     {
         ImGui::BeginChild("left pane", ImVec2(230, -1), true);
-        /*for (int i = 0; i < labels.size(); i++)
+        for (int i = 0; i < labels.size(); i++)
         {
             if (i == 0)
             {
@@ -132,7 +132,7 @@ void ModuleManager::OnImGuiRender()
             if (ImGui::Selectable(label.c_str(), selected == i))
                 selected = i;
         }
-        */ImGui::EndChild();
+        ImGui::EndChild();
     }
     ImGui::SameLine();
     ImGui::Separator();
@@ -141,7 +141,7 @@ void ModuleManager::OnImGuiRender()
                                 std::string label = "packhhqsdsdageView###";
                                 ImGuiID id = ImGui::GetID(label.c_str());
                 ImGui::BeginChildFrame(id, ImVec2(0, 0), true);
-    /*for (int row = 0; row < this->ctx->IO.em.size(); row++)
+    for (int row = 0; row < this->ctx->IO.em.size(); row++)
     {
         switch (selected)
         {
@@ -235,8 +235,8 @@ void ModuleManager::OnImGuiRender()
             }
             ImGui::EndChild();
         }
-        }
-    }*/
+    }
+    }
     ImGui::EndChildFrame();
     ImGui::End();
 }

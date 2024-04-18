@@ -2,8 +2,8 @@
 #include "./src/instances/packageInstance/PackageRenderInstance.h"
 #include "./src/module.h"
 
-#ifndef CPackagesModule
-ModuleCTX *CPackagesModule = NULL;
+#ifndef CTasksModule
+TasksModuleCTX *CTasksModule = NULL;
 #endif
 
 
@@ -13,8 +13,8 @@ static std::shared_ptr<hArgs> arguments;
 
 
 void CreatePackageContext(){
-  ModuleCTX *ctx = VX_NEW(ModuleCTX);
-  CPackagesModule = ctx;
+  TasksModuleCTX *ctx = VX_NEW(TasksModuleCTX);
+  CTasksModule = ctx;
 }
 
 class PackagesModule : public ModuleInterface
@@ -26,8 +26,8 @@ public:
     void execute() override
     {
         CreatePackageContext();
-        std::cout <<CPackagesModule << std::endl;
-        CPackagesModule->m_interface = std::make_shared<ModuleInterface>(*this);
+        std::cout <<CTasksModule << std::endl;
+        CTasksModule->m_interface = std::make_shared<ModuleInterface>(*this);
         
         // Add main args
         this->AddArg<const char*>("chainsModule.name", "PackagesModule");
@@ -36,7 +36,7 @@ public:
         this->AddLogo(icons::_i,icons::_i_size);
         
         // Adding functions
-        this->AddFunction(Register, "RegisterPackages");
+        //this->AddFunction(Register, "RegisterPackages");
         
         // Adding events
         //this->AddInputEvent(TestInputEvent, "test");
@@ -59,21 +59,7 @@ public:
     void render() override
     {
         
-		ImGui::Begin("Contefghjghjgghnt SQDQSD");
-            std::cout << CPackagesModule->m_packages.size() << std::endl;
-        for(auto package : CPackagesModule->m_packages){
-            ImGui::Text(package->name.c_str());
-            ImGui::SameLine();
-            std::string label = "Open ###" + package->name;
-            if(ImGui::Button(label.c_str())){
-                VxContext* ctx = VortexMaker::GetCurrentContext();
-                std::shared_ptr<PackageRenderInstance> instance = std::make_shared<PackageRenderInstance>(ctx, package);
-				//factory->SpawnInstance(instance);	
-                instance->name = package->name;
-                this->AddModuleRenderInstance(instance);
-
-            }
-        }
+		ImGui::Begin("Tasks");
         ImGui::End();
         // "Launcher" of regitered toolchains
     }

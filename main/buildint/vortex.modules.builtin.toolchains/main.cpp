@@ -88,7 +88,6 @@ public:
     {
         
 		ImGui::Begin("Contefgghnt SQDQSD");
-            std::cout << CToolchainModule->m_toolchains.size() << std::endl;
         for(auto toolchain : CToolchainModule->m_toolchains){
             ImGui::Text(toolchain->name.c_str());
             ImGui::SameLine();
