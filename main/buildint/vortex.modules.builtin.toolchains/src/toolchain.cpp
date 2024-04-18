@@ -30,7 +30,7 @@ static std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(cons
 }
 
 
-nlohmann::json VxToolchainCurrentSystem::Extract()
+nlohmann::json ToolchainCurrentSystem::Extract()
 {
   VxContext &ctx = *CVortexMaker;
   nlohmann::json jsonData;
@@ -40,7 +40,7 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
   jsonData["packageList"] = nlohmann::json::array();
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
- /*   for (auto package : this->parent->packages)
+  for (auto package : this->parent->packages)
     {
       nlohmann::json report;
       report["p_name"] = package->name;
@@ -52,7 +52,7 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
       }
       jsonData["packageList"].push_back(report);
     }
-*/
+
   // Fix : All tasks features and after : make all basic task of toolchain
   for (auto task : this->executedTasks)
   {
@@ -171,7 +171,7 @@ void ToolchainCurrentSystem::Populate(nlohmann::json jsonData)
 
     for (auto packageReport : jsonData["packageList"])
     {
-   /*  for (auto package : this->parent->packages)
+    for (auto package : this->parent->packages)
       {
         if (package->name == packageReport["p_name"].get<std::string>())
         {
@@ -190,7 +190,7 @@ void ToolchainCurrentSystem::Populate(nlohmann::json jsonData)
             }
           }
         }
-      }*/
+      }
     }
   // Get filesystem informations
 

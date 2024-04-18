@@ -156,6 +156,7 @@ void ToolchainRenderInstance::render()
         // All Windows of this instances :
         this->UI_ParametersWindow();
         this->UI_ContentWindow();
+        this->UI_AssetsViewer();
     }
 
 

@@ -1,12 +1,16 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
+#include "../../vortex.modules.builtin.packages/src/module.h"
+#include "../../vortex.modules.builtin.packages/src/instances/packageInstance/PackageRenderInstance.h"
 
 #ifndef __TOOLCHAIN__MODULE_H__
 #define __TOOLCHAIN__MODULE_H__
 
+
+
 class Toolchain;
-struct ModuleCTX
+struct ToolchainsModuleCTX
 {
   std::vector<std::shared_ptr<Toolchain>> m_toolchains;    
   std::shared_ptr<ModuleInterface>        m_interface;
@@ -17,12 +21,13 @@ struct ModuleCTX
 #endif
 
 #ifndef CToolchainModule
-extern TOOLCHAIN_MODULE_API ModuleCTX *CToolchainModule; // Current implicit context pointer
+extern TOOLCHAIN_MODULE_API ToolchainsModuleCTX *CToolchainModule; // Current implicit context pointer
 #endif
 
 namespace ToolchainModule{
     TOOLCHAIN_MODULE_API bool RegisterNewToolchain(std::shared_ptr<Toolchain> toolchain, nlohmann::json toolchainData);
 }
+
 
 
 struct ToolchainCurrentSystem{
@@ -32,11 +37,11 @@ struct ToolchainCurrentSystem{
     std::vector<std::shared_ptr<Task>> executedTasks;
     std::shared_ptr<Toolchain> parent;
 
-    //std::vector<VxPackageReport> packageReports;
+    std::vector<PackageReport> packageReports;
     std::vector<VxActionReport> actionReports;
     void CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
 
-   // void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
+    void PushPackageReport(PackageReport report){this->packageReports.push_back(report);};
     void PushSize(std::string newsize){this->size = newsize;};
     void Populate(nlohmann::json jsonData); // from working_host.config
     nlohmann::json Extract();
@@ -70,7 +75,7 @@ struct ToolchainSnapshot{
     std::string name;
     std::string path;
 
-    VxToolchainCurrentSystem snapshotSystem; // to import from 
+    ToolchainCurrentSystem snapshotSystem; // to import from 
 };
 
 
@@ -159,10 +164,10 @@ struct Toolchain
 
     // Vector de packages
 
-   // std::vector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    std::vector<std::shared_ptr<PackageInterface>> registeredPackages;
    // std::vector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
 
-    //std::vector<std::shared_ptr<VxPackage>> packages;
+    std::vector<std::shared_ptr<Package>> packages;
    // std::vector<std::shared_ptr<TaskList>> tasklists;
     // Scripts
     // Modules & other assets..
@@ -225,7 +230,7 @@ struct Toolchain
 
 
 
-static void Register()
+static void RegisterToolchains()
 {
   VxContext &ctx = *CVortexMaker;
 

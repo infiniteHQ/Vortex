@@ -1,12 +1,12 @@
-#include "../../include/ToolchainInstance.h"
-#include "../../../Assets/Package/PackageInstance.h"
+#include "../ToolchainRenderInstance.h"
+//#include "../../../Assets/Package/PackageInstance.h"
 
-static bool compareLabels(const std::shared_ptr<VxPackage> &obj, const std::string &label)
+static bool compareLabels(const std::shared_ptr<Package> &obj, const std::string &label)
 {
     return obj->label == label;
 }
 
-void ToolchainInstance::UI_AssetsViewer()
+void ToolchainRenderInstance::UI_AssetsViewer()
 {
     if (this->show_UI_AssetsViewer)
     {
@@ -58,10 +58,10 @@ void ToolchainInstance::UI_AssetsViewer()
             {
 
                 auto it = std::find_if(this->toolchain->packages.begin(), this->toolchain->packages.end(),
-                                       [&](const std::shared_ptr<VxPackage> &obj)
+                                       [&](const std::shared_ptr<Package> &obj)
                                        { return compareLabels(obj, this->m_currentSave->registeredPackages[row].first); });
 
-                std::shared_ptr<VxPackage> currentPackage;
+                std::shared_ptr<Package> currentPackage;
 
                 if (it != this->toolchain->packages.end())
                 {
@@ -83,8 +83,16 @@ void ToolchainInstance::UI_AssetsViewer()
                             if (ImGui::ImageButtonWithText(packageIcon, openButtonID.c_str(), ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
                             {
                                 std::cout << "Opening " << currentPackage->name << std::endl;
-                                std::shared_ptr<PackageInstance> instance = std::make_shared<PackageInstance>(m_ctx, currentPackage);
-                                this->factory->SpawnInstance(instance);
+                                //std::shared_ptr<PackageRenderInstance> instance = std::make_shared<PackageRenderInstance>(m_ctx, currentPackage);
+                                //this->factory->SpawnInstance(instance);
+
+                                //instance->name = currentPackage->name;
+                                //CToolchainModule->m_interface->AddModuleRenderInstance(instance);
+                                std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+                                args->add("package", currentPackage);
+                                VortexMaker::CallModuleEvent(args, "LaunchPackageInterface", "vortex.modules.builtin.packages");
+
+                                // TODO: Call inpu event of PackagesModule (RenderEditorInstanceOfPackage)
                             }
                             // Vous pouvez faire d'autres opérations avec l'élément trouvé ici
                         }

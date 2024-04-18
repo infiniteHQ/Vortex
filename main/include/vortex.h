@@ -597,14 +597,14 @@ struct TaskListSave {
 
 };
 
-
+/*
 struct PackageActionSave{
     char type[128] = "unknow";
     int  priority = -1;
     char sequence[128] = "unknow";
     char command[128] = "unknow";
-};
-
+};*/
+/*
 struct PackageSave{ 
     char name[128] = "unknow";
     char label[128] = "unknow";
@@ -642,7 +642,7 @@ struct PackageSave{
     std::vector<PackageActionSave> actions;
 
 
-};
+};*/
 
 struct VxScriptSave{
     char name[128] = "unknow";
@@ -1057,45 +1057,6 @@ std::string startTime() {
 
 
 
-struct VxToolchainCurrentSystem{
-    std::string lastUpdate;
-    std::string size;
-
-    std::vector<std::shared_ptr<Task>> executedTasks;
-    std::shared_ptr<VxToolchain> parent;
-
-    //std::vector<VxPackageReport> packageReports;
-    std::vector<VxActionReport> actionReports;
-    void CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
-
-   // void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
-    void PushSize(std::string newsize){this->size = newsize;};
-    void Populate(nlohmann::json jsonData); // from working_host.config
-    nlohmann::json Extract();
-    void Save(std::shared_ptr<VxToolchain> host);
-
-
-    // Variable Name // Required By (Task) // Value
-    std::vector<std::tuple<std::string, std::string, std::string>> variables;
-    void put_varable(Task* task, std::string name, std::string createdBy, std::string value){
-        task->created_variables.push_back(std::make_tuple(name, createdBy, value));
-        this->variables.push_back(std::make_tuple(name, createdBy, value));
-    }
-
-    // Save dans le current system les variables utilisées
-    std::tuple<std::string, std::string, std::string> get_varable(Task* task, std::string name){
-        for(auto var : this->variables){
-            if(std::get<0>(var) == name){
-                task->used_variables.push_back(var);
-                return var;
-            }
-        }
-        task->used_variables.push_back({name, "unknow", "unknow"});
-        return {name, "unknow", "unknow"};
-    }   
-
-};
-
 struct VxHostCurrentSystem{
     std::string lastUpdate;
     std::string size;
@@ -1449,14 +1410,6 @@ struct VxDistHost{
 
 
 
-struct VxToolchainSnapshot{
-    std::string date;
-    std::string name;
-    std::string path;
-
-    VxToolchainCurrentSystem snapshotSystem; // to import from 
-};
-
 
 struct VxDistToolchainSave{
     char CC_value[128];
@@ -1491,7 +1444,7 @@ struct VxDistToolchain{
     
 };
 
-
+/*
 struct VxToolchain{
     // Vortex project informations
     std::string name = "unknow";
@@ -1645,9 +1598,9 @@ void RegisterTasklist(const std::string label);
     void CompilePackage(std::string packageName);
     void InstallPackage(std::string packageName);
 
-    void CreateToolchainDirectory(/*VxDirectory*/);
+    void CreateToolchainDirectory(/*VxDirectory*);
 }; 
-
+*/
 
 #include <queue>
 

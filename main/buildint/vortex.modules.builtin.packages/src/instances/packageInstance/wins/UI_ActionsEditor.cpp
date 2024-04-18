@@ -63,7 +63,7 @@ void PackageRenderInstance::UI_ActionsEditor()
 
                 for (int row = 0; row < 1; row++)
                 {
-                    static PackageActionSave_ newItem;
+                    static PackageActionSave newItem;
 
                     ImGui::TableNextRow();
                     for (int column = 0; column < 5; column++)

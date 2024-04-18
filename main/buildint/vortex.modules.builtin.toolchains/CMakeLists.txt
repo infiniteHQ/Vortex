@@ -15,6 +15,7 @@ set(SOURCES
     main.cpp
     src/toolchain.cpp
     src/instances/toolchainInstance/ToolchainRenderInstance.cpp
+    src/instances/toolchainInstance/wins/UI_AssetsViewer.cpp
     src/instances/toolchainInstance/wins/UI_ParameterWindow.cpp
     src/instances/toolchainInstance/wins/UI_ContentWindow.cpp
 )

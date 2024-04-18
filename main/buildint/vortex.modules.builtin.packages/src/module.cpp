@@ -10,7 +10,7 @@ static void fillArray(const std::vector<std::pair<char[128], char[128]>> &pairs,
     }
 }
 
-void Package::PushSave(std::shared_ptr<PackageSave_> save)
+void Package::PushSave(std::shared_ptr<PackageSave> save)
 {
     VxContext *ctx = VortexMaker::GetCurrentContext();
     nlohmann::json packageData;

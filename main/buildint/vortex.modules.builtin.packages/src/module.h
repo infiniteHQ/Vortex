@@ -6,7 +6,7 @@
 #define __PACKAGE__MODULE_H__
 
 class Package;
-struct ModuleCTX
+struct PackagesModuleCTX
 {
   std::vector<std::shared_ptr<Package>>  m_packages;    
   std::shared_ptr<ModuleInterface>        m_interface;
@@ -17,8 +17,9 @@ struct ModuleCTX
 #endif
 
 #ifndef CPackagesModule
-extern PACKAGE_MODULE_API ModuleCTX *CPackagesModule; // Current implicit context pointer
+extern PACKAGE_MODULE_API PackagesModuleCTX *CPackagesModule; // Current implicit context pointer
 #endif
+
 
 namespace PackageModule{
     PACKAGE_MODULE_API bool RegisterPackage(std::string filepath, std::shared_ptr<Package> newPackage, nlohmann::json filecontent);
@@ -78,14 +79,14 @@ struct Diag{
 };
 
 
-struct PackageActionSave_{
+struct PackageActionSave{
     char type[128] = "unknow";
     int  priority = -1;
     char sequence[128] = "unknow";
     char command[128] = "unknow";
 };
 
-struct PackageSave_{ 
+struct PackageSave{ 
     char name[128] = "unknow";
     char label[128] = "unknow";
     char author[128] = "unknow";
@@ -119,7 +120,7 @@ struct PackageSave_{
     std::vector<std::pair<char[128], char[128]>> installationSuffixes;
     char installationExclusiveCommand[128];
 
-    std::vector<PackageActionSave_> actions;
+    std::vector<PackageActionSave> actions;
 
 
 };
@@ -159,7 +160,7 @@ struct Package{
 
     hVector<std::shared_ptr<PackageAction>> actions;
 
-    void PushSave(std::shared_ptr<PackageSave_> save);
+    void PushSave(std::shared_ptr<PackageSave> save);
     void Refresh();
 
     void ExecuteActions(std::string sequence, std::shared_ptr<Package> package);
@@ -221,8 +222,22 @@ struct Package{
 
 };
 
+struct PackageReport{
+    std::string label;
+    std::string source;
+    std::string taskID;
+    std::string sizeImpact;
 
+    std::string result;
+    std::string state; 
+    std::string report;
+};
 
+struct PackageInterface{
+    std::string emplacement;
+    std::string label;
+    bool resolved;
+};
 
 static void Register()
 {

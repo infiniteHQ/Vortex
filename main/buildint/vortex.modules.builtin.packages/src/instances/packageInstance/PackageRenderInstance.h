@@ -38,7 +38,7 @@ public:
     std::string name;
     VxContext *m_ctx;
     std::shared_ptr<Package> package;
-    std::shared_ptr<PackageSave_> m_currentSave;
+    std::shared_ptr<PackageSave> m_currentSave;
     ImGuiID dockspaceID;
 
     std::shared_ptr<Walnut::Image> m_HostIcon;

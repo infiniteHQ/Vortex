@@ -4,9 +4,11 @@
 
 
 #ifndef CToolchainModule
-ModuleCTX *CToolchainModule = NULL;
+ToolchainsModuleCTX *CToolchainModule = NULL;
 #endif
 
+
+PackagesModuleCTX *CPackagesModule = NULL;
 
 // Module context ptr, including variables of functions, call at any moments wit convention : HelloTest.someParam or HelloTest.return
 static std::shared_ptr<hArgs> arguments;
@@ -35,7 +37,7 @@ void HelloTest(){
 
 
  void CreateModuleContext(){
-  ModuleCTX *ctx = VX_NEW(ModuleCTX);
+  ToolchainsModuleCTX *ctx = VX_NEW(ToolchainsModuleCTX);
   CToolchainModule = ctx;
 }
 
@@ -62,7 +64,7 @@ public:
         this->AddLogo(icons::_i,icons::_i_size);
         
         // Adding functions
-        this->AddFunction(Register, "RegisterToolchains");
+        this->AddFunction(RegisterToolchains, "RegisterToolchains");
         
         // Adding events
         //this->AddInputEvent(TestInputEvent, "test");

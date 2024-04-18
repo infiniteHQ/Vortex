@@ -228,7 +228,7 @@ void PackageRenderInstance::Refresh()
 
     this->package->Refresh();
 
-    std::shared_ptr<PackageSave_> refreshedCurrentSave = std::make_shared<PackageSave_>();
+    std::shared_ptr<PackageSave> refreshedCurrentSave = std::make_shared<PackageSave>();
 
     strncpy(refreshedCurrentSave->name, this->package->name.c_str(), sizeof(refreshedCurrentSave->name));
     refreshedCurrentSave->name[sizeof(refreshedCurrentSave->name) - 1] = '\0';
@@ -363,7 +363,7 @@ void PackageRenderInstance::Refresh()
 
     for (auto action : this->package->actions)
     {
-        PackageActionSave_ savedAction;
+        PackageActionSave savedAction;
 
         strncpy(savedAction.command, action->command.c_str(), sizeof(savedAction.command));
         savedAction.command[sizeof(savedAction.command) - 1] = '\0';
