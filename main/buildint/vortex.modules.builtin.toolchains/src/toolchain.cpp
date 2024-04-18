@@ -40,7 +40,7 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
   jsonData["packageList"] = nlohmann::json::array();
   jsonData["actionsReportsList"] = nlohmann::json::array();
 
-    for (auto package : this->parent->packages)
+ /*   for (auto package : this->parent->packages)
     {
       nlohmann::json report;
       report["p_name"] = package->name;
@@ -52,7 +52,7 @@ nlohmann::json VxToolchainCurrentSystem::Extract()
       }
       jsonData["packageList"].push_back(report);
     }
-
+*/
   // Fix : All tasks features and after : make all basic task of toolchain
   for (auto task : this->executedTasks)
   {
@@ -171,7 +171,7 @@ void ToolchainCurrentSystem::Populate(nlohmann::json jsonData)
 
     for (auto packageReport : jsonData["packageList"])
     {
-      for (auto package : this->parent->packages)
+   /*  for (auto package : this->parent->packages)
       {
         if (package->name == packageReport["p_name"].get<std::string>())
         {
@@ -190,7 +190,7 @@ void ToolchainCurrentSystem::Populate(nlohmann::json jsonData)
             }
           }
         }
-      }
+      }*/
     }
   // Get filesystem informations
 
@@ -321,7 +321,7 @@ void Toolchain::Refresh()
   this->localScriptsPath = toolchainData["data"]["scripts"].get<std::string>();
 
   VortexMaker::LogInfo("Core", "Refreshing packages asset of " + this->name);
-  registeredPackages.clear();
+  //registeredPackages.clear();
   nlohmann::json packages = toolchainData["content"]["packages"];
   for (auto &pkg : packages)
   {
@@ -332,7 +332,7 @@ void Toolchain::Refresh()
   //this->FindPackages();
 
   VortexMaker::LogInfo("Core", "Refreshing tasklists asset of " + this->name);
-  registeredTasklists.clear();
+  //registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
   {

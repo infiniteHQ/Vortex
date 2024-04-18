@@ -157,7 +157,7 @@ struct VxIO {
   std::vector<std::shared_ptr<VxToolchain>>      toolchains;    
   std::vector<VxDistToolchain>  distToolchains;    
   std::vector<std::shared_ptr<VxHost>>           hosts;    
-  std::vector<std::shared_ptr<VxPackage>>        packages;    
+//  std::vector<std::shared_ptr<VxPackage>>        packages;    
   std::vector<std::shared_ptr<VxScript>>         scripts;
   std::vector<std::shared_ptr<VxGPOSystem>>      gpoSystems;
   std::vector<VxDistHost>  distHosts;    

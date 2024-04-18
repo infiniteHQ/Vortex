@@ -272,7 +272,7 @@ void ToolchainRenderInstance::menubar(){
 
             if (ImGui::CollapsingHeader("Import package(s)"))
             {
-                for(auto package : this->m_ctx->IO.packages){
+               /* FIXME for(auto package : this->m_ctx->IO.packages){
                     if (ImGui::Button(package->label.c_str(), ImVec2(-1, 0)))
                     {
                         std::pair<char[128],char[128]> pair;
@@ -286,7 +286,7 @@ void ToolchainRenderInstance::menubar(){
                     open_ImportationMenu = false;
                         ImGui::CloseCurrentPopup();
                     }
-                }
+                }*/
             }
 
             // static int unused_i = 0;
@@ -512,7 +512,7 @@ void ToolchainRenderInstance::Refresh()
 
     // Output the content of buffer
     // refreshedCurrentSave.name = this->toolchain->name;
-
+    /* FIXME
     for (auto registeredPackage : this->toolchain->registeredPackages)
     {
         std::pair<char[128], char[128]> package;
@@ -534,7 +534,7 @@ void ToolchainRenderInstance::Refresh()
 
 
         refreshedCurrentSave->registeredTasklists.push_back(tasklist);
-    }   
+    }   */
 
 
 

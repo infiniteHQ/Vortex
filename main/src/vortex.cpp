@@ -317,7 +317,7 @@ std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string 
 
   return task;
 }
-
+/*
 void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package)
 {
   for (auto action : package->actions)
@@ -337,7 +337,7 @@ void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> 
       }
     }
   }
-}
+}*/
 
 // Demain : Finir l'edition complete des packages et de la toolchains (y compris les configuration de target de la toolchain, etc...)
 // Preparer la beta !!
@@ -377,7 +377,7 @@ void TaskProcessor::markTaskCompleted(std::shared_ptr<Task> task)
   this->tasksToProcess.erase(std::remove_if(this->tasksToProcess.begin(), this->tasksToProcess.end(), [task](const auto& t) { return t == task; }), this->tasksToProcess.end());
   std::unique_lock<std::mutex> lock(mutex);
 }
-
+/*
 void VortexMaker::DeleteHost(const std::shared_ptr<VxHost>& host){
     VxContext *ctx = VortexMaker::GetCurrentContext();
     std::string host_path = ctx->projectPath;
@@ -403,9 +403,9 @@ void VortexMaker::DeleteHost(const std::shared_ptr<VxHost>& host){
 
   VortexMaker::RefreshToolchains();
 
-}
+}*/
 
-
+/*
 
 void VortexMaker::DeleteGpos(const std::shared_ptr<VxGPOSystem>& gpos){
     VxContext *ctx = VortexMaker::GetCurrentContext();
@@ -435,9 +435,9 @@ void VortexMaker::DeleteGpos(const std::shared_ptr<VxGPOSystem>& gpos){
   VortexMaker::RefreshGpos();
 
 }
+*/
 
-
-
+/*
 
 void VortexMaker::CreateGpos(const std::string& name, const std::string& author){
     VxContext *ctx = VortexMaker::GetCurrentContext();
@@ -534,7 +534,9 @@ void VortexMaker::CreateGpos(const std::string& name, const std::string& author)
       VortexMaker::RefreshGpos();
 
 }
+*/
 
+/*
 
 void VortexMaker::DeleteToolchain(const std::shared_ptr<VxToolchain>& toolchain){
     VxContext *ctx = VortexMaker::GetCurrentContext();
@@ -565,7 +567,9 @@ void VortexMaker::DeleteToolchain(const std::shared_ptr<VxToolchain>& toolchain)
 
 }
 
+*/
 
+/*
 void VortexMaker::CreateHost(const std::string& name, const std::string& author){
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
@@ -664,8 +668,11 @@ void VortexMaker::CreateHost(const std::string& name, const std::string& author)
       VortexMaker::RefreshHosts();
 
 }
+*/
 
 
+
+/*
 void CreateCreate(std::string name, std::string pathOfTarball){
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
@@ -726,7 +733,9 @@ void CreateCreate(std::string name, std::string pathOfTarball){
 
 
 }
+*/
 
+/*
 
 void VortexMaker::CreateScript(const std::string& name, const std::string& author){
     VxContext *ctx = VortexMaker::GetCurrentContext();
@@ -769,9 +778,9 @@ void VortexMaker::CreateScript(const std::string& name, const std::string& autho
     // Refresh current host
     //this->
 }
+*/
 
-
-
+/*
 void VortexMaker::CreateToolchain(const std::string& name, const std::string& author){
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
@@ -901,9 +910,9 @@ void VortexMaker::CreateToolchain(const std::string& name, const std::string& au
     // Refresh current host
     //this->
 }
+*/
 
-#include <deque>
-#include <mutex>
+
 
 void TaskProcessor::processTasks() {
     VxContext &ctx = *CVortexMaker;

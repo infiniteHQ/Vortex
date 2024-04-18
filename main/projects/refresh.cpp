@@ -24,7 +24,7 @@ void TaskList::Refresh()
     this->list.push_back(task);
   }
 }
-
+/*
 void VxPackage::Refresh()
 {
   nlohmann::json filecontent = VortexMaker::DumpJSON(this->configFilePath);
@@ -126,6 +126,7 @@ void VxPackage::Refresh()
     }
   }
 }
+*/
 
 void VxHost::RefreshCurrentWorkingHost()
 {
@@ -882,7 +883,7 @@ VORTEX_API void VortexMaker::RefreshScripts()
     }
   }
 }
-
+/*
 VORTEX_API void VortexMaker::RefreshPackages()
 {
   VxContext &ctx = *CVortexMaker;
@@ -922,7 +923,7 @@ VORTEX_API void VortexMaker::RefreshPackages()
     }
   }
 }
-
+*/
 VORTEX_API void VortexMaker::RefreshHosts()
 {
   VxContext &ctx = *CVortexMaker;

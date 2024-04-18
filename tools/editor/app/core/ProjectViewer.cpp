@@ -44,7 +44,7 @@ void ProjectViewer::OnImGuiRender()
 
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Project contents of : ");
     ImGui::SameLine();
-    ImGui::Text(this->ctx->name.c_str());
+    //ImGui::Text(this->ctx->name.c_str());
 
     ImGui::GetFont()->Scale = oldsize;
     ImGui::PopFont();
@@ -72,7 +72,7 @@ void ProjectViewer::OnImGuiRender()
 
             {
 
-            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Hosts : ");
+            /*ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Hosts : ");
             int height = 0;
             if(this->ctx->IO.hosts.size() < 4)height = 220;
             if(this->ctx->IO.hosts.size() < 8 && this->ctx->IO.hosts.size() > 4)height = 440;
@@ -105,13 +105,13 @@ void ProjectViewer::OnImGuiRender()
                 ImGui::EndChildFrame();
                 ImGui::NextColumn();
             }
-            ImGui::EndChild();
+            ImGui::EndChild();*/
             }
 
 
 
 
-            {
+            {/*
 
             int i = 0;
             int height = 0;
@@ -147,7 +147,7 @@ void ProjectViewer::OnImGuiRender()
                 ImGui::EndChildFrame();
                 ImGui::NextColumn();
             }
-            ImGui::EndChild();
+            ImGui::EndChild();*/
             }
     
     }
@@ -192,7 +192,7 @@ void ProjectViewer::menubar()
             }
             ImGui::EndMenu();
         }
-
+/*
         static bool open_CreateToolchain = false;
         static bool open_CreateScript = false;
         static bool open_CreateHost = false;
@@ -246,7 +246,7 @@ void ProjectViewer::menubar()
                     std::string _label = label;
                     std::string _author = author;
 
-                    VortexMaker::CreateHost(_label, _author);
+                    //VortexMaker::CreateHost(_label, _author);
 
                     // open_confirm_popup = true;
                     open_CreateHost = false;
@@ -280,7 +280,7 @@ void ProjectViewer::menubar()
                     std::string _label = label;
                     std::string _author = author;
 
-                    VortexMaker::CreateGpos(_label, _author);
+                   // VortexMaker::CreateGpos(_label, _author);
 
                     // open_confirm_popup = true;
                     open_CreateGpos = false;
@@ -313,7 +313,7 @@ void ProjectViewer::menubar()
                     std::string _label = label;
                     std::string _author = author;
 
-                    VortexMaker::CreateScript(_label, _author);
+                   // VortexMaker::CreateScript(_label, _author);
 
                     // open_confirm_popup = true;
                     open_CreateScript = false;
@@ -348,7 +348,7 @@ void ProjectViewer::menubar()
                     std::string _label = label;
                     std::string _author = author;
 
-                    VortexMaker::CreateToolchain(_label, _author);
+                   // VortexMaker::CreateToolchain(_label, _author);
 
                     // open_confirm_popup = true;
                     open_CreateToolchain = false;
@@ -468,7 +468,7 @@ void ProjectViewer::menubar()
             }
             ImGui::EndPopup();
         }
-
+*/
         ImGui::EndMenuBar();
     }
 }

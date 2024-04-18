@@ -32,11 +32,11 @@ struct ToolchainCurrentSystem{
     std::vector<std::shared_ptr<Task>> executedTasks;
     std::shared_ptr<Toolchain> parent;
 
-    std::vector<VxPackageReport> packageReports;
+    //std::vector<VxPackageReport> packageReports;
     std::vector<VxActionReport> actionReports;
     void CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
 
-    void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
+   // void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
     void PushSize(std::string newsize){this->size = newsize;};
     void Populate(nlohmann::json jsonData); // from working_host.config
     nlohmann::json Extract();
@@ -159,11 +159,11 @@ struct Toolchain
 
     // Vector de packages
 
-    std::vector<std::shared_ptr<VxPackageInterface>> registeredPackages;
-    std::vector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
+   // std::vector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+   // std::vector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
 
-    std::vector<std::shared_ptr<VxPackage>> packages;
-    std::vector<std::shared_ptr<TaskList>> tasklists;
+    //std::vector<std::shared_ptr<VxPackage>> packages;
+   // std::vector<std::shared_ptr<TaskList>> tasklists;
     // Scripts
     // Modules & other assets..
     // Patchs

@@ -6,8 +6,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 # Liste des fichiers sources pour la bibliothèque partagée
 file(GLOB_RECURSE VORTEX_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
-file(GLOB_RECURSE VORTEXCORE_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/core/*.cpp")
-file(GLOB_RECURSE VORTEXPROJECT_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/projects/*.cpp")
+#file(GLOB_RECURSE VORTEXCORE_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/core/*.cpp")
+#file(GLOB_RECURSE VORTEXPROJECT_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/projects/*.cpp")
 file(GLOB_RECURSE VORTEXUTILS_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/utils/*.cpp")
 file(GLOB_RECURSE VORTEXEDITOR_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tools/editor/*.cpp")
 
@@ -23,11 +23,11 @@ ${IMGUI_SHARED_SOURCES}
 
 # Définir les chemins d'inclusion pour la bibliothèque partagée
 target_include_directories(vortex_shared PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/core/scripts
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/core/toolchains
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/core/hosts
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/core/gpos
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/core/disthost
+    #${CMAKE_CURRENT_SOURCE_DIR}/main/core/scripts
+    #${CMAKE_CURRENT_SOURCE_DIR}/main/core/toolchains
+    #${CMAKE_CURRENT_SOURCE_DIR}/main/core/hosts
+    #${CMAKE_CURRENT_SOURCE_DIR}/main/core/gpos
+    #${CMAKE_CURRENT_SOURCE_DIR}/main/core/disthost
     ${CMAKE_CURRENT_SOURCE_DIR}/main/projects
     ${CMAKE_CURRENT_SOURCE_DIR}/main/utils
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include

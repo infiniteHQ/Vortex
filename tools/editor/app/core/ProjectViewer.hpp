@@ -5,8 +5,8 @@
 #include "../../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
 #include "../../../../lib/uikit/Assets/icons.h"
 
-#include "../instances/Components/Host/HostInstance.h"
-#include "../instances/Components/Toolchain/ToolchainInstance.h"
+//#include "../instances/Components/Host/HostInstance.h"
+//#include "../instances/Components/Toolchain/ToolchainInstance.h"
 #include "../src/instanceFactory.h"
 
 // Simple storage to output a dummy file-system.
@@ -40,7 +40,7 @@ struct MyTreeNode
 		else
 		{
 
-			if(node->Type == "Host"){
+			/*if(node->Type == "Host"){
 				std::string hostName = "Open###" + node->Name + "Open";
 				if(ImGui::Button(hostName.c_str())){
 					for(auto host : ctx->IO.hosts){
@@ -109,7 +109,7 @@ struct MyTreeNode
 
 				}
 				ImGui::SameLine();
-			}
+			}*/
 			ImGui::TreeNodeEx(node->Name.c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth);
 			
 			ImGui::TableNextColumn();
@@ -150,7 +150,7 @@ public:
 			// Ajoutez le reste des données ici...
 		};
 
-		std::vector<MyTreeNode> Hosts = {};
+		/*std::vector<MyTreeNode> Hosts = {};
 		for(auto host : ctx->IO.hosts){
 			MyTreeNode nodeHost;
 			nodeHost.Name = host->name.c_str();
@@ -187,8 +187,8 @@ public:
 			nodeGPOS.ChildIdx = -1;
 			Gpos.push_back(nodeGPOS);
 		}
-		int gpos_size = Gpos.size();
-
+		int gpos_size = Gpos.size();*/
+/*
 
 		std::vector<MyTreeNode> Packages = {};
 		for(auto package : ctx->IO.packages){
@@ -200,10 +200,10 @@ public:
 			nodePackage.ChildIdx = -1;
 			Packages.push_back(nodePackage);
 		}
-		int package_size = Packages.size();
+		int package_size = Packages.size();*/
 
 
-		std::vector<MyTreeNode> Scripts = {};
+		/*std::vector<MyTreeNode> Scripts = {};
 		for(auto script : ctx->IO.scripts){
 			MyTreeNode nodePackage;
 			nodePackage.Name = (char*)script->name.c_str();
@@ -213,20 +213,20 @@ public:
 			nodePackage.ChildIdx = -1;
 			Scripts.push_back(nodePackage);
 		}
-		int scripts_size = Scripts.size();
+		int scripts_size = Scripts.size();*/
 
 
 		std::vector<MyTreeNode> nodes = {
-			{this->ctx->name.c_str(), "Project", 	-1, 1, 2}, // 0
+			//{this->ctx->name.c_str(), "Project", 	-1, 1, 2}, // 0
 			{"Components", "...", 					-1, 3, 3},				// 1
 			{"Assets", "...", 						-1, 6, 3},						// 2
 
-			{"Hosts", "...", 						-1, 9, 									hosts_size},						// 1
-			{"Toolchains", "...", 					-1, 9 + hosts_size, 					toolchains_size},				// 1
-			{"GPOS", "...", 						-1, 9 + toolchains_size + hosts_size,  	gpos_size},				// 1
+			//{"Hosts", "...", 						-1, 9, 									hosts_size},						// 1
+			//{"Toolchains", "...", 					-1, 9 + hosts_size, 					toolchains_size},				// 1
+			//{"GPOS", "...", 						-1, 9 + toolchains_size + hosts_size,  	gpos_size},				// 1
 
-			{"Packages", "...", 					-1, 9 + toolchains_size + hosts_size + gpos_size, 					package_size},						// 2
-			{"Scripts", "...", 						-1, 9 + package_size + toolchains_size + hosts_size + gpos_size, 	scripts_size},						// 2
+			//{"Packages", "...", 					-1, 9 + toolchains_size + hosts_size + gpos_size, 					package_size},						// 2
+			//{"Scripts", "...", 						-1, 9 + package_size + toolchains_size + hosts_size + gpos_size, 	scripts_size},						// 2
 			{"Patchs", "..." 						-1, 1, 1},						// 2
 
 			// Host 1
@@ -235,7 +235,7 @@ public:
 			// Ajoutez le reste des données ici...
 		};
 
-		for(auto hostnode : Hosts){
+		/*for(auto hostnode : Hosts){
 			nodes.push_back({hostnode.Name, hostnode.Type, hostnode.Size, hostnode.ChildIdx, hostnode.ChildCount});
 		}
 
@@ -246,16 +246,16 @@ public:
 
 		for(auto systems : Gpos){
 			nodes.push_back({systems.Name, systems.Type, systems.Size, systems.ChildIdx, systems.ChildCount});
-		}
+		}*/
 
-		for(auto package : Packages){
+		/*for(auto package : Packages){
 			nodes.push_back({package.Name, package.Type, package.Size, package.ChildIdx, package.ChildCount});
-		}
+		}*/
 
-		for(auto script : Scripts){
+		/*for(auto script : Scripts){
 			nodes.push_back({script.Name, script.Type, script.Size, script.ChildIdx, script.ChildCount});
 		}
-
+*/
 		this->nodeInfos = nodes;
 	}
 

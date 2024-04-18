@@ -3,7 +3,7 @@
 
 void VxGPOSystem::FindPackages()
 {
-  VxContext &ctx = *CVortexMaker;
+  /*VxContext &ctx = *CVortexMaker;
 
   // Register all finded local packages
   for (const auto &file : VortexMaker::SearchFiles(ctx.gposPath, "package.config"))
@@ -159,5 +159,5 @@ void VxGPOSystem::FindPackages()
     {
       // Recupérer les packages du ctx.
     }
-  }
+  }*/
 }

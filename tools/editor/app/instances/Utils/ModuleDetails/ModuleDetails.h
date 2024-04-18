@@ -6,6 +6,8 @@
 #include "../../../../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
 #include "../../../../../../lib/uikit/Assets/icons.h"
 
+#include "../../../../../../main/include/modules/interface.h"
+
 #ifndef ModuleDetails_H
 #define ModuleDetails_H
 

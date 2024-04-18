@@ -3,7 +3,7 @@
 
 void VxGPOSystem::FindTasklists()
 {
-  VxContext &ctx = *CVortexMaker;
+  /*VxContext &ctx = *CVortexMaker;
 
   // Register all finded local packages
   for (const auto &file : VortexMaker::SearchFiles(ctx.hostsPath, "tasklist.config"))
@@ -72,5 +72,5 @@ void VxGPOSystem::FindTasklists()
     {
       // Recupérer les packages du ctx.
     }
-  }
+  }*/
 }

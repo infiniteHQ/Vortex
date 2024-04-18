@@ -25,24 +25,18 @@ public:
     */
     void execute() override
     {
-        std::cout << "dfsdf" << std::endl;
         CreatePackageContext();
-        std::cout << "dfsdf" << std::endl;
         std::cout <<CPackagesModule << std::endl;
         CPackagesModule->m_interface = std::make_shared<ModuleInterface>(*this);
-        std::cout << "dfsdf" << std::endl;
         
         // Add main args
         this->AddArg<const char*>("chainsModule.name", "PackagesModule");
-        std::cout << "dfsdf" << std::endl;
 
         // Add logo
         this->AddLogo(icons::_i,icons::_i_size);
         
-        std::cout << "dfsdf" << std::endl;
         // Adding functions
         this->AddFunction(Register, "RegisterPackages");
-        std::cout << "dfsdf" << std::endl;
         
         // Adding events
         //this->AddInputEvent(TestInputEvent, "test");
@@ -52,11 +46,9 @@ public:
         //this->AddModuleRenderInstance(ToolchainRenderInstance(nullptr, nullptr));
 
         arguments = this->m_args;
-        std::cout << "dfsdf" << std::endl;
 
 
         this->ExecFunction("RegisterPackages");
-        std::cout << "dfsdf" << std::endl;
         // Adding events
 
     }

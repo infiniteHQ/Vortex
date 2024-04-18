@@ -10,7 +10,7 @@ static void fillArray(const std::vector<std::pair<char[128], char[128]>> &pairs,
         jsonArray.push_back(parameter);
     }
 }
-
+/*
 void VxPackage::PushSave(std::shared_ptr<PackageSave> save)
 {
     VxContext *ctx = VortexMaker::GetCurrentContext();
@@ -84,7 +84,7 @@ void VxPackage::PushSave(std::shared_ptr<PackageSave> save)
     std::string cmd = "mv " + this->path + " " + tempPath + "/" + save->name;
     system(cmd.c_str());
 }
-
+*/
 void TaskList::PushSave(std::shared_ptr<TaskListSave> save)
 {
     nlohmann::json data;

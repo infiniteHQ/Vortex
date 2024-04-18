@@ -10,8 +10,8 @@
 #include "../../../lib/uikit/Platform/GUI/editor/UI/IconsFontAwesome6.h"
 
 #include "../instances/instance.h"
-#include "../instances/Components/Host/HostInstance.h"
-#include "../instances/Components/Toolchain/ToolchainInstance.h"
+//#include "../instances/Components/Host/HostInstance.h"
+//#include "../instances/Components/Toolchain/ToolchainInstance.h"
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
 #include "../core/ModuleManager.hpp"
@@ -21,7 +21,7 @@
 using namespace VortexMaker;
 
 // Toolchain window not appear when we activate it from Project viewer.
-
+/*
 static std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
 static std::vector<std::shared_ptr<HostInstance>> hostInstances;
 static std::vector<std::shared_ptr<ToolchainInstance>> toolchainInstances;
@@ -31,7 +31,7 @@ static std::vector<std::shared_ptr<GPOSInstance>> gposInstances;
 static std::vector<std::shared_ptr<ReportInstance>> reportInstances;
 static std::vector<std::shared_ptr<TextEditorInstance>> texteditorInstances;
 static std::vector<std::shared_ptr<ScriptInstance>> scriptInstances;
-
+*/
 static std::vector<std::shared_ptr<ModuleDetails>> moduleDetailsInstances;
 
 
@@ -56,6 +56,8 @@ ImGui::PopStyleVar(8);
 
 class Instance : public InstanceFactory {
   public:
+
+/*
   void SpawnInstance(std::shared_ptr<HostInstance> instance) override {
     instance->name = instance->host->name;
     instance->opened = true;
@@ -67,7 +69,6 @@ class Instance : public InstanceFactory {
     instance->opened = true;
     toolchainInstances.push_back(instance);
   };
-
 
   void SpawnInstance(std::shared_ptr<PackageInstance> instance) override {
     instance->name = instance->package->name;
@@ -113,19 +114,6 @@ class Instance : public InstanceFactory {
   };
 
 
-
-  void SpawnInstance(std::shared_ptr<ModuleDetails> instance) override {
-    instance->name = instance->m_module->m_name;
-    instance->opened = true;
-    moduleDetailsInstances.push_back(instance);
-  };
-
-  void UnspawnInstance(std::shared_ptr<ModuleDetails> instance) override {
-    std::string instanceName = instance->name;
-    instance = nullptr;
-  };
-
-
   void UnspawnInstance(std::shared_ptr<ScriptInstance> instance) override {
     std::string instanceName = instance->name;
     instance = nullptr;
@@ -167,6 +155,19 @@ class Instance : public InstanceFactory {
   void UnspawnInstance(std::shared_ptr<ReportInstance> instance) override {
     std::string instanceName = instance->name;
     instance->name = "null";
+    instance = nullptr;
+  };
+*/
+
+
+  void SpawnInstance(std::shared_ptr<ModuleDetails> instance) override {
+    instance->name = instance->m_module->m_name;
+    instance->opened = true;
+    moduleDetailsInstances.push_back(instance);
+  };
+
+  void UnspawnInstance(std::shared_ptr<ModuleDetails> instance) override {
+    std::string instanceName = instance->name;
     instance = nullptr;
   };
 
@@ -218,6 +219,7 @@ public:
     }
 
     // Instances [OBSOLETE]
+    /*
     for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}    
     for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
@@ -225,7 +227,7 @@ public:
     for (auto window : gposInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : reportInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
     for (auto window : texteditorInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
-    for (auto window : scriptInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
+    for (auto window : scriptInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}*/
 
 
     for (auto window : moduleDetailsInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
@@ -247,7 +249,7 @@ public:
 
 
   }
-
+/*
   void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName, std::shared_ptr<VxHost> host)
   {
     win->name = winName;
@@ -255,7 +257,7 @@ public:
     win->setup(host);
     instanciedWindows.push_back(win);
   }
-
+*/
 
   VxContext *m_ctx;
 

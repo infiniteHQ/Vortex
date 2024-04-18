@@ -60,19 +60,16 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <chrono>
-#include <iostream>
-#include <string>
 #include <spdlog/spdlog.h>
 #include <thread>
-#include <vector>
 #include <algorithm>
 #include <mutex>
 #include <condition_variable>
 #include <future>
-#include <thread>
 #include <random>
 #include <dlfcn.h>
 #include <dirent.h>
+#include <deque>
 
 #include "../../lib/imgui/imgui.h"
 #include "../../lib/imgui/imgui_internal.h"
@@ -155,7 +152,7 @@ struct CommandOutput;
 struct VxToolchain;
 struct VxScript;
 struct VxDistHost;
-struct VxPackage;
+//struct VxPackage;
 struct VxDistToolchain;
 struct TaskProcessor;
 
@@ -229,17 +226,17 @@ namespace VortexMaker
     VORTEX_API void             RefreshPackages();
     VORTEX_API void             RefreshScripts();
     // Legacy components creation
-    VORTEX_API void             CreateToolchain(const std::string& name, const std::string& author);
-    VORTEX_API void             CreateCreate(const std::string& name, const std::string& pathOfTarball);
-    VORTEX_API void             CreateHost(const std::string& name, const std::string& author);
-    VORTEX_API void             CreateGpos(const std::string& name, const std::string& author);
+    //VORTEX_API void             CreateToolchain(const std::string& name, const std::string& author);
+    //VORTEX_API void             CreateCreate(const std::string& name, const std::string& pathOfTarball);
+    //VORTEX_API void             CreateHost(const std::string& name, const std::string& author);
+    //VORTEX_API void             CreateGpos(const std::string& name, const std::string& author);
     VORTEX_API void             CreateProject(const std::string& name, const std::string& path);
-    VORTEX_API void             CreateScript(const std::string& name, const std::string& author);
+    //VORTEX_API void             CreateScript(const std::string& name, const std::string& author);
 
     // Legacy components deletion
-    VORTEX_API void             DeleteHost(const std::shared_ptr<VxHost>& host);
-    VORTEX_API void             DeleteGpos(const std::shared_ptr<VxGPOSystem>& gpos);
-    VORTEX_API void             DeleteToolchain(const std::shared_ptr<VxToolchain>& toolchain);
+    //VORTEX_API void             DeleteHost(const std::shared_ptr<VxHost>& host);
+    //VORTEX_API void             DeleteGpos(const std::shared_ptr<VxGPOSystem>& gpos);
+    //VORTEX_API void             DeleteToolchain(const std::shared_ptr<VxToolchain>& toolchain);
     VORTEX_API void             CreateHost();
 
     VORTEX_API std::shared_ptr<Task>             CreateTask(const std::string tasktype, const std::string component, const std::string uniqueID, int priority, const std::shared_ptr<hArgs> props);
@@ -255,7 +252,7 @@ namespace VortexMaker
     VORTEX_API nlohmann::json DumpJSON(const std::string& file);
 
 
-    VORTEX_API bool RegisterPackage(std::string filepath, std::shared_ptr<VxPackage> newPackage, nlohmann::json toolchainData);
+    //VORTEX_API bool RegisterPackage(std::string filepath, std::shared_ptr<VxPackage> newPackage, nlohmann::json toolchainData);
     VORTEX_API bool RegisterDistHost(VxDistHost host, nlohmann::json packageData);
     VORTEX_API bool RegisterScript(std::shared_ptr<VxScript> script, nlohmann::json packageData);
     VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
@@ -517,18 +514,18 @@ struct Check{
 };
 
 
-struct VxPackageInterface{
-    std::string emplacement;
-    std::string label;
-    bool resolved;
-};
 struct VxTasklistInterface{
     std::string label;
     bool resolved;
 };
 
+/*
 
-
+struct VxPackageInterface{
+    std::string emplacement;
+    std::string label;
+    bool resolved;
+};
 
 struct VXPackage_Action{
     int         priority;
@@ -571,7 +568,7 @@ struct VxPackageCompilation{
     std::string customInstallationProcess = "not specified";
     std::string exclusiveCustomInstallationProcess = "not specified";
 };
-
+*/
 
 struct VxDiag{
     std::string properName;
@@ -666,6 +663,8 @@ struct VxScript{
     void PushSave(std::shared_ptr<VxScriptSave> save);
 };
 
+
+/*
 struct VxPackage{
     std::string name = "unknow"; // Proper name of the package
     std::string author = "unknow"; // Proper name of the package
@@ -761,7 +760,7 @@ struct VxPackage{
     
 
 };
-
+*/
 
 struct ToolchainSave{ 
     char name[128] = "unknow";
@@ -826,7 +825,7 @@ struct HostSave{
 
 };
 
-
+/*
 struct VxPackageReport{
     std::string label;
     std::string source;
@@ -836,7 +835,7 @@ struct VxPackageReport{
     std::string result;
     std::string state; 
     std::string report;
-};
+};*/
 
 
 struct VxActionReport{
@@ -1065,11 +1064,11 @@ struct VxToolchainCurrentSystem{
     std::vector<std::shared_ptr<Task>> executedTasks;
     std::shared_ptr<VxToolchain> parent;
 
-    std::vector<VxPackageReport> packageReports;
+    //std::vector<VxPackageReport> packageReports;
     std::vector<VxActionReport> actionReports;
     void CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
 
-    void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
+   // void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
     void PushSize(std::string newsize){this->size = newsize;};
     void Populate(nlohmann::json jsonData); // from working_host.config
     nlohmann::json Extract();
@@ -1104,11 +1103,11 @@ struct VxHostCurrentSystem{
     std::vector<std::shared_ptr<Task>> executedTasks;
     std::shared_ptr<VxHost> parent;
 
-    std::vector<VxPackageReport> packageReports;
+    //std::vector<VxPackageReport> packageReports;
     std::vector<VxActionReport> actionReports;
 
 
-    void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
+    //void PushPackageReport(VxPackageReport report){this->packageReports.push_back(report);};
     void PushSize(std::string newsize){this->size = newsize;};
     void Populate(nlohmann::json jsonData); // from working_host.config
     nlohmann::json Extract();
@@ -1195,10 +1194,10 @@ struct VxHost{
 
     std::string GetTriplet(std::string triplet_type);
 
-    hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    //hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
     hVector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
 
-    hVector<std::shared_ptr<VxPackage>> packages;
+    //hVector<std::shared_ptr<VxPackage>> packages;
     std::vector<std::shared_ptr<TaskList>> tasklists;
     std::vector<VxHostSnapshot> snapshots;
 
@@ -1354,10 +1353,10 @@ struct VxGPOSystem{
 
     std::string GetTriplet(std::string triplet_type);
 
-    hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+   // hVector<std::shared_ptr<VxPackageInterface>> registeredPackages;
     hVector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
 
-    hVector<std::shared_ptr<VxPackage>> packages;
+   // hVector<std::shared_ptr<VxPackage>> packages;
     std::vector<std::shared_ptr<TaskList>> tasklists;
     std::vector<VxHostSnapshot> snapshots;
 
@@ -1586,10 +1585,10 @@ struct VxToolchain{
 
     // Vector de packages
 
-    std::vector<std::shared_ptr<VxPackageInterface>> registeredPackages;
+    //std::vector<std::shared_ptr<VxPackageInterface>> registeredPackages;
     std::vector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
 
-    std::vector<std::shared_ptr<VxPackage>> packages;
+   // std::vector<std::shared_ptr<VxPackage>> packages;
     std::vector<std::shared_ptr<TaskList>> tasklists;
     // Scripts
     // Modules & other assets..
