@@ -27,7 +27,7 @@ public:
 
     void render()
     {
-        this->dockspaceID = ImGui::GetID(this->host->name.c_str());
+        /*this->dockspaceID = ImGui::GetID(this->host->name.c_str());
         static ImGuiIO &io = ImGui::GetIO();
 
         // Mainwindow with dockspace
@@ -53,11 +53,11 @@ public:
         this->UI_ParametersWindow();
         this->UI_ContentWindow();
 
-
+*/
     }
 
     void menubar(){
-
+/*
             if (ImGui::BeginMenuBar())
             {
                 static ImTextureID saveIcon = this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -151,14 +151,14 @@ public:
                 }
                 ImGui::EndMenuBar();
             }
-            
+        */    
     }
 
     void UI_ContentWindow(){
         if (this->show_UI_ContentWindow)
         {
 
-            static std::string label = this->host->name + " - Content Window";
+            /*static std::string label = this->host->name + " - Content Window";
             ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_FirstUseEver);
             if (ImGui::Begin(label.c_str()))
             {
@@ -182,7 +182,7 @@ public:
                     ImGui::EndTable();
                 }
             }
-            ImGui::End();
+            ImGui::End();*/
         }
     
 
@@ -192,7 +192,7 @@ public:
         if (this->show_UI_ParametersWindow)
         {
 
-            static std::string label = this->host->name + " - Parameters Window";
+            /*static std::string label = this->host->name + " - Parameters Window";
             ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
             if (ImGui::Begin(label.c_str()))
             {
@@ -282,7 +282,7 @@ public:
                     ImGui::InputFloat("input scientific", &f1, 0.0f, 0.0f, "%e");
                 }
             }
-            ImGui::End();
+            ImGui::End();*/
         }
 
         

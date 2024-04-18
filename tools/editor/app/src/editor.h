@@ -264,7 +264,7 @@ public:
 
 
 // Global TaskProcessor instance
-TaskProcessor taskProcessor;
+//TaskProcessor taskProcessor;
 
   std::thread receiveThread;
   bool ShowContentBrowser = false;
