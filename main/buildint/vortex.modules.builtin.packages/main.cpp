@@ -1,43 +1,8 @@
 #include "../../include/vortex.h"
-#include "./src/instances/packageInstance/PackageRenderInstance.h"
 #include "./src/module.h"
+#include "./src/instances/packageInstance/PackageRenderInstance.h"
 
-#ifndef CPackagesModule
-PackagesModuleCTX *CPackagesModule = NULL;
-#endif
 
-void CreatePackageContext()
-{
-    PackagesModuleCTX *ctx = VX_NEW(PackagesModuleCTX);
-    CPackagesModule = ctx;
-}
-
-/**
- * @brief Launch package interface
- * @param ["args"] "package" The target package we wan't to open in a interface. (type: std::shared_ptr<Package>)
-*/
-void LaunchPackageInterface(std::shared_ptr<hArgs> args)
-{
-    if (args != NULL)
-    {
-        std::shared_ptr<Package> package = args->get<std::shared_ptr<Package>>("package", nullptr);
-        if (package != nullptr)
-        {
-            VxContext *ctx = VortexMaker::GetCurrentContext();
-            std::shared_ptr<PackageRenderInstance> instance = std::make_shared<PackageRenderInstance>(ctx, package);
-            instance->name = package->name;
-            std::cout << CPackagesModule << std::endl;
-            CPackagesModule->m_interface->AddModuleRenderInstance(instance);
-        }
-        else{
-            VortexMaker::LogError("..", "package null");
-        }
-    }
-    else{
-
-            VortexMaker::LogError("..", "arg null");
-    }
-}
 
 /**
  * @brief Find packages from a registered package interface list
@@ -257,8 +222,11 @@ public:
      */
     void execute() override
     {
-        CreatePackageContext();
-        CPackagesModule->m_interface = std::make_shared<ModuleInterface>(*this);
+        // Create the context ptr of this module
+        PackageModule::CreatePackageContext();
+
+        // Get the interface ptr (for GUI launcher, from others modules)
+        CPackagesModule->m_interface = ModuleInterface::GetEditorModuleByName(this->m_name);
 
         // Add main args
         this->AddArg<const char *>("chainsModule.name", "PackagesModule");
@@ -270,7 +238,7 @@ public:
         this->AddFunction(Register, "RegisterPackages");
 
         // Adding events
-        this->AddInputEvent(LaunchPackageInterface, "LaunchPackageInterface");
+        this->AddInputEvent(PackageModule::LaunchPackageInterface, "LaunchPackageInterface");
         this->AddInputEvent(FindPackages,           "FindPackages");
         this->AddInputEvent(RegisterPackage,        "RegisterPackage");
 

@@ -239,7 +239,8 @@ public:
         em->render();
 
         // Subinstances renderers
-        std::cout << em->GetModuleRenderInstances().size() << std::endl;
+        //std::cout << em->GetModuleRenderInstances().size() << std::endl;
+        std::cout <<"SD " <<  em << std::endl;
         for(auto instance : em->GetModuleRenderInstances()){
           instance->render();
         }

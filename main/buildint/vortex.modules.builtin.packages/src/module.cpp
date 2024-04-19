@@ -1,4 +1,44 @@
 #include "module.h"
+#include "../src/instances/packageInstance/PackageRenderInstance.h"
+
+#ifndef CPackagesModule
+PackagesModuleCTX *CPackagesModule = NULL;
+#endif
+
+void PackageModule::CreatePackageContext()
+{
+    PackagesModuleCTX *ctx = VX_NEW(PackagesModuleCTX);
+    CPackagesModule = ctx;
+}
+
+
+/**
+ * @brief Launch package interface
+ * @param ["args"] "package" The target package we wan't to open in a interface. (type: std::shared_ptr<Package>)
+*/
+void PackageModule::LaunchPackageInterface(std::shared_ptr<hArgs> args)
+{
+    if (args != NULL)
+    {
+        std::shared_ptr<Package> package = args->get<std::shared_ptr<Package>>("package", nullptr);
+        if (package != nullptr)
+        {
+            VxContext *ctx = VortexMaker::GetCurrentContext();
+            std::shared_ptr<PackageRenderInstance> instance = std::make_shared<PackageRenderInstance>(ctx, package);
+            instance->name = package->name;
+            std::cout << "Add to" << CPackagesModule->m_interface << std::endl;
+            CPackagesModule->m_interface->AddModuleRenderInstance(instance);
+            VortexMaker::LogWarn("..", "package sdfdsf");
+        }
+        else{
+            VortexMaker::LogError("..", "package null");
+        }
+    }
+    else{
+
+            VortexMaker::LogError("..", "arg null");
+    }
+}
 
 static void fillArray(const std::vector<std::pair<char[128], char[128]>> &pairs, nlohmann::json &jsonArray)
 {

@@ -208,6 +208,10 @@ public:
         this->m_output_events.push_back(p_event);
     }
 
+    std::shared_ptr<ModuleInterface> GetInterface(){
+        return std::make_shared<ModuleInterface>(*this);
+    }
+
     // GetReturn get in args "FunctionName.params.return"
     // GetReturn get in args "InputEvent.params.return"
 
@@ -245,6 +249,8 @@ public:
     void AddModuleRenderInstance(const std::shared_ptr<ModuleRenderInstance> &event);
     void AddModuleFunction(const ModuleFunction& event);
     std::vector<std::shared_ptr<ModuleRenderInstance>> GetModuleRenderInstances() {return this->m_render_instances;};
+
+    static std::shared_ptr<ModuleInterface> GetEditorModuleByName(const std::string& name);
 
     std::shared_ptr<hArgs> m_args;
     std::string m_datapath;

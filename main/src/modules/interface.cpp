@@ -30,3 +30,13 @@ void ModuleInterface::AddModuleRenderInstance(const std::shared_ptr<ModuleRender
    // std::shared_ptr<ModuleRenderInstance> p_event = std::make_shared<ModuleRenderInstance>(event);
     this->m_render_instances.push_back(event);
 }
+
+std::shared_ptr<ModuleInterface> ModuleInterface::GetEditorModuleByName(const std::string& name){
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+    for(auto em : ctx->IO.em){
+        if(name == em->m_name){
+            return em;
+        }
+    }
+    return nullptr;
+}

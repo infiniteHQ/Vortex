@@ -6,6 +6,7 @@
 #ifndef __PACKAGE__MODULE_H__
 #define __PACKAGE__MODULE_H__
 
+
 class Package;
 struct PackagesModuleCTX
 {
@@ -23,7 +24,9 @@ extern PACKAGE_MODULE_API PackagesModuleCTX *CPackagesModule; // Current implici
 
 
 namespace PackageModule{
+    PACKAGE_MODULE_API void CreatePackageContext();
     PACKAGE_MODULE_API bool RegisterPackage(std::string filepath, std::shared_ptr<Package> newPackage, nlohmann::json filecontent);
+    PACKAGE_MODULE_API void LaunchPackageInterface(std::shared_ptr<hArgs> args);
 }
 
 
