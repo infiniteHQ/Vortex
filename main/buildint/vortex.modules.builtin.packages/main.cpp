@@ -232,7 +232,7 @@ public:
         this->AddArg<const char *>("chainsModule.name", "PackagesModule");
 
         // Add logo
-        this->AddLogo(icons::_i, icons::_i_size);
+        //this->AddLogo(icons::package_icon, icons::_i_size);
 
         // Adding functions
         this->AddFunction(Register, "RegisterPackages");

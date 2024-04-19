@@ -20,18 +20,6 @@
 #include "./instanceFactory.h"
 using namespace VortexMaker;
 
-// Toolchain window not appear when we activate it from Project viewer.
-/*
-static std::vector<std::shared_ptr<InstanceWindow>> instanciedWindows;
-static std::vector<std::shared_ptr<HostInstance>> hostInstances;
-static std::vector<std::shared_ptr<ToolchainInstance>> toolchainInstances;
-static std::vector<std::shared_ptr<PackageInstance>> packageInstances;
-static std::vector<std::shared_ptr<TasklistInstance>> tasklistInstances;
-static std::vector<std::shared_ptr<GPOSInstance>> gposInstances;
-static std::vector<std::shared_ptr<ReportInstance>> reportInstances;
-static std::vector<std::shared_ptr<TextEditorInstance>> texteditorInstances;
-static std::vector<std::shared_ptr<ScriptInstance>> scriptInstances;
-*/
 static std::vector<std::shared_ptr<ModuleDetails>> moduleDetailsInstances;
 
 
@@ -57,109 +45,6 @@ ImGui::PopStyleVar(8);
 class Instance : public InstanceFactory {
   public:
 
-/*
-  void SpawnInstance(std::shared_ptr<HostInstance> instance) override {
-    instance->name = instance->host->name;
-    instance->opened = true;
-    hostInstances.push_back(instance);
-  };
-
-  void SpawnInstance(std::shared_ptr<ToolchainInstance> instance) override {
-    instance->name = instance->toolchain->name;
-    instance->opened = true;
-    toolchainInstances.push_back(instance);
-  };
-
-  void SpawnInstance(std::shared_ptr<PackageInstance> instance) override {
-    instance->name = instance->package->name;
-    instance->opened = true;
-    packageInstances.push_back(instance);
-  };
-
-  void SpawnInstance(std::shared_ptr<TasklistInstance> instance) override {
-    instance->name = instance->tasklist->label;
-    instance->opened = true;
-    tasklistInstances.push_back(instance);
-  };
-
-
-  void SpawnInstance(std::shared_ptr<GPOSInstance> instance) override {
-    instance->name = instance->gpos->name;
-    instance->opened = true;
-    gposInstances.push_back(instance);
-  };
-
-  void SpawnInstance(std::shared_ptr<ReportInstance> instance) override {
-    instance->name = instance->task->id;
-    instance->opened = true;
-    reportInstances.push_back(instance);
-  };
-
-  void SpawnInstance(std::shared_ptr<TextEditorInstance> instance) override {
-    for(auto i : texteditorInstances){
-      if(i->textFilePath == instance->textFilePath){
-        VortexMaker::LogError("Core", i->textFilePath + " already opened !");
-        return;
-      }
-    }
-    instance->name = instance->textFilePath;
-    instance->opened = true;
-    texteditorInstances.push_back(instance);
-  };
-
-  void SpawnInstance(std::shared_ptr<ScriptInstance> instance) override {
-    instance->name = instance->script->name;
-    instance->opened = true;
-    scriptInstances.push_back(instance);
-  };
-
-
-  void UnspawnInstance(std::shared_ptr<ScriptInstance> instance) override {
-    std::string instanceName = instance->name;
-    instance = nullptr;
-  };
-
-
-  void UnspawnInstance(std::shared_ptr<TextEditorInstance> instance) override {
-    std::string instanceName = instance->name;
-    instance = nullptr;
-  };
-
-  void UnspawnInstance(std::shared_ptr<TasklistInstance> instance) override {
-    std::string instanceName = instance->name;
-    instance = nullptr;
-  };
-
-  void UnspawnInstance(std::shared_ptr<PackageInstance> instance) override {
-    std::string instanceName = instance->name;
-    instance = nullptr;
-  };
-
-  void UnspawnInstance(std::shared_ptr<HostInstance> instance) override {
-    std::string instanceName = instance->name;
-    instance = nullptr;
-  };
-
-
-  void UnspawnInstance(std::shared_ptr<ToolchainInstance> instance) override {
-    std::string instanceName = instance->name;
-    //instance->toolchain->taskProcessor->stopWorker();
-    instance = nullptr;
-  };
-
-  void UnspawnInstance(std::shared_ptr<GPOSInstance> instance) override {
-    std::string instanceName = instance->name;
-    instance = nullptr;
-  };
-
-  void UnspawnInstance(std::shared_ptr<ReportInstance> instance) override {
-    std::string instanceName = instance->name;
-    instance->name = "null";
-    instance = nullptr;
-  };
-*/
-
-
   void SpawnInstance(std::shared_ptr<ModuleDetails> instance) override {
     instance->name = instance->m_module->m_name;
     instance->opened = true;
@@ -170,7 +55,6 @@ class Instance : public InstanceFactory {
     std::string instanceName = instance->name;
     instance = nullptr;
   };
-
 
 };
 
@@ -218,18 +102,6 @@ public:
       moduleManager.OnImGuiRender();
     }
 
-    // Instances [OBSOLETE]
-    /*
-    for (auto window : hostInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}    
-    for (auto window : toolchainInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
-    for (auto window : packageInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
-    for (auto window : tasklistInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
-    for (auto window : gposInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
-    for (auto window : reportInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
-    for (auto window : texteditorInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
-    for (auto window : scriptInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}*/
-
-
     for (auto window : moduleDetailsInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
 
     // Modules rendering
@@ -239,8 +111,6 @@ public:
         em->render();
 
         // Subinstances renderers
-        //std::cout << em->GetModuleRenderInstances().size() << std::endl;
-        std::cout <<"SD " <<  em << std::endl;
         for(auto instance : em->GetModuleRenderInstances()){
           instance->render();
         }
@@ -251,15 +121,6 @@ public:
 
 
   }
-/*
-  void AddInstanceOfWindow(std::shared_ptr<InstanceWindow> win, std::string winName, std::shared_ptr<VxHost> host)
-  {
-    win->name = winName;
-    win->opened = true;
-    win->setup(host);
-    instanciedWindows.push_back(win);
-  }
-*/
 
   VxContext *m_ctx;
 
@@ -274,18 +135,9 @@ public:
   bool ShowProjectSettings = false;
 
   Instance factory;
+  
 private:
-
-
   std::vector<std::string> instanciedWindowsNames;
-
-
-  // To remove
-  VxToolchain *m_currentToolchainForPannel;
-  VxToolchain *m_currentToolchainForPannelToBuild;
-  VxHost *m_currentHostForPannel;
-  VxDistHost *m_currentDistHostForPannel;
-  VxDistToolchain *m_currentDistToolchainForPannel;
 };
 
 Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext *ctx)

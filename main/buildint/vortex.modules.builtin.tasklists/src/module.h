@@ -1,6 +1,7 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
+#include "../../vortex.modules.builtin.tasks/src/module.h"
 
 #ifndef __TASKLISTS_MODULE_H__
 #define __TASKLISTS_MODULE_H__

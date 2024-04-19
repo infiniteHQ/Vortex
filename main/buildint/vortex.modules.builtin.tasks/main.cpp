@@ -1,5 +1,6 @@
 #include "../../include/vortex.h"
-#include "./src/instances/packageInstance/PackageRenderInstance.h"
+#include "./assets/icons.h"
+#include "./assets/logo.h"
 #include "./src/module.h"
 
 #ifndef CTasksModule
@@ -33,7 +34,7 @@ public:
         this->AddArg<const char*>("chainsModule.name", "PackagesModule");
 
         // Add logo
-        this->AddLogo(icons::_i,icons::_i_size);
+        this->AddLogo(icons::tasks_icon,icons::tasks_icon);
         
         // Adding functions
         //this->AddFunction(Register, "RegisterPackages");

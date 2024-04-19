@@ -4,6 +4,58 @@
 
 static int item_current = 0;
 
+// Fonction pour charger le contenu hexadécimal d'un fichier .png
+static std::vector<uint8_t> loadPngHex(const std::string &filePath)
+{
+    std::ifstream file(filePath, std::ios::binary);
+
+    if (!file)
+    {
+        std::cerr << "Erreur lors de l'ouverture du fichier." << std::endl;
+        return {};
+    }
+
+    // Déterminez la taille du fichier
+    file.seekg(0, std::ios::end);
+    size_t fileSize = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    // Créez un vecteur pour stocker le contenu hexadécimal
+    std::vector<uint8_t> hexContent(fileSize);
+
+    // Lisez le contenu hexadécimal du fichier
+    file.read(reinterpret_cast<char *>(hexContent.data()), fileSize);
+
+    return hexContent;
+}
+static std::vector<std::shared_ptr<Walnut::Image>> logos;
+static std::vector<ImTextureID> textures;
+
+static void logo(const std::string &path, int index, int total)
+{
+
+    uint32_t w, h;
+    // Chargez le contenu hexadécimal du fichier .png
+    std::vector<uint8_t> hexTable = loadPngHex(path);
+    const uint8_t *hexData = hexTable.data();
+
+    if(total > logos.size()){
+        void *data = Walnut::Image::Decode(hexData, hexTable.size(), w, h);
+        std::shared_ptr<Walnut::Image> _icon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data); // ML
+        logos.push_back(_icon);
+        VX_FREE(data);
+        ImTextureID addIcon = logos[index]->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        textures.push_back(addIcon);
+    }
+
+    std::cout << "Logo Array : " << logos.size() << std::endl;
+    std::cout << "Texture Array : " << textures.size() << std::endl;
+    std::cout << "Requested index |ROW]: " << index << std::endl;
+    std::cout << "Total indexes |TOW]: " << total << std::endl;
+
+    ImGui::Image(textures[index], ImVec2(50, 50));
+}
+
 ModuleManager::ModuleManager(VxContext *_ctx, InstanceFactory *_factory)
 {
     this->ctx = _ctx;
@@ -88,7 +140,7 @@ void ModuleManager::OnImGuiRender()
                 label += " (";
                 label += std::to_string(number);
                 label += ")";
-                break; 
+                break;
             }
             case 1:
             {
@@ -105,7 +157,7 @@ void ModuleManager::OnImGuiRender()
                 label += " (";
                 label += std::to_string(number);
                 label += ")";
-                break; 
+                break;
             }
             case 2:
             {
@@ -122,7 +174,7 @@ void ModuleManager::OnImGuiRender()
                 label += " (";
                 label += std::to_string(number);
                 label += ")";
-                break; 
+                break;
             }
             }
 
@@ -138,9 +190,9 @@ void ModuleManager::OnImGuiRender()
     ImGui::Separator();
     ImGui::SameLine();
 
-                                std::string label = "packhhqsdsdageView###";
-                                ImGuiID id = ImGui::GetID(label.c_str());
-                ImGui::BeginChildFrame(id, ImVec2(0, 0), true);
+    std::string label = "packhhqsdsdageView###";
+    ImGuiID id = ImGui::GetID(label.c_str());
+    ImGui::BeginChildFrame(id, ImVec2(0, 0), true);
     for (int row = 0; row < this->ctx->IO.em.size(); row++)
     {
         switch (selected)
@@ -155,12 +207,7 @@ void ModuleManager::OnImGuiRender()
                 ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 200), true);
 
                 {
-                    uint32_t w, h;
-                    void *data = Walnut::Image::Decode(this->ctx->IO.em[row]->m_logo, this->ctx->IO.em[row]->m_logo_size, w, h);
-                    static std::shared_ptr<Walnut::Image> _icon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
-                    free(data);
-                    static ImTextureID addIcon = _icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-                    ImGui::Image(addIcon, ImVec2(50, 50));
+                    logo(this->ctx->IO.em[row]->m_logo_path, row, this->ctx->IO.em.size());
                     ImGui::SameLine();
                 }
 
@@ -228,6 +275,7 @@ void ModuleManager::OnImGuiRender()
                     std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, this->ctx->IO.em[row]);
                     factory->SpawnInstance(instance);
                 }
+                ImGui::SameLine();
 
                 if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
@@ -235,7 +283,7 @@ void ModuleManager::OnImGuiRender()
             }
             ImGui::EndChild();
         }
-    }
+        }
     }
     ImGui::EndChildFrame();
     ImGui::End();

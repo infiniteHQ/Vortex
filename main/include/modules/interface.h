@@ -262,6 +262,7 @@ public:
     std::string m_author;
     std::string m_group;
     std::string m_picture;
+    std::string m_logo_path;
     std::string m_description;
     bool        m_auto_exec;
     std::vector<std::string> m_contributors;

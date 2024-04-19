@@ -14,10 +14,6 @@ endif()
 set(SOURCES
     main.cpp
     src/module.cpp
-    src/instances/packageInstance/PackageRenderInstance.cpp
-    src/instances/packageInstance/wins/UI_ActionsEditor.cpp
-    src/instances/packageInstance/wins/UI_CompilationArguments.cpp
-    src/instances/packageInstance/wins/UI_MainSettings.cpp
 )
 
 # Création de la bibliothèque partagée (.so)

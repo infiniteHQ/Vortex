@@ -59,9 +59,6 @@ public:
         
         // Add main args
         this->AddArg<const char*>("chainsModule.name", "ToolchainsModule");
-
-        // Add logo
-        this->AddLogo(icons::_i,icons::_i_size);
         
         // Adding functions
         this->AddFunction(RegisterToolchains, "RegisterToolchains");
