@@ -48,11 +48,6 @@ static void logo(const std::string &path, int index, int total)
         textures.push_back(addIcon);
     }
 
-    std::cout << "Logo Array : " << logos.size() << std::endl;
-    std::cout << "Texture Array : " << textures.size() << std::endl;
-    std::cout << "Requested index |ROW]: " << index << std::endl;
-    std::cout << "Total indexes |TOW]: " << total << std::endl;
-
     ImGui::Image(textures[index], ImVec2(50, 50));
 }
 
@@ -207,12 +202,15 @@ void ModuleManager::OnImGuiRender()
                 ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 200), true);
 
                 {
+                ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
                     logo(this->ctx->IO.em[row]->m_logo_path, row, this->ctx->IO.em.size());
-                    ImGui::SameLine();
+                   
+            ImGui::EndChild();
+             ImGui::SameLine();
                 }
 
                 {
-
+                ImGui::BeginChild("TEXT_", ImVec2(220, 68), true);
                     float oldsize = ImGui::GetFont()->Scale;
                     ImGui::GetFont()->Scale *= 1.3;
                     ImGui::PushFont(ImGui::GetFont());
@@ -221,7 +219,19 @@ void ModuleManager::OnImGuiRender()
 
                     ImGui::GetFont()->Scale = oldsize;
                     ImGui::PopFont();
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
+                    ImGui::SameLine();
+                    ImGui::Text(this->ctx->IO.em[row]->m_version.c_str());
+            ImGui::EndChild();
                 }
+
+                {
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Name : ");
+                    ImGui::SameLine();
+                    ImGui::Text(this->ctx->IO.em[row]->m_name.c_str());
+                }
+
 
                 {
 

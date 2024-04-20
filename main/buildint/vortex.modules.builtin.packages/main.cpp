@@ -2,7 +2,9 @@
 #include "./src/module.h"
 #include "./src/instances/packageInstance/PackageRenderInstance.h"
 
-
+#ifndef CPackagesModule
+PackagesModuleCTX *CPackagesModule = NULL;
+#endif
 
 /**
  * @brief Find packages from a registered package interface list
@@ -235,7 +237,7 @@ public:
         //this->AddLogo(icons::package_icon, icons::_i_size);
 
         // Adding functions
-        this->AddFunction(Register, "RegisterPackages");
+        this->AddFunction(RegisterPackages, "RegisterPackages");
 
         // Adding events
         this->AddInputEvent(PackageModule::LaunchPackageInterface, "LaunchPackageInterface");
@@ -252,7 +254,7 @@ public:
     void render() override
     {
 
-        ImGui::Begin("Packages module 1.0.0");
+        ImGui::Begin("Packages");
         for (auto package : CPackagesModule->m_packages)
         {
             ImGui::Text(package->name.c_str());

@@ -26,7 +26,6 @@ namespace VortexMaker
         // Iterate through each found module file
         for (const auto &file : module_files)
         {
-            std::cout << "File found at: " << file << std::endl;
             try
             {
                 // Load JSON data from the module configuration file
@@ -34,7 +33,6 @@ namespace VortexMaker
 
                 // Get the directory path containing the module file
                 std::string path = file.substr(0, file.find_last_of("/"));
-                std::cout << "Plugin path: " << path << std::endl;
 
                 // Search for shared object (SO) files in the same directory as the module configuration file
                 auto so_files = VortexMaker::SearchFiles(path, "libmodule.so");
@@ -95,6 +93,8 @@ namespace VortexMaker
                         dlclose(handle);
                         continue;
                     }
+
+                    VXINFO("Modules", new_module->m_name + " module loaded with success !")
 
                     // Store the module instance and handle
                     modules.push_back(new_module);

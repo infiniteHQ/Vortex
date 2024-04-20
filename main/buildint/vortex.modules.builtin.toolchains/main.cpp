@@ -55,7 +55,7 @@ public:
     void execute() override
     {
         CreateModuleContext();
-        CToolchainModule->m_interface = std::make_shared<ModuleInterface>(*this);
+        CToolchainModule->m_interface = ModuleInterface::GetEditorModuleByName(this->m_name);
         
         // Add main args
         this->AddArg<const char*>("chainsModule.name", "ToolchainsModule");
@@ -84,7 +84,7 @@ public:
     void render() override
     {
         
-		ImGui::Begin("Contefgghnt SQDQSD");
+		ImGui::Begin("Toolchains");
         for(auto toolchain : CToolchainModule->m_toolchains){
             ImGui::Text(toolchain->name.c_str());
             ImGui::SameLine();

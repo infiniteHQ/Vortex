@@ -21,8 +21,9 @@ struct TasksModuleCTX
 extern TASKS_MODULE_API TasksModuleCTX *CTasksModule; // Current implicit context pointer
 #endif
 
-namespace PackageModule
+namespace TaskModule
 {
+  TASKS_MODULE_API void CreateTasksContext();
   //TASKS_MODULE_API bool RegisterPackage(std::string filepath, std::shared_ptr<Package> newPackage, nlohmann::json filecontent);
 }
 

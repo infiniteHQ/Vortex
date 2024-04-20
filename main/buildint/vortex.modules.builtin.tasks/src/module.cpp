@@ -22,6 +22,10 @@ void TaskProcessor::stopWorker(){
   this->stop = true;
 }
 
+void TaskModule::CreateTasksContext(){
+  TasksModuleCTX *ctx = VX_NEW(TasksModuleCTX);
+  CTasksModule = ctx;
+}
 
 // Ajout d'une tâche à TaskProcessor
 

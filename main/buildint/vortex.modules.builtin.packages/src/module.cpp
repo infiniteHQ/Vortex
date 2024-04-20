@@ -1,9 +1,7 @@
 #include "module.h"
 #include "../src/instances/packageInstance/PackageRenderInstance.h"
 
-#ifndef CPackagesModule
-PackagesModuleCTX *CPackagesModule = NULL;
-#endif
+
 
 void PackageModule::CreatePackageContext()
 {

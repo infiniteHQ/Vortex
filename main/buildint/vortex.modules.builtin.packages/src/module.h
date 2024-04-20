@@ -243,7 +243,7 @@ struct PackageInterface{
     bool resolved;
 };
 
-static void Register()
+static void RegisterPackages()
 {
   VxContext &ctx = *CVortexMaker;
 

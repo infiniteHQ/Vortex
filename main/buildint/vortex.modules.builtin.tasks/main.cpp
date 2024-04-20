@@ -1,5 +1,4 @@
 #include "../../include/vortex.h"
-#include "./assets/icons.h"
 #include "./assets/logo.h"
 #include "./src/module.h"
 
@@ -12,13 +11,7 @@ TasksModuleCTX *CTasksModule = NULL;
 // Module context ptr, including variables of functions, call at any moments wit convention : HelloTest.someParam or HelloTest.return
 static std::shared_ptr<hArgs> arguments;
 
-
-void CreatePackageContext(){
-  TasksModuleCTX *ctx = VX_NEW(TasksModuleCTX);
-  CTasksModule = ctx;
-}
-
-class PackagesModule : public ModuleInterface
+class TasksModule : public ModuleInterface
 {
 public:
     /**
@@ -26,15 +19,13 @@ public:
     */
     void execute() override
     {
-        CreatePackageContext();
-        std::cout <<CTasksModule << std::endl;
-        CTasksModule->m_interface = std::make_shared<ModuleInterface>(*this);
+        TaskModule::CreateTasksContext();
+        CTasksModule->m_interface = ModuleInterface::GetEditorModuleByName(this->m_name);
         
         // Add main args
-        this->AddArg<const char*>("chainsModule.name", "PackagesModule");
+        this->AddArg<const char*>("chainsModule.name", "TasksModule");
 
         // Add logo
-        this->AddLogo(icons::tasks_icon,icons::tasks_icon);
         
         // Adding functions
         //this->AddFunction(Register, "RegisterPackages");
@@ -76,7 +67,7 @@ public:
 
 extern "C" ModuleInterface *create_em()
 {
-    return new PackagesModule();
+    return new TasksModule();
 }
 
 // Initialiser les modules dans le contexte depuis le vortex.config
