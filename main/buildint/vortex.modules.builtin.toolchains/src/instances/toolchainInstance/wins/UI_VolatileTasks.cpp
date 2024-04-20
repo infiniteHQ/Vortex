@@ -1,7 +1,7 @@
-#include "../ToolchainInstance.h"
+#include "../ToolchainRenderInstance.h"
 #include <array>
 
-void ToolchainInstance::UI_VolatileTasks()
+void ToolchainRenderInstance::UI_VolatileTasks()
 {
 
     if (this->show_UI_VolatileTasks)
@@ -112,31 +112,40 @@ void ToolchainInstance::UI_VolatileTasks()
                             int i = 1;
                             for (int row = 0; row < this->toolchain->packages.size(); row++)
                             {
+                                std::cout << "GLKFDSUJH" << std::endl;
                                 std::string label = "packhhageView###" + std::to_string(row) + this->toolchain->packages[row]->label + std::to_string(i);
                                 ImGuiID id = ImGui::GetID(label.c_str());
                                 ImGui::BeginChildFrame(id, ImVec2(0, 150), true);
+                                std::cout << "GLKFDSUJH" << std::endl;
 
                                 // Affichage des éléments individuels
                                 std::string ll = this->toolchain->packages[row]->label;
                                 ImGui::Text(ll.c_str());
 
+                                std::cout << "GLKFDSUJH" << std::endl;
                                 if (ImGui::BeginCombo("Task", items[item_current]))
                                 {
                                     for (int i = 0; i < items.size(); ++i)
                                     {
+                                std::cout << "888" << std::endl;
                                         bool is_selected = (item_current == i);
+                                std::cout << "888" << std::endl;
                                         if (ImGui::Selectable(items[i], is_selected))
                                         {
+                                std::cout << "888" << std::endl;
                                             item_current = i; // Met à jour l'ID de l'élément sélectionné
                                         }
                                         if (is_selected)
                                         {
+                                std::cout << "888" << std::endl;
                                             ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
                                         }
+                                std::cout << "888" << std::endl;
                                     }
                                     ImGui::EndCombo();
                                 }
 
+                                std::cout << "GLKFDSUJH" << std::endl;
                                 if (ImGui::Button("Select"))
                                 {
 
@@ -168,6 +177,7 @@ void ToolchainInstance::UI_VolatileTasks()
 
                                     /////////////////////
                                 }
+                                std::cout << "GLKFDSUJH" << std::endl;
                                 /*
                                                 if (ImGui::Button("Build"))
                                                 {
@@ -216,6 +226,7 @@ void ToolchainInstance::UI_VolatileTasks()
                                 */
                                 ImGui::EndChildFrame();
                                 ImGui::NextColumn();
+                                std::cout << "GLKFDSUJH" << std::endl;
                             }
                             ImGui::EndChild();
                         }
@@ -235,7 +246,7 @@ void ToolchainInstance::UI_VolatileTasks()
                             static int item_component_current = 0;
 
                             int i = 1;
-                            for (int row = 0; row < this->toolchain->tasklists.size(); row++)
+                           /* for (int row = 0; row < this->toolchain->tasklists.size(); row++)
                             {
                                 std::string label = "packageVifghgfew###" + std::to_string(row) + this->toolchain->tasklists[row]->label + std::to_string(i);
                                 ImGuiID id = ImGui::GetID(label.c_str());
@@ -268,7 +279,7 @@ void ToolchainInstance::UI_VolatileTasks()
                                     - Selecteur de taches et builder de tache (possibilité d'attacher des props, des variables, etc...)
 
 
-                                */
+                                *
 
                                 if (ImGui::Button("Select"))
                                 {
@@ -338,10 +349,10 @@ void ToolchainInstance::UI_VolatileTasks()
 
                                                     /////////////////////
                                                 }
-                                */
+                                *
                                 ImGui::EndChildFrame();
                                 ImGui::NextColumn();
-                            }
+                            }*/
                             ImGui::EndChild();
                         }
 
@@ -525,11 +536,11 @@ void ToolchainInstance::UI_VolatileTasks()
                                         {
                                             if (selectedTask->props->registered_arguments[row] == "toolchain")
                                             {
-                                                ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), selectedTask->props->get<std::shared_ptr<VxToolchain>>("toolchain", nullptr)->name.c_str());
+                                                ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), selectedTask->props->get<std::shared_ptr<Toolchain>>("toolchain", nullptr)->name.c_str());
                                             }
                                             if (selectedTask->props->registered_arguments[row] == "package")
                                             {
-                                                ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), selectedTask->props->get<std::shared_ptr<VxPackage>>("package", nullptr)->name.c_str());
+                                                ImGui::TextColored(ImVec4(0.0f, 0.5f, 0.7f, 1.0), selectedTask->props->get<std::shared_ptr<Package>>("package", nullptr)->name.c_str());
                                             }
                                         }
                                     }

@@ -204,8 +204,8 @@ void VxToolchain::Init()
   // Add tasks types
   
   {
-    std::shared_ptr<T_T_CheckCompiler> task = std::make_shared<T_T_CheckCompiler>();
-    task->tasktype = "T_T_CheckCompiler";
+    
+std::shared_ptr<T_T_CheckCompiler> task = std::make_shared<T_T_CheckCompiler>();    task->tasktype = "T_T_CheckCompiler";
     this->tasks.push_back(task);
   }
   {

@@ -24,6 +24,11 @@ extern TASKS_MODULE_API TasksModuleCTX *CTasksModule; // Current implicit contex
 namespace TaskModule
 {
   TASKS_MODULE_API void CreateTasksContext();
+  TASKS_MODULE_API void RegisterTask(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void CreateTaskProcessor(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void StartTaskProcessor(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void StopTaskProcessor(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void FindPackages(const std::shared_ptr<hArgs>& args);
   //TASKS_MODULE_API bool RegisterPackage(std::string filepath, std::shared_ptr<Package> newPackage, nlohmann::json filecontent);
 }
 

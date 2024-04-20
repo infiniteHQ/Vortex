@@ -157,6 +157,7 @@ void ToolchainRenderInstance::render()
         this->UI_ParametersWindow();
         this->UI_ContentWindow();
         this->UI_AssetsViewer();
+        this->UI_VolatileTasks();
     }
 
 

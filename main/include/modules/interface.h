@@ -83,11 +83,11 @@ class ModuleInputEvent
 {
 public:
 
-    ModuleInputEvent(void(*foo)(std::shared_ptr<hArgs> args), const std::string& name) {this->m_foo = foo; this->m_name = name;};
+    ModuleInputEvent(void(*foo)(const std::shared_ptr<hArgs>& args), const std::string& name) {this->m_foo = foo; this->m_name = name;};
     
     virtual void execute(){};
 
-    void(*m_foo)(std::shared_ptr<hArgs> args);
+    void(*m_foo)(const std::shared_ptr<hArgs>& args);
     std::string m_name;
 };
 
@@ -97,10 +97,10 @@ public:
 class ModuleOutputEvent
 {
 public:
-    ModuleOutputEvent(void(*foo)(std::shared_ptr<hArgs> args), const std::string& name) {this->m_foo = foo; this->m_name = name;};
+    ModuleOutputEvent(void(*foo)(const std::shared_ptr<hArgs>& args), const std::string& name) {this->m_foo = foo; this->m_name = name;};
     virtual void execute() {};
 
-    void(*m_foo)(std::shared_ptr<hArgs> args);
+    void(*m_foo)(const std::shared_ptr<hArgs>& args);
     std::string m_name;
 };
 
@@ -113,7 +113,7 @@ public:
     virtual void execute() {};
 
     template<typename T>
-std::string GetFunctionName(T* functionPtr) {
+    std::string GetFunctionName(T* functionPtr) {
     typedef typename std::remove_pointer<T>::type FunctionType;
     const char* name = typeid(FunctionType).name();
     return name;
@@ -193,7 +193,7 @@ public:
     /**
      * @brief Other elements can exec event that added here
     */
-    void AddInputEvent(void (*item)(std::shared_ptr<hArgs> args), const std::string& name)
+    void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name)
     {
         std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
         this->m_input_events.push_back(p_event);
@@ -202,7 +202,7 @@ public:
     /**
      * @brief When other elements, modules or plugin deploy a event indireclty, function that added here can handle this remote event 
     */
-    void AddOutputEvent(void (*item)(std::shared_ptr<hArgs> args), const std::string& name)
+    void AddOutputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name)
     {
         std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(item, name);
         this->m_output_events.push_back(p_event);
@@ -250,7 +250,14 @@ public:
     void AddModuleFunction(const ModuleFunction& event);
     std::vector<std::shared_ptr<ModuleRenderInstance>> GetModuleRenderInstances() {return this->m_render_instances;};
 
+    void LogInfo(const std::string& message);
+    void LogWarning(const std::string& message);
+    void LogError(const std::string& message);
+    void LogFatal(const std::string& message);
+
     static std::shared_ptr<ModuleInterface> GetEditorModuleByName(const std::string& name);
+
+
 
     std::shared_ptr<hArgs> m_args;
     std::string m_datapath;

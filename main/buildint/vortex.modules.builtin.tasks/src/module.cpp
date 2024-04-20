@@ -1,6 +1,21 @@
 #include "module.h"
 
 
+
+TASKS_MODULE_API void TaskModule::RegisterTask(const std::shared_ptr<hArgs>& args){
+    if(args != NULL){
+        std::vector<std::shared_ptr<Task>>* task_array = args->get<std::vector<std::shared_ptr<Task>>*>("taskarray", nullptr);
+        std::shared_ptr<Task> task = args->get<std::shared_ptr<Task>>("task", nullptr);
+
+        std::cout << "TASKARRAY" << task_array << std::endl;
+
+        if(task != NULL && task_array != NULL){
+            task_array->push_back(task);
+        }
+    }
+}
+
+// TODO : systeme de taches et faire l'api public, puis faire les tasks list et retrouver tout
 // Constructeur de TaskProcessor
 TaskProcessor::TaskProcessor() : stop(false)
 {

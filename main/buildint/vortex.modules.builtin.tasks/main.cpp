@@ -31,7 +31,7 @@ public:
         //this->AddFunction(Register, "RegisterPackages");
         
         // Adding events
-        //this->AddInputEvent(TestInputEvent, "test");
+        this->AddInputEvent(TaskModule::RegisterTask, "RegisterTask");
         //this->AddOutputEvent(TestOutputEvent, "test");
 
         // Render instance

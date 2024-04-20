@@ -199,7 +199,7 @@ void ModuleManager::OnImGuiRender()
 
                 std::string childLabel = "module##" + this->ctx->IO.em[row]->m_name;
 
-                ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 200), true);
+                ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 220), true);
 
                 {
                 ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);

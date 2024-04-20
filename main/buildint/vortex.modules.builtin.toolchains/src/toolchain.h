@@ -1,6 +1,8 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
+#include "../../vortex.modules.builtin.tasks/src/module.h"
+
 #include "../../vortex.modules.builtin.packages/src/module.h"
 #include "../../vortex.modules.builtin.packages/src/instances/packageInstance/PackageRenderInstance.h"
 
@@ -25,6 +27,7 @@ extern TOOLCHAIN_MODULE_API ToolchainsModuleCTX *CToolchainModule; // Current im
 #endif
 
 namespace ToolchainModule{
+    TOOLCHAIN_MODULE_API void InitTasks();
     TOOLCHAIN_MODULE_API bool RegisterNewToolchain(std::shared_ptr<Toolchain> toolchain, nlohmann::json toolchainData);
 }
 
@@ -198,6 +201,7 @@ struct Toolchain
     // TO CLEAN
     void FindTasklists();
     void Refresh();
+    void InitTasks();
     void RefreshDistConfig();
     void RefreshCurrentWorkingToolchain();
     void ExecuteTask(Task task, hArgs args);

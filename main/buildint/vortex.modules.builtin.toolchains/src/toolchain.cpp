@@ -1,4 +1,24 @@
 #include "toolchain.h"
+#include "tasks/CreateUser.h"
+
+void Toolchain::InitTasks(){
+  {
+    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+    args->add<std::vector<std::shared_ptr<Task>>*>("taskarray", &this->tasks);
+    
+    std::shared_ptr<CreateTemporaryUser> task = std::make_shared<CreateTemporaryUser>();
+    args->add<std::shared_ptr<Task>>("task", task);
+
+    task->tasktype = "CreateTemporaryUser";
+
+    VortexMaker::CallModuleEvent(args, "RegisterTask", "vortex.modules.builtin.tasks");
+  }
+
+  std::cout <<&this->tasks << std::endl;
+
+  std::cout << this->tasks.size()<< std::endl;  std::cout << this->tasks.size()<< std::endl;  std::cout << this->tasks.size()<< std::endl;  std::cout << this->tasks.size()<< std::endl;
+
+}
 
 static std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::string &timeString)
 {
@@ -343,6 +363,8 @@ void Toolchain::Refresh()
     this->packages = args->get<std::vector<std::shared_ptr<Package>>>("packages", this->packages);
     this->registeredPackages = args->get<std::vector<std::shared_ptr<PackageInterface>>>("list", this->registeredPackages);
   }
+
+  this->InitTasks();
 
   VortexMaker::LogInfo("Core", "Refreshing tasklists asset of " + this->name);
   // registeredTasklists.clear();

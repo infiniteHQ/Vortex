@@ -26,7 +26,8 @@ extern PACKAGE_MODULE_API PackagesModuleCTX *CPackagesModule; // Current implici
 namespace PackageModule{
     PACKAGE_MODULE_API void CreatePackageContext();
     PACKAGE_MODULE_API bool RegisterPackage(std::string filepath, std::shared_ptr<Package> newPackage, nlohmann::json filecontent);
-    PACKAGE_MODULE_API void LaunchPackageInterface(std::shared_ptr<hArgs> args);
+    PACKAGE_MODULE_API void LaunchPackageInterface(const std::shared_ptr<hArgs>& args);
+    PACKAGE_MODULE_API void FindPackages(const std::shared_ptr<hArgs>& args);
 }
 
 
