@@ -41,7 +41,7 @@ struct CreateTemporaryUser : public Task
       this->finish("fatal", nullptr);
     }
     std::shared_ptr<Toolchain> toolchain = this->props->get<std::shared_ptr<Toolchain>>("toolchain", nullptr);
-
+std::cout << toolchain << std::endl;
     {
       std::string cmd = "groupadd vortex";
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());

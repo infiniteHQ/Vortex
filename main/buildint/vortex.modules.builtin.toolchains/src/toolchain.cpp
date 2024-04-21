@@ -2,22 +2,36 @@
 #include "tasks/CreateUser.h"
 
 void Toolchain::InitTasks(){
+
+    this->pool_name = 'toolchains.' + this->name.c_str();
+
+    {
+      std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+      args->add("processor_name", this->pool_name);
+      VortexMaker::CallModuleEvent(args, "CreateTaskProcessor", "vortex.modules.builtin.tasks");
+      VortexMaker::CallModuleEvent(args, "StartTaskProcessor", "vortex.modules.builtin.tasks");
+
+    }
+
+    {
+      std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+      args->add("pool_name", this->pool_name);
+      VortexMaker::CallModuleEvent(args, "CreateTaskPool", "vortex.modules.builtin.tasks");
+
+    }
+
   {
     std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
     args->add<std::vector<std::shared_ptr<Task>>*>("taskarray", &this->tasks);
     
     std::shared_ptr<CreateTemporaryUser> task = std::make_shared<CreateTemporaryUser>();
+    args->add<const char*>("pool_name", this->pool_name);
     args->add<std::shared_ptr<Task>>("task", task);
 
     task->tasktype = "CreateTemporaryUser";
 
-    VortexMaker::CallModuleEvent(args, "RegisterTask", "vortex.modules.builtin.tasks");
+    VortexMaker::CallModuleEvent(args, "AddTaskToPool", "vortex.modules.builtin.tasks");
   }
-
-  std::cout <<&this->tasks << std::endl;
-
-  std::cout << this->tasks.size()<< std::endl;  std::cout << this->tasks.size()<< std::endl;  std::cout << this->tasks.size()<< std::endl;  std::cout << this->tasks.size()<< std::endl;
-
 }
 
 static std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::string &timeString)
@@ -395,6 +409,49 @@ void ToolchainCurrentSystem::Save(std::shared_ptr<Toolchain> parent)
     VortexMaker::LogError("Core", "Unable to open file " + parent->workingPath + "/working_host.config" + " for writing!");
   }
 }
+
+
+std::pair<std::string, int> Toolchain::exec_cmd(const std::string& cmd) {
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+
+  std::string output;
+  int returnCode = -1;
+
+  std::string uid = VortexMaker::gen_random(8);
+  std::string _cmd = cmd;
+
+  _cmd += " 2>";
+  _cmd += ctx->projectPath;
+  _cmd += "/.vx/temp/" + uid + ".txt";
+
+      std::string path = ctx->projectPath;
+      path += "/.vx/temp/"+uid+".txt";
+
+      returnCode = system((char *)_cmd.c_str());
+
+      std::ifstream outputFile(path);
+      output.clear();
+
+        if (outputFile.is_open())
+        {
+          output.assign(std::istreambuf_iterator<char>(outputFile), std::istreambuf_iterator<char>());
+          outputFile.close();
+          std::string clearFile = "rm ";
+          clearFile +=  ctx->projectPath;
+          clearFile += "/.vx/temp/" + uid + ".txt";
+
+
+          system((char *)clearFile.c_str());
+        }
+        else
+        {
+          std::cerr << "Impossible d'ouvrir le fichier de sortie d'erreur." << std::endl;
+          return{"null", returnCode};
+        
+      }
+      return{output, returnCode};
+}
+
 
 void Toolchain::PushSave(std::shared_ptr<ToolchainSave> save)
 {

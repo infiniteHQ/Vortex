@@ -7,10 +7,14 @@
 #define __TASKS__MODULE_H__
 
 class TaskProcessor;
+class TaskPool;
+class Task;
+
 struct TasksModuleCTX
 {
-  std::unordered_map<std::string, std::shared_ptr<TaskProcessor>>   m_processors;
   std::shared_ptr<ModuleInterface> m_interface;
+  std::unordered_map<const char*, std::shared_ptr<TaskProcessor>>   m_processors;
+  std::vector<std::shared_ptr<TaskPool>> m_taskpools;
 };
 
 #ifndef TASKS_MODULE_API
@@ -24,13 +28,24 @@ extern TASKS_MODULE_API TasksModuleCTX *CTasksModule; // Current implicit contex
 namespace TaskModule
 {
   TASKS_MODULE_API void CreateTasksContext();
-  TASKS_MODULE_API void RegisterTask(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void CreateTaskProcessor(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void CreateTaskPool(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void AddTaskToPool(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void AddTaskToProcess(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void StartTaskProcessor(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void StopTaskProcessor(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void GetTaskPool(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void StartTaskProcessor(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void StopTaskProcessor(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void FindPackages(const std::shared_ptr<hArgs>& args);
   //TASKS_MODULE_API bool RegisterPackage(std::string filepath, std::shared_ptr<Package> newPackage, nlohmann::json filecontent);
 }
+
+struct TaskPool
+{  
+  std::vector<std::shared_ptr<Task>> m_list;
+  const char* m_pool_name;
+};
 
 struct Task
 {

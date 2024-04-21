@@ -17,6 +17,7 @@ set(SOURCES
     src/instances/toolchainInstance/ToolchainRenderInstance.cpp
     src/instances/toolchainInstance/wins/UI_AssetsViewer.cpp
     src/instances/toolchainInstance/wins/UI_ParameterWindow.cpp
+    src/instances/toolchainInstance/wins/UI_CurrentToolchainPreview.cpp
     src/instances/toolchainInstance/wins/UI_ContentWindow.cpp
     src/instances/toolchainInstance/wins/UI_VolatileTasks.cpp
 )

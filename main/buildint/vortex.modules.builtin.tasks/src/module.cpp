@@ -1,16 +1,203 @@
 #include "module.h"
 
+// TODO Task processor creation
+// TODO Task launching in processor with params
+// TODO Link to toolchbain
 
-
-TASKS_MODULE_API void TaskModule::RegisterTask(const std::shared_ptr<hArgs>& args){
+/**
+ * @brief Create a new task execution processor
+ * @param args All arguments
+ * 
+ * @arg <const char*> "processor_name" : Identification of the task processor 
+*/
+TASKS_MODULE_API void TaskModule::CreateTaskProcessor(const std::shared_ptr<hArgs>& args){
+    // Check input args
     if(args != NULL){
-        std::vector<std::shared_ptr<Task>>* task_array = args->get<std::vector<std::shared_ptr<Task>>*>("taskarray", nullptr);
+
+        // Try to get pool name
+        const char* pool_name = args->get<const char*>("processor_name", nullptr);
+
+        if(pool_name != nullptr){
+            std::shared_ptr<TaskProcessor> processor = std::make_shared<TaskProcessor>();
+            CTasksModule->m_processors.insert({pool_name, processor});
+        }
+    }
+}
+
+/**
+ * @brief Create a new task execution processor
+ * @param args All arguments
+ * @param args <const char*>("pool_name") : Name of the task pool who tasks will be stored
+*/
+TASKS_MODULE_API void TaskModule::CreateTaskPool(const std::shared_ptr<hArgs>& args){
+    // Check input args
+    if(args != NULL){
+
+        // Try to get pool name
+        const char* pool_name = args->get<const char*>("pool_name", nullptr);
+
+        // Verify is "pool_name" exist
+        if(pool_name != nullptr){
+
+            // Create a new task pool and store it in the current context.
+            std::shared_ptr<TaskPool> pool = std::make_shared<TaskPool>();
+            pool->m_pool_name = pool_name;
+            CTasksModule->m_taskpools.push_back(pool);
+        }
+        else{
+            // Handle error
+
+        }
+    }
+}
+
+
+TASKS_MODULE_API void TaskModule::GetTaskPool(const std::shared_ptr<hArgs>& args){
+    // Check input args
+    if(args != NULL){
+        const char* pool_name = args->get<const char*>("pool_name", nullptr);
+        if(pool_name != nullptr){ 
+            // Find pool
+            for(auto pool : CTasksModule->m_taskpools){
+                if(pool->m_pool_name == pool_name){
+                    args->add<std::shared_ptr<TaskPool>>("taskpool", pool);
+                    return;
+                }
+            }
+        }
+    }
+}
+
+/**
+ * @brief Create a new task execution processor
+ * @param args All arguments
+*/
+TASKS_MODULE_API void TaskModule::AddTaskToPool(const std::shared_ptr<hArgs>& args){
+    // Check input args
+    if(args != NULL){
+
+        // Get arguments
+        const char* pool_name = args->get<const char*>("pool_name", nullptr);
         std::shared_ptr<Task> task = args->get<std::shared_ptr<Task>>("task", nullptr);
 
-        std::cout << "TASKARRAY" << task_array << std::endl;
+        // Verify arguments
+        if(pool_name != nullptr && task != nullptr){
 
-        if(task != NULL && task_array != NULL){
-            task_array->push_back(task);
+            // Find pool
+            for(auto pool : CTasksModule->m_taskpools){
+                if(pool->m_pool_name == pool_name){
+
+                    // If exist, increment the finded pool with the new task
+                    pool->m_list.push_back(task);
+                    return;
+                }
+            }
+
+            // Handler error... (pool not found)
+
+        }
+        else{
+            //Handle error... (args are not valid)
+        }
+    }
+}
+
+/**
+ * @brief Add task to process
+ * @param args All arguments
+*/
+TASKS_MODULE_API void TaskModule::AddTaskToProcess(const std::shared_ptr<hArgs>& args){
+    // Check input args
+    std::cout << "LKFDGUJH" << std::endl;
+    if(args != NULL){
+        const char* pool_name = args->get<const char*>("pool_name", nullptr);
+        const char* processor_name = args->get<const char*>("processor_name", nullptr);
+        const char* task_name = args->get<const char*>("task_name", nullptr);
+        std::shared_ptr<hArgs> arguments = args->get<std::shared_ptr<hArgs>>("arguments", nullptr);
+
+    std::cout << "LKFDGUJH" << std::endl;
+        if(processor_name != nullptr && task_name != nullptr && pool_name != nullptr && arguments != nullptr){ 
+            // Find processor
+            for(auto processor : CTasksModule->m_processors){
+                if(processor.first == processor_name){
+    std::cout << "LKFDGUJH" << std::endl;
+
+                // Find pool
+                for(auto pool : CTasksModule->m_taskpools){
+                    if(pool->m_pool_name == pool_name){
+    std::cout << "LKFDGUJH" << std::endl;
+
+                        // Find task
+                        for(auto task : pool->m_list){
+                            if(task->tasktype == task_name){
+    std::cout << "LKFDGUJH" << std::endl;
+                                std::shared_ptr<Task> newtask = task->clone();
+                                newtask->id = newtask->tasktype + "-" + VortexMaker::gen_random(6);
+                                newtask->state = "not_started";
+                                newtask->props = arguments;
+    std::cout << "LKFDGUJH" << std::endl;
+
+                                {
+                                    std::lock_guard<std::mutex> lock(processor.second->mutex);
+                                    processor.second->tasksToProcess.push_back(newtask);
+                                }
+    std::cout << "LKFDGUJH" << std::endl;
+                                
+                                args->add<std::shared_ptr<Task>>("task", newtask);
+
+                                // Get task file and store it
+                                //this->toolchain->currentLoadedSystem.executedTasks.push_back(selectedTask);
+                                return;
+
+                            }
+                        }
+                    }
+                    
+                }
+                }
+            }
+        }
+    }
+
+}
+
+/**
+ * @brief Start a task processor
+ * @param args All arguments
+*/
+TASKS_MODULE_API void TaskModule::StartTaskProcessor(const std::shared_ptr<hArgs>& args){
+    // Check input args
+    if(args != NULL){
+        const char* processor_name = args->get<const char*>("processor_name", nullptr);
+        if(processor_name != nullptr){ 
+            // Find pool
+            for(auto processor : CTasksModule->m_processors){
+                if(processor.first == processor_name){
+                    processor.second->startWorker();
+                    return;
+                }
+            }
+        }
+    }
+}
+
+
+/**
+ * @brief Stop a task processor
+ * @param args All arguments
+*/
+TASKS_MODULE_API void TaskModule::StopTaskProcessor(const std::shared_ptr<hArgs>& args){
+    // Check input args
+    if(args != NULL){
+        const char* processor_name = args->get<const char*>("processor_name", nullptr);
+        if(processor_name != nullptr){ 
+            // Find pool
+            for(auto processor : CTasksModule->m_processors){
+                if(processor.first == processor_name){
+                    processor.second->stopWorker();
+                    return;
+                }
+            }
         }
     }
 }

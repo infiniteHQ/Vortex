@@ -31,7 +31,13 @@ public:
         //this->AddFunction(Register, "RegisterPackages");
         
         // Adding events
-        this->AddInputEvent(TaskModule::RegisterTask, "RegisterTask");
+        this->AddInputEvent(TaskModule::CreateTaskPool, "CreateTaskPool");
+        this->AddInputEvent(TaskModule::CreateTaskProcessor, "CreateTaskProcessor");
+        this->AddInputEvent(TaskModule::AddTaskToPool, "AddTaskToPool");
+        this->AddInputEvent(TaskModule::GetTaskPool, "GetTaskPool");
+        this->AddInputEvent(TaskModule::StartTaskProcessor, "StartTaskProcessor");
+        this->AddInputEvent(TaskModule::StopTaskProcessor, "StopTaskProcessor");
+        this->AddInputEvent(TaskModule::AddTaskToProcess, "AddTaskToProcess");
         //this->AddOutputEvent(TestOutputEvent, "test");
 
         // Render instance

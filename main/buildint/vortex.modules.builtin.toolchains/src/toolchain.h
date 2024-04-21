@@ -121,6 +121,8 @@ struct Toolchain
 
     std::string path_hostsnapshots = "unknow";
 
+    const char* pool_name = "unknow";
+
     // Low level toolchain informations
     std::string workingPath = "not specified";
     std::string ouputPath = "not specified";

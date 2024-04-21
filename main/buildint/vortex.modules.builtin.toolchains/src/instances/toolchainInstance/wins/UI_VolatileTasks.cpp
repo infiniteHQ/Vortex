@@ -1,12 +1,23 @@
 #include "../ToolchainRenderInstance.h"
-#include <array>
+
+static std::vector<std::shared_ptr<Task>> tasklist;
+static void refreshTaskList(const char* poolname){
+    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+    args->add("pool_name", poolname);
+    VortexMaker::CallModuleEvent(args, "GetTaskPool", "vortex.modules.builtin.tasks");
+    std::shared_ptr<TaskPool> list = args->get<std::shared_ptr<TaskPool>>("taskpool", nullptr);
+
+    if(list != nullptr){
+        tasklist = list->m_list;
+    }
+}
 
 void ToolchainRenderInstance::UI_VolatileTasks()
 {
 
     if (this->show_UI_VolatileTasks)
     {
-
+        refreshTaskList(this->toolchain->pool_name);
         std::string label = this->name + " - Volatile Tasks ###" + this->name + "volatiletasks";
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
@@ -102,7 +113,7 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                             ImGui::Columns(3, NULL);
 
                             std::vector<const char *> items;
-                            for (auto chaine : this->toolchain->tasks)
+                            for (auto chaine : tasklist)
                             {
                                 items.push_back(chaine->tasktype.c_str());
                             }
@@ -112,17 +123,16 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                             int i = 1;
                             for (int row = 0; row < this->toolchain->packages.size(); row++)
                             {
-                                std::cout << "GLKFDSUJH" << std::endl;
                                 std::string label = "packhhageView###" + std::to_string(row) + this->toolchain->packages[row]->label + std::to_string(i);
                                 ImGuiID id = ImGui::GetID(label.c_str());
                                 ImGui::BeginChildFrame(id, ImVec2(0, 150), true);
-                                std::cout << "GLKFDSUJH" << std::endl;
 
                                 // Affichage des éléments individuels
                                 std::string ll = this->toolchain->packages[row]->label;
                                 ImGui::Text(ll.c_str());
 
-                                std::cout << "GLKFDSUJH" << std::endl;
+                                if(!items.empty()){
+
                                 if (ImGui::BeginCombo("Task", items[item_current]))
                                 {
                                     for (int i = 0; i < items.size(); ++i)
@@ -145,14 +155,17 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                                     ImGui::EndCombo();
                                 }
 
-                                std::cout << "GLKFDSUJH" << std::endl;
+                                }
+                                else{
+                                    ImGui::Text("Empty");
+                                }
                                 if (ImGui::Button("Select"))
                                 {
 
                                     std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
                                     props->add("toolchain", this->toolchain);
 
-                                    for (auto task : this->toolchain->tasks)
+                                    for (auto task : tasklist)
                                     {
                                         if (task->tasktype == items[item_current])
                                         {
@@ -177,7 +190,6 @@ void ToolchainRenderInstance::UI_VolatileTasks()
 
                                     /////////////////////
                                 }
-                                std::cout << "GLKFDSUJH" << std::endl;
                                 /*
                                                 if (ImGui::Button("Build"))
                                                 {
@@ -186,7 +198,7 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                                                     props->add("toolchain", this->toolchain);
 
 
-                                                    for (auto task : this->toolchain->tasks)
+                                                    for (auto task : tasklist)
                                                     {
                                                         if (task->tasktype == items[item_current])
                                                         {
@@ -226,7 +238,6 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                                 */
                                 ImGui::EndChildFrame();
                                 ImGui::NextColumn();
-                                std::cout << "GLKFDSUJH" << std::endl;
                             }
                             ImGui::EndChild();
                         }
@@ -238,7 +249,7 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                             ImGui::Columns(4, NULL);
 
                             std::vector<const char *> items;
-                            for (auto chaine : this->toolchain->tasks)
+                            for (auto chaine : tasklist)
                             {
                                 items.push_back(chaine->tasktype.c_str());
                             }
@@ -283,7 +294,7 @@ void ToolchainRenderInstance::UI_VolatileTasks()
 
                                 if (ImGui::Button("Select"))
                                 {
-                                    for (auto task : this->toolchain->tasks)
+                                    for (auto task : tasklist)
                                     {
                                         if (task->tasktype == items[item_current])
                                         {
@@ -311,7 +322,7 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                                                     props->add("toolchain", this->toolchain);
 
 
-                                                    for (auto task : this->toolchain->tasks)
+                                                    for (auto task : tasklist)
                                                     {
                                                         if (task->tasktype == items[item_current])
                                                         {
@@ -368,9 +379,29 @@ void ToolchainRenderInstance::UI_VolatileTasks()
 
                         if (ImGui::ImageButtonWithText(buildIcon, "Exec", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                         { // Ajout de la tâche aux listes appropriées
-                            if (this->toolchain->taskProcessor)
-                            {
+{
+    std::shared_ptr<hArgs> arguments = std::make_shared<hArgs>();
+    arguments->add("pool_name", this->toolchain->pool_name);
+    arguments->add("processor_name", this->toolchain->pool_name);
+    arguments->add("task_name", selectedTask->tasktype.c_str());
 
+
+    std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+    props->add<std::shared_ptr<Toolchain>>("toolchain", this->toolchain);
+    arguments->add("arguments", props);
+    VortexMaker::CallModuleEvent(arguments, "AddTaskToProcess", "vortex.modules.builtin.tasks");
+
+
+
+
+    std::shared_ptr<Task> newtask = arguments->get<std::shared_ptr<Task>>("task", nullptr);
+    if(newtask != nullptr){
+                                this->toolchain->currentLoadedSystem.executedTasks.push_back(newtask);
+                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
+
+    }
+}
+/*
                                 {
                                     std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
                                     this->toolchain->taskProcessor->tasksToProcess.push_back(selectedTask);
@@ -379,12 +410,8 @@ void ToolchainRenderInstance::UI_VolatileTasks()
 
                                 this->toolchain->currentLoadedSystem.executedTasks.push_back(selectedTask);
                                 // this->toolchain->packages[row]->latestTask = _task;
-                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
-                            }
-                            else
-                            {
-                                std::cout << "Failed while accessing taskToProcess" << std::endl;
-                            }
+                                this->toolchain->currentLoadedSystem.Save(this->toolchain);*/
+
                         }
 
                         float oldsize = ImGui::GetFont()->Scale;
