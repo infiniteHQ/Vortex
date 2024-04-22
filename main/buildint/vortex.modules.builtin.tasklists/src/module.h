@@ -1,18 +1,20 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
+
+
 #include "../../vortex.modules.builtin.tasks/src/module.h"
 
 #ifndef __TASKLISTS_MODULE_H__
 #define __TASKLISTS_MODULE_H__
 
 class TasklistInterface;
-class TaskList_;
+class TaskList;
 
-struct ModuleCTX
+struct TasklistModuleCTX
 {
   std::vector<std::shared_ptr<TasklistInterface>>  m_registered_tasklists;    
-  std::vector<std::shared_ptr<TaskList_>>  m_tasklists;    
+  std::vector<std::shared_ptr<TaskList>>  m_tasklists;    
   std::shared_ptr<ModuleInterface>        m_interface;
 };
 
@@ -21,22 +23,18 @@ struct ModuleCTX
 #endif
 
 #ifndef CTasklistsModule
-extern TASKLIST_MODULE_API ModuleCTX *CTasklistsModule; // Current implicit context pointer
+extern TASKLIST_MODULE_API TasklistModuleCTX *CTasklistsModule; // Current implicit context pointer
 #endif
 
 namespace TasklistModule{
+
+    TASKLIST_MODULE_API void FindTasklists(const std::shared_ptr<hArgs>& args);
+    TASKLIST_MODULE_API void LaunchTasklistInterface(const std::shared_ptr<hArgs>& args);
     //TASKLIST_MODULE_API bool RegisterPackage(std::string filepath, std::shared_ptr<Package> newPackage, nlohmann::json filecontent);
 }
 
 
-
-struct TasklistInterface{
-    std::string label;
-    std::string emplacement;
-    bool resolved;
-};
-
-struct TaskSave_{
+struct TaskSave{
     char task[128];
     char component[128];
 
@@ -48,16 +46,21 @@ struct TaskSave_{
 
 };
 
-
-struct TaskList_Save {
+struct TaskListSave {
     char label[128] = "unknow";
 
-    std::vector<TaskSave_> list;
+    std::vector<TaskSave> list;
 
 };
 
 
-struct TaskList_{
+struct TasklistInterface{
+    std::string label;
+    std::string emplacement;
+    bool resolved;
+};
+
+struct TaskList{
     std::string configFilePath;
     std::string label;
     std::vector<std::shared_ptr<Task>> list;
@@ -65,8 +68,12 @@ struct TaskList_{
     std::shared_ptr<hArgs> props;
 
     void Refresh();
-    void PushSave(std::shared_ptr<TaskList_Save> save);
+    void PushSave(std::shared_ptr<TaskListSave> save);
 };
+
+
+
+
 
 
 /**
@@ -104,7 +111,7 @@ static void RegisterTasklist()
 
           if (!already_registered)
           {
-            std::shared_ptr<TaskList_> newTasklist = std::make_shared<TaskList_>();
+            std::shared_ptr<TaskList> newTasklist = std::make_shared<TaskList>();
 
               newTasklist->configFilePath = file;
 

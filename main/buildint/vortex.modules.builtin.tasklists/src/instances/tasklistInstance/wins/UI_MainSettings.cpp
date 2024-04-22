@@ -2,9 +2,8 @@
 #include <array>
 #include <random>
 
-
 /*
-Tomorrow : 
+Tomorrow :
     - Refaire la toolchin fonctionnelle
     - Ajouter toutes les configurations du build (target, arch, packaging, export...)
     - Continuer avec les hosts...
@@ -49,12 +48,9 @@ void TasklistRenderInstance::UI_MainSettings()
             if (ImGui::ImageButtonWithText(refreshIcon, "Sort", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
             {
 
-  std::sort(m_currentSave->list.begin(), m_currentSave->list.end(), [](const TaskSave_ &a, const TaskSave_ &b)
-            { return a.priority < b.priority; });
+                std::sort(m_currentSave->list.begin(), m_currentSave->list.end(), [](const TaskSave &a, const TaskSave &b)
+                          { return a.priority < b.priority; });
             }
-
-
-
 
             ImGui::Separator();
             if (ImGui::BeginMenu("Pannels"))
@@ -82,15 +78,24 @@ void TasklistRenderInstance::UI_MainSettings()
 
             for (int row = 0; row < 1; row++)
             {
-                static TaskSave_ newtask;
+                static TaskSave newtask;
                 std::vector<const char *> items;
 
                 // To do the same for hsots
                 if (this->parentType == "toolchain")
                 {
-                    for (auto &chaine : this->parentToolchain->tasks)
+
+                    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+                    args->add("pool_name", this->parentToolchain->pool_name);
+                    VortexMaker::CallModuleEvent(args, "GetTaskPool", "vortex.modules.builtin.tasks");
+                    std::shared_ptr<TaskPool> list = args->get<std::shared_ptr<TaskPool>>("taskpool", nullptr);
+                    if (list != nullptr)
                     {
-                        items.push_back(chaine->tasktype.c_str());
+                        for (auto entry : list->m_list)
+                        {
+
+                            items.push_back(entry->tasktype.c_str());
+                        }
                     }
                 }
 
@@ -99,25 +104,25 @@ void TasklistRenderInstance::UI_MainSettings()
                 if (this->parentType == "host")
                 {
 
-                    for (auto &chaine : this->parentHost->packages)
+                    /*for (auto &chaine : this->parentHost->packages)
                     {
                         items_components.push_back(chaine->name.c_str());
-                    }
+                    }*/
 
                     for (auto &chaine : this->m_ctx->IO.distHosts)
                     {
                         items_components.push_back(chaine.name.c_str());
                     }
 
-                    for (auto &chaine : this->m_ctx->IO.toolchains)
+                    /*for (auto &chaine : this->m_ctx->IO.toolchains)
                     {
                         items_components.push_back(chaine->name.c_str());
-                    }
+                    }*/
 
-                    for (auto &chaine : this->m_ctx->IO.hosts)
+                    /*for (auto &chaine : this->m_ctx->IO.hosts)
                     {
                         items_components.push_back(chaine->name.c_str());
-                    }
+                    }*/
 
                     for (auto &chaine : this->m_ctx->IO.distHosts)
                     {
@@ -128,7 +133,7 @@ void TasklistRenderInstance::UI_MainSettings()
                 if (this->parentType == "toolchain")
                 {
 
-                    for (auto &chaine : this->parentToolchain->packages)
+                    for (auto &chaine : this->parentToolchain->packages) // Parent = nullptr
                     {
                         items_components.push_back(chaine->label.c_str());
                     }
@@ -144,6 +149,7 @@ void TasklistRenderInstance::UI_MainSettings()
 
                     if (column == 0)
                     {
+                        std::cout << "LK?JHB" << std::endl;
                         if (ImGui::ImageButtonWithText(addIcon, "Create new", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                         {
                             strncpy(newtask.task, items[item_current], sizeof(newtask.task) - 1);
@@ -157,6 +163,7 @@ void TasklistRenderInstance::UI_MainSettings()
                     }
                     if (column == 1)
                     {
+                        std::cout << "LK?JHB" << std::endl;
                         if (ImGui::BeginCombo("Task", items[item_current]))
                         {
                             for (int i = 0; i < items.size(); ++i)
@@ -178,6 +185,7 @@ void TasklistRenderInstance::UI_MainSettings()
 
                     if (column == 2)
                     {
+                        std::cout << "LK?JHB" << std::endl;
                         if (ImGui::BeginCombo("Component", items_components[item_component_current]))
                         {
                             for (int i = 0; i < items_components.size(); ++i)
@@ -198,6 +206,7 @@ void TasklistRenderInstance::UI_MainSettings()
 
                     if (column == 3)
                     {
+                        std::cout << "LK?JHB" << std::endl;
                         ImGui::InputInt("Priority", &newtask.priority);
                     }
                 }
@@ -258,8 +267,6 @@ void TasklistRenderInstance::UI_MainSettings()
                             ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthFixed);
                             ImGui::TableHeadersRow();
 
-                            
-
                             for (int srow = 0; srow < 1; srow++)
                             {
                                 ImGui::TableNextRow();
@@ -278,16 +285,16 @@ void TasklistRenderInstance::UI_MainSettings()
                                     }
                                     if (column == 1)
                                     {
-                                        // Unique ID for label 
+                                        // Unique ID for label
                                         static std::string rd = VortexMaker::gen_random(6);
-                                        std::string name = "###Type"+std::to_string(row);
+                                        std::string name = "###Type" + std::to_string(row);
                                         spdlog::critical(name);
                                         ImGui::InputText(name.c_str(), newEnvProps.first, 128);
                                     }
                                     if (column == 2)
                                     {
-                                        // Unique ID for label 
-                                        std::string name = "###PROP"+std::to_string(row);
+                                        // Unique ID for label
+                                        std::string name = "###PROP" + std::to_string(row);
                                         spdlog::critical(name);
                                         ImGui::InputText(name.c_str(), newEnvProps.second, 128);
                                     }

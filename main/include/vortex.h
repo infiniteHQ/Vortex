@@ -510,10 +510,6 @@ private:
 
 
 
-struct VxTasklistInterface{
-    std::string label;
-    bool resolved;
-};
 
 /*
 
@@ -573,7 +569,7 @@ struct VxDiag{
     std::string output;
     int code;
 };
-
+/*
 struct TaskSave{
     char task[128];
     char component[128];
@@ -591,7 +587,7 @@ struct TaskListSave {
 
     std::vector<TaskSave> list;
 
-};
+};*/
 
 /*
 struct PackageActionSave{
@@ -1096,16 +1092,7 @@ struct VxHostSnapshot{
    // VxHostCurrentSystem snapshotSystem; // to import from 
 };
 
-struct TaskList{
-    std::string configFilePath;
-    std::string label;
-    std::vector<std::shared_ptr<Task>> list;
 
-    std::shared_ptr<hArgs> props;
-
-    void Refresh();
-    void PushSave(std::shared_ptr<TaskListSave> save);
-};
 /*
 // Task list, uniquement ici, pour les snapshots, possibilité de reprendre la task list, et de reasseyer tout les précédents echecs
 struct VxHost{

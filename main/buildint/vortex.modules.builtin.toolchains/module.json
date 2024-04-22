@@ -11,6 +11,10 @@
     ],
     "deps": [
         {
+            "name": "vortex.modules.builtin.tasklists",
+            "version": "1.0"
+        },
+        {
             "name": "vortex.modules.builtin.tasks",
             "version": "1.0"
         },

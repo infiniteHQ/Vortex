@@ -3,12 +3,12 @@
 using namespace VortexMaker;
 
 
-TasklistRenderInstance::TasklistRenderInstance(VxContext *ctx, std::shared_ptr<TaskList_> t)
+TasklistRenderInstance::TasklistRenderInstance(VxContext *ctx, std::shared_ptr<TaskList> t, std::shared_ptr<Toolchain> toolchain)
 {
     this->m_ctx = ctx;
     this->tasklist = t;
-    //this->parentToolchain = _parentToolchain;
-    //this->parentType = "toolchain";
+    this->parentToolchain = toolchain;
+    this->parentType = "toolchain";
 
     this->Refresh();
 
@@ -260,7 +260,7 @@ void TasklistRenderInstance::Refresh()
 
     this->tasklist->Refresh();
 
-    std::shared_ptr<TaskList_Save> refreshedCurrentSave = std::make_shared<TaskList_Save>();
+    std::shared_ptr<TaskListSave> refreshedCurrentSave = std::make_shared<TaskListSave>();
     // Refresh host from vortex API
     // Get all vortex infos, store into save struct and save the save struct to current save struct
 
@@ -271,7 +271,7 @@ void TasklistRenderInstance::Refresh()
 
     for (auto task : this->tasklist->list)
     {
-        TaskSave_ newtask;
+        TaskSave newtask;
 
         strncpy(newtask.task, task->tasktype.c_str(), sizeof(newtask.task));
         newtask.task[sizeof(newtask.task) - 1] = '\0';

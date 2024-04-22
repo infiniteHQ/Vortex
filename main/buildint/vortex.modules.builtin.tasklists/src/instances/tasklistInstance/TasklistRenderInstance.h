@@ -4,6 +4,8 @@
 #include "../../../../../../main/include/vortex_internals.h"
 #include "../../module.h"
 
+#include "../../../../vortex.modules.builtin.toolchains/src/toolchain.h"
+
 #ifndef TasklistRenderInstance_H
 #define TasklistRenderInstance_H
 
@@ -15,7 +17,7 @@ class InstanceFactory;
 class TasklistRenderInstance : public ModuleRenderInstance
 {
 public:
-    TasklistRenderInstance(VxContext *ctx, std::shared_ptr<TaskList_> t);
+    TasklistRenderInstance(VxContext *ctx, std::shared_ptr<TaskList> t, std::shared_ptr<Toolchain> toolchain);
     
     // Content Managment 
     void Refresh();
@@ -34,12 +36,12 @@ public:
 
     std::string name;
     VxContext *m_ctx;
-    std::shared_ptr<TaskList_> tasklist;
-    std::shared_ptr<TaskList_Save> m_currentSave;
+    std::shared_ptr<TaskList> tasklist;
+    std::shared_ptr<TaskListSave> m_currentSave;
     ImGuiID dockspaceID;
 
-    std::shared_ptr<VxHost> parentHost;
-    std::shared_ptr<VxToolchain> parentToolchain;
+    //std::shared_ptr<VxHost> parentHost;
+    std::shared_ptr<Toolchain> parentToolchain;
     std::string parentType;
 
     std::shared_ptr<Walnut::Image> m_HostIcon;

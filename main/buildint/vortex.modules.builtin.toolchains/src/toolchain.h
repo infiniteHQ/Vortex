@@ -3,6 +3,8 @@
 
 #include "../../vortex.modules.builtin.tasks/src/module.h"
 
+#include "../../vortex.modules.builtin.tasklists/src/module.h"
+
 #include "../../vortex.modules.builtin.packages/src/module.h"
 #include "../../vortex.modules.builtin.packages/src/instances/packageInstance/PackageRenderInstance.h"
 
@@ -170,10 +172,10 @@ struct Toolchain
     // Vector de packages
 
     std::vector<std::shared_ptr<PackageInterface>> registeredPackages;
-   // std::vector<std::shared_ptr<VxTasklistInterface>> registeredTasklists;
+    std::vector<std::shared_ptr<TasklistInterface>> registeredTasklists;
 
     std::vector<std::shared_ptr<Package>> packages;
-   // std::vector<std::shared_ptr<TaskList>> tasklists;
+    std::vector<std::shared_ptr<TaskList>> tasklists;
     // Scripts
     // Modules & other assets..
     // Patchs

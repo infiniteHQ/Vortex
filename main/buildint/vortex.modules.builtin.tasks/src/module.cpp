@@ -169,27 +169,35 @@ TASKS_MODULE_API void TaskModule::AddTaskToPool(const std::shared_ptr<hArgs>& ar
 TASKS_MODULE_API void TaskModule::AddTaskToProcess(const std::shared_ptr<hArgs>& args){
     // Check input args
     if(args != NULL){
+
         const char* pool_name = args->get<const char*>("pool_name", nullptr);
         const char* processor_name = args->get<const char*>("processor_name", nullptr);
         const char* task_name = args->get<const char*>("task_name", nullptr);
+        std::shared_ptr<hArgs> task_props = args->get<std::shared_ptr<hArgs>>("task_props", nullptr);
+        int task_priority = args->get<int>("task_priority", 0);
         std::shared_ptr<hArgs> arguments = args->get<std::shared_ptr<hArgs>>("arguments", nullptr);
 
-        if(processor_name != nullptr && task_name != nullptr && pool_name != nullptr && arguments != nullptr){ 
+        if(task_props != nullptr && processor_name != nullptr && task_name != nullptr && pool_name != nullptr && arguments != nullptr){ 
             // Find processor
+
             for(auto processor : CTasksModule->m_processors){
+
                 if(processor.first == processor_name){
 
                 // Find pool
                 for(auto pool : CTasksModule->m_taskpools){
+
                     if(pool->m_pool_name == pool_name){
 
                         // Find task
                         for(auto task : pool->m_list){
+                          std::cout <<"task:"<< task->tasktype << task_name << std::endl;
                             if(task->tasktype == task_name){
                                 std::shared_ptr<Task> newtask = task->clone();
                                 newtask->id = newtask->tasktype + "-" + VortexMaker::gen_random(6);
                                 newtask->state = "not_started";
-                                newtask->props = arguments;
+                                newtask->props = task_props;
+                                newtask->priority = task_priority;
 
                                 {
                                     std::lock_guard<std::mutex> lock(processor.second->mutex);

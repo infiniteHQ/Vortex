@@ -323,6 +323,26 @@ void Package::PushSave(std::shared_ptr<PackageSave> save)
     system(cmd.c_str());
 }
 
+void Package::ExecuteActions(std::string sequence, std::shared_ptr<Package> package)
+{
+  for (auto action : package->actions)
+  {
+    if (sequence == action->executionSequence)
+    {
+      if (action->type == "command")
+      {
+
+        std::string cmd = "";
+        cmd += "cd " + package->distPath + "/build && " + action->command;
+
+        std::string label = "action-" + action->type + "-" + action->executionSequence + "-";
+        label += action->priority;
+
+        package->SetDiagCode(label, system(cmd.c_str()));
+      }
+    }
+  }
+}
 
 void Package::Refresh()
 {

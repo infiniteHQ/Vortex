@@ -148,7 +148,9 @@ struct VortexMakerDebugAllocInfo {
 //_____________________________________________________________________________
 
 
-
+struct VxSystemLog{
+  std::string type; 
+};
 
 struct VxIO {
   int         MetricsActiveAllocations;  

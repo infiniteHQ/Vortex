@@ -158,6 +158,7 @@ void ToolchainRenderInstance::render()
     this->UI_AssetsViewer();
     this->UI_VolatileTasks();
     this->UI_CurrentToolchainPreview();
+    this->UI_TasksEditor();
 }
 
 void ToolchainRenderInstance::menubar()
@@ -512,7 +513,6 @@ void ToolchainRenderInstance::Refresh()
 
         refreshedCurrentSave->registeredPackages.push_back(package);
     }
-    /*
         for(auto registeredTasklists : this->toolchain->registeredTasklists){
             std::pair<char[128], char[128]> tasklist;
 
@@ -521,7 +521,7 @@ void ToolchainRenderInstance::Refresh()
 
 
             refreshedCurrentSave->registeredTasklists.push_back(tasklist);
-        }   */
+        }   
 
     strncpy(refreshedCurrentDistSave->AR_value, this->toolchain->distToolchain.AR.c_str(), sizeof(refreshedCurrentDistSave->AR_value));
     refreshedCurrentDistSave->AR_value[sizeof(refreshedCurrentDistSave->AR_value) - 1] = '\0';

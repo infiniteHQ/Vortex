@@ -11,6 +11,7 @@
 #include "tasks/MovePackageToDist.h"
 #include "tasks/SetupDistEnvironment.h"
 #include "tasks/UncompressDistPackage.h"
+#include "tasks/ExecuteTasklist.h"
 
 
 template<typename T>
@@ -55,6 +56,7 @@ void Toolchain::InitTasks(){
     this->AddTaskType<InstallPackage>("InstallPackage");
     this->AddTaskType<SetupDistEnvironment>("SetupDistEnvironment");
     this->AddTaskType<CheckCompiler>("CheckCompiler");
+    this->AddTaskType<ExecuteTasklist>("ExecuteTasklist");
 
 }
 
@@ -560,6 +562,178 @@ void Toolchain::CreateCurrentToolchainSystem()
 }
 
 
+std::pair<std::string, int> Toolchain::exec_cmd_quote(const std::string& cmd) {
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+
+  std::string output;
+  int returnCode = -1;
+
+  std::string _cmd = cmd;
+  std::string uid = VortexMaker::gen_random(8);
+
+  _cmd += "' 2>";
+  _cmd += ctx->projectPath;
+  _cmd += "/.vx/temp/" + uid + ".txt";
+  _cmd += "";
+
+      std::string path = ctx->projectPath;
+      path += "/.vx/temp/"+uid+".txt";
+
+      returnCode = system((char *)_cmd.c_str());
+
+      std::ifstream outputFile(path);
+      output.clear();
+
+        if (outputFile.is_open())
+        {
+          output.assign(std::istreambuf_iterator<char>(outputFile), std::istreambuf_iterator<char>());
+          outputFile.close();
+          std::string clearFile = "rm ";
+          clearFile +=  ctx->projectPath;
+          clearFile += "/.vx/temp/" + uid + ".txt";
+
+
+          system((char *)clearFile.c_str());
+        }
+        else
+        {
+          std::cerr << "Impossible d'ouvrir le fichier de sortie d'erreur." << std::endl;
+          return{"Unknow log(s)", returnCode};
+        
+      }
+      return{output, returnCode};
+}
+
+
+std::pair<std::string, int> Toolchain::exec_cmd(const std::string& cmd) {
+  VxContext *ctx = VortexMaker::GetCurrentContext();
+
+  std::string output;
+  int returnCode = -1;
+
+  std::string uid = VortexMaker::gen_random(8);
+  std::string _cmd = cmd;
+
+  _cmd += " 2>";
+  _cmd += ctx->projectPath;
+  _cmd += "/.vx/temp/" + uid + ".txt";
+
+      std::string path = ctx->projectPath;
+      path += "/.vx/temp/"+uid+".txt";
+
+      returnCode = system((char *)_cmd.c_str());
+
+      std::ifstream outputFile(path);
+      output.clear();
+
+        if (outputFile.is_open())
+        {
+          output.assign(std::istreambuf_iterator<char>(outputFile), std::istreambuf_iterator<char>());
+          outputFile.close();
+          std::string clearFile = "rm ";
+          clearFile +=  ctx->projectPath;
+          clearFile += "/.vx/temp/" + uid + ".txt";
+
+
+          system((char *)clearFile.c_str());
+        }
+        else
+        {
+          std::cerr << "Impossible d'ouvrir le fichier de sortie d'erreur." << std::endl;
+          return{"null", returnCode};
+        
+      }
+      return{output, returnCode};
+}
+
+void Toolchain::RegisterTasklist(const std::string label)
+{
+  std::shared_ptr<TasklistInterface> newTasklistInterface = std::make_shared<TasklistInterface>();
+  newTasklistInterface->label = label;
+  registeredTasklists.push_back(newTasklistInterface);
+}
+
+void Toolchain::FindTasklists()
+{
+  VxContext &ctx = *CVortexMaker;
+
+  // Register all finded local packages
+  for (const auto &file : VortexMaker::SearchFiles(ctx.toolchainsPath, "tasklist.config"))
+  {
+    try
+    {
+
+      nlohmann::json filecontent = VortexMaker::DumpJSON(file);
+      // VxPackage newPackage;
+
+      // newPackage.configFilePath = file;
+
+      // Get packages infos
+
+      for (auto registeredTasklist : this->registeredTasklists)
+      {
+        if (registeredTasklist->label == filecontent["label"].get<std::string>())
+        {
+          bool already_registered = false;
+          for (auto tasklist : this->tasklists)
+          {
+            if (filecontent["label"].get<std::string>() == tasklist->label)
+            {
+              already_registered = true;
+            }
+          }
+
+          if (!already_registered)
+          {
+            std::shared_ptr<TaskList> newTasklist = std::make_shared<TaskList>();
+
+              newTasklist->configFilePath = file;
+
+            newTasklist->label = filecontent["label"].get<std::string>();
+
+            //this->tasks.clear();
+            nlohmann::json tasks = filecontent["tasks"];
+            for (auto &t : tasks)
+            {
+              std::shared_ptr<Task> task = std::make_shared<Task>();
+              task->tasktype = t["task"].get<std::string>();
+              task->component = t["component"].get<std::string>();
+
+              for(auto env_props : t["env_props"]){
+                task->env_props.push_back({env_props["type"].get<std::string>(), env_props["prop"].get<std::string>()});
+              }
+
+              task->priority = t["priority"].get<int>();
+
+              newTasklist->list.push_back(task);
+            }
+
+            this->tasklists.push_back(newTasklist);
+            registeredTasklist->resolved = true;
+          }
+        }
+      }
+    }
+    catch (const std::exception &e)
+    {
+      std::cerr << "Error : " << e.what() << std::endl;
+    }
+  }
+
+  std::sort(this->packages.begin(), this->packages.end(), [](const std::shared_ptr<Package> &a, const std::shared_ptr<Package> &b)
+            { return a->priority < b->priority; });
+
+  // Register global packages
+  for (auto registeredPackage : this->registeredPackages)
+  {
+    if (registeredPackage->emplacement == "global")
+    {
+      // Recupérer les packages du ctx.
+    }
+  }
+}
+
+
 void Toolchain::Refresh()
 {
   VortexMaker::LogInfo("Core", "Refreshing toolchain " + this->name + " from " + this->configFilePath);
@@ -631,14 +805,15 @@ void Toolchain::Refresh()
   this->InitTasks();
 
   VortexMaker::LogInfo("Core", "Refreshing tasklists asset of " + this->name);
-  // registeredTasklists.clear();
+
+  registeredTasklists.clear();
   nlohmann::json tasklists = toolchainData["content"]["tasklists"];
   for (auto &t : tasklists)
   {
-    // this->RegisterTasklist(t["label"].get<std::string>());
+     this->RegisterTasklist(t["label"].get<std::string>());
   }
   VortexMaker::LogInfo("Core", "Finding tasklists asset of " + this->name);
-  // this->FindTasklists();
+  this->FindTasklists();
 
   VortexMaker::LogInfo("Core", "Refreshing toolchain " + this->name + " is finish !");
   // this->Init();
@@ -660,47 +835,6 @@ void ToolchainCurrentSystem::Save(std::shared_ptr<Toolchain> parent)
   }
 }
 
-
-std::pair<std::string, int> Toolchain::exec_cmd(const std::string& cmd) {
-  VxContext *ctx = VortexMaker::GetCurrentContext();
-
-  std::string output;
-  int returnCode = -1;
-
-  std::string uid = VortexMaker::gen_random(8);
-  std::string _cmd = cmd;
-
-  _cmd += " 2>";
-  _cmd += ctx->projectPath;
-  _cmd += "/.vx/temp/" + uid + ".txt";
-
-      std::string path = ctx->projectPath;
-      path += "/.vx/temp/"+uid+".txt";
-
-      returnCode = system((char *)_cmd.c_str());
-
-      std::ifstream outputFile(path);
-      output.clear();
-
-        if (outputFile.is_open())
-        {
-          output.assign(std::istreambuf_iterator<char>(outputFile), std::istreambuf_iterator<char>());
-          outputFile.close();
-          std::string clearFile = "rm ";
-          clearFile +=  ctx->projectPath;
-          clearFile += "/.vx/temp/" + uid + ".txt";
-
-
-          system((char *)clearFile.c_str());
-        }
-        else
-        {
-          std::cerr << "Impossible d'ouvrir le fichier de sortie d'erreur." << std::endl;
-          return{"null", returnCode};
-        
-      }
-      return{output, returnCode};
-}
 
 
 void Toolchain::PushSave(std::shared_ptr<ToolchainSave> save)
@@ -866,6 +1000,7 @@ TOOLCHAIN_MODULE_API bool ToolchainModule::RegisterNewToolchain(std::shared_ptr<
     toolchain->registeredPackages.push_back(newPackageInterface);
   }
   // this->FindPackages();
+
   {
     VortexMaker::LogInfo("Core", "Finding packages asset of " + toolchain->name);
     std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
@@ -878,11 +1013,30 @@ TOOLCHAIN_MODULE_API bool ToolchainModule::RegisterNewToolchain(std::shared_ptr<
     toolchain->registeredPackages = args->get<std::vector<std::shared_ptr<PackageInterface>>>("list", toolchain->registeredPackages);
   };
 
-  nlohmann::json tasklists = toolchainData["content"]["tasklists"];
-  for (auto &t : tasklists)
-  {
 
+
+  nlohmann::json tasklists = toolchainData["content"]["tasklists"];
+  for (auto &tasklist : tasklists)
+  {
+    std::shared_ptr<TasklistInterface> newtasklistInterface = std::make_shared<TasklistInterface>();
+    newtasklistInterface->label = tasklist["label"].get<std::string>();
+    newtasklistInterface->emplacement = tasklist["origin"].get<std::string>();
+    newtasklistInterface->resolved = false;
+    toolchain->registeredTasklists.push_back(newtasklistInterface);
   }
+  
+  {
+    VortexMaker::LogInfo("Core", "Finding tasklists asset of " + toolchain->name);
+    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+    args->add("path", toolchain->path);
+    args->add("tasklists", toolchain->tasklists);
+    args->add("list", toolchain->registeredPackages);
+
+    VortexMaker::CallModuleEvent(args, "FindTasklists", "vortex.modules.builtin.tasklists");
+
+    toolchain->tasklists = args->get<std::vector<std::shared_ptr<TaskList>>>("tasklists", toolchain->tasklists);
+    //toolchain->registeredTasklists = args->get<std::vector<std::shared_ptr<TasklistInterface>>>("list", toolchain->registeredTasklists);
+  };
 
 
   toolchain->Init();

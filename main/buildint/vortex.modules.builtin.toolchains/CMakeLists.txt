@@ -20,6 +20,7 @@ set(SOURCES
     src/instances/toolchainInstance/wins/UI_CurrentToolchainPreview.cpp
     src/instances/toolchainInstance/wins/UI_ContentWindow.cpp
     src/instances/toolchainInstance/wins/UI_VolatileTasks.cpp
+    src/instances/toolchainInstance/wins/UI_TasksEditor.cpp
 )
 
 # Création de la bibliothèque partagée (.so)

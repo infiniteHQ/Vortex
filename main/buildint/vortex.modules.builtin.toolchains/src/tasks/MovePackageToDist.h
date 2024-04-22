@@ -27,7 +27,7 @@ struct MovePackageToDist : public Task
     this->neededProps.push_back("package");
 
     // Variables needed by task execution
-    this->neededVariables.push_back("dist_path:package:[package_name]");
+    //this->neededVariables.push_back("dist_path:package:[package_name]");
 
     // Checklist
     this->addIdleCheck("copy_package_to_dist");

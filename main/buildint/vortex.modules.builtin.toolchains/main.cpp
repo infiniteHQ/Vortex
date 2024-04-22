@@ -9,6 +9,7 @@ ToolchainsModuleCTX *CToolchainModule = NULL;
 
 
 PackagesModuleCTX *CPackagesModule = NULL;
+TasklistModuleCTX *CTasklistsModule = NULL;
 
 // Module context ptr, including variables of functions, call at any moments wit convention : HelloTest.someParam or HelloTest.return
 static std::shared_ptr<hArgs> arguments;

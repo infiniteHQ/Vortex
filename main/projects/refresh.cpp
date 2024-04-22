@@ -1,29 +1,7 @@
 #include "../../main/include/vortex.h"
 #include "../../main/include/vortex_internals.h"
 
-void TaskList::Refresh()
-{
-  nlohmann::json filecontent = VortexMaker::DumpJSON(this->configFilePath);
 
-  this->label = filecontent["label"].get<std::string>();
-
-  this->list.clear();
-  nlohmann::json tasks = filecontent["tasks"];
-  for (auto &t : tasks)
-  {
-    std::shared_ptr<Task> task = std::make_shared<Task>();
-    task->tasktype = t["task"].get<std::string>();
-    task->component = t["component"].get<std::string>();
-    task->priority = t["priority"].get<int>();
-
-    for (auto env_props : t["env_props"])
-    {
-      task->env_props.push_back({env_props["type"].get<std::string>(), env_props["prop"].get<std::string>()});
-    }
-
-    this->list.push_back(task);
-  }
-}
 /*
 void VxPackage::Refresh()
 {

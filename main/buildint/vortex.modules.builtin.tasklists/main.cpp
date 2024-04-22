@@ -3,7 +3,7 @@
 #include "./src/module.h"
 
 #ifndef CTasklistsModule
-ModuleCTX *CTasklistsModule = NULL;
+TasklistModuleCTX *CTasklistsModule = NULL;
 #endif
 
 
@@ -13,7 +13,7 @@ static std::shared_ptr<hArgs> arguments;
 
 
 void CreateTasklistContext(){
-  ModuleCTX *ctx = VX_NEW(ModuleCTX);
+  TasklistModuleCTX *ctx = VX_NEW(TasklistModuleCTX);
   CTasklistsModule = ctx;
 }
 
@@ -26,22 +26,13 @@ public:
     void execute() override
     {
         CreateTasklistContext();
-        std::cout <<CTasklistsModule << std::endl;
-        std::cout << "tt" << std::endl;
-        CTasklistsModule->m_interface = std::make_shared<ModuleInterface>(*this);
-        
-        std::cout << "tt" << std::endl;
-        // Add main args
-        this->AddArg<const char*>("chainsModule.name", "TasklistsModule");
-
-        // Add logo
-        this->AddLogo(icons::_i,icons::_i_size);
+        CTasklistsModule->m_interface =  ModuleInterface::GetEditorModuleByName(this->m_name);
         
         // Adding functions
         this->AddFunction(RegisterTasklist, "RegisterTasklists");
         
         // Adding events
-        //this->AddInputEvent(TestInputEvent, "test");
+        this->AddInputEvent(TasklistModule::LaunchTasklistInterface, "LaunchTasklistInterface");
         //this->AddOutputEvent(TestOutputEvent, "test");
 
         // Render instance
@@ -60,18 +51,18 @@ public:
     void render() override
     {
         
-		ImGui::Begin("");
+		ImGui::Begin("Tasklists");
             std::cout << CTasklistsModule->m_tasklists.size() << std::endl;
         for(auto tasklist : CTasklistsModule->m_tasklists){
             ImGui::Text(tasklist->label.c_str());
             ImGui::SameLine();
             std::string label = "Open ###" + tasklist->label;
             if(ImGui::Button(label.c_str())){
-                VxContext* ctx = VortexMaker::GetCurrentContext();
-                std::shared_ptr<TasklistRenderInstance> instance = std::make_shared<TasklistRenderInstance>(ctx, tasklist);
+                //VxContext* ctx = VortexMaker::GetCurrentContext();
+                //std::shared_ptr<TasklistRenderInstance> instance = std::make_shared<TasklistRenderInstance>(ctx, tasklist);
 				//factory->SpawnInstance(instance);	
-                instance->name = tasklist->label;
-                this->AddModuleRenderInstance(instance);
+                //instance->name = tasklist->label;
+                //this->AddModuleRenderInstance(instance);
 
             }
         }
