@@ -1,5 +1,29 @@
 #include "toolchain.h"
-#include "tasks/CreateUser.h"
+
+#include "tasks/CheckCompiler.h"
+#include "tasks/CompilePackage.h"
+#include "tasks/ConfigurePackage.h"
+#include "tasks/CreateBuildEnv.h"
+#include "tasks/CreateTemporaryUser.h"
+#include "tasks/DeleteTemporaryUser.h"
+#include "tasks/GiveToolchainToTemporaryUser.h"
+#include "tasks/InstallPackage.h"
+#include "tasks/MovePackageToDist.h"
+#include "tasks/SetupDistEnvironment.h"
+#include "tasks/UncompressDistPackage.h"
+
+
+template<typename T>
+void Toolchain::AddTaskType(const std::string& name){
+    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+    args->add<std::vector<std::shared_ptr<Task>>*>("taskarray", &this->tasks);
+    std::shared_ptr<T> task = std::make_shared<T>();
+    args->add<const char*>("pool_name", this->pool_name);
+    args->add<std::shared_ptr<Task>>("task", task);
+    task->tasktype = name;
+    VortexMaker::CallModuleEvent(args, "AddTaskToPool", "vortex.modules.builtin.tasks");
+
+}
 
 void Toolchain::InitTasks(){
 
@@ -20,18 +44,18 @@ void Toolchain::InitTasks(){
 
     }
 
-  {
-    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
-    args->add<std::vector<std::shared_ptr<Task>>*>("taskarray", &this->tasks);
-    
-    std::shared_ptr<CreateTemporaryUser> task = std::make_shared<CreateTemporaryUser>();
-    args->add<const char*>("pool_name", this->pool_name);
-    args->add<std::shared_ptr<Task>>("task", task);
+    this->AddTaskType<CreateTemporaryUser>("CreateTemporaryUser");
+    this->AddTaskType<DeleteTemporaryUser>("DeleteTemporaryUser");
+    this->AddTaskType<CreateBuildEnv>("CreateBuildEnv");
+    this->AddTaskType<GiveToolchainToTemporaryUser>("GiveToolchainToTemporaryUser");
+    this->AddTaskType<MovePackageToDist>("MovePackageToDist");
+    this->AddTaskType<UncompressDistPackage>("UncompressDistPackage");
+    this->AddTaskType<ConfigurePackage>("ConfigurePackage");
+    this->AddTaskType<CompilePackage>("CompilePackage");
+    this->AddTaskType<InstallPackage>("InstallPackage");
+    this->AddTaskType<SetupDistEnvironment>("SetupDistEnvironment");
+    this->AddTaskType<CheckCompiler>("CheckCompiler");
 
-    task->tasktype = "CreateTemporaryUser";
-
-    VortexMaker::CallModuleEvent(args, "AddTaskToPool", "vortex.modules.builtin.tasks");
-  }
 }
 
 static std::chrono::time_point<std::chrono::system_clock> stringToTimePoint(const std::string &timeString)
@@ -245,6 +269,66 @@ bool Toolchain::TaskSuccedded(std::string label){
   return false;
 }
 
+std::string Toolchain::GetTriplet(std::string triplet_type)
+{
+  std::string NativeTriplet;
+  FILE *pipe = popen("gcc -dumpmachine", "r");
+  if (!pipe)
+  {
+    perror("Error while try to get triplet with gcc !");
+    return "unknow";
+  }
+  char buffer[128];
+  while (fgets(buffer, 128, pipe) != NULL)
+  {
+    NativeTriplet += buffer;
+  }
+  pclose(pipe);
+  NativeTriplet.pop_back();
+
+  if (triplet_type == "target")
+  {
+
+   
+      std::string triplet;
+
+      triplet += this->target_arch;
+      triplet += "-";
+      triplet += this->target_vendor;
+      triplet += "-";
+      triplet += this->target_platform;
+
+      return triplet;
+  }
+  else if (triplet_type == "builder")
+  {
+      std::string triplet;
+
+      triplet += this->builder_arch;
+      triplet += "-";
+      triplet += this->builder_vendor;
+      triplet += "-";
+      triplet += this->builder_platform;
+
+      return triplet;
+  }
+
+  if (triplet_type == "host")
+  {
+
+      std::string triplet;
+
+      triplet += this->host_arch;
+      triplet += "-";
+      triplet += this->host_vendor;
+      triplet += "-";
+      triplet += this->host_platform;
+
+      return triplet;
+  }
+
+  return "unknow";
+}
 
 void Toolchain::MakeSnapshot(std::string label)
 {

@@ -223,11 +223,15 @@ struct Toolchain
     void RegisterPackage(const std::string label, const std::string emplacemement);
     void FindPackages();
     void PreparePackage(std::string packageName);
-    void ConfigurePackage(std::string packageName);
-    void CompilePackage(std::string packageName);
-    void InstallPackage(std::string packageName);
+    //void ConfigurePackage(std::string packageName);
+    //void CompilePackage(std::string packageName);
+    //void InstallPackage(std::string packageName);
 
     void CreateToolchainDirectory(/*VxDirectory*/);
+
+
+template<typename T>
+void AddTaskType(const std::string& name);
 };
 
 
