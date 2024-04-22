@@ -1,22 +1,21 @@
+#include "../../../../../../lib/uikit/uikit.h"
+#include "../../../../../../main/include/vortex.h"
+#include "../../../assets/logo.h"
+#include "../../../../../../main/include/vortex_internals.h"
+#include "../../module.h"
 
-#include "../../../src/instanceFactory.h"
-#include "../../../../../../lib/uikit/Source/editor/Application.h"
-#include "../../../../../../lib/uikit/Platform/GUI/editor/ImGui/ImGuiTheme.h"
-#include "../../../../../../lib/uikit/Platform/GUI/editor/Image.h"
-#include "../../../../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
-#include "../../../../../../lib/uikit/Assets/icons.h"
 
-#ifndef ReportInstance_H
-#define ReportInstance_H
+#ifndef ReportRenderInstance_H
+#define ReportRenderInstance_H
 
 using namespace VortexMaker;
 
-class ReportInstance
+class ReportRenderInstance : public ModuleRenderInstance
 {
 public:
-    ReportInstance(VxContext *ctx, std::shared_ptr<Task> task);
+    ReportRenderInstance(VxContext *ctx, std::shared_ptr<Task> task);
 
-    std::string render();
+    void render();
     void close();
 
     void menubar();
@@ -66,4 +65,4 @@ public:
     std::shared_ptr<Walnut::Image> m_FolderIcon;
 };
 
-#endif // ReportInstance_H
+#endif // ReportRenderInstance_H

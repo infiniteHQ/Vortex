@@ -416,11 +416,20 @@ void ToolchainRenderInstance::Refresh()
     this->toolchain->RefreshDistConfig();
     // Refresh dist
 
-
+    std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+    args->add("pool_name", this->toolchain->pool_name);
+    VortexMaker::CallModuleEvent(args, "GetTaskPool", "vortex.modules.builtin.tasks");
+    std::shared_ptr<TaskPool> list = args->get<std::shared_ptr<TaskPool>>("taskpool", nullptr);
   VortexMaker::LogInfo("Core", "Init core tasks of " + this->name);
-    for(auto task : this->toolchain->tasks){
+
+    if (list != nullptr)
+    {
+    for(auto task : list->m_list){
         task->init();
     }
+        //tasklist = list->m_list;
+    }
+
 
   VortexMaker::LogInfo("Core", "Load a new save " + this->name);
     std::shared_ptr<ToolchainSave> refreshedCurrentSave = std::make_shared<ToolchainSave>();

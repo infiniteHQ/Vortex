@@ -1,13 +1,15 @@
 #include "../ToolchainRenderInstance.h"
 
 static std::vector<std::shared_ptr<Task>> tasklist;
-static void refreshTaskList(const char* poolname){
+static void refreshTaskList(const char *poolname)
+{
     std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
     args->add("pool_name", poolname);
     VortexMaker::CallModuleEvent(args, "GetTaskPool", "vortex.modules.builtin.tasks");
     std::shared_ptr<TaskPool> list = args->get<std::shared_ptr<TaskPool>>("taskpool", nullptr);
 
-    if(list != nullptr){
+    if (list != nullptr)
+    {
         tasklist = list->m_list;
     }
 }
@@ -131,32 +133,33 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                                 std::string ll = this->toolchain->packages[row]->label;
                                 ImGui::Text(ll.c_str());
 
-                                if(!items.empty()){
-
-                                if (ImGui::BeginCombo("Task", items[item_current]))
+                                if (!items.empty())
                                 {
-                                    for (int i = 0; i < items.size(); ++i)
-                                    {
-                                std::cout << "888" << std::endl;
-                                        bool is_selected = (item_current == i);
-                                std::cout << "888" << std::endl;
-                                        if (ImGui::Selectable(items[i], is_selected))
-                                        {
-                                std::cout << "888" << std::endl;
-                                            item_current = i; // Met à jour l'ID de l'élément sélectionné
-                                        }
-                                        if (is_selected)
-                                        {
-                                std::cout << "888" << std::endl;
-                                            ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
-                                        }
-                                std::cout << "888" << std::endl;
-                                    }
-                                    ImGui::EndCombo();
-                                }
 
+                                    if (ImGui::BeginCombo("Task", items[item_current]))
+                                    {
+                                        for (int i = 0; i < items.size(); ++i)
+                                        {
+                                            std::cout << "888" << std::endl;
+                                            bool is_selected = (item_current == i);
+                                            std::cout << "888" << std::endl;
+                                            if (ImGui::Selectable(items[i], is_selected))
+                                            {
+                                                std::cout << "888" << std::endl;
+                                                item_current = i; // Met à jour l'ID de l'élément sélectionné
+                                            }
+                                            if (is_selected)
+                                            {
+                                                std::cout << "888" << std::endl;
+                                                ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
+                                            }
+                                            std::cout << "888" << std::endl;
+                                        }
+                                        ImGui::EndCombo();
+                                    }
                                 }
-                                else{
+                                else
+                                {
                                     ImGui::Text("Empty");
                                 }
                                 if (ImGui::Button("Select"))
@@ -257,113 +260,113 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                             static int item_component_current = 0;
 
                             int i = 1;
-                           /* for (int row = 0; row < this->toolchain->tasklists.size(); row++)
-                            {
-                                std::string label = "packageVifghgfew###" + std::to_string(row) + this->toolchain->tasklists[row]->label + std::to_string(i);
-                                ImGuiID id = ImGui::GetID(label.c_str());
-                                ImGui::BeginChildFrame(id, ImVec2(0, 220), true);
+                            /* for (int row = 0; row < this->toolchain->tasklists.size(); row++)
+                             {
+                                 std::string label = "packageVifghgfew###" + std::to_string(row) + this->toolchain->tasklists[row]->label + std::to_string(i);
+                                 ImGuiID id = ImGui::GetID(label.c_str());
+                                 ImGui::BeginChildFrame(id, ImVec2(0, 220), true);
 
-                                // Affichage des éléments individuels
-                                std::string ll = this->toolchain->tasklists[row]->label;
-                                ImGui::Text(ll.c_str());
+                                 // Affichage des éléments individuels
+                                 std::string ll = this->toolchain->tasklists[row]->label;
+                                 ImGui::Text(ll.c_str());
 
-                                if (ImGui::BeginCombo("Task", items[item_current]))
-                                {
-                                    for (int i = 0; i < items.size(); ++i)
-                                    {
-                                        bool is_selected = (item_current == i);
-                                        if (ImGui::Selectable(items[i], is_selected))
-                                        {
-                                            item_current = i; // Met à jour l'ID de l'élément sélectionné
-                                        }
-                                        if (is_selected)
-                                        {
-                                            ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
-                                        }
-                                    }
-                                    ImGui::EndCombo();
-                                }
+                                 if (ImGui::BeginCombo("Task", items[item_current]))
+                                 {
+                                     for (int i = 0; i < items.size(); ++i)
+                                     {
+                                         bool is_selected = (item_current == i);
+                                         if (ImGui::Selectable(items[i], is_selected))
+                                         {
+                                             item_current = i; // Met à jour l'ID de l'élément sélectionné
+                                         }
+                                         if (is_selected)
+                                         {
+                                             ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
+                                         }
+                                     }
+                                     ImGui::EndCombo();
+                                 }
 
-                                /*
+                                 /*
 
-                                    TODO :
-                                    - Selecteur de taches et builder de tache (possibilité d'attacher des props, des variables, etc...)
-
-
-                                *
-
-                                if (ImGui::Button("Select"))
-                                {
-                                    for (auto task : tasklist)
-                                    {
-                                        if (task->tasktype == items[item_current])
-                                        {
-                                            std::shared_ptr<Task> _task = task->clone();
-                                            //_task = task;
-
-                                            _task->id = task->tasktype + "-" + VortexMaker::gen_random(8);
-                                            _task->tasktype = task->tasktype;
-                                            _task->component = this->toolchain->packages[row]->label;
-                                            _task->priority = task->priority;
-                                            _task->props->add("toolchain", this->toolchain);
-                                            _task->props->add("packages", this->toolchain->packages[row]);
-                                            _task->props->add("tasklist", this->toolchain->tasklists[row]);
-                                            _task->state = "not_started";
-
-                                            selectedTask = _task;
-                                        }
-                                    }
-                                }
-                                /*
-                                                if (ImGui::Button("Build"))
-                                                {
-
-                                                    std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-                                                    props->add("toolchain", this->toolchain);
+                                     TODO :
+                                     - Selecteur de taches et builder de tache (possibilité d'attacher des props, des variables, etc...)
 
 
-                                                    for (auto task : tasklist)
-                                                    {
-                                                        if (task->tasktype == items[item_current])
-                                                        {
-                                                            std::shared_ptr<Task> _task = task->clone();
-                                                            //_task = task;
-                                                            std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-                                                            props->add("toolchain", this->toolchain);
-                                                            props->add("packages", this->toolchain->packages[row]);
-                                                            props->add("tasklist", this->toolchain->tasklists[row]);
+                                 *
 
-                                                            _task->id = task->tasktype + "-" + VortexMaker::gen_random(8);
-                                                            _task->tasktype = task->tasktype;
-                                                            _task->component = this->toolchain->packages[row]->label;
-                                                            _task->priority = task->priority;
-                                                            _task->props = props;
-                                                            _task->state = "not_started";
+                                 if (ImGui::Button("Select"))
+                                 {
+                                     for (auto task : tasklist)
+                                     {
+                                         if (task->tasktype == items[item_current])
+                                         {
+                                             std::shared_ptr<Task> _task = task->clone();
+                                             //_task = task;
 
-                                                            // Ajout de la tâche aux listes appropriées
-                                                            if(this->toolchain->taskProcessor){
+                                             _task->id = task->tasktype + "-" + VortexMaker::gen_random(8);
+                                             _task->tasktype = task->tasktype;
+                                             _task->component = this->toolchain->packages[row]->label;
+                                             _task->priority = task->priority;
+                                             _task->props->add("toolchain", this->toolchain);
+                                             _task->props->add("packages", this->toolchain->packages[row]);
+                                             _task->props->add("tasklist", this->toolchain->tasklists[row]);
+                                             _task->state = "not_started";
 
-                                                {
-                                                    std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
-                                                    this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
-                                                }
+                                             selectedTask = _task;
+                                         }
+                                     }
+                                 }
+                                 /*
+                                                 if (ImGui::Button("Build"))
+                                                 {
 
-                                                                this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
-                                                                this->toolchain->packages[row]->latestTask = _task;
-                                                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
-                                                            }
-                                                            else{
-                                                                std::cout << "Failed while accessing taskToProcess" << std::endl;
-                                                            }
-                                                        }
-                                                    }
+                                                     std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+                                                     props->add("toolchain", this->toolchain);
 
-                                                    /////////////////////
-                                                }
-                                *
-                                ImGui::EndChildFrame();
-                                ImGui::NextColumn();
-                            }*/
+
+                                                     for (auto task : tasklist)
+                                                     {
+                                                         if (task->tasktype == items[item_current])
+                                                         {
+                                                             std::shared_ptr<Task> _task = task->clone();
+                                                             //_task = task;
+                                                             std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+                                                             props->add("toolchain", this->toolchain);
+                                                             props->add("packages", this->toolchain->packages[row]);
+                                                             props->add("tasklist", this->toolchain->tasklists[row]);
+
+                                                             _task->id = task->tasktype + "-" + VortexMaker::gen_random(8);
+                                                             _task->tasktype = task->tasktype;
+                                                             _task->component = this->toolchain->packages[row]->label;
+                                                             _task->priority = task->priority;
+                                                             _task->props = props;
+                                                             _task->state = "not_started";
+
+                                                             // Ajout de la tâche aux listes appropriées
+                                                             if(this->toolchain->taskProcessor){
+
+                                                 {
+                                                     std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
+                                                     this->toolchain->taskProcessor->tasksToProcess.push_back(_task);
+                                                 }
+
+                                                                 this->toolchain->currentLoadedSystem.executedTasks.push_back(_task);
+                                                                 this->toolchain->packages[row]->latestTask = _task;
+                                                                 this->toolchain->currentLoadedSystem.Save(this->toolchain);
+                                                             }
+                                                             else{
+                                                                 std::cout << "Failed while accessing taskToProcess" << std::endl;
+                                                             }
+                                                         }
+                                                     }
+
+                                                     /////////////////////
+                                                 }
+                                 *
+                                 ImGui::EndChildFrame();
+                                 ImGui::NextColumn();
+                             }*/
                             ImGui::EndChild();
                         }
 
@@ -379,39 +382,42 @@ void ToolchainRenderInstance::UI_VolatileTasks()
 
                         if (ImGui::ImageButtonWithText(buildIcon, "Exec", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                         { // Ajout de la tâche aux listes appropriées
-{
-    std::shared_ptr<hArgs> arguments = std::make_shared<hArgs>();
-    arguments->add("pool_name", this->toolchain->pool_name);
-    arguments->add("processor_name", this->toolchain->pool_name);
-    arguments->add("task_name", selectedTask->tasktype.c_str());
+                          
 
+                            {
+                                std::shared_ptr<hArgs> arguments = std::make_shared<hArgs>();
+                                arguments->add("pool_name", this->toolchain->pool_name);
+                                arguments->add("processor_name", this->toolchain->pool_name);
+                                arguments->add("task_name", selectedTask->tasktype.c_str());
 
-    std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
-    props->add<std::shared_ptr<Toolchain>>("toolchain", this->toolchain);
-    arguments->add("arguments", props);
-    VortexMaker::CallModuleEvent(arguments, "AddTaskToProcess", "vortex.modules.builtin.tasks");
+                                std::shared_ptr<hArgs> props = std::make_shared<hArgs>();
+                                props->add<std::shared_ptr<Toolchain>>("toolchain", this->toolchain);
+                                arguments->add("arguments", props);
 
+                                VortexMaker::CallModuleEvent(arguments, "StopProcessor", "vortex.modules.builtin.tasks");
+                                VortexMaker::CallModuleEvent(arguments, "AddTaskToProcess", "vortex.modules.builtin.tasks");
+                                VortexMaker::CallModuleEvent(arguments, "StartProcessor", "vortex.modules.builtin.tasks");
 
-
-
-    std::shared_ptr<Task> newtask = arguments->get<std::shared_ptr<Task>>("task", nullptr);
-    if(newtask != nullptr){
-                                this->toolchain->currentLoadedSystem.executedTasks.push_back(newtask);
-                                this->toolchain->currentLoadedSystem.Save(this->toolchain);
-
-    }
-}
-/*
+                                std::shared_ptr<Task> newtask = arguments->get<std::shared_ptr<Task>>("task", nullptr);
+                                if (newtask != nullptr)
                                 {
-                                    std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
-                                    this->toolchain->taskProcessor->tasksToProcess.push_back(selectedTask);
+                                    this->toolchain->currentLoadedSystem.executedTasks.push_back(newtask);
+                                    this->toolchain->currentLoadedSystem.parent = this->toolchain;
+                                                            // this->toolchain->packages[row]->latestTask = _task;
+                                    this->toolchain->currentLoadedSystem.Save(this->toolchain);
                                 }
-                                
+                                else{std::cout << "NULL" << std::endl;}
+                            }
+                            /*
+                                                            {
+                                                                std::lock_guard<std::mutex> lock(this->toolchain->taskProcessor->mutex);
+                                                                this->toolchain->taskProcessor->tasksToProcess.push_back(selectedTask);
+                                                            }
 
-                                this->toolchain->currentLoadedSystem.executedTasks.push_back(selectedTask);
-                                // this->toolchain->packages[row]->latestTask = _task;
-                                this->toolchain->currentLoadedSystem.Save(this->toolchain);*/
 
+                                                            this->toolchain->currentLoadedSystem.executedTasks.push_back(selectedTask);
+                                                            // this->toolchain->packages[row]->latestTask = _task;
+                                                            this->toolchain->currentLoadedSystem.Save(this->toolchain);*/
                         }
 
                         float oldsize = ImGui::GetFont()->Scale;

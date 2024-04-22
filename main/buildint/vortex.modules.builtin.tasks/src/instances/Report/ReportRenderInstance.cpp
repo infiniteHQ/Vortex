@@ -1,8 +1,8 @@
-#include "ReportInstance.h"
+#include "ReportRenderInstance.h"
 
 using namespace VortexMaker;
 
-ReportInstance::ReportInstance(VxContext *ctx, std::shared_ptr<Task> _task)
+ReportRenderInstance::ReportRenderInstance(VxContext *ctx, std::shared_ptr<Task> _task)
 {
     this->m_ctx = ctx;
     this->task = _task;
@@ -119,12 +119,12 @@ ReportInstance::ReportInstance(VxContext *ctx, std::shared_ptr<Task> _task)
     }
 };
 
-void ReportInstance::close()
+void ReportRenderInstance::close()
 {
     this->opened = false;
 }
 
-std::string ReportInstance::render()
+void ReportRenderInstance::render()
 {
     static ImTextureID toolchainIcon = this->m_ToolchainIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -135,8 +135,6 @@ std::string ReportInstance::render()
         static ImTextureID flipIcon = this->m_FlipBookIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         static ImTextureID unknowIcon = this->m_UnknowIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    if (opened)
-    {
         // Mainwindow with dockspace
         std::string label = "Reporting task" + this->task->id + "###" + this->task->id + "-reportingtask";
         if (ImGui::Begin(label.c_str(), &flipIcon, &this->opened, ImGuiWindowFlags_MenuBar))
@@ -576,16 +574,9 @@ std::string ReportInstance::render()
         }
         ImGui::End();
 
-        return "rendering";
-    }
-    else
-    {
-
-        return "closed";
-    }
 }
 
-void ReportInstance::menubar()
+void ReportRenderInstance::menubar()
 {
     if (ImGui::BeginMenuBar())
     {

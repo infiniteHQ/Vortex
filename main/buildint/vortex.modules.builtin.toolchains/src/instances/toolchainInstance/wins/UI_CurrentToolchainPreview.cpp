@@ -282,12 +282,16 @@ if (ImGui::BeginPopupModal("DestroyCurrentSys"))
                             // TODO : task for toolchains, test reports and latest tasks by elements
 {
 
-                            /*std::string buttonid = "Report###" + std::to_string(row) + "-" + std::to_string(column);
+                            std::string buttonid = "Report###" + std::to_string(row) + "-" + std::to_string(column);
                             if (ImGui::ImageButtonWithText(flipbookIcon, buttonid.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                             {
-							    std::shared_ptr<ReportInstance> instance = std::make_shared<ReportInstance>(m_ctx, this->toolchain->currentLoadedSystem.executedTasks[row]);
-							    this->factory->SpawnInstance(instance);	
-                            }*/
+
+							    //std::shared_ptr<ReportInstance> instance = std::make_shared<ReportInstance>(m_ctx, this->toolchain->currentLoadedSystem.executedTasks[row]);
+							    //this->factory->SpawnInstance(instance);	
+                                std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
+                                args->add<std::shared_ptr<Task>>("task", this->toolchain->currentLoadedSystem.executedTasks[row]);
+                                VortexMaker::CallModuleEvent(args, "OpenTaskReportInstance", "vortex.modules.builtin.tasks");
+                            }
 }
 {
 /*

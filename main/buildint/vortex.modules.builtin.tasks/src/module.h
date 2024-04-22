@@ -29,7 +29,10 @@ namespace TaskModule
 {
   TASKS_MODULE_API void CreateTasksContext();
   TASKS_MODULE_API void CreateTaskProcessor(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void StopProcessor(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void StartProcessor(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void CreateTaskPool(const std::shared_ptr<hArgs>& args);
+  TASKS_MODULE_API void OpenTaskReportInstance(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void AddTaskToPool(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void AddTaskToProcess(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void StartTaskProcessor(const std::shared_ptr<hArgs>& args);
@@ -38,7 +41,6 @@ namespace TaskModule
   TASKS_MODULE_API void StartTaskProcessor(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void StopTaskProcessor(const std::shared_ptr<hArgs>& args);
   TASKS_MODULE_API void FindPackages(const std::shared_ptr<hArgs>& args);
-  //TASKS_MODULE_API bool RegisterPackage(std::string filepath, std::shared_ptr<Package> newPackage, nlohmann::json filecontent);
 }
 
 struct TaskPool
@@ -46,6 +48,14 @@ struct TaskPool
   std::vector<std::shared_ptr<Task>> m_list;
   const char* m_pool_name;
 };
+
+struct Check{
+    std::string checkID;
+    std::string checkResult = "unknow";
+    std::string checkLog;
+    std::string checkDirective;
+};
+
 
 struct Task
 {
@@ -76,31 +86,8 @@ struct Task
   int successCounter = 0;
 
   std::vector<std::shared_ptr<Check>> checkList;
-  void addIdleCheck(std::string id)
-  {
-    std::shared_ptr<Check> newCheck = std::make_shared<Check>();
-    newCheck->checkID = id;
-    this->checkList.push_back(newCheck);
-    this->unknowCounter++;
-  }
-
-  void updateState()
-  {
-    std::string _state = "unknow";
-    if (this->successCounter > 0)
-    {
-      _state = "success";
-    }
-    else if (this->warningCounter > 0)
-    {
-      _state = "warning";
-    }
-    else if (this->failCounter > 0)
-    {
-      _state = "failed";
-    }
-    this->state = _state;
-  }
+  void addIdleCheck(std::string id);
+  void updateState();
 
   /*
       Result types :
@@ -111,38 +98,7 @@ struct Task
       - fatal : The check is a fatal error
   */
 
-  void addCheckVerdict(std::string id, std::string result, std::string log, std::string directive)
-  {
-    for (auto check : this->checkList)
-    {
-      if (check->checkID == id)
-      {
-        check->checkLog = log;
-        check->checkResult = result;
-        check->checkDirective = directive;
-
-        if (check->checkResult == "failed")
-        {
-          this->failCounter++;
-          this->unknowCounter--;
-        }
-        else if (check->checkResult == "success")
-        {
-          this->successCounter++;
-          this->unknowCounter--;
-        }
-        else if (check->checkResult == "warning")
-        {
-          this->warningCounter++;
-          this->unknowCounter--;
-        }
-        else if (check->checkResult == "unknow")
-        {
-        }
-        this->updateState();
-      }
-    }
-  }
+  void addCheckVerdict(std::string id, std::string result, std::string log, std::string directive);
 
   // type // state
   std::vector<std::pair<std::string, std::string>> depsChecks;
@@ -162,98 +118,20 @@ struct Task
 
   */
 
-  bool ifProps(const std::vector<std::string> &propsname)
-  {
-    int satisfied = 0;
-    int total = propsname.size();
-
-    this->depsChecks.clear();
-
-    for (const auto &prop : propsname)
-    {
-      bool propFound = false;
-
-      std::string propStr = prop;
-
-      for (const auto &registeredArg : this->props->registered_arguments)
-      {
-        std::string registeredArgStr = registeredArg.c_str();
-
-        if (registeredArgStr == propStr)
-        {
-          satisfied++;
-          this->depsChecks.push_back({propStr, "satisfied"});
-          VortexMaker::LogInfo("Core", "New prop found, state: " + std::to_string(satisfied) + "/" + std::to_string(total) + " props found.");
-          propFound = true;
-          break;
-        }
-      }
-
-      if (!propFound)
-      {
-        this->depsChecks.push_back({propStr, "missing"});
-      }
-    }
-
-    VortexMaker::LogInfo("Core", "Added " + std::to_string(total) + " props to check.");
-
-    // Vérifier si toutes les propriétés sont satisfaites
-    return (satisfied == total);
-  }
-
-  bool ifProp(std::string propname)
-  {
-    for (auto prop : this->props->registered_arguments)
-    {
-      if (prop.c_str() == propname)
-      {
-        return true;
-      }
-    }
-    return false;
-  }
+  bool ifProps(const std::vector<std::string> &propsname);
+  bool ifProp(std::string propname);
 
   std::chrono::time_point<std::chrono::system_clock> m_StartTime;
   std::chrono::time_point<std::chrono::system_clock> m_EndTime;
   double m_TotalTime;
   bool m_bRunning = false;
 
-  double elapsedMilliseconds()
-  {
-    std::chrono::time_point<std::chrono::system_clock> endTime;
-    if (m_bRunning)
-    {
-      endTime = std::chrono::system_clock::now();
-    }
-    else
-    {
-      endTime = m_EndTime;
-    }
-    return std::chrono::duration_cast<std::chrono::milliseconds>(endTime - m_StartTime).count();
-  }
-  double elapsedSeconds() { return elapsedMilliseconds() / 1000.0; }
+  double elapsedMilliseconds();
+  double elapsedSeconds();
 
-  std::string startTime()
-  {
-    std::time_t t = std::chrono::system_clock::to_time_t(this->m_StartTime);
-    std::string ts = std::ctime(&t);
-    ts.resize(ts.size() - 1);
-    return ts;
-  }
-
-  void start()
-  {
-    this->m_StartTime = std::chrono::system_clock::now();
-    this->state = "process";
-    this->m_bRunning = true;
-  }
-
-  void stop()
-  {
-    this->m_EndTime = std::chrono::system_clock::now();
-    this->m_bRunning = false;
-    this->m_TotalTime = elapsedSeconds();
-  }
+  std::string startTime();
+  void start();
+  void stop();
 
   // Custom args
   std::shared_ptr<hArgs> props;

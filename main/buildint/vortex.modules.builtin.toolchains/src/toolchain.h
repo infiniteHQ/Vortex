@@ -206,7 +206,6 @@ struct Toolchain
     void InitTasks();
     void RefreshDistConfig();
     void RefreshCurrentWorkingToolchain();
-    void ExecuteTask(Task task, hArgs args);
     std::string GetTriplet(std::string triplet_type);
     bool TaskSuccedded(std::string taskID);
     void MakeSnapshot(std::string label);

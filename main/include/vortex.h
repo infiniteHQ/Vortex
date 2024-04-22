@@ -508,12 +508,6 @@ private:
 // [SECTION] Structures
 //_____________________________________________________________________________
 
-struct Check{
-    std::string checkID;
-    std::string checkResult = "unknow";
-    std::string checkLog;
-    std::string checkDirective;
-};
 
 
 struct VxTasklistInterface{

@@ -14,6 +14,7 @@ endif()
 set(SOURCES
     main.cpp
     src/module.cpp
+    src/instances/Report/ReportRenderInstance.cpp
 )
 
 # Création de la bibliothèque partagée (.so)
