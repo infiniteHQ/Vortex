@@ -7,6 +7,9 @@
     Description :
 */
 
+
+/// TODO : Finish toolchain, Libs, Deps handling, install of modules, advances logs. VIDEOS
+
 static std::vector<std::shared_ptr<Task>> taskpool;
 static void refreshTaskList(const char *poolname)
 {
