@@ -380,7 +380,6 @@ void ReportRenderInstance::render()
 
                         for (int row = 0; row < successes.size(); row++)
                         {
-                        std::cout << label << " << " << successes[row] << std::endl;
                             static std::pair<char[128], char[128]> newItem;
                             static char label[128];
 

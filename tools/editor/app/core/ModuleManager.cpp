@@ -39,7 +39,8 @@ static void logo(const std::string &path, int index, int total)
     std::vector<uint8_t> hexTable = loadPngHex(path);
     const uint8_t *hexData = hexTable.data();
 
-    if(total > logos.size()){
+    if (total > logos.size())
+    {
         void *data = Walnut::Image::Decode(hexData, hexTable.size(), w, h);
         std::shared_ptr<Walnut::Image> _icon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data); // ML
         logos.push_back(_icon);
@@ -199,18 +200,18 @@ void ModuleManager::OnImGuiRender()
 
                 std::string childLabel = "module##" + this->ctx->IO.em[row]->m_name;
 
-                ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 220), true);
+                ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 250), true);
 
                 {
-                ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
+                    ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
                     logo(this->ctx->IO.em[row]->m_logo_path, row, this->ctx->IO.em.size());
-                   
-            ImGui::EndChild();
-             ImGui::SameLine();
+
+                    ImGui::EndChild();
+                    ImGui::SameLine();
                 }
 
                 {
-                ImGui::BeginChild("TEXT_", ImVec2(220, 68), true);
+                    ImGui::BeginChild("TEXT_", ImVec2(220, 68), true);
                     float oldsize = ImGui::GetFont()->Scale;
                     ImGui::GetFont()->Scale *= 1.3;
                     ImGui::PushFont(ImGui::GetFont());
@@ -219,11 +220,27 @@ void ModuleManager::OnImGuiRender()
 
                     ImGui::GetFont()->Scale = oldsize;
                     ImGui::PopFont();
+
+
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
                     ImGui::SameLine();
                     ImGui::Text(this->ctx->IO.em[row]->m_version.c_str());
-            ImGui::EndChild();
+                    ImGui::EndChild();
                 }
+
+                    if (this->ctx->IO.em[row]->m_state == "running")
+                    {
+                        ImGui::TextColored(ImVec4(0.6f, 1.0f, 0.6f, 0.8f), "Running");
+                    }
+
+                    if (this->ctx->IO.em[row]->m_state == "failed")
+                    {
+                        ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.6f, 0.8f), "Failed");
+                    }
+                    if (this->ctx->IO.em[row]->m_state == "unknow"  || this->ctx->IO.em[row]->m_state == "stopped")
+                    {
+                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Not running");
+                    }
 
                 {
 
@@ -231,7 +248,6 @@ void ModuleManager::OnImGuiRender()
                     ImGui::SameLine();
                     ImGui::Text(this->ctx->IO.em[row]->m_name.c_str());
                 }
-
 
                 {
 
@@ -279,16 +295,41 @@ void ModuleManager::OnImGuiRender()
                     }
                 }
 
-                if (ImGui::ImageButtonWithText(listIcon, "Details", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                if (this->ctx->IO.em[row]->m_state == "running")
                 {
-
-                    std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, this->ctx->IO.em[row]);
-                    factory->SpawnInstance(instance);
+                    if (ImGui::ImageButtonWithText(listIcon, "Stop", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+                        this->ctx->IO.em[row]->Stop();
+                    }
                 }
-                ImGui::SameLine();
 
-                if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                if (this->ctx->IO.em[row]->m_state == "failed")
                 {
+
+                    if (ImGui::ImageButtonWithText(listIcon, "Retry to launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+
+                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, this->ctx->IO.em[row]);
+                        factory->SpawnInstance(instance);
+                    }
+                    ImGui::SameLine();
+
+                    if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+                    }
+                }
+                if (this->ctx->IO.em[row]->m_state == "unknow" || this->ctx->IO.em[row]->m_state == "stopped")
+                {
+
+                    if (ImGui::ImageButtonWithText(listIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+                        this->ctx->IO.em[row]->Start();
+                    }
+                    ImGui::SameLine();
+
+                    if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+                    }
                 }
             }
             ImGui::EndChild();

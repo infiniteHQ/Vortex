@@ -46,7 +46,6 @@ struct CreateTemporaryUser : public Task
       this->finish("fatal", nullptr);
     }
     std::shared_ptr<Toolchain> toolchain = this->props->get<std::shared_ptr<Toolchain>>("toolchain", nullptr);
-std::cout << toolchain << std::endl;
     {
       std::string cmd = "groupadd vortex";
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
@@ -107,7 +106,6 @@ std::cout << toolchain << std::endl;
 
   void finish(std::string finish_state, std::shared_ptr<hArgs> result_properties) override
   {
-    std::cout << "finish with state : " << finish_state << std::endl;
     // Get time
     // Get timer
     // Get all...

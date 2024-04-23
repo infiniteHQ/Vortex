@@ -117,7 +117,6 @@ struct CheckCompiler : public Task
       std::string cmd = "sudo -u vortex -i sh -c ' "+tempPath+"/main";
       auto [output, result] = toolchain->exec_cmd_quote(cmd.c_str());
 
-      std::cout << "Result: " << result << std::endl;
       if (result == 0)
         this->addCheckVerdict("test_output", "success", output, cmd);
       if (result != 0)

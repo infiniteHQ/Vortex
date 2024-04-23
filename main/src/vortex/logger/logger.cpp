@@ -10,10 +10,14 @@
  * @param message The message to be logged.
  */
 VORTEX_API void VortexMaker::LogInfo(const std::string& scope, const std::string& message){
-    // TODO: Add metrics about logs & store log into the context (for earlier uses)
     VxContext &ctx = *CVortexMaker;
     if(ctx.logger){
-      spdlog::info("[" + scope + "] -> "+ message);
+      spdlog::info("[" + scope + "] : "+ message);
+
+      if(ctx.logger_registering){
+        std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::info, scope, message);
+        ctx.registered_logs.push_back(log);
+      }
     }
 }
 
@@ -26,10 +30,14 @@ VORTEX_API void VortexMaker::LogInfo(const std::string& scope, const std::string
  * @param message The message to be logged.
  */
 VORTEX_API void VortexMaker::LogWarn(const std::string& scope, const std::string& message){
-    // TODO: Add metrics about logs & store log into the context (for earlier uses)
     VxContext &ctx = *CVortexMaker;
     if(ctx.logger){
-      spdlog::warn("[" + scope + "] -> "+ message);
+      spdlog::warn("[" + scope + "] : "+ message);
+
+      if(ctx.logger_registering){
+        std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::warn, scope, message);
+        ctx.registered_logs.push_back(log);
+      }
     }
 }
 
@@ -42,10 +50,14 @@ VORTEX_API void VortexMaker::LogWarn(const std::string& scope, const std::string
  * @param message The message to be logged.
  */
 VORTEX_API void VortexMaker::LogError(const std::string& scope, const std::string& message){
-    // TODO: Add metrics about logs & store log into the context (for earlier uses)
     VxContext &ctx = *CVortexMaker;
     if(ctx.logger){
-      spdlog::error("[" + scope + "] -> " + message);
+      spdlog::error("[" + scope + "] : " + message);
+
+      if(ctx.logger_registering){
+        std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::err, scope, message);
+        ctx.registered_logs.push_back(log);
+      }
     }
 }
 
@@ -58,9 +70,13 @@ VORTEX_API void VortexMaker::LogError(const std::string& scope, const std::strin
  * @param message The message to be logged.
  */
 VORTEX_API void VortexMaker::LogFatal(const std::string& scope, const std::string& message){
-    // TODO: Add metrics about logs & store log into the context (for earlier uses)
     VxContext &ctx = *CVortexMaker;
     if(ctx.logger){
-      spdlog::critical("[" + scope + "] -> "+ message);
+      spdlog::critical("[" + scope + "] : "+ message);
+
+      if(ctx.logger_registering){
+        std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::critical, scope, message);
+        ctx.registered_logs.push_back(log);
+      }
     }
 }

@@ -149,7 +149,12 @@ struct VortexMakerDebugAllocInfo {
 
 
 struct VxSystemLog{
-  std::string type; 
+  spdlog::level::level_enum m_level;
+  std::string m_filter;
+  std::string m_message;
+  std::string m_timestamp;
+
+  VxSystemLog(spdlog::level::level_enum level, std::string filter, std::string message): m_level(level), m_filter(filter), m_message(message) {};
 };
 
 struct VxIO {
@@ -191,8 +196,11 @@ struct VxPaths {
 struct VxContext {
   bool                              initialized;
   bool                              logger;
+  bool                              logger_registering;
   VxIO                              IO;
   VortexMakerDebugAllocInfo         debugAllocInfo;
+
+  std::vector<std::shared_ptr<VxSystemLog>> registered_logs;
   
 
   TaskFactory*                      taskFactory;

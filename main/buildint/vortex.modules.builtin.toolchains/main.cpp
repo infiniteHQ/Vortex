@@ -11,31 +11,6 @@ ToolchainsModuleCTX *CToolchainModule = NULL;
 PackagesModuleCTX *CPackagesModule = NULL;
 TasklistModuleCTX *CTasklistsModule = NULL;
 
-// Module context ptr, including variables of functions, call at any moments wit convention : HelloTest.someParam or HelloTest.return
-static std::shared_ptr<hArgs> arguments;
-
-
-void TestOutputEvent(std::shared_ptr<hArgs> args){
-    if(args != NULL){
-        std::cout << "TestOutputEvent trigerred ! With message : " << args->get<const char*>("message", "default") <<  std::endl;
-        args->add("result", "ARRIBA");
-    }
-}
-
-
-void TestInputEvent(std::shared_ptr<hArgs> args){
-    if(args != NULL){
-        std::cout << "TestInputEvent trigerred ! With message : " << args->get<const char*>("message", "default") <<  std::endl;
-        args->add("result", "ARRIBA");
-    }
-}
-
-void HelloTest(){
-    if(arguments != NULL){
-        std::cout << "Hello " << " et " << arguments->get<const char*>("ToolchainsModule.name", "default") << std::endl;
-    }
-}
-
 
  void CreateModuleContext(){
   ToolchainsModuleCTX *ctx = VX_NEW(ToolchainsModuleCTX);
@@ -61,15 +36,6 @@ public:
         
         // Adding functions
         this->AddFunction(RegisterToolchains, "RegisterToolchains");
-        
-        // Adding events
-        //this->AddInputEvent(TestInputEvent, "test");
-        //this->AddOutputEvent(TestOutputEvent, "test");
-
-        // Render instance
-        //this->AddModuleRenderInstance(ToolchainRenderInstance(nullptr, nullptr));
-
-        arguments = this->m_args;
 
 
         this->ExecFunction("RegisterToolchains");

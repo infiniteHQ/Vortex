@@ -10,60 +10,53 @@
 #include "../../../lib/uikit/Platform/GUI/editor/UI/IconsFontAwesome6.h"
 
 #include "../instances/instance.h"
-//#include "../instances/Components/Host/HostInstance.h"
-//#include "../instances/Components/Toolchain/ToolchainInstance.h"
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
 #include "../core/ModuleManager.hpp"
-
 
 #include "./instanceFactory.h"
 using namespace VortexMaker;
 
 static std::vector<std::shared_ptr<ModuleDetails>> moduleDetailsInstances;
 
-
 static void PushStyle()
 {
-ImGuiStyle& style = ImGui::GetStyle();
-ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
-ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 11.0f);
-ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 11.0f);
-ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
-ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 6.0f));
-ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(9.0f, 3.0f));
-ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
-
+  ImGuiStyle &style = ImGui::GetStyle();
+  ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+  ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+  ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 11.0f);
+  ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 11.0f);
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 6.0f));
+  ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(9.0f, 3.0f));
+  ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
 }
 
 static void PopStyle()
 {
-ImGui::PopStyleVar(8);
+  ImGui::PopStyleVar(8);
 }
 
-class Instance : public InstanceFactory {
-  public:
-
-  void SpawnInstance(std::shared_ptr<ModuleDetails> instance) override {
+class Instance : public InstanceFactory
+{
+public:
+  void SpawnInstance(std::shared_ptr<ModuleDetails> instance) override
+  {
     instance->name = instance->m_module->m_name;
     instance->opened = true;
     moduleDetailsInstances.push_back(instance);
   };
 
-  void UnspawnInstance(std::shared_ptr<ModuleDetails> instance) override {
+  void UnspawnInstance(std::shared_ptr<ModuleDetails> instance) override
+  {
     std::string instanceName = instance->name;
     instance = nullptr;
   };
-
 };
-
 
 class ExampleLayer : public Walnut::Layer
 {
 public:
-
-
   ExampleLayer(VxContext *ctx)
   {
     this->m_ctx = ctx;
@@ -74,14 +67,13 @@ public:
     PushStyle();
 
     ImGui::ShowDemoWindow();
-    
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f); 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f); 
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.10f, 0.10f, 0.10f, 1.00f));
     ImGui::RenderNotifications();
     ImGui::PopStyleVar(2);
     ImGui::PopStyleColor(1);
-
 
     if (this->ShowContentBrowser)
     {
@@ -95,38 +87,44 @@ public:
       projectViewer.OnImGuiRender();
     }
 
-
     if (this->ShowModulesManager)
     {
       static ModuleManager moduleManager(this->m_ctx, &factory);
       moduleManager.OnImGuiRender();
     }
 
-    for (auto window : moduleDetailsInstances){if(window->render() == "closed"){this->factory.UnspawnInstance(window);};}
+    for (auto window : moduleDetailsInstances)
+    {
+      if (window->render() == "closed")
+      {
+        this->factory.UnspawnInstance(window);
+      };
+    }
 
     // Modules rendering
-    for(auto em : this->m_ctx->IO.em)
+    for (auto em : this->m_ctx->IO.em)
     {
+      if (em->m_state == "running")
+      {
+
         // Main renderer channel
         em->render();
 
         // Subinstances renderers
-        for(auto instance : em->GetModuleRenderInstances()){
+        for (auto instance : em->GetModuleRenderInstances())
+        {
           instance->render();
         }
+      }
     }
-    
+
     PopStyle();
-    
-
-
   }
 
   VxContext *m_ctx;
 
-
-// Global TaskProcessor instance
-//TaskProcessor taskProcessor;
+  // Global TaskProcessor instance
+  // TaskProcessor taskProcessor;
 
   std::thread receiveThread;
   bool ShowContentBrowser = false;
@@ -135,7 +133,7 @@ public:
   bool ShowProjectSettings = false;
 
   Instance factory;
-  
+
 private:
   std::vector<std::string> instanciedWindowsNames;
 };
@@ -149,82 +147,92 @@ Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext 
   std::string name = exampleLayer->m_ctx->name + " - Vortex Editor";
   spec.Name = name;
   spec.CustomTitlebar = true;
-  spec.IconPath =  "icon.png";
+  spec.IconPath = "icon.png";
 
   Walnut::Application *app = new Walnut::Application(spec);
-
-
 
   app->PushLayer(exampleLayer);
   app->SetMenubarCallback([app, exampleLayer, ctx]()
                           {
-      static  int number=1;
-    if (ImGui::BeginMenu("File")) {
-      if (ImGui::MenuItem("Exit")) {
-        app->Close();
-      }
-      ImGui::EndMenu();
-    }
-    if (ImGui::BeginMenu("Edit")) {
-      if (ImGui::MenuItem("Project Settings", "Main configurations of this project")) {
-        app->Close();
-      }
-      ImGui::Separator();
-      if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project")) {
-        app->Close();
-      }
-            if (ImGui::MenuItem("Manage modules", "Project file manager", &exampleLayer->ShowModulesManager))
-            {
-            }
-      ImGui::EndMenu();
-    }
+                            static int number = 1;
+                            if (ImGui::BeginMenu("File"))
+                            {
+                              if (ImGui::MenuItem("Exit"))
+                              {
+                                app->Close();
+                              }
+                              ImGui::EndMenu();
+                            }
+                            if (ImGui::BeginMenu("Edit"))
+                            {
+                              if (ImGui::MenuItem("Project Settings", "Main configurations of this project"))
+                              {
+                                app->Close();
+                              }
+                              ImGui::Separator();
+                              if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project"))
+                              {
+                                app->Close();
+                              }
+                              if (ImGui::MenuItem("Manage modules", "Project file manager", &exampleLayer->ShowModulesManager))
+                              {
+                              }
+                              ImGui::EndMenu();
+                            }
 
-    if (ImGui::BeginMenu("Window")) {
-      if (ImGui::MenuItem("Show bottom toolbar", "Get some usefull tools in a bottom bar.")) {
-        app->Close();
-      }
-      if (ImGui::MenuItem("Show simplified header", "Reduce the size of header")) {
-        
-        app->m_Specification.CustomTitlebar = !app->m_Specification.CustomTitlebar;
-      }
-   
-      ImGui::EndMenu();
-    }
+                            if (ImGui::BeginMenu("Window"))
+                            {
+                              if (ImGui::MenuItem("Show bottom toolbar", "Get some usefull tools in a bottom bar."))
+                              {
+                                app->Close();
+                              }
+                              if (ImGui::MenuItem("Show simplified header", "Reduce the size of header"))
+                              {
 
-    if (ImGui::BeginMenu("Tools")) {
+                                app->m_Specification.CustomTitlebar = !app->m_Specification.CustomTitlebar;
+                              }
 
-            if (ImGui::MenuItem("Content Browser", "Project file manager", &exampleLayer->ShowContentBrowser))
-            {
-            }
-            if (ImGui::MenuItem("Project Viewer", "Project component manager", &exampleLayer->ShowProjectViewer))
-            {
-            }
-      ImGui::EndMenu();
-    }
+                              ImGui::EndMenu();
+                            }
 
-    if (ImGui::BeginMenu("Help")) {
-      if (ImGui::MenuItem("News", "Get latest Vortex news")) {
-        app->Close();
-      }
-      if (ImGui::MenuItem("Community", "Join a community of creators")) {
-        app->Close();
-      }
-      if (ImGui::MenuItem("Tutorials", "Get bunch of tutorials")) {
-        app->Close();
-      }
-      if (ImGui::MenuItem("Documentation", "See official documentation of Vortex Maker")) {
-        app->Close();
-      }
-      ImGui::Separator();
-      if (ImGui::MenuItem("Exit")) {
-        app->Close();
-      }
-      ImGui::EndMenu();
-    } 
-    
+                            if (ImGui::BeginMenu("Tools"))
+                            {
 
-    
-    });
+                              if (ImGui::MenuItem("Content Browser", "Project file manager", &exampleLayer->ShowContentBrowser))
+                              {
+                              }
+                              if (ImGui::MenuItem("Project Viewer", "Project component manager", &exampleLayer->ShowProjectViewer))
+                              {
+                              }
+                              ImGui::EndMenu();
+                            }
+
+                            if (ImGui::BeginMenu("Help"))
+                            {
+                              if (ImGui::MenuItem("News", "Get latest Vortex news"))
+                              {
+                                app->Close();
+                              }
+                              if (ImGui::MenuItem("Community", "Join a community of creators"))
+                              {
+                                app->Close();
+                              }
+                              if (ImGui::MenuItem("Tutorials", "Get bunch of tutorials"))
+                              {
+                                app->Close();
+                              }
+                              if (ImGui::MenuItem("Documentation", "See official documentation of Vortex Maker"))
+                              {
+                                app->Close();
+                              }
+                              ImGui::Separator();
+                              if (ImGui::MenuItem("Exit"))
+                              {
+                                app->Close();
+                              }
+                              ImGui::EndMenu();
+                            }
+                          });
 
   return app;
 }

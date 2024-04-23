@@ -20,7 +20,6 @@ void TasklistModule::LaunchTasklistInterface(const std::shared_ptr<hArgs>& args)
             VxContext *ctx = VortexMaker::GetCurrentContext();
             std::shared_ptr<TasklistRenderInstance> instance = std::make_shared<TasklistRenderInstance>(ctx, tasklist, toolchain);
             instance->name = tasklist->label;
-            std::cout << "Add to" << CTasklistsModule->m_interface << std::endl;
             CTasklistsModule->m_interface->AddModuleRenderInstance(instance);
 
             }

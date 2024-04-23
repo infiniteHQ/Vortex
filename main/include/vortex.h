@@ -203,69 +203,27 @@ namespace VortexMaker
     VORTEX_API void                 LogFatal(const std::string& scope, const std::string& message);
     #define VXFATAL(scope, message) LogFatal(scope, message);
 
-    VORTEX_API void             Initialize();
+    VORTEX_API void                 Initialize();
+    VORTEX_API void                 InitProject(const nlohmann::json& main_config);
 
-    VORTEX_API void             InitProject(const nlohmann::json& main_config);
-
-
-    VORTEX_API void             DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name);
-    VORTEX_API void             DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, void(*callback)(std::shared_ptr<hArgs> args));
-    VORTEX_API void             CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name);
-    VORTEX_API void             CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name, void(*callback)(std::shared_ptr<hArgs> args));
+    VORTEX_API void                 DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name);
+    VORTEX_API void                 DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, void(*callback)(std::shared_ptr<hArgs> args));
+    VORTEX_API void                 CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name);
+    VORTEX_API void                 CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name, void(*callback)(std::shared_ptr<hArgs> args));
 
 
 
+    VORTEX_API void                 CreateProject(const std::string& name, const std::string& path);
 
     VORTEX_API std::vector<std::string> SearchFiles(const std::string& path, const std::string& filename);
     VORTEX_API std::string SearchFilesRecursive(const fs::path &chemin, const std::string &filename, std::vector<std::string> &file);
-
-    // Legacy component refreshing
-    VORTEX_API void             RefreshHosts();
-    VORTEX_API void             RefreshDistToolchains();
-    VORTEX_API void             RefreshToolchains();
-    VORTEX_API void             RefreshGpos();
-    VORTEX_API void             RefreshDistHosts();
-    VORTEX_API void             RefreshPackages();
-    VORTEX_API void             RefreshScripts();
-    // Legacy components creation
-    //VORTEX_API void             CreateToolchain(const std::string& name, const std::string& author);
-    //VORTEX_API void             CreateCreate(const std::string& name, const std::string& pathOfTarball);
-    //VORTEX_API void             CreateHost(const std::string& name, const std::string& author);
-    //VORTEX_API void             CreateGpos(const std::string& name, const std::string& author);
-    VORTEX_API void             CreateProject(const std::string& name, const std::string& path);
-    //VORTEX_API void             CreateScript(const std::string& name, const std::string& author);
-
-    // Legacy components deletion
-    //VORTEX_API void             DeleteHost(const std::shared_ptr<VxHost>& host);
-    //VORTEX_API void             DeleteGpos(const std::shared_ptr<VxGPOSystem>& gpos);
-    //VORTEX_API void             DeleteToolchain(const std::shared_ptr<VxToolchain>& toolchain);
-    VORTEX_API void             CreateHost();
-
-    VORTEX_API std::shared_ptr<Task>             CreateTask(const std::string tasktype, const std::string component, const std::string uniqueID, int priority, const std::shared_ptr<hArgs> props);
-
     bool                        DebugCheckVersionAndDataLayout(const char* version);
-
-    VORTEX_API void             ExecuteTask(std::string task, hArgs args);
 
     VORTEX_API void             MoveAllContent();
     VORTEX_API void             CopyAllContent();
     VORTEX_API void             ExecuteCommand();
 
     VORTEX_API nlohmann::json DumpJSON(const std::string& file);
-
-
-    //VORTEX_API bool RegisterPackage(std::string filepath, std::shared_ptr<VxPackage> newPackage, nlohmann::json toolchainData);
-    VORTEX_API bool RegisterDistHost(VxDistHost host, nlohmann::json packageData);
-    VORTEX_API bool RegisterScript(std::shared_ptr<VxScript> script, nlohmann::json packageData);
-    VORTEX_API bool RegisterDistToolchain(VxDistToolchain toolchain, nlohmann::json packageData);
-    VORTEX_API bool RegisterToolchain(std::shared_ptr<VxToolchain> toolchain, nlohmann::json toolchainData);
-    VORTEX_API bool RegisterHost(std::shared_ptr<VxHost> host, nlohmann::json toolchainData);
-    
-    VORTEX_API bool RegisterGPOS(std::shared_ptr<VxGPOSystem> gpos, nlohmann::json gposData);
-
-
-    VORTEX_API void CreateNewTask(std::shared_ptr<Task> task, std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props);
-
 
     VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
     VORTEX_API std::string replacePlaceholders(const std::string &command, const std::unordered_map<std::string, std::string> &replacements);

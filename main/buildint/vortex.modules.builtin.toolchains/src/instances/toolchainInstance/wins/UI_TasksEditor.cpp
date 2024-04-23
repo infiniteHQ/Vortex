@@ -28,7 +28,6 @@ void ToolchainRenderInstance::UI_TasksEditor()
         static bool toolchainPropAdded = false;
         static bool tasklistPropAdded = false;
 
-        std::cout << "taskpool : " << taskpool.size() << std::endl;
 
         ImGui::SetNextWindowDockID(this->dockspaceID, ImGuiCond_FirstUseEver);
 
@@ -172,7 +171,6 @@ void ToolchainRenderInstance::UI_TasksEditor()
 
                                                 for (auto runtime_tasks : taskpool)
                                                 {
-                                                    std::cout << "CMP : " << runtime_tasks->tasktype << task->tasktype << std::endl;
                                                     if (runtime_tasks->tasktype == task->tasktype)
                                                     {
                                                         std::shared_ptr<Task> _task = runtime_tasks->clone();
@@ -203,12 +201,10 @@ void ToolchainRenderInstance::UI_TasksEditor()
                                                         }
                                                         for (auto env_prop : task->env_props)
                                                         {
-                                                            std::cout << "Processing " << env_prop.first << " " << env_prop.second << std::endl;
                                                             if (env_prop.first == "package")
                                                             {
                                                                 for (auto package : this->toolchain->packages)
                                                                 {
-                                                                    std::cout << "Package name " << package->name << " " << env_prop.second << std::endl;
                                                                     if (package->name == env_prop.second)
                                                                     {
                                                                         _props->add("package", package);
@@ -258,7 +254,6 @@ void ToolchainRenderInstance::UI_TasksEditor()
 
                                                         _task->props = _props;
                                                         selectedTasklist->list.push_back(_task);
-                                                        std::cout << _task->tasktype << _task->props << std::endl;
                                                     }
                                                 }
                                             }
@@ -338,7 +333,9 @@ void ToolchainRenderInstance::UI_TasksEditor()
                                                             // this->toolchain->packages[row]->latestTask = _task;
                                     this->toolchain->currentLoadedSystem.Save(this->toolchain);
                                 }
-                                else{std::cout << "NULL" << std::endl;}
+                                else{
+                                    
+                                }
                             }
 
                                     /*if (this->toolchain->taskProcessor)
@@ -381,8 +378,6 @@ void ToolchainRenderInstance::UI_TasksEditor()
                         {
                             ImGui::Text("No task selected.");
                         }
-
-                        std::cout << "qsdqsd " << selectedTasklist->list.size() << std::endl;
 
                         ImGui::GetFont()->Scale = oldsize;
                         ImGui::PopFont();
@@ -468,7 +463,6 @@ void ToolchainRenderInstance::UI_TasksEditor()
 
                                                                 for (auto package : this->toolchain->packages)
                                                                 {
-                                                                    std::cout << package->name.c_str() << " </" << packages_items[packages_items_current] << std::endl;
                                                                     if (package->name == packages_items[packages_items_current])
                                                                     {
                                                                         bool alreadyRegistered = false;
@@ -483,12 +477,10 @@ void ToolchainRenderInstance::UI_TasksEditor()
                                                                         if (!alreadyRegistered)
                                                                         {
 
-                                                                            std::cout << "Add " << package << std::endl;
                                                                             selectedTasklist->list[task]->props->remove("package");
                                                                             selectedTasklist->list[task]->props->add("package", package);
 
-                                                                            std::cout << "Task package name is " << selectedTasklist->list[task]->props->get<std::shared_ptr<Package>>("package", nullptr)->name.c_str() << std::endl;
-                                                                        }
+                                                                         }
                                                                     }
                                                                 }
                                                             }
@@ -561,7 +553,6 @@ void ToolchainRenderInstance::UI_TasksEditor()
 
                                                                     for (auto tasklist : this->toolchain->tasklists)
                                                                     {
-                                                                        std::cout << tasklist->label.c_str() << " </" << tasklists_items[tasklist_items_current] << std::endl;
                                                                         if (tasklist->label == tasklists_items[tasklist_items_current])
                                                                         {
                                                                             bool alreadyRegistered = false;
@@ -576,11 +567,9 @@ void ToolchainRenderInstance::UI_TasksEditor()
                                                                             if (!alreadyRegistered)
                                                                             {
 
-                                                                                std::cout << "Add " << tasklist << std::endl;
                                                                                 selectedTasklist->list[task]->props->remove("tasklist");
                                                                                 selectedTasklist->list[task]->props->add("tasklist", tasklist);
 
-                                                                                std::cout << "Task tasklist name is " << selectedTasklist->list[task]->props->get<std::shared_ptr<TaskList>>("tasklist", nullptr)->label.c_str() << std::endl;
                                                                             }
                                                                         }
                                                                     }

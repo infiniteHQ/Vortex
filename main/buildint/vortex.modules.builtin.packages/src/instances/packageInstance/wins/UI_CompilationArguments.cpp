@@ -367,7 +367,6 @@ void PackageRenderInstance::UI_CompilationArguments()
                         {
                             if (ImGui::ImageButtonWithText(trashIcon, deleteButtonID.c_str(), ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                             {
-                                std::cout << "sfdljkhj" << std::endl;
                                 std::swap(this->m_currentSave->compilationPrefixes[row], this->m_currentSave->compilationPrefixes.back());
                                 this->m_currentSave->compilationPrefixes.pop_back();
                             }

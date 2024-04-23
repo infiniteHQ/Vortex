@@ -140,20 +140,15 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                                     {
                                         for (int i = 0; i < items.size(); ++i)
                                         {
-                                            std::cout << "888" << std::endl;
                                             bool is_selected = (item_current == i);
-                                            std::cout << "888" << std::endl;
                                             if (ImGui::Selectable(items[i], is_selected))
                                             {
-                                                std::cout << "888" << std::endl;
                                                 item_current = i; // Met à jour l'ID de l'élément sélectionné
                                             }
                                             if (is_selected)
                                             {
-                                                std::cout << "888" << std::endl;
                                                 ImGui::SetItemDefaultFocus(); // Met en surbrillance l'élément sélectionné
                                             }
-                                            std::cout << "888" << std::endl;
                                         }
                                         ImGui::EndCombo();
                                     }
@@ -406,7 +401,9 @@ void ToolchainRenderInstance::UI_VolatileTasks()
                                                             // this->toolchain->packages[row]->latestTask = _task;
                                     this->toolchain->currentLoadedSystem.Save(this->toolchain);
                                 }
-                                else{std::cout << "NULL" << std::endl;}
+                                else{
+                                    
+                                }
                             }
                             /*
                                                             {

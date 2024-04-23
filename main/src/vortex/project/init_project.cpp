@@ -35,10 +35,12 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     // Set project path to current working directory
     ctx.projectPath = fs::current_path();
 
-            ctx.logger = true;
+    ctx.logger = true;
+    ctx.logger_registering = true;
 
     // Load modules installed in the current project
     VortexMaker::LoadEditorModules(ctx.projectPath, ctx.IO.em_handles, ctx.IO.em);
+
     // TODO : On a dedicated function
     for(auto em : ctx.IO.em)
     {
@@ -56,16 +58,7 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
 
         // If the module is a autoexecution module, execute it now.
         if(em->m_auto_exec){
-            em->execute();
+            em->Start();
         }
     }
-
-    // Refresh various project components
-    //VortexMaker::RefreshPackages();
-    //VortexMaker::RefreshGpos();
-    //VortexMaker::RefreshHosts();
-    //VortexMaker::RefreshToolchains();
-    //VortexMaker::RefreshDistToolchains();
-    //VortexMaker::RefreshScripts();
-    //VortexMaker::RefreshDistHosts();
 }

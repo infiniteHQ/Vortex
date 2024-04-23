@@ -90,7 +90,6 @@ struct ExecuteTasklist : public Task
 
     refreshTaskList(toolchain->pool_name);
 
-        //std::cout <<" taskpool " << taskpool.size() << std::endl;
       std::shared_ptr<TaskList> prop_tasklist = this->props->get<std::shared_ptr<TaskList>>("tasklist", nullptr);
     for (auto runtime_tasks : prop_tasklist->list) // !
     {
@@ -132,12 +131,10 @@ struct ExecuteTasklist : public Task
 
             for (auto env_prop : env_props)
             {
-              std::cout << "Processing " << env_prop.first << " " << env_prop.second << std::endl;
               if (env_prop.first == "package")
               {
                 for (auto package : toolchain->packages)
                 {
-                  std::cout << "Package name " << package->name << " " << env_prop.second << std::endl;
                   if (package->name == env_prop.second)
                   {
                     spdlog::info("Add package");
@@ -166,7 +163,6 @@ struct ExecuteTasklist : public Task
             //props->add<std::shared_ptr<Toolchain>>("toolchain", toolchain);
             arguments->add("arguments", props);
 
-            std::cout << "ADDMODULE" << std::endl;
             VortexMaker::CallModuleEvent(arguments, "AddTaskToProcess", "vortex.modules.builtin.tasks");
 
             std::shared_ptr<Task> newtask = arguments->get<std::shared_ptr<Task>>("task", nullptr);
@@ -177,7 +173,6 @@ struct ExecuteTasklist : public Task
             }
             else
             {
-              std::cout << "NULL" << std::endl;
             }
           }
         }

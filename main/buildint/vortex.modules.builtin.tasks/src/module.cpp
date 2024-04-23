@@ -191,7 +191,6 @@ TASKS_MODULE_API void TaskModule::AddTaskToProcess(const std::shared_ptr<hArgs>&
 
                         // Find task
                         for(auto task : pool->m_list){
-                          std::cout <<"task:"<< task->tasktype << task_name << std::endl;
                             if(task->tasktype == task_name){
                                 std::shared_ptr<Task> newtask = task->clone();
                                 newtask->id = newtask->tasktype + "-" + VortexMaker::gen_random(6);

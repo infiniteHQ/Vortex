@@ -119,12 +119,10 @@ void ToolchainInstance::UI_FullBuild()
                                                                 }
                                                         for (auto env_prop : task->env_props)
                                                         {
-                                                            std::cout << "Processing " << env_prop.first << " " << env_prop.second << std::endl;
                                                             if (env_prop.first == "package")
                                                             {
                                                                 for (auto package : this->toolchain->packages)
                                                                 {
-                                                                    std::cout << "Package name " << package->name << " " << env_prop.second << std::endl;
                                                                     if (package->name == env_prop.second)
                                                                     {
                                                                         _props->add("package", package);
@@ -175,7 +173,6 @@ void ToolchainInstance::UI_FullBuild()
                                                         
                                                         _task->props = _props;
                                                         selectedTasklist->list.push_back(_task);
-                                                        std::cout << _task->tasktype << _task->props << std::endl;
                                                     }
                                                 }
                                             }
@@ -278,7 +275,6 @@ void ToolchainInstance::UI_FullBuild()
                                         /*
                                         if (ImGui::ImageButtonWithText(buildIcon, "Error", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                                         {
-                                            std::cout << "EE" << std::endl;
                                             ImGui::InsertNotification({ImGuiToastType::Error, 3000, "That is a error! %s", "(Format here)"});
                                             // Config Task
                                             // Compile Task

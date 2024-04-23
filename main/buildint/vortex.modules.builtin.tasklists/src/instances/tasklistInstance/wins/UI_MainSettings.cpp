@@ -149,7 +149,6 @@ void TasklistRenderInstance::UI_MainSettings()
 
                     if (column == 0)
                     {
-                        std::cout << "LK?JHB" << std::endl;
                         if (ImGui::ImageButtonWithText(addIcon, "Create new", ImVec2(this->m_SaveIcon->GetWidth(), this->m_SaveIcon->GetHeight())))
                         {
                             strncpy(newtask.task, items[item_current], sizeof(newtask.task) - 1);
@@ -163,7 +162,6 @@ void TasklistRenderInstance::UI_MainSettings()
                     }
                     if (column == 1)
                     {
-                        std::cout << "LK?JHB" << std::endl;
                         if (ImGui::BeginCombo("Task", items[item_current]))
                         {
                             for (int i = 0; i < items.size(); ++i)
@@ -185,7 +183,6 @@ void TasklistRenderInstance::UI_MainSettings()
 
                     if (column == 2)
                     {
-                        std::cout << "LK?JHB" << std::endl;
                         if (ImGui::BeginCombo("Component", items_components[item_component_current]))
                         {
                             for (int i = 0; i < items_components.size(); ++i)
@@ -206,7 +203,6 @@ void TasklistRenderInstance::UI_MainSettings()
 
                     if (column == 3)
                     {
-                        std::cout << "LK?JHB" << std::endl;
                         ImGui::InputInt("Priority", &newtask.priority);
                     }
                 }

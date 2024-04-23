@@ -11,81 +11,21 @@
 #include <variant>
 #include <stdexcept>
 #include <cxxabi.h> 
-#include "../../../lib/uikit/Platform/GUI/editor/Image.h"
+
 #include "function.h"
+#include "event.h"
+#include "render_instance.h"
+#include "dummy_function.h"
 
 #ifndef MODULE_INTERFACE_H
 #define MODULE_INTERFACE_H
 
-class ModuleFunction
+struct ModuleInterfaceDep
 {
-public:
-    ModuleFunction(void(*foo)(), const std::string& name) {this->m_foo = foo; this->m_name = name;};
-    //ModuleFunction(void(*foo)(), const std::string& name) {this->m_foo = foo; this->m_name = name;};
-
-    virtual void execute() {};
-
-
-    void(*m_foo)();
-    std::string m_name;
-    //std::shared_ptr<Parameters> m_params;
-    std::vector<std::string> m_params_def;
-};
-
-
-/**
- * @brief Executed by other with custom parameters
- */
-class ModuleInputEvent
-{
-public:
-
-    ModuleInputEvent(void(*foo)(const std::shared_ptr<hArgs>& args), const std::string& name) {this->m_foo = foo; this->m_name = name;};
-    
-    virtual void execute(){};
-
-    void(*m_foo)(const std::shared_ptr<hArgs>& args);
-    std::string m_name;
-};
-
-/**
- * @brief Emmiting this even with custom parameters.
- */
-class ModuleOutputEvent
-{
-public:
-    ModuleOutputEvent(void(*foo)(const std::shared_ptr<hArgs>& args), const std::string& name) {this->m_foo = foo; this->m_name = name;};
-    virtual void execute() {};
-
-    void(*m_foo)(const std::shared_ptr<hArgs>& args);
-    std::string m_name;
-};
-
-
-
-class ModuleDummyFunction
-{
-public:
-    ModuleDummyFunction(void(*foo)(), const std::string& name) {this->m_foo = foo; this->m_name = name;};
-    virtual void execute() {};
-
-    template<typename T>
-    std::string GetFunctionName(T* functionPtr) {
-    typedef typename std::remove_pointer<T>::type FunctionType;
-    const char* name = typeid(FunctionType).name();
-    return name;
-}
-    std::string m_name;
-    void(*m_foo)();
-};
-
-
-
-
-class ModuleRenderInstance
-{
-public:
-    virtual void render() {};
+    std::string type; // em, plugin, etc..
+    std::string name;
+    std::vector<std::string> supported_versions;
+    bool satisfied;
 };
 
 class ModuleInterface
@@ -94,7 +34,11 @@ class ModuleInterface
 public:
     virtual ~ModuleInterface() {}
     virtual void execute()  {};
+    virtual void destroy()  {};
     virtual void render()   {};
+
+    void Start();
+    void Stop();
 
     void OnInputEvent();
     void OnOutputEvent();
@@ -134,7 +78,8 @@ public:
 
     static std::shared_ptr<ModuleInterface> GetEditorModuleByName(const std::string& name);
 
-
+    void CheckDependencies();
+    void CheckVersion();
 
     std::shared_ptr<hArgs> m_args;
     std::string m_datapath;
@@ -150,8 +95,11 @@ public:
     std::string m_description;
     bool        m_auto_exec;
     std::vector<std::string> m_contributors;
+    std::vector<std::shared_ptr<ModuleInterfaceDep>> m_dependencies;
     const uint8_t* m_logo;
     size_t m_logo_size;
+
+    std::string m_state = "unknow";
 
     std::vector<std::shared_ptr<ModuleFunction>> m_functions;
     std::vector<std::shared_ptr<ModuleOutputEvent>> m_output_events;

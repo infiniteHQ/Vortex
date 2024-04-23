@@ -32,7 +32,6 @@ struct GiveToolchainToTemporaryUser : public Task
 
   void exec() override
   {
-    std::cout << "GiveToolchainToTemporaryUser" << std::endl;
     this->start();
     VxContext *ctx = VortexMaker::GetCurrentContext();
 

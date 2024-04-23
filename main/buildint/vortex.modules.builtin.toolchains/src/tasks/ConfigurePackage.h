@@ -114,7 +114,6 @@ struct ConfigurePackage : public Task
       }
       else
       {
-        std::cout << configuration << std::endl;
         configuration += "sudo -u vortex -i sh -c 'cd " + working_path + "/build && ";
         configuration += VortexMaker::replacePlaceholders(package->compilation.exclusiveCustomConfigProcess, replacements);
       }

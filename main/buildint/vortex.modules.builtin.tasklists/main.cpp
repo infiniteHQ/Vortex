@@ -52,7 +52,6 @@ public:
     {
         
 		ImGui::Begin("Tasklists");
-            std::cout << CTasklistsModule->m_tasklists.size() << std::endl;
         for(auto tasklist : CTasklistsModule->m_tasklists){
             ImGui::Text(tasklist->label.c_str());
             ImGui::SameLine();
