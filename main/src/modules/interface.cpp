@@ -348,6 +348,8 @@ void ModuleInterface::CheckDependencies()
  */
 void ModuleInterface::Start()
 {
+    this->CheckDependencies();
+
     // Check if all dependencies are satisfied
     bool allDependenciesSatisfied = true;
     std::vector<std::pair<std::string, std::string>> unsatisfiedDependencies;
@@ -397,6 +399,8 @@ void ModuleInterface::Stop()
 
     for (auto em : ctx->IO.em)
     {
+        //if(em->m_state == "running"){
+
         for (auto dependency : em->m_dependencies)
         {
             if (dependency->name == this->m_name)
@@ -417,6 +421,7 @@ void ModuleInterface::Stop()
                 }
             }
         }
+        //}
     }
 
     if(!authorized){

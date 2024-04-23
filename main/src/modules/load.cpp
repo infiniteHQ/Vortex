@@ -85,6 +85,7 @@ namespace VortexMaker
                             for(auto version : dep["versions"]){
                                 dependence->supported_versions.push_back(version);
                             }
+                            new_module->m_dependencies.push_back(dependence);
                         }
                     }
                     catch (std::exception e)

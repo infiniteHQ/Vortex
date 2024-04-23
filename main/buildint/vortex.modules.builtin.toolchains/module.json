@@ -1,5 +1,5 @@
 {
-    "type": "em_instanciable",
+    "type": "em",
     "group": "Core",
     "name": "vortex.modules.builtin.toolchains",
     "proper_name": "Toolchains",
@@ -14,7 +14,7 @@
             "name": "vortex.modules.builtin.tasks",
             "type": "em",
             "versions": [
-                "1.0"
+                "1.0.0"
             ]
         }
     ],

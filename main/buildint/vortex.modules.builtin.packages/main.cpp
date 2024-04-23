@@ -46,23 +46,48 @@ public:
     {
         ImGui::Begin("Packages");
 
-        // Iterate through each package
-        for (auto package : CPackagesModule->m_packages)
-        {
-            // Display the package's name
-            ImGui::Text(package->name.c_str());
+        // Display the package's name
 
-            // Display "Open" button for the package
-            ImGui::SameLine();
-            std::string label = "Open ###" + package->name;
-            if (ImGui::Button(label.c_str()))
+        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+        if (ImGui::BeginTable("table_", 3, flags))
+        {
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Date", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableHeadersRow();
+            // Iterate through each package
+            for (int i = 0; i < CPackagesModule->m_packages.size(); i++)
             {
-                // Create a render instance for the package and add it
-                VxContext *ctx = VortexMaker::GetCurrentContext();
-                std::shared_ptr<PackageRenderInstance> instance = std::make_shared<PackageRenderInstance>(ctx, package);
-                instance->name = package->name;
-                this->AddModuleRenderInstance(instance);
+                ImGui::TableNextRow();
+                for (int column = 0; column < 3; column++)
+                {
+                    ImGui::TableSetColumnIndex(column);
+
+                    if (column == 0)
+                    {
+                        std::string label = "Open ###" + CPackagesModule->m_packages[i]->name;
+                        if (ImGui::Button(label.c_str()))
+                        {
+                            // Create a render instance for the package and add it
+                            VxContext *ctx = VortexMaker::GetCurrentContext();
+                            std::shared_ptr<PackageRenderInstance> instance = std::make_shared<PackageRenderInstance>(ctx, CPackagesModule->m_packages[i]);
+                            instance->name = CPackagesModule->m_packages[i]->name;
+                            this->AddModuleRenderInstance(instance);
+                        }
+                    }
+                    if (column == 1)
+                    {
+                        ImGui::Text(CPackagesModule->m_packages[i]->name.c_str());
+                    }
+                    if (column == 2)
+                    {
+                        ImGui::Text("Thu 28 Apr 2024");
+                    }
+                }
             }
+
+            ImGui::EndTable();
         }
 
         ImGui::End();

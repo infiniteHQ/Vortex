@@ -50,19 +50,48 @@ public:
     {
         
 		ImGui::Begin("Toolchains");
-        for(auto toolchain : CToolchainModule->m_toolchains){
-            ImGui::Text(toolchain->name.c_str());
-            ImGui::SameLine();
-            std::string label = "Open ###" + toolchain->name;
-            if(ImGui::Button(label.c_str())){
-                VxContext* ctx = VortexMaker::GetCurrentContext();
-                std::shared_ptr<ToolchainRenderInstance> instance = std::make_shared<ToolchainRenderInstance>(ctx, toolchain);
-				//factory->SpawnInstance(instance);	
-                instance->name = toolchain->name;
-                this->AddModuleRenderInstance(instance);
+        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
+        if (ImGui::BeginTable("table_", 3, flags))
+        {
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Date", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableHeadersRow();
+            // Iterate through each package
+            for (int i = 0; i < CToolchainModule->m_toolchains.size(); i++)
+            {
+                ImGui::TableNextRow();
+                for (int column = 0; column < 3; column++)
+                {
+                    ImGui::TableSetColumnIndex(column);
+
+                    if (column == 0)
+                    {
+                        std::string label = "Open ###" + CToolchainModule->m_toolchains[i]->name;
+                        if (ImGui::Button(label.c_str()))
+                        {
+                            // Create a render instance for the package and add it
+                            VxContext *ctx = VortexMaker::GetCurrentContext();
+                            std::shared_ptr<ToolchainRenderInstance> instance = std::make_shared<ToolchainRenderInstance>(ctx, CToolchainModule->m_toolchains[i]);
+                            instance->name = CToolchainModule->m_toolchains[i]->name;
+                            this->AddModuleRenderInstance(instance);
+                        }
+                    }
+                    if (column == 1)
+                    {
+                        ImGui::Text(CToolchainModule->m_toolchains[i]->name.c_str());
+                    }
+                    if (column == 2)
+                    {
+                        ImGui::Text("Thu 28 Apr 2024");
+                    }
+                }
             }
+
+            ImGui::EndTable();
         }
+
         ImGui::End();
         // "Launcher" of regitered toolchains
     }

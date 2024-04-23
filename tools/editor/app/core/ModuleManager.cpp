@@ -94,9 +94,20 @@ void ModuleManager::OnImGuiRender()
     ImGui::GetFont()->Scale *= 1.3;
     ImGui::PushFont(ImGui::GetFont());
 
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Module of ");
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Module of project(s)");
     ImGui::SameLine();
     ImGui::Text(this->ctx->name.c_str());
+
+    ImGui::GetFont()->Scale = oldsize;
+    ImGui::PopFont();
+
+    oldsize = ImGui::GetFont()->Scale;
+    ImGui::GetFont()->Scale *= 0.9;
+    ImGui::PushFont(ImGui::GetFont());
+
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Vortex version");
+    ImGui::SameLine();
+    ImGui::Text(this->ctx->version.c_str());
 
     ImGui::GetFont()->Scale = oldsize;
     ImGui::PopFont();
@@ -105,7 +116,23 @@ void ModuleManager::OnImGuiRender()
 
     // Left
     static int selected = 0;
-    static std::array<char[128], 3> labels = {"Instances", "Utils", "Workers"};
+    static std::vector<std::string> labels;
+
+    for(auto em : ctx->IO.em){
+        bool add = true;
+
+        for(auto label : labels){
+            if(label == em->m_group){
+                add = false;
+            }
+
+        }
+
+        if(add){
+        labels.push_back(em->m_group);
+        }
+        
+    }
 
     {
         ImGui::BeginChild("left pane", ImVec2(230, -1), true);
@@ -119,15 +146,10 @@ void ModuleManager::OnImGuiRender()
 
             std::string label;
 
-            switch (i)
-            {
-            case 0:
-            {
-
                 int number = 0;
                 for (auto em : this->ctx->IO.em)
                 {
-                    if (em->m_type == "em_instanciable")
+                    if (em->m_group == labels[i])
                     {
                         number++;
                     }
@@ -136,43 +158,8 @@ void ModuleManager::OnImGuiRender()
                 label += " (";
                 label += std::to_string(number);
                 label += ")";
-                break;
-            }
-            case 1:
-            {
-
-                int number = 0;
-                for (auto em : this->ctx->IO.em)
-                {
-                    if (em->m_type == "em_instanciable")
-                    {
-                        number++;
-                    }
-                }
-                label = labels[i];
-                label += " (";
-                label += std::to_string(number);
-                label += ")";
-                break;
-            }
-            case 2:
-            {
-
-                int number = 0;
-                for (auto em : this->ctx->IO.em)
-                {
-                    if (em->m_type == "other..")
-                    {
-                        number++;
-                    }
-                }
-                label = labels[i];
-                label += " (";
-                label += std::to_string(number);
-                label += ")";
-                break;
-            }
-            }
+            
+            
 
             label += "##";
             label += labels[i];
@@ -189,22 +176,17 @@ void ModuleManager::OnImGuiRender()
     std::string label = "packhhqsdsdageView###";
     ImGuiID id = ImGui::GetID(label.c_str());
     ImGui::BeginChildFrame(id, ImVec2(0, 0), true);
-    for (int row = 0; row < this->ctx->IO.em.size(); row++)
-    {
-        switch (selected)
-        {
-        case 1:
-        {
-            if (this->ctx->IO.em[row]->m_type == "em_instanciable")
-            {
 
-                std::string childLabel = "module##" + this->ctx->IO.em[row]->m_name;
+
+                for(auto em : ctx->IO.em){
+                    if(em->m_group == labels[selected]){
+                          std::string childLabel = "module##" + em->m_name;
 
                 ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 250), true);
 
                 {
                     ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
-                    logo(this->ctx->IO.em[row]->m_logo_path, row, this->ctx->IO.em.size());
+                    logo(em->m_logo_path, selected, this->ctx->IO.em.size());
 
                     ImGui::EndChild();
                     ImGui::SameLine();
@@ -216,7 +198,7 @@ void ModuleManager::OnImGuiRender()
                     ImGui::GetFont()->Scale *= 1.3;
                     ImGui::PushFont(ImGui::GetFont());
 
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), this->ctx->IO.em[row]->m_proper_name.c_str());
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), em->m_proper_name.c_str());
 
                     ImGui::GetFont()->Scale = oldsize;
                     ImGui::PopFont();
@@ -224,20 +206,19 @@ void ModuleManager::OnImGuiRender()
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
                     ImGui::SameLine();
-                    ImGui::Text(this->ctx->IO.em[row]->m_version.c_str());
+                    ImGui::Text(em->m_version.c_str());
                     ImGui::EndChild();
                 }
 
-                    if (this->ctx->IO.em[row]->m_state == "running")
+                    if (em->m_state == "running")
                     {
                         ImGui::TextColored(ImVec4(0.6f, 1.0f, 0.6f, 0.8f), "Running");
                     }
-
-                    if (this->ctx->IO.em[row]->m_state == "failed")
+                    if (em->m_state == "failed")
                     {
                         ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.6f, 0.8f), "Failed");
                     }
-                    if (this->ctx->IO.em[row]->m_state == "unknow"  || this->ctx->IO.em[row]->m_state == "stopped")
+                    if (em->m_state == "unknow"  || em->m_state == "stopped")
                     {
                         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Not running");
                     }
@@ -246,33 +227,33 @@ void ModuleManager::OnImGuiRender()
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Name : ");
                     ImGui::SameLine();
-                    ImGui::Text(this->ctx->IO.em[row]->m_name.c_str());
+                    ImGui::Text(em->m_name.c_str());
                 }
 
                 {
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) : ");
                     ImGui::SameLine();
-                    ImGui::Text(this->ctx->IO.em[row]->m_author.c_str());
+                    ImGui::Text(em->m_author.c_str());
                 }
 
                 {
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Description : ");
                     ImGui::SameLine();
-                    ImGui::Text(this->ctx->IO.em[row]->m_description.c_str());
+                    ImGui::Text(em->m_description.c_str());
                 }
 
                 {
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Contributors : ");
                     int i = 0;
-                    for (auto contributor : this->ctx->IO.em[row]->m_contributors)
+                    for (auto contributor : em->m_contributors)
                     {
                         i++;
                         if (i <= 3)
                         {
-                            if (i < this->ctx->IO.em[row]->m_contributors.size())
+                            if (i < em->m_contributors.size())
                             {
                                 ImGui::SameLine();
                                 std::string contri = contributor + ",";
@@ -287,7 +268,7 @@ void ModuleManager::OnImGuiRender()
                         else
                         {
                             ImGui::SameLine();
-                            int counter = this->ctx->IO.em[row]->m_contributors.size() - 3;
+                            int counter = em->m_contributors.size() - 3;
                             std::string label = " and " + std::to_string(counter) + " other...";
                             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), label.c_str());
                             break;
@@ -295,21 +276,21 @@ void ModuleManager::OnImGuiRender()
                     }
                 }
 
-                if (this->ctx->IO.em[row]->m_state == "running")
+                if (em->m_state == "running")
                 {
                     if (ImGui::ImageButtonWithText(listIcon, "Stop", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
-                        this->ctx->IO.em[row]->Stop();
+                        em->Stop();
                     }
                 }
 
-                if (this->ctx->IO.em[row]->m_state == "failed")
+                if (em->m_state == "failed")
                 {
 
                     if (ImGui::ImageButtonWithText(listIcon, "Retry to launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
 
-                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, this->ctx->IO.em[row]);
+                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, em);
                         factory->SpawnInstance(instance);
                     }
                     ImGui::SameLine();
@@ -318,12 +299,12 @@ void ModuleManager::OnImGuiRender()
                     {
                     }
                 }
-                if (this->ctx->IO.em[row]->m_state == "unknow" || this->ctx->IO.em[row]->m_state == "stopped")
+                if (em->m_state == "unknow" || em->m_state == "stopped")
                 {
 
                     if (ImGui::ImageButtonWithText(listIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
-                        this->ctx->IO.em[row]->Start();
+                        em->Start();
                     }
                     ImGui::SameLine();
 
@@ -331,12 +312,166 @@ void ModuleManager::OnImGuiRender()
                     {
                     }
                 }
-            }
+            
             ImGui::EndChild();
+
+                    }
+                }
+            
+        
+
+        
+/*
+    for (int row = 0; row < this->ctx->IO.em.size(); row++)
+    {
+        switch (selected)
+        {
+        case 1:
+        {
+            if (em->m_group == "em")
+            {
+
+                std::string childLabel = "module##" + em->m_name;
+
+                ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 250), true);
+
+                {
+                    ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
+                    logo(em->m_logo_path, row, this->ctx->IO.em.size());
+
+                    ImGui::EndChild();
+                    ImGui::SameLine();
+                }
+
+                {
+                    ImGui::BeginChild("TEXT_", ImVec2(220, 68), true);
+                    float oldsize = ImGui::GetFont()->Scale;
+                    ImGui::GetFont()->Scale *= 1.3;
+                    ImGui::PushFont(ImGui::GetFont());
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), em->m_proper_name.c_str());
+
+                    ImGui::GetFont()->Scale = oldsize;
+                    ImGui::PopFont();
+
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
+                    ImGui::SameLine();
+                    ImGui::Text(em->m_version.c_str());
+                    ImGui::EndChild();
+                }
+
+                    if (em->m_state == "running")
+                    {
+                        ImGui::TextColored(ImVec4(0.6f, 1.0f, 0.6f, 0.8f), "Running");
+                    }
+                    if (em->m_state == "failed")
+                    {
+                        ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.6f, 0.8f), "Failed");
+                    }
+                    if (em->m_state == "unknow"  || em->m_state == "stopped")
+                    {
+                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Not running");
+                    }
+
+                {
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Name : ");
+                    ImGui::SameLine();
+                    ImGui::Text(em->m_name.c_str());
+                }
+
+                {
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) : ");
+                    ImGui::SameLine();
+                    ImGui::Text(em->m_author.c_str());
+                }
+
+                {
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Description : ");
+                    ImGui::SameLine();
+                    ImGui::Text(em->m_description.c_str());
+                }
+
+                {
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Contributors : ");
+                    int i = 0;
+                    for (auto contributor : em->m_contributors)
+                    {
+                        i++;
+                        if (i <= 3)
+                        {
+                            if (i < em->m_contributors.size())
+                            {
+                                ImGui::SameLine();
+                                std::string contri = contributor + ",";
+                                ImGui::Text(contri.c_str());
+                            }
+                            else
+                            {
+                                ImGui::SameLine();
+                                ImGui::Text(contributor.c_str());
+                            }
+                        }
+                        else
+                        {
+                            ImGui::SameLine();
+                            int counter = em->m_contributors.size() - 3;
+                            std::string label = " and " + std::to_string(counter) + " other...";
+                            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), label.c_str());
+                            break;
+                        }
+                    }
+                }
+
+                if (em->m_state == "running")
+                {
+                    if (ImGui::ImageButtonWithText(listIcon, "Stop", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+                        em->Stop();
+                    }
+                }
+
+                if (em->m_state == "failed")
+                {
+
+                    if (ImGui::ImageButtonWithText(listIcon, "Retry to launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+
+                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, em);
+                        factory->SpawnInstance(instance);
+                    }
+                    ImGui::SameLine();
+
+                    if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+                    }
+                }
+                if (em->m_state == "unknow" || em->m_state == "stopped")
+                {
+
+                    if (ImGui::ImageButtonWithText(listIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+                        em->Start();
+                    }
+                    ImGui::SameLine();
+
+                    if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                    {
+                    }
+                }
+            
+            ImGui::EndChild();
+            }
+            
         }
         }
     }
-    ImGui::EndChildFrame();
+   */ 
+  ImGui::EndChildFrame();
     ImGui::End();
 }
 
@@ -348,22 +483,38 @@ void ModuleManager::menubar()
 
     if (ImGui::BeginMenuBar())
     {
-
-        const char *items[] = {"Treev iew", "Cards view"};
-
-        ImGui::Combo("View", &item_current, items, IM_ARRAYSIZE(items));
-
-        ImGui::Separator();
-
-        if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
-        {
-        }
         if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
         {
             ImGui::OpenPopup("CreationMenu");
         }
+
+        if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+        {
+        }
         ImGui::Separator();
         if (ImGui::BeginMenu("Filters"))
+        {
+
+            if (ImGui::MenuItem("Build/Rebuild single parts"))
+            {
+            }
+            if (ImGui::MenuItem("Global build"))
+            {
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Create a module"))
+        {
+
+            if (ImGui::MenuItem("Build/Rebuild single parts"))
+            {
+            }
+            if (ImGui::MenuItem("Global build"))
+            {
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Search"))
         {
 
             if (ImGui::MenuItem("Build/Rebuild single parts"))

@@ -1,6 +1,6 @@
 {
-    "type": "em_instanciable",
-    "group": "Core",
+    "type": "em",
+    "group": "Additionnal",
     "name": "vortex.modules.builtin.tasklists",
     "proper_name": "Tasklists",
     "auto_exec": true,
@@ -10,7 +10,7 @@
         "Diego E. Moreno <d@infinite.si>"
     ],
     "deps": [
-        {"name":"vortex.modules.builtin.tasks", "type": "em", "versions": ["1.0"]}
+        {"name":"vortex.modules.builtin.tasks", "type": "em", "versions": ["1.0.0"]}
     ],
     "compatibility": [
         "1.0",
