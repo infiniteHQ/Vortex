@@ -1,7 +1,7 @@
-#include "../ToolchainInstance.h"
+#include "../ToolchainRenderInstance.h"
 #include <array>
 
-void ToolchainInstance::UI_MainSettings()
+void ToolchainRenderInstance::UI_MainSettings()
 {
 
     if (this->show_UI_MainSettings)

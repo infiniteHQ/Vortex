@@ -1,7 +1,7 @@
-#include "../ToolchainInstance.h"
+#include "../ToolchainRenderInstance.h"
 #include <array>
 
-void ToolchainInstance::UI_ManualBuild()
+void ToolchainRenderInstance::UI_ManualBuild()
 {
 
     if (this->show_UI_ManualBuild)

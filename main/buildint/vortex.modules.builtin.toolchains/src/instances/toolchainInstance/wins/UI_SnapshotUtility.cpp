@@ -1,7 +1,7 @@
-#include "../ToolchainInstance.h"
+#include "../ToolchainRenderInstance.h"
 #include <array> 
 
-void ToolchainInstance::UI_SnapshotUtility()
+void ToolchainRenderInstance::UI_SnapshotUtility()
 {
 
     if (this->show_UI_SnapshotUtility)

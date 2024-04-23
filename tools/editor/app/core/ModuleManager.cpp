@@ -178,15 +178,15 @@ void ModuleManager::OnImGuiRender()
     ImGui::BeginChildFrame(id, ImVec2(0, 0), true);
 
 
-                for(auto em : ctx->IO.em){
-                    if(em->m_group == labels[selected]){
-                          std::string childLabel = "module##" + em->m_name;
+                for(int i =0; i < ctx->IO.em.size(); i++){
+                    if(ctx->IO.em[i]->m_group == labels[selected]){
+                          std::string childLabel = "module##" + ctx->IO.em[i]->m_name;
 
                 ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 250), true);
 
                 {
                     ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
-                    logo(em->m_logo_path, selected, this->ctx->IO.em.size());
+                    logo(ctx->IO.em[i]->m_logo_path, i, this->ctx->IO.em.size());
 
                     ImGui::EndChild();
                     ImGui::SameLine();
@@ -198,7 +198,7 @@ void ModuleManager::OnImGuiRender()
                     ImGui::GetFont()->Scale *= 1.3;
                     ImGui::PushFont(ImGui::GetFont());
 
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), em->m_proper_name.c_str());
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), ctx->IO.em[i]->m_proper_name.c_str());
 
                     ImGui::GetFont()->Scale = oldsize;
                     ImGui::PopFont();
@@ -206,19 +206,19 @@ void ModuleManager::OnImGuiRender()
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
                     ImGui::SameLine();
-                    ImGui::Text(em->m_version.c_str());
+                    ImGui::Text(ctx->IO.em[i]->m_version.c_str());
                     ImGui::EndChild();
                 }
 
-                    if (em->m_state == "running")
+                    if (ctx->IO.em[i]->m_state == "running")
                     {
                         ImGui::TextColored(ImVec4(0.6f, 1.0f, 0.6f, 0.8f), "Running");
                     }
-                    if (em->m_state == "failed")
+                    if (ctx->IO.em[i]->m_state == "failed")
                     {
                         ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.6f, 0.8f), "Failed");
                     }
-                    if (em->m_state == "unknow"  || em->m_state == "stopped")
+                    if (ctx->IO.em[i]->m_state == "unknow"  || ctx->IO.em[i]->m_state == "stopped")
                     {
                         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Not running");
                     }
@@ -227,33 +227,33 @@ void ModuleManager::OnImGuiRender()
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Name : ");
                     ImGui::SameLine();
-                    ImGui::Text(em->m_name.c_str());
+                    ImGui::Text(ctx->IO.em[i]->m_name.c_str());
                 }
 
                 {
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) : ");
                     ImGui::SameLine();
-                    ImGui::Text(em->m_author.c_str());
+                    ImGui::Text(ctx->IO.em[i]->m_author.c_str());
                 }
 
                 {
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Description : ");
                     ImGui::SameLine();
-                    ImGui::Text(em->m_description.c_str());
+                    ImGui::Text(ctx->IO.em[i]->m_description.c_str());
                 }
 
                 {
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Contributors : ");
                     int i = 0;
-                    for (auto contributor : em->m_contributors)
+                    for (auto contributor : ctx->IO.em[i]->m_contributors)
                     {
                         i++;
                         if (i <= 3)
                         {
-                            if (i < em->m_contributors.size())
+                            if (i < ctx->IO.em[i]->m_contributors.size())
                             {
                                 ImGui::SameLine();
                                 std::string contri = contributor + ",";
@@ -268,7 +268,7 @@ void ModuleManager::OnImGuiRender()
                         else
                         {
                             ImGui::SameLine();
-                            int counter = em->m_contributors.size() - 3;
+                            int counter = ctx->IO.em[i]->m_contributors.size() - 3;
                             std::string label = " and " + std::to_string(counter) + " other...";
                             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), label.c_str());
                             break;
@@ -276,21 +276,21 @@ void ModuleManager::OnImGuiRender()
                     }
                 }
 
-                if (em->m_state == "running")
+                if (ctx->IO.em[i]->m_state == "running")
                 {
                     if (ImGui::ImageButtonWithText(listIcon, "Stop", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
-                        em->Stop();
+                        ctx->IO.em[i]->Stop();
                     }
                 }
 
-                if (em->m_state == "failed")
+                if (ctx->IO.em[i]->m_state == "failed")
                 {
 
                     if (ImGui::ImageButtonWithText(listIcon, "Retry to launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
 
-                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, em);
+                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, ctx->IO.em[i]);
                         factory->SpawnInstance(instance);
                     }
                     ImGui::SameLine();
@@ -299,12 +299,12 @@ void ModuleManager::OnImGuiRender()
                     {
                     }
                 }
-                if (em->m_state == "unknow" || em->m_state == "stopped")
+                if (ctx->IO.em[i]->m_state == "unknow" || ctx->IO.em[i]->m_state == "stopped")
                 {
 
                     if (ImGui::ImageButtonWithText(listIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
-                        em->Start();
+                        ctx->IO.em[i]->Start();
                     }
                     ImGui::SameLine();
 

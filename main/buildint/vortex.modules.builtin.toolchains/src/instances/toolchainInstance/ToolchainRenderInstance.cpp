@@ -159,6 +159,10 @@ void ToolchainRenderInstance::render()
     this->UI_VolatileTasks();
     this->UI_CurrentToolchainPreview();
     this->UI_TasksEditor();
+    this->UI_SnapshotUtility();
+    this->UI_MainSettings();
+    this->UI_FullBuild();
+    this->UI_ManualBuild();
 }
 
 void ToolchainRenderInstance::menubar()

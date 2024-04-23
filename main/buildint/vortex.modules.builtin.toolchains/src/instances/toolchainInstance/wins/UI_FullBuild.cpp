@@ -1,4 +1,4 @@
-#include "../ToolchainInstance.h"
+#include "../ToolchainRenderInstance.h"
 #include <array>
 
 //#include "../../backend/Platform/GUI/editor/UI/Spinner.h"
@@ -34,7 +34,7 @@ static void coloredText(std::string name, ImVec4 color)
 
 
 
-void ToolchainInstance::UI_FullBuild()
+void ToolchainRenderInstance::UI_FullBuild()
 {
 
     if (this->show_UI_FullBuild)
@@ -132,7 +132,7 @@ void ToolchainInstance::UI_FullBuild()
                                                             }
                                                             else if (env_prop.first == "toolchain")
                                                             {
-                                                                for (auto toolchain : this->m_ctx->IO.toolchains)
+                                                                for (auto toolchain : CToolchainModule->m_toolchains)
                                                                 {
                                                                     if (toolchain->name == env_prop.second)
                                                                     {
@@ -153,7 +153,7 @@ void ToolchainInstance::UI_FullBuild()
                                                             else if (prop == "package" && !packagePropAdded)
                                                             {
 
-                                                                std::shared_ptr<VxPackage> _package = std::make_shared<VxPackage>();
+                                                                std::shared_ptr<Package> _package = std::make_shared<Package>();
                                                                 _package->name = "none";
                                                                 _props->add("package", _package); // Or, add the default element of the tasklist
                                                                 packagePropAdded = true;
