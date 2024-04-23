@@ -58,8 +58,6 @@ public:
         CreateModuleContext();
         CToolchainModule->m_interface = ModuleInterface::GetEditorModuleByName(this->m_name);
         
-        // Add main args
-        this->AddArg<const char*>("chainsModule.name", "ToolchainsModule");
         
         // Adding functions
         this->AddFunction(RegisterToolchains, "RegisterToolchains");

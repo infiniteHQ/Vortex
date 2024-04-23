@@ -21,8 +21,6 @@ public:
         // Get the interface ptr (for GUI launcher, from others modules)
         CPackagesModule->m_interface = ModuleInterface::GetEditorModuleByName(this->m_name);
 
-        // Add main args
-        this->AddArg<const char *>("chainsModule.name", "PackagesModule");
 
         // Add logo
         //this->AddLogo(icons::package_icon, icons::_i_size);

@@ -2,9 +2,6 @@
 #include "../../include/vortex_internals.h"
 #include "../../include/modules/load.h"
 
-
-
-
 namespace VortexMaker
 {
 

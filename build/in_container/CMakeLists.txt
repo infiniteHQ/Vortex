@@ -4,6 +4,6 @@ project(vx)
 
 
 add_executable(vx 
-    ../bootstrapp.cpp
+    ../../bootstrapp.cpp
 )
 install(TARGETS vx DESTINATION /bin)

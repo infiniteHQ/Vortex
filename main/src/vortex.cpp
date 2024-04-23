@@ -1,10 +1,7 @@
-// The VortexMaker Project, version 1.0
-// [Main sources & docs]
+// The VortexMaker Project
+// [Main sources]
 
 // Index of this file:
-
-//  [Includes]
-//  [Context Utility: RegisterProvider] => Register a Provider into the context
 
 //-------------------------------------------------------------------------
 // [INCLUDES]
@@ -31,32 +28,79 @@ VxContext *CVortexMaker = NULL;
 // global/static e.g. ImVector<> instances you may need to keep them accessible
 // during program destruction.
 // - DLL users: read comments above.
+
 #ifndef DISABLE_DEFAULT_ALLOCATORS
+
+/**
+ * @brief Wrapper function for malloc.
+ * 
+ * This function is a wrapper for the malloc function.
+ * It allocates memory of the specified size using the standard malloc function.
+ * 
+ * @param size The size of memory to allocate.
+ * @param user_data Unused user data pointer (required by Vortex allocator signature).
+ * @return A pointer to the allocated memory, or nullptr if allocation fails.
+ */
 static void *MallocWrapper(size_t size, void *user_data)
 {
-  VX_UNUSED(user_data);
-  return malloc(size);
+    VX_UNUSED(user_data); // Unused parameter
+    return malloc(size); // Call standard malloc
 }
+
+/**
+ * @brief Wrapper function for free.
+ * 
+ * This function is a wrapper for the free function.
+ * It deallocates memory pointed to by ptr using the standard free function.
+ * 
+ * @param ptr Pointer to the memory block to deallocate.
+ * @param user_data Unused user data pointer (required by Vortex allocator signature).
+ */
 static void FreeWrapper(void *ptr, void *user_data)
 {
-  VX_UNUSED(user_data);
-  free(ptr);
+    VX_UNUSED(user_data); // Unused parameter
+    free(ptr); // Call standard free
 }
-#else
+
+#else // DISABLE_DEFAULT_ALLOCATORS
+
+/**
+ * @brief Dummy MallocWrapper function.
+ * 
+ * This function is a dummy wrapper for malloc used when default allocators are disabled.
+ * It should not be called and will trigger an assertion.
+ * 
+ * @param size Unused size parameter.
+ * @param user_data Unused user data parameter.
+ * @return Always returns nullptr, triggering an assertion.
+ */
 static void *MallocWrapper(size_t size, void *user_data)
 {
-  VX_UNUSED(user_data);
-  VX_UNUSED(size);
-  VX_ASSERT(0);
-  return NULL;
+    VX_UNUSED(size); // Unused parameter
+    VX_UNUSED(user_data); // Unused parameter
+    VX_ASSERT(0); // Trigger assertion, should not be called
+    return nullptr; // Return nullptr
 }
+
+/**
+ * @brief Dummy FreeWrapper function.
+ * 
+ * This function is a dummy wrapper for free used when default allocators are disabled.
+ * It should not be called and will trigger an assertion.
+ * 
+ * @param ptr Unused pointer parameter.
+ * @param user_data Unused user data parameter.
+ */
 static void FreeWrapper(void *ptr, void *user_data)
 {
-  VX_UNUSED(user_data);
-  VX_UNUSED(ptr);
-  VX_ASSERT(0);
+    VX_UNUSED(ptr); // Unused parameter
+    VX_UNUSED(user_data); // Unused parameter
+    VX_ASSERT(0); // Trigger assertion, should not be called
 }
-#endif
+
+#endif // DISABLE_DEFAULT_ALLOCATORS
+
+
 static VortexMakerMemAllocFunc CVxAllocatorAllocFunc = MallocWrapper;
 static VortexMakerMemFreeFunc CVxAllocatorFreeFunc = FreeWrapper;
 static void *CVxAllocatorUserData = NULL;
@@ -155,50 +199,92 @@ VORTEX_API void VortexMaker::Initialize()
 }
 
 
-
-//-----------------------------------------------------------------------------
-
+/**
+ * @brief Set custom allocator functions and user data for VortexMaker.
+ * 
+ * This function allows setting custom allocator functions and user data
+ * for VortexMaker. These custom functions and data will be used by VortexMaker
+ * for memory allocation and deallocation.
+ * 
+ * @param alloc_func The custom allocator function pointer.
+ * @param free_func The custom free function pointer.
+ * @param user_data The custom user data pointer.
+ */
 void VortexMaker::SetAllocatorFunctions(VortexMakerMemAllocFunc alloc_func,
                                         VortexMakerMemFreeFunc free_func,
                                         void *user_data)
 {
-  CVxAllocatorAllocFunc = alloc_func;
-  CVxAllocatorFreeFunc = free_func;
-  CVxAllocatorUserData = user_data;
+    // Set the custom allocator functions and user data for VortexMaker
+    CVxAllocatorAllocFunc = alloc_func;
+    CVxAllocatorFreeFunc = free_func;
+    CVxAllocatorUserData = user_data;
 }
 
-// This is provided to facilitate copying allocators from one static/DLL
-// boundary to another (e.g. retrieve default allocator of your executable
-// address space)
+
+/**
+ * @brief Retrieve allocator functions and user data.
+ * 
+ * This function is provided to facilitate copying allocators from one static/DLL
+ * boundary to another. It retrieves the allocator functions and user data
+ * used by the VortexMaker.
+ * 
+ * @param p_alloc_func Pointer to store the allocator function.
+ * @param p_free_func Pointer to store the free function.
+ * @param p_user_data Pointer to store the user data.
+ */
 void VortexMaker::GetAllocatorFunctions(VortexMakerMemAllocFunc *p_alloc_func,
                                         VortexMakerMemFreeFunc *p_free_func,
                                         void **p_user_data)
 {
-  *p_alloc_func = CVxAllocatorAllocFunc;
-  *p_free_func = CVxAllocatorFreeFunc;
-  *p_user_data = CVxAllocatorUserData;
+    // Retrieve the allocator functions and user data from the VortexMaker
+    *p_alloc_func = CVxAllocatorAllocFunc;
+    *p_free_func = CVxAllocatorFreeFunc;
+    *p_user_data = CVxAllocatorUserData;
 }
 
 
-//-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-// [Context Function: GetCurrentContext] => Get the current main context
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-VORTEX_API VxContext *VortexMaker::GetCurrentContext() { return CVortexMaker; }
-//-----------------------------------------------------------------------------
+/**
+ * @brief Get the current Vortex context.
+ * 
+ * This function returns a pointer to the current Vortex context.
+ * It simply returns the value of the CVortexMaker pointer.
+ * 
+ * @return A pointer to the current Vortex context.
+ */
+VORTEX_API VxContext *VortexMaker::GetCurrentContext()
+{
+    return CVortexMaker; // Return the current Vortex context pointer
+}
 
-// IM_ALLOC() == ImGui::MemAlloc()
+
+/**
+ * @brief Allocate memory using the Vortex memory allocator.
+ * 
+ * This function allocates memory of the specified size using the Vortex memory allocator.
+ * It calls the CVxAllocatorAllocFunc function pointer with the provided size and allocator user data.
+ * If IMGUI debug tools are enabled, it also calls DebugAllocHook to handle debug allocation information.
+ * 
+ * @param size The size of memory to allocate.
+ * @return A pointer to the allocated memory, or nullptr if allocation fails.
+ */
 void *VortexMaker::MemAlloc(size_t size)
 {
-  void *ptr = (*CVxAllocatorAllocFunc)(size, CVxAllocatorUserData);
-#ifndef IMGUI_DISABLE_DEBUG_TOOLS
-  if (VxContext *ctx = CVortexMaker)
-    DebugAllocHook(&ctx->debugAllocInfo, ptr, size);
+    // Call the Vortex memory allocator function pointer to allocate memory
+    void *ptr = (*CVxAllocatorAllocFunc)(size, CVxAllocatorUserData);
+
+#ifndef VX_DISABLE_DEBUG_TOOLS
+    // Check if IMGUI debug tools are enabled and CVortexMaker is valid
+    if (VxContext *ctx = CVortexMaker)
+    {
+        // Call the debug allocation hook to handle debug information
+        DebugAllocHook(&ctx->debugAllocInfo, ptr, size);
+    }
 #endif
-  return ptr;
+
+    return ptr; // Return the allocated memory pointer
 }
+
 
 // Vx_FREE() == VortexMaker::MemFree()
 void VortexMaker::MemFree(void *ptr)
@@ -259,700 +345,262 @@ void VortexMaker::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
 
 char hString::EmptyString[1] = {0};
 
+/**
+ * @brief Append a string to the hString buffer.
+ * 
+ * This function appends the provided string to the hString buffer.
+ * It calculates the length of the string based on the provided end pointer (str_end) or using strlen if str_end is null.
+ * If the buffer capacity is not enough to hold the new string, it resizes the buffer to accommodate the new string.
+ * The string is then copied into the buffer, and a zero-terminator is added.
+ * 
+ * @param str Pointer to the beginning of the string to append.
+ * @param str_end Pointer to the end of the string to append (optional).
+ */
 void hString::append(const char *str, const char *str_end)
 {
-  int len = str_end ? (int)(str_end - str) : (int)strlen(str);
+    // Calculate the length of the string
+    int len = str_end ? (int)(str_end - str) : (int)strlen(str);
 
-  // Add zero-terminator the first time
-  const int write_off = (Buf.Size != 0) ? Buf.Size : 1;
-  const int needed_sz = write_off + len;
-  if (write_off + len >= Buf.Capacity)
-  {
-    int new_capacity = Buf.Capacity * 2;
-    Buf.reserve(needed_sz > new_capacity ? needed_sz : new_capacity);
-  }
+    // Calculate the write offset and needed size
+    const int write_off = (Buf.Size != 0) ? Buf.Size : 1;
+    const int needed_sz = write_off + len;
 
-  Buf.resize(needed_sz);
-  memcpy(&Buf[write_off - 1], str, (size_t)len);
-  Buf[write_off - 1 + len] = 0;
+    // Check if the buffer capacity is enough, resize if needed
+    if (needed_sz >= Buf.Capacity)
+    {
+        // Double the capacity or use the needed size, whichever is greater
+        int new_capacity = Buf.Capacity * 2;
+        Buf.reserve(needed_sz > new_capacity ? needed_sz : new_capacity);
+    }
+
+    // Resize the buffer to accommodate the new string
+    Buf.resize(needed_sz);
+
+    // Copy the string into the buffer
+    memcpy(&Buf[write_off - 1], str, (size_t)len);
+
+    // Add zero-terminator
+    Buf[write_off - 1 + len] = 0;
 }
 
+/**
+ * @brief Check the version string and data layout for debugging purposes.
+ * 
+ * This function compares the provided version string with the defined VORTEX_VERSION.
+ * If the strings do not match, it sets an error flag and asserts.
+ * 
+ * @param version The version string to check.
+ * @return True if the version string matches, false otherwise.
+ */
 bool VortexMaker::DebugCheckVersionAndDataLayout(const char *version)
 {
-  bool error = false;
-  if (strcmp(version, VORTEX_VERSION) != 0)
-  {
-    error = true;
-    VX_ASSERT(strcmp(version, VORTEX_VERSION) == 0 && "Mismatched version string!");
-  }
-  return !error;
+    bool error = false;
+
+    // Check if the provided version string matches the defined VORTEX_VERSION
+    if (strcmp(version, VORTEX_VERSION) != 0)
+    {
+        error = true;
+        // Assertion for debugging purposes, will only trigger in debug builds
+        VX_ASSERT(strcmp(version, VORTEX_VERSION) == 0 && "Mismatched version string!");
+    }
+
+    return !error; // Return true if no error occurred
 }
 
 
-// Correction de la fonction CreateTask
-/*
-std::shared_ptr<Task> VortexMaker::CreateTask(std::string tasktype, std::string component, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
-{
-  VxContext &ctx = *CVortexMaker;
 
-  // Utilisation de make_shared pour créer la tâche
-  std::shared_ptr<Task> task = TaskFactory::getInstance().createInstance(tasktype);
-
-  if (task)
-  { // Vérification si la tâche a été créée avec succès
-    task->id = uniqueID;
-    task->tasktype = tasktype;
-    task->component = component;
-    task->priority = priority;
-    task->props = props;
-    task->state = "not_started";
-
-    // Ajout de la tâche aux listes appropriées
-    //ctx.IO.tasksToProcess.push_back(task);
-    ctx.IO.tasks.push_back(task);
-  }
-  else
-  {
-    std::cerr << "Failed to create task of type: " << tasktype << std::endl;
-  }
-
-  return task;
-}
-*/
-
-/*
-void VxPackage::ExecuteActions(std::string sequence, std::shared_ptr<VxPackage> package)
-{
-  for (auto action : package->actions)
-  {
-    if (sequence == action->executionSequence)
-    {
-      if (action->type == "command")
-      {
-
-        std::string cmd = "";
-        cmd += "cd " + package->distPath + "/build && " + action->command;
-
-        std::string label = "action-" + action->type + "-" + action->executionSequence + "-";
-        label += action->priority;
-
-        package->SetDiagCode(label, system(cmd.c_str()));
-      }
-    }
-  }
-}*/
-
-// Demain : Finir l'edition complete des packages et de la toolchains (y compris les configuration de target de la toolchain, etc...)
-// Preparer la beta !!
-
-VORTEX_API void VortexMaker::CreateNewTask(std::shared_ptr<Task> task, std::string tasktype, std::string uniqueID, int priority, std::shared_ptr<hArgs> props)
-{
-}
-
-/*
-void VortexMaker::DeleteHost(const std::shared_ptr<VxHost>& host){
-    VxContext *ctx = VortexMaker::GetCurrentContext();
-    std::string host_path = ctx->projectPath;
-    host_path += "/.vx/data/hosts/" + host->name;
-
-    std::string host_distpath = ctx->projectPath;
-    host_distpath += "/.vx/dist/hosts/" + host->name;
-
-    
-    // Verify if the toolchain_path is not empty
-    if (host_path != "") {
-        std::string cmd = "rm -rf " + host_path + "";
-        system(cmd.c_str());
-    }
-
-
-    if (host_distpath != "") {
-        std::string cmd = "rm -rf " + host_distpath + "";
-        system(cmd.c_str());
-    }
-
-    ctx->IO.hosts.erase(std::remove(ctx->IO.hosts.begin(), ctx->IO.hosts.end(), host), ctx->IO.hosts.end());
-
-  VortexMaker::RefreshToolchains();
-
-}*/
-
-/*
-
-void VortexMaker::DeleteGpos(const std::shared_ptr<VxGPOSystem>& gpos){
-    VxContext *ctx = VortexMaker::GetCurrentContext();
-    std::string gpos_path = ctx->projectPath;
-    gpos_path += "/.vx/data/gpos/" + gpos->name;
-
-    std::string gpos_distpath = ctx->projectPath;
-    gpos_distpath += "/.vx/dist/gpos/" + gpos->name;
-
-
-    // Create package.config into the baseDir folder
-    
-    // Verify if the toolchain_path is not empty
-    if (gpos_path != "") {
-        std::string cmd = "rm -rf " + gpos_path + "";
-        system(cmd.c_str());
-    }
-
-
-    if (gpos_distpath != "") {
-        std::string cmd = "rm -rf " + gpos_distpath + "";
-        system(cmd.c_str());
-    }
-
-    ctx->IO.gpoSystems.erase(std::remove(ctx->IO.gpoSystems.begin(), ctx->IO.gpoSystems.end(), gpos), ctx->IO.gpoSystems.end());
-
-  VortexMaker::RefreshGpos();
-
-}
-*/
-
-/*
-
-void VortexMaker::CreateGpos(const std::string& name, const std::string& author){
-    VxContext *ctx = VortexMaker::GetCurrentContext();
-
-    std::string new_gpos_path = ctx->projectPath;
-    new_gpos_path += "/.vx/data/gpos/" + name;
-
-    std::string new_gpos_distpath = ctx->projectPath;
-    new_gpos_distpath += "/.vx/dist/gpos/" + name;
-
-
-
-    // Create package.config into the baseDir folder
-    {
-        std::string cmd = "mkdir " + new_gpos_path + "/";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "touch " + new_gpos_path + "/gpos.config";
-        system(cmd.c_str());
-    }
-
-    {
-        std::string cmd = "mkdir " + new_gpos_path + "/data";
-        system(cmd.c_str());
-    }
-
-    {
-        std::string cmd = "mkdir " + new_gpos_path + "/data/packages";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_gpos_path + "/data/patchs";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_gpos_path + "/data/scripts";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_gpos_path + "/data/tasklists";
-        system(cmd.c_str());
-    }
-
-
-    {
-        std::string cmd = "mkdir " + new_gpos_distpath + "/";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "touch " + new_gpos_distpath + "/gpos.dist.config";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_gpos_distpath + "/data";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_gpos_distpath + "/snapshots";
-        system(cmd.c_str());
-    }
-
-      // Create json object and store it into  "touch " + envPath + "/toolchain.config"
-      nlohmann::json j;
-      j["gpos"]["author"] = author;
-      j["gpos"]["description"] = "This is a toolchain";
-      j["gpos"]["name"] = name;
-      j["gpos"]["platform"] = "???";
-      j["gpos"]["state"] = "???";
-      j["gpos"]["type"] = "toolchain";
-      j["gpos"]["vendor"] = "???";
-      j["gpos"]["version"] = "1.0.0";
-
-      j["data"]["packages"] = "./data/packages/";
-      j["data"]["patchs"] = "./data/patchs/";
-      j["data"]["scripts"] = "./data/scripts/";
-
-      j["content"]["packages"] = nlohmann::json::array();
-      j["content"]["patchs"] = nlohmann::json::array();
-      j["content"]["tasklists"] = nlohmann::json::array();
-      
-      j["build"]["use_toolchain"] = "???";
-
-      j["configs"]["builder_arch"] = "???";
-      j["configs"]["host_arch"] = "???";
-      j["configs"]["target_arch"] = "???";
-      j["configs"]["compression"] = "???";
-
-      // Store this into toolchain.config
-      std::ofstream o(new_gpos_path + "/gpos.config");
-      o << std::setw(4) << j << std::endl;
-      o.close();
-
-      VortexMaker::RefreshGpos();
-
-}
-*/
-
-/*
-
-void VortexMaker::DeleteToolchain(const std::shared_ptr<VxToolchain>& toolchain){
-    VxContext *ctx = VortexMaker::GetCurrentContext();
-    std::string toolchain_path = ctx->projectPath;
-    toolchain_path += "/.vx/data/toolchains/" + toolchain->name;
-
-    std::string toolchain_distpath = ctx->projectPath;
-    toolchain_distpath += "/.vx/dist/toolchains/" + toolchain->name;
-
-
-    // Create package.config into the baseDir folder
-    
-    // Verify if the toolchain_path is not empty
-    if (toolchain_path != "") {
-        std::string cmd = "rm -rf " + toolchain_path + "";
-        system(cmd.c_str());
-    }
-
-
-    if (toolchain_distpath != "") {
-        std::string cmd = "rm -rf " + toolchain_distpath + "";
-        system(cmd.c_str());
-    }
-
-    ctx->IO.toolchains.erase(std::remove(ctx->IO.toolchains.begin(), ctx->IO.toolchains.end(), toolchain), ctx->IO.toolchains.end());
-
-  VortexMaker::RefreshToolchains();
-
-}
-
-*/
-
-/*
-void VortexMaker::CreateHost(const std::string& name, const std::string& author){
-    VxContext *ctx = VortexMaker::GetCurrentContext();
-
-    std::string new_host_path = ctx->projectPath;
-    new_host_path += "/.vx/data/hosts/" + name;
-
-    std::string new_toolchain_distpath = ctx->projectPath;
-    new_toolchain_distpath += "/.vx/dist/hosts/" + name;
-
-
-
-    // Create package.config into the baseDir folder
-    {
-        std::string cmd = "mkdir " + new_host_path + "/";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "touch " + new_host_path + "/host.config";
-        system(cmd.c_str());
-    }
-
-    {
-        std::string cmd = "mkdir " + new_host_path + "/data";
-        system(cmd.c_str());
-    }
-
-    {
-        std::string cmd = "mkdir " + new_host_path + "/data/packages";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_host_path + "/data/patchs";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_host_path + "/data/scripts";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_host_path + "/data/tasklists";
-        system(cmd.c_str());
-    }
-
-
-    {
-        std::string cmd = "mkdir " + new_toolchain_distpath + "/";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "touch " + new_toolchain_distpath + "/host.dist.config";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_toolchain_distpath + "/data";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_toolchain_distpath + "/snapshots";
-        system(cmd.c_str());
-    }
-
-
-
-
-      // Create json object and store it into  "touch " + envPath + "/toolchain.config"
-      nlohmann::json j;
-      j["host"]["author"] = author;
-      j["host"]["description"] = "This is a toolchain";
-      j["host"]["name"] = name;
-      j["host"]["platform"] = "???";
-      j["host"]["state"] = "???";
-      j["host"]["type"] = "toolchain";
-      j["host"]["vendor"] = "???";
-      j["host"]["version"] = "1.0.0";
-
-      j["data"]["packages"] = "./data/packages/";
-      j["data"]["patchs"] = "./data/patchs/";
-      j["data"]["scripts"] = "./data/scripts/";
-
-      j["content"]["packages"] = nlohmann::json::array();
-      j["content"]["patchs"] = nlohmann::json::array();
-      j["content"]["tasklists"] = nlohmann::json::array();
-      
-      j["build"]["use_toolchain"] = "???";
-
-      j["configs"]["builder_arch"] = "???";
-      j["configs"]["host_arch"] = "???";
-      j["configs"]["target_arch"] = "???";
-      j["configs"]["compression"] = "???";
-
-      // Store this into toolchain.config
-      std::ofstream o(new_host_path + "/host.config");
-      o << std::setw(4) << j << std::endl;
-      o.close();
-
-      VortexMaker::RefreshHosts();
-
-}
-*/
-
-
-
-/*
-void CreateCreate(std::string name, std::string pathOfTarball){
-    VxContext *ctx = VortexMaker::GetCurrentContext();
-
-
-    std::string new_package_path = ctx->projectPath;
-    new_package_path += "/.vx/data/packages/" + name;
-
-    {
-        std::string cmd = "mkdir " + new_package_path + "/";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "touch " + new_package_path + "/package.config";
-        system(cmd.c_str());
-    }
-
- nlohmann::json j;
-      j["package"]["name"] = name;
-      j["package"]["author"] = "???";
-      j["package"]["description"] = "???";
-      j["package"]["label"] = "???";
-      j["package"]["clear_after_process"] = false;
-      j["package"]["priority"] = 1;
-      j["package"]["compressed"] = "???";
-      j["package"]["filename"] = "???";
-
-      j["data"]["packages"] = "./data/packages/";
-      j["data"]["patchs"] = "./data/patchs/";
-      j["data"]["scripts"] = "./data/scripts/";
-
-      j["assets"] = nlohmann::json::array();
-      j["actions"] = nlohmann::json::array();
-
-      j["parameters"]["customOutput"] = "???";
-      j["parameters"]["useOnlyCustomConfigurationProcess"] = "not specified";
-      j["parameters"]["useOnlyCustomCompilationProcess"] = "not specified";
-      j["parameters"]["useOnlyCustomInstallationProcess"] = "not specified";
-      j["parameters"]["useCompilationOptimization"] = true;
-
-
-      j["compilation"]["configurationSuffixes"] = nlohmann::json::array();
-      j["compilation"]["configurationPrefixes"] = nlohmann::json::array();
-      j["compilation"]["compilationSuffixes"] = nlohmann::json::array();
-      j["compilation"]["compilationPrefixes"] = nlohmann::json::array();
-      j["compilation"]["installationSuffixes"] = nlohmann::json::array();
-      j["compilation"]["installationPrefixes"] = nlohmann::json::array();
-      
-      j["configs"]["builder_arch"] = "???";
-      j["configs"]["host_arch"] = "???";
-      j["configs"]["target_arch"] = "???";
-      j["configs"]["compression"] = "???";
-
-      // Store this into toolchain.config
-      std::ofstream o(new_package_path + "/package.config");
-      o << std::setw(4) << j << std::endl;
-      o.close();
-  VortexMaker::RefreshPackages();
-
-
-}
-*/
-
-/*
-
-void VortexMaker::CreateScript(const std::string& name, const std::string& author){
-    VxContext *ctx = VortexMaker::GetCurrentContext();
-
-
-    std::string new_script_path = ctx->projectPath;
-    new_script_path += "/.vx/data/scripts/" + name;
-
-
-    {
-        std::string cmd = "mkdir " + new_script_path + "/"; 
-        system(cmd.c_str());
-    }
-
-
-    // Create package.config into the baseDir folder
-    {
-        std::string cmd = "mkdir " + new_script_path + "/pool"; // for all files (to open with a file browser/editor)
-        system(cmd.c_str());
-    }
-
-      // Create json object and store it into  "touch " + envPath + "/toolchain.config"
-      nlohmann::json j;
-      j["script"]["author"] = author;
-      j["script"]["description"] = "This is a script";
-      j["script"]["name"] = name;
-
-      // Store this into toolchain.config
-      std::ofstream o(new_script_path + "/script.config");
-      o << std::setw(4) << j << std::endl;
-      o.close();
-
-      std::ofstream mainScript(new_script_path + "/pool/main.sh");
-      mainScript << std::setw(4) << "#Auto generated by VortexMaker. This is the bootsrapp of the script asset. \n #!/bin/sh" << std::endl;
-      mainScript.close();
-
-      VortexMaker::RefreshScripts();
-      
-
-    // Refresh current host
-    //this->
-}
-*/
-
-/*
-void VortexMaker::CreateToolchain(const std::string& name, const std::string& author){
-    VxContext *ctx = VortexMaker::GetCurrentContext();
-
-
-    std::string new_toolchain_path = ctx->projectPath;
-    new_toolchain_path += "/.vx/data/toolchains/" + name;
-
-    std::string new_toolchain_distpath = ctx->projectPath;
-    new_toolchain_distpath += "/.vx/dist/toolchains/" + name;
-
-
-    // Create package.config into the baseDir folder
-    {
-        std::string cmd = "mkdir " + new_toolchain_path + "/";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "touch " + new_toolchain_path + "/toolchain.config";
-        system(cmd.c_str());
-    }
-
-    {
-        std::string cmd = "mkdir " + new_toolchain_path + "/data";
-        system(cmd.c_str());
-    }
-
-    {
-        std::string cmd = "mkdir " + new_toolchain_path + "/data/packages";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_toolchain_path + "/data/patchs";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_toolchain_path + "/data/scripts";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_toolchain_path + "/data/tasklists";
-        system(cmd.c_str());
-    }
-
-
-    {
-        std::string cmd = "mkdir " + new_toolchain_distpath + "/";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "touch " + new_toolchain_distpath + "/toolchain.dist.config";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_toolchain_distpath + "/data";
-        system(cmd.c_str());
-    }
-    {
-        std::string cmd = "mkdir " + new_toolchain_distpath + "/snapshots";
-        system(cmd.c_str());
-    }
-
-      // Create json object and store it into  "touch " + envPath + "/toolchain.config"
-      nlohmann::json j;
-      j["toolchain"]["author"] = author;
-      j["toolchain"]["description"] = "This is a toolchain";
-      j["toolchain"]["name"] = name;
-      j["toolchain"]["platform"] = "???";
-      j["toolchain"]["state"] = "???";
-      j["toolchain"]["type"] = "toolchain";
-      j["toolchain"]["vendor"] = "???";
-      j["toolchain"]["version"] = "1.0.0";
-
-      j["data"]["packages"] = "./data/packages/";
-      j["data"]["patchs"] = "./data/patchs/";
-      j["data"]["scripts"] = "./data/scripts/";
-
-      j["content"]["packages"] = nlohmann::json::array();
-      j["content"]["patchs"] = nlohmann::json::array();
-      j["content"]["tasklists"] = nlohmann::json::array();
-      
-      j["configs"]["builder_arch"] = "???";
-      j["configs"]["builder_platform"] = "???";
-      j["configs"]["builder_vendor"] = "???";
-      j["configs"]["builder_cpu"] = "???";
-      j["configs"]["builder_fpu"] = "???";
-      
-      j["configs"]["host_arch"] = "???";
-      j["configs"]["host_platform"] = "???";
-      j["configs"]["host_vendor"] = "???";
-      j["configs"]["host_cpu"] = "???";
-      j["configs"]["host_fpu"] = "???";
-
-      j["configs"]["target_arch"] = "???";
-      j["configs"]["target_platform"] = "???";
-      j["configs"]["target_vendor"] = "???";
-      j["configs"]["target_cpu"] = "???";
-      j["configs"]["target_fpu"] = "???";
-
-      j["configs"]["toolchain_type"] = "???";
-       
-      j["configs"]["compression"] = "???";
-
-      // Store this into toolchain.config
-      std::ofstream o(new_toolchain_path + "/toolchain.config");
-      o << std::setw(4) << j << std::endl;
-      o.close();
-
-
-      nlohmann::json dist;
-      dist["configs"]["AR"] = "???";
-      dist["configs"]["AS"] = "???";
-      dist["configs"]["CC"] = "???";
-      dist["configs"]["CXX"] = "???";
-      dist["configs"]["LD"] = "???";
-      dist["configs"]["RANLIB"] = "???";
-      dist["configs"]["STRIP"] = "???";
-    // Store this into toolchain.config
-    std::ofstream disto(new_toolchain_distpath + "/toolchain.dist.config");
-    disto << std::setw(4) << j << std::endl;
-    disto.close();
-
-
-
-  VortexMaker::RefreshToolchains();
-      
-
-    // Refresh current host
-    //this->
-}
-*/
-
-
-
+/**
+ * @brief Deploy an event with the specified arguments.
+ * 
+ * This function deploys an event with the specified event name and arguments.
+ * It iterates through each EventManager in the Vortex context, checks if the output event
+ * matches the provided event name, and calls the corresponding event function with the arguments.
+ * 
+ * @param args A shared pointer to the arguments for the event.
+ * @param event_name The name of the event to deploy.
+ */
 VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name){
+    // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
-    for(auto em : ctx.IO.em){
-      for(auto output_event : em->m_output_events){
-        if(output_event->m_name == event_name){
-          output_event->m_foo(args);
-        }
-      }
+
+    // Ensure args is not null before proceeding
+    if (!args) {
+      VortexMaker::LogError("Core", "Null argument provided to DeployEvent.");
+      return;
     }
-  
+
+    // Iterate through each EventManager in the Vortex context
+    for (auto em : ctx.IO.em) {
+        // Iterate through each output event in the EventManager
+        for (auto output_event : em->m_output_events) {
+            // Check if the output event name matches the provided event name
+            if (output_event->m_name == event_name) {
+                // Check if the event function pointer is valid
+                if (output_event->m_foo) {
+                    // Call the corresponding event function with the provided arguments
+                    output_event->m_foo(args);
+                } else {
+                    // Print an error message if the event function is null
+                    VortexMaker::LogError("Core", "Event function is null for event " + event_name);
+                }
+            }
+        }
+    }
 }
 
 
-
+/**
+ * @brief Deploy an event with the specified arguments and callback.
+ * 
+ * This function deploys an event with the specified event name and arguments.
+ * It iterates through each EventManager in the Vortex context, checks if the output event
+ * matches the provided event name, and calls the corresponding event function with the arguments.
+ * Additionally, it calls the provided callback function after executing the event function.
+ * 
+ * @param args A shared pointer to the arguments for the event.
+ * @param event_name The name of the event to deploy.
+ * @param callback The callback function to be called after executing the event function.
+ */
 VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, void(*callback)(std::shared_ptr<hArgs> args)){
+    // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
-    for(auto em : ctx.IO.em){
-      for(auto output_event : em->m_output_events){
-        if(output_event->m_name == event_name){
-          output_event->m_foo(args);
-          callback(args);
+
+    // Ensure args is not null before proceeding
+    if (!args) {
+      VortexMaker::LogError("Core", "Null argument provided to DeployEvent.");
+      return;
+    }
+
+    // Ensure callback is not null before proceeding
+    if (!callback) {
+      VortexMaker::LogError("Core", "Null callback provided to DeployEvent.");
+      return;
+    }
+
+    // Iterate through each EventManager in the Vortex context
+    for (auto em : ctx.IO.em) {
+        // Iterate through each output event in the EventManager
+        for (auto output_event : em->m_output_events) {
+            // Check if the output event name matches the provided event name
+            if (output_event->m_name == event_name) {
+                // Check if the event function pointer is valid
+                if (output_event->m_foo) {
+                    // Call the corresponding event function with the provided arguments
+                    output_event->m_foo(args);
+                    // Call the provided callback function with the arguments
+                    callback(args);
+                } else {
+                    // Print an error message if the event function is null
+                    VortexMaker::LogError("Core", "Event function is null for event " + event_name);
+                }
+            }
         }
-      }
     }
 }
 
 
-
+/**
+ * @brief Call an event of a specific module with the specified arguments.
+ * 
+ * This function calls an event with the specified event name and arguments
+ * for a specific module in the Vortex context.
+ * It iterates through each EventManager in the Vortex context, checks if the module
+ * name matches the provided module name, and then checks if the input event name
+ * matches the provided event name. If both conditions are met, it calls the
+ * corresponding event function with the provided arguments.
+ * 
+ * @param args A shared pointer to the arguments for the event.
+ * @param event_name The name of the event to call.
+ * @param module_name The name of the module where the event should be called.
+ */
 VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name){
+    // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
-    for(auto em : ctx.IO.em){
 
-      if(em->m_name == module_name){
-      for(auto input_events : em->m_input_events){
+    // Ensure args is not null before proceeding
+    if (!args) {
+      VortexMaker::LogError("Core", "Null argument provided to DeployEvent.");
+      return;
+    }
 
-        if(input_events->m_name == event_name){
-            input_events->m_foo(args);
+    // Iterate through each EventManager in the Vortex context
+    for (auto em : ctx.IO.em) {
+        // Check if the EventManager corresponds to the specified module
+        if (em->m_name == module_name) {
+            // Iterate through each input event in the EventManager
+            for (auto input_event : em->m_input_events) {
+                // Check if the input event name matches the provided event name
+                if (input_event->m_name == event_name) {
+                    // Check if the event function pointer is valid
+                    if (input_event->m_foo) {
+                        // Call the corresponding event function with the provided arguments
+                        input_event->m_foo(args);
+                    } else {
+                        // Print an error message if the event function is null
+                        VortexMaker::LogError("Core", "Event function is null for event " + event_name);
+                    }
+                }
+            }
         }
-
-      }
-      }
-
     }
 }
 
 
+/**
+ * @brief Call an event of a specific module with the specified arguments and callback.
+ * 
+ * This function calls an event with the specified event name and arguments
+ * for a specific module in the Vortex context.
+ * It iterates through each EventManager in the Vortex context, checks if the module
+ * name matches the provided module name, and then checks if the input event name
+ * matches the provided event name. If both conditions are met, it calls the
+ * corresponding event function with the provided arguments and then calls
+ * the provided callback function with the arguments.
+ * 
+ * @param args A shared pointer to the arguments for the event.
+ * @param event_name The name of the event to call.
+ * @param module_name The name of the module where the event should be called.
+ * @param callback The callback function to be called after executing the event function.
+ */
 VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs>& args, const std::string& event_name, const std::string& module_name, void(*callback)(std::shared_ptr<hArgs> args)){
+    // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
-    for(auto em : ctx.IO.em){
 
-      if(em->m_name == module_name){
-      for(auto input_events : em->m_input_events){
+    // Ensure args is not null before proceeding
+    if (!args) {
+      VortexMaker::LogError("Core", "Null argument provided to CallModuleEvent.");
+      return;
+    }
 
-        if(input_events->m_name == event_name){
-            input_events->m_foo(args);
-            callback(args);
+    // Ensure callback is not null before proceeding
+    if (!callback) {
+      VortexMaker::LogError("Core", "Null callback provided to CallModuleEvent.");
+      return;
+    }
+
+    // Iterate through each EventManager in the Vortex context
+    for (auto em : ctx.IO.em) {
+        // Check if the EventManager corresponds to the specified module
+        if (em->m_name == module_name) {
+            // Iterate through each input event in the EventManager
+            for (auto input_event : em->m_input_events) {
+                // Check if the input event name matches the provided event name
+                if (input_event->m_name == event_name) {
+                    // Check if the event function pointer is valid
+                    if (input_event->m_foo) {
+                        // Call the corresponding event function with the provided arguments
+                        input_event->m_foo(args);
+                        // Call the provided callback function with the arguments
+                        callback(args);
+                    } else {
+                        // Print an error message if the event function is null
+                        VortexMaker::LogError("Core", "Event function is null for event " + event_name +  " in module " + module_name);
+                    }
+                }
+            }
         }
-
-      }
-      }
-
     }
 }
-
-
-
-// TODO after : Module loading system, plugins loader. 
 
 
 #endif // VORTEX_DISABLE

@@ -17,49 +17,6 @@
 #ifndef MODULE_INTERFACE_H
 #define MODULE_INTERFACE_H
 
-class Parameters {
-private:
-    std::map<std::string, std::variant<int, double, std::string, void*>> params;
-
-public:
-    Parameters(std::initializer_list<std::pair<std::string, std::variant<int, double, std::string, void*>>> initList) {
-        for (const auto& pair : initList) {
-            params.insert(pair);
-        }
-    }
-
-    Parameters(){};
-
-    template<typename T>
-    void setParameter(const std::string& key, const T& value) {
-        params[key] = value;
-    }
-
-    template<typename T>
-    T getParameter(const std::string& key) const {
-        auto it = params.find(key);
-        if (it != params.end()) {
-            try {
-                return std::get<T>(it->second);
-            } catch (const std::bad_variant_access&) {
-                throw std::runtime_error("Param type isn't valid");
-            }
-        } else {
-            throw std::out_of_range("Key doesn't exist");
-        }
-    }
-
-    void displayParameters() const {
-        for (const auto& pair : params) {
-            std::visit([](const auto& value) {
-                std::cout << value << ' ';
-            }, pair.second);
-            std::cout << std::endl;
-        }
-    }
-};
-
-
 class ModuleFunction
 {
 public:
@@ -71,7 +28,7 @@ public:
 
     void(*m_foo)();
     std::string m_name;
-    std::shared_ptr<Parameters> m_params;
+    //std::shared_ptr<Parameters> m_params;
     std::vector<std::string> m_params_def;
 };
 
@@ -146,100 +103,20 @@ public:
     void AddOutputEventHandler();
 
     template<typename T>
-    void AddArg(const std::string& key, T value)
-    {
-        if(this->m_args == NULL){
-            std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
-            this->m_args = args;
-            this->m_args->add<T>(key.c_str(), value);
-        }
-        else{
-            this->m_args->add<T>(key.c_str(), value);
-        }
+    void AddArg(const std::string& key, T value);
 
-    }
+    void AddLogo(const uint8_t* hexa, size_t size);
+    void AddLogo(const std::string& relative_path);
+    void AddFunction(void (*item)(), const std::string& name);
 
-    void AddLogo(const uint8_t* hexa, size_t size)
-    {
-        this->m_logo = hexa;
-        this->m_logo_size = size;
-    }
+    //void AddFunction(void (*item)(), const std::string& name, Parameters params);
+    void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
+    void AddOutputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
+    std::shared_ptr<ModuleInterface> GetInterface();
 
-    void AddLogo(const std::string& relative_path)
-    {
-    }
-
-    // Functions methods
-    void AddFunction(void (*item)(), const std::string& name)
-    {
-        std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(item, name);
-        this->m_functions.push_back(p_function);
-    }
-/*
-    void AddFunction(void (*item)(), const std::string& name)
-    {
-        std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(item, name);
-        this->m_functions.push_back(p_function);
-    }*/
-
-    void AddFunction(void (*item)(), const std::string& name, Parameters params)
-    {
-        std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(item, name);
-        p_function->m_params = std::make_shared<Parameters>(params);
-        this->m_functions.push_back(p_function);
-    }
-
-
-    /**
-     * @brief Other elements can exec event that added here
-    */
-    void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name)
-    {
-        std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
-        this->m_input_events.push_back(p_event);
-    }
-
-    /**
-     * @brief When other elements, modules or plugin deploy a event indireclty, function that added here can handle this remote event 
-    */
-    void AddOutputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name)
-    {
-        std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(item, name);
-        this->m_output_events.push_back(p_event);
-    }
-
-    std::shared_ptr<ModuleInterface> GetInterface(){
-        return std::make_shared<ModuleInterface>(*this);
-    }
-
-    // GetReturn get in args "FunctionName.params.return"
-    // GetReturn get in args "InputEvent.params.return"
-
-    // TODO : Creer des events et les assigner a des id unqiues
-
-    void ExecFunction(const std::string& name){
-        for(auto foo : this->m_functions){
-            if(foo->m_name == name){
-                foo->m_foo();
-            }
-        }
-    }
-
-    void ExecInputEvent(const std::string& name, std::shared_ptr<hArgs> args){
-        for(auto event : this->m_input_events){
-            if(event->m_name == name){
-                event->m_foo(args);
-            }
-        }
-    }
-    
-    void ExecOutputEvent(const std::string& name, std::shared_ptr<hArgs> args){
-        for(auto event : this->m_output_events){
-            if(event->m_name == name){
-                event->m_foo(args);
-            }
-        }
-    }
+    void ExecFunction(const std::string& name);
+    void ExecInputEvent(const std::string& name, std::shared_ptr<hArgs> args);
+    void ExecOutputEvent(const std::string& name, std::shared_ptr<hArgs> args);
 
     template<typename T>
     void AddModuleItemParam(const void *item, std::pair<std::string, T> parameter);
@@ -275,16 +152,12 @@ public:
     std::vector<std::string> m_contributors;
     const uint8_t* m_logo;
     size_t m_logo_size;
-    //VxContext* m_ctx;
 
-    // std::shared_ptr<Walnut::Image> m_module_icon;
     std::vector<std::shared_ptr<ModuleFunction>> m_functions;
     std::vector<std::shared_ptr<ModuleOutputEvent>> m_output_events;
     std::vector<std::shared_ptr<ModuleInputEvent>> m_input_events;
 
 private:
-    
-
     std::vector<std::shared_ptr<ModuleDummyFunction>> m_dummy_functions;
     std::vector<std::shared_ptr<ModuleRenderInstance>> m_render_instances;
 
