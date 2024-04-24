@@ -1,15 +1,6 @@
-[submodule "lib/glfw"]
-	path = lib/glfw
-	url = https://github.com/infiniteHQ/glfw
+[submodule "lib/json"]
+	path = lib/json
+	url = https://github.com/nlohmann/json
 [submodule "lib/uikit"]
 	path = lib/uikit
 	url = https://github.com/infiniteHQ/uikit
-[submodule "lib/stb-image"]
-	path = lib/stb-image
-	url = https://github.com/infiniteHQ/stb-image
-[submodule "lib/glm"]
-	path = lib/glm
-	url = https://github.com/infiniteHQ/glm
-[submodule "lib/imgui"]
-	path = lib/imgui
-	url = https://github.com/infiniteHQ/imgui
