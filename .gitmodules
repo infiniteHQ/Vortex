@@ -1,0 +1,6 @@
+[submodule "lib/uikit"]
+	path = lib/uikit
+	url = https://github.com/infiniteHQ/uikit
+[submodule "lib/json"]
+	path = lib/json
+	url = https://github.com/nlohmann/json
