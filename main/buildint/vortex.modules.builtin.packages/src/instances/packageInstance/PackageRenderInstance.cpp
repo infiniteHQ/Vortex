@@ -11,68 +11,68 @@ PackageRenderInstance::PackageRenderInstance(VxContext *ctx, std::shared_ptr<Pac
 
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_save, icons::i_save_size, w, h);
-        m_SaveIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_save, icons::i_save_size, w, h);
+        m_SaveIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-        m_AddIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_add, icons::i_add_size, w, h);
+        m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_folder, icons::i_folder_size, w, h);
-        m_FolderIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_folder, icons::i_folder_size, w, h);
+        m_FolderIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_settings, icons::i_settings_size, w, h);
-        m_SettingsIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_settings, icons::i_settings_size, w, h);
+        m_SettingsIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_host, icons::i_host_size, w, h);
-        m_HostIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_host, icons::i_host_size, w, h);
+        m_HostIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_database, icons::i_database_size, w, h);
-        m_DatabaseIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_database, icons::i_database_size, w, h);
+        m_DatabaseIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_pen, icons::i_pen_size, w, h);
-        m_EditIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_pen, icons::i_pen_size, w, h);
+        m_EditIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
-        m_RefreshIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
+        m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_build, icons::i_build_size, w, h);
-        m_BuildIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_build, icons::i_build_size, w, h);
+        m_BuildIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_package, icons::i_package_size, w, h);
-        m_PackageIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_package, icons::i_package_size, w, h);
+        m_PackageIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
-        m_TrashIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
+        m_TrashIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
 };

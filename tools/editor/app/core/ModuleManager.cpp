@@ -1,6 +1,5 @@
-#include "ModuleManager.hpp"
 
-#include <iostream>
+#include "ModuleManager.hpp"
 
 static int item_current = 0;
 
@@ -28,7 +27,7 @@ static std::vector<uint8_t> loadPngHex(const std::string &filePath)
 
     return hexContent;
 }
-static std::vector<std::shared_ptr<Walnut::Image>> logos;
+static std::vector<std::shared_ptr<UIKit::Image>> logos;
 static std::vector<ImTextureID> textures;
 
 static void logo(const std::string &path, int index, int total)
@@ -41,8 +40,8 @@ static void logo(const std::string &path, int index, int total)
 
     if (total > logos.size())
     {
-        void *data = Walnut::Image::Decode(hexData, hexTable.size(), w, h);
-        std::shared_ptr<Walnut::Image> _icon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data); // ML
+        void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
+        std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data); // ML
         logos.push_back(_icon);
         VX_FREE(data);
         ImTextureID addIcon = logos[index]->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -58,26 +57,26 @@ ModuleManager::ModuleManager(VxContext *_ctx, InstanceFactory *_factory)
     this->factory = _factory;
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_list, icons::i_list_size, w, h);
-        m_ListIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_list, icons::i_list_size, w, h);
+        m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
-        m_RefreshIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
+        m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
-        m_TrashIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
+        m_TrashIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-        m_AddIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_add, icons::i_add_size, w, h);
+        m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
 }

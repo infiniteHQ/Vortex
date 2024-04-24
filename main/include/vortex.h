@@ -8,7 +8,7 @@
 // Versions & Build identification
 //_____________________________________________________________________________
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if VORTEX_VERSION_NUM >= 12345')
-#define VORTEX_VERSION       "1.1"
+#define VORTEX_VERSION       "1.1.0"
 #define VORTEX_VERSION_NUM   10000
 
 //_____________________________________________________________________________
@@ -71,13 +71,13 @@
 #include <dirent.h>
 #include <deque>
 
-#include "../../lib/imgui/imgui.h"
-#include "../../lib/imgui/imgui_internal.h"
-#include "../../lib/imgui/backends/imgui_impl_vulkan.h"
-#include "../../lib/imgui/backends/imgui_impl_glfw.h"
-#include "../../lib/stb-image/stb_image.h"
+#include "../../lib/newuikit/lib/imgui/imgui.h"
+#include "../../lib/newuikit/lib/imgui/imgui_internal.h"
+#include "../../lib/newuikit/lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../../lib/newuikit/lib/imgui/backends/imgui_impl_glfw.h"
+#include "../../lib/newuikit/lib/stb-image/stb_image.h"
 //#include "../../lib/glm/glm/glm.hpp"
-#include "../../lib/glfw/include/GLFW/glfw3.h"
+#include "../../lib/newuikit/lib/glfw/include/GLFW/glfw3.h"
 
 
 namespace fs = std::filesystem;

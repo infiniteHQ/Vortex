@@ -78,6 +78,7 @@ namespace VortexMaker
                         new_module->m_group = json_data["group"].get<std::string>();
                         new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
 
+                        
                         for(auto dep : json_data["deps"]){
                             std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
                             dependence->name = dep["name"].get<std::string>();
@@ -87,6 +88,8 @@ namespace VortexMaker
                             }
                             new_module->m_dependencies.push_back(dependence);
                         }
+                        
+                        new_module->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
                     }
                     catch (std::exception e)
                     {

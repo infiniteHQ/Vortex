@@ -69,7 +69,7 @@ public:
     void AddModuleInputEvent(const ModuleInputEvent& event);
     void AddModuleRenderInstance(const std::shared_ptr<ModuleRenderInstance> &event);
     void AddModuleFunction(const ModuleFunction& event);
-    std::vector<std::shared_ptr<ModuleRenderInstance>> GetModuleRenderInstances() {return this->m_render_instances;};
+    std::vector<std::shared_ptr<ModuleRenderInstance>> GetModuleRenderInstances();
 
     void LogInfo(const std::string& message);
     void LogWarning(const std::string& message);
@@ -96,6 +96,7 @@ public:
     bool        m_auto_exec;
     std::vector<std::string> m_contributors;
     std::vector<std::shared_ptr<ModuleInterfaceDep>> m_dependencies;
+    std::vector<std::string> m_supported_versions;
     const uint8_t* m_logo;
     size_t m_logo_size;
 

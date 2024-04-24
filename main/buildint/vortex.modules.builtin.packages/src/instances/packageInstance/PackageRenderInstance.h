@@ -1,4 +1,4 @@
-#include "../../../../../../lib/uikit/uikit.h"
+#include "../../../../../../lib/newuikit/uikit.h"
 #include "../../../../../../main/include/vortex.h"
 #include "../../../assets/logo.h"
 #include "../../../../../../main/include/vortex_internals.h"
@@ -41,18 +41,18 @@ public:
     std::shared_ptr<PackageSave> m_currentSave;
     ImGuiID dockspaceID;
 
-    std::shared_ptr<Walnut::Image> m_HostIcon;
-    std::shared_ptr<Walnut::Image> m_Icon;
-    std::shared_ptr<Walnut::Image> m_SaveIcon;
-    std::shared_ptr<Walnut::Image> m_RefreshIcon;
-    std::shared_ptr<Walnut::Image> m_DatabaseIcon;
-    std::shared_ptr<Walnut::Image> m_TrashIcon;
-    std::shared_ptr<Walnut::Image> m_PackageIcon;
-    std::shared_ptr<Walnut::Image> m_EditIcon;
-    std::shared_ptr<Walnut::Image> m_BuildIcon;
-    std::shared_ptr<Walnut::Image> m_SettingsIcon;
-    std::shared_ptr<Walnut::Image> m_AddIcon;
-    std::shared_ptr<Walnut::Image> m_FolderIcon;
+    std::shared_ptr<UIKit::Image> m_HostIcon;
+    std::shared_ptr<UIKit::Image> m_Icon;
+    std::shared_ptr<UIKit::Image> m_SaveIcon;
+    std::shared_ptr<UIKit::Image> m_RefreshIcon;
+    std::shared_ptr<UIKit::Image> m_DatabaseIcon;
+    std::shared_ptr<UIKit::Image> m_TrashIcon;
+    std::shared_ptr<UIKit::Image> m_PackageIcon;
+    std::shared_ptr<UIKit::Image> m_EditIcon;
+    std::shared_ptr<UIKit::Image> m_BuildIcon;
+    std::shared_ptr<UIKit::Image> m_SettingsIcon;
+    std::shared_ptr<UIKit::Image> m_AddIcon;
+    std::shared_ptr<UIKit::Image> m_FolderIcon;
 };
 
 #endif // PackageModulesInstance_H

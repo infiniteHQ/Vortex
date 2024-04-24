@@ -1,14 +1,4 @@
 
-
-// UI (with imgui)
-#include "../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
-#include "../../../lib/uikit/Source/editor/Application.h"
-#include "../../../lib/uikit/Source/editor/EntryPoint.h"
-#include "../../../lib/uikit/Platform/GUI/editor/Image.h"
-#include "../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
-#include "../../../lib/uikit/Platform/GUI/editor/UI/Notification.h"
-#include "../../../lib/uikit/Platform/GUI/editor/UI/IconsFontAwesome6.h"
-
 #include "../instances/instance.h"
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
@@ -54,13 +44,10 @@ public:
   };
 };
 
-class ExampleLayer : public Walnut::Layer
+class ExampleLayer : public UIKit::Layer
 {
 public:
-  ExampleLayer(VxContext *ctx)
-  {
-    this->m_ctx = ctx;
-  };
+  ExampleLayer(){};
 
   virtual void OnUIRender() override
   {
@@ -138,21 +125,22 @@ private:
   std::vector<std::string> instanciedWindowsNames;
 };
 
-Walnut::Application *Walnut::CreateApplication(int argc, char **argv, VxContext *ctx)
+UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
 {
   int port = atoi(argv[1]);
 
-  Walnut::ApplicationSpecification spec;
-  std::shared_ptr<ExampleLayer> exampleLayer = std::make_shared<ExampleLayer>(ctx);
+  UIKit::ApplicationSpecification spec;
+  std::shared_ptr<ExampleLayer> exampleLayer = std::make_shared<ExampleLayer>();
+  exampleLayer->m_ctx = VortexMaker::GetCurrentContext();
   std::string name = exampleLayer->m_ctx->name + " - Vortex Editor";
   spec.Name = name;
   spec.CustomTitlebar = true;
   spec.IconPath = "icon.png";
 
-  Walnut::Application *app = new Walnut::Application(spec);
+  UIKit::Application *app = new UIKit::Application(spec);
 
   app->PushLayer(exampleLayer);
-  app->SetMenubarCallback([app, exampleLayer, ctx]()
+  app->SetMenubarCallback([app, exampleLayer]()
                           {
                             static int number = 1;
                             if (ImGui::BeginMenu("File"))

@@ -1,9 +1,8 @@
 
-#include "../../../../lib/uikit/Source/editor/Application.h"
-#include "../../../../lib/uikit/Platform/GUI/editor/ImGui/ImGuiTheme.h"
-#include "../../../../lib/uikit/Platform/GUI/editor/Image.h"
-#include "../../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
-#include "../../../../lib/uikit/Assets/icons.h"
+#ifndef CONTENTBROWSER_H
+#define CONTENTBROWSER_H
+
+#include "../src/instanceFactory.h"
 
 	class ContentBrowserPanel
 	{
@@ -16,10 +15,12 @@
 		std::filesystem::path m_BaseDirectory;
 		std::filesystem::path m_CurrentDirectory;
 		
-		std::shared_ptr<Walnut::Image> m_FileIcon;
-		std::shared_ptr<Walnut::Image> m_DirectoryIcon;
+		std::shared_ptr<UIKit::Image> m_FileIcon;
+		std::shared_ptr<UIKit::Image> m_DirectoryIcon;
 
 
 		 ImTextureID m_DirectoryIconTexture;
 		 ImTextureID m_FileIconTexture;
 	};
+
+#endif // CONTENTBROWSER_H

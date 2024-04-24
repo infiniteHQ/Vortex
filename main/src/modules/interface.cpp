@@ -350,9 +350,21 @@ void ModuleInterface::Start()
 {
     this->CheckDependencies();
 
+    std::string version = VORTEX_VERSION;    
+    
+    std::size_t last_point = version.find('.', version.find('.') + 1);
+    std::string major = version.substr(0, last_point);
+    
+        if (!major.empty() && major.back() == '.') {
+        major.pop_back();
+    }
+
     // Check if all dependencies are satisfied
     bool allDependenciesSatisfied = true;
+    bool isVersionCompatible = false;
+
     std::vector<std::pair<std::string, std::string>> unsatisfiedDependencies;
+
     for (auto dependency : this->m_dependencies)
     {
         if (!dependency->satisfied)
@@ -367,6 +379,12 @@ void ModuleInterface::Start()
         }
     }
 
+    for(auto version : this->m_supported_versions){
+        if(version == major){
+            isVersionCompatible = true;
+        }
+    }
+
     // If any dependency is not satisfied, log and set state to "failed"
     if (!allDependenciesSatisfied)
     {
@@ -375,6 +393,15 @@ void ModuleInterface::Start()
         {
             this->LogFatal("Failed to retrieve: " + unsatisfiedDep.first + " with version(s) " + unsatisfiedDep.second);
         }
+        this->m_state = "failed";
+        return;
+    }
+
+    if (!isVersionCompatible)
+    {   
+
+        this->LogFatal("The Vortex version (" + version + ", try to find \""+major+"\") is incompatible with \"" + this->m_name + "\" supported version(s).");
+
         this->m_state = "failed";
         return;
     }
@@ -441,3 +468,9 @@ void ModuleInterface::Stop()
 void ModuleInterface::CheckVersion()
 {
 }
+
+
+std::vector<std::shared_ptr<ModuleRenderInstance>> ModuleInterface::GetModuleRenderInstances() 
+{
+    return this->m_render_instances;
+};

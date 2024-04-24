@@ -52,6 +52,7 @@ public:
     {
         
 		ImGui::Begin("Tasklists");
+        std::cout << this->m_name << std::endl;
         for(auto tasklist : CTasklistsModule->m_tasklists){
             ImGui::Text(tasklist->label.c_str());
             ImGui::SameLine();
@@ -65,6 +66,7 @@ public:
 
             }
         }
+        std::cout << this->m_name << std::endl;
         ImGui::End();
         // "Launcher" of regitered toolchains
     }

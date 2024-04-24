@@ -1,19 +1,14 @@
 // UI (with imgui)
-#include "../../../lib/uikit/Source/editor/Application.h"
-#include "../../../lib/uikit/Platform/GUI/editor/ImGui/ImGuiTheme.h"
-#include "../../../lib/uikit/Platform/GUI/editor/Image.h"
-#include "../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
-#include "../../../lib/uikit/Platform/GUI/editor/UI/Notification.h"
-#include "../../../lib/uikit/Platform/GUI/editor/UI/IconsFontAwesome6.h"
-#include "../../../lib/uikit/Assets/icons.h"
 
+#ifndef InstanceWindow_H
+#define InstanceWindow_H
+
+// UI (with imgui)
+#include "../../../../lib/newuikit/uikit.h"
 
 #include "../../../../main/include/vortex.h"
 #include "../../../../main/include/vortex_internals.h"
 #include "../../../../main/include/vortex_core.h"
-
-#ifndef InstanceWindow_H
-#define InstanceWindow_H
 
 using namespace VortexMaker;
 
@@ -292,26 +287,26 @@ public:
     {
         {
             uint32_t w, h;
-            void *data = Walnut::Image::Decode(icons::i_save, icons::i_save_size, w, h);
-            m_SaveIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+            void *data = UIKit::Image::Decode(icons::i_save, icons::i_save_size, w, h);
+            m_SaveIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
             free(data);
         }
         {
             uint32_t w, h;
-            void *data = Walnut::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-            m_AddIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+            void *data = UIKit::Image::Decode(icons::i_add, icons::i_add_size, w, h);
+            m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
             free(data);
         }
         {
             uint32_t w, h;
-            void *data = Walnut::Image::Decode(icons::i_folder, icons::i_folder_size, w, h);
-            m_FolderIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+            void *data = UIKit::Image::Decode(icons::i_folder, icons::i_folder_size, w, h);
+            m_FolderIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
             free(data);
         }
         {
             uint32_t w, h;
-            void *data = Walnut::Image::Decode(icons::i_settings, icons::i_settings_size, w, h);
-            m_SettingsIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+            void *data = UIKit::Image::Decode(icons::i_settings, icons::i_settings_size, w, h);
+            m_SettingsIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
             free(data);
         }
 
@@ -327,11 +322,11 @@ public:
     std::shared_ptr<VxHost> host;
     ImGuiID dockspaceID;
 
-    std::shared_ptr<Walnut::Image> m_Icon;
-    std::shared_ptr<Walnut::Image> m_SaveIcon;
-    std::shared_ptr<Walnut::Image> m_SettingsIcon;
-    std::shared_ptr<Walnut::Image> m_AddIcon;
-    std::shared_ptr<Walnut::Image> m_FolderIcon;
+    std::shared_ptr<UIKit::Image> m_Icon;
+    std::shared_ptr<UIKit::Image> m_SaveIcon;
+    std::shared_ptr<UIKit::Image> m_SettingsIcon;
+    std::shared_ptr<UIKit::Image> m_AddIcon;
+    std::shared_ptr<UIKit::Image> m_FolderIcon;
 };
 
 #endif

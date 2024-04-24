@@ -12,20 +12,20 @@ ProjectViewer::ProjectViewer(VxContext *_ctx, InstanceFactory *_factory)
 
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_list, icons::i_list_size, w, h);
-        m_ListIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_list, icons::i_list_size, w, h);
+        m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
-        m_RefreshIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
+        m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
         uint32_t w, h;
-        void *data = Walnut::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-        m_AddIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+        void *data = UIKit::Image::Decode(icons::i_add, icons::i_add_size, w, h);
+        m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
 }

@@ -5,7 +5,7 @@
     "proper_name": "Tasks",
     "auto_exec": true,
     "version": "1.0.0",
-    "author": "Infinite Tech",
+    "author": "Infinite",
     "contributors": [
         "Diego E. Moreno <d@infinite.si>"
     ],
@@ -18,5 +18,5 @@
     ],
     "path": "./build/libplugin.so",
     "picture": "./assets/logo.png",
-    "description": "A very sampel"
+    "description": "A simple task manager with task metrics, tracers, loging, dependences handling, and more !"
 }

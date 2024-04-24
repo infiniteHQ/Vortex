@@ -5,15 +5,15 @@
 	{
 		{
 			uint32_t w, h;
-			void* data = Walnut::Image::Decode(icons::i_FolderIcon, icons::i_FolderIcon_size, w, h);
-			this->m_DirectoryIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+			void* data = UIKit::Image::Decode(icons::i_FolderIcon, icons::i_FolderIcon_size, w, h);
+			this->m_DirectoryIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
 		 	this->m_DirectoryIconTexture = m_DirectoryIcon->GetImGuiTextureID();
 			free(data);
 		}
 		{
 			uint32_t w, h;
-		  	void* data = Walnut::Image::Decode(icons::i_file, icons::i_file_size, w, h);
-			this->m_FileIcon = std::make_shared<Walnut::Image>(w, h, Walnut::ImageFormat::RGBA, data);
+		  	void* data = UIKit::Image::Decode(icons::i_file, icons::i_file_size, w, h);
+			this->m_FileIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
 			this->m_FileIconTexture = m_FileIcon->GetImGuiTextureID();
 			free(data);
 		}

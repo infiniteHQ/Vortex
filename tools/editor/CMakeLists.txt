@@ -14,13 +14,13 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/../../main/src/vortex.cpp
 
     # editor requirements
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/ImGui/ImGuiTheme.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/UI/UI.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/UI/Spinner.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/ApplicationGUI.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/Image.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Source/editor/Core/Log.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Assets/icons.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/platform/GUI/editor/ImGui/ImGuiTheme.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/platform/GUI/editor/UI/UI.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/platform/GUI/editor/UI/Spinner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/platform/GUI/editor/ApplicationGUI.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/platform/GUI/editor/Image.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/src/core/Log.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/assets/icons.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ContentBrowser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectViewer.cpp
@@ -76,10 +76,10 @@ target_include_directories(editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
 # editor requirements
 find_package(Vulkan REQUIRED)
 find_package(spdlog REQUIRED)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/glfw glfw_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/glm glm_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/imgui imgui_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/stb-image stb_image_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/lib/glfw glfw_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/lib/glm glm_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/lib/imgui imgui_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/lib/stb-image stb_image_build)
 target_link_libraries(editor PUBLIC Vulkan::Vulkan)
 target_link_libraries(editor PUBLIC glfw)
 target_link_libraries(editor PUBLIC imgui)
@@ -87,4 +87,4 @@ target_link_libraries(editor PUBLIC glm)
 target_link_libraries(editor PUBLIC stbimage)
 target_link_libraries(editor PUBLIC spdlog::spdlog)
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/Platform/GUI/editor/icon.png DESTINATION /usr/include/vortex)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/newuikit/platform/GUI/editor/icon.png DESTINATION /usr/include/vortex)

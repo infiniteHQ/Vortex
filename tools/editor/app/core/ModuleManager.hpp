@@ -1,9 +1,8 @@
 
-#include "../../../../lib/uikit/Source/editor/Application.h"
-#include "../../../../lib/uikit/Platform/GUI/editor/ImGui/ImGuiTheme.h"
-#include "../../../../lib/uikit/Platform/GUI/editor/Image.h"
-#include "../../../../lib/uikit/Platform/GUI/editor/UI/UI.h"
-#include "../../../../lib/uikit/Assets/icons.h"
+#ifndef MODULEMANAGER_H
+#define MODULEMANAGER_H
+
+
 #include "../src/instanceFactory.h"
 
 class ModuleManager
@@ -23,10 +22,12 @@ private:
 
 	std::shared_ptr<VxToolchain> latest_toolchain;
 
-    std::shared_ptr<Walnut::Image> m_ListIcon;
-    std::shared_ptr<Walnut::Image> m_RefreshIcon;
-    std::shared_ptr<Walnut::Image> m_AddIcon;
-    std::shared_ptr<Walnut::Image> m_TrashIcon;
+    std::shared_ptr<UIKit::Image> m_ListIcon;
+    std::shared_ptr<UIKit::Image> m_RefreshIcon;
+    std::shared_ptr<UIKit::Image> m_AddIcon;
+    std::shared_ptr<UIKit::Image> m_TrashIcon;
 
 	bool CollapseAll = false;
 };
+
+#endif // MODULEMANAGER_H

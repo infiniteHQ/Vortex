@@ -6,6 +6,7 @@
 
 #include "./tools/editor/app/src/editor.h"
 #include "./main/include/vortex.h"
+#include "./lib/newuikit/src/EntryPoint.h"
 
 bool CheckDirectory(){
     std::ifstream mainconfig("vortex.config");
@@ -81,13 +82,15 @@ int main(int argc, char *argv[])
 
             std::thread receiveThread;
             try{
-            if (std::string(argv[2]) == "-v"){
-                std::thread Thread([&]() { VortexMaker::DebugTools(argc, argv, InitRuntime(true)); });
+            if (std::string(argv[2]) == "-v"){ 
+                InitRuntime(true);
+                std::thread Thread([&]() { VortexMaker::VortexInterface(argc, argv); });
                 receiveThread.swap(Thread);
             }
             }
             catch(std::exception e){
-                std::thread Thread([&]() { VortexMaker::DebugTools(argc, argv, InitRuntime(false)); });
+                InitRuntime(false);
+                std::thread Thread([&]() { VortexMaker::VortexInterface(argc, argv); });
                 receiveThread.swap(Thread);
 
             }

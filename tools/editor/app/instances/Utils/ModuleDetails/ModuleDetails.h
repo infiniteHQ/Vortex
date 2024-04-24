@@ -47,25 +47,25 @@ public:
     VxContext *m_ctx;
     std::shared_ptr<ModuleInterface> m_module;
 
-    std::shared_ptr<Walnut::Image> m_ToolchainIcon;
-    std::shared_ptr<Walnut::Image> m_Icon;
-    std::shared_ptr<Walnut::Image> m_EyeIcon;
-    std::shared_ptr<Walnut::Image> m_WarningIcon;
-    std::shared_ptr<Walnut::Image> m_FlipBookIcon;
-    std::shared_ptr<Walnut::Image> m_ErrorIcon;
-    std::shared_ptr<Walnut::Image> m_SuccessIcon;
-    std::shared_ptr<Walnut::Image> m_UnknowIcon;
-    std::shared_ptr<Walnut::Image> m_TaskListIcon;
-    std::shared_ptr<Walnut::Image> m_SaveIcon;
-    std::shared_ptr<Walnut::Image> m_RefreshIcon;
-    std::shared_ptr<Walnut::Image> m_DatabaseIcon;
-    std::shared_ptr<Walnut::Image> m_TrashIcon;
-    std::shared_ptr<Walnut::Image> m_PackageIcon;
-    std::shared_ptr<Walnut::Image> m_EditIcon;
-    std::shared_ptr<Walnut::Image> m_BuildIcon;
-    std::shared_ptr<Walnut::Image> m_SettingsIcon;
-    std::shared_ptr<Walnut::Image> m_AddIcon;
-    std::shared_ptr<Walnut::Image> m_FolderIcon;
+    std::shared_ptr<UIKit::Image> m_ToolchainIcon;
+    std::shared_ptr<UIKit::Image> m_Icon;
+    std::shared_ptr<UIKit::Image> m_EyeIcon;
+    std::shared_ptr<UIKit::Image> m_WarningIcon;
+    std::shared_ptr<UIKit::Image> m_FlipBookIcon;
+    std::shared_ptr<UIKit::Image> m_ErrorIcon;
+    std::shared_ptr<UIKit::Image> m_SuccessIcon;
+    std::shared_ptr<UIKit::Image> m_UnknowIcon;
+    std::shared_ptr<UIKit::Image> m_TaskListIcon;
+    std::shared_ptr<UIKit::Image> m_SaveIcon;
+    std::shared_ptr<UIKit::Image> m_RefreshIcon;
+    std::shared_ptr<UIKit::Image> m_DatabaseIcon;
+    std::shared_ptr<UIKit::Image> m_TrashIcon;
+    std::shared_ptr<UIKit::Image> m_PackageIcon;
+    std::shared_ptr<UIKit::Image> m_EditIcon;
+    std::shared_ptr<UIKit::Image> m_BuildIcon;
+    std::shared_ptr<UIKit::Image> m_SettingsIcon;
+    std::shared_ptr<UIKit::Image> m_AddIcon;
+    std::shared_ptr<UIKit::Image> m_FolderIcon;
 };
 
 #endif // ModuleDetails_H
