@@ -71,13 +71,13 @@
 #include <dirent.h>
 #include <deque>
 
-#include "../../lib/newuikit/lib/imgui/imgui.h"
-#include "../../lib/newuikit/lib/imgui/imgui_internal.h"
-#include "../../lib/newuikit/lib/imgui/backends/imgui_impl_vulkan.h"
-#include "../../lib/newuikit/lib/imgui/backends/imgui_impl_glfw.h"
-#include "../../lib/newuikit/lib/stb-image/stb_image.h"
+#include "../../lib/uikit/lib/imgui/imgui.h"
+#include "../../lib/uikit/lib/imgui/imgui_internal.h"
+#include "../../lib/uikit/lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../../lib/uikit/lib/imgui/backends/imgui_impl_glfw.h"
+#include "../../lib/uikit/lib/stb-image/stb_image.h"
 //#include "../../lib/glm/glm/glm.hpp"
-#include "../../lib/newuikit/lib/glfw/include/GLFW/glfw3.h"
+#include "../../lib/uikit/lib/glfw/include/GLFW/glfw3.h"
 
 
 namespace fs = std::filesystem;

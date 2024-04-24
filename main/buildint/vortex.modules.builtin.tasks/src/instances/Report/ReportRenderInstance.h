@@ -4,6 +4,10 @@
 #include "../../../../../../main/include/vortex_internals.h"
 #include "../../module.h"
 
+// TODO : Creation of projects, toolchain & packages
+// TODO : Install & Get modules
+// Github readme + Deps spdlog & json + Github Actions
+// Finish video
 
 #ifndef ReportRenderInstance_H
 #define ReportRenderInstance_H
