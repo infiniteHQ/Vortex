@@ -4,7 +4,7 @@
 #define InstanceWindow_H
 
 // UI (with imgui)
-#include "../../../../lib/newuikit/uikit.h"
+#include "../../../../lib/uikit/uikit.h"
 
 #include "../../../../main/include/vortex.h"
 #include "../../../../main/include/vortex_internals.h"

@@ -6,7 +6,7 @@
 
 #include "./tools/editor/app/src/editor.h"
 #include "./main/include/vortex.h"
-#include "./lib/newuikit/src/EntryPoint.h"
+#include "./lib/uikit/src/EntryPoint.h"
 
 bool CheckDirectory(){
     std::ifstream mainconfig("vortex.config");
