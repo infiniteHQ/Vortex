@@ -10,9 +10,9 @@
 </a>
 
 <div align="center">
-<a title="Code Quality" href="https://www.codefactor.io/repository/github/infinitehq/uikit"><img alt="Code Quality" src="https://img.shields.io/codefactor/grade/github/infinitehq/uikit?longCache=true&style=for-the-badge&label=Code%20Quality&logoColor=fff&logo=CodeFactor&branch=master"></a>
+<a title="Code Quality" href="https://www.codefactor.io/repository/github/infinitehq/VortexMaker"><img alt="Code Quality" src="https://img.shields.io/codefactor/grade/github/infinitehq/VortexMaker?longCache=true&style=for-the-badge&label=Code%20Quality&logoColor=fff&logo=CodeFactor&branch=master"></a>
   <a title="Discord Server" href="https://discord.gg/H2wptkecUg"><img alt="Discord Server" src="https://img.shields.io/discord/1095333825762046194?label=Discord&logo=Discord&logoColor=fff&style=for-the-badge"></a>
-<a title="'Build' workflow Status" href="https://img.shields.io/github/actions/workflow/status/infiniteHQ/uikit/build.yml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/infiniteHQ/uikit/build.yml?longCache=true&style=for-the-badge&label=Build&logoColor=fff&logo=GitHub%20Actions&branch=main"></a>
+<a title="'Build' workflow Status" href="https://img.shields.io/github/actions/workflow/status/infiniteHQ/VortexMaker/build.yml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/infiniteHQ/VortexMaker/build.yml?longCache=true&style=for-the-badge&label=Build&logoColor=fff&logo=GitHub%20Actions&branch=main"></a>
   <a title="Modules & Plugins" href=""><img alt="Modules & Plugins" src="https://img.shields.io/badge/Modules-Supported-brightgreen?logo=stackedit&logoColor=%23FFFFFF&style=for-the-badge"></a>
 </div>
 
@@ -26,18 +26,15 @@ Transform your environment into a playground, a sandbox with Vortex. Master this
 ## Features
 <img height="60px" alt="Code Quality" src=".github/imgs/projects.png">
 
-With Vortex, create and collaborate on new or existing projects. 
+With Vortex, create and collaborate on new or existing projects. You can simply create your project with the command **vortex -cp \<ProjectName>**, go into the project folder and execute the command **vortex -g**. (Why not create a project manager at the future.) And then, you can add modules/plugins in your project to make it as you want. You can also create or add assets and start a powerfull adventure !
 
 <img height="60px" alt="Code Quality" src=".github/imgs/modules.png">
 
-Add modules to have dedicated featrures relative to what you want to create, you can have toolchains modules,
+This project was made for modularity and modifications, you can so add or remove all components you want, and adapt Vortex with your usecases and your problematics. Add modules to have dedicated featrures relative to what you want to create, you can have toolchains modules. You can also create your owns modules easely (check our template) and give it to the community for example ! :)
 
 <img height="60px" alt="Code Quality" src=".github/imgs/components.png">
 
-
-
-- Create a project, collaborate and manage it
-- Create, install and modify modules, plugins & assets
+Vortex give you the possibility to create your own assets and components, you can so create all things you want (like toolchains, systems, apps, libs), and add it into your project.
 
 ### Builtin modules/plugins
 
