@@ -259,7 +259,6 @@ void ModuleManager::OnImGuiRender()
             }
 
             {
-
                 ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Contributors : ");
                 int i = 0;
                 for (auto contributor : ctx->IO.em[i]->m_contributors)
@@ -300,7 +299,6 @@ void ModuleManager::OnImGuiRender()
 
             if (ctx->IO.em[i]->m_state == "failed")
             {
-
                 if (ImGui::ImageButtonWithText(listIcon, "Retry to launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
                     std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, ctx->IO.em[i]);
@@ -315,7 +313,6 @@ void ModuleManager::OnImGuiRender()
             }
             if (ctx->IO.em[i]->m_state == "unknow" || ctx->IO.em[i]->m_state == "stopped")
             {
-
                 if (ImGui::ImageButtonWithText(listIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
                     ctx->IO.em[i]->Start();
@@ -338,7 +335,6 @@ void ModuleManager::OnImGuiRender()
 
 void ModuleManager::menubar()
 {
-
     static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static bool open_ADDMODULE = false;
@@ -368,7 +364,6 @@ void ModuleManager::menubar()
     {
         if (ImGui::BeginPopupModal("Add module(s)", NULL, ImGuiWindowFlags_MenuBar))
         {
-
     if (ImGui::BeginMenuBar())
     {
         if (ImGui::Button("Close"))
@@ -475,25 +470,21 @@ void ModuleManager::menubar()
                     }
 
                     {
-
                         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Name : ");
                         ImGui::SameLine();
                         ImGui::Text(ctx->IO.sys_em[i]->m_name.c_str());
                     }
                     {
-
                         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) : ");
                         ImGui::SameLine();
                         ImGui::Text(ctx->IO.sys_em[i]->m_author.c_str());
                     }
                     {
-
                         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Description : ");
                         ImGui::SameLine();
                         ImGui::Text(ctx->IO.sys_em[i]->m_description.c_str());
                     }
                     {
-
                         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Contributors : ");
                         int i = 0;
                         for (auto contributor : ctx->IO.sys_em[i]->m_contributors)
@@ -521,8 +512,6 @@ void ModuleManager::menubar()
                 }
                 ImGui::EndChildFrame();
             }
-
-            
             ImGui::EndPopup();
         }
     }
