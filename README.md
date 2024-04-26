@@ -10,9 +10,9 @@
 </a>
 
 <div align="center">
-<a title="Code Quality" href="https://www.codefactor.io/repository/github/infinitehq/VortexMaker"><img alt="Code Quality" src="https://img.shields.io/codefactor/grade/github/infinitehq/VortexMaker?longCache=true&style=for-the-badge&label=Code%20Quality&logoColor=fff&logo=CodeFactor&branch=master"></a>
+<a title="Code Quality" href="https://www.codefactor.io/repository/github/infinitehq/Vortex"><img alt="Code Quality" src="https://img.shields.io/codefactor/grade/github/infinitehq/Vortex?longCache=true&style=for-the-badge&label=Code%20Quality&logoColor=fff&logo=CodeFactor&branch=master"></a>
   <a title="Discord Server" href="https://discord.gg/H2wptkecUg"><img alt="Discord Server" src="https://img.shields.io/discord/1095333825762046194?label=Discord&logo=Discord&logoColor=fff&style=for-the-badge"></a>
-<a title="'Build' workflow Status" href="https://img.shields.io/github/actions/workflow/status/infiniteHQ/VortexMaker/build.yml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/infiniteHQ/VortexMaker/build.yml?longCache=true&style=for-the-badge&label=Build&logoColor=fff&logo=GitHub%20Actions&branch=main"></a>
+<a title="'Build' workflow Status" href="https://img.shields.io/github/actions/workflow/status/infiniteHQ/Vortex/build.yml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/infiniteHQ/Vortex/build.yml?longCache=true&style=for-the-badge&label=Build&logoColor=fff&logo=GitHub%20Actions&branch=main"></a>
   <a title="Modules & Plugins" href=""><img alt="Modules & Plugins" src="https://img.shields.io/badge/Modules-Supported-brightgreen?logo=stackedit&logoColor=%23FFFFFF&style=for-the-badge"></a>
 </div>
 
@@ -93,11 +93,13 @@ A tasklist can contain a group of tasks, and order it by priority, collect logs,
 
 
 #### Planned builtin modules
+<div align="center">
 <img height="40px" alt="Tasklists" src=".github/imgs/scripts.png">
 <img height="40px" alt="Tasklists" src=".github/imgs/hosts.png">
 <img height="40px" alt="Tasklists" src=".github/imgs/embeddedapp.png">
 <img height="40px" alt="Tasklists" src=".github/imgs/embeddedsystem.png">
 <img height="40px" alt="Tasklists" src=".github/imgs/gpos.png">
+</div>
 
 ## Special thanks
 
