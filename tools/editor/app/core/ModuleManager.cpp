@@ -310,6 +310,7 @@ void ModuleManager::OnImGuiRender()
 
                 if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
+                // Behavior
                 }
             }
             if (ctx->IO.em[i]->m_state == "unknow" || ctx->IO.em[i]->m_state == "stopped")
@@ -323,6 +324,7 @@ void ModuleManager::OnImGuiRender()
 
                 if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
+                // Behavior
                 }
             }
 
@@ -375,20 +377,24 @@ void ModuleManager::menubar()
         }
         if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
         {
+                // Behavior
         }
 
         ImGui::Separator();
         if (ImGui::ImageButtonWithText(addIcon, "Browse public modules", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
         {
+                // Behavior
         }
         ImGui::Separator();
         if (ImGui::BeginMenu("Filters"))
         {
             if (ImGui::MenuItem("Build/Rebuild single parts"))
             {
+                // Behavior
             }
             if (ImGui::MenuItem("Global build"))
             {
+                // Behavior
             }
             ImGui::EndMenu();
         }
@@ -509,6 +515,7 @@ void ModuleManager::menubar()
 
                 if (ImGui::ImageButtonWithText(addIcon, "Add to the current project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
+                // Behavior
                 }
                     ImGui::EndChild();
                 }
@@ -532,15 +539,18 @@ void ModuleManager::menubar()
 
         if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
         {
+            // Behavior
         }
         ImGui::Separator();
         if (ImGui::BeginMenu("Filters"))
         {
             if (ImGui::MenuItem("Build/Rebuild single parts"))
             {
+                // Behavior
             }
             if (ImGui::MenuItem("Global build"))
             {
+                // Behavior
             }
             ImGui::EndMenu();
         }
@@ -548,9 +558,11 @@ void ModuleManager::menubar()
         {
             if (ImGui::MenuItem("Build/Rebuild single parts"))
             {
+                // Behavior
             }
             if (ImGui::MenuItem("Global build"))
             {
+                // Behavior
             }
             ImGui::EndMenu();
         }
@@ -558,9 +570,11 @@ void ModuleManager::menubar()
         {
             if (ImGui::MenuItem("Build/Rebuild single parts"))
             {
+                // Behavior
             }
             if (ImGui::MenuItem("Global build"))
             {
+                // Behavior
             }
             ImGui::EndMenu();
         }

@@ -424,7 +424,6 @@ struct hString
     char* Data;
     size_t Size;
     size_t Capacity;
-
 };
 //=============================================================================
 
@@ -448,6 +447,7 @@ public:
     ~hArgs() {for (const auto& pair : arguments) {delete pair.value;}}
 
     hVector<hString> registered_arguments;
+
 private:
     class ArgumentBase {public: virtual ~ArgumentBase() = default;};
 
@@ -456,7 +456,7 @@ private:
     public:
         ArgumentHolder(T value) : storedValue(value) {}
         T getValue() const { return storedValue;}
-    private:
+private:
         T storedValue;
     };
 
@@ -489,10 +489,7 @@ struct VxScript{
     std::string author = "unknow"; // Proper name of the script
     std::string description = "unknow";  // Short description of the script
     std::string configFilePath = "unknow";  // Short description of the script
-
-
     std::string path = "unknow"; // Path to script
-
     void Refresh();
     void PushSave(std::shared_ptr<VxScriptSave> save);
 };
@@ -505,35 +502,27 @@ struct ToolchainSave{
     char description[128] = "unknow";
     char type[128] = "unknow";
     char state[128] = "unknow";
-
     char host_arch[128] = "unknow";
     char host_vendor[128] = "unknow";
     char host_platform[128] = "unknow";
     char host_cpu[128] = "unknow";
     char host_fpu[128] = "unknow";
-
     char builder_arch[128] = "unknow";
     char builder_vendor[128] = "unknow";
     char builder_platform[128] = "unknow";
     char builder_cpu[128] = "unknow";
     char builder_fpu[128] = "unknow";
-
     char target_arch[128] = "unknow";
     char target_vendor[128] = "unknow";
     char target_platform[128] = "unknow";
     char target_cpu[128] = "unknow";
     char target_fpu[128] = "unknow";
-
     char toolchain_type[128] = "unknow";
-
     char compression[128] = "unknow";
     char toolchains_compilation[128] = "unknow";
-
-
     char localPackagePath[128] = "unknow";
     char localScriptsPath[128] = "unknow";
     char localPatchsPath[128] = "unknow";
-
     std::vector<std::pair<char[128], char[128]>> registeredPackages;
     std::vector<std::pair<char[128], char[128]>> registeredTasklists;
 };
@@ -551,20 +540,15 @@ struct HostSave{
     char host_arch[128] = "unknow";
     char target_arch[128] = "unknow";
     char toolchainToUse[128] = "unknow";
-
-
     char localPackagePath[128] = "unknow";
     char localScriptsPath[128] = "unknow";
     char localPatchsPath[128] = "unknow";
-
     std::vector<std::pair<char[128], char[128]>> registeredPackages;
-
 };
 
 
 struct VxActionReport{
     std::string actionType;
-
     std::string label;
     std::string result;
     std::string state;
@@ -574,7 +558,6 @@ struct VxActionReport{
 struct VxHostSnapshot{
     std::string date;
     std::string name;
-
    // VxHostCurrentSystem snapshotSystem; // to import from 
 };
 struct VxDistHost{
@@ -624,8 +607,6 @@ struct VxDistToolchain{
     std::string path;
     std::string vendor;
     std::string platform;
-
-
     std::string CC;
     std::string CXX;
     std::string AR;
@@ -633,7 +614,6 @@ struct VxDistToolchain{
     std::string RANLIB;
     std::string LD;
     std::string STRIP;
-    
 };
 
 
@@ -655,7 +635,6 @@ public:
     }
 
     hMap<std::string, CreatorFunction> creatorMap;
-
 };
 
 
@@ -674,7 +653,6 @@ public:
 class Module {
     public:
         virtual void test();
-
 };
 
 
