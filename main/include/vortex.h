@@ -76,7 +76,7 @@
 #include "../../lib/uikit/lib/stb-image/stb_image.h"
 //#include "../../lib/glm/glm/glm.hpp"
 #include "../../lib/uikit/lib/glfw/include/GLFW/glfw3.h"
-#include "../../lib/uikit/lib/spdlog/include/spdlog/spdlog.h"
+#include "../../lib/spdlog/include/spdlog/spdlog.h"
 
 #include "../../lib/json/single_include/nlohmann/json.hpp"
 

@@ -75,6 +75,7 @@ target_include_directories(editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
 # editor requirements
 find_package(Vulkan REQUIRED)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/spdlog spdlog_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/lib/glfw glfw_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/lib/glm glm_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/lib/imgui imgui_build)
