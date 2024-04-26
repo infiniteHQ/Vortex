@@ -36,144 +36,73 @@ This project was made for modularity and modifications, you can so add or remove
 
 Vortex give you the possibility to create your own assets and components, you can so create all things you want (like toolchains, systems, apps, libs), and add it into your project.
 
-### Builtin modules/plugins
+## Quick installation
+`NOTE: We actually work on the Windows support, stay tuned :)`
+
+#### Install the core on Linux
+```bash
+git clone https://github.com/infiniteHQ/Vortex
+cd Vortex/build/in_system/
+mkdir build && cd build
+bash ./build.sh
+```
+
+#### Install a module
+```bash
+cd path/to/a/module
+bash ./build.sh
+bash ./install.sh # or copy the folder on the .vx/modules of a project
+```
+
+## Quick start
+#### Create a project
+```bash
+vortex -cp <ProjectName> # or --create-project
+```
+
+#### Open project
+```bash
+cd path/to/your/project/
+vortex -g <Parameters> # or --gui
+```
+
+## Builtin modules/plugins
 
 With builtin modules, you can develop embedded applications (for microcontrollers, etc.) is also an area of interest for Vortex. With its set of tools, it will now be easier to develop our future applications. Vortex builtin modules also allows the creation of various tools such as toolchains, packages, build hosts, scripts, deployment systems, maintenance, and update systems. 
 
 Creating complete systems is now easy with Vortex. Imagine, develop, build, maintain, and update them with many tools to optimize the process and reduce the cost of development and production.
 
-- Packages module
-- Toolchains module
-- Tasks/Tasklists module
 
-### Download & build project
+<img height="60px" alt="Toolchains" src=".github/imgs/toolchains.png">
 
-- Linux
-
-```bash
-git clone https://github.com/infiniteHQ/VortexMaker
-cd VortexMaker/build/in_system/
-mkdir build && cd build
-bash ./build.sh
-```
-
-### Get started
-
-- Create a project
-
-```bash
-vortex -cp ProjectName
-```
-
-- Open a project with the graphical editor (execute it into the project folder)
-
----
+A toolchain is a collection of software tools used in the development process to translate source code into executable binaries, libraries, or firmware. It typically includes compilers, linkers, assemblers, debuggers, and libraries. The compiler translates high-level code into machine code, the linker combines multiple object files into executables, and the debugger helps identify and fix issues. For embedded systems, cross-compilers may be used to generate code for different architectures. Overall, a toolchain streamlines the software development process by automating tasks and ensuring compatibility across various platforms and environments.
+**This module allow you to create custom-made toolchain(s)**
 
 
+<img height="60px" alt="Packages" src=".github/imgs/packages.png">
 
-## General Features
-- Operating systems creation tools
-- Embedded systems creation tools
-- Embedded apps creation tools
-- Independant components creation tools (toolchains, packages, scripts, etc...)
-- Pre/production & Post/Production tools
-- Maintenance tools
-- Update tools
+A package is a tarball that contain contents for a system. It can generate binaries, libraries, configurations or other things to a toolchain, a host build environment, a general purposes operating system or a embedded system. 
 
-- #### Projects
-    - Project gestion & saves handle
-    - Export to production
-    - Easy collaboration
-- ####  Toolchains
-    - Toolchain development (manage packages, scripts and tasks)
-    - Toolchain compilation
-    - Toolchain debugging (gdb, testers, etc...)
-- #### Hosts & Build Environments
-    - Host development (packages, skeletons, routines, etc...)
-    - Host compilation (from a toolchain for exemple)
-    - Host linking and final components build
-    - Host debugging runtime
-- #### General Purpose Operating Systems (GPOS)
-    - System development & production
+<img height="60px" alt="Tasks" src=".github/imgs/tasks.png">
+
+This module can create, manage, execute et report advances metrics of a task. The task is a simple fonction and it can be executed by this module on a task processor.
+
+<img height="60px" alt="Tasklists" src=".github/imgs/tasklists.png">
+
+A tasklist can contain a group of tasks, and order it by priority, collect logs, gives generics arguments or components, or automate the process of executing tasks in a project.
 
 
-- Operating Systems, Embedded Filesystems & Embbeded app creation
-- Full toolchain creation
-- Complete package & tarball creation
-- Advanced snapshot/recovery of a project
-- Production tools
+#### Planned builtin modules
+<img height="40px" alt="Tasklists" src=".github/imgs/scripts.png">
+<img height="40px" alt="Tasklists" src=".github/imgs/hosts.png">
+<img height="40px" alt="Tasklists" src=".github/imgs/embeddedapp.png">
+<img height="40px" alt="Tasklists" src=".github/imgs/embeddedsystem.png">
+<img height="40px" alt="Tasklists" src=".github/imgs/gpos.png">
 
+## Special thanks
 
+- The amazing immediate mode UI system "ImGui" from Ocornut (https://github.com/ocornut/imgui)
 
-## Build & Installation
+- The json library of nlohmann (https://github.com/nlohmann/json)
 
-#### Linux/Unix Build
-```
-git clone https://github.com/infiniteHQ/VortexMaker.git
-cd VortexMaker
-mkdir build && cd build
-cmake ..
-sudo make install
-```
-
-
-#### Linux Distributions
-```
-
-
-## Usage
-Usage : vortex <paramater(s)...> <information(s)...>
-
-- -h --help :               See all parameters
-- -g --gui :                Open the Vortex graphical interface
-- -I --init  <...> :        Initialize a new project
-- -i --install  <...> :     Install a new content
-- -b --build <...> :        Build the project
-- -a --add <...> :          Add a content (packages, libs, toolchains...)
-- -p --preview <...> :      Preview final component(s) of the project
-
-
-## Create your first operating system
-##### Create your first project
-For this example, let's initialize a project with a sample, such as a basic Linux operating system.
-
-*vortex -cp \<project_name\> \<template\>*
-```
-vortex -cp MySystem linux_os
-```
-This command will create a system called *MySystem* based on *linux_os* template.
-
-
-##### Develop your system...
-First, enter your project with 
-
-```
-cd ./MySystem
-```
-
-
-Once inside, you can interact with it using various commands:
-
-*Open the project editor*
-```
-vortex -g
-```
-or
-```
-vortex --gui
-```
-
-*Add a package into the project*
-```
-vortex -a package <path_to_your_package>
-```
-
-*Build all toolchains*
-```
-vortex -b toolchains
-```
-
-*Build all project*
-```
-vortex -b all
-```
+- The logger library of gabime (https://github.com/gabime/spdlog)
