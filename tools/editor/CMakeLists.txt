@@ -75,7 +75,6 @@ target_include_directories(editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
 # editor requirements
 find_package(Vulkan REQUIRED)
-find_package(spdlog REQUIRED)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/lib/glfw glfw_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/lib/glm glm_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/lib/imgui imgui_build)
@@ -85,6 +84,6 @@ target_link_libraries(editor PUBLIC glfw)
 target_link_libraries(editor PUBLIC imgui)
 target_link_libraries(editor PUBLIC glm)
 target_link_libraries(editor PUBLIC stbimage)
-target_link_libraries(editor PUBLIC spdlog::spdlog)
+target_link_libraries(editor PUBLIC spdlog)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/platform/GUI/editor/icon.png DESTINATION /usr/include/vortex)

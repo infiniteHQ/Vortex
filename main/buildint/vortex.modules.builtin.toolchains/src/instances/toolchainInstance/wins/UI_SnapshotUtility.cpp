@@ -128,7 +128,7 @@ static ImTextureID toolIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_L
                     static char label[128];
 
                     ImGui::TableNextRow();
-                    for (int column = 0; column < 2; column++)
+                    for (int column = 0; column < 4; column++)
                     {
                         ImGui::TableSetColumnIndex(column);
 
@@ -156,9 +156,9 @@ static ImTextureID toolIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_L
                         }
                     }
                 }
+                ImGui::EndTable();
         }
 
-                ImGui::EndTable();
         
         }
 
