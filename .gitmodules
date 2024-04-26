@@ -7,3 +7,15 @@
 [submodule "lib/spdlog"]
 	path = lib/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "main/builtint/vortex.modules.builtin.toolchains"]
+	path = main/builtint/vortex.modules.builtin.toolchains
+	url = https://github.com/infiniteHQ/vortex.modules.builtin.toolchains
+[submodule "main/builtint/vortex.modules.builtin.packages"]
+	path = main/builtint/vortex.modules.builtin.packages
+	url = https://github.com/infiniteHQ/vortex.modules.builtin.packages
+[submodule "main/builtint/vortex.modules.builtin.tasks"]
+	path = main/builtint/vortex.modules.builtin.tasks
+	url = https://github.com/infiniteHQ/vortex.modules.builtin.tasks
+[submodule "main/builtint/vortex.modules.builtin.tasklists"]
+	path = main/builtint/vortex.modules.builtin.tasklists
+	url = https://github.com/infiniteHQ/vortex.modules.builtin.tasklists
