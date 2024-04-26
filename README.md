@@ -42,8 +42,8 @@ Vortex give you the possibility to create your own assets and components, you ca
 #### Install the core on Linux
 ```bash
 git clone https://github.com/infiniteHQ/Vortex
+git submodule update --init --recursive
 cd Vortex/build/in_system/
-mkdir build && cd build
 bash ./build.sh
 ```
 
