@@ -70,8 +70,6 @@ struct CreateTemporaryUser : public Task
       std::string cmd = "mkdir -pv /home/vortex";
       auto [output, result] = toolchain->exec_cmd(cmd.c_str());
 
-      sleep(10);
-
       if (result == 0)
         this->addCheckVerdict("add_vortex_home", "success", output, cmd);
       if (result != 0)

@@ -34,6 +34,13 @@ VxContext* InitRuntime(bool logger){
     return ctx;
 }
 
+
+VxContext* InitBlankRuntime(bool logger){ 
+    std::cout << "Initializing runtime..." << std::endl;
+    VxContext* ctx = VortexMaker::CreateContext();
+    ctx->logger = logger;
+    return ctx;
+}
 /**
  * @brief : Entry point of main Vortex runtime command.
 */
@@ -56,6 +63,12 @@ int main(int argc, char *argv[])
             std::cout << "Press a key and hit ENTER to continue ..." << std::endl;
             std::string ui;
             std::cin >> ui;
+        }
+        else if (std::string(argv[1]) == "-i")
+        {
+            std::string current_path = std::filesystem::current_path();
+            InitBlankRuntime(true);
+            VortexMaker::InstallModuleToSystem(current_path);
         }
         else if (std::string(argv[1]) == "-cp" || std::string(argv[1]) == "--create-project")
         {

@@ -36,13 +36,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/editor editor_build)
 target_link_libraries(vortex_shared PUBLIC editor)
 
 
-# Trouvez la bibliothèque nlohmann/json installée
-find_package(nlohmann_json REQUIRED)
-
-# Liens avec la bibliothèque nlohmann/json
-target_link_libraries(vortex_shared PRIVATE nlohmann_json::nlohmann_json)
-
-
 # Création de l'exécutable principal
 add_executable(vortex ${VORTEX_SOURCES} main.cpp)
 

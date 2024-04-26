@@ -176,6 +176,7 @@ struct VxIO {
   // EM / Editor Modules
   std::vector<void *> em_handles;
   std::vector<std::shared_ptr<ModuleInterface>> em;
+  std::vector<std::shared_ptr<ModuleInterface>> sys_em;
 };
 
 

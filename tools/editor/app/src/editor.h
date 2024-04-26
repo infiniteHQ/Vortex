@@ -155,12 +155,10 @@ UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
                             {
                               if (ImGui::MenuItem("Project Settings", "Main configurations of this project"))
                               {
-                                app->Close();
                               }
                               ImGui::Separator();
                               if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project"))
                               {
-                                app->Close();
                               }
                               if (ImGui::MenuItem("Manage modules", "Project file manager", &exampleLayer->ShowModulesManager))
                               {
@@ -172,7 +170,6 @@ UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
                             {
                               if (ImGui::MenuItem("Show bottom toolbar", "Get some usefull tools in a bottom bar."))
                               {
-                                app->Close();
                               }
                               if (ImGui::MenuItem("Show simplified header", "Reduce the size of header"))
                               {
@@ -199,19 +196,15 @@ UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
                             {
                               if (ImGui::MenuItem("News", "Get latest Vortex news"))
                               {
-                                app->Close();
                               }
                               if (ImGui::MenuItem("Community", "Join a community of creators"))
                               {
-                                app->Close();
                               }
                               if (ImGui::MenuItem("Tutorials", "Get bunch of tutorials"))
                               {
-                                app->Close();
                               }
                               if (ImGui::MenuItem("Documentation", "See official documentation of Vortex Maker"))
                               {
-                                app->Close();
                               }
                               ImGui::Separator();
                               if (ImGui::MenuItem("Exit"))

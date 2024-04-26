@@ -7,15 +7,15 @@
  * This function recursively searches for files in the specified directory and its subdirectories.
  * If a file with the specified filename is found, its path is added to the provided vector of filenames.
  * 
- * @param chemin The path of the directory to search in.
+ * @param path The path of the directory to search in.
  * @param filename The name of the file to search for.
  * @param file A vector to store the paths of the found files.
  * @return The path of the first found file matching the filename, or "null" if no file is found.
  */
-VORTEX_API std::string VortexMaker::SearchFilesRecursive(const fs::path &chemin, const std::string &filename, std::vector<std::string> &file)
+VORTEX_API std::string VortexMaker::SearchFilesRecursive(const fs::path &path, const std::string &filename, std::vector<std::string> &file)
 {
   // Iterate through each entry in the directory
-  for (const auto &entry : fs::directory_iterator(chemin))
+  for (const auto &entry : fs::directory_iterator(path))
   {
     // If the entry is a regular file and its filename contains the specified filename
     if (entry.is_regular_file() && entry.path().filename().string().find(filename) != std::string::npos)
@@ -52,6 +52,29 @@ VORTEX_API std::vector<std::string> VortexMaker::SearchFiles(const std::string &
   
   // Call the recursive function to search for files
   VortexMaker::SearchFilesRecursive(fs::current_path() / path, filename, fichiersTest);
+  
+  // Return the vector containing the paths of found files
+  return fichiersTest;
+}
+
+
+/**
+ * @brief SearchFiles searches for files in a directory.
+ * 
+ * This function searches for files in the specified directory and its subdirectories (in system variant).
+ * It returns a vector containing the paths of all files found matching the specified filename.
+ * 
+ * @param path The relative path of the directory to search in.
+ * @param filename The name of the file to search for.
+ * @return A vector containing the paths of all files found matching the filename.
+ */
+VORTEX_API std::vector<std::string> VortexMaker::SearchSystemFiles(const std::string &path, const std::string &filename)
+{
+  // Initialize a vector to store the paths of found files
+  std::vector<std::string> fichiersTest;
+  
+  // Call the recursive function to search for files
+  VortexMaker::SearchFilesRecursive(path, filename, fichiersTest);
   
   // Return the vector containing the paths of found files
   return fichiersTest;

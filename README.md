@@ -3,18 +3,76 @@
 <a href="https://infinite.si">
   <h1 align="center">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="./.github/imgs/banner-dark.png">
-      <img height="250px" src="./.github/imgs/banner-light.png">
+      <source media="(prefers-color-scheme: dark)" srcset="./.github/imgs/main.png">
+      <img height="250px" src="./.github/imgs/main.png">
     </picture>
   </h1>
 </a>
 
-![VortexMaker Editor](./.github/imgs/editor.png)
+<div align="center">
+<a title="Code Quality" href="https://www.codefactor.io/repository/github/infinitehq/uikit"><img alt="Code Quality" src="https://img.shields.io/codefactor/grade/github/infinitehq/uikit?longCache=true&style=for-the-badge&label=Code%20Quality&logoColor=fff&logo=CodeFactor&branch=master"></a>
+  <a title="Discord Server" href="https://discord.gg/H2wptkecUg"><img alt="Discord Server" src="https://img.shields.io/discord/1095333825762046194?label=Discord&logo=Discord&logoColor=fff&style=for-the-badge"></a>
+<a title="'Build' workflow Status" href="https://img.shields.io/github/actions/workflow/status/infiniteHQ/uikit/build.yml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/infiniteHQ/uikit/build.yml?longCache=true&style=for-the-badge&label=Build&logoColor=fff&logo=GitHub%20Actions&branch=main"></a>
+  <a title="Modules & Plugins" href=""><img alt="Modules & Plugins" src="https://img.shields.io/badge/Modules-Supported-brightgreen?logo=stackedit&logoColor=%23FFFFFF&style=for-the-badge"></a>
+</div>
+
+## What is it ?
+Vortex is a comprehensive open creation platform for creators and makers. The primary goal of this platform is to empower everyone to create systems, real-world apps, embedded applications, user environment apps, networking solutions, and more—while upholding the values of top-notch technology: security, safety, efficiency, and quality. This editor aims to provide users access to best practices and excellent tools.
+
+## Allow everyone to make everythings
+
+Transform your environment into a playground, a sandbox with Vortex. Master this environment to manipulate data, services, apps, etc. Turn the real world into a sandbox and shape it to your liking, regardless of the project.
+
+## Features
+<img height="60px" alt="Code Quality" src=".github/imgs/projects.png">
+
+With Vortex, create and collaborate on new or existing projects. 
+
+<img height="60px" alt="Code Quality" src=".github/imgs/modules.png">
+
+Add modules to have dedicated featrures relative to what you want to create, you can have toolchains modules,
+
+<img height="60px" alt="Code Quality" src=".github/imgs/components.png">
 
 
-<p align="center">Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. </p>
 
-<p align="center">Vortex est conçu pour apporter des outils puissants aux créateurs et aux makers afin de leurs permettre de créer de nombreux projets.</p>
+- Create a project, collaborate and manage it
+- Create, install and modify modules, plugins & assets
+
+### Builtin modules/plugins
+
+With builtin modules, you can develop embedded applications (for microcontrollers, etc.) is also an area of interest for Vortex. With its set of tools, it will now be easier to develop our future applications. Vortex builtin modules also allows the creation of various tools such as toolchains, packages, build hosts, scripts, deployment systems, maintenance, and update systems. 
+
+Creating complete systems is now easy with Vortex. Imagine, develop, build, maintain, and update them with many tools to optimize the process and reduce the cost of development and production.
+
+- Packages module
+- Toolchains module
+- Tasks/Tasklists module
+
+### Download & build project
+
+- Linux
+
+```bash
+git clone https://github.com/infiniteHQ/VortexMaker
+cd VortexMaker/build/in_system/
+mkdir build && cd build
+bash ./build.sh
+```
+
+### Get started
+
+- Create a project
+
+```bash
+vortex -cp ProjectName
+```
+
+- Open a project with the graphical editor (execute it into the project folder)
+
+---
+
+
 
 ## General Features
 - Operating systems creation tools
