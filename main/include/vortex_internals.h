@@ -200,7 +200,6 @@ struct VxContext {
   VxIO                              IO;
   VortexMakerDebugAllocInfo         debugAllocInfo;
   std::vector<std::shared_ptr<VxSystemLog>> registered_logs;
-  TaskFactory*                      taskFactory;
   fs::path projectPath;
   VxPaths paths;
   std::string author;
