@@ -123,18 +123,6 @@ extern VORTEX_API VxContext *CVortexMaker; // Current implicit context pointer
 #define Vx_BASE64ENCODE(_toencodebuffer) base64_encode(_toencodebuffer);
 #define Vx_BASE64DECODE(_todecodebuffer) base64_decode(_todecodebuffer);
 
-//-----------------------------------------------------------------------------
-// (Base structure) VortexMakerMatrix
-//-----------------------------------------------------------------------------
-// A matrix is a point of matrix can interact with each others
-//-----------------------------------------------------------------------------
-
-struct hRandom {
-  static hString GenerateUUIDv4();
-  static hString Generate6CharID();
-};
-//-----------------------------------------------------------------------------
-
 //_____________________________________________________________________________
 
 struct VortexMakerDebugAllocInfo {

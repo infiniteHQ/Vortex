@@ -3,6 +3,12 @@
 
 static int item_current = 0;
 
+static bool open_ADDMODULE = false;
+
+// Left
+static int mb_selected = 0;
+static std::vector<std::string> mb_syslabels;
+
 // Fonction pour charger le contenu hexadécimal d'un fichier .png
 static std::vector<uint8_t> loadPngHex(const std::string &filePath)
 {
@@ -308,7 +314,7 @@ void ModuleManager::OnImGuiRender()
 
                 if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
-                // Behavior
+                    // Behavior
                 }
             }
             if (ctx->IO.em[i]->m_state == "unknow" || ctx->IO.em[i]->m_state == "stopped")
@@ -321,7 +327,7 @@ void ModuleManager::OnImGuiRender()
 
                 if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
-                // Behavior
+                    // Behavior
                 }
             }
 
@@ -333,228 +339,271 @@ void ModuleManager::OnImGuiRender()
     ImGui::End();
 }
 
-
 // Helper functions for menu items
 
-void handleRefresh() {
+void handleRefresh()
+{
     // Behavior
 }
 
-void handleAddToProject() {
+void handleAddToProject()
+{
     // Behavior
 }
 
-void handleFilterBuildRebuild() {
+void handleFilterBuildRebuild()
+{
     // Behavior
 }
 
-void handleGlobalBuild() {
+void handleGlobalBuild()
+{
     // Behavior
 }
 
-void handleCreateModule() {
+void handleCreateModule()
+{
     // Behavior
 }
 
-void handleSearch() {
+void handleSearch()
+{
     // Behavior
+}
+
+void ModuleManager::addModuleModal()
+{
+    static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    if (ImGui::BeginPopupModal("Add module(s)", NULL, ImGuiWindowFlags_MenuBar))
+    {
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::Button("Close"))
+            {
+                open_ADDMODULE = false;
+            }
+            if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+            {
+                handleRefresh();
+            }
+            ImGui::Separator();
+            if (ImGui::ImageButtonWithText(addIcon, "Browse public modules", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+            {
+                // Behavior
+            }
+            ImGui::Separator();
+            if (ImGui::BeginMenu("Filters"))
+            {
+                if (ImGui::MenuItem("Build/Rebuild single parts"))
+                {
+                    handleFilterBuildRebuild();
+                }
+                if (ImGui::MenuItem("Global build"))
+                {
+                    handleGlobalBuild();
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
+
+        ImGui::BeginChild("left pane", ImVec2(230, -1), true);
+        for (int i = 0; i < mb_syslabels.size(); i++)
+        {
+            if (i == 0)
+            {
+                std::string label = "All modules (" + std::to_string(this->ctx->IO.sys_em.size()) + ")";
+                ImGui::TextColored(ImVec4(0.4, 0.4, 0.4, 1), label.c_str());
+            }
+
+            std::string label;
+
+            int number = 0;
+            for (auto sysem : this->ctx->IO.sys_em)
+            {
+                if (sysem->m_group == mb_syslabels[i])
+                {
+                    number++;
+                }
+            }
+            label = mb_syslabels[i];
+            label += " (";
+            label += std::to_string(number);
+            label += ")";
+
+            label += "##";
+            label += mb_syslabels[i];
+
+            if (ImGui::Selectable(label.c_str(), mb_selected == i))
+                mb_selected = i;
+        }
+        ImGui::EndChild();
+        ImGui::SameLine();
+        ImGui::Separator();
+        ImGui::SameLine();
+
+        std::string label = "packhhqsdsdageView###";
+        ImGuiID id = ImGui::GetID(label.c_str());
+        ImGui::BeginChildFrame(id, ImVec2(0, 0), true);
+
+        for (int i = 0; i < ctx->IO.sys_em.size(); i++)
+        {
+            if (ctx->IO.sys_em[i]->m_group == mb_syslabels[mb_selected])
+            {
+                std::string childLabel = "module##" + ctx->IO.sys_em[i]->m_name;
+
+                ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 250), true);
+
+                {
+                    ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
+                    logo(ctx->IO.sys_em[i]->m_logo_path, i, this->ctx->IO.sys_em.size());
+
+                    ImGui::EndChild();
+                    ImGui::SameLine();
+                }
+
+                {
+                    ImGui::BeginChild("TEXT_", ImVec2(220, 68), true);
+                    float oldsize = ImGui::GetFont()->Scale;
+                    ImGui::GetFont()->Scale *= 1.3;
+                    ImGui::PushFont(ImGui::GetFont());
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), ctx->IO.sys_em[i]->m_proper_name.c_str());
+
+                    ImGui::GetFont()->Scale = oldsize;
+                    ImGui::PopFont();
+
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
+                    ImGui::SameLine();
+                    ImGui::Text(ctx->IO.sys_em[i]->m_version.c_str());
+                    ImGui::EndChild();
+                }
+
+                {
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Name : ");
+                    ImGui::SameLine();
+                    ImGui::Text(ctx->IO.sys_em[i]->m_name.c_str());
+                }
+                {
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) : ");
+                    ImGui::SameLine();
+                    ImGui::Text(ctx->IO.sys_em[i]->m_author.c_str());
+                }
+                {
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Description : ");
+                    ImGui::SameLine();
+                    ImGui::Text(ctx->IO.sys_em[i]->m_description.c_str());
+                }
+                {
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Contributors : ");
+                    int i = 0;
+                    for (auto contributor : ctx->IO.sys_em[i]->m_contributors)
+                    {
+                        i++;
+                        if (i <= 3)
+                        {
+                        }
+                        else
+                        {
+                            ImGui::SameLine();
+                            int counter = ctx->IO.sys_em[i]->m_contributors.size() - 3;
+                            std::string label = " and " + std::to_string(counter) + " other...";
+                            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), label.c_str());
+                            break;
+                        }
+                    }
+                }
+
+                if (ImGui::ImageButtonWithText(addIcon, "Add to the current project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    handleAddToProject();
+                }
+                ImGui::EndChild();
+            }
+            ImGui::EndChildFrame();
+        }
+        ImGui::EndPopup();
+    }
 }
 
 // Main menu function
 
-void ModuleManager::menubar() {
+void ModuleManager::menubar()
+{
     static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static bool open_ADDMODULE = false;
 
-    // Left
-    static int selected = 0;
-    static std::vector<std::string> syslabels;
-
-    for (auto em : ctx->IO.sys_em) {
+    for (auto em : ctx->IO.sys_em)
+    {
         bool add = true;
 
-        for (auto label : syslabels) {
-            if (label == em->m_group) {
+        for (auto label : mb_syslabels)
+        {
+            if (label == em->m_group)
+            {
                 add = false;
             }
         }
 
-        if (add) {
-            syslabels.push_back(em->m_group);
-        }
-    }
-
-    if (open_ADDMODULE) {
-        if (ImGui::BeginPopupModal("Add module(s)", NULL, ImGuiWindowFlags_MenuBar)) {
-            if (ImGui::BeginMenuBar()) {
-                if (ImGui::Button("Close")) {
-                    open_ADDMODULE = false;
-                }
-                if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight()))) {
-                    handleRefresh();
-                }
-                ImGui::Separator();
-                if (ImGui::ImageButtonWithText(addIcon, "Browse public modules", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight()))) {
-                    // Behavior
-                }
-                ImGui::Separator();
-                if (ImGui::BeginMenu("Filters")) {
-                    if (ImGui::MenuItem("Build/Rebuild single parts")) {
-                        handleFilterBuildRebuild();
-                    }
-                    if (ImGui::MenuItem("Global build")) {
-                        handleGlobalBuild();
-                    }
-                    ImGui::EndMenu();
-                }
-                ImGui::EndMenuBar();
-            }
-
-            ImGui::BeginChild("left pane", ImVec2(230, -1), true);
-            for (int i = 0; i < syslabels.size(); i++) {
-                if (i == 0) {
-                    std::string label = "All modules (" + std::to_string(this->ctx->IO.sys_em.size()) + ")";
-                    ImGui::TextColored(ImVec4(0.4, 0.4, 0.4, 1), label.c_str());
-                }
-
-                std::string label;
-
-                int number = 0;
-                for (auto sysem : this->ctx->IO.sys_em) {
-                    if (sysem->m_group == syslabels[i]) {
-                        number++;
-                    }
-                }
-                label = syslabels[i];
-                label += " (";
-                label += std::to_string(number);
-                label += ")";
-
-                label += "##";
-                label += syslabels[i];
-
-                if (ImGui::Selectable(label.c_str(), selected == i))
-                    selected = i;
-            }
-            ImGui::EndChild();
-            ImGui::SameLine();
-            ImGui::Separator();
-            ImGui::SameLine();
-
-            std::string label = "packhhqsdsdageView###";
-            ImGuiID id = ImGui::GetID(label.c_str());
-            ImGui::BeginChildFrame(id, ImVec2(0, 0), true);
-
-            for (int i = 0; i < ctx->IO.sys_em.size(); i++) {
-                if (ctx->IO.sys_em[i]->m_group == syslabels[selected]) {
-                    std::string childLabel = "module##" + ctx->IO.sys_em[i]->m_name;
-
-                    ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 250), true);
-
-                    {
-                        ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
-                        logo(ctx->IO.sys_em[i]->m_logo_path, i, this->ctx->IO.sys_em.size());
-
-                        ImGui::EndChild();
-                        ImGui::SameLine();
-                    }
-
-                    {
-                        ImGui::BeginChild("TEXT_", ImVec2(220, 68), true);
-                        float oldsize = ImGui::GetFont()->Scale;
-                        ImGui::GetFont()->Scale *= 1.3;
-                        ImGui::PushFont(ImGui::GetFont());
-
-                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), ctx->IO.sys_em[i]->m_proper_name.c_str());
-
-                        ImGui::GetFont()->Scale = oldsize;
-                        ImGui::PopFont();
-
-                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
-                        ImGui::SameLine();
-                        ImGui::Text(ctx->IO.sys_em[i]->m_version.c_str());
-                        ImGui::EndChild();
-                    }
-
-                    {
-                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Name : ");
-                        ImGui::SameLine();
-                        ImGui::Text(ctx->IO.sys_em[i]->m_name.c_str());
-                    }
-                    {
-                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) : ");
-                        ImGui::SameLine();
-                        ImGui::Text(ctx->IO.sys_em[i]->m_author.c_str());
-                    }
-                    {
-                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Description : ");
-                        ImGui::SameLine();
-                        ImGui::Text(ctx->IO.sys_em[i]->m_description.c_str());
-                    }
-                    {
-                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Contributors : ");
-                        int i = 0;
-                        for (auto contributor : ctx->IO.sys_em[i]->m_contributors) {
-                            i++;
-                            if (i <= 3) {
-                            }
-                            else {
-                                ImGui::SameLine();
-                                int counter = ctx->IO.sys_em[i]->m_contributors.size() - 3;
-                                std::string label = " and " + std::to_string(counter) + " other...";
-                                ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), label.c_str());
-                                break;
-                            }
-                        }
-                    }
-
-                    if (ImGui::ImageButtonWithText(addIcon, "Add to the current project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight()))) {
-                        handleAddToProject();
-                    }
-                    ImGui::EndChild();
-                }
-                ImGui::EndChildFrame();
-            }
-            ImGui::EndPopup();
+        if (add)
+        {
+            mb_syslabels.push_back(em->m_group);
         }
     }
 
     if (open_ADDMODULE)
+        this->addModuleModal();
+
+    if (open_ADDMODULE)
         ImGui::OpenPopup("Add module(s)");
 
-    if (ImGui::BeginMenuBar()) {
-        if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight()))) {
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
+        {
             open_ADDMODULE = true;
         }
 
-        if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight()))) {
+        if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+        {
             handleRefresh();
         }
         ImGui::Separator();
-        if (ImGui::BeginMenu("Filters")) {
-            if (ImGui::MenuItem("Build/Rebuild single parts")) {
+        if (ImGui::BeginMenu("Filters"))
+        {
+            if (ImGui::MenuItem("Build/Rebuild single parts"))
+            {
                 handleFilterBuildRebuild();
             }
-            if (ImGui::MenuItem("Global build")) {
+            if (ImGui::MenuItem("Global build"))
+            {
                 handleGlobalBuild();
             }
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("Create a module")) {
-            if (ImGui::MenuItem("Build/Rebuild single parts")) {
+        if (ImGui::BeginMenu("Create a module"))
+        {
+            if (ImGui::MenuItem("Build/Rebuild single parts"))
+            {
                 handleCreateModule();
             }
-            if (ImGui::MenuItem("Global build")) {
+            if (ImGui::MenuItem("Global build"))
+            {
                 handleGlobalBuild();
             }
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("Search")) {
-            if (ImGui::MenuItem("Build/Rebuild single parts")) {
+        if (ImGui::BeginMenu("Search"))
+        {
+            if (ImGui::MenuItem("Build/Rebuild single parts"))
+            {
                 handleSearch();
             }
-            if (ImGui::MenuItem("Global build")) {
+            if (ImGui::MenuItem("Global build"))
+            {
                 handleGlobalBuild();
             }
             ImGui::EndMenu();

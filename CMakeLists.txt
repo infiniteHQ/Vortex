@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.16)
 project(vortex)
 
@@ -25,11 +24,8 @@ target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/tools/editor
 )
 
-# Ajouter d'autres dépendances ou configurations pour la bibliothèque partagée
-
 # Liste des fichiers sources pour l'exécutable principal
 file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
-
 
 # Add editor
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/editor editor_build)
@@ -50,3 +46,31 @@ install(TARGETS vortex DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
 
 # Installation de la bibliothèque partagée dans /lib
 install(TARGETS vortex_shared LIBRARY DESTINATION /lib)
+
+# Définir le répertoire d'installation pour les fichiers d'en-tête
+set(INSTALL_INCLUDE_DIR /usr/include/Vortex)
+
+# Installation des fichiers d'en-tête de /main/include
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/main/include/
+        DESTINATION ${INSTALL_INCLUDE_DIR}/main/include/
+        PATTERN "*.h"
+        PATTERN "*.hpp"
+        PATTERN "*.inl"
+)
+
+# Installation des fichiers d'en-tête de /tools/editor/app/include
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tools/editor/app/
+        DESTINATION ${INSTALL_INCLUDE_DIR}/tools/editor/app/
+        PATTERN "*.h"
+        PATTERN "*.hpp"
+        PATTERN "*.inl"
+)
+
+# Installation des fichiers d'en-tête de /lib
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
+        DESTINATION ${INSTALL_INCLUDE_DIR}/lib
+        FILES_MATCHING 
+        PATTERN "*.h"
+        PATTERN "*.hpp"
+        PATTERN "*.inl"
+)

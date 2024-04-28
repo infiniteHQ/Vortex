@@ -3,7 +3,7 @@
 #include <thread>
 #include <fstream>
 
-#include "./tools/editor/app/src/editor.h"
+#include "./tools/editor/app/include/editor.h"
 #include "./main/include/vortex.h"
 #include "./lib/uikit/src/EntryPoint.h"
 

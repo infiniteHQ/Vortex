@@ -3,7 +3,7 @@
 #define MODULEMANAGER_H
 
 
-#include "../src/instanceFactory.h"
+#include "../include/instanceFactory.h"
 
 class ModuleManager
 {
@@ -12,6 +12,7 @@ public:
 
 	void OnImGuiRender();
 	void menubar();
+	void addModuleModal();
 
 
 	VxContext *ctx;

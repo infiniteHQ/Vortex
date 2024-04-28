@@ -1,4 +1,4 @@
-#include "editor.h"
+#include "../include/editor.h"
 
 // Helper functions for menu items
 
@@ -7,19 +7,19 @@ void handleExit(UIKit::Application* app) {
 }
 
 void handleProjectSettings() {
-    // Behavior
+
 }
 
 void handleManagePlugins() {
-    // Behavior
+
 }
 
 void handleManageModules(bool& showModulesManager) {
-    // Behavior
+
 }
 
 void handleShowBottomToolbar() {
-    // Behavior
+
 }
 
 void handleShowSimplifiedHeader(UIKit::Application* app) {
@@ -27,27 +27,28 @@ void handleShowSimplifiedHeader(UIKit::Application* app) {
 }
 
 void handleContentBrowser(bool& showContentBrowser) {
-    // Behavior
+
 }
 
 void handleProjectViewer(bool& showProjectViewer) {
-    // Behavior
+
 }
 
 void handleNews() {
-    // Behavior
+
 }
 
 void handleCommunity() {
-    // Behavior
+
 }
 
 void handleTutorials() {
-    // Behavior
+
 }
 
-void handleDocumentation() {
-    // Behavior
+void handleDocumentation()
+{
+
 }
 
 // Main menu function

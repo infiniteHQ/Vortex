@@ -5,7 +5,7 @@
 #ifndef PROJECTVIEWER_H
 #define PROJECTVIEWER_H
 
-#include "../src/instanceFactory.h"
+#include "../include/instanceFactory.h"
 
 // Simple storage to output a dummy file-system.
 struct MyTreeNode

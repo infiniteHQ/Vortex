@@ -1,4 +1,5 @@
 
+
 #include "../instances/instance.h"
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
@@ -6,6 +7,9 @@
 
 #include "./instanceFactory.h"
 using namespace VortexMaker;
+
+#ifndef EDITOR_H
+#define EDITOR_H
 
 static std::vector<std::shared_ptr<ModuleDetails>> moduleDetailsInstances;
 
@@ -125,8 +129,7 @@ private:
   std::vector<std::string> instanciedWindowsNames;
 };
 
-
-UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
+static UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
 {
   int port = atoi(argv[1]);
 
@@ -146,3 +149,5 @@ UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
 
   return app;
 }
+
+#endif

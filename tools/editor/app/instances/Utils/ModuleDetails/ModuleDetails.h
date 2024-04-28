@@ -1,5 +1,5 @@
 
-#include "../../../src/instanceFactory.h"
+#include "../../../include/instanceFactory.h"
 #include "../../../../../../lib/uikit/uikit.h"
 
 #include "../../../../../../main/include/modules/interface.h"

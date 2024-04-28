@@ -316,6 +316,8 @@ void VortexMaker::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
     }*/
 }
 
+
+
 //-----------------------------------------------------------------------------
 // [SECTION] ImGuiTextBuffer, ImGuiTextIndex
 //-----------------------------------------------------------------------------

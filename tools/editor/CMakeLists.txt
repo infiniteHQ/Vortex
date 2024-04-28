@@ -26,48 +26,7 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectViewer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ModuleManager.cpp
 
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_ContentWindow.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_MainSettings.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_ParameterWindow.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_FullBuild.cpp
-   # ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_AssetsViewer.cpp
-   # ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_SnapshotUtility.cpp
-   # ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_CurrentHostPreview.cpp
-  #  ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_TasksEditor.cpp
-  #  ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/wins/UI_VolatileTasks.cpp
-  #  ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Host/HostInstance.cpp
-
- #    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/GPOS/GPOSInstance.cpp
-  #   ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/GPOS/wins/UI_MainSettings.cpp
-    
-    # ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Script/wins/UI_MainSettings.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Script/wins/UI_FileBrowser.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Script/ScriptInstance.cpp
-
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/PackageInstance.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/wins/UI_MainSettings.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/wins/UI_ActionsEditor.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Package/wins/UI_CompilationArguments.cpp
-
-  #   ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Tasklist/wins/UI_MainSettings.cpp
-   #  ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Assets/Tasklist/TasklistInstance.cpp
-
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/ToolchainInstance.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ContentWindow.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_AssetsViewer.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_MainSettings.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_FullBuild.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_TasksEditor.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ManualBuild.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_VolatileTasks.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_SnapshotUtility.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_CurrentToolchainPreview.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Components/Toolchain/wins/UI_ParameterWindow.cpp
-
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/Report/ReportInstance.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/ModuleDetails/ModuleDetails.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/TextEditor/TextEditor.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/TextEditor/TextEditorInstance.cpp
 )
 
 
@@ -75,6 +34,7 @@ target_include_directories(editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
 # editor requirements
 find_package(Vulkan REQUIRED)
+option(SPDLOG_INSTALL "Enable installation of spdlog" ON)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/spdlog spdlog_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/lib/glfw glfw_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/lib/glm glm_build)
@@ -86,5 +46,6 @@ target_link_libraries(editor PUBLIC imgui)
 target_link_libraries(editor PUBLIC glm)
 target_link_libraries(editor PUBLIC stbimage)
 target_link_libraries(editor PUBLIC spdlog)
+
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/platform/GUI/editor/icon.png DESTINATION /usr/include/vortex)

@@ -65,16 +65,6 @@
 #include <dirent.h>
 #include <deque>
 
-#include "../../lib/uikit/lib/imgui/imgui.h"
-#include "../../lib/uikit/lib/imgui/imgui_internal.h"
-#include "../../lib/uikit/lib/imgui/backends/imgui_impl_vulkan.h"
-#include "../../lib/uikit/lib/imgui/backends/imgui_impl_glfw.h"
-#include "../../lib/uikit/lib/stb-image/stb_image.h"
-// #include "../../lib/glm/glm/glm.hpp"
-#include "../../lib/uikit/lib/glfw/include/GLFW/glfw3.h"
-#include "../../lib/spdlog/include/spdlog/spdlog.h"
-
-#include "../../lib/json/single_include/nlohmann/json.hpp"
 
 namespace fs = std::filesystem;
 
@@ -84,6 +74,18 @@ namespace fs = std::filesystem;
 #ifndef VORTEX_EXT_API
 #define VORTEX_EXT_API VORTEX_API
 #endif
+
+
+#include "../../lib/uikit/lib/imgui/imgui.h"
+#include "../../lib/uikit/lib/imgui/imgui_internal.h"
+#include "../../lib/uikit/lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../../lib/uikit/lib/imgui/backends/imgui_impl_glfw.h"
+#include "../../lib/uikit/lib/stb-image/stb_image.h"
+#include "../../lib/uikit/lib/glfw/include/GLFW/glfw3.h"
+#include "../../lib/spdlog/include/spdlog/spdlog.h"
+#include "../../lib/json/single_include/nlohmann/json.hpp"
+
+
 
 // Helper Macros
 #ifndef VX_ASSERT
