@@ -1,65 +1,67 @@
 #include "../include/editor.h"
 
-// Helper functions for menu items
-
-void handleExit(UIKit::Application* app) {
+void handleExit(UIKit::Application *app)
+{
     app->Close();
 }
 
-void handleProjectSettings() {
-
+void handleProjectSettings()
+{
 }
 
-void handleManagePlugins() {
-
+void handleManagePlugins()
+{
 }
 
-void handleManageModules(bool& showModulesManager) {
-
+void handleManageModules(bool &showModulesManager)
+{
 }
 
-void handleShowBottomToolbar() {
-
+void handleShowBottomToolbar()
+{
 }
 
-void handleShowSimplifiedHeader(UIKit::Application* app) {
+void handleShowSimplifiedHeader(UIKit::Application *app)
+{
     app->m_Specification.CustomTitlebar = !app->m_Specification.CustomTitlebar;
 }
 
-void handleContentBrowser(bool& showContentBrowser) {
-
+void handleContentBrowser(bool &showContentBrowser)
+{
 }
 
-void handleProjectViewer(bool& showProjectViewer) {
-
+void handleProjectViewer(bool &showProjectViewer)
+{
 }
 
-void handleNews() {
-
+void handleNews()
+{
 }
 
-void handleCommunity() {
-
+void handleCommunity()
+{
 }
 
-void handleTutorials() {
-
+void handleTutorials()
+{
 }
 
 void handleDocumentation()
 {
-
 }
 
 // Main menu function
-void ApplicationLayer::menubar(const std::shared_ptr<ApplicationLayer>& exampleLayer, UIKit::Application* app) {
-    if (ImGui::BeginMenu("File")) {
+void ApplicationLayer::menubar(const std::shared_ptr<ApplicationLayer> &exampleLayer, UIKit::Application *app)
+{
+    if (ImGui::BeginMenu("File"))
+    {
         if (ImGui::MenuItem("Exit"))
             handleExit(app);
         ImGui::EndMenu();
     }
 
-    if (ImGui::BeginMenu("Edit")) {
+    if (ImGui::BeginMenu("Edit"))
+    {
         if (ImGui::MenuItem("Project Settings", "Main configurations of this project"))
             handleProjectSettings();
         ImGui::Separator();
@@ -70,7 +72,8 @@ void ApplicationLayer::menubar(const std::shared_ptr<ApplicationLayer>& exampleL
         ImGui::EndMenu();
     }
 
-    if (ImGui::BeginMenu("Window")) {
+    if (ImGui::BeginMenu("Window"))
+    {
         if (ImGui::MenuItem("Show bottom toolbar", "Get some useful tools in a bottom bar."))
             handleShowBottomToolbar();
         if (ImGui::MenuItem("Show simplified header", "Reduce the size of header"))
@@ -78,7 +81,8 @@ void ApplicationLayer::menubar(const std::shared_ptr<ApplicationLayer>& exampleL
         ImGui::EndMenu();
     }
 
-    if (ImGui::BeginMenu("Tools")) {
+    if (ImGui::BeginMenu("Tools"))
+    {
         if (ImGui::MenuItem("Content Browser", "Project file manager", &exampleLayer->ShowContentBrowser))
             handleContentBrowser(exampleLayer->ShowContentBrowser);
         if (ImGui::MenuItem("Project Viewer", "Project component manager", &exampleLayer->ShowProjectViewer))
@@ -86,7 +90,8 @@ void ApplicationLayer::menubar(const std::shared_ptr<ApplicationLayer>& exampleL
         ImGui::EndMenu();
     }
 
-    if (ImGui::BeginMenu("Help")) {
+    if (ImGui::BeginMenu("Help"))
+    {
         if (ImGui::MenuItem("News", "Get latest Vortex news"))
             handleNews();
         if (ImGui::MenuItem("Community", "Join a community of creators"))

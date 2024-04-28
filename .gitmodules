@@ -10,12 +10,16 @@
 [submodule "main/builtint/vortex.modules.builtin.toolchains"]
 	path = main/builtint/vortex.modules.builtin.toolchains
 	url = https://github.com/infiniteHQ/vortex.modules.builtin.toolchains
+	branch = main
 [submodule "main/builtint/vortex.modules.builtin.packages"]
 	path = main/builtint/vortex.modules.builtin.packages
 	url = https://github.com/infiniteHQ/vortex.modules.builtin.packages
+	branch = main
 [submodule "main/builtint/vortex.modules.builtin.tasks"]
 	path = main/builtint/vortex.modules.builtin.tasks
 	url = https://github.com/infiniteHQ/vortex.modules.builtin.tasks
+	branch = main
 [submodule "main/builtint/vortex.modules.builtin.tasklists"]
 	path = main/builtint/vortex.modules.builtin.tasklists
 	url = https://github.com/infiniteHQ/vortex.modules.builtin.tasklists
+	branch = main
