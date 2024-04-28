@@ -74,13 +74,11 @@ void ProjectViewer::OnImGuiRender()
         // Behavior
     }
 
-
     ImGui::End();
 }
 
 void ProjectViewer::menubar()
 {
-
     static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -103,14 +101,13 @@ void ProjectViewer::menubar()
         ImGui::Separator();
         if (ImGui::BeginMenu("Filters"))
         {
-
             if (ImGui::MenuItem("Build/Rebuild single parts"))
             {
-        // Behavior
+                // Behavior
             }
             if (ImGui::MenuItem("Global build"))
             {
-        // Behavior
+                // Behavior
             }
             ImGui::EndMenu();
         }

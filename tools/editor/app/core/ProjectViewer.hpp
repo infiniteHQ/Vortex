@@ -1,6 +1,6 @@
 
-//#include "../instances/Components/Host/HostInstance.h"
-//#include "../instances/Components/Toolchain/ToolchainInstance.h"
+// #include "../instances/Components/Host/HostInstance.h"
+// #include "../instances/Components/Toolchain/ToolchainInstance.h"
 
 #ifndef PROJECTVIEWER_H
 #define PROJECTVIEWER_H
@@ -15,7 +15,7 @@ struct MyTreeNode
 	int Size;
 	int ChildIdx;
 	int ChildCount;
-	static void DisplayNode(const MyTreeNode *node, std::vector<MyTreeNode> all_nodes, InstanceFactory* factory, VxContext *ctx)
+	static void DisplayNode(const MyTreeNode *node, std::vector<MyTreeNode> all_nodes, InstanceFactory *factory, VxContext *ctx)
 	{
 		ImGui::TableNextRow();
 		ImGui::TableNextColumn();
@@ -37,14 +37,13 @@ struct MyTreeNode
 		}
 		else
 		{
-
 			/*if(node->Type == "Host"){
 				std::string hostName = "Open###" + node->Name + "Open";
 				if(ImGui::Button(hostName.c_str())){
 					for(auto host : ctx->IO.hosts){
 						if(node->Name == host->name){
 							std::shared_ptr<HostInstance> instance = std::make_shared<HostInstance>(ctx, host, factory);
-							factory->SpawnInstance(instance);	
+							factory->SpawnInstance(instance);
 						}
 					}
 
@@ -57,7 +56,7 @@ struct MyTreeNode
 					for(auto gpos: ctx->IO.gpoSystems){
 						if(node->Name == gpos->name){
 							std::shared_ptr<GPOSInstance> instance = std::make_shared<GPOSInstance>(ctx, gpos, factory);
-							factory->SpawnInstance(instance);	
+							factory->SpawnInstance(instance);
 						}
 					}
 
@@ -72,7 +71,7 @@ struct MyTreeNode
 					for(auto package: ctx->IO.packages){
 						if(node->Name == package->name){
 							std::shared_ptr<PackageInstance> instance = std::make_shared<PackageInstance>(ctx, package);
-							factory->SpawnInstance(instance);	
+							factory->SpawnInstance(instance);
 						}
 					}
 
@@ -86,14 +85,14 @@ struct MyTreeNode
 					for(auto script: ctx->IO.scripts){
 						if(node->Name == script->name){
 							std::shared_ptr<ScriptInstance> instance = std::make_shared<ScriptInstance>(ctx, script, factory);
-							factory->SpawnInstance(instance);	
+							factory->SpawnInstance(instance);
 						}
 					}
 
 				}
 				ImGui::SameLine();
 			}
-			
+
 
 			if(node->Type == "Toolchain"){
 				std::string toolchainName = "Open###" + node->Name + "Open";
@@ -101,7 +100,7 @@ struct MyTreeNode
 					for(auto toolchain : ctx->IO.toolchains){
 						if(node->Name == toolchain->name){
 							std::shared_ptr<ToolchainInstance> instance = std::make_shared<ToolchainInstance>(ctx, toolchain, factory);
-							factory->SpawnInstance(instance);	
+							factory->SpawnInstance(instance);
 						}
 					}
 
@@ -109,7 +108,7 @@ struct MyTreeNode
 				ImGui::SameLine();
 			}*/
 			ImGui::TreeNodeEx(node->Name.c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth);
-			
+
 			ImGui::TableNextColumn();
 			ImGui::Text("%d", node->Size);
 			ImGui::TableNextColumn();
@@ -121,14 +120,13 @@ struct MyTreeNode
 class ProjectViewer
 {
 public:
-	ProjectViewer(VxContext *_ctx, InstanceFactory* _factory);
+	ProjectViewer(VxContext *_ctx, InstanceFactory *_factory);
 
 	void OnImGuiRender();
 	void menubar();
 
 	void refreshContents()
 	{
-
 		// Tout faire ici dans le vecteur
 		std::vector<MyTreeNode> _nodeInfos = {
 			{"Root", "Folder", -1, 1, 4},									 // 0
@@ -186,20 +184,19 @@ public:
 			Gpos.push_back(nodeGPOS);
 		}
 		int gpos_size = Gpos.size();*/
-/*
+		/*
 
-		std::vector<MyTreeNode> Packages = {};
-		for(auto package : ctx->IO.packages){
-			MyTreeNode nodePackage;
-			nodePackage.Name = (char*)package->name.c_str();
-			nodePackage.Size = 1024;
-			nodePackage.Type = "Package";
-			nodePackage.ChildCount = -1;
-			nodePackage.ChildIdx = -1;
-			Packages.push_back(nodePackage);
-		}
-		int package_size = Packages.size();*/
-
+				std::vector<MyTreeNode> Packages = {};
+				for(auto package : ctx->IO.packages){
+					MyTreeNode nodePackage;
+					nodePackage.Name = (char*)package->name.c_str();
+					nodePackage.Size = 1024;
+					nodePackage.Type = "Package";
+					nodePackage.ChildCount = -1;
+					nodePackage.ChildIdx = -1;
+					Packages.push_back(nodePackage);
+				}
+				int package_size = Packages.size();*/
 
 		/*std::vector<MyTreeNode> Scripts = {};
 		for(auto script : ctx->IO.scripts){
@@ -213,11 +210,10 @@ public:
 		}
 		int scripts_size = Scripts.size();*/
 
-
 		std::vector<MyTreeNode> nodes = {
 			//{this->ctx->name.c_str(), "Project", 	-1, 1, 2}, // 0
-			{"Components", "...", 					-1, 3, 3},				// 1
-			{"Assets", "...", 						-1, 6, 3},						// 2
+			{"Components", "...", -1, 3, 3}, // 1
+			{"Assets", "...", -1, 6, 3},	 // 2
 
 			//{"Hosts", "...", 						-1, 9, 									hosts_size},						// 1
 			//{"Toolchains", "...", 					-1, 9 + hosts_size, 					toolchains_size},				// 1
@@ -225,7 +221,7 @@ public:
 
 			//{"Packages", "...", 					-1, 9 + toolchains_size + hosts_size + gpos_size, 					package_size},						// 2
 			//{"Scripts", "...", 						-1, 9 + package_size + toolchains_size + hosts_size + gpos_size, 	scripts_size},						// 2
-			{"Patchs", "..." 						-1, 1, 1},						// 2
+			{"Patchs", "..." - 1, 1, 1}, // 2
 
 			// Host 1
 			// Toolchain 1
@@ -258,19 +254,18 @@ public:
 	}
 
 	VxContext *ctx;
-	InstanceFactory* factory;
+	InstanceFactory *factory;
 
 private:
 	bool opened;
-
 
 	std::vector<MyTreeNode> nodeInfos;
 
 	std::shared_ptr<VxToolchain> latest_toolchain;
 
-    std::shared_ptr<UIKit::Image> m_ListIcon;
-    std::shared_ptr<UIKit::Image> m_RefreshIcon;
-    std::shared_ptr<UIKit::Image> m_AddIcon;
+	std::shared_ptr<UIKit::Image> m_ListIcon;
+	std::shared_ptr<UIKit::Image> m_RefreshIcon;
+	std::shared_ptr<UIKit::Image> m_AddIcon;
 
 	bool CollapseAll = false;
 };

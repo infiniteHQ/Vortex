@@ -399,7 +399,6 @@ void ModuleInterface::Start()
 
     if (!isVersionCompatible)
     {   
-
         this->LogFatal("The Vortex version (" + version + ", try to find \""+major+"\") is incompatible with \"" + this->m_name + "\" supported version(s).");
 
         this->m_state = "failed";
@@ -456,13 +455,11 @@ void ModuleInterface::Stop()
         for(auto dep : deps){
             this->LogError("This module is used by \"" + dep.first + "\" with needed versions : "+ dep.second +" ! ");
         }
-
     }
     else{
         this->destroy();
         this->m_state = "stopped";
     }
-
 }
 
 void ModuleInterface::CheckVersion()

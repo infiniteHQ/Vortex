@@ -3,57 +3,63 @@
 #include <thread>
 #include <fstream>
 
-
 #include "./tools/editor/app/src/editor.h"
 #include "./main/include/vortex.h"
 #include "./lib/uikit/src/EntryPoint.h"
 
-bool CheckDirectory(){
+bool CheckDirectory()
+{
     std::ifstream mainconfig("vortex.config");
-    if (!mainconfig.good()) {
+    if (!mainconfig.good())
+    {
         std::cout << "This directory does not contain a Vortex project. Please initialize a new project with \"vortex --create-project <project_name>\" or repair it." << std::endl;
         return false;
     }
     return true;
 }
 
-VxContext* InitRuntime(bool logger){ 
+VxContext *InitRuntime(bool logger)
+{
     std::cout << "Initializing runtime..." << std::endl;
-    VxContext* ctx = VortexMaker::CreateContext();
+    VxContext *ctx = VortexMaker::CreateContext();
     ctx->logger = logger;
     std::ifstream file("vortex.config");
 
-    if (file) {
+    if (file)
+    {
         nlohmann::json jsonContenu;
         file >> jsonContenu;
         VortexMaker::InitProject(jsonContenu);
-    } else {
     }
-
+    else
+    {
+    }
 
     return ctx;
 }
 
-
-VxContext* InitBlankRuntime(bool logger){ 
+VxContext *InitBlankRuntime(bool logger)
+{
     std::cout << "Initializing runtime..." << std::endl;
-    VxContext* ctx = VortexMaker::CreateContext();
+    VxContext *ctx = VortexMaker::CreateContext();
     ctx->logger = logger;
     return ctx;
 }
 /**
  * @brief : Entry point of main Vortex runtime command.
-*/
+ */
 int main(int argc, char *argv[])
 {
     if (argc < 2)
     {
         std::cout << std::endl;
-        std::cout << "Usage : vortex <paramater(s)...> <information(s)...>" << std::endl << std::endl;
+        std::cout << "Usage : vortex <paramater(s)...> <information(s)...>" << std::endl
+                  << std::endl;
         std::cout << "-h --help :               See all parameters" << std::endl;
         std::cout << "-g --gui :                Open the Vortex graphical interface" << std::endl;
         std::cout << "-cp --create-project  <...> :        Create a new project" << std::endl;
-        std::cout << "Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. " << std::endl << std::endl;
+        std::cout << "Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. " << std::endl
+                  << std::endl;
     }
     else
     {
@@ -78,8 +84,8 @@ int main(int argc, char *argv[])
                 std::cout << "Or : vortex --create-project <project_name>" << std::endl;
             }
             else
-            {   
-                VxContext* ctx = VortexMaker::CreateContext();
+            {
+                VxContext *ctx = VortexMaker::CreateContext();
                 std::cout << "Creating a new project..." << std::endl;
                 std::string project_name = std::string(argv[2]);
                 std::string current_path = std::filesystem::current_path();
@@ -90,42 +96,56 @@ int main(int argc, char *argv[])
         }
         else if (std::string(argv[1]) == "-g" || std::string(argv[1]) == "--gui")
         {
-            if(!CheckDirectory()){return 1;};
+            if (!CheckDirectory())
+            {
+                return 1;
+            };
             std::cout << "Opening the graphical interface..." << std::endl;
 
             std::thread receiveThread;
-            try{
-            if (std::string(argv[2]) == "-v"){ 
-                InitRuntime(true);
-                std::thread Thread([&]() { VortexMaker::VortexInterface(argc, argv); });
-                receiveThread.swap(Thread);
+            try
+            {
+                if (std::string(argv[2]) == "-v")
+                {
+                    InitRuntime(true);
+                    std::thread Thread([&]()
+                                       { VortexMaker::VortexInterface(argc, argv); });
+                    receiveThread.swap(Thread);
+                }
             }
-            }
-            catch(std::exception e){
+            catch (std::exception e)
+            {
                 InitRuntime(false);
-                std::thread Thread([&]() { VortexMaker::VortexInterface(argc, argv); });
+                std::thread Thread([&]()
+                                   { VortexMaker::VortexInterface(argc, argv); });
                 receiveThread.swap(Thread);
-
             }
 
-            
             receiveThread.join();
         }
         else if (std::string(argv[1]) == "-test" || std::string(argv[1]) == "--test")
         {
-            if(!CheckDirectory()){return 1;};
+            if (!CheckDirectory())
+            {
+                return 1;
+            };
             std::cout << "Opening the graphical interface..." << std::endl;
 
             std::thread receiveThread;
-            std::thread Thread([&]() { system("vortex -g"); });
-            std::thread Thread2([&]() { system("vortex -g"); });
+            std::thread Thread([&]()
+                               { system("vortex -g"); });
+            std::thread Thread2([&]()
+                                { system("vortex -g"); });
             receiveThread.swap(Thread);
             receiveThread.swap(Thread2);
             receiveThread.join();
         }
         else if (std::string(argv[1]) == "-b" || std::string(argv[1]) == "--build")
         {
-            if(!CheckDirectory()){return 1;};
+            if (!CheckDirectory())
+            {
+                return 1;
+            };
             if (argc < 3)
             {
                 std::cout << "Usage : vortex -b <build_type>" << std::endl;
@@ -168,7 +188,10 @@ int main(int argc, char *argv[])
         }
         else if (std::string(argv[1]) == "-a" || std::string(argv[1]) == "--add")
         {
-            if(!CheckDirectory()){return 1;};
+            if (!CheckDirectory())
+            {
+                return 1;
+            };
             if (argc < 3)
             {
                 std::cout << "Usage : vortex -a <content_type>" << std::endl;
@@ -177,13 +200,6 @@ int main(int argc, char *argv[])
                 std::cout << "package <path>:   Build the entire project" << std::endl;
                 std::cout << "lib <path>:       Build all toochains" << std::endl;
                 std::cout << "toolchain <path>: Build specific toolchain" << std::endl;
-            }
-        }
-        else if (std::string(argv[1]) == "-p" || std::string(argv[1]) == "--preview")
-        {
-            if(!CheckDirectory()){return 1;};
-            if (argc < 3)
-            {
             }
         }
     }

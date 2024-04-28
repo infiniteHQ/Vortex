@@ -49,7 +49,7 @@ class ExampleLayer : public UIKit::Layer
 public:
   ExampleLayer(){};
 
-  virtual void OnUIRender() override
+  void OnUIRender() override
   {
     PushStyle();
 
@@ -124,13 +124,96 @@ private:
   std::vector<std::string> instanciedWindowsNames;
 };
 
+void menubar(const std::shared_ptr<ExampleLayer>& exampleLayer, UIKit::Application* app)
+{
+  static int number = 1;
+  if (ImGui::BeginMenu("File"))
+  {
+    if (ImGui::MenuItem("Exit"))
+    {
+      app->Close();
+    }
+    ImGui::EndMenu();
+  }
+  if (ImGui::BeginMenu("Edit"))
+  {
+    if (ImGui::MenuItem("Project Settings", "Main configurations of this project"))
+    {
+      // Behavior
+    }
+    ImGui::Separator();
+    if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project"))
+    {
+      // Behavior
+    }
+    if (ImGui::MenuItem("Manage modules", "Project file manager", &exampleLayer->ShowModulesManager))
+    {
+      // Behavior
+    }
+    ImGui::EndMenu();
+  }
+
+  if (ImGui::BeginMenu("Window"))
+  {
+    if (ImGui::MenuItem("Show bottom toolbar", "Get some usefull tools in a bottom bar."))
+    {
+      // Behavior
+    }
+    if (ImGui::MenuItem("Show simplified header", "Reduce the size of header"))
+    {
+      app->m_Specification.CustomTitlebar = !app->m_Specification.CustomTitlebar;
+    }
+    ImGui::EndMenu();
+  }
+
+  if (ImGui::BeginMenu("Tools"))
+  {
+    if (ImGui::MenuItem("Content Browser", "Project file manager", &exampleLayer->ShowContentBrowser))
+    {
+      // Behavior
+    }
+    if (ImGui::MenuItem("Project Viewer", "Project component manager", &exampleLayer->ShowProjectViewer))
+    {
+      // Behavior
+    }
+    ImGui::EndMenu();
+  }
+
+  if (ImGui::BeginMenu("Help"))
+  {
+    if (ImGui::MenuItem("News", "Get latest Vortex news"))
+    {
+      // Behavior
+    }
+    if (ImGui::MenuItem("Community", "Join a community of creators"))
+    {
+      // Behavior
+    }
+    if (ImGui::MenuItem("Tutorials", "Get bunch of tutorials"))
+    {
+      // Behavior
+    }
+    if (ImGui::MenuItem("Documentation", "See official documentation of Vortex Maker"))
+    {
+      // Behavior
+    }
+    ImGui::Separator();
+    if (ImGui::MenuItem("Exit"))
+    {
+      app->Close();
+    }
+    ImGui::EndMenu();
+  }
+}
+
 UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
 {
   int port = atoi(argv[1]);
 
-  UIKit::ApplicationSpecification spec;
   std::shared_ptr<ExampleLayer> exampleLayer = std::make_shared<ExampleLayer>();
   exampleLayer->m_ctx = VortexMaker::GetCurrentContext();
+
+  UIKit::ApplicationSpecification spec;
   std::string name = exampleLayer->m_ctx->name + " - Vortex Editor";
   spec.Name = name;
   spec.CustomTitlebar = true;
@@ -139,91 +222,7 @@ UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
   UIKit::Application *app = new UIKit::Application(spec);
 
   app->PushLayer(exampleLayer);
-  app->SetMenubarCallback([app, exampleLayer]()
-                          {
-                            static int number = 1;
-                            if (ImGui::BeginMenu("File"))
-                            {
-                              if (ImGui::MenuItem("Exit"))
-                              {
-                                app->Close();
-                              }
-                              ImGui::EndMenu();
-                            }
-                            if (ImGui::BeginMenu("Edit"))
-                            {
-                              if (ImGui::MenuItem("Project Settings", "Main configurations of this project"))
-                              {
-                                  // Behavior
-                              }
-                              ImGui::Separator();
-                              if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project"))
-                              {
-                                  // Behavior
-                              }
-                              if (ImGui::MenuItem("Manage modules", "Project file manager", &exampleLayer->ShowModulesManager))
-                              {
-                                  // Behavior
-                              }
-                              ImGui::EndMenu();
-                            }
-
-                            if (ImGui::BeginMenu("Window"))
-                            {
-                              if (ImGui::MenuItem("Show bottom toolbar", "Get some usefull tools in a bottom bar."))
-                              {
-                                  // Behavior
-                              }
-                              if (ImGui::MenuItem("Show simplified header", "Reduce the size of header"))
-                              {
-                                app->m_Specification.CustomTitlebar = !app->m_Specification.CustomTitlebar;
-                              }
-                              ImGui::EndMenu();
-                            }
-
-                            if (ImGui::BeginMenu("Tools"))
-                            {
-
-                              if (ImGui::MenuItem("Content Browser", "Project file manager", &exampleLayer->ShowContentBrowser))
-                              {
-                                  // Behavior
-                              }
-                              if (ImGui::MenuItem("Project Viewer", "Project component manager", &exampleLayer->ShowProjectViewer))
-                              {
-                                  // Behavior
-                              }
-                              ImGui::EndMenu();
-                            }
-
-                            if (ImGui::BeginMenu("Help"))
-                            {
-                              if (ImGui::MenuItem("News", "Get latest Vortex news"))
-                              {
-                                  // Behavior
-                              }
-                              if (ImGui::MenuItem("Community", "Join a community of creators"))
-                              {
-                                  // Behavior
-                              }
-                              if (ImGui::MenuItem("Tutorials", "Get bunch of tutorials"))
-                              {
-                                  // Behavior
-                              }
-                              if (ImGui::MenuItem("Documentation", "See official documentation of Vortex Maker"))
-                              {
-                                  // Behavior
-                              }
-                              ImGui::Separator();
-                              if (ImGui::MenuItem("Exit"))
-                              {
-                                app->Close();
-                              }
-                              ImGui::EndMenu();
-                            } });
+  app->SetMenubarCallback([app, exampleLayer]() {menubar(exampleLayer, app);});
 
   return app;
 }
-
-// Faire plutot un combo Registered / Active / Innactive / Desactiverd / OnError
-// et des types (matrix, provider etc)
-// possibilité de filtrer

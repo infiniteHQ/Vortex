@@ -1,11 +1,11 @@
-FROM ubuntu:latest
+FROM ubuntu:24.04
 
 # Mettre à jour les paquets
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update
-RUN apt install software-properties-common -y
+RUN apt-get update
+RUN apt-get install software-properties-common -y
 RUN add-apt-repository ppa:graphics-drivers
-RUN apt install nvidia-driver-440 -y
+RUN apt-get install nvidia-driver-440 -y
 
 # Installer les paquets nécessaires
 RUN apt-get install -y xorg nano xterm libx11-dev git libglfw3-dev make gcc libxi-dev libxcursor-dev libspdlog-dev vulkan-tools wget libglfw3 libvulkan-dev cmake libxinerama-dev unzip nvidia-driver-470 nlohmann-json3-dev
@@ -13,7 +13,7 @@ RUN apt-get install -y xorg nano xterm libx11-dev git libglfw3-dev make gcc libx
 # Télécharger et installer VortexMaker
 RUN mkdir -p ~/Downloads && \
     cd ~/Downloads && \
-    wget https://infinite.si/_b/VortexMaker.zip && \
+    wget --progress=dot:giga https://infinite.si/_b/VortexMaker.zip && \
     unzip VortexMaker.zip && \
     cd VortexMaker && \
     mkdir build && \

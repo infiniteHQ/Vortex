@@ -2,9 +2,11 @@
 #include "../../include/vortex_internals.h"
 #include "../../include/modules/load.h"
 
-std::string getHomeDirectory() {
-    const char* homePath = std::getenv("HOME");
-    if (homePath == nullptr) {
+std::string getHomeDirectory()
+{
+    const char *homePath = std::getenv("HOME");
+    if (homePath == nullptr)
+    {
         throw std::runtime_error("HOME environment variable not set");
     }
     return std::string(homePath);
@@ -86,17 +88,18 @@ namespace VortexMaker
                         new_module->m_group = json_data["group"].get<std::string>();
                         new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
 
-                        
-                        for(auto dep : json_data["deps"]){
+                        for (auto dep : json_data["deps"])
+                        {
                             std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
                             dependence->name = dep["name"].get<std::string>();
                             dependence->type = dep["type"].get<std::string>();
-                            for(auto version : dep["versions"]){
+                            for (auto version : dep["versions"])
+                            {
                                 dependence->supported_versions.push_back(version);
                             }
                             new_module->m_dependencies.push_back(dependence);
                         }
-                        
+
                         new_module->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
                     }
                     catch (std::exception e)
@@ -127,8 +130,6 @@ namespace VortexMaker
         }
     }
 
-
-    
     VORTEX_API void LoadSystemModules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules)
     {
         // Get the home directory
@@ -139,8 +140,8 @@ namespace VortexMaker
 
         // Search for module files recursively in the directory
         auto module_files = VortexMaker::SearchSystemFiles(path, "module.json");
-        
-          // Iterate through each found module file
+
+        // Iterate through each found module file
         for (const auto &file : module_files)
         {
             try
@@ -152,45 +153,44 @@ namespace VortexMaker
 
                 std::shared_ptr<ModuleInterface> new_module = std::make_shared<ModuleInterface>();
 
-                    // Try to fetch module informations from module.json
-                    try
-                    {
-                        new_module->m_name = json_data["name"].get<std::string>();
-                        new_module->m_auto_exec = json_data["auto_exec"].get<bool>();
-                        new_module->m_proper_name = json_data["proper_name"].get<std::string>();
-                        new_module->m_type = json_data["type"].get<std::string>();
-                        new_module->m_version = json_data["version"].get<std::string>();
-                        new_module->m_description = json_data["description"].get<std::string>();
-                        new_module->m_picture = json_data["picture"].get<std::string>();
-                        new_module->m_logo_path = module_path + "/" + new_module->m_picture;
-                        new_module->m_author = json_data["author"].get<std::string>();
-                        new_module->m_group = json_data["group"].get<std::string>();
-                        new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+                // Try to fetch module informations from module.json
+                try
+                {
+                    new_module->m_name = json_data["name"].get<std::string>();
+                    new_module->m_auto_exec = json_data["auto_exec"].get<bool>();
+                    new_module->m_proper_name = json_data["proper_name"].get<std::string>();
+                    new_module->m_type = json_data["type"].get<std::string>();
+                    new_module->m_version = json_data["version"].get<std::string>();
+                    new_module->m_description = json_data["description"].get<std::string>();
+                    new_module->m_picture = json_data["picture"].get<std::string>();
+                    new_module->m_logo_path = module_path + "/" + new_module->m_picture;
+                    new_module->m_author = json_data["author"].get<std::string>();
+                    new_module->m_group = json_data["group"].get<std::string>();
+                    new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
 
-                        
-                        for(auto dep : json_data["deps"]){
-                            std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
-                            dependence->name = dep["name"].get<std::string>();
-                            dependence->type = dep["type"].get<std::string>();
-                            for(auto version : dep["versions"]){
-                                dependence->supported_versions.push_back(version);
-                            }
-                            new_module->m_dependencies.push_back(dependence);
+                    for (auto dep : json_data["deps"])
+                    {
+                        std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
+                        dependence->name = dep["name"].get<std::string>();
+                        dependence->type = dep["type"].get<std::string>();
+                        for (auto version : dep["versions"])
+                        {
+                            dependence->supported_versions.push_back(version);
                         }
-                        
-                        new_module->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
-                    }
-                    catch (std::exception e)
-                    {
-                        std::cerr << e.what() << std::endl;
+                        new_module->m_dependencies.push_back(dependence);
                     }
 
+                    new_module->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
+                }
+                catch (std::exception e)
+                {
+                    std::cerr << e.what() << std::endl;
+                }
 
-                    VXINFO("Modules registered in system ", new_module->m_name + " loaded with success !")
+                VXINFO("Modules registered in system ", new_module->m_name + " loaded with success !")
 
-                    // Store the module instance and handle
-                    sys_modules.push_back(new_module);
-                
+                // Store the module instance and handle
+                sys_modules.push_back(new_module);
             }
             catch (const std::exception &e)
             {
@@ -198,7 +198,6 @@ namespace VortexMaker
                 std::cerr << "Error: " << e.what() << std::endl;
             }
         }
-   
     }
 
 } // namespace VortexMaker

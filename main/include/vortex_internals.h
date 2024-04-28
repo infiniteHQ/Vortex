@@ -183,7 +183,6 @@ struct VxIO {
 struct VxPaths {
   std::string toolchainDistFolder;
   std::string hostDistFolder;
-
 };
 
 
@@ -200,34 +199,21 @@ struct VxContext {
   bool                              logger_registering;
   VxIO                              IO;
   VortexMakerDebugAllocInfo         debugAllocInfo;
-
   std::vector<std::shared_ptr<VxSystemLog>> registered_logs;
-  
-
   TaskFactory*                      taskFactory;
-
   fs::path projectPath;
   VxPaths paths;
-
   std::string author;
   std::string description;
   std::string label;
   std::string name;
   std::string type;
   std::string version;
-
-
   std::string toolchainsPath;
   std::string gposPath;
   std::string packagesPath;
   std::string scriptsPath;
   std::string hostsPath;
-
-  // All contents...
-
-
-
-
 };
 //-----------------------------------------------------------------------------
 

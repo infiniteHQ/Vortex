@@ -645,20 +645,17 @@ VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path)
 
         VortexMaker::LogInfo("Core", "Installing the module " + name + "...");
 
-    // Move the module in the final system path
-    {
-        std::string cmd = "cp -r " + path + " " + modules_path;
-        system(cmd.c_str());
-    }
-
-        
+        // Move the module in the final system path
+        {
+            std::string cmd = "cp -r " + path + " " + modules_path;
+            system(cmd.c_str());
+        }
     }
     catch (const std::exception &e)
     {
         // Print error if an exception occurs
         std::cerr << "Error: " << e.what() << std::endl;
     }
-
 }
 
 VORTEX_API void VortexMaker::AddModuleToProject(const std::string &module_name)
@@ -667,18 +664,17 @@ VORTEX_API void VortexMaker::AddModuleToProject(const std::string &module_name)
 
 VORTEX_API std::string VortexMaker::replacePlaceholders(const std::string &command, const std::unordered_map<std::string, std::string> &replacements)
 {
-  std::string result = command;
-  for (const auto &[placeholder, value] : replacements)
-  {
-    size_t pos = 0;
-    while ((pos = result.find(placeholder, pos)) != std::string::npos)
+    std::string result = command;
+    for (const auto &[placeholder, value] : replacements)
     {
-      result.replace(pos, placeholder.length(), value);
-      pos += value.length();
+        size_t pos = 0;
+        while ((pos = result.find(placeholder, pos)) != std::string::npos)
+        {
+            result.replace(pos, placeholder.length(), value);
+            pos += value.length();
+        }
     }
-  }
-  return result;
+    return result;
 }
-
 
 #endif // VORTEX_DISABLE

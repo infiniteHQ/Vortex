@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
             std::string current_path = std::filesystem::current_path();
             std::string docker_command = "xhost + && sudo docker run -it --gpus=all --rm -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -v " + current_path + ":/root/vx -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all vortex";
 
-            int status = std::system(docker_command.c_str());
+            int status = system(docker_command.c_str());
 
             if (status == 0)
             {

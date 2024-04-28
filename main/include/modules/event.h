@@ -11,7 +11,6 @@
 class ModuleInputEvent
 {
 public:
-
     ModuleInputEvent(void(*foo)(const std::shared_ptr<hArgs>& args), const std::string& name);
     
     virtual void execute(){};

@@ -128,12 +128,11 @@ std::string ModuleDetails::render()
 {
     static ImTextureID toolchainIcon = this->m_ToolchainIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-
-        static ImTextureID errorIcon = this->m_ErrorIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        static ImTextureID warnIcon = this->m_WarningIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        static ImTextureID successIcon = this->m_SuccessIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        static ImTextureID flipIcon = this->m_FlipBookIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        static ImTextureID unknowIcon = this->m_UnknowIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID errorIcon = this->m_ErrorIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID warnIcon = this->m_WarningIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID successIcon = this->m_SuccessIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID flipIcon = this->m_FlipBookIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID unknowIcon = this->m_UnknowIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     if (opened)
     {
@@ -151,7 +150,6 @@ std::string ModuleDetails::render()
             ImGui::SameLine();
             ImGui::Text(this->m_module->m_proper_name.c_str());
 
-
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Module State :");
             ImGui::SameLine();
             ImGui::Text("?");
@@ -164,49 +162,47 @@ std::string ModuleDetails::render()
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Module name : ");
             ImGui::SameLine();
             ImGui::Text(this->m_module->m_name.c_str());
-      
+
             ImGui::Separator();
             if (ImGui::CollapsingHeader("Instances", &errorIcon, NULL))
             {
+                // Behavior
             }
             if (ImGui::CollapsingHeader("Events", &errorIcon, NULL))
             {
+                // Behavior
             }
             if (ImGui::CollapsingHeader("Functions", &errorIcon, NULL))
             {
-                                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-                    if (ImGui::BeginTable("table_", 4, flags))
+                if (ImGui::BeginTable("table_", 4, flags))
+                {
+                    ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Directive", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableHeadersRow();
+                    for (int row = 0; row < this->m_module->m_functions.size(); row++)
                     {
-                        ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
-                        ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
-                        ImGui::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
-                        ImGui::TableSetupColumn("Directive", ImGuiTableColumnFlags_WidthFixed);
-                        ImGui::TableHeadersRow();
-                        for (int row = 0; row < this->m_module->m_functions.size(); row++)
+                        ImGui::TableNextRow();
+                        for (int column = 0; column < 4; column++)
                         {
+                            ImGui::TableSetColumnIndex(column);
 
-                            ImGui::TableNextRow();
-                            for (int column = 0; column < 4; column++)
+                            if (column == 0)
                             {
-                                ImGui::TableSetColumnIndex(column);
-
-                                if (column == 0)
-                                {
-                                    ImGui::Text(this->m_module->m_functions[row]->m_name.c_str());
-                                }
+                                ImGui::Text(this->m_module->m_functions[row]->m_name.c_str());
                             }
                         }
-
-                        ImGui::EndTable();
-                    
+                    }
+                    ImGui::EndTable();
                 }
-           
             }
             if (ImGui::CollapsingHeader("Logs", &errorIcon, NULL))
             {
+                // Behavior
             }
-
         }
         ImGui::End();
 
@@ -214,7 +210,6 @@ std::string ModuleDetails::render()
     }
     else
     {
-
         return "closed";
     }
 }
@@ -223,12 +218,12 @@ void ModuleDetails::menubar()
 {
     if (ImGui::BeginMenuBar())
     {
-            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Details of module :\"");
-            ImGui::Text(this->m_module->m_proper_name.c_str());
-            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "\" with name : \"");
-            ImGui::Text(this->m_module->m_name.c_str());
-            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "\"");
-    
-    ImGui::EndMenuBar();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Details of module :\"");
+        ImGui::Text(this->m_module->m_proper_name.c_str());
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "\" with name : \"");
+        ImGui::Text(this->m_module->m_name.c_str());
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "\"");
+
+        ImGui::EndMenuBar();
     }
 }
