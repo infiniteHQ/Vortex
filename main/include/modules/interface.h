@@ -109,7 +109,6 @@ public:
 private:
     std::vector<std::shared_ptr<ModuleDummyFunction>> m_dummy_functions;
     std::vector<std::shared_ptr<ModuleRenderInstance>> m_render_instances;
-
 };
 
 #endif // MODULE_INTERFACE_H

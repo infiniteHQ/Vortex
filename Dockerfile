@@ -6,6 +6,8 @@ RUN apt-get update
 RUN apt-get install software-properties-common -y
 RUN add-apt-repository ppa:graphics-drivers
 RUN apt-get install nvidia-driver-440 -y
+RUN apt-get clean \
+RUN rm -rf /var/lib/apt/lists/*
 
 # Installer les paquets nécessaires
 RUN apt-get install -y xorg nano xterm libx11-dev git libglfw3-dev make gcc libxi-dev libxcursor-dev libspdlog-dev vulkan-tools wget libglfw3 libvulkan-dev cmake libxinerama-dev unzip nvidia-driver-470 nlohmann-json3-dev
