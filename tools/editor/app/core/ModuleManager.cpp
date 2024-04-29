@@ -3,8 +3,6 @@
 
 static int item_current = 0;
 
-static bool open_ADDMODULE = false;
-
 // Left
 static int mb_selected = 0;
 static std::vector<std::string> mb_syslabels;
@@ -346,9 +344,9 @@ void handleRefresh()
     // Behavior
 }
 
-void handleAddToProject()
+void handleAddToProject(const std::string& name, const std::string& version)
 {
-    // Behavior
+    VortexMaker::InstallModule(name, version);
 }
 
 void handleFilterBuildRebuild()
@@ -373,6 +371,37 @@ void handleSearch()
 
 void ModuleManager::addModuleModal()
 {
+}
+
+// Main menu function
+
+void ModuleManager::menubar()
+{
+    static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    static bool open_ADDMODULE = false;
+
+    for (auto em : ctx->IO.sys_em)
+    {
+        bool add = true;
+
+        for (auto label : mb_syslabels)
+        {
+            if (label == em->m_group)
+            {
+                add = false;
+            }
+        }
+
+        if (add)
+        {
+            mb_syslabels.push_back(em->m_group);
+        }
+    }
+
+    if (open_ADDMODULE){
+        
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -452,7 +481,7 @@ void ModuleManager::addModuleModal()
         {
             if (ctx->IO.sys_em[i]->m_group == mb_syslabels[mb_selected])
             {
-                std::string childLabel = "module##" + ctx->IO.sys_em[i]->m_name;
+                std::string childLabel = "module##" + ctx->IO.sys_em[i]->m_name +  ctx->IO.sys_em[i]->m_version;
 
                 ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 250), true);
 
@@ -518,44 +547,16 @@ void ModuleManager::addModuleModal()
 
                 if (ImGui::ImageButtonWithText(addIcon, "Add to the current project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
-                    handleAddToProject();
+                    handleAddToProject(ctx->IO.sys_em[i]->m_name, ctx->IO.sys_em[i]->m_version);
                 }
                 ImGui::EndChild();
             }
-            ImGui::EndChildFrame();
+           
         }
+         ImGui::EndChildFrame();
         ImGui::EndPopup();
     }
-}
-
-// Main menu function
-
-void ModuleManager::menubar()
-{
-    static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    static bool open_ADDMODULE = false;
-
-    for (auto em : ctx->IO.sys_em)
-    {
-        bool add = true;
-
-        for (auto label : mb_syslabels)
-        {
-            if (label == em->m_group)
-            {
-                add = false;
-            }
-        }
-
-        if (add)
-        {
-            mb_syslabels.push_back(em->m_group);
-        }
     }
-
-    if (open_ADDMODULE)
-        this->addModuleModal();
 
     if (open_ADDMODULE)
         ImGui::OpenPopup("Add module(s)");

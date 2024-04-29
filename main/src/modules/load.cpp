@@ -2,16 +2,6 @@
 #include "../../include/vortex_internals.h"
 #include "../../include/modules/load.h"
 
-std::string getHomeDirectory()
-{
-    const char *homePath = std::getenv("HOME");
-    if (homePath == nullptr)
-    {
-        throw std::runtime_error("HOME environment variable not set");
-    }
-    return std::string(homePath);
-}
-
 namespace VortexMaker
 {
 
@@ -133,7 +123,7 @@ namespace VortexMaker
     VORTEX_API void LoadSystemModules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules)
     {
         // Get the home directory
-        std::string homeDir = getHomeDirectory();
+        std::string homeDir = VortexMaker::getHomeDirectory();
 
         // Module path on the system
         std::string path = homeDir + "/.vx/modules";
@@ -164,6 +154,7 @@ namespace VortexMaker
                     new_module->m_description = json_data["description"].get<std::string>();
                     new_module->m_picture = json_data["picture"].get<std::string>();
                     new_module->m_logo_path = module_path + "/" + new_module->m_picture;
+                    new_module->m_path = module_path + "/";
                     new_module->m_author = json_data["author"].get<std::string>();
                     new_module->m_group = json_data["group"].get<std::string>();
                     new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();

@@ -202,7 +202,9 @@ namespace VortexMaker
     VORTEX_API void CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name);
     VORTEX_API void CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> args));
 
+
     VORTEX_API void InstallModuleToSystem(const std::string &path);
+    VORTEX_API void InstallModule(const std::string &module_name, const std::string &version);
     VORTEX_API void AddModuleToProject(const std::string &module_name);
 
     VORTEX_API void CreateProject(const std::string &name, const std::string &path);
@@ -222,6 +224,7 @@ namespace VortexMaker
     VORTEX_API std::string replacePlaceholders(const std::string &command, const std::unordered_map<std::string, std::string> &replacements);
 
     VORTEX_API std::string gen_random(const int len);
+    VORTEX_API std::string getHomeDirectory();
 
     // Memory Allocators
     // - Those functions are not reliant on the current context.

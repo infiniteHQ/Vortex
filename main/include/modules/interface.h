@@ -88,6 +88,7 @@ public:
     std::string m_proper_name;
     std::string m_name;
     std::string m_version;
+    std::string m_path;
     std::string m_author;
     std::string m_group;
     std::string m_picture;

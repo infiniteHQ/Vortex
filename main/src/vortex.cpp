@@ -628,11 +628,6 @@ VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path)
     std::string modules_path = "~/.vx/modules";
     std::string json_file = path + "/module.json";
 
-    {
-        std::string cmd = "mkdir " + modules_path;
-        system(cmd.c_str());
-    }
-
     // Verify if the module is valid
     try
     {
@@ -645,11 +640,20 @@ VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path)
         std::string description = json_data["description"].get<std::string>();
         std::string author = json_data["author"].get<std::string>();
 
+        //std::string origin_path = path.substr(0, path.find_last_of("/"));
+        modules_path += "/" + name + "." + version;
+
         VortexMaker::LogInfo("Core", "Installing the module " + name + "...");
+
+        // Create directory
+        {
+            std::string cmd = "mkdir " + modules_path;
+            system(cmd.c_str());
+        }
 
         // Move the module in the final system path
         {
-            std::string cmd = "cp -r " + path + " " + modules_path;
+            std::string cmd = "cp -r " + path + "/* " + modules_path;
             system(cmd.c_str());
         }
     }
@@ -677,6 +681,16 @@ VORTEX_API std::string VortexMaker::replacePlaceholders(const std::string &comma
         }
     }
     return result;
+}
+
+VORTEX_API std::string VortexMaker::getHomeDirectory()
+{
+    const char *homePath = std::getenv("HOME");
+    if (homePath == nullptr)
+    {
+        throw std::runtime_error("HOME environment variable not set");
+    }
+    return std::string(homePath);
 }
 
 #endif // VORTEX_DISABLE
