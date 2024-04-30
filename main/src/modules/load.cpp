@@ -23,6 +23,8 @@ namespace VortexMaker
         // Iterate through each found module file
         for (const auto &file : module_files)
         {
+            VXINFO("Modules", file + " module path finded !")
+            
             try
             {
                 // Load JSON data from the module configuration file
@@ -37,6 +39,8 @@ namespace VortexMaker
                 // Iterate through each found SO file
                 for (const auto &so_file : so_files)
                 {
+
+                        std::cout << "File " << file << "So " << so_file << std::endl;
                     // Load the shared object
                     void *handle = dlopen(so_file.c_str(), RTLD_LAZY | RTLD_GLOBAL);
                     if (!handle)
@@ -78,7 +82,7 @@ namespace VortexMaker
                         new_module->m_group = json_data["group"].get<std::string>();
                         new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
 
-                        for (auto dep : json_data["deps"])
+                        for (auto dep : json_data["deps"].get<std::vector<nlohmann::json>>())
                         {
                             std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
                             dependence->name = dep["name"].get<std::string>();
@@ -90,7 +94,10 @@ namespace VortexMaker
                             new_module->m_dependencies.push_back(dependence);
                         }
 
-                        new_module->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
+                        for (auto compat : json_data["compatibility"].get<std::vector<nlohmann::json>>())
+                        {
+                            new_module->m_supported_versions.push_back(compat.get<std::string>());
+                        }
                     }
                     catch (std::exception e)
                     {

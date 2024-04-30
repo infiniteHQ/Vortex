@@ -38,6 +38,8 @@ VORTEX_API void VortexMaker::InstallModule(const std::string &module_name, const
                     std::string cmd = "cp -r " + module_path + " " + ctx.projectPath.c_str() + "/.vx/modules/";
                     system(cmd.c_str());
                 }
+
+                return;
             }
         }
         catch(std::exception e)

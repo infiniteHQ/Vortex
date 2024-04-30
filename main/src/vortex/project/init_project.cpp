@@ -45,7 +45,6 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     // Note: These modules are simply initialized in the project, not loaded, but we can add these in CLI/GUI 
     VortexMaker::LoadSystemModules(ctx.IO.sys_em);
     
-
     // TODO : On a dedicated function
     for(auto em : ctx.IO.em)
     {
