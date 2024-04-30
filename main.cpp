@@ -7,6 +7,30 @@
 #include "./main/include/vortex.h"
 #include "./lib/uikit/src/EntryPoint.h"
 
+void PrintInfinite()
+{
+        std::cout << R"(
+                  ███  ███   ███  ███████▓▒███ ███░  ░███ ███▓█████████ ████████                   
+                  ███  ███▒  ███  ███████▓▒███ █████ ░███ ███▓█████████ ████████                   
+                  ███  ████  ███  ███▓▓▓▓ ▒███ ██████▒███ ███▓   ███░   ███                        
+                  ███  █████ ███  ███████ ▒███ ███▒██████ ███▓   ███░   ███                        
+                  ███  █████████  ███     ▒███ ███▒ █████ ███▓   ███░   ███                        
+                  ███  ███▓█████  ███     ▒███ ███▒  ████ ███▓   ███░   ███                        
+                  ███  ███ █████  ███                     ███▓   ███░   ███████                    
+                  ███  ███ ▒████  ██░                        ░   ███░   ███████                    
+                  ███  ███  ████                                 ███░   ███                        
+                  ███  ███  ░█▓                                    █░   ███                        
+                  ███  ███                                              ███                        
+                  ███  ███                                              ███▒                       
+                  ███  ██                                               ░████                      
+                  ███                                                     ████▒                    
+                  ███                                                       ███░                   
+                  ██▒                                                        ███                   
+                  █░                                                          ██                   
+                  █                                                            █                   
+                                                                                                              )" << std::endl;
+}
+
 bool CheckDirectory()
 {
     std::ifstream mainconfig("vortex.config");
@@ -53,13 +77,35 @@ int main(int argc, char *argv[])
     if (argc < 2)
     {
         std::cout << std::endl;
-        std::cout << "Usage : vortex <paramater(s)...> <information(s)...>" << std::endl
-                  << std::endl;
-        std::cout << "-h --help :               See all parameters" << std::endl;
-        std::cout << "-g --gui :                Open the Vortex graphical interface" << std::endl;
-        std::cout << "-cp --create-project  <...> :        Create a new project" << std::endl;
-        std::cout << "Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. " << std::endl
-                  << std::endl;
+        std::cout << "\033[38;2;177;255;49m"; 
+        PrintInfinite();
+        std::cout << "\033[0m";
+
+        std::cout << "┌────────────────────────────────────────────────────────────────────────────────────────────────┐" << std::endl;
+        std::cout << "|" << "\033[38;2;177;255;49m" <<  " Description : " << "\033[0m" << "                                                                                 | " << std::endl;
+
+        std::cout << "| ❓ Vortex makes it easy to create a system, application or toolchain. It also offers a wide    | " << std::endl;
+        std::cout << "| range of options for system maintenance and supervision.                                       | " << std::endl;
+        std::cout << "├────────────────────────────────────────────────────────────────────────────────────────────────┤" << std::endl;
+
+        std::cout << "|" << "\033[38;2;177;255;49m" <<  " Usage : " << "\033[0m" << "vortex <paramater(s)...> <information(s)...>                                           | " << std::endl;
+
+
+        std::cout << "├────────────────────────────────────────────────────────────────────────────────────────────────┤" << std::endl;
+        std::cout << "|" << "\033[38;2;177;255;49m" <<  " Helpfull commands : " << "\033[0m" << "                                                                           | " << std::endl;
+        std::cout << "| -h   --help :                          See all parameters                                      | " << std::endl;
+        std::cout << "| -g   --gui :                           Open the Vortex graphical interface                     | " << std::endl;
+        std::cout << "| -cp  --create-project  <...> :         Create a new project                                    | " << std::endl;
+        std::cout << "| -i   --install  <...> :                Install a ressource into the user environment           | " << std::endl;
+        std::cout << "| -bi  --build-install  <...> :          Build & Install a ressource into the user environment   | " << std::endl;
+        std::cout << "├────────────────────────────────────────────────────────────────────────────────────────────────┤" << std::endl;
+        std::cout << "|" << "\033[38;2;177;255;49m" <<  " Links : " << "\033[0m" << "                                                                                       | " << std::endl;
+        std::cout << "| 🌍 Vortex website :                                                                            | " << std::endl;
+        std::cout << "| 📝 News :                                                                                      | " << std::endl;
+        std::cout << "| 💬 Discord :                                                                                   | " << std::endl;
+        std::cout << "| 💬 Source code :                                                                               | " << std::endl;
+        std::cout << "└────────────────────────────────────────────────────────────────────────────────────────────────┘ " << std::endl;
+        std::cout << std::endl;
     }
     else
     {
@@ -70,7 +116,13 @@ int main(int argc, char *argv[])
             std::string ui;
             std::cin >> ui;
         }
-        else if (std::string(argv[1]) == "-i")
+        else if (std::string(argv[1]) == "-i" || std::string(argv[1]) == "--install")
+        {
+            std::string current_path = std::filesystem::current_path();
+            InitBlankRuntime(true);
+            VortexMaker::InstallModuleToSystem(current_path);
+        }
+        else if (std::string(argv[1]) == "-bi" || std::string(argv[1]) == "--build-install")
         {
             std::string current_path = std::filesystem::current_path();
             InitBlankRuntime(true);
