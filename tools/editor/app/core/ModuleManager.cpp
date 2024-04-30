@@ -305,8 +305,7 @@ void ModuleManager::OnImGuiRender()
             {
                 if (ImGui::ImageButtonWithText(listIcon, "Retry to launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
-                    std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(ctx, ctx->IO.em[i]);
-                    factory->SpawnInstance(instance);
+                    ctx->IO.em[i]->Start();
                 }
                 ImGui::SameLine();
 

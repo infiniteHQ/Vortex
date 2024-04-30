@@ -348,10 +348,16 @@ void ModuleInterface::CheckDependencies()
  */
 void ModuleInterface::Start()
 {
+    // Get the current Vortex context
+    VxContext *ctx = VortexMaker::GetCurrentContext();
+
+    // Update dependencies
     this->CheckDependencies();
 
+    // Get current vortex version
     std::string version = VORTEX_VERSION;    
     
+    // Get major, a medium idendifiers of version
     std::size_t last_point = version.find('.', version.find('.') + 1);
     std::string major = version.substr(0, last_point);
     
@@ -363,6 +369,7 @@ void ModuleInterface::Start()
     bool allDependenciesSatisfied = true;
     bool isVersionCompatible = false;
 
+    // Vector of unsatisfied dependencies
     std::vector<std::pair<std::string, std::string>> unsatisfiedDependencies;
 
     for (auto dependency : this->m_dependencies)
@@ -385,13 +392,32 @@ void ModuleInterface::Start()
         }
     }
 
+    // Vector of needed dependencies (to run)
+    std::vector<std::pair<std::string, std::string>> needToRunDependencies;
+    for(auto dep : this->m_dependencies){
+        for(auto em : ctx->IO.em){
+            if(em->m_name == dep->name){
+
+            std::string versions;
+            for (auto version : dep->supported_versions)
+            {
+                versions += "[" + version + "]";
+            }
+
+                if(em->m_state != "running"){
+                    needToRunDependencies.push_back({dep->name, versions});
+                }
+            }
+        }
+    }
+
     // If any dependency is not satisfied, log and set state to "failed"
     if (!allDependenciesSatisfied)
     {
-        this->LogFatal("Dependencies not satisfied!");
+        this->LogError("Dependencies not satisfied!");
         for (auto unsatisfiedDep : unsatisfiedDependencies)
         {
-            this->LogFatal("Failed to retrieve: " + unsatisfiedDep.first + " with version(s) " + unsatisfiedDep.second);
+            this->LogError("Failed to retrieve: " + unsatisfiedDep.first + " with version(s) " + unsatisfiedDep.second);
         }
         this->m_state = "failed";
         return;
@@ -399,8 +425,20 @@ void ModuleInterface::Start()
 
     if (!isVersionCompatible)
     {   
-        this->LogFatal("The Vortex version (" + version + ", try to find \""+major+"\") is incompatible with \"" + this->m_name + "\" supported version(s).");
+        this->LogError("The Vortex version (" + version + ", try to find \""+major+"\") is incompatible with \"" + this->m_name + "\" supported version(s).");
 
+        this->m_state = "failed";
+        return;
+    }
+
+    if(!needToRunDependencies.empty())
+    {
+        this->LogError("Dependencies of this modules are not running !");
+
+        for (auto notRunningDeps : needToRunDependencies)
+        {
+            this->LogError("Please run : " + notRunningDeps.first + " with version(s) " + notRunningDeps.second);
+        }
         this->m_state = "failed";
         return;
     }
@@ -425,7 +463,7 @@ void ModuleInterface::Stop()
 
     for (auto em : ctx->IO.em)
     {
-        //if(em->m_state == "running"){
+        if(em->m_state == "running"){
 
         for (auto dependency : em->m_dependencies)
         {
@@ -447,7 +485,7 @@ void ModuleInterface::Stop()
                 }
             }
         }
-        //}
+        }
     }
 
     if(!authorized){
