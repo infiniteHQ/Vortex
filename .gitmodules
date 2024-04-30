@@ -20,3 +20,6 @@
 	path = main/builtint/vortex.modules.builtin.tasklists
 	url = https://github.com/infiniteHQ/vortex.modules.builtin.tasklists
 	branch = main
+[submodule "lib/uikit"]
+	path = lib/uikit
+	url = https://github.com/infiniteHQ/uikit
