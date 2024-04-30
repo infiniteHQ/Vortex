@@ -39,8 +39,6 @@ namespace VortexMaker
                 // Iterate through each found SO file
                 for (const auto &so_file : so_files)
                 {
-
-                        std::cout << "File " << file << "So " << so_file << std::endl;
                     // Load the shared object
                     void *handle = dlopen(so_file.c_str(), RTLD_LAZY | RTLD_GLOBAL);
                     if (!handle)

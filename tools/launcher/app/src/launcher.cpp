@@ -1,4 +1,4 @@
-#include "../include/editor.h"
+#include "../include/launcher.h"
 
 static void handleExit(UIKit::Application *app)
 {
@@ -51,42 +51,14 @@ static void handleDocumentation()
 }
 
 // Main menu function
-void EditorLayer::menubar(const std::shared_ptr<EditorLayer> &exampleLayer, UIKit::Application *app)
+void LauncherLayer::menubar(const std::shared_ptr<LauncherLayer> &exampleLayer, UIKit::Application *app)
 {
-    if (ImGui::BeginMenu("File"))
-    {
-        if (ImGui::MenuItem("Exit"))
-            handleExit(app);
-        ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Edit"))
-    {
-        if (ImGui::MenuItem("Project Settings", "Main configurations of this project"))
-            handleProjectSettings();
-        ImGui::Separator();
-        if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project"))
-            handleManagePlugins();
-        if (ImGui::MenuItem("Manage modules", "Project file manager", &exampleLayer->ShowModulesManager))
-            handleManageModules(exampleLayer->ShowModulesManager);
-        ImGui::EndMenu();
-    }
-
     if (ImGui::BeginMenu("Window"))
     {
         if (ImGui::MenuItem("Show bottom toolbar", "Get some useful tools in a bottom bar."))
             handleShowBottomToolbar();
         if (ImGui::MenuItem("Show simplified header", "Reduce the size of header"))
             handleShowSimplifiedHeader(app);
-        ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Tools"))
-    {
-        if (ImGui::MenuItem("Content Browser", "Project file manager", &exampleLayer->ShowContentBrowser))
-            handleContentBrowser(exampleLayer->ShowContentBrowser);
-        if (ImGui::MenuItem("Project Viewer", "Project component manager", &exampleLayer->ShowProjectViewer))
-            handleProjectViewer(exampleLayer->ShowProjectViewer);
         ImGui::EndMenu();
     }
 

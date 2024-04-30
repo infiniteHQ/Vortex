@@ -1,35 +1,18 @@
-
-
 #include "../instances/instance.h"
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
 #include "../core/ModuleManager.hpp"
 
 #include "./instanceFactory.h"
+
+#include "../../../../lib/uikit/src/EntryPoint.h"
+
 using namespace VortexMaker;
 
 #ifndef EDITOR_H
 #define EDITOR_H
 
 static std::vector<std::shared_ptr<ModuleDetails>> moduleDetailsInstances;
-
-static void PushStyle()
-{
-  ImGuiStyle &style = ImGui::GetStyle();
-  ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-  ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
-  ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 11.0f);
-  ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 11.0f);
-  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
-  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 6.0f));
-  ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(9.0f, 3.0f));
-  ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
-}
-
-static void PopStyle()
-{
-  ImGui::PopStyleVar(8);
-}
 
 class Instance : public InstanceFactory
 {
@@ -48,12 +31,12 @@ public:
   };
 };
 
-class ApplicationLayer : public UIKit::Layer
+class EditorLayer : public UIKit::Layer
 {
 public:
-  ApplicationLayer(){};
+  EditorLayer(){};
 
-  void menubar(const std::shared_ptr<ApplicationLayer>& applayer, UIKit::Application* app);
+  void menubar(const std::shared_ptr<EditorLayer> &applayer, UIKit::Application *app);
   void OnUIRender() override
   {
     PushStyle();
@@ -111,7 +94,23 @@ public:
 
     PopStyle();
   }
+  void PushStyle()
+  {
+    ImGuiStyle &style = ImGui::GetStyle();
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 11.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 11.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 6.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(9.0f, 3.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
+  }
 
+  void PopStyle()
+  {
+    ImGui::PopStyleVar(8);
+  }
   VxContext *m_ctx;
 
   // Global TaskProcessor instance
@@ -129,11 +128,11 @@ private:
   std::vector<std::string> instanciedWindowsNames;
 };
 
-static UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
+UIKit::Application *CreateEditor(int argc, char **argv)
 {
   int port = atoi(argv[1]);
 
-  std::shared_ptr<ApplicationLayer> applayer = std::make_shared<ApplicationLayer>();
+  std::shared_ptr<EditorLayer> applayer = std::make_shared<EditorLayer>();
   applayer->m_ctx = VortexMaker::GetCurrentContext();
 
   UIKit::ApplicationSpecification spec;
@@ -145,9 +144,47 @@ static UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
   UIKit::Application *app = new UIKit::Application(spec);
 
   app->PushLayer(applayer);
-  app->SetMenubarCallback([app, applayer]() {applayer->menubar(applayer, app);});
+  app->SetMenubarCallback([app, applayer]()
+                          { applayer->menubar(applayer, app); });
 
   return app;
 }
+
+namespace VortexMaker
+{
+  static int VortexEditor(int argc, char **argv)
+  {
+    return UIKit::ThirdMain(argc, argv, CreateEditor);
+  }
+
+  // Old call
+  /*static int VortexEditor(int argc, char **argv)
+  {
+    return UIKit::Main(argc, argv);
+  }*/
+}
+
+// Old creation function
+/*static UIKit::Application *UIKit::CreateApplication(int argc, char **argv)
+{
+  int port = atoi(argv[1]);
+
+  std::shared_ptr<EditorLayer> applayer = std::make_shared<EditorLayer>();
+  applayer->m_ctx = VortexMaker::GetCurrentContext();
+
+  UIKit::ApplicationSpecification spec;
+  std::string name = applayer->m_ctx->name + " - Vortex Editor";
+  spec.Name = name;
+  spec.CustomTitlebar = true;
+  spec.IconPath = "icon.png";
+
+  UIKit::Application *app = new UIKit::Application(spec);
+
+  app->PushLayer(applayer);
+  app->SetMenubarCallback([app, applayer]()
+                          { applayer->menubar(applayer, app); });
+
+  return app;
+}*/
 
 #endif
