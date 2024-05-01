@@ -1,6 +1,7 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 #include "../../../include/modules/load.h"
+#include "../../../include/templates/load.h"
 
 /**
  * @brief Initialize project settings based on provided JSON configurations.
@@ -21,7 +22,9 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     ctx.label = main_configs["project"]["name"].get<std::string>();
     ctx.name = main_configs["project"]["name"].get<std::string>();
     ctx.type = main_configs["project"]["type"].get<std::string>();
-    ctx.version = main_configs["project"]["version"].get<std::string>();
+    ctx.project_version = main_configs["project"]["version"].get<std::string>();
+    ctx.version = VORTEX_VERSION;
+    ctx.include_system_templates = main_configs["project"]["include_system_templates"].get<bool>();
 
     ctx.packagesPath = main_configs["data"]["packages"].get<std::string>();
     ctx.toolchainsPath = main_configs["data"]["toolchains"].get<std::string>();
@@ -35,6 +38,7 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     // Set project path to current working directory
     ctx.projectPath = fs::current_path();
 
+    // TODO : Only for early development.
     ctx.logger = true;
     ctx.logger_registering = true;
 
@@ -44,6 +48,14 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     // Load modules installed in the system
     // Note: These modules are simply initialized in the project, not loaded, but we can add these in CLI/GUI 
     VortexMaker::LoadSystemModules(ctx.IO.sys_em);
+
+    // Load templates installed in the system if the configuration allow it
+    // Note: These templates are simply initialized in the project, not included, but we can add these in CLI/GUI 
+    if(ctx.include_system_templates)
+    {
+        VortexMaker::LoadSystemTemplates(ctx.IO.sys_templates);
+    }
+    
     
     // TODO : On a dedicated function
     for(auto em : ctx.IO.em)

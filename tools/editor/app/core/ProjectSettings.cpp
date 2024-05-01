@@ -1,5 +1,5 @@
 
-#include "ModuleManager.hpp"
+#include "ProjectSettings.hpp"
 
 static int item_current = 0;
 
@@ -54,7 +54,7 @@ static void logo(const std::string &path, int index, int total)
     ImGui::Image(textures[index], ImVec2(50, 50));
 }
 
-ModuleManager::ModuleManager(VxContext *_ctx, InstanceFactory *_factory)
+ProjectSettings::ProjectSettings(VxContext *_ctx, InstanceFactory *_factory)
 {
     this->ctx = _ctx;
     this->factory = _factory;
@@ -84,7 +84,7 @@ ModuleManager::ModuleManager(VxContext *_ctx, InstanceFactory *_factory)
     }
 }
 
-void ModuleManager::OnImGuiRender()
+void ProjectSettings::OnImGuiRender()
 {
     static ImTextureID listIcon = this->m_ListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID trashIcon = this->m_TrashIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -368,13 +368,13 @@ static void handleSearch()
     // Behavior
 }
 
-void ModuleManager::addModuleModal()
+void ProjectSettings::addModuleModal()
 {
 }
 
 // Main menu function
 
-void ModuleManager::menubar()
+void ProjectSettings::menubar()
 {
     static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

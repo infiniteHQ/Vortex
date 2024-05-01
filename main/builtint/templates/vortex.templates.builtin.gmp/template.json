@@ -1,0 +1,28 @@
+{
+    "type": "module:vortex.modules.builtin.packages",
+    "group": "Core",
+    "name": "vortex.templates.builtin.gmp",
+    "proper_name": "GMP",
+    "author": "Infinite",
+    "contributors": [
+        "Diego E. Moreno <d@infinite.si>"
+    ],
+    "deps": [
+        {
+            "name": "vortex.modules.builtin.tasks",
+            "type": "em",
+            "versions": [
+                "1.1.0"
+            ]
+        },
+        {
+            "name": "vortex.modules.builtin.tasklists",
+            "type": "em",
+            "versions": [
+                "1.1.0"
+            ]
+        }
+    ],
+    "picture": "./assets/logo.png",
+    "description": "This is a module that allow the creation, manipulation, development & production of a toolchain"
+}

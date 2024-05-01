@@ -2,6 +2,7 @@
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
 #include "../core/ModuleManager.hpp"
+#include "../core/TemplateManager.hpp"
 
 #include "./instanceFactory.h"
 
@@ -68,6 +69,12 @@ public:
       moduleManager.OnImGuiRender();
     }
 
+    if (this->ShowTemplateManager)
+    {
+      static TemplateManager templateManager(this->m_ctx, &factory);
+      templateManager.OnImGuiRender();
+    }
+
     for (auto window : moduleDetailsInstances)
     {
       if (window->render() == "closed")
@@ -120,6 +127,7 @@ public:
   bool ShowContentBrowser = false;
   bool ShowProjectViewer = false;
   bool ShowModulesManager = false;
+  bool ShowTemplateManager = false;
   bool ShowProjectSettings = false;
 
   Instance factory;

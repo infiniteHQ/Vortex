@@ -355,13 +355,14 @@ void ModuleInterface::Start()
     this->CheckDependencies();
 
     // Get current vortex version
-    std::string version = VORTEX_VERSION;    
-    
+    std::string version = VORTEX_VERSION;
+
     // Get major, a medium idendifiers of version
     std::size_t last_point = version.find('.', version.find('.') + 1);
     std::string major = version.substr(0, last_point);
-    
-        if (!major.empty() && major.back() == '.') {
+
+    if (!major.empty() && major.back() == '.')
+    {
         major.pop_back();
     }
 
@@ -386,25 +387,31 @@ void ModuleInterface::Start()
         }
     }
 
-    for(auto version : this->m_supported_versions){
-        if(version == major){
+    for (auto version : this->m_supported_versions)
+    {
+        if (version == major)
+        {
             isVersionCompatible = true;
         }
     }
 
     // Vector of needed dependencies (to run)
     std::vector<std::pair<std::string, std::string>> needToRunDependencies;
-    for(auto dep : this->m_dependencies){
-        for(auto em : ctx->IO.em){
-            if(em->m_name == dep->name){
-
-            std::string versions;
-            for (auto version : dep->supported_versions)
+    for (auto dep : this->m_dependencies)
+    {
+        for (auto em : ctx->IO.em)
+        {
+            if (em->m_name == dep->name)
             {
-                versions += "[" + version + "]";
-            }
 
-                if(em->m_state != "running"){
+                std::string versions;
+                for (auto version : dep->supported_versions)
+                {
+                    versions += "[" + version + "]";
+                }
+
+                if (em->m_state != "running")
+                {
                     needToRunDependencies.push_back({dep->name, versions});
                 }
             }
@@ -424,14 +431,14 @@ void ModuleInterface::Start()
     }
 
     if (!isVersionCompatible)
-    {   
-        this->LogError("The Vortex version (" + version + ", try to find \""+major+"\") is incompatible with \"" + this->m_name + "\" supported version(s).");
+    {
+        this->LogError("The Vortex version (" + version + ", try to find \"" + major + "\") is incompatible with \"" + this->m_name + "\" supported version(s).");
 
         this->m_state = "failed";
         return;
     }
 
-    if(!needToRunDependencies.empty())
+    if (!needToRunDependencies.empty())
     {
         this->LogError("Dependencies of this modules are not running !");
 
@@ -463,38 +470,41 @@ void ModuleInterface::Stop()
 
     for (auto em : ctx->IO.em)
     {
-        if(em->m_state == "running"){
-
-        for (auto dependency : em->m_dependencies)
+        if (em->m_state == "running")
         {
-            if (dependency->name == this->m_name)
+            for (auto dependency : em->m_dependencies)
             {
-                for (auto version : dependency->supported_versions)
+                if (dependency->name == this->m_name)
                 {
-                    if (this->m_version == version)
+                    for (auto version : dependency->supported_versions)
                     {
-                        authorized = false;
-
-                        std::string versions;
-                        for (auto version : dependency->supported_versions)
+                        if (this->m_version == version)
                         {
-                            versions += "[" + version + "]";
+                            authorized = false;
+
+                            std::string versions;
+                            for (auto version : dependency->supported_versions)
+                            {
+                                versions += "[" + version + "]";
+                            }
+                            deps.push_back({dependency->name, versions});
                         }
-                        deps.push_back({dependency->name, versions});
                     }
                 }
             }
         }
-        }
     }
 
-    if(!authorized){
+    if (!authorized)
+    {
         this->LogError("Cannot stop \"" + this->m_name + "\" ! ");
-        for(auto dep : deps){
-            this->LogError("This module is used by \"" + dep.first + "\" with needed versions : "+ dep.second +" ! ");
+        for (auto dep : deps)
+        {
+            this->LogError("This module is used by \"" + dep.first + "\" with needed versions : " + dep.second + " ! ");
         }
     }
-    else{
+    else
+    {
         this->destroy();
         this->m_state = "stopped";
     }
@@ -504,8 +514,7 @@ void ModuleInterface::CheckVersion()
 {
 }
 
-
-std::vector<std::shared_ptr<ModuleRenderInstance>> ModuleInterface::GetModuleRenderInstances() 
+std::vector<std::shared_ptr<ModuleRenderInstance>> ModuleInterface::GetModuleRenderInstances()
 {
     return this->m_render_instances;
 };

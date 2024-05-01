@@ -67,8 +67,10 @@ void EditorLayer::menubar(const std::shared_ptr<EditorLayer> &exampleLayer, UIKi
         ImGui::Separator();
         if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project"))
             handleManagePlugins();
-        if (ImGui::MenuItem("Manage modules", "Project file manager", &exampleLayer->ShowModulesManager))
+        if (ImGui::MenuItem("Manage modules", "Manage modules loaded/registered", &exampleLayer->ShowModulesManager))
             handleManageModules(exampleLayer->ShowModulesManager);
+        if (ImGui::MenuItem("Templates modules", "Create, add template in your project", &exampleLayer->ShowTemplateManager))
+            handleManageModules(exampleLayer->ShowTemplateManager);
         ImGui::EndMenu();
     }
 

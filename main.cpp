@@ -43,6 +43,10 @@ void PrintHeader()
     PrintInfinite();
     std::cout << "\033[0m";
 
+    std::cout << "\033[38;2;177;255;49m"
+              << " Vortex " << VORTEX_VERSION
+              << "\033[0m" << std::endl;
+
     std::cout << "┌────────────────────────────────────────────────────────────────────────────────────────────────┐" << std::endl;
     std::cout << "│"
               << "\033[38;2;177;255;49m"
@@ -211,10 +215,6 @@ int main(int argc, char *argv[])
         {
             PrintHeader();
             InitBlankRuntime(true);
-            if (!CheckDirectory())
-            {
-                return 1;
-            };
             VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
 
             std::thread receiveThread;
@@ -223,7 +223,6 @@ int main(int argc, char *argv[])
                 if (std::string(argv[2]) == "-v")
                 {
                     VortexMaker::LogWarn("Bootstrapp", "Opening the graphical interface...");
-                    InitRuntime(true);
                     std::thread Thread([&]()
                                        { VortexMaker::VortexLauncher(argc, argv); });
                     receiveThread.swap(Thread);
@@ -231,7 +230,6 @@ int main(int argc, char *argv[])
             }
             catch (std::exception e)
             {
-                InitRuntime(false);
                 std::thread Thread([&]()
                                    { VortexMaker::VortexLauncher(argc, argv); });
                 receiveThread.swap(Thread);

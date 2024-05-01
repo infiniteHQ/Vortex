@@ -1,5 +1,3 @@
-
-
 #include "../vortex.h"
 #include <vector>
 #include <memory>

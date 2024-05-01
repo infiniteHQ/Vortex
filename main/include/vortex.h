@@ -1,4 +1,4 @@
-// The VortexMaker Project, version 1.0
+// The VortexMaker Project, version
 // [header files]
 
 // See licence in LICSENCE.md
@@ -8,7 +8,7 @@
 // Versions & Build identification
 //_____________________________________________________________________________
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if VORTEX_VERSION_NUM >= 12345')
-#define VORTEX_VERSION "1.1.0"
+#define VORTEX_VERSION "1.1.2"
 #define VORTEX_VERSION_NUM 10000
 
 //_____________________________________________________________________________

@@ -1,4 +1,4 @@
-// The VortexMaker Project, version 1.0
+// The VortexMaker Project
 // [internal structures]
 
 // See licence in LICSENCE.md
@@ -24,8 +24,8 @@
 #include "vortex.h"
 #endif
 
-
 #include "./modules/interface.h"
+#include "./templates/interface.h"
 //_____________________________________________________________________________
 
 
@@ -73,31 +73,6 @@
 //_____________________________________________________________________________
 // Absolute basis
 struct VxContext;
-
-// Position structures;
-
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-// [SECTION] Basic types
-//_____________________________________________________________________________
-// Scalar data types
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-// [SECTION] Enumerations
-//_____________________________________________________________________________
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-// [SECTION] Flags
-//_____________________________________________________________________________
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-// [SECTION] Memory, Containers
-//_____________________________________________________________________________
-//_____________________________________________________________________________
 
 //_____________________________________________________________________________
 // [SECTION] Main runtime pointer
@@ -147,24 +122,15 @@ struct VxSystemLog{
 
 struct VxIO {
   int         MetricsActiveAllocations;  
-                                       
-  // All loaded components
-  std::vector<std::shared_ptr<VxToolchain>>      toolchains;    
-  std::vector<VxDistToolchain>  distToolchains;    
-  std::vector<std::shared_ptr<VxHost>>           hosts;    
-//  std::vector<std::shared_ptr<VxPackage>>        packages;    
-  std::vector<std::shared_ptr<VxScript>>         scripts;
-  std::vector<std::shared_ptr<VxGPOSystem>>      gpoSystems;
-  std::vector<VxDistHost>  distHosts;    
-
-
-  std::vector<std::shared_ptr<Task>> tasks;
-
 
   // EM / Editor Modules
   std::vector<void *> em_handles;
   std::vector<std::shared_ptr<ModuleInterface>> em;
   std::vector<std::shared_ptr<ModuleInterface>> sys_em;
+
+  // Templates
+  std::vector<std::shared_ptr<TemplateInterface>> templates;
+  std::vector<std::shared_ptr<TemplateInterface>> sys_templates;
 };
 
 
@@ -196,11 +162,13 @@ struct VxContext {
   std::string name;
   std::string type;
   std::string version;
+  std::string project_version;
   std::string toolchainsPath;
   std::string gposPath;
   std::string packagesPath;
   std::string scriptsPath;
   std::string hostsPath;
+  bool include_system_templates;
 };
 //-----------------------------------------------------------------------------
 
