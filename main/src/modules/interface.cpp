@@ -403,7 +403,6 @@ void ModuleInterface::Start()
         {
             if (em->m_name == dep->name)
             {
-
                 std::string versions;
                 for (auto version : dep->supported_versions)
                 {

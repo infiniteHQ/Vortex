@@ -32,6 +32,7 @@ file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
 
 
 
+
 # Add editor
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/editor editor_build)
 target_link_libraries(vortex_shared PUBLIC editor)
@@ -45,6 +46,12 @@ add_executable(vortex ${VORTEX_SOURCES} main.cpp)
 
 # Liaison avec la bibliothèque partagée
 target_link_libraries(vortex PRIVATE vortex_shared)
+
+if (NOT TARGET launcher AND NOT TARGET editor)
+option(SPDLOG_INSTALL "Enable installation of spdlog" ON)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog spdlog_build)
+target_link_libraries(vortex_shared PUBLIC spdlog)
+endif()
 
 # Ajouter d'autres dépendances ou configurations pour l'exécutable principal
 

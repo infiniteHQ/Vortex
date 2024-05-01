@@ -52,7 +52,6 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name)
                 VortexMaker::LogError("Core", e.what());
             }
         }
-
     }
 
     if (!finded)
