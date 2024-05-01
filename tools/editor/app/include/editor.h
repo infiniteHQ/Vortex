@@ -136,34 +136,10 @@ private:
   std::vector<std::string> instanciedWindowsNames;
 };
 
-UIKit::Application *CreateEditor(int argc, char **argv)
-{
-  int port = atoi(argv[1]);
-
-  std::shared_ptr<EditorLayer> applayer = std::make_shared<EditorLayer>();
-  applayer->m_ctx = VortexMaker::GetCurrentContext();
-
-  UIKit::ApplicationSpecification spec;
-  std::string name = applayer->m_ctx->name + " - Vortex Editor";
-  spec.Name = name;
-  spec.CustomTitlebar = true;
-  spec.IconPath = "icon.png";
-
-  UIKit::Application *app = new UIKit::Application(spec);
-
-  app->PushLayer(applayer);
-  app->SetMenubarCallback([app, applayer]()
-                          { applayer->menubar(applayer, app); });
-
-  return app;
-}
 
 namespace VortexMaker
 {
-  static int VortexEditor(int argc, char **argv)
-  {
-    return UIKit::ThirdMain(argc, argv, CreateEditor);
-  }
+   int VortexEditor(int argc, char **argv);
 
   // Old call
   /*static int VortexEditor(int argc, char **argv)

@@ -7,6 +7,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+
+
 add_library(editor
     # API
     ${CMAKE_CURRENT_SOURCE_DIR}/../../main/src/vortex.cpp
@@ -22,16 +24,18 @@ add_library(editor
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ContentBrowser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectViewer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/TemplateManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ModuleManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/src/editor.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/ModuleDetails/ModuleDetails.cpp
 )
 
+
 target_include_directories(editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
-
-if (NOT TARGET launcher)
 # editor requirements
+if (NOT TARGET launcher)
 find_package(Vulkan REQUIRED)
 option(SPDLOG_INSTALL "Enable installation of spdlog" ON)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/spdlog spdlog_build)
@@ -45,7 +49,6 @@ target_link_libraries(editor PUBLIC imgui)
 target_link_libraries(editor PUBLIC glm)
 target_link_libraries(editor PUBLIC stbimage)
 target_link_libraries(editor PUBLIC spdlog)
-
 endif()
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/platform/GUI/editor/icon.png DESTINATION /usr/include/vortex)

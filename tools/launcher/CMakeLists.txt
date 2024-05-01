@@ -21,14 +21,14 @@ add_library(launcher
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/platform/GUI/editor/Image.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/src/core/Log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/assets/icons.cpp
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/src/launcher.cpp
 )
 
 
 target_include_directories(launcher PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
-if (NOT TARGET editor)
 # launcher requirements
+if (NOT TARGET editor)
 find_package(Vulkan REQUIRED)
 option(SPDLOG_INSTALL "Enable installation of spdlog" ON)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/spdlog spdlog_build)
@@ -42,7 +42,7 @@ target_link_libraries(launcher PUBLIC imgui)
 target_link_libraries(launcher PUBLIC glm)
 target_link_libraries(launcher PUBLIC stbimage)
 target_link_libraries(launcher PUBLIC spdlog)
-
 endif()
+
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/platform/GUI/editor/icon.png DESTINATION /usr/include/vortex)
