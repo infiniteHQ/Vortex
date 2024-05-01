@@ -31,13 +31,6 @@ target_include_directories(vortex_shared PUBLIC
 file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
 
 
-if (NOT TARGET launcher)
-if (NOT TARGET editor)
-option(SPDLOG_INSTALL "Enable installation of spdlog" ON)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog spdlog_build)
-target_link_libraries(vortex_shared PUBLIC spdlog)
-endif()
-endif()
 
 # Add editor
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/editor editor_build)
