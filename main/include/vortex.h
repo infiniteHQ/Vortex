@@ -202,9 +202,9 @@ namespace VortexMaker
     VORTEX_API void CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name);
     VORTEX_API void CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> args));
 
-
     VORTEX_API void InstallModuleToSystem(const std::string &path);
-    VORTEX_API void InstallModule(const std::string &module_name, const std::string &version);
+
+    VORTEX_API void InstallModule(const std::string &module_name, const std::string &version, bool& restart_modules);
     VORTEX_API void AddModuleToProject(const std::string &module_name);
 
     VORTEX_API void CreateProject(const std::string &name, const std::string &path);

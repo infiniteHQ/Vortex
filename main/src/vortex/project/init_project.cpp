@@ -1,6 +1,7 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 #include "../../../include/modules/load.h"
+#include "../../../include/modules/runtime.h"
 #include "../../../include/templates/load.h"
 
 /**
@@ -56,25 +57,6 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
         VortexMaker::LoadSystemTemplates(ctx.IO.sys_templates);
     }
     
-    
-    // TODO : On a dedicated function
-    for(auto em : ctx.IO.em)
-    {
-        {
-            // Set the module data path
-            std::string datapath = ctx.projectPath;
-            datapath += "/.vx/data/" + em->m_name;
-            em->m_datapath = datapath;
-
-            // Try to create the datapath folder (if not exist yet)
-            std::string cmd = "sudo mkdir ";
-            cmd += datapath.c_str();
-            system(cmd.c_str());
-        }
-
-        // If the module is a autoexecution module, execute it now.
-        if(em->m_auto_exec){
-            em->Start();
-        }
-    }
+    // Finally, start all loaded modules.
+    VortexMaker::StartAllModules();
 }

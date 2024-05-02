@@ -343,9 +343,9 @@ static void handleRefresh()
     // Behavior
 }
 
-static void handleAddToProject(const std::string &name, const std::string &version)
+static void handleAddToProject(const std::string &name, const std::string &version, bool& restart_modules)
 {
-    VortexMaker::InstallModule(name, version);
+    VortexMaker::InstallModule(name, version,restart_modules);
 }
 
 static void handleFilterBuildRebuild()
@@ -555,6 +555,8 @@ void ModuleManager::menubar()
                         }
                     }
 
+                    static bool restart_modules = false;
+
                     {
                         bool exist = false;
                         for(auto em : ctx->IO.em){
@@ -572,9 +574,10 @@ void ModuleManager::menubar()
                             ImGui::EndDisabled();
                         }
                         else{
+                            ImGui::Checkbox("Restart modules, and launch this module directly", &restart_modules);
                             if (ImGui::ImageButtonWithText(addIcon, "Add to the current project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                             {
-                                handleAddToProject(ctx->IO.sys_em[i]->m_name, ctx->IO.sys_em[i]->m_version);
+                                handleAddToProject(ctx->IO.sys_em[i]->m_name, ctx->IO.sys_em[i]->m_version, restart_modules);
                             }
                         }
                     }

@@ -109,6 +109,14 @@ void EditorLayer::menubar(const std::shared_ptr<EditorLayer> &exampleLayer, UIKi
     }
 }
 
+/*
+
+ - Creation de projet via launcher (avec la possibilité de charger les templates "project")
+ - Creation de templates de modules, etc.. "modules:package", "module:toolchain"
+
+
+*/
+
 UIKit::Application *CreateEditor(int argc, char **argv)
 {
   int port = atoi(argv[1]);
