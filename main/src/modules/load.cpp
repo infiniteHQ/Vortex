@@ -4,7 +4,6 @@
 
 namespace VortexMaker
 {
-
     /**
      * @brief Load modules from the specified directory.
      *
@@ -23,8 +22,6 @@ namespace VortexMaker
         // Iterate through each found module file
         for (const auto &file : module_files)
         {
-            VXINFO("Modules", file + " module path finded !")
-            
             try
             {
                 // Load JSON data from the module configuration file
@@ -41,10 +38,13 @@ namespace VortexMaker
                 {
                     // Load the shared object
                     void *handle = dlopen(so_file.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+                    const char *dlopen_error = dlerror();
                     if (!handle)
                     {
                         // Print error if failed to load the shared object
-                        std::cerr << "Failed to load module: " << dlerror() << std::endl;
+                        std::string output = "Failed to load module: ";
+                        output += dlopen_error;
+                        VortexMaker::LogFatal("Modules", output); // core dumped
                         continue;
                     }
 
@@ -57,7 +57,9 @@ namespace VortexMaker
                     if (dlsym_error)
                     {
                         // Print error if failed to load symbol
-                        std::cerr << "Failed to load symbol: " << dlsym_error << std::endl;
+                        std::string output = "Failed to load symbol: ";
+                        output += dlsym_error;
+                        VortexMaker::LogFatal("Modules", output);
                         dlclose(handle);
                         continue;
                     }

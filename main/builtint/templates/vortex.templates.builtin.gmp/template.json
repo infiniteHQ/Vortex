@@ -1,5 +1,5 @@
 {
-    "type": "module:vortex.modules.builtin.packages",
+    "type": "module",
     "group": "Core",
     "name": "vortex.templates.builtin.gmp",
     "proper_name": "GMP",
@@ -23,6 +23,7 @@
             ]
         }
     ],
+    "tarball": "./dist/template.tar.gz",
     "picture": "./assets/logo.png",
     "description": "This is a module that allow the creation, manipulation, development & production of a toolchain"
 }

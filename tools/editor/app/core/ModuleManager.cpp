@@ -1,5 +1,6 @@
 
 #include "ModuleManager.hpp"
+#include <optional>
 
 static int item_current = 0;
 
@@ -34,12 +35,54 @@ static std::vector<uint8_t> loadPngHex(const std::string &filePath)
 static std::vector<std::shared_ptr<UIKit::Image>> logos;
 static std::vector<ImTextureID> textures;
 
-static void logo(const std::string &path, int index, int total)
+// Left
+static int selected = 0;
+static std::vector<std::string> labels;
+static std::vector<std::shared_ptr<std::pair<std::string, int>>> labels_indexes;
+static std::vector<std::string> syslabels;
+
+void incrementValue(const std::string &str)
+{
+    for (auto index : labels_indexes)
+    {
+        if (index->first == str)
+        {
+            index->second++;
+        }
+    }
+}
+
+void resetValue(const std::string &str)
+{
+    for (auto index : labels_indexes)
+    {
+        if (index->first == str)
+        {
+            index->second = 0;
+        }
+    }
+}
+
+int getIndex(const std::string &str)
+{
+    for (auto index : labels_indexes)
+    {
+        if (index->first == str)
+        {
+            return index->second;
+        }
+    }
+    return -1;
+}
+
+static void logo(const std::string &path, std::string index_group, int total)
 {
     uint32_t w, h;
     // Chargez le contenu hexadécimal du fichier .png
     std::vector<uint8_t> hexTable = loadPngHex(path);
     const uint8_t *hexData = hexTable.data();
+
+    int index = getIndex(index_group);
 
     if (total > logos.size())
     {
@@ -116,11 +159,6 @@ void ModuleManager::OnImGuiRender()
 
     ImGui::Separator();
 
-    // Left
-    static int selected = 0;
-    static std::vector<std::string> labels;
-    static std::vector<std::string> syslabels;
-
     for (auto em : ctx->IO.em)
     {
         bool add = true;
@@ -135,7 +173,12 @@ void ModuleManager::OnImGuiRender()
 
         if (add)
         {
+            std::shared_ptr<std::pair<std::string, int>> new_index = std::make_shared<std::pair<std::string, int>>();
+            new_index->first = em->m_group;
+            new_index->second = 0;
+
             labels.push_back(em->m_group);
+            labels_indexes.push_back(new_index);
         }
     }
 
@@ -200,6 +243,12 @@ void ModuleManager::OnImGuiRender()
 
     for (int i = 0; i < ctx->IO.em.size(); i++)
     {
+
+        resetValue(ctx->IO.em[i]->m_group);
+    }
+    for (int i = 0; i < ctx->IO.em.size(); i++)
+    {
+
         if (ctx->IO.em[i]->m_group == labels[selected])
         {
             std::string childLabel = "module##" + ctx->IO.em[i]->m_name;
@@ -208,7 +257,7 @@ void ModuleManager::OnImGuiRender()
 
             {
                 ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
-                logo(ctx->IO.em[i]->m_logo_path, i, this->ctx->IO.em.size());
+                logo(ctx->IO.em[i]->m_logo_path, ctx->IO.em[i]->m_group, this->ctx->IO.em.size());
 
                 ImGui::EndChild();
                 ImGui::SameLine();
@@ -328,6 +377,7 @@ void ModuleManager::OnImGuiRender()
                 }
             }
 
+            incrementValue(ctx->IO.em[i]->m_group);
             ImGui::EndChild();
         }
     }
@@ -343,9 +393,9 @@ static void handleRefresh()
     // Behavior
 }
 
-static void handleAddToProject(const std::string &name, const std::string &version, bool& restart_modules)
+static void handleAddToProject(const std::string &name, const std::string &version, bool &restart_modules)
 {
-    VortexMaker::InstallModule(name, version,restart_modules);
+    VortexMaker::InstallModule(name, version, restart_modules);
 }
 
 static void handleFilterBuildRebuild()
@@ -486,7 +536,7 @@ void ModuleManager::menubar()
 
                     {
                         ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
-                        logo(ctx->IO.sys_em[i]->m_logo_path, i, this->ctx->IO.sys_em.size());
+                        logo(ctx->IO.sys_em[i]->m_logo_path, ctx->IO.em[i]->m_group, this->ctx->IO.sys_em.size());
 
                         ImGui::EndChild();
                         ImGui::SameLine();
@@ -559,13 +609,16 @@ void ModuleManager::menubar()
 
                     {
                         bool exist = false;
-                        for(auto em : ctx->IO.em){
-                            if(ctx->IO.sys_em[i]->m_name == em->m_name && ctx->IO.sys_em[i]->m_version == em->m_version){
+                        for (auto em : ctx->IO.em)
+                        {
+                            if (ctx->IO.sys_em[i]->m_name == em->m_name && ctx->IO.sys_em[i]->m_version == em->m_version)
+                            {
                                 exist = true;
                             }
                         }
-                        
-                        if(exist){
+
+                        if (exist)
+                        {
                             ImGui::BeginDisabled();
                             if (ImGui::ImageButtonWithText(addIcon, "Already in the project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                             {
@@ -573,7 +626,8 @@ void ModuleManager::menubar()
                             }
                             ImGui::EndDisabled();
                         }
-                        else{
+                        else
+                        {
                             ImGui::Checkbox("Restart modules, and launch this module directly", &restart_modules);
                             if (ImGui::ImageButtonWithText(addIcon, "Add to the current project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                             {

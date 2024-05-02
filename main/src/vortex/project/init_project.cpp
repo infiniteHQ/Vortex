@@ -58,5 +58,5 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     }
     
     // Finally, start all loaded modules.
-    VortexMaker::StartAllModules();
+    VortexMaker::BootstrappAllModules();
 }

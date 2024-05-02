@@ -345,7 +345,7 @@ static void handleRefresh()
 
 static void handleAddToProject(const std::string &name, const std::string &version)
 {
-    VortexMaker::InstallModule(name, version);
+    // Behavior
 }
 
 static void handleFilterBuildRebuild()
