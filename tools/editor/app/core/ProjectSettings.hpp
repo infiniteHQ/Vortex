@@ -5,6 +5,17 @@
 
 #include "../include/instanceFactory.h"
 
+struct ProjectSettingsSave
+{
+    char name[128] = "unknow";
+    char author[128] = "unknow";
+    char version[128] = "unknow";
+    char description[128] = "unknow";
+    char type[128] = "unknow";
+	bool include_system_templates;
+};
+
+
 class ProjectSettings
 {
 public:
@@ -14,9 +25,14 @@ public:
 	void menubar();
 	void addModuleModal();
 
+	void Refresh();
+	void Update();
+
 
 	VxContext *ctx;
 	InstanceFactory* factory;
+
+	std::shared_ptr<ProjectSettingsSave> current_save;
 
 private:
 	bool opened;

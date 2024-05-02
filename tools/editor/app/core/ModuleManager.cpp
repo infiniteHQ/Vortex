@@ -243,12 +243,11 @@ void ModuleManager::OnImGuiRender()
 
     for (int i = 0; i < ctx->IO.em.size(); i++)
     {
-
         resetValue(ctx->IO.em[i]->m_group);
     }
+    
     for (int i = 0; i < ctx->IO.em.size(); i++)
     {
-
         if (ctx->IO.em[i]->m_group == labels[selected])
         {
             std::string childLabel = "module##" + ctx->IO.em[i]->m_name;

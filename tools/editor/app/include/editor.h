@@ -3,6 +3,7 @@
 #include "../core/ProjectViewer.hpp"
 #include "../core/ModuleManager.hpp"
 #include "../core/TemplateManager.hpp"
+#include "../core/ProjectSettings.hpp"
 
 #include "./instanceFactory.h"
 
@@ -61,6 +62,12 @@ public:
     {
       static ProjectViewer projectViewer(this->m_ctx, &factory);
       projectViewer.OnImGuiRender();
+    }
+
+    if (this->ShowProjectSettings)
+    {
+      static ProjectSettings projectSettings(this->m_ctx, &factory);
+      projectSettings.OnImGuiRender();
     }
 
     if (this->ShowModulesManager)

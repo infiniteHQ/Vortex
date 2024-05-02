@@ -26,6 +26,7 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectViewer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/TemplateManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ModuleManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectSettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/src/editor.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/ModuleDetails/ModuleDetails.cpp

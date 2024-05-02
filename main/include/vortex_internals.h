@@ -156,6 +156,7 @@ struct VxContext {
   std::vector<std::shared_ptr<VxSystemLog>> registered_logs;
   fs::path projectPath;
   VxPaths paths;
+  std::string configFilePath;
   std::string author;
   std::string description;
   std::string label;

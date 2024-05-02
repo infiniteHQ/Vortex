@@ -1,26 +1,16 @@
 // The VortexMaker Project, version
-// [header files]
+// [main header]
 
-// See licence in LICSENCE.md
+// See licence in LICENSE
 // (c) 2022-2024, Diego E. Moreno
 
 //_____________________________________________________________________________
 // Versions & Build identification
 //_____________________________________________________________________________
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if VORTEX_VERSION_NUM >= 12345')
-#define VORTEX_VERSION "1.1.2"
+#define VORTEX_VERSION "1.1.3"
 #define VORTEX_VERSION_NUM 10000
 
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-// Index of this file
-//_____________________________________________________________________________
-// [SECTION] Header mess
-// [SECTION] Forward declarations of structures
-// [SECTION] VortexMaker end-use API functions
-// [SECTION] Flags & Enumerations
-// [SECTION] Structures
 //_____________________________________________________________________________
 
 //_____________________________________________________________________________

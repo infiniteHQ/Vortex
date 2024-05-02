@@ -62,7 +62,7 @@ void EditorLayer::menubar(const std::shared_ptr<EditorLayer> &exampleLayer, UIKi
 
     if (ImGui::BeginMenu("Edit"))
     {
-        if (ImGui::MenuItem("Project Settings", "Main configurations of this project"))
+        if (ImGui::MenuItem("Project Settings", "Main configurations of this project", &exampleLayer->ShowProjectSettings))
             handleProjectSettings();
         ImGui::Separator();
         if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project"))

@@ -14,21 +14,7 @@ VORTEX_API void FinalStartModule(const std::string &module_name, std::shared_ptr
             {
                 VortexMaker::LogInfo("Modules", "Start \"" + em->m_name + "\"");
                 processed_modules->push_back(em->m_name);
-/*
-                std::vector<std::string> current_processed = processed_modules;
-
-                // Start dependencies
-                for (auto deps : em->m_dependencies)
-                {
-                    for(auto i = 0 ; i <= processed_modules->size(); i++)
-                    {
-
-                    }
-
-                    FinalStartModule(deps->name, processed_modules);
-                }*/
-
-                // Finally start the module
+                
                 VortexMaker::LogWarn("qsd","qsd");
                 em->Start();
             }
