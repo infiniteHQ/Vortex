@@ -4,6 +4,7 @@
     "name": "vortex.templates.builtin.gmp",
     "proper_name": "GMP",
     "author": "Infinite",
+    "version": "1.0.0",
     "contributors": [
         "Diego E. Moreno <d@infinite.si>"
     ],

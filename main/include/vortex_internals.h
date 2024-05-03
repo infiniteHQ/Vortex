@@ -25,6 +25,7 @@
 #endif
 
 #include "./modules/interface.h"
+#include "./templates/install.h"
 #include "./templates/interface.h"
 //_____________________________________________________________________________
 

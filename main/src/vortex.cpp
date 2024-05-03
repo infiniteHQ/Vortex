@@ -693,4 +693,28 @@ VORTEX_API std::string VortexMaker::getHomeDirectory()
     return std::string(homePath);
 }
 
+VORTEX_API void VortexMaker::InstallContentOnSystem(const std::string &directory)
+{
+    fs::path dir_path(directory);
+
+    // Vérifier si le répertoire existe
+    if (!fs::exists(dir_path) || !fs::is_directory(dir_path)) {
+        VortexMaker::LogError("Core", "So such file or directory.");
+        return;
+    }
+
+    // Vérifier la présence des fichiers module.json et template.json
+    bool module_found = fs::exists(dir_path / "module.json");
+    bool template_found = fs::exists(dir_path / "template.json");
+    
+    if(module_found)
+    {
+        VortexMaker::InstallModuleToSystem(directory);
+    }
+    else if(template_found)
+    {
+        VortexMaker::InstallTemplateOnSystem(directory);
+    }
+}
+
 #endif // VORTEX_DISABLE

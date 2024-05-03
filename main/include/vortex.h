@@ -199,6 +199,11 @@ namespace VortexMaker
 
     VORTEX_API void CreateProject(const std::string &name, const std::string &path);
 
+    VORTEX_API void InstallContentOnSystem(const std::string &directory);
+
+    VORTEX_API void UpdateProjectData();
+    VORTEX_API void InitEnvironment();
+
     VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename);
     VORTEX_API std::vector<std::string> SearchSystemFiles(const std::string &path, const std::string &filename);
     VORTEX_API std::string SearchFilesRecursive(const fs::path &chemin, const std::string &filename, std::vector<std::string> &file);
@@ -215,6 +220,9 @@ namespace VortexMaker
 
     VORTEX_API std::string gen_random(const int len);
     VORTEX_API std::string getHomeDirectory();
+    VORTEX_API void createFolderIfNotExists(const std::string& path);
+    VORTEX_API void createJsonFileIfNotExists(const std::string &filename, const nlohmann::json &defaultData);
+
 
     // Memory Allocators
     // - Those functions are not reliant on the current context.

@@ -125,6 +125,10 @@ VxContext *InitBlankRuntime(bool logger)
 {
     VxContext *ctx = VortexMaker::CreateContext();
     VortexMaker::LogInfo("Bootstrapp", "Initializing runtime...");
+
+    // Initialize environment
+    VortexMaker::InitEnvironment();
+    
     ctx->logger = logger;
     return ctx;
 }
@@ -151,7 +155,7 @@ int main(int argc, char *argv[])
             VortexMaker::LogInfo("Bootstrapp", "Find and install component...");
             std::string current_path = std::filesystem::current_path();
             InitBlankRuntime(true);
-            VortexMaker::InstallModuleToSystem(current_path);
+            VortexMaker::InstallContentOnSystem(current_path);
         }
         else if (std::string(argv[1]) == "-bi" || std::string(argv[1]) == "--build-install")
         {
@@ -160,7 +164,7 @@ int main(int argc, char *argv[])
             VortexMaker::LogInfo("Bootstrapp", "Find and build/install component...");
             std::string current_path = std::filesystem::current_path();
             InitBlankRuntime(true);
-            VortexMaker::InstallModuleToSystem(current_path);
+            VortexMaker::InstallContentOnSystem(current_path);
         }
         else if (std::string(argv[1]) == "-cp" || std::string(argv[1]) == "--create-project")
         {

@@ -43,6 +43,11 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     ctx.logger = true;
     ctx.logger_registering = true;
 
+    // Initialize environment
+    VortexMaker::InitEnvironment();
+
+    // Update projet metadata (last opened, etc...) in the ~/.vx/data/projects.json
+
     // Load modules installed in the current project
     VortexMaker::LoadEditorModules(ctx.projectPath, ctx.IO.em_handles, ctx.IO.em);
 
