@@ -121,6 +121,9 @@ VxContext *InitRuntime(bool logger)
     return ctx;
 }
 
+// Project creator,
+// Template deployment overrides (project, modules_content, etc...)
+
 VxContext *InitBlankRuntime(bool logger)
 {
     VxContext *ctx = VortexMaker::CreateContext();
@@ -128,7 +131,7 @@ VxContext *InitBlankRuntime(bool logger)
 
     // Initialize environment
     VortexMaker::InitEnvironment();
-    
+
     ctx->logger = logger;
     return ctx;
 }

@@ -204,6 +204,10 @@ namespace VortexMaker
     VORTEX_API void UpdateProjectData();
     VORTEX_API void InitEnvironment();
 
+    VORTEX_API void RefreshEnvironmentProjects();
+    VORTEX_API void UpdateEnvironmentProject();
+    VORTEX_API void UpdateEnvironmentProject(const std::string& oldname);
+
     VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename);
     VORTEX_API std::vector<std::string> SearchSystemFiles(const std::string &path, const std::string &filename);
     VORTEX_API std::string SearchFilesRecursive(const fs::path &chemin, const std::string &filename, std::vector<std::string> &file);

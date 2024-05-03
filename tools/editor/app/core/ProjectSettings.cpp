@@ -242,6 +242,8 @@ void ProjectSettings::Refresh()
 
 void ProjectSettings::Update()
 {
+    std::string oldname = this->ctx->name;
+
     nlohmann::json toolchainData;
     toolchainData["project"]["name"] = this->current_save->name;
     toolchainData["project"]["author"] = this->current_save->author;
@@ -264,4 +266,9 @@ void ProjectSettings::Update()
     {
         VortexMaker::LogError("Core", "Unable to open file " + path + " for writing!");
     }
+
+    this->Refresh();
+
+
+    VortexMaker::UpdateEnvironmentProject(oldname);
 }

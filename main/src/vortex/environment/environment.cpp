@@ -1,4 +1,6 @@
 #include "../../../include/vortex.h"
+#include "../../../include/vortex_internals.h"
+
 
 VORTEX_API void VortexMaker::InitEnvironment()
 {
@@ -25,5 +27,152 @@ VORTEX_API void VortexMaker::InitEnvironment()
         };
 
         VortexMaker::createJsonFileIfNotExists(file, default_data);
+    }
+}
+
+
+VORTEX_API void VortexMaker::RefreshEnvironmentProjects()
+{
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
+
+    std::string path = VortexMaker::getHomeDirectory() + "/.vx/data/projects.json";
+
+    std::string json_file = path + "/project.json";
+
+    // Verify if the project is valid
+    try
+    {
+        // Load JSON data from the project configuration file
+        auto json_data = VortexMaker::DumpJSON(json_file);
+        for(auto project : json_data["projects"])
+        {
+            std::shared_ptr<EnvProject> newproject = std::make_shared<EnvProject>();
+
+            newproject->name = project["name"].get<std::string>();
+            newproject->version = project["version"].get<std::string>();
+            newproject->description = project["description"].get<std::string>();
+            newproject->path = project["path"].get<std::string>();
+            newproject->logoPath = project["logoPath"].get<std::string>();
+
+            ctx.IO.sys_projects.push_back(newproject);
+        }
+        
+    }
+    catch (const std::exception &e)
+    {
+        // Print error if an exception occurs
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+
+VORTEX_API void VortexMaker::UpdateEnvironmentProject()
+{
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
+
+    std::string path = VortexMaker::getHomeDirectory() + "/.vx/data/";
+    std::string json_file = path + "/projects.json";
+
+    // Verify if the project is valid
+    try
+    {
+        // Load JSON data from the project configuration file
+        auto json_data = VortexMaker::DumpJSON(json_file);
+
+        std::string name = ctx.name;
+
+        // Check if a project with the given name exists
+        bool projectExists = false;
+        for (auto& project : json_data["projects"])
+        {
+            if (project["name"].get<std::string>() == name)
+            {
+                // Project with the given name exists, update its information
+                project["version"] = ctx.version;
+                project["description"] = ctx.description;
+                project["path"] = ctx.projectPath;
+                project["logoPath"] = ctx.logoPath;
+                projectExists = true;
+                break;
+            }
+        }
+
+        // If the project doesn't exist, create a new JSON object and add it to the list
+        if (!projectExists)
+        {
+            json_data["projects"].push_back({
+                {"name", ctx.name},
+                {"version", ctx.version},
+                {"description", ctx.description},
+                {"path", ctx.projectPath},
+                {"logoPath", ctx.logoPath}
+            });
+        }
+
+        // Write the updated JSON data back to the file
+        std::ofstream output(json_file);
+        output << json_data.dump(4); // Use pretty print with indentation of 4 spaces
+        output.close();
+    }
+    catch (const std::exception &e)
+    {
+        // Print error if an exception occurs
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+
+VORTEX_API void VortexMaker::UpdateEnvironmentProject(const std::string& oldname)
+{
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
+
+    std::string path = VortexMaker::getHomeDirectory() + "/.vx/data/";
+    std::string json_file = path + "/projects.json";
+
+    // Verify if the project is valid
+    try
+    {
+        // Load JSON data from the project configuration file
+        auto json_data = VortexMaker::DumpJSON(json_file);
+
+        // Check if a project with the old name exists
+        bool projectExists = false;
+        for (auto& project : json_data["projects"])
+        {
+            if (project["name"].get<std::string>() == oldname)
+            {
+                // Project with the old name exists, update its information
+                project["name"] = ctx.name;
+                project["version"] = ctx.version;
+                project["description"] = ctx.description;
+                project["path"] = ctx.projectPath;
+                project["logoPath"] = ctx.logoPath;
+                projectExists = true;
+                break;
+            }
+        }
+
+        // If the project doesn't exist, create a new JSON object and add it to the list
+        if (!projectExists)
+        {
+            json_data["projects"].push_back({
+                {"name", ctx.name},
+                {"version", ctx.version},
+                {"description", ctx.description},
+                {"path", ctx.projectPath},
+                {"logoPath", ctx.logoPath}
+            });
+        }
+
+        // Write the updated JSON data back to the file
+        std::ofstream output(json_file);
+        output << json_data.dump(4); // Use pretty print with indentation of 4 spaces
+        output.close();
+    }
+    catch (const std::exception &e)
+    {
+        // Print error if an exception occurs
+        std::cerr << "Error: " << e.what() << std::endl;
     }
 }

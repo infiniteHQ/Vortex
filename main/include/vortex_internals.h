@@ -29,7 +29,6 @@
 #include "./templates/interface.h"
 //_____________________________________________________________________________
 
-
 // Enable SSE intrinsics if available
 #if (defined __SSE__ || defined __x86_64__ || defined _M_X64 || (defined(_M_IX86_FP) && (_M_IX86_FP >= 1))) && !defined(IMGUI_DISABLE_SSE)
 #define IMGUI_ENABLE_SSE
@@ -38,12 +37,12 @@
 
 // Visual Studio warnings
 #ifdef _MSC_VER
-#pragma warning (push)
-#pragma warning (disable: 4251)     // class 'xxx' needs to have dll-interface to be used by clients of struct 'xxx' // when IMGUI_API is set to__declspec(dllexport)
-#pragma warning (disable: 26812)    // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum' (Enum.3). [MSVC Static Analyzer)
-#pragma warning (disable: 26495)    // [Static Analyzer] Variable 'XXX' is uninitialized. Always initialize a member variable (type.6).
+#pragma warning(push)
+#pragma warning(disable : 4251)           // class 'xxx' needs to have dll-interface to be used by clients of struct 'xxx' // when IMGUI_API is set to__declspec(dllexport)
+#pragma warning(disable : 26812)          // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum' (Enum.3). [MSVC Static Analyzer)
+#pragma warning(disable : 26495)          // [Static Analyzer] Variable 'XXX' is uninitialized. Always initialize a member variable (type.6).
 #if defined(_MSC_VER) && _MSC_VER >= 1922 // MSVC 2019 16.2 or later
-#pragma warning (disable: 5054)     // operator '|': deprecated between enumerations of different types
+#pragma warning(disable : 5054)           // operator '|': deprecated between enumerations of different types
 #endif
 #endif
 
@@ -51,23 +50,22 @@
 #if defined(__clang__)
 #pragma clang diagnostic push
 #if __has_warning("-Wunknown-warning-option")
-#pragma clang diagnostic ignored "-Wunknown-warning-option"         // warning: unknown warning group 'xxx'
+#pragma clang diagnostic ignored "-Wunknown-warning-option" // warning: unknown warning group 'xxx'
 #endif
-#pragma clang diagnostic ignored "-Wunknown-pragmas"                // warning: unknown warning group 'xxx'
-#pragma clang diagnostic ignored "-Wfloat-equal"                    // warning: comparing floating point with == or != is unsafe // storing and comparing against same constants ok, for ImFloor()
-#pragma clang diagnostic ignored "-Wunused-function"                // for stb_textedit.h
-#pragma clang diagnostic ignored "-Wmissing-prototypes"             // for stb_textedit.h
+#pragma clang diagnostic ignored "-Wunknown-pragmas"    // warning: unknown warning group 'xxx'
+#pragma clang diagnostic ignored "-Wfloat-equal"        // warning: comparing floating point with == or != is unsafe // storing and comparing against same constants ok, for ImFloor()
+#pragma clang diagnostic ignored "-Wunused-function"    // for stb_textedit.h
+#pragma clang diagnostic ignored "-Wmissing-prototypes" // for stb_textedit.h
 #pragma clang diagnostic ignored "-Wold-style-cast"
 #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma clang diagnostic ignored "-Wdouble-promotion"
-#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion"  // warning: implicit conversion from 'xxx' to 'float' may lose precision
-#pragma clang diagnostic ignored "-Wmissing-noreturn"               // warning: function 'xxx' could be declared with attribute 'noreturn'
+#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion" // warning: implicit conversion from 'xxx' to 'float' may lose precision
+#pragma clang diagnostic ignored "-Wmissing-noreturn"              // warning: function 'xxx' could be declared with attribute 'noreturn'
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"              // warning: unknown option after '#pragma GCC diagnostic' kind
-#pragma GCC diagnostic ignored "-Wclass-memaccess"      // [__GNUC__ >= 8] warning: 'memset/memcpy' clearing/writing an object of type 'xxxx' with no trivial copy-assignment; use assignment or value-initialization instead
+#pragma GCC diagnostic ignored "-Wpragmas"         // warning: unknown option after '#pragma GCC diagnostic' kind
+#pragma GCC diagnostic ignored "-Wclass-memaccess" // [__GNUC__ >= 8] warning: 'memset/memcpy' clearing/writing an object of type 'xxxx' with no trivial copy-assignment; use assignment or value-initialization instead
 #endif
-
 
 //_____________________________________________________________________________
 // [SECTION] Forward declarations
@@ -101,46 +99,58 @@ extern VORTEX_API VxContext *CVortexMaker; // Current implicit context pointer
 
 //_____________________________________________________________________________
 
-struct VortexMakerDebugAllocInfo {
-  int                               TotalAllocCount; // Number of call to MemAlloc().
-  int                               TotalFreeCount;
-  VortexMakerDebugAllocInfo()          { memset(this, 0, sizeof(*this)); }
+struct VortexMakerDebugAllocInfo
+{
+  int TotalAllocCount; // Number of call to MemAlloc().
+  int TotalFreeCount;
+  VortexMakerDebugAllocInfo() { memset(this, 0, sizeof(*this)); }
 };
 
 //_____________________________________________________________________________
 // [SECTION]: Internal structures
 //_____________________________________________________________________________
 
-
-struct VxSystemLog{
+struct VxSystemLog
+{
   spdlog::level::level_enum m_level;
   std::string m_filter;
   std::string m_message;
   std::string m_timestamp;
 
-  VxSystemLog(spdlog::level::level_enum level, std::string filter, std::string message): m_level(level), m_filter(filter), m_message(message) {};
+  VxSystemLog(spdlog::level::level_enum level, std::string filter, std::string message) : m_level(level), m_filter(filter), m_message(message){};
 };
 
-struct VxIO {
-  int         MetricsActiveAllocations;  
+struct EnvProject
+{
+    std::string name;
+    std::string path;
+    std::string version;
+    std::string description;
+    std::string logoPath;
+};
+
+struct VxIO
+{
+  int MetricsActiveAllocations;
 
   // EM / Editor Modules
   std::vector<void *> em_handles;
   std::vector<std::shared_ptr<ModuleInterface>> em;
   std::vector<std::shared_ptr<ModuleInterface>> sys_em;
 
+  // Know projects in system
+  std::vector<std::shared_ptr<EnvProject>> sys_projects;
+
   // Templates
   std::vector<std::shared_ptr<TemplateInterface>> templates;
   std::vector<std::shared_ptr<TemplateInterface>> sys_templates;
 };
 
-
-struct VxPaths {
+struct VxPaths
+{
   std::string toolchainDistFolder;
   std::string hostDistFolder;
 };
-
-
 
 //-----------------------------------------------------------------------------
 // (Context) VortexMakerContext => Main VortexMaker context.
@@ -148,14 +158,16 @@ struct VxPaths {
 // This context contain all user data about VortexMaker functionnal interfaces &
 // all instances of custom contents.
 //-----------------------------------------------------------------------------
-struct VxContext {
-  bool                              initialized;
-  bool                              logger;
-  bool                              logger_registering;
-  VxIO                              IO;
-  VortexMakerDebugAllocInfo         debugAllocInfo;
+struct VxContext
+{
+  bool initialized;
+  bool logger;
+  bool logger_registering;
+  VxIO IO;
+  VortexMakerDebugAllocInfo debugAllocInfo;
   std::vector<std::shared_ptr<VxSystemLog>> registered_logs;
   fs::path projectPath;
+  fs::path logoPath;
   VxPaths paths;
   std::string configFilePath;
   std::string author;
@@ -176,8 +188,6 @@ struct VxContext {
 
 //_____________________________________________________________________________
 
-
-
 //__________________________________________________________________________________________________________________
 // [SECTION]: Internal API of VortexMaker
 //__________________________________________________________________________________________________________________
@@ -186,12 +196,11 @@ struct VxContext {
 // Basicly, you don't need to care about this. For all user interactions of
 // Hypernet & Vx, go on the main userapi on vortex.h
 //__________________________________________________________________________________________________________________
-namespace VortexMaker {
+namespace VortexMaker
+{
 
-// Utils & Base
-VORTEX_API void DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,size_t size); // size >= 0 : alloc, size = -1 : free
-
-
+  // Utils & Base
+  VORTEX_API void DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr, size_t size); // size >= 0 : alloc, size = -1 : free
 
 }
 //_____________________________________________________________________________

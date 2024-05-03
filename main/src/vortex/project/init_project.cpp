@@ -27,15 +27,6 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     ctx.version = VORTEX_VERSION;
     ctx.include_system_templates = main_configs["project"]["include_system_templates"].get<bool>();
 
-    /*ctx.packagesPath = main_configs["data"]["packages"].get<std::string>();
-    ctx.toolchainsPath = main_configs["data"]["toolchains"].get<std::string>();
-    ctx.gposPath = main_configs["data"]["gpos"].get<std::string>();
-    ctx.scriptsPath = main_configs["data"]["scripts"].get<std::string>(); // Fixed typo here
-    ctx.hostsPath = main_configs["data"]["hosts"].get<std::string>();
-
-    ctx.paths.toolchainDistFolder = main_configs["dist"]["toolchains"].get<std::string>();
-    ctx.paths.hostDistFolder = main_configs["dist"]["hosts"].get<std::string>();*/
-
     // Set project path to current working directory
     ctx.projectPath = fs::current_path();
 
@@ -47,6 +38,7 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     VortexMaker::InitEnvironment();
 
     // Update projet metadata (last opened, etc...) in the ~/.vx/data/projects.json
+    VortexMaker::UpdateEnvironmentProject();
 
     // Load modules installed in the current project
     VortexMaker::LoadEditorModules(ctx.projectPath, ctx.IO.em_handles, ctx.IO.em);
