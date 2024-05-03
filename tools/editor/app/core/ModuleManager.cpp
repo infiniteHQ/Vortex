@@ -2,7 +2,8 @@
 #include "ModuleManager.hpp"
 #include <optional>
 
-static int item_current = 0;
+static int item_current = 0;    
+static bool open_ADDMODULE = false;
 
 // Left
 static int mb_selected = 0;
@@ -428,7 +429,7 @@ void ModuleManager::menubar()
     static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    static bool open_ADDMODULE = false;
+
 
     for (auto em : ctx->IO.sys_em)
     {

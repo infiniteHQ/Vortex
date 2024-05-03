@@ -146,7 +146,69 @@ void ProjectSettings::addModuleModal()
 {
 }
 
-// Main menu function
+void ProjectSettings::mainButtonsMenuItem()
+{
+    static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    if (ImGui::ImageButtonWithText(refreshIcon, "Save", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+    {
+        this->Update();
+    }
+    if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+    {
+        this->Refresh();
+    }
+}
+
+void ProjectSettings::filterMenuItem()
+{
+    ImGui::Separator();
+    if (ImGui::BeginMenu("Filters"))
+    {
+        if (ImGui::MenuItem("Build/Rebuild single parts"))
+        {
+            handleFilterBuildRebuild();
+        }
+        if (ImGui::MenuItem("Global build"))
+        {
+            handleGlobalBuild();
+        }
+        ImGui::EndMenu();
+    }
+}
+
+void ProjectSettings::createMenuItem()
+{
+    if (ImGui::BeginMenu("Create a module"))
+    {
+        if (ImGui::MenuItem("Build/Rebuild single parts"))
+        {
+            handleCreateModule();
+        }
+        if (ImGui::MenuItem("Global build"))
+        {
+            handleGlobalBuild();
+        }
+        ImGui::EndMenu();
+    }
+}
+
+void ProjectSettings::searchMenuItem()
+{
+    if (ImGui::BeginMenu("Search"))
+    {
+        if (ImGui::MenuItem("Build/Rebuild single parts"))
+        {
+            handleSearch();
+        }
+        if (ImGui::MenuItem("Global build"))
+        {
+            handleGlobalBuild();
+        }
+        ImGui::EndMenu();
+    }
+}
 
 void ProjectSettings::menubar()
 {
@@ -155,52 +217,10 @@ void ProjectSettings::menubar()
 
     if (ImGui::BeginMenuBar())
     {
-
-        if (ImGui::ImageButtonWithText(refreshIcon, "Save", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
-        {
-            this->Update();
-        }
-        if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
-        {
-            this->Refresh();
-        }
-        ImGui::Separator();
-        if (ImGui::BeginMenu("Filters"))
-        {
-            if (ImGui::MenuItem("Build/Rebuild single parts"))
-            {
-                handleFilterBuildRebuild();
-            }
-            if (ImGui::MenuItem("Global build"))
-            {
-                handleGlobalBuild();
-            }
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Create a module"))
-        {
-            if (ImGui::MenuItem("Build/Rebuild single parts"))
-            {
-                handleCreateModule();
-            }
-            if (ImGui::MenuItem("Global build"))
-            {
-                handleGlobalBuild();
-            }
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Search"))
-        {
-            if (ImGui::MenuItem("Build/Rebuild single parts"))
-            {
-                handleSearch();
-            }
-            if (ImGui::MenuItem("Global build"))
-            {
-                handleGlobalBuild();
-            }
-            ImGui::EndMenu();
-        }
+        this->mainButtonsMenuItem();
+        this->filterMenuItem();
+        this->createMenuItem();
+        this->searchMenuItem();
         ImGui::EndMenuBar();
     }
 }
@@ -268,7 +288,6 @@ void ProjectSettings::Update()
     }
 
     this->Refresh();
-
 
     VortexMaker::UpdateEnvironmentProject(oldname);
 }

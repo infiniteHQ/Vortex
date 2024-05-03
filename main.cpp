@@ -8,6 +8,7 @@
 #include "./tools/launcher/app/include/launcher.h"
 
 #include "./main/include/vortex.h"
+#include "./main/include/templates/load.h"
 #include "./lib/uikit/src/EntryPoint.h"
 
 void PrintInfinite()
@@ -120,6 +121,8 @@ VxContext *InitRuntime(bool logger)
 
     return ctx;
 }
+ // Project sys size== 0
+
 
 // Project creator,
 // Template deployment overrides (project, modules_content, etc...)
@@ -131,6 +134,11 @@ VxContext *InitBlankRuntime(bool logger)
 
     // Initialize environment
     VortexMaker::InitEnvironment();
+
+    // Refresh environment registered projects
+    VortexMaker::RefreshEnvironmentProjects();
+
+    VortexMaker::LoadSystemTemplates(ctx->IO.sys_templates);
 
     ctx->logger = logger;
     return ctx;

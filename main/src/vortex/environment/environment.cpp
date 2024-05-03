@@ -12,13 +12,39 @@ VORTEX_API void VortexMaker::InitEnvironment()
         std::string path = VortexMaker::getHomeDirectory() + "/.vx/modules/";
         VortexMaker::createFolderIfNotExists(path);
     }
+
     {
         std::string path = VortexMaker::getHomeDirectory() + "/.vx/templates/";
         VortexMaker::createFolderIfNotExists(path);
     }
 
     {
+        std::string path = VortexMaker::getHomeDirectory() + "/.vx/templates/vortex.templates.builtin.__blankproject/";
+        VortexMaker::createFolderIfNotExists(path);
+    }
+    {
+        std::string path = VortexMaker::getHomeDirectory() + "/.vx/templates/vortex.templates.builtin.__blankproject/";
+        std::string file = path + "template.json";
 
+        nlohmann::json default_data = {
+            {"type", "project"},
+            {"group", "Core"},
+            {"name", "vortex.templates.builtin.blankproject"},
+            {"proper_name", "Blank project"},
+            {"author", "Infinite"},
+            {"version", "--"},
+            {"compatibleWith", "--"},
+            {"tarball", "--"},
+            {"picture", "/usr/include/vortex/icon.png"},
+            {"description", "This the most minimum sample project for Vortex."},
+            {"deps", nlohmann::json::array()},
+            {"contributors", nlohmann::json::array()}
+        };
+
+        VortexMaker::createJsonFileIfNotExists(file, default_data);
+    }
+
+    {
         std::string path = VortexMaker::getHomeDirectory() + "/.vx/data/";
         std::string file = path + "projects.json";
 
@@ -36,9 +62,9 @@ VORTEX_API void VortexMaker::RefreshEnvironmentProjects()
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
 
-    std::string path = VortexMaker::getHomeDirectory() + "/.vx/data/projects.json";
+    std::string path = VortexMaker::getHomeDirectory() + "/.vx/data/";
 
-    std::string json_file = path + "/project.json";
+    std::string json_file = path + "/projects.json";
 
     // Verify if the project is valid
     try
@@ -57,7 +83,6 @@ VORTEX_API void VortexMaker::RefreshEnvironmentProjects()
 
             ctx.IO.sys_projects.push_back(newproject);
         }
-        
     }
     catch (const std::exception &e)
     {
@@ -92,6 +117,8 @@ VORTEX_API void VortexMaker::UpdateEnvironmentProject()
                 project["version"] = ctx.version;
                 project["description"] = ctx.description;
                 project["path"] = ctx.projectPath;
+                project["compatibleWith"] = ctx.compatibleWith;
+                project["lastOpened"] = VortexMaker::getCurrentTimeStamp();
                 project["logoPath"] = ctx.logoPath;
                 projectExists = true;
                 break;
@@ -106,6 +133,8 @@ VORTEX_API void VortexMaker::UpdateEnvironmentProject()
                 {"version", ctx.version},
                 {"description", ctx.description},
                 {"path", ctx.projectPath},
+                {"lastOpened", VortexMaker::getCurrentTimeStamp()},
+                {"compatibleWith", ctx.compatibleWith},
                 {"logoPath", ctx.logoPath}
             });
         }

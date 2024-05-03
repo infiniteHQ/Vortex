@@ -6,13 +6,13 @@
 
 /**
  * @brief Initialize project settings based on provided JSON configurations.
- * 
+ *
  * This function initializes project settings based on the configurations provided in a JSON object.
  * It sets various properties of the VortexMaker context object accordingly.
- * 
+ *
  * @param main_configs JSON object containing main project configurations.
  */
-VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
+VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs)
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
@@ -24,7 +24,7 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     ctx.name = main_configs["project"]["name"].get<std::string>();
     ctx.type = main_configs["project"]["type"].get<std::string>();
     ctx.project_version = main_configs["project"]["version"].get<std::string>();
-    ctx.version = VORTEX_VERSION;
+    ctx.compatibleWith = main_configs["project"]["compatibleWith"].get<std::string>();
     ctx.include_system_templates = main_configs["project"]["include_system_templates"].get<bool>();
 
     // Set project path to current working directory
@@ -44,16 +44,16 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json& main_configs)
     VortexMaker::LoadEditorModules(ctx.projectPath, ctx.IO.em_handles, ctx.IO.em);
 
     // Load modules installed in the system
-    // Note: These modules are simply initialized in the project, not loaded, but we can add these in CLI/GUI 
+    // Note: These modules are simply initialized in the project, not loaded, but we can add these in CLI/GUI
     VortexMaker::LoadSystemModules(ctx.IO.sys_em);
 
     // Load templates installed in the system if the configuration allow it
-    // Note: These templates are simply initialized in the project, not included, but we can add these in CLI/GUI 
-    if(ctx.include_system_templates)
+    // Note: These templates are simply initialized in the project, not included, but we can add these in CLI/GUI
+    if (ctx.include_system_templates)
     {
         VortexMaker::LoadSystemTemplates(ctx.IO.sys_templates);
     }
-    
+
     // Finally, start all loaded modules.
     VortexMaker::BootstrappAllModules();
 }

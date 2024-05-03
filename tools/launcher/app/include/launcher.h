@@ -1,5 +1,6 @@
 #include "../../../../lib/uikit/src/EntryPoint.h"
 #include "../../../../main/include/vortex.h"
+#include "../core/ProjectManager.hpp"
 using namespace VortexMaker;
 
 #ifndef LAUNCHER_H
@@ -16,6 +17,12 @@ public:
     PushStyle();
 
     ImGui::ShowDemoWindow();
+
+    if (this->ShowProjectManager)
+    {
+      static ProjectManager projectManager(this->m_ctx);
+      projectManager.OnImGuiRender();
+    }
 
     PopStyle();
   }
@@ -47,7 +54,7 @@ public:
   bool ShowContentBrowser = false;
   bool ShowProjectViewer = false;
   bool ShowModulesManager = false;
-  bool ShowProjectSettings = false;
+  bool ShowProjectManager = true;
 
 private:
   std::vector<std::string> instanciedWindowsNames;

@@ -1,4 +1,3 @@
-
 #ifndef MODULEMANAGER_H
 #define MODULEMANAGER_H
 

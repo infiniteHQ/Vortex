@@ -171,6 +171,7 @@ struct VxContext
   VxPaths paths;
   std::string configFilePath;
   std::string author;
+  std::string compatibleWith;
   std::string description;
   std::string label;
   std::string name;
