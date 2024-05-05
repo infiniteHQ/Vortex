@@ -35,7 +35,7 @@ VORTEX_API void VortexMaker::InitEnvironment()
             {"version", "--"},
             {"compatibleWith", "--"},
             {"tarball", "--"},
-            {"picture", "/usr/include/vortex/icon.png"},
+            {"picture", "/icon.png"},
             {"description", "This the most minimum sample project for Vortex."},
             {"deps", nlohmann::json::array()},
             {"contributors", nlohmann::json::array()}

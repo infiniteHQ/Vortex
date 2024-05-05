@@ -8,6 +8,62 @@ static bool template_is_selected = false;
 static std::shared_ptr<TemplateInterface> selected_template_object;
 static std::string title = "none";
 
+// Fonction pour charger le contenu hexadécimal d'un fichier .png
+static std::vector<uint8_t> loadPngHex(const std::string &filePath)
+{
+    std::ifstream file(filePath, std::ios::binary);
+
+    if (!file)
+    {
+        std::cerr << "Erreur lors de l'ouverture du fichier. -> " + filePath << std::endl;
+        return {};
+    }
+
+    // Déterminez la taille du fichier
+    file.seekg(0, std::ios::end);
+    size_t fileSize = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    // Créez un vecteur pour stocker le contenu hexadécimal
+    std::vector<uint8_t> hexContent(fileSize);
+
+    // Lisez le contenu hexadécimal du fichier
+    file.read(reinterpret_cast<char *>(hexContent.data()), fileSize);
+
+    return hexContent;
+}
+static std::vector<std::shared_ptr<UIKit::Image>> logos;
+static std::vector<ImTextureID> textures;
+static std::vector<std::shared_ptr<std::pair<std::string, int>>> labels_indexes;
+static std::vector<std::string> syslabels;
+
+static void logo(const std::string &path, int index, int total)
+{
+    uint32_t w, h;
+    // Chargez le contenu hexadécimal du fichier .png
+    std::vector<uint8_t> hexTable = loadPngHex(path);
+    const uint8_t *hexData = hexTable.data();
+
+    if (total > logos.size())
+    {
+        void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
+        std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        logos.push_back(_icon);
+        VX_FREE(data);
+
+        if (index <= logos.size())
+        {
+            ImTextureID addIcon = logos[index]->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            textures.push_back(addIcon);
+        }
+    }
+
+    if (index <= textures.size())
+    {
+        ImGui::Image(textures[index], ImVec2(50, 50));
+    }
+}
+
 ProjectManager::ProjectManager(VxContext *_ctx)
 {
     this->ctx = _ctx;
@@ -99,7 +155,6 @@ void ProjectManager::OnImGuiRender()
             ImGuiID id = ImGui::GetID(label.c_str());
             ImGui::BeginChildFrame(id, ImVec2(0, 150), true);
 
-            ImGui::Text(this->ctx->IO.sys_projects[row]->name.c_str());
             ImGui::Button("Open");
 
             ImGui::EndChildFrame();
@@ -114,19 +169,53 @@ void ProjectManager::OnImGuiRender()
 
         ImGui::Columns(3, NULL);
 
-        for (auto tem : project_templates)
+        for (int i = 0; i <= project_templates.size(); i++)
         {
-            std::string label = tem->m_name;
-            ImGuiID id = ImGui::GetID(label.c_str());
-            ImGui::BeginChildFrame(id, ImVec2(0, 150), true);
 
-            ImGui::Text(tem->m_name.c_str());
-            if (ImGui::Button("Create"))
+            if (project_templates[i])
             {
-                template_is_selected = true;
-                selected_template_object = tem;
-            }
+                {
+                    ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
+                    if (!project_templates[i]->m_logo_path.empty())
+                    {
+                        logo(project_templates[i]->m_logo_path, i, project_templates.size());
+                    }
 
+                    ImGui::EndChild();
+                    ImGui::SameLine();
+                }
+
+                {
+                    if (!project_templates[i]->m_proper_name.empty() && !project_templates[i]->m_author.empty())
+                    {
+                        ImGui::BeginChild("TEXT_", ImVec2(220, 68), true);
+                        float oldsize = ImGui::GetFont()->Scale;
+                        ImGui::GetFont()->Scale *= 1.3;
+                        ImGui::PushFont(ImGui::GetFont());
+
+                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), project_templates[i]->m_proper_name.c_str());
+
+                        ImGui::GetFont()->Scale = oldsize;
+                        ImGui::PopFont();
+
+                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
+                        ImGui::SameLine();
+                        ImGui::Text(project_templates[i]->m_author.c_str());
+                        ImGui::EndChild();
+                    }
+                }
+
+                if (!project_templates[i]->m_description.empty())
+                {
+                    ImGui::TextWrapped(project_templates[i]->m_description.c_str());
+                }
+
+                if (ImGui::Button("Create"))
+                {
+                    template_is_selected = true;
+                    selected_template_object = project_templates[i];
+                }
+            }
             ImGui::EndChildFrame();
             ImGui::NextColumn();
         }
