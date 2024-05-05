@@ -39,6 +39,8 @@ target_link_libraries(vortex_shared PUBLIC launcher)
 # Création de l'exécutable principal
 add_executable(vortex ${VORTEX_SOURCES} main.cpp)
 
+add_executable(vortex_desktop ${VORTEX_SOURCES} desktop.cpp)
+
 # Liaison avec la bibliothèque partagée
 target_link_libraries(vortex PRIVATE vortex_shared)
 
@@ -46,6 +48,7 @@ target_link_libraries(vortex PRIVATE vortex_shared)
 
 # Installation de l'exécutable dans /bin
 install(TARGETS vortex DESTINATION /bin)
+install(TARGETS vortex_desktop DESTINATION /bin)
 install(TARGETS vortex DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
 
 # Installation de la bibliothèque partagée dans /lib
@@ -78,3 +81,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
         PATTERN "*.hpp"
         PATTERN "*.inl"
 )
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/vortex_desktop.desktop
+        DESTINATION /usr/share/applications/)
