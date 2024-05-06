@@ -80,6 +80,7 @@ VORTEX_API void VortexMaker::RefreshEnvironmentProjects()
             newproject->description = project["description"].get<std::string>();
             newproject->path = project["path"].get<std::string>();
             newproject->logoPath = project["logoPath"].get<std::string>();
+            newproject->lastOpened = project["lastOpened"].get<std::string>();
 
             ctx.IO.sys_projects.push_back(newproject);
         }

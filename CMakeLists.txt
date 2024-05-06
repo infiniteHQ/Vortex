@@ -55,7 +55,7 @@ install(TARGETS vortex DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
 install(TARGETS vortex_shared LIBRARY DESTINATION /lib)
 
 # Définir le répertoire d'installation pour les fichiers d'en-tête
-set(INSTALL_INCLUDE_DIR /usr/include/Vortex)
+set(INSTALL_INCLUDE_DIR /usr/local/include/Vortex)
 
 # Installation des fichiers d'en-tête de /main/include
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/main/include/
@@ -81,6 +81,15 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
         PATTERN "*.hpp"
         PATTERN "*.inl"
 )
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/editor.png
+        DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/icon.png
+        DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/vortex.png
+        DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/vortex_desktop.desktop
         DESTINATION /usr/share/applications/)

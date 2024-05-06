@@ -41,7 +41,7 @@ VORTEX_API void VortexMaker::InstallTemplateOnSystem(const std::string &director
     }
 }
 
-VORTEX_API void VortexMaker::InstallTemplate(const std::string &name)
+VORTEX_API void VortexMaker::InstallTemplate(const std::string &name, const std::string &path)
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
@@ -52,8 +52,20 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name)
     // TODO : Search modules registered in project first (if the project have include_system_templates == false)
     // Search modules registered in project first
     /*...*/
+    
+    for(auto tem : ctx.IO.sys_templates)
+    {
+        if(tem->m_name == name)
+        {
 
-    // Search the template registered in the system environment (if not findeed in the system and if the project can see env template)
+                    VortexMaker::LogInfo("Core", "Installing the template \"" + name + "\" ...");
+
+                    std::string cmd = "tar -xvf " + tem->m_path + tem->m_tarball + " " + path; 
+        }
+
+    }
+
+    /*// Search the template registered in the system environment (if not findeed in the system and if the project can see env template)
     if (!finded && ctx.include_system_templates)
     {
         // Get the home directory
@@ -85,6 +97,11 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name)
 
                     // TODO : Call Deploy function of the template
 
+                    std::string cmd = "tar -xvf " + module_path + 
+
+                    // Get the target directory of installation (path)
+                    // Take the tarball, and uncompress it into destination
+
                     return;
                 }
             }
@@ -98,5 +115,5 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name)
     if (!finded)
     {
         VortexMaker::LogError("Core", "Failed to find the template " + name + " this template is installed ?");
-    }
+    }*/
 }

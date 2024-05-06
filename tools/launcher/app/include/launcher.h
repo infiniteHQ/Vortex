@@ -16,8 +16,6 @@ public:
   {
     PushStyle();
 
-    ImGui::ShowDemoWindow();
-
     if (this->ShowProjectManager)
     {
       static ProjectManager projectManager(this->m_ctx);
@@ -70,7 +68,7 @@ UIKit::Application *CreateLauncher(int argc, char **argv)
   UIKit::ApplicationSpecification spec;
   std::string name = "Vortex Launcher";
   spec.Name = name;
-  spec.Width = 1500;
+  spec.Width = 1200;
   spec.Height = 700;
   spec.Name = name;
   spec.CustomTitlebar = true;

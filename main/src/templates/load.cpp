@@ -44,6 +44,7 @@ namespace VortexMaker
                     new_template->m_path = module_path + "/";
                     new_template->m_author = json_data["author"].get<std::string>();
                     new_template->m_group = json_data["group"].get<std::string>();
+                    new_template->m_tarball = json_data["tarball"].get<std::string>();
                     new_template->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
 
                     for (auto dep : json_data["deps"])

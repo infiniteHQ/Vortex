@@ -19,6 +19,7 @@ class TemplateInterface
     std::string m_name; // unique
     std::string m_description;
     std::string m_group;
+    std::string m_tarball;
     std::string m_logo_path;
     std::string m_picture;
     std::string m_path;

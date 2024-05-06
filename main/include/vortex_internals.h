@@ -127,6 +127,8 @@ struct EnvProject
     std::string version;
     std::string description;
     std::string logoPath;
+    std::string author;
+    std::string lastOpened;
 };
 
 struct VxIO

@@ -92,3 +92,27 @@ void VortexMaker::CreateProject(const std::string& name, const std::string& path
         system(cmd.c_str());
     }
 }
+
+VORTEX_API void VortexMaker::CreateProject(const std::string &name, const std::string &author, const std::string &description, const std::string &path, const std::string &template_name)
+{
+    VortexMaker::createFolderIfNotExists(path);
+    VortexMaker::InstallTemplate(template_name, path);
+
+    // Creating and populating JSON data for vortex.config
+    {
+        nlohmann::json j;
+        j["project"]["author"] = author;
+        j["project"]["description"] = description;
+        j["project"]["name"] = name;
+        j["project"]["type"] = "???";
+        j["project"]["version"] = "1.0.0";
+        j["project"]["compatibleWith"] = VORTEX_VERSION;
+        j["project"]["include_system_templates"] = true;
+
+        // Store JSON into vortex.config file
+        std::ofstream o(path + "/vortex.config");
+        o << std::setw(4) << j << std::endl;
+        o.close();
+    }
+
+}

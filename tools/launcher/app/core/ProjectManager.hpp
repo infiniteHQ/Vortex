@@ -33,6 +33,7 @@ private:
 
 	std::shared_ptr<VxToolchain> latest_toolchain;
 
+    std::thread receiveThread;
 	std::vector<std::shared_ptr<TemplateInterface>> project_templates;
     std::shared_ptr<UIKit::Image> m_ListIcon;
     std::shared_ptr<UIKit::Image> m_RefreshIcon;
