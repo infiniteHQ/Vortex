@@ -60,7 +60,12 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name, const std:
 
                     VortexMaker::LogInfo("Core", "Installing the template \"" + name + "\" ...");
 
-                    std::string cmd = "tar -xvf " + tem->m_path + tem->m_tarball + " " + path; 
+                    std::string cmd = "tar -xvf " + tem->m_path + tem->m_tarball + " --strip-components=1 " + " -C " + path; 
+                    std::cout << cmd << std::endl;
+                    system(cmd.c_str());
+        
+                    // Puis reprendre le ficheir vortex.condfig et l'overrider
+        
         }
 
     }

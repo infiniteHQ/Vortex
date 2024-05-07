@@ -24,7 +24,7 @@
             ]
         }
     ],
-    "tarball": "./dist/template.tar.gz",
+    "tarball": "./base.tar.gz",
     "picture": "./assets/logo.png",
     "description": "This is a module that allow the creation, manipulation, development & production of a toolchain"
 }

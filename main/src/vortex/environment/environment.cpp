@@ -22,27 +22,6 @@ VORTEX_API void VortexMaker::InitEnvironment()
         std::string path = VortexMaker::getHomeDirectory() + "/.vx/templates/vortex.templates.builtin.__blankproject/";
         VortexMaker::createFolderIfNotExists(path);
     }
-    {
-        std::string path = VortexMaker::getHomeDirectory() + "/.vx/templates/vortex.templates.builtin.__blankproject/";
-        std::string file = path + "template.json";
-
-        nlohmann::json default_data = {
-            {"type", "project"},
-            {"group", "Core"},
-            {"name", "vortex.templates.builtin.blankproject"},
-            {"proper_name", "Blank project"},
-            {"author", "Infinite"},
-            {"version", "--"},
-            {"compatibleWith", "--"},
-            {"tarball", "--"},
-            {"picture", "/icon.png"},
-            {"description", "This the most minimum sample project for Vortex."},
-            {"deps", nlohmann::json::array()},
-            {"contributors", nlohmann::json::array()}
-        };
-
-        VortexMaker::createJsonFileIfNotExists(file, default_data);
-    }
 
     {
         std::string path = VortexMaker::getHomeDirectory() + "/.vx/data/";

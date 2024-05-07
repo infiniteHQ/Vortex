@@ -16,7 +16,6 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs)
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
-
     // Initialize context properties based on JSON configurations
     ctx.author = main_configs["project"]["author"].get<std::string>();
     ctx.description = main_configs["project"]["description"].get<std::string>();

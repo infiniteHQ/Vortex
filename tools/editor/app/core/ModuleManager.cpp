@@ -85,6 +85,9 @@ static void logo(const std::string &path, std::string index_group, int total)
 
     int index = getIndex(index_group);
 
+    if(index == -1)
+    return;
+
     if (total > logos.size())
     {
         void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
@@ -536,8 +539,7 @@ void ModuleManager::menubar()
 
                     {
                         ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
-                        logo(ctx->IO.sys_em[i]->m_logo_path, ctx->IO.em[i]->m_group, this->ctx->IO.sys_em.size());
-
+                        logo(ctx->IO.sys_em[i]->m_logo_path, ctx->IO.sys_em[i]->m_group, this->ctx->IO.sys_em.size());
                         ImGui::EndChild();
                         ImGui::SameLine();
                     }

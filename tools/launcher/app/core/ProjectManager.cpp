@@ -50,12 +50,9 @@ static void logo(const std::string &path, int index, int total)
         std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         logos.push_back(_icon);
         VX_FREE(data);
-
-        if (index <= logos.size())
-        {
             ImTextureID addIcon = logos[index]->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
             textures.push_back(addIcon);
-        }
+        
     }
 
     if (index <= textures.size())
@@ -166,8 +163,6 @@ void ProjectManager::OnImGuiRender()
             }
 
             {
-                if (!this->ctx->IO.sys_projects[row]->name.empty() && !this->ctx->IO.sys_projects[row]->name.empty())
-                {
                     ImGuiID _id = ImGui::GetID("TEXT_");
                     ImGui::BeginChild(_id, ImVec2(0, 100), true);
                     float oldsize = ImGui::GetFont()->Scale;
@@ -188,7 +183,7 @@ void ProjectManager::OnImGuiRender()
                     ImGui::Text(this->ctx->IO.sys_projects[row]->author.c_str());
 
                     ImGui::EndChild();
-                }
+                
             }
 
             if (ImGui::Button("Open"))
@@ -321,15 +316,14 @@ void ProjectManager::OnImGuiRender()
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), selected_template_object->m_proper_name.c_str());
         ImGui::Text("Description : ");
-        ImGui::SameLine();
+        ImGui::SameLine(); 
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), selected_template_object->m_description.c_str());
         ImGui::Separator();
 
         ImGui::Checkbox("Open the project after creation", &open);
-std::ostringstream oss;
-oss << buf << "/" << name;
-static std::string path = oss.str();
-        ImGui::Text("This new project will be install in ");
+        std::string path = s + name;
+
+        ImGui::Text("This new project will be install in "); // Fix path and allow project creation + fix core dumped 
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), path.c_str());
 
@@ -344,7 +338,6 @@ static std::string path = oss.str();
         {
             VortexMaker::CreateProject(name, auth, desc, path, selected_template_object->m_name);
         }
-path.clear();
         ImGui::EndChild();
     }
 
