@@ -22,8 +22,12 @@ private:
 
 	std::shared_ptr<VxToolchain> latest_toolchain;
 
+    std::shared_ptr<UIKit::Image> m_StartIcon;
+    std::shared_ptr<UIKit::Image> m_StopIcon;
+    std::shared_ptr<UIKit::Image> m_LogsIcon;
     std::shared_ptr<UIKit::Image> m_ListIcon;
     std::shared_ptr<UIKit::Image> m_RefreshIcon;
+    std::shared_ptr<UIKit::Image> m_ModuleIcon;
     std::shared_ptr<UIKit::Image> m_AddIcon;
     std::shared_ptr<UIKit::Image> m_TrashIcon;
 	bool CollapseAll = false;

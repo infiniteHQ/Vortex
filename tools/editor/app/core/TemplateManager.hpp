@@ -23,6 +23,7 @@ private:
 
 	std::shared_ptr<VxToolchain> latest_toolchain;
 
+    std::shared_ptr<UIKit::Image> m_TemplateIcon;
     std::shared_ptr<UIKit::Image> m_ListIcon;
     std::shared_ptr<UIKit::Image> m_RefreshIcon;
     std::shared_ptr<UIKit::Image> m_AddIcon;

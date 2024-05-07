@@ -107,8 +107,32 @@ ModuleManager::ModuleManager(VxContext *_ctx, InstanceFactory *_factory)
     this->factory = _factory;
     {
         uint32_t w, h;
+        void *data = UIKit::Image::Decode(icons::i_stop, icons::i_stop_size, w, h);
+        m_StopIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = UIKit::Image::Decode(icons::i_start, icons::i_start_size, w, h);
+        m_StartIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = UIKit::Image::Decode(icons::i_logs, icons::i_logs_size, w, h);
+        m_LogsIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_list, icons::i_list_size, w, h);
         m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = UIKit::Image::Decode(icons::i_module, icons::i_module_size, w, h);
+        m_ModuleIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
     }
     {
@@ -135,8 +159,12 @@ void ModuleManager::OnImGuiRender()
 {
     static ImTextureID listIcon = this->m_ListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID trashIcon = this->m_TrashIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID moduleIcon = this->m_ModuleIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID startIcon = this->m_StartIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID stopIcon = this->m_StopIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID logIcon = this->m_LogsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    if (ImGui::Begin("Modules manager", &listIcon, &this->opened, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Modules manager", &moduleIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         this->menubar();
 
     float oldsize = ImGui::GetFont()->Scale;
@@ -347,9 +375,16 @@ void ModuleManager::OnImGuiRender()
 
             if (ctx->IO.em[i]->m_state == "running")
             {
-                if (ImGui::ImageButtonWithText(listIcon, "Stop", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                if (ImGui::ImageButtonWithText(stopIcon, "Stop", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
                     ctx->IO.em[i]->Stop();
+                }
+                ImGui::SameLine();
+                if (ImGui::ImageButtonWithText(logIcon, "Details", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    // Behavior
+                    std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(this->ctx, ctx->IO.em[i]);
+                    this->factory->SpawnInstance(instance);
                 }
             }
 
@@ -360,7 +395,6 @@ void ModuleManager::OnImGuiRender()
                     ctx->IO.em[i]->Start();
                 }
                 ImGui::SameLine();
-
                 if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
                     // Behavior
@@ -368,12 +402,11 @@ void ModuleManager::OnImGuiRender()
             }
             if (ctx->IO.em[i]->m_state == "unknow" || ctx->IO.em[i]->m_state == "stopped")
             {
-                if (ImGui::ImageButtonWithText(listIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                if (ImGui::ImageButtonWithText(startIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
                     ctx->IO.em[i]->Start();
                 }
                 ImGui::SameLine();
-
                 if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
                     // Behavior

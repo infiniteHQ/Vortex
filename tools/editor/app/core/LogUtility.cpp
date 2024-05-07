@@ -20,6 +20,12 @@ LogUtility::LogUtility(VxContext *_ctx, InstanceFactory *_factory)
     }
     {
         uint32_t w, h;
+        void *data = UIKit::Image::Decode(icons::i_journal, icons::i_journal_size, w, h);
+        m_JournalIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
         m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
@@ -35,8 +41,9 @@ LogUtility::LogUtility(VxContext *_ctx, InstanceFactory *_factory)
 void LogUtility::OnImGuiRender()
 {
     static ImTextureID listIcon = this->m_ListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID journalIcon = this->m_JournalIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    if (ImGui::Begin("Project Viewer", &listIcon, &this->opened, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Log utility", &journalIcon, &this->opened, ImGuiWindowFlags_MenuBar))
     {
         this->menubar();
     }

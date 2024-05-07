@@ -97,6 +97,18 @@ ProjectManager::ProjectManager(VxContext *_ctx)
     }
     {
         uint32_t w, h;
+        void *data = UIKit::Image::Decode(icons::i_project, icons::i_project_size, w, h);
+        m_ProjectIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
+        void *data = UIKit::Image::Decode(icons::i_open, icons::i_open_size, w, h);
+        m_OpenIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
         m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
@@ -119,8 +131,10 @@ void ProjectManager::OnImGuiRender()
 {
     static ImTextureID listIcon = this->m_ListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID trashIcon = this->m_TrashIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID projectIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID openIcon = this->m_OpenIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    if (ImGui::Begin("Project managers", &listIcon, &this->opened, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Project managers", &projectIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         this->menubar();
 
     float oldsize = ImGui::GetFont()->Scale;
@@ -207,7 +221,7 @@ void ProjectManager::OnImGuiRender()
                 ImGui::EndChild();
             }
 
-            if (ImGui::Button("Open"))
+            if (ImGui::ImageButtonWithText(openIcon, "Open"))
             {
                 std::string projectPath = this->ctx->IO.sys_projects[row]->path;
 

@@ -37,6 +37,8 @@ private:
 	std::vector<std::shared_ptr<TemplateInterface>> project_templates;
     std::shared_ptr<UIKit::Image> m_ListIcon;
     std::shared_ptr<UIKit::Image> m_RefreshIcon;
+    std::shared_ptr<UIKit::Image> m_OpenIcon;
+    std::shared_ptr<UIKit::Image> m_ProjectIcon;
     std::shared_ptr<UIKit::Image> m_AddIcon;
     std::shared_ptr<UIKit::Image> m_TrashIcon;
 	bool CollapseAll = false;

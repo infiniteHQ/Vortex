@@ -13,6 +13,12 @@ ProjectSettings::ProjectSettings(VxContext *_ctx, InstanceFactory *_factory)
 
     {
         uint32_t w, h;
+        void *data = UIKit::Image::Decode(icons::i_settings_sliders, icons::i_settings_sliders_size, w, h);
+        m_SettingsIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        free(data);
+    }
+    {
+        uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_list, icons::i_list_size, w, h);
         m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         free(data);
@@ -41,8 +47,9 @@ void ProjectSettings::OnImGuiRender()
 {
     static ImTextureID listIcon = this->m_ListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID trashIcon = this->m_TrashIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    static ImTextureID settingsIcon = this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    if (ImGui::Begin("Project settings", &listIcon, &this->opened, ImGuiWindowFlags_MenuBar))
+    if (ImGui::Begin("Project settings", &settingsIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         this->menubar();
 
     float oldsize = ImGui::GetFont()->Scale;
