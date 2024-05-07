@@ -39,24 +39,47 @@ static std::vector<std::string> syslabels;
 
 static void logo(const std::string &path, int index, int total)
 {
-    uint32_t w, h;
+    sleep(0.1);
+    uint32_t w = 0, h = 0;
+    // Vérifier si le chemin du fichier est valide
+    if (path.empty())
+    {
+        std::cerr << "Chemin de fichier invalide." << std::endl;
+        return;
+    }
+
     // Chargez le contenu hexadécimal du fichier .png
     std::vector<uint8_t> hexTable = loadPngHex(path);
     const uint8_t *hexData = hexTable.data();
 
-    if (total > logos.size())
+    if (total > logos.size() && !hexTable.empty())
     {
         void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
-        std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
-        logos.push_back(_icon);
-        VX_FREE(data);
-        ImTextureID addIcon = logos[index]->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        textures.push_back(addIcon);
+        if (data)
+        {
+            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+            logos.push_back(_icon);
+            VX_FREE(data);
+            ImTextureID addIcon = _icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            textures.push_back(addIcon);
+        }
+        else
+        {
+            // Gérer l'échec de décodage de l'image
+            std::cerr << "Échec du décodage de l'image." << std::endl;
+            // Vous pouvez logger une erreur ou effectuer une autre action appropriée
+        }
     }
 
-    if (index <= textures.size())
+    if (index >= 0 && index < textures.size())
     {
         ImGui::Image(textures[index], ImVec2(50, 50));
+    }
+    else
+    {
+        // Gérer l'index hors limites
+        std::cerr << "Index hors limites." << std::endl;
+        // Vous pouvez logger une erreur ou effectuer une autre action appropriée
     }
 }
 
@@ -214,16 +237,11 @@ void ProjectManager::OnImGuiRender()
                     ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
                     try
                     {
-
-                        if (!project_templates[i]->m_logo_path.empty())
-                        {
                             logo(project_templates[i]->m_logo_path, i, project_templates.size());
-                        }
+                        
                     }
                     catch (std::exception e)
                     {
-                        std::cout << e.what() << std::endl;
-                        sleep(5);
                     }
                     ImGui::EndChild();
                     ImGui::SameLine();

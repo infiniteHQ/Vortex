@@ -17,6 +17,9 @@ namespace VortexMaker
             fs::create_directories(path);
         }
 
+        // Clear actual templates array
+        sys_templates.clear();
+
         // Search for module files recursively in the directory
         auto module_files = VortexMaker::SearchSystemFiles(path, "template.json");
 
