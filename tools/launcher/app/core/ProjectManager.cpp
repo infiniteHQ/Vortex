@@ -50,9 +50,8 @@ static void logo(const std::string &path, int index, int total)
         std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
         logos.push_back(_icon);
         VX_FREE(data);
-            ImTextureID addIcon = logos[index]->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-            textures.push_back(addIcon);
-        
+        ImTextureID addIcon = logos[index]->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        textures.push_back(addIcon);
     }
 
     if (index <= textures.size())
@@ -163,27 +162,26 @@ void ProjectManager::OnImGuiRender()
             }
 
             {
-                    ImGuiID _id = ImGui::GetID("TEXT_");
-                    ImGui::BeginChild(_id, ImVec2(0, 100), true);
-                    float oldsize = ImGui::GetFont()->Scale;
-                    ImGui::GetFont()->Scale *= 1.3;
-                    ImGui::PushFont(ImGui::GetFont());
+                ImGuiID _id = ImGui::GetID("TEXT_");
+                ImGui::BeginChild(_id, ImVec2(0, 100), true);
+                float oldsize = ImGui::GetFont()->Scale;
+                ImGui::GetFont()->Scale *= 1.3;
+                ImGui::PushFont(ImGui::GetFont());
 
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), this->ctx->IO.sys_projects[row]->name.c_str());
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), this->ctx->IO.sys_projects[row]->name.c_str());
 
-                    ImGui::GetFont()->Scale = oldsize;
-                    ImGui::PopFont();
+                ImGui::GetFont()->Scale = oldsize;
+                ImGui::PopFont();
 
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Last opened ");
-                    ImGui::SameLine();
-                    ImGui::Text(this->ctx->IO.sys_projects[row]->lastOpened.c_str());
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Last opened ");
+                ImGui::SameLine();
+                ImGui::Text(this->ctx->IO.sys_projects[row]->lastOpened.c_str());
 
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) ");
-                    ImGui::SameLine();
-                    ImGui::Text(this->ctx->IO.sys_projects[row]->author.c_str());
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) ");
+                ImGui::SameLine();
+                ImGui::Text(this->ctx->IO.sys_projects[row]->author.c_str());
 
-                    ImGui::EndChild();
-                
+                ImGui::EndChild();
             }
 
             if (ImGui::Button("Open"))
@@ -214,11 +212,19 @@ void ProjectManager::OnImGuiRender()
             {
                 {
                     ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
-                    if (!project_templates[i]->m_logo_path.empty())
+                    try
                     {
-                        logo(project_templates[i]->m_logo_path, i, project_templates.size());
-                    }
 
+                        if (!project_templates[i]->m_logo_path.empty())
+                        {
+                            logo(project_templates[i]->m_logo_path, i, project_templates.size());
+                        }
+                    }
+                    catch (std::exception e)
+                    {
+                        std::cout << e.what() << std::endl;
+                        sleep(5);
+                    }
                     ImGui::EndChild();
                     ImGui::SameLine();
                 }
@@ -266,7 +272,8 @@ void ProjectManager::OnImGuiRender()
         strncpy(buf, s.c_str(), sizeof(buf) - 1);
 
         static char name[128] = "UnknowName";
-        static char desc[128];
+        static char desc[128] = "My project description !";
+        static char version[128] = "1.0.0";
         static char auth[128] = "you";
         static bool open = true;
         {
@@ -304,6 +311,7 @@ void ProjectManager::OnImGuiRender()
         ImGui::InputText("Name", name, 128);
         ImGui::InputText("Description", desc, 128);
         ImGui::InputText("Authors", auth, 128);
+        ImGui::InputText("Version", version, 128);
 
         ImGui::Separator();
         float oldsize = ImGui::GetFont()->Scale;
@@ -316,14 +324,14 @@ void ProjectManager::OnImGuiRender()
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), selected_template_object->m_proper_name.c_str());
         ImGui::Text("Description : ");
-        ImGui::SameLine(); 
+        ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), selected_template_object->m_description.c_str());
         ImGui::Separator();
 
         ImGui::Checkbox("Open the project after creation", &open);
         std::string path = s + name;
 
-        ImGui::Text("This new project will be install in "); // Fix path and allow project creation + fix core dumped 
+        ImGui::Text("This new project will be install in "); // Fix path and allow project creation + fix core dumped
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), path.c_str());
 
@@ -333,10 +341,9 @@ void ProjectManager::OnImGuiRender()
         }
         ImGui::SameLine();
 
-
         if (ImGui::ImageButtonWithText(addIcon, "Create", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
         {
-            VortexMaker::CreateProject(name, auth, desc, path, selected_template_object->m_name);
+            VortexMaker::CreateProject(name, auth, version, desc, path, selected_template_object->m_name);
         }
         ImGui::EndChild();
     }

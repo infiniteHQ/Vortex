@@ -17,7 +17,7 @@ VORTEX_API void VortexMaker::InstallTemplateOnSystem(const std::string &director
         std::string description = json_data["description"].get<std::string>();
         std::string author = json_data["author"].get<std::string>();
 
-        //std::string origin_path = path.substr(0, path.find_last_of("/"));
+        // std::string origin_path = path.substr(0, path.find_last_of("/"));
         modules_path += "/" + name + "." + version;
 
         VortexMaker::LogInfo("Core", "Installing the module " + name + "...");
@@ -52,22 +52,19 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name, const std:
     // TODO : Search modules registered in project first (if the project have include_system_templates == false)
     // Search modules registered in project first
     /*...*/
-    
-    for(auto tem : ctx.IO.sys_templates)
+
+    for (auto tem : ctx.IO.sys_templates)
     {
-        if(tem->m_name == name)
+        if (tem->m_name == name)
         {
+            VortexMaker::LogInfo("Core", "Installing the template \"" + name + "\" ...");
 
-                    VortexMaker::LogInfo("Core", "Installing the template \"" + name + "\" ...");
+            std::string cmd = "tar -xvf " + tem->m_path + tem->m_tarball + " --strip-components=1 " + " -C " + path;
+            std::cout << cmd << std::endl;
+            system(cmd.c_str());
 
-                    std::string cmd = "tar -xvf " + tem->m_path + tem->m_tarball + " --strip-components=1 " + " -C " + path; 
-                    std::cout << cmd << std::endl;
-                    system(cmd.c_str());
-        
-                    // Puis reprendre le ficheir vortex.condfig et l'overrider
-        
+            // Puis reprendre le ficheir vortex.condfig et l'overrider
         }
-
     }
 
     /*// Search the template registered in the system environment (if not findeed in the system and if the project can see env template)
@@ -102,7 +99,7 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name, const std:
 
                     // TODO : Call Deploy function of the template
 
-                    std::string cmd = "tar -xvf " + module_path + 
+                    std::string cmd = "tar -xvf " + module_path +
 
                     // Get the target directory of installation (path)
                     // Take the tarball, and uncompress it into destination

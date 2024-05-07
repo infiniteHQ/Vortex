@@ -264,10 +264,13 @@ void ProjectSettings::Update()
 {
     std::string oldname = this->ctx->name;
 
+    std::string vortex_version = VORTEX_VERSION;
+
     nlohmann::json toolchainData;
     toolchainData["project"]["name"] = this->current_save->name;
     toolchainData["project"]["author"] = this->current_save->author;
     toolchainData["project"]["description"] = this->current_save->description;
+    toolchainData["project"]["compatibleWith"] = vortex_version;
     toolchainData["project"]["type"] = this->current_save->type;
     toolchainData["project"]["version"] = this->current_save->version;
     toolchainData["project"]["include_system_templates"] = this->current_save->include_system_templates;

@@ -93,12 +93,31 @@ void VortexMaker::CreateProject(const std::string& name, const std::string& path
     }
 }
 
-VORTEX_API void VortexMaker::CreateProject(const std::string &name, const std::string &author, const std::string &description, const std::string &path, const std::string &template_name)
+VORTEX_API void VortexMaker::CreateProject(const std::string &name, const std::string &author, const std::string &version, const std::string &description, const std::string &path, const std::string &template_name)
 {
     VortexMaker::createFolderIfNotExists(path);
     VortexMaker::InstallTemplate(template_name, path);
 
-    std::string version = VORTEX_VERSION;
+    std::string vortex_version = VORTEX_VERSION;
+
+
+    std::string config_file = path + "/vortex.config";
+
+        // Load JSON data from the project configuration file
+        auto config_data = VortexMaker::DumpJSON(config_file);
+
+                // Project with the old name exists, update its information
+                config_data["project"]["name"] = name;
+                config_data["project"]["compatibleWith"] = vortex_version;
+                config_data["project"]["version"] = version;
+                config_data["project"]["author"] = author;
+                config_data["project"]["description"] = description;
+
+
+        // Write the updated JSON data back to the file
+        std::ofstream output(config_file);
+        output << config_data.dump(4); // Use pretty print with indentation of 4 spaces
+        output.close();
 
     // Creating and populating JSON data for vortex.config
     /*
