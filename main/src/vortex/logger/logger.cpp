@@ -16,6 +16,7 @@ VORTEX_API void VortexMaker::LogInfo(const std::string& scope, const std::string
 
       if(ctx.logger_registering){
         std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::info, scope, message);
+        log->m_timestamp = VortexMaker::getCurrentTimeStamp();
         ctx.registered_logs.push_back(log);
       }
     }
@@ -36,6 +37,7 @@ VORTEX_API void VortexMaker::LogWarn(const std::string& scope, const std::string
 
       if(ctx.logger_registering){
         std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::warn, scope, message);
+        log->m_timestamp = VortexMaker::getCurrentTimeStamp();
         ctx.registered_logs.push_back(log);
       }
     }
@@ -56,6 +58,7 @@ VORTEX_API void VortexMaker::LogError(const std::string& scope, const std::strin
 
       if(ctx.logger_registering){
         std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::err, scope, message);
+        log->m_timestamp = VortexMaker::getCurrentTimeStamp();
         ctx.registered_logs.push_back(log);
       }
     }
@@ -76,6 +79,7 @@ VORTEX_API void VortexMaker::LogFatal(const std::string& scope, const std::strin
 
       if(ctx.logger_registering){
         std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::critical, scope, message);
+        log->m_timestamp = VortexMaker::getCurrentTimeStamp();
         ctx.registered_logs.push_back(log);
       }
     }

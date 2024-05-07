@@ -1,6 +1,7 @@
 #include "../instances/instance.h"
 #include "../core/ContentBrowser.hpp"
 #include "../core/ProjectViewer.hpp"
+#include "../core/LogUtility.hpp"
 #include "../core/ModuleManager.hpp"
 #include "../core/TemplateManager.hpp"
 #include "../core/ProjectSettings.hpp"
@@ -82,6 +83,13 @@ public:
       templateManager.OnImGuiRender();
     }
 
+    if (this->ShowLogUtility)
+    {
+      static LogUtility logUtility(this->m_ctx, &factory);
+      logUtility.OnImGuiRender();
+    }
+
+
     for (auto window : moduleDetailsInstances)
     {
       if (window->render() == "closed")
@@ -105,6 +113,8 @@ public:
         }
       }
     }
+
+    std::cout << this->m_ctx->registered_logs.size() << std::endl;
 
     PopStyle();
   }
@@ -136,6 +146,7 @@ public:
   bool ShowModulesManager = false;
   bool ShowTemplateManager = false;
   bool ShowProjectSettings = false;
+  bool ShowLogUtility = false;
 
   Instance factory;
 

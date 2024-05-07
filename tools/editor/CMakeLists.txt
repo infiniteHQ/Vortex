@@ -7,6 +7,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+file(GLOB_RECURSE EDITOR_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/app/*.cpp")
+
 
 
 add_library(editor
@@ -21,15 +23,7 @@ add_library(editor
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/platform/GUI/editor/Image.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/src/core/Log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/assets/icons.cpp
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ContentBrowser.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectViewer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/TemplateManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ModuleManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectSettings.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/src/editor.cpp
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/instances/Utils/ModuleDetails/ModuleDetails.cpp
+    ${EDITOR_SOURCES}
 )
 
 

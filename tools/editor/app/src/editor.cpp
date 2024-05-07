@@ -21,6 +21,10 @@ static void handleShowBottomToolbar()
 {
 }
 
+static void handleLogUtility()
+{
+}
+
 static void handleShowSimplifiedHeader(UIKit::Application *app)
 {
     app->m_Specification.CustomTitlebar = !app->m_Specification.CustomTitlebar;
@@ -64,6 +68,9 @@ void EditorLayer::menubar(const std::shared_ptr<EditorLayer> &exampleLayer, UIKi
     {
         if (ImGui::MenuItem("Project Settings", "Main configurations of this project", &exampleLayer->ShowProjectSettings))
             handleProjectSettings();
+        ImGui::Separator();
+        if (ImGui::MenuItem("Logs Utility", "Overview of all logs", &exampleLayer->ShowLogUtility))
+            handleLogUtility();
         ImGui::Separator();
         if (ImGui::MenuItem("Manage plugins", "Add, remove, edit plugins of this project"))
             handleManagePlugins();
