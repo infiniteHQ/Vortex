@@ -101,6 +101,29 @@ void EditorLayer::menubar(const std::shared_ptr<EditorLayer> &exampleLayer, UIKi
 
     if (ImGui::BeginMenu("Help"))
     {
+
+        if (ImGui::Button("About Vortex.."))
+            ImGui::OpenPopup("About Vortex");
+    if (ImGui::BeginPopupModal("About Vortex", NULL, ImGuiWindowFlags_MenuBar))
+    {
+        
+            if (ImGui::BeginMenuBar())
+            {
+                if (ImGui::BeginMenu("File"))
+                {
+                    if (ImGui::MenuItem("Close")) {}
+                    ImGui::EndMenu();
+                }
+                ImGui::EndMenuBar();
+            }
+            ImGui::Text("Vortex is complete open creation platform that contain a bunch of tools for creators and makers. ");
+
+      
+            if (ImGui::Button("Close"))
+                ImGui::CloseCurrentPopup();
+            ImGui::EndPopup();
+        }
+        ImGui::Separator();
         if (ImGui::MenuItem("News", "Get latest Vortex news"))
             handleNews();
         if (ImGui::MenuItem("Community", "Join a community of creators"))
@@ -114,6 +137,7 @@ void EditorLayer::menubar(const std::shared_ptr<EditorLayer> &exampleLayer, UIKi
             handleExit(app);
         ImGui::EndMenu();
     }
+
 }
 
 /*

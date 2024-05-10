@@ -188,9 +188,12 @@ namespace VortexMaker
     VORTEX_API void InitProject(const nlohmann::json &main_config);
 
     VORTEX_API void DeployEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name);
-    VORTEX_API void DeployEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, void (*callback)(std::shared_ptr<hArgs> args));
+    VORTEX_API void DeployEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, void (*callback)(std::shared_ptr<hArgs> _args));
+
+    VORTEX_API void CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, const std::string &origin);
+    VORTEX_API void CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> _args), const std::string &origin);
     VORTEX_API void CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name);
-    VORTEX_API void CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> args));
+    VORTEX_API void CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> _args));
 
     VORTEX_API void InstallModuleToSystem(const std::string &path);
 

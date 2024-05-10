@@ -456,7 +456,7 @@ VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs> &args, con
  * @param event_name The name of the event to deploy.
  * @param callback The callback function to be called after executing the event function.
  */
-VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, void (*callback)(std::shared_ptr<hArgs> args))
+VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, void (*callback)(std::shared_ptr<hArgs> _args))
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
@@ -515,8 +515,9 @@ VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs> &args, con
  * @param args A shared pointer to the arguments for the event.
  * @param event_name The name of the event to call.
  * @param module_name The name of the module where the event should be called.
+ * @param origin The name of the caller
  */
-VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name)
+VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, const std::string& origin)
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
@@ -543,19 +544,27 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args,
                     // Check if the event function pointer is valid
                     if (input_event->m_foo)
                     {
+                        // Trigger a information trigger in the input event
+                        input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Calling module input event \"" + input_event->m_name +"\" of module \"" + em->m_name + "\" from \"" + origin +"\"");
+
                         // Call the corresponding event function with the provided arguments
                         input_event->m_foo(args);
+
+                        // Trigger a information trigger in the input event
+                        input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Input event \"" + input_event->m_name +"\" of module \"" + em->m_name + "\" called succefully from \"" + origin +"\" !");
                     }
                     else
-                    {
-                        // Print an error message if the event function is null
-                        VortexMaker::LogError("Core", "Event function is null for event " + event_name);
+                    {   
+                        // Trigger a information trigger in the input event
+                        input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Trying to call \"" + input_event->m_name +"\" of module \"" + em->m_name + "\" from \"" + origin +"\" but it not exist !");
                     }
                 }
             }
         }
     }
 }
+
+
 
 /**
  * @brief Call an event of a specific module with the specified arguments and callback.
@@ -572,8 +581,9 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args,
  * @param event_name The name of the event to call.
  * @param module_name The name of the module where the event should be called.
  * @param callback The callback function to be called after executing the event function.
+ * @param origin The name of the caller
  */
-VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> args))
+VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> args), const std::string& origin)
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
@@ -621,6 +631,53 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args,
             }
         }
     }
+}
+
+
+/**
+ * @brief Call an event of a specific module with the specified arguments.
+ * 
+ * Surcharge : This function simplify the identification process (to allow random callers)
+ *
+ * This function calls an event with the specified event name and arguments
+ * for a specific module in the Vortex context.
+ * It iterates through each EventManager in the Vortex context, checks if the module
+ * name matches the provided module name, and then checks if the input event name
+ * matches the provided event name. If both conditions are met, it calls the
+ * corresponding event function with the provided arguments.
+ *
+ * @param args A shared pointer to the arguments for the event.
+ * @param event_name The name of the event to call.
+ * @param module_name The name of the module where the event should be called.
+ */
+VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name)
+{
+    VortexMaker::CallModuleEvent(args, event_name, module_name, "unknow");
+}
+
+
+/**
+ * @brief Call an event of a specific module with the specified arguments and callback.
+ *
+ * Surcharge : This function simplify the identification process (to allow random callers)
+ * 
+ * This function calls an event with the specified event name and arguments
+ * for a specific module in the Vortex context.
+ * It iterates through each EventManager in the Vortex context, checks if the module
+ * name matches the provided module name, and then checks if the input event name
+ * matches the provided event name. If both conditions are met, it calls the
+ * corresponding event function with the provided arguments and then calls
+ * the provided callback function with the arguments.
+ *
+ * @param args A shared pointer to the arguments for the event.
+ * @param event_name The name of the event to call.
+ * @param module_name The name of the module where the event should be called.
+ * @param callback The callback function to be called after executing the event function.
+ * @param origin The name of the caller
+ */
+VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> _args))
+{
+    VortexMaker::CallModuleEvent(args, event_name, module_name, callback, "unknow");
 }
 
 VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path)

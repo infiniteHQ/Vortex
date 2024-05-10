@@ -509,6 +509,17 @@ void ModuleInterface::Stop()
     }
 }
 
+
+void ModuleInterface::CallInputEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> _args))
+{
+    VortexMaker::CallModuleEvent(args, event_name, module_name, callback, this->m_name);
+}
+
+void ModuleInterface::CallInputEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name)
+{
+    VortexMaker::CallModuleEvent(args, event_name, module_name, this->m_name);
+}
+
 void ModuleInterface::CheckVersion()
 {
 }

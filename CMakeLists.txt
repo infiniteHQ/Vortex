@@ -90,6 +90,9 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/icon.png
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/vortex.png
         DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/)
+        
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/base_vortex.png
+        DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/vortex_desktop.desktop
         DESTINATION /usr/share/applications/)

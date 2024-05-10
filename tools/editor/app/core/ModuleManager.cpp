@@ -399,6 +399,13 @@ void ModuleManager::OnImGuiRender()
                 {
                     // Behavior
                 }
+                ImGui::SameLine();
+                if (ImGui::ImageButtonWithText(logIcon, "Details", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    // Behavior
+                    std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(this->ctx, ctx->IO.em[i]);
+                    this->factory->SpawnInstance(instance);
+                }
             }
             if (ctx->IO.em[i]->m_state == "unknow" || ctx->IO.em[i]->m_state == "stopped")
             {
@@ -410,6 +417,13 @@ void ModuleManager::OnImGuiRender()
                 if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                 {
                     // Behavior
+                }
+                ImGui::SameLine();
+                if (ImGui::ImageButtonWithText(logIcon, "Details", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    // Behavior
+                    std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(this->ctx, ctx->IO.em[i]);
+                    this->factory->SpawnInstance(instance);
                 }
             }
 

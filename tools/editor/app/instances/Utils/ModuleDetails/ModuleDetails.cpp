@@ -164,15 +164,15 @@ std::string ModuleDetails::render()
             ImGui::Text(this->m_module->m_name.c_str());
 
             ImGui::Separator();
-            if (ImGui::CollapsingHeader("Instances", &errorIcon, NULL))
+            if (ImGui::CollapsingHeader("Instances"))
             {
                 // Behavior
             }
-            if (ImGui::CollapsingHeader("Events", &errorIcon, NULL))
+            if (ImGui::CollapsingHeader("Events"))
             {
                 // Behavior
             }
-            if (ImGui::CollapsingHeader("Functions", &errorIcon, NULL))
+            if (ImGui::CollapsingHeader("Functions"))
             {
                 static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
@@ -199,9 +199,131 @@ std::string ModuleDetails::render()
                     ImGui::EndTable();
                 }
             }
-            if (ImGui::CollapsingHeader("Logs", &errorIcon, NULL))
+            if (ImGui::CollapsingHeader("History"))
             {
+                // Events boostrapped, with informations, args, return ,etc...
                 // Behavior
+                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                if (ImGui::BeginTable("table_", 4, flags))
+                {
+                    ImGui::TableSetupColumn("Trigger", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Timestamp", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableHeadersRow();
+                    for (int i = 0; i < this->m_module->m_input_events.size(); i++)
+                    {
+                        for (int row = 0; row < this->m_module->m_input_events[i]->m_happenings.size(); row++)
+                        {
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 4; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
+
+                                if (column == 0)
+                                {
+                                    ImGui::Text(this->m_module->m_input_events[i]->m_happenings[row]->m_trigger_name.c_str());
+                                }
+                                else if (column == 1)
+                                {
+                                    if (this->m_module->m_input_events[i]->m_happenings[row]->m_state == HappeningState::FATAL)
+                                    {
+                                        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
+                                    }
+                                    else if (this->m_module->m_input_events[i]->m_happenings[row]->m_state == HappeningState::ERROR)
+                                    {
+                                        ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
+                                    }
+                                    else if (this->m_module->m_input_events[i]->m_happenings[row]->m_state == HappeningState::WARNING)
+                                    {
+                                        ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Warning");
+                                    }
+                                    else if (this->m_module->m_input_events[i]->m_happenings[row]->m_state == HappeningState::INFO)
+                                    {
+                                        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Information");
+                                    }
+                                }
+                                else if (column == 2)
+                                {
+                                    ImGui::Text(this->m_module->m_input_events[i]->m_happenings[row]->m_timestamp.c_str());
+                                }
+                                else if (column == 2)
+                                {
+                                    ImGui::Text(this->m_module->m_input_events[i]->m_happenings[row]->m_log.c_str());
+                                }
+                            }
+                        }
+                    }
+                    ImGui::EndTable();
+                }
+            }
+            if (ImGui::CollapsingHeader("Logs"))
+            {
+                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                static std::vector<std::shared_ptr<VxSystemLog>> logs;
+
+                logs.clear();
+                for (int i = 0; i < this->m_ctx->registered_logs.size(); i++)
+                {
+                    if (this->m_ctx->registered_logs[i]->m_filter == this->m_module->m_name)
+                    {
+                        logs.push_back(this->m_ctx->registered_logs[i]);
+                    }
+                }
+
+                if (ImGui::BeginTable("table_", 4, flags))
+                {
+                    ImGui::TableSetupColumn("Trigger", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Timestamp", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableHeadersRow();
+                    for (int i = 0; i < logs.size(); i++)
+                    {
+                            std::cout << "FJK______LUGH" << std::endl;
+
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 4; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
+                                if (column == 0)
+                                {
+                                    if (logs[i]->m_level == spdlog::level::critical)
+                                    {
+                                        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
+                                    }
+                                    else if (logs[i]->m_level == spdlog::level::err)
+                                    {
+                                        ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
+                                    }
+                                    else if (logs[i]->m_level == spdlog::level::warn)
+                                    {
+                                        ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Warning");
+                                    }
+                                    else if (logs[i]->m_level == spdlog::level::info)
+                                    {
+                                        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Information");
+                                    }
+                                }
+                                else if (column == 1)
+                                {
+                                    ImGui::Text(logs[i]->m_timestamp.c_str());
+                                }
+                                else if (column == 2)
+                                {
+                                    ImGui::Text(logs[i]->m_filter.c_str());
+                                }
+                                else if (column == 3)
+                                {
+                                    ImGui::Text(logs[i]->m_message.c_str());
+                                }
+                            }
+                        
+                    }
+                    ImGui::EndTable();
+                }
             }
         }
         ImGui::End();

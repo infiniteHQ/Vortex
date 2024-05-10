@@ -7,6 +7,7 @@ static int selected_template = 0;
 static bool template_is_selected = false;
 static std::shared_ptr<TemplateInterface> selected_template_object;
 static std::string title = "none";
+static std::string default_project_avatar  = "/usr/local/include/Vortex/imgs/base_vortex.png";
 
 // Fonction pour charger le contenu hexadécimal d'un fichier .png
 static std::vector<uint8_t> loadPngHex(const std::string &filePath)
@@ -189,7 +190,11 @@ void ProjectManager::OnImGuiRender()
 
             {
                 ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
-                if (!this->ctx->IO.sys_projects[row]->logoPath.empty())
+                if (this->ctx->IO.sys_projects[row]->logoPath.empty())
+                {
+                    logo(default_project_avatar, row, this->ctx->IO.sys_projects.size());
+                }
+                else
                 {
                     logo(this->ctx->IO.sys_projects[row]->logoPath, row, this->ctx->IO.sys_projects.size());
                 }
@@ -200,7 +205,7 @@ void ProjectManager::OnImGuiRender()
 
             {
                 ImGuiID _id = ImGui::GetID("TEXT_");
-                ImGui::BeginChild(_id, ImVec2(0, 100), true);
+                ImGui::BeginChild(_id, ImVec2(0, 70), true);
                 float oldsize = ImGui::GetFont()->Scale;
                 ImGui::GetFont()->Scale *= 1.3;
                 ImGui::PushFont(ImGui::GetFont());
@@ -214,12 +219,27 @@ void ProjectManager::OnImGuiRender()
                 ImGui::SameLine();
                 ImGui::Text(this->ctx->IO.sys_projects[row]->lastOpened.c_str());
 
+
+                ImGui::EndChild();
+            }
+
                 ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) ");
                 ImGui::SameLine();
                 ImGui::Text(this->ctx->IO.sys_projects[row]->author.c_str());
 
-                ImGui::EndChild();
-            }
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Description ");
+                ImGui::SameLine();
+                ImGui::Text(this->ctx->IO.sys_projects[row]->description.c_str());
+
+
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Version ");
+                ImGui::SameLine();
+                ImGui::Text(this->ctx->IO.sys_projects[row]->version.c_str());
+
+
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Compatible with ");
+                ImGui::SameLine();
+                ImGui::Text(this->ctx->IO.sys_projects[row]->version.c_str());
 
             if (ImGui::ImageButtonWithText(openIcon, "Open"))
             {
