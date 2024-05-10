@@ -186,7 +186,7 @@ void ProjectManager::OnImGuiRender()
         {
             std::string label = this->ctx->IO.sys_projects[row]->name + "###" + std::to_string(row);
             ImGuiID id = ImGui::GetID(label.c_str());
-            ImGui::BeginChild(id, ImVec2(0, 200), true);
+            ImGui::BeginChild(id, ImVec2(0, 220), true);
 
             {
                 ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
