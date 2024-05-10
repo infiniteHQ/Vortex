@@ -151,8 +151,20 @@ std::string ModuleDetails::render()
             ImGui::Text(this->m_module->m_proper_name.c_str());
 
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Module State :");
-            ImGui::SameLine();
-            ImGui::Text("?");
+            ImGui::SameLine(); 
+            if (this->m_module->m_state == "running")
+            {
+                ImGui::TextColored(ImVec4(0.6f, 1.0f, 0.6f, 0.8f), "Running");
+            }
+            if (this->m_module->m_state == "failed")
+            {
+                ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.6f, 0.8f), "Failed");
+            }
+            if (this->m_module->m_state == "unknow" || this->m_module->m_state == "stopped")
+            {
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Not running");
+            }
+
 
             ImGui::GetFont()->Scale = oldsize;
             ImGui::PopFont();
@@ -163,14 +175,85 @@ std::string ModuleDetails::render()
             ImGui::SameLine();
             ImGui::Text(this->m_module->m_name.c_str());
 
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Module version : ");
+            ImGui::SameLine();
+            ImGui::Text(this->m_module->m_version.c_str());
+
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Compatible with Vortex version(s) : ");
+            ImGui::SameLine();
+            static std::string version;
+            version.clear();
+            for(auto ver : this->m_module->m_supported_versions){
+                version += "[" + ver + "]";
+            }
+            ImGui::Text(version.c_str());
+
             ImGui::Separator();
             if (ImGui::CollapsingHeader("Instances"))
             {
                 // Behavior
             }
-            if (ImGui::CollapsingHeader("Events"))
+            if (ImGui::CollapsingHeader("Input events"))
             {
-                // Behavior
+                    for (int row = 0; row < this->m_module->m_input_events.size(); row++)
+                    {
+
+            if (ImGui::TreeNode(this->m_module->m_input_events[row]->m_name.c_str()))
+            {
+                ImGui::Text("Name : ");
+                ImGui::SameLine();
+                ImGui::Text(this->m_module->m_input_events[row]->m_name.c_str());
+                ImGui::Text("Description : ");
+                ImGui::SameLine();
+                ImGui::Text(this->m_module->m_input_events[row]->m_description.c_str());
+
+                if(this->m_module->m_input_events[row]->m_devflag == DevFlag::READY)
+                {
+                                        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Ready to use");
+                }
+                else if(this->m_module->m_input_events[row]->m_devflag == DevFlag::DEPRECIATED)
+                {
+                                        ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Depreciated");
+                }
+
+                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                if (ImGui::BeginTable("table_input_event_args", 3, flags))
+                {
+                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("C++ type", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Description", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableHeadersRow();
+                    for (int param = 0; param < this->m_module->m_input_events[row]->m_params.size(); param++)
+                    {
+                        ImGui::TableNextRow();
+                        for (int column = 0; column < 3; column++)
+                        {
+                            ImGui::TableSetColumnIndex(column);
+
+                            if (column == 0)
+                            {
+                                ImGui::Text(std::get<0>(this->m_module->m_input_events[row]->m_params[param]).c_str());
+                            }
+                            if (column == 1)
+                            {
+                                ImGui::Text(std::get<1>(this->m_module->m_input_events[row]->m_params[param]).c_str());
+                            }
+                            if (column == 2)
+                            {
+                                ImGui::Text(std::get<2>(this->m_module->m_input_events[row]->m_params[param]).c_str());
+                            }
+                        }
+                    }
+                    ImGui::EndTable();
+                }
+
+            }
+                            
+                            }
+                        
+                    
+
             }
             if (ImGui::CollapsingHeader("Functions"))
             {
@@ -282,8 +365,6 @@ std::string ModuleDetails::render()
                     ImGui::TableHeadersRow();
                     for (int i = 0; i < logs.size(); i++)
                     {
-                            std::cout << "FJK______LUGH" << std::endl;
-
                             ImGui::TableNextRow();
                             for (int column = 0; column < 4; column++)
                             {

@@ -54,7 +54,7 @@ public:
 
     //void AddFunction(void (*item)(), const std::string& name, Parameters params);
     void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
-    void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name, const std::string& version, const std::string& description, const nlohmann::json& args_def);
+    void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name, DevFlag devflag, const std::string& description, const std::vector<std::tuple<std::string, std::string, std::string>>& args_def, const bool& can_callback);
     void AddOutputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
     std::shared_ptr<ModuleInterface> GetInterface();
 

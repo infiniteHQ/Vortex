@@ -5,7 +5,7 @@
 #ifndef MODULE_EVENT_H
 #define MODULE_EVENT_H
 
-enum class ModuleInputEventStates
+enum class DevFlag
 {
     DEPRECIATED,
     READY, 
@@ -40,6 +40,10 @@ public:
 
     void(*m_foo)(const std::shared_ptr<hArgs>& args);
     std::string m_name;
+    std::string m_description;
+    std::vector<std::tuple<std::string, std::string, std::string>> m_params;
+    bool m_can_callback;
+    DevFlag m_devflag;
     std::vector<std::shared_ptr<ModuleInputEventHappening>> m_happenings;
 };
 

@@ -128,6 +128,21 @@ void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs> &a
     this->m_input_events.push_back(p_event);
 }
 
+void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name, DevFlag devflag, const std::string& description, const std::vector<std::tuple<std::string, std::string, std::string>>& args_def, const bool& can_callback)
+{
+    // Create a shared_ptr to the ModuleInputEvent
+    std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
+
+    p_event->m_can_callback = can_callback;    
+    p_event->m_devflag = devflag;
+    p_event->m_description = description;
+    p_event->m_params = args_def;
+
+    // Add the shared_ptr to the list of input events
+    this->m_input_events.push_back(p_event);
+}
+    
+
 /**
  * @brief Adds an output event to the ModuleInterface.
  *
