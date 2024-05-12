@@ -262,17 +262,15 @@ void ProjectManager::OnImGuiRender()
 
         ImGui::Columns(2, NULL);
 
-        for (int i = 0; i <= project_templates.size(); i++)
+        for (int project = 0; project < project_templates.size(); project++)
         {
-            _i++;
-            if (project_templates[i])
+            if(project_templates[project] != NULL)
             {
                 {
                     ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
                     try
                     {
-                            logo(project_templates[i]->m_logo_path, i, project_templates.size());
-                        
+                            logo(project_templates[project]->m_logo_path, project, project_templates.size());
                     }
                     catch (std::exception e)
                     {
@@ -287,26 +285,28 @@ void ProjectManager::OnImGuiRender()
                     ImGui::GetFont()->Scale *= 1.3;
                     ImGui::PushFont(ImGui::GetFont());
 
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), project_templates[i]->m_proper_name.c_str());
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), project_templates[project]->m_proper_name.c_str());
 
                     ImGui::GetFont()->Scale = oldsize;
                     ImGui::PopFont();
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
                     ImGui::SameLine();
-                    ImGui::Text(project_templates[i]->m_author.c_str());
+                    ImGui::Text(project_templates[project]->m_author.c_str());
                     ImGui::EndChild();
                 }
 
-                ImGui::TextWrapped(project_templates[i]->m_description.c_str());
+                ImGui::TextWrapped(project_templates[project]->m_description.c_str());
 
                 if (ImGui::Button("Create"))
                 {
                     template_is_selected = true;
-                    selected_template_object = project_templates[i];
+                    selected_template_object = project_templates[project];
                 }
-            }
+            
             ImGui::NextColumn();
+
+            }
         }
         ImGui::EndChild();
     }
