@@ -111,6 +111,26 @@ void ModuleInterface::AddFunction(void (*item)(), const std::string &name)
     this->m_functions.push_back(p_function);
 }
 
+
+/**
+ * @brief Adds a function to the ModuleInterface.
+ *
+ * This function creates a shared_ptr to a ModuleFunction and adds it to the ModuleInterface's list of functions.
+ *
+ * @param item Pointer to the function.
+ * @param name Name of the function.
+ */
+void ModuleInterface::AddFunction(void (*item)(const std::shared_ptr<hArgs>& args), const std::string &name, const std::string& description)
+{
+    // Create a shared_ptr to the ModuleFunction
+    std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(item, name);
+
+    // Add the shared_ptr to the list of functions
+    this->m_functions.push_back(p_function);
+}
+
+
+
 /**
  * @brief Adds an input event to the ModuleInterface.
  *
@@ -149,7 +169,7 @@ void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& a
             return;
         }
     }
-    
+
     // Create a shared_ptr to the ModuleInputEvent
     std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
 
@@ -235,6 +255,27 @@ void ModuleInterface::ExecFunction(const std::string &name)
         if (foo->m_name == name)
         {
             foo->m_foo();
+            return; // Exit after executing the function
+        }
+    }
+}
+
+/**
+ * @brief Executes a function by name with arguments.
+ *
+ * This function searches for a ModuleFunction with the specified name
+ * and executes its associated function if found.
+ *
+ * @param name The name of the function to execute.
+ */
+void ModuleInterface::ExecFunction(const std::string& name, std::shared_ptr<hArgs> args)
+{
+    for (auto foo : this->m_functions)
+    {
+        if (foo->m_name == name)
+        {
+            foo->m_args = args;
+            foo->m_args_foo(args);
             return; // Exit after executing the function
         }
     }

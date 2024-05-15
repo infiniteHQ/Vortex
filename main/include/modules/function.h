@@ -9,12 +9,14 @@ class ModuleFunction
 {
 public:
     ModuleFunction(void(*foo)(), const std::string& name);
+    ModuleFunction(void(*m_args_foo)(const std::shared_ptr<hArgs>& args), const std::string& name);
 
     virtual void execute() {};
 
     void(*m_foo)();
+    void(*m_args_foo)(const std::shared_ptr<hArgs>& args);
     std::string m_name;
-    //std::shared_ptr<Parameters> m_params;
+    std::shared_ptr<hArgs> m_args;
     std::vector<std::string> m_params_def;
 };
 

@@ -895,7 +895,27 @@ struct hString
 //=============================================================================
 class hArgs
 {
-public:
+private:
+    class ArgumentBase
+    {
+    public:
+        virtual ~ArgumentBase() = default;
+    };
+
+    template <typename T>
+    class ArgumentHolder : public ArgumentBase
+    {
+    public:
+        ArgumentHolder(T value) : storedValue(value) {}
+        T getValue() const { return storedValue; }
+
+    private:
+        T storedValue;
+    };
+
+    public:
+    hArgs(){};
+
     template <typename T>
     void add(const hString &tag, T value)
     {
@@ -934,23 +954,6 @@ public:
 
     hVector<hString> registered_arguments;
 
-private:
-    class ArgumentBase
-    {
-    public:
-        virtual ~ArgumentBase() = default;
-    };
-
-    template <typename T>
-    class ArgumentHolder : public ArgumentBase
-    {
-    public:
-        ArgumentHolder(T value) : storedValue(value) {}
-        T getValue() const { return storedValue; }
-
-    private:
-        T storedValue;
-    };
 
     hMap<hString, ArgumentBase *> arguments;
 };
