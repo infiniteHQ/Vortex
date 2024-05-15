@@ -151,7 +151,7 @@ std::string ModuleDetails::render()
             ImGui::Text(this->m_module->m_proper_name.c_str());
 
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Module State :");
-            ImGui::SameLine(); 
+            ImGui::SameLine();
             if (this->m_module->m_state == "running")
             {
                 ImGui::TextColored(ImVec4(0.6f, 1.0f, 0.6f, 0.8f), "Running");
@@ -164,7 +164,6 @@ std::string ModuleDetails::render()
             {
                 ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Not running");
             }
-
 
             ImGui::GetFont()->Scale = oldsize;
             ImGui::PopFont();
@@ -183,77 +182,128 @@ std::string ModuleDetails::render()
             ImGui::SameLine();
             static std::string version;
             version.clear();
-            for(auto ver : this->m_module->m_supported_versions){
+            for (auto ver : this->m_module->m_supported_versions)
+            {
                 version += "[" + ver + "]";
             }
             ImGui::Text(version.c_str());
 
             ImGui::Separator();
+            if (ImGui::CollapsingHeader("Dependancies"))
+            {  static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                if (ImGui::BeginTable("table_deps", 4, flags))
+                {
+                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Version", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("State", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableHeadersRow();
+                    for (int i = 0; i < this->m_module->m_dependencies.size(); i++)
+                    {
+                            ImGui::TableNextRow();
+                            for (int column = 0; column < 4; column++)
+                            {
+                                ImGui::TableSetColumnIndex(column);
+
+                                if (column == 0)
+                                {
+                                    ImGui::Text(this->m_module->m_dependencies[i]->name.c_str());
+                                }
+                                else if (column == 1)
+                                {
+                                    ImGui::Text(this->m_module->m_dependencies[i]->type.c_str());
+                                }
+                                else if (column == 2)
+                                {
+                                    static std::string versions;
+                                    versions.clear();
+                                    for(auto ver : this->m_module->m_dependencies[i]->supported_versions)
+                                    {
+                                        version += "[" + ver + "] ";
+                                    }
+
+                                    ImGui::Text(versions.c_str());
+                                }
+                                else if (column == 3)
+                                {
+                                    
+                                if (this->m_module->m_dependencies[i]->satisfied)
+                                {
+                                    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Satisfied");
+                                }
+                                else
+                                {
+                                    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Not satisfied");
+                                }
+
+                                }
+                            
+                        }
+                    }
+                    ImGui::EndTable();
+                }
+            
+            }
             if (ImGui::CollapsingHeader("Instances"))
             {
                 // Behavior
             }
             if (ImGui::CollapsingHeader("Input events"))
             {
-                    for (int row = 0; row < this->m_module->m_input_events.size(); row++)
+                for (int row = 0; row < this->m_module->m_input_events.size(); row++)
+                {
+                    if (ImGui::TreeNode(this->m_module->m_input_events[row]->m_name.c_str()))
                     {
+                        ImGui::Text("Name : ");
+                        ImGui::SameLine();
+                        ImGui::Text(this->m_module->m_input_events[row]->m_name.c_str());
+                        ImGui::Text("Description : ");
+                        ImGui::SameLine();
+                        ImGui::Text(this->m_module->m_input_events[row]->m_description.c_str());
 
-            if (ImGui::TreeNode(this->m_module->m_input_events[row]->m_name.c_str()))
-            {
-                ImGui::Text("Name : ");
-                ImGui::SameLine();
-                ImGui::Text(this->m_module->m_input_events[row]->m_name.c_str());
-                ImGui::Text("Description : ");
-                ImGui::SameLine();
-                ImGui::Text(this->m_module->m_input_events[row]->m_description.c_str());
-
-                if(this->m_module->m_input_events[row]->m_devflag == DevFlag::READY)
-                {
-                                        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Ready to use");
-                }
-                else if(this->m_module->m_input_events[row]->m_devflag == DevFlag::DEPRECIATED)
-                {
-                                        ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Depreciated");
-                }
-
-                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
-
-                if (ImGui::BeginTable("table_input_event_args", 3, flags))
-                {
-                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableSetupColumn("C++ type", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableSetupColumn("Description", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableHeadersRow();
-                    for (int param = 0; param < this->m_module->m_input_events[row]->m_params.size(); param++)
-                    {
-                        ImGui::TableNextRow();
-                        for (int column = 0; column < 3; column++)
+                        if (this->m_module->m_input_events[row]->m_devflag == DevFlag::READY)
                         {
-                            ImGui::TableSetColumnIndex(column);
+                            ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Ready to use");
+                        }
+                        else if (this->m_module->m_input_events[row]->m_devflag == DevFlag::DEPRECIATED)
+                        {
+                            ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Depreciated");
+                        }
 
-                            if (column == 0)
+                        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                        if (ImGui::BeginTable("table_input_event_args", 3, flags))
+                        {
+                            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                            ImGui::TableSetupColumn("C++ type", ImGuiTableColumnFlags_WidthFixed);
+                            ImGui::TableSetupColumn("Description", ImGuiTableColumnFlags_WidthFixed);
+                            ImGui::TableHeadersRow();
+                            for (int param = 0; param < this->m_module->m_input_events[row]->m_params.size(); param++)
                             {
-                                ImGui::Text(std::get<0>(this->m_module->m_input_events[row]->m_params[param]).c_str());
+                                ImGui::TableNextRow();
+                                for (int column = 0; column < 3; column++)
+                                {
+                                    ImGui::TableSetColumnIndex(column);
+
+                                    if (column == 0)
+                                    {
+                                        ImGui::Text(std::get<0>(this->m_module->m_input_events[row]->m_params[param]).c_str());
+                                    }
+                                    if (column == 1)
+                                    {
+                                        ImGui::Text(std::get<1>(this->m_module->m_input_events[row]->m_params[param]).c_str());
+                                    }
+                                    if (column == 2)
+                                    {
+                                        ImGui::Text(std::get<2>(this->m_module->m_input_events[row]->m_params[param]).c_str());
+                                    }
+                                }
                             }
-                            if (column == 1)
-                            {
-                                ImGui::Text(std::get<1>(this->m_module->m_input_events[row]->m_params[param]).c_str());
-                            }
-                            if (column == 2)
-                            {
-                                ImGui::Text(std::get<2>(this->m_module->m_input_events[row]->m_params[param]).c_str());
-                            }
+                            ImGui::EndTable();
                         }
                     }
-                    ImGui::EndTable();
                 }
-
-            }
-                            
-                            }
-                        
-                    
-
             }
             if (ImGui::CollapsingHeader("Functions"))
             {
@@ -365,43 +415,42 @@ std::string ModuleDetails::render()
                     ImGui::TableHeadersRow();
                     for (int i = 0; i < logs.size(); i++)
                     {
-                            ImGui::TableNextRow();
-                            for (int column = 0; column < 4; column++)
+                        ImGui::TableNextRow();
+                        for (int column = 0; column < 4; column++)
+                        {
+                            ImGui::TableSetColumnIndex(column);
+                            if (column == 0)
                             {
-                                ImGui::TableSetColumnIndex(column);
-                                if (column == 0)
+                                if (logs[i]->m_level == spdlog::level::critical)
                                 {
-                                    if (logs[i]->m_level == spdlog::level::critical)
-                                    {
-                                        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
-                                    }
-                                    else if (logs[i]->m_level == spdlog::level::err)
-                                    {
-                                        ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
-                                    }
-                                    else if (logs[i]->m_level == spdlog::level::warn)
-                                    {
-                                        ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Warning");
-                                    }
-                                    else if (logs[i]->m_level == spdlog::level::info)
-                                    {
-                                        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Information");
-                                    }
+                                    ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
                                 }
-                                else if (column == 1)
+                                else if (logs[i]->m_level == spdlog::level::err)
                                 {
-                                    ImGui::Text(logs[i]->m_timestamp.c_str());
+                                    ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
                                 }
-                                else if (column == 2)
+                                else if (logs[i]->m_level == spdlog::level::warn)
                                 {
-                                    ImGui::Text(logs[i]->m_filter.c_str());
+                                    ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Warning");
                                 }
-                                else if (column == 3)
+                                else if (logs[i]->m_level == spdlog::level::info)
                                 {
-                                    ImGui::Text(logs[i]->m_message.c_str());
+                                    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Information");
                                 }
                             }
-                        
+                            else if (column == 1)
+                            {
+                                ImGui::Text(logs[i]->m_timestamp.c_str());
+                            }
+                            else if (column == 2)
+                            {
+                                ImGui::Text(logs[i]->m_filter.c_str());
+                            }
+                            else if (column == 3)
+                            {
+                                ImGui::TextWrapped(logs[i]->m_message.c_str());
+                            }
+                        }
                     }
                     ImGui::EndTable();
                 }

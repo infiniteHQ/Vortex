@@ -15,8 +15,17 @@ VORTEX_API void FinalStartModule(const std::string &module_name, std::shared_ptr
                 VortexMaker::LogInfo("Modules", "Start \"" + em->m_name + "\"");
                 processed_modules->push_back(em->m_name);
                 
-                VortexMaker::LogWarn("qsd","qsd");
-                em->Start();
+                try
+                {
+                    em->Start();
+                }
+                catch (const std::exception &e)
+                {
+                    // Log the error
+                    VortexMaker::LogError("Modules", "Error starting module \"" + em->m_name + "\": " + e.what());
+                    // Continue to the next module
+                    continue;
+                }
             }
         }
     }

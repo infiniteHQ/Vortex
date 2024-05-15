@@ -121,6 +121,16 @@ void ModuleInterface::AddFunction(void (*item)(), const std::string &name)
  */
 void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs> &args), const std::string &name)
 {
+    // Checking if the event already exist
+    for(auto existing_events : this->m_input_events)
+    {
+        if(name == existing_events->m_name)
+        {
+            this->LogError("\"" + name + "\" event already registered ! Abording.");
+            return;
+        }
+    }
+
     // Create a shared_ptr to the ModuleInputEvent
     std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
 
@@ -130,6 +140,16 @@ void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs> &a
 
 void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name, DevFlag devflag, const std::string& description, const std::vector<std::tuple<std::string, std::string, std::string>>& args_def, const bool& can_callback)
 {
+    // Checking if the event already exist
+    for(auto existing_events : this->m_input_events)
+    {
+        if(name == existing_events->m_name)
+        {
+            this->LogError("\"" + name + "\" event already registered ! Abording.");
+            return;
+        }
+    }
+    
     // Create a shared_ptr to the ModuleInputEvent
     std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
 
