@@ -159,6 +159,11 @@ int main(int argc, char *argv[])
         {
             PrintHeader();
         }
+        else if (std::string(argv[1]) == "-test")
+        {
+            std::cout << "ok" << std::endl;
+            return 0;
+        }
         else if (std::string(argv[1]) == "-i" || std::string(argv[1]) == "--install")
         {
             InitBlankRuntime(true);

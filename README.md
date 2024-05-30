@@ -48,6 +48,7 @@ cd build/in_system/
 bash ./build.sh
 ```
 
+`NOTE: Many new features, a complete documentation website is comming soon`
 #### Install a module
 ```bash
 cd path/to/a/module
@@ -56,15 +57,9 @@ bash ./install.sh # or copy the folder on the .vx/modules of a project
 ```
 
 ## Quick start
-#### Create a project
+#### Open the project launcher
 ```bash
-vortex -cp <ProjectName> # or --create-project
-```
-
-#### Open project
-```bash
-cd path/to/your/project/
-vortex -g <Parameters> # or --gui
+vx -l # or simply "vx"
 ```
 
 ## Builtin modules/plugins

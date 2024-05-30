@@ -1,7 +1,91 @@
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 #include <fstream>
 #include <filesystem>
+#include <cstdlib>
+#include <array>
+#include <memory>
+#include <algorithm>
+
+/*
+    TODO : Parent process for vortex executables regitered in /usr/local/bin/Vortex/VERSION/vortex
+    This command can detect the version of a project and execute the correspondant project.
+
+    Usage :
+
+    vortex -e --version=1.1 -> Execute a project editor 1.1 in the directory of a project
+    vortex -e --version=1.1 --contained=docker -> Execute a project editor 1.1 in the directory of a project in a docker container
+    vortex -e --version=1.1 --templates_path=PATH -> With a template path preset
+    vortex -e --version=1.1 --projects_path=PATH -> With a project path preset
+
+    vortex -l --version=1.1 -> Execute a launcher with vortex 1.1
+
+
+    Before lauching everything, this process can detect all version registered in the system by checking /usr/local/bin and run healthy command
+
+
+
+*/
+
+static std::vector<std::string> available_versions;
+
+bool TestVortexExecutable(const std::string &path)
+{
+    std::array<char, 128> buffer;
+    std::string result;
+    std::string command = path + " -test";
+
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
+    if (!pipe)
+    {
+        std::cerr << "popen() failed!" << std::endl;
+        return false;
+    }
+
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+    {
+        result += buffer.data();
+    }
+
+    int return_code = pclose(pipe.release());
+
+    return (result.find("ok") != std::string::npos) && (return_code == 0);
+}
+
+void RegisterAvailableVersions()
+{
+    const std::string base_path = "/usr/local/bin/Vortex";
+
+    for (const auto &entry : std::filesystem::directory_iterator(base_path))
+    {
+        if (entry.is_directory())
+        {
+            std::string version = entry.path().filename().string();
+            std::string vortex_executable = entry.path().string() + "/vortex";
+
+            if (TestVortexExecutable(vortex_executable))
+            {
+                available_versions.push_back(version);
+            }
+        }
+    }
+}
+
+std::string FindCompatibleVersion()
+{
+}
+
+
+void LaunchVortex(const std::string& version) {
+    std::string command = "/usr/local/bin/Vortex/" + version + "/vortex --launcher";
+    std::system(command.c_str());
+}
+
+void LaunchVortexEditor(const std::string& version) {
+    std::string command = "/usr/local/bin/Vortex/" + version + "/vortex --editor";
+    std::system(command.c_str());
+}
 
 bool CheckDirectory()
 {
@@ -14,210 +98,53 @@ bool CheckDirectory()
     return true;
 }
 
-int main(int argc, char *argv[])
-{
-    if (argc < 2)
-    {
-        std::cout << std::endl;
-        std::cout << "Usage : vortex <paramater(s)...> <information(s)...>" << std::endl
-                  << std::endl;
-        std::cout << "-h --help :               See all parameters" << std::endl;
-        std::cout << "-g --gui :                Open the Vortex graphical interface" << std::endl;
-        std::cout << "-cp --create-project  <...> :        Create a new project" << std::endl;
-        std::cout << "Vortex makes it easy to create a system, application or toolchain. It also offers a wide range of options for system maintenance and supervision. " << std::endl
-                  << std::endl;
+
+int main(int argc, char *argv[]) {
+    RegisterAvailableVersions();
+
+    std::cout << "Available versions:" << std::endl;
+    for (const std::string &version : available_versions) {
+        std::cout << version << std::endl;
     }
-    else
-    {
-        if (std::string(argv[1]) == "-cp" || std::string(argv[1]) == "--create-project")
-        {
-            if (!argv[2])
-            {
-                std::cout << "Please provide a project name" << std::endl;
-                std::cout << "Usage : vortex -cp \"name\" <template>" << std::endl;
-            }
-#ifdef _WIN32
-            std::string project_name = argv[2];
-            fs::path current_path = fs::current_path();
-            fs::path projectPath = current_path / project_name;
 
-            // Creating main project folder
-            fs::create_directory(projectPath);
+    if (argc > 1) {
+        std::string arg1 = argv[1];
+        if (arg1 == "-l" || arg1 == "--launcher") {
+            std::string specified_version;
 
-            // Creating .vx folder
-            fs::path vxPath = projectPath / ".vx";
-            fs::create_directory(vxPath);
-
-            // Creating vortex.config file
-            std::ofstream config_file(projectPath / "vortex.config");
-            if (config_file.is_open())
-            {
-                std::string j = "{\"project\":{\"author\":\"unknown\",\"description\":\"This is a toolchain\",\"name\":\"" + project_name + "\",\"type\":\"???\",\"version\":\"1.0.0\"},\"data\":{\"toolchains\":\"./.vx/data/toolchains/\",\"hosts\":\"./.vx/data/hosts/\",\"scripts\":\"./.vx/data/scripts/\",\"gpos\":\"./.vx/data/gpos/\",\"packages\":\"./.vx/data/packages/\"},\"dist\":{\"toolchains\":\"./.vx/dist/toolchains/\",\"gpos\":\"./.vx/dist/gpos/\",\"packages\":\"./.vx/dist/packages/\",\"hosts\":\"./.vx/dist/hosts/\"}}";
-                config_file << j << std::endl;
-                config_file.close();
+            // Check for --version argument
+            if (argc > 2) {
+                std::string arg2 = argv[2];
+                if (arg2.rfind("--version=", 0) == 0) {
+                    specified_version = arg2.substr(10); // Extract version number
+                }
             }
 
-            // Creating data directories
-            fs::create_directories(vxPath / "data/hosts");
-            fs::create_directories(vxPath / "data/kernels");
-            fs::create_directories(vxPath / "data/libs");
-            fs::create_directories(vxPath / "data/gpos");
-            fs::create_directories(vxPath / "data/scripts");
-            fs::create_directories(vxPath / "data/packages");
-            fs::create_directories(vxPath / "data/skeletons");
-            fs::create_directories(vxPath / "data/toolchains");
-
-            // Creating dist directories
-            fs::create_directories(vxPath / "dist/hosts");
-            fs::create_directories(vxPath / "dist/gpos");
-            fs::create_directories(vxPath / "dist/kernels");
-            fs::create_directories(vxPath / "dist/libs");
-            fs::create_directories(vxPath / "dist/packages");
-            fs::create_directories(vxPath / "dist/skeletons");
-            fs::create_directories(vxPath / "dist/toolchains");
-
-            // Creating temp directory
-            fs::create_directories(vxPath / "temp");
-#endif
-
-#ifdef __linux__
-            std::string project_name = std::string(argv[2]);
-            std::string current_path = std::filesystem::current_path();
-            std::string projectPath;
-
-            // Creating main project folder
-            {
-                projectPath = current_path + "/" + project_name + "/";
-                std::string cmd = "mkdir " + projectPath;
-                system(cmd.c_str());
+            if (specified_version.empty()) {
+                // Launch the last version if --version is not specified
+                if (!available_versions.empty()) {
+                    LaunchVortex(available_versions.back());
+                } else {
+                    std::cerr << "No available versions found." << std::endl;
+                }
+            } else {
+                // Launch the specified version
+                if (std::find(available_versions.begin(), available_versions.end(), specified_version) != available_versions.end()) {
+                    LaunchVortex(specified_version);
+                } else {
+                    std::cerr << "Specified version not found." << std::endl;
+                }
             }
-
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "touch " + projectPath + "/vortex.config";
-                system(cmd.c_str());
-            }
-            std::string j = "{\"project\":{\"author\":\"unknow\",\"description\":\"This is a toolchain\",\"name\":\"" + project_name + "\",\"type\":\"???\",\"version\":\"1.0.0\"},\"data\":{\"toolchains\":\"./.vx/data/toolchains/\",\"hosts\":\"./.vx/data/hosts/\",\"scripts\":\"./.vx/data/scripts/\",\"gpos\":\"./.vx/data/gpos/\",\"packages\":\"./.vx/data/packages/\"},\"dist\":{\"toolchains\":\"./.vx/dist/toolchains/\",\"gpos\":\"./.vx/dist/gpos/\",\"packages\":\"./.vx/dist/packages/\",\"hosts\":\"./.vx/dist/hosts/\"}}";
-
-            // Store this into toolchain.config
-            std::ofstream o(projectPath + "/vortex.config");
-            o << std::setw(4) << j << std::endl;
-            o.close();
-
-            // Data
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/data";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/data/hosts";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/data/kernels";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/data/libs";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/data/gpos";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/data/scripts";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/data/packages";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/data/skeletons";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/data/toolchains";
-                system(cmd.c_str());
-            }
-
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/config";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/dist";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/dist/hosts";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/dist/gpos";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/dist/kernels";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/dist/libs";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/dist/packages";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/dist/skeletons";
-                system(cmd.c_str());
-            }
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/dist/toolchains";
-                system(cmd.c_str());
-            }
-
-            {
-                std::string cmd = "mkdir " + projectPath + "/.vx/temp";
-                system(cmd.c_str());
-            }
-#endif
+        } else if (arg1 == "-test") {
+            std::cout << "ok" << std::endl;
+            return 0;
         }
-        else if (std::string(argv[1]) == "-g" || std::string(argv[1]) == "--gui")
-        {
-            if (!CheckDirectory())
-            {
-                return 1;
-            };
-
-#ifdef _WIN32
-#endif
-
-#ifdef __APPLE__
-#endif
-
-#ifdef __linux__
-            // Linux
-            std::string current_path = std::filesystem::current_path();
-            std::string docker_command = "xhost + && sudo docker run -it --gpus=all --rm -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY -v " + current_path + ":/root/vx -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all vortex";
-
-            int status = system(docker_command.c_str());
-
-            if (status == 0)
-            {
-                std::cout << "La commande a été exécutée avec succès." << std::endl;
-            }
-            else
-            {
-                std::cerr << "Erreur lors de l'exécution de la commande." << std::endl;
-            }
-
-#endif
+    } else {
+        // Default behavior: launch the last version
+        if (!available_versions.empty()) {
+            LaunchVortex(available_versions.back());
+        } else {
+            std::cerr << "No available versions found." << std::endl;
         }
     }
 

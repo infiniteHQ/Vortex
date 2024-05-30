@@ -255,6 +255,8 @@ std::string ModuleDetails::render()
                 {
                     if (ImGui::TreeNode(this->m_module->m_input_events[row]->m_name.c_str()))
                     {
+                        
+                        ImGui::BeginChildFrame(ImGui::GetID(this->m_module->m_input_events[row]->m_name.c_str()), ImVec2(0, 400));
                         ImGui::Text("Name : ");
                         ImGui::SameLine();
                         ImGui::Text(this->m_module->m_input_events[row]->m_name.c_str());
@@ -301,7 +303,9 @@ std::string ModuleDetails::render()
                                 }
                             }
                             ImGui::EndTable();
-                        }
+                        }    
+                        ImGui::EndChildFrame();
+                        ImGui::TreePop(); 
                     }
                 }
             }
@@ -309,27 +313,61 @@ std::string ModuleDetails::render()
             {
                 static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-                if (ImGui::BeginTable("table_", 4, flags))
+                for (int row = 0; row < this->m_module->m_functions.size(); row++)
                 {
-                    ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableSetupColumn("Directive", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableHeadersRow();
-                    for (int row = 0; row < this->m_module->m_functions.size(); row++)
+                    if (ImGui::TreeNode(this->m_module->m_functions[row]->m_name.c_str()))
                     {
-                        ImGui::TableNextRow();
-                        for (int column = 0; column < 4; column++)
-                        {
-                            ImGui::TableSetColumnIndex(column);
+                        ImGui::BeginChildFrame(ImGui::GetID(this->m_module->m_functions[row]->m_name.c_str()), ImVec2(0, 400));
+                        ImGui::Text("Name : ");
+                        ImGui::SameLine();
+                        ImGui::Text(this->m_module->m_functions[row]->m_name.c_str());
+                        ImGui::Text("Description : ");
+                        ImGui::SameLine();
+                        ImGui::Text(this->m_module->m_functions[row]->m_description.c_str());
 
-                            if (column == 0)
-                            {
-                                ImGui::Text(this->m_module->m_functions[row]->m_name.c_str());
-                            }
+                        /*if (this->m_module->m_functions[row]->m_devflag == DevFlag::READY)
+                        {
+                            ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Ready to use");
                         }
-                    }
-                    ImGui::EndTable();
+                        else if (this->m_module->m_functions[row]->m_devflag == DevFlag::DEPRECIATED)
+                        {
+                            ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Depreciated");
+                        }*/
+
+                        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                        if (ImGui::BeginTable("table_input_event_args", 3, flags))
+                        {
+                            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                            ImGui::TableSetupColumn("C++ type", ImGuiTableColumnFlags_WidthFixed);
+                            ImGui::TableSetupColumn("Description", ImGuiTableColumnFlags_WidthFixed);
+                            ImGui::TableHeadersRow();
+                            for (int param = 0; param < this->m_module->m_functions[row]->m_params_def.size(); param++)
+                            {
+                                ImGui::TableNextRow();
+                                for (int column = 0; column < 3; column++)
+                                {
+                                    ImGui::TableSetColumnIndex(column);
+
+                                    if (column == 0)
+                                    {
+                                        ImGui::Text(std::get<0>(this->m_module->m_functions[row]->m_params_def[param]).c_str());
+                                    }
+                                    if (column == 1)
+                                    {
+                                        ImGui::Text(std::get<1>(this->m_module->m_functions[row]->m_params_def[param]).c_str());
+                                    }
+                                    if (column == 2)
+                                    {
+                                        ImGui::Text(std::get<2>(this->m_module->m_functions[row]->m_params_def[param]).c_str());
+                                    }
+                                }
+                            }
+                            ImGui::EndTable();
+                        }
+                        ImGui::EndChildFrame();
+                    ImGui::TreePop(); 
+                    }    
                 }
             }
             if (ImGui::CollapsingHeader("History"))

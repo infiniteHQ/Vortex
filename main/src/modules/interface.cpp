@@ -120,10 +120,14 @@ void ModuleInterface::AddFunction(void (*item)(), const std::string &name)
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-void ModuleInterface::AddFunction(void (*item)(const std::shared_ptr<hArgs>& args), const std::string &name, const std::string& description)
+void ModuleInterface::AddFunction(void (*item)(const std::shared_ptr<hArgs>& args), const std::string &name, const std::string& description, const std::vector<std::tuple<std::string, std::string, std::string>>& args_def, const bool& can_callback)
 {
     // Create a shared_ptr to the ModuleFunction
     std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(item, name);
+
+    p_function->m_description = description;
+    p_function->m_params_def = args_def;
+    p_function->m_can_callback = can_callback;
 
     // Add the shared_ptr to the list of functions
     this->m_functions.push_back(p_function);

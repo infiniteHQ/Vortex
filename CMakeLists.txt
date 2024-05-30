@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(vortex)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(VORTEX_VERSION "1.1")
 
 # Liste des fichiers sources pour la bibliothèque partagée
 file(GLOB_RECURSE VORTEX_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
@@ -39,23 +40,25 @@ target_link_libraries(vortex_shared PUBLIC launcher)
 # Création de l'exécutable principal
 add_executable(vortex ${VORTEX_SOURCES} main.cpp)
 
-add_executable(vortex_desktop ${VORTEX_SOURCES} desktop.cpp)
+add_executable(vx ${VORTEX_SOURCES} bootstrapp.cpp)
 
 # Liaison avec la bibliothèque partagée
 target_link_libraries(vortex PRIVATE vortex_shared)
 
 # Ajouter d'autres dépendances ou configurations pour l'exécutable principal
 
+# Définir le répertoire d'installation pour les fichiers d'en-tête
+set(INSTALL_INCLUDE_DIR /usr/local/include/Vortex/${VORTEX_VERSION}/)
+
+# Définir le répertoire d'installation pour les fichiers d'en-tête
+set(INSTALL_BIN_DIR /usr/local/bin/Vortex/${VORTEX_VERSION}/)
+
 # Installation de l'exécutable dans /bin
-install(TARGETS vortex DESTINATION /bin)
-install(TARGETS vortex_desktop DESTINATION /bin)
-install(TARGETS vortex DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/build/bin)
+install(TARGETS vortex DESTINATION  ${INSTALL_BIN_DIR})
+install(TARGETS vx DESTINATION /bin)
 
 # Installation de la bibliothèque partagée dans /lib
 install(TARGETS vortex_shared LIBRARY DESTINATION /lib)
-
-# Définir le répertoire d'installation pour les fichiers d'en-tête
-set(INSTALL_INCLUDE_DIR /usr/local/include/Vortex)
 
 # Installation des fichiers d'en-tête de /main/include
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/main/include/

@@ -16,8 +16,10 @@ public:
     void(*m_foo)();
     void(*m_args_foo)(const std::shared_ptr<hArgs>& args);
     std::string m_name;
+    std::string m_description;
+    bool        m_can_callback;
     std::shared_ptr<hArgs> m_args;
-    std::vector<std::string> m_params_def;
+    std::vector<std::tuple<std::string,std::string,std::string>> m_params_def;
 };
 
 #endif

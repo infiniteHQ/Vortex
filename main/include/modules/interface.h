@@ -51,7 +51,7 @@ public:
     void AddLogo(const std::string& relative_path);
     void AddFunction(void (*item)(), const std::string& name);
     void AddFunction(void (*item)(), const std::string& name, const std::string& description);
-    void AddFunction(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name, const std::string& description);
+    void AddFunction(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name, const std::string& description, const std::vector<std::tuple<std::string, std::string, std::string>>& args_def, const bool& can_callback);
 
     //void AddFunction(void (*item)(), const std::string& name, Parameters params);
     void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
@@ -62,18 +62,11 @@ public:
     void ExecFunction(const std::string& name);
     void ExecFunction(const std::string& name, std::shared_ptr<hArgs> args);
     void ExecInputEvent(const std::string& name, std::shared_ptr<hArgs> args);
+
+    // Trigger all output events for every modules/plugins
+    void DeployOutputEvent(const std::string& name, std::shared_ptr<hArgs> args);
     void ExecOutputEvent(const std::string& name, std::shared_ptr<hArgs> args);
-
-    /*
-    Finir les functions
-    Trouver un moyen d'init direct un hArg,
-    tout porter en fonction vortex.
-    Faire un toolchaine fonctionnelle
     
-    
-    
-    */
-
     template<typename T>
     void AddModuleItemParam(const void *item, std::pair<std::string, T> parameter);
     
