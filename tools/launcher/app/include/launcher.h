@@ -68,8 +68,8 @@ UIKit::Application *CreateLauncher(int argc, char **argv)
   UIKit::ApplicationSpecification spec;
   std::string name = "Vortex Launcher";
   spec.Name = name;
-  spec.Width = 1200;
-  spec.Height = 700;
+  spec.Width = 1550;
+  spec.Height = 850;
   spec.Name = name;
   spec.CustomTitlebar = true;
   spec.IconPath = "icon.png";

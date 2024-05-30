@@ -85,17 +85,8 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
         PATTERN "*.inl"
 )
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/editor.png
-        DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/)
-
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/icon.png
-        DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/)
-
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/vortex.png
-        DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/)
-        
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/.cache/base_vortex.png
-        DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/.cache/
+        DESTINATION  ${INSTALL_INCLUDE_DIR}/imgs/) 
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/vortex_desktop.desktop
         DESTINATION /usr/share/applications/)
