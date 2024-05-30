@@ -8,6 +8,13 @@
 #include <memory>
 #include <algorithm>
 
+#include "main/include/vortex.h"
+#include "main/include/vortex_internals.h"
+#include "main/include/modules/load.h"
+#include "main/include/modules/runtime.h"
+#include "main/include/templates/load.h"
+
+
 /*
     TODO : Parent process for vortex executables regitered in /usr/local/bin/Vortex/VERSION/vortex
     This command can detect the version of a project and execute the correspondant project.

@@ -1,6 +1,8 @@
 #include "../../../../lib/uikit/src/EntryPoint.h"
 #include "../../../../main/include/vortex.h"
+#include "../../../../main/include/modules/load.h"
 #include "../core/ProjectManager.hpp"
+#include "../core/SystemSettings.hpp"
 using namespace VortexMaker;
 
 #ifndef LAUNCHER_H
@@ -20,6 +22,12 @@ public:
     {
       static ProjectManager projectManager(this->m_ctx);
       projectManager.OnImGuiRender();
+    }
+
+    if (this->ShowSystemSettings)
+    {
+      static SystemSettings systemSettings(this->m_ctx);
+      systemSettings.OnImGuiRender();
     }
 
     PopStyle();
@@ -53,6 +61,7 @@ public:
   bool ShowProjectViewer = false;
   bool ShowModulesManager = false;
   bool ShowProjectManager = true;
+  bool ShowSystemSettings = false;
 
 private:
   std::vector<std::string> instanciedWindowsNames;
@@ -64,6 +73,9 @@ UIKit::Application *CreateLauncher(int argc, char **argv)
 
   std::shared_ptr<LauncherLayer> applayer = std::make_shared<LauncherLayer>();
   applayer->m_ctx = VortexMaker::GetCurrentContext();
+
+
+  VortexMaker::LoadSystemModules(applayer->m_ctx->IO.sys_em);
 
   UIKit::ApplicationSpecification spec;
   std::string name = "Vortex Launcher";
