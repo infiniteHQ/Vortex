@@ -39,6 +39,7 @@ private:
     std::shared_ptr<UIKit::Image> m_RefreshIcon;
     std::shared_ptr<UIKit::Image> m_OpenIcon;
     std::shared_ptr<UIKit::Image> m_ProjectIcon;
+    std::shared_ptr<UIKit::Image> m_SearchIcon;
     std::shared_ptr<UIKit::Image> m_AddIcon;
     std::shared_ptr<UIKit::Image> m_TrashIcon;
 	bool CollapseAll = false;
