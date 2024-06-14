@@ -3,6 +3,7 @@
 #include "../../../../main/include/modules/load.h"
 #include "../core/ProjectManager.hpp"
 #include "../core/SystemSettings.hpp"
+#include "../core/Details.hpp"
 using namespace VortexMaker;
 
 #ifndef LAUNCHER_H
@@ -11,24 +12,37 @@ using namespace VortexMaker;
 class LauncherLayer : public UIKit::Layer
 {
 public:
-  LauncherLayer(){};
+  LauncherLayer(){
+    this->LayerName = "LauncherLayer";
+  };
 
   void menubar(const std::shared_ptr<LauncherLayer> &applayer, UIKit::Application *app);
+
+  void OnUpdate(float timestep) override
+  {
+    
+  }
+
   void OnUIRender() override
   {
     PushStyle();
 
+    ImGui::ShowDemoWindow();
+
     if (this->ShowProjectManager)
     {
-      static ProjectManager projectManager(this->m_ctx);
-      projectManager.OnImGuiRender();
-    }
-
+      static ProjectManager projectManager(this->m_ctx, this->ParentWindow);
+      projectManager.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
+    } 
+    
     if (this->ShowSystemSettings)
     {
-      static SystemSettings systemSettings(this->m_ctx);
-      systemSettings.OnImGuiRender();
-    }
+      static SystemSettings systemSettings(this->m_ctx, this->ParentWindow);
+      systemSettings.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
+    } 
+
+      static Details details(this->m_ctx, this->ParentWindow);
+      details.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
 
     PopStyle();
   }
@@ -43,7 +57,7 @@ public:
     ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 11.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 11.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 6.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 7.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(9.0f, 3.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
   }

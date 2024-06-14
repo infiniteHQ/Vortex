@@ -8,6 +8,8 @@
 
 namespace VortexMaker {
     VORTEX_API void InstallModule(const std::string &directory);
+    VORTEX_API std::shared_ptr<ModuleInterface> FindModuleInDirectory(const std::string &directory);
+    VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> FindModulesInDirectory(const std::string &directory);
 }
 
 #endif

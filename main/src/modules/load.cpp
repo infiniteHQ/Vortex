@@ -138,6 +138,9 @@ namespace VortexMaker
         // Search for module files recursively in the directory
         auto module_files = VortexMaker::SearchSystemFiles(path, "module.json");
 
+        // Clear system modules vector
+        sys_modules.clear();
+
         // Iterate through each found module file
         for (const auto &file : module_files)
         {

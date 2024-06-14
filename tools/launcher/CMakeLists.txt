@@ -19,10 +19,13 @@ add_library(launcher
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/platform/GUI/editor/UI/Spinner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/platform/GUI/editor/ApplicationGUI.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/platform/GUI/editor/Image.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/components/windows/windows.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/components/buttons/buttons.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/src/core/Log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/assets/icons.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/SystemSettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/core/Details.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/src/launcher.cpp
 )
 

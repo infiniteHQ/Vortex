@@ -9,9 +9,9 @@
 class ProjectManager
 {
 public:
-	ProjectManager(VxContext *_ctx);
+	ProjectManager(VxContext *_ctx, const std::string& parent);
 
-	void OnImGuiRender();
+	void OnImGuiRender(const std::string& parent, std::function<void(ImGuiWindow*)> controller);
 	void menubar();
 	void addModuleModal();
 
@@ -27,6 +27,7 @@ public:
 	void searchMenuItem();
 
 	VxContext *ctx;
+	std::string parent;
 
 private:
 	bool opened;
@@ -41,6 +42,7 @@ private:
     std::shared_ptr<UIKit::Image> m_ProjectIcon;
     std::shared_ptr<UIKit::Image> m_AddIcon;
     std::shared_ptr<UIKit::Image> m_TrashIcon;
+	
 	bool CollapseAll = false;
 };
 

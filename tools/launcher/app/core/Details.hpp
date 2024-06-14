@@ -1,18 +1,15 @@
 #include "../../../../main/include/vortex.h"
 #include "../../../../main/include/vortex_internals.h"
-#include "../../../../main/include/modules/install.h"
-#include "../../../../main/include/modules/load.h"
-#include "../../../../main/include/templates/load.h"
 #include "../../../../lib/uikit/uikit.h"
 
 
-#ifndef SYSTEMSETTINGS_H
-#define SYSTEMSETTINGS_H
+#ifndef DETAILS_H
+#define DETAILS_H
 
-class SystemSettings
+class Details
 {
 public:
-	SystemSettings(VxContext *_ctx, const std::string& parent);
+	Details(VxContext *_ctx, const std::string& parent);
 
 	void OnImGuiRender(const std::string& parent, std::function<void(ImGuiWindow*)> controller);
 	void menubar();
@@ -43,11 +40,10 @@ private:
     std::shared_ptr<UIKit::Image> m_RefreshIcon;
     std::shared_ptr<UIKit::Image> m_OpenIcon;
     std::shared_ptr<UIKit::Image> m_ProjectIcon;
-    std::shared_ptr<UIKit::Image> m_SearchIcon;
     std::shared_ptr<UIKit::Image> m_AddIcon;
     std::shared_ptr<UIKit::Image> m_TrashIcon;
+	
 	bool CollapseAll = false;
 };
 
-
-#endif // SYSTEMSETTINGS_H
+#endif // DETAILS_H

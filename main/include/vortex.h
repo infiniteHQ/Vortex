@@ -215,8 +215,10 @@ namespace VortexMaker
     VORTEX_API std::string getCurrentTimeStamp();
 
     VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename);
+    VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename, int recursions);
     VORTEX_API std::vector<std::string> SearchSystemFiles(const std::string &path, const std::string &filename);
     VORTEX_API std::string SearchFilesRecursive(const fs::path &chemin, const std::string &filename, std::vector<std::string> &file);
+    VORTEX_API std::string SearchFilesRecursive(const fs::path &chemin, const std::string &filename, std::vector<std::string> &file, int recursions, int counter);
     bool DebugCheckVersionAndDataLayout(const char *version);
 
     VORTEX_API void MoveAllContent();

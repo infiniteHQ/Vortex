@@ -119,3 +119,57 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name, const std:
         VortexMaker::LogError("Core", "Failed to find the template " + name + " this template is installed ?");
     }*/
 }
+
+VORTEX_API std::vector<std::shared_ptr<TemplateInterface>> VortexMaker::FindTemplatesInDirectory(const std::string &directory)
+{
+    // Search modules registered
+    auto template_files = VortexMaker::SearchFiles(directory, "template.json", 3);
+
+    std::vector<std::shared_ptr<TemplateInterface>> interfaces;
+
+    // Iterate through each found module file
+    for (const auto &file : template_files)
+    {
+        try
+        {
+            // Load JSON data from the module configuration file
+            auto json_data = VortexMaker::DumpJSON(file);
+
+            std::string module_path = file.substr(0, file.find_last_of("/"));
+
+            std::shared_ptr<TemplateInterface> new_template = std::make_shared<TemplateInterface>();
+
+            new_template->m_name = json_data["name"].get<std::string>();
+            new_template->m_proper_name = json_data["proper_name"].get<std::string>();
+            new_template->m_type = json_data["type"].get<std::string>();
+            new_template->m_description = json_data["description"].get<std::string>();
+            new_template->m_picture = json_data["picture"].get<std::string>();
+            new_template->m_logo_path = module_path + "/" + new_template->m_picture;
+            new_template->m_path = module_path + "/";
+            new_template->m_author = json_data["author"].get<std::string>();
+            new_template->m_group = json_data["group"].get<std::string>();
+            new_template->m_tarball = json_data["tarball"].get<std::string>();
+            new_template->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+
+            for (auto dep : json_data["deps"])
+            {
+                std::shared_ptr<TemplateDep> dependence = std::make_shared<TemplateDep>();
+                dependence->name = dep["name"].get<std::string>();
+                dependence->type = dep["type"].get<std::string>();
+                for (auto version : dep["versions"])
+                {
+                    dependence->supported_versions.push_back(version);
+                }
+                new_template->m_dependencies.push_back(dependence);
+            }
+
+            interfaces.push_back(new_template);
+        }
+        catch (std::exception e)
+        {
+            VortexMaker::LogError("Core", e.what());
+        }
+    }
+
+    return interfaces;
+}

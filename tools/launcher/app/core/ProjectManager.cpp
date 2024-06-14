@@ -11,6 +11,7 @@ static std::shared_ptr<EnvProject> selected_envproject;
 static std::string title = "none";
 static std::string default_project_avatar = "/usr/local/include/Vortex/imgs/base_vortex.png";
 static std::string operating_system_banner = "/usr/local/include/Vortex/1.1/imgs/operating_system_banner.png";
+static std::string _parent;
 
 static std::vector<uint8_t> loadPngHex(const std::string &filePath)
 {
@@ -56,8 +57,9 @@ void addTexture(const std::string &name, const std::string &path)
 
         if (!hexTable.empty())
         {
+    ImGuiWindow* win = ImGui::GetCurrentWindow();
             void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
-            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  _parent, data);
             logos.push_back(_icon);
             VX_FREE(data);
             if (data)
@@ -78,7 +80,6 @@ void addTexture(const std::string &name, const std::string &path)
         {
             if (texture.first == name)
             {
-                std::cout << "Une texture avec le nom \"" << name << "\" existe déjà." << std::endl;
                 return;
             }
         }
@@ -87,9 +88,10 @@ void addTexture(const std::string &name, const std::string &path)
 
         if (!hexTable.empty())
         {
+    ImGuiWindow* win = ImGui::GetCurrentWindow();
 
             void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
-            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  _parent, data);
             logos.push_back(_icon);
             VX_FREE(data);
             if (data)
@@ -136,10 +138,11 @@ static void logo(const std::string &path, int index, int total)
 
     if (total > logos.size() && !hexTable.empty())
     {
+    ImGuiWindow* win = ImGui::GetCurrentWindow();
         void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
         if (data)
         {
-            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  _parent, data);
             logos.push_back(_icon);
             VX_FREE(data);
             ImTextureID addIcon = _icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -176,10 +179,11 @@ static void logo(const std::string &path, int index, int total, ImDrawList *draw
 
     if (total > logos.size() && !hexTable.empty())
     {
+    ImGuiWindow* win = ImGui::GetCurrentWindow();
         void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
         if (data)
         {
-            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  _parent, data);
             logos.push_back(_icon);
             VX_FREE(data);
             ImTextureID addIcon = _icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL); // Utiliser 0 pour la simulation
@@ -202,48 +206,51 @@ static void logo(const std::string &path, int index, int total, ImDrawList *draw
     }
 }
 
-ProjectManager::ProjectManager(VxContext *_ctx)
+ProjectManager::ProjectManager(VxContext *_ctx, const std::string& parent)
 {
     this->ctx = _ctx;
 
     this->Refresh();
 
+    _parent = parent;
+
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_list, icons::i_list_size, w, h);
-        m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_project, icons::i_project_size, w, h);
-        m_ProjectIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_ProjectIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_open, icons::i_open_size, w, h);
-        m_OpenIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_OpenIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
-        m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
-        m_TrashIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_TrashIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-        m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
         free(data);
     }
+    std::cout << "8" << std::endl;
 }
 
 void MyButton(const std::string &name, int w, int h)
@@ -408,13 +415,24 @@ void MyBanner(const std::string &path)
     ImVec2 smallRectPos(cursorPos.x + squareSize.x - smallRectSize.x - 5, cursorPos.y + squareSize.y - smallRectSize.y - 5);
 }
 
-void ProjectManager::OnImGuiRender()
+void ProjectManager::OnImGuiRender(const std::string& parent, std::function<void(ImGuiWindow*)> controller)
 {
     static ImTextureID projectIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    if (ImGui::Begin("Project managers", &projectIcon, &this->opened, ImGuiWindowFlags_MenuBar))
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+
+    ImGui::SetNextWindowDockID(ImGui::GetID("MainDockspace"), ImGuiCond_FirstUseEver);
+
+    if (ImGui::UIKit_BeginLogoWindow("Project managers", &projectIcon, &this->opened, window_flags))
         this->menubar();
 
+    static ImGuiWindow* win = ImGui::GetCurrentWindow();
+    this->parent = parent;
+    std::cout << "[" << win->Name << "] -> " << this->parent << std::endl;
+
+    controller(win);
+    
+    
     if (!project_creation)
     {
         float columnWidths[2] = {345.0f, 100.0f};
@@ -758,14 +776,14 @@ void ProjectManager::mainButtonsMenuItem()
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     if (!project_creation)
     {
-        if (ImGui::ImageButtonWithText(addIcon, "Create a project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+        if (ImGui::UIKit_ImageButtonWithText(addIcon, "Create a project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
         {
             project_creation = true;
         }
     }
     else
     {
-        if (ImGui::ImageButtonWithText(addIcon, "Open a project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+        if (ImGui::UIKit_ImageButtonWithText(addIcon, "Open a project", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
         {
             project_creation = false;
         }
