@@ -33,7 +33,7 @@ add_library(launcher
 target_include_directories(launcher PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
 # launcher requirements
-if (NOT TARGET editor)
+if (NOT TARGET editor AND NOT TARGET crash_handler)
 find_package(Vulkan REQUIRED)
 option(SPDLOG_INSTALL "Enable installation of spdlog" ON)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../lib/spdlog spdlog_build)

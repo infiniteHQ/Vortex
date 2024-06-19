@@ -1,48 +1,31 @@
 #include "../../../../lib/uikit/src/EntryPoint.h"
 #include "../../../../main/include/vortex.h"
-#include "../../../../main/include/modules/load.h"
-#include "../core/ProjectManager.hpp"
-#include "../core/SystemSettings.hpp"
-#include "../core/Details.hpp"
+#include "../core/Crash.hpp"
 using namespace VortexMaker;
 
-#ifndef LAUNCHER_H
-#define LAUNCHER_H
+#ifndef CRASH_HANDLER_H
+#define CRASH_HANDLER_H
 
-class LauncherLayer : public UIKit::Layer
+class CrashHandlerLayer : public UIKit::Layer
 {
 public:
-  LauncherLayer(){
-    this->LayerName = "LauncherLayer";
+  CrashHandlerLayer(){
+    this->LayerName = "CrashHandlerLayer";
   };
 
-  void menubar(const std::shared_ptr<LauncherLayer> &applayer, UIKit::Application *app);
+  void menubar(const std::shared_ptr<CrashHandlerLayer> &applayer, UIKit::Application *app);
 
   void OnUpdate(float timestep) override
   {
-
+    
   }
 
   void OnUIRender() override
   {
     PushStyle();
 
-    ImGui::ShowDemoWindow();
-
-    if (this->ShowProjectManager)
-    {
-      static ProjectManager projectManager(this->m_ctx, this->ParentWindow);
-      projectManager.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
-    } 
-    
-    if (this->ShowSystemSettings)
-    {
-      static SystemSettings systemSettings(this->m_ctx, this->ParentWindow);
-      systemSettings.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
-    } 
-
-    static Details details(this->m_ctx, this->ParentWindow);
-    details.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
+      static Crash details(this->m_ctx, this->ParentWindow);
+      details.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
 
     PopStyle();
   }
@@ -81,22 +64,20 @@ private:
   std::vector<std::string> instanciedWindowsNames;
 };
 
-static UIKit::Application *CreateLauncher(int argc, char **argv)
+static UIKit::Application *CreateCrashHandler(int argc, char **argv)
 {
   int port = atoi(argv[1]);
 
-  std::shared_ptr<LauncherLayer> applayer = std::make_shared<LauncherLayer>();
+  std::shared_ptr<CrashHandlerLayer> applayer = std::make_shared<CrashHandlerLayer>();
   applayer->m_ctx = VortexMaker::GetCurrentContext();
 
-
-  VortexMaker::LoadSystemModules(applayer->m_ctx->IO.sys_em);
-
   UIKit::ApplicationSpecification spec;
-  std::string name = "Vortex Launcher";
+  std::string name = "Vortex crash reporter";
   spec.Name = name;
-  spec.Width = 1550;
-  spec.Height = 850;
+  spec.Width = 800;
+  spec.Height = 650;
   spec.Name = name;
+  spec.WindowOnlyClosable = true;
   spec.CustomTitlebar = true;
   spec.IconPath = "icon.png";
 
@@ -111,9 +92,9 @@ static UIKit::Application *CreateLauncher(int argc, char **argv)
 
 namespace VortexMaker
 {
-  static int VortexLauncher(int argc, char **argv)
+  static int VortexCrashHandler(int argc, char **argv)
   {
-    return UIKit::ThirdMain(argc, argv, CreateLauncher);
+    return UIKit::ThirdMain(argc, argv, CreateCrashHandler);
   }
 }
 

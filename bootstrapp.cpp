@@ -86,12 +86,18 @@ std::string FindCompatibleVersion()
 
 void LaunchVortex(const std::string& version) {
     std::string command = "/usr/local/bin/Vortex/" + version + "/vortex --launcher";
-    std::system(command.c_str());
+    if(std::system(command.c_str()) != 0){
+        std::string crash_handle_command = "/usr/local/bin/Vortex/" + version + "/vortex -crash";
+        std::system(crash_handle_command.c_str());
+    }
 }
 
 void LaunchVortexEditor(const std::string& version) {
     std::string command = "/usr/local/bin/Vortex/" + version + "/vortex --editor";
-    std::system(command.c_str());
+    if(std::system(command.c_str()) != 0){
+        std::string crash_handle_command = "/usr/local/bin/Vortex/" + version + "/vortex -crash";
+        std::system(crash_handle_command.c_str());
+    }
 }
 
 bool CheckDirectory()

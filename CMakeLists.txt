@@ -8,15 +8,12 @@ set(VORTEX_VERSION "1.1")
 file(GLOB_RECURSE VORTEX_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
 file(GLOB_RECURSE VORTEXEDITOR_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tools/editor/*.cpp")
 file(GLOB_RECURSE VORTEXEDITOR_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tools/launcher/*.cpp")
+file(GLOB_RECURSE VORTEXEDITOR_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tools/crash_handler/*.cpp")
 
 # Création de la bibliothèque partagée
 add_library(vortex_shared SHARED 
 ${VORTEX_SHARED_SOURCES}
 ${VORTEXEDITOR_SHARED_SOURCES}
-${VORTEXCORE_SHARED_SOURCES}
-${VORTEXPROJECT_SHARED_SOURCES}
-${VORTEXUTILS_SHARED_SOURCES}
-${IMGUI_SHARED_SOURCES}
 )
 
 # Définir les chemins d'inclusion pour la bibliothèque partagée
@@ -33,7 +30,11 @@ file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/editor editor_build)
 target_link_libraries(vortex_shared PUBLIC editor)
 
-# Add editor
+# Add crash_handler
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/crash_handler crash_handler_build)
+target_link_libraries(vortex_shared PUBLIC crash_handler)
+
+# Add launcher
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/launcher launcher_build)
 target_link_libraries(vortex_shared PUBLIC launcher)
 

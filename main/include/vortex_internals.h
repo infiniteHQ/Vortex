@@ -131,6 +131,24 @@ struct EnvProject
     std::string lastOpened;
 };
 
+struct SessionState
+{
+    // Master
+    std::string session_started_at;
+    std::string session_started_on_os;
+    std::string session_started_on_arch;
+
+    // Last module
+    std::shared_ptr<ModuleInterface> last_used_module;
+
+    bool master_initialized = false;
+    bool logs_modified = false;
+    bool last_used_module_modified = false;
+    bool last_used_plugin_modified = false;
+    bool last_used_module_input_event_modified = false;
+    bool last_used_module_output_event_modified = false;
+};
+
 struct VxIO
 {
   int MetricsActiveAllocations;
@@ -166,6 +184,7 @@ struct VxContext
   bool logger;
   bool logger_registering;
   VxIO IO;
+  SessionState state;
   VortexMakerDebugAllocInfo debugAllocInfo;
   std::vector<std::shared_ptr<VxSystemLog>> registered_logs;
   fs::path projectPath;

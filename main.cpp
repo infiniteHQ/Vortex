@@ -6,6 +6,7 @@
 // UI instances
 #include "./tools/editor/app/include/editor.h"
 #include "./tools/launcher/app/include/launcher.h"
+#include "./tools/crash_handler/app/include/crash_handler.h"
 
 #include "./main/include/vortex.h"
 #include "./main/include/templates/load.h"
@@ -163,6 +164,20 @@ int main(int argc, char *argv[])
         {
             std::cout << "ok" << std::endl;
             return 0;
+        }
+        else if (std::string(argv[1]) == "-crash" || std::string(argv[1]) == "--get-last-crash")
+        {
+            PrintHeader();
+            InitBlankRuntime(true);
+            VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
+
+            std::thread receiveThread;
+                std::thread Thread([&]()
+                                   { VortexMaker::VortexCrashHandler(argc, argv); });
+                receiveThread.swap(Thread);
+            
+
+            receiveThread.join();
         }
         else if (std::string(argv[1]) == "-i" || std::string(argv[1]) == "--install")
         {

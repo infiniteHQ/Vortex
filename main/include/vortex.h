@@ -212,6 +212,10 @@ namespace VortexMaker
     VORTEX_API void UpdateProjectData(const std::string& old_name, const std::string& path);
     VORTEX_API void InitEnvironment();
 
+    VORTEX_API void PostSessionState(const std::string& post_topic);
+    VORTEX_API nlohmann::json GetLastModuleOfLastSession(const std::string& post_topic);
+    VORTEX_API nlohmann::json GetLastSession(const std::string& post_topic);
+
     VORTEX_API void RefreshEnvironmentProjects();
     VORTEX_API void UpdateEnvironmentProject();
     VORTEX_API void UpdateEnvironmentProject(const std::string& oldname);
