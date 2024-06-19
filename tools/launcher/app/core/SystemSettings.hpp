@@ -2,6 +2,7 @@
 #include "../../../../main/include/vortex_internals.h"
 #include "../../../../main/include/modules/install.h"
 #include "../../../../main/include/modules/load.h"
+#include "../../../../main/include/modules/delete.h"
 #include "../../../../main/include/templates/load.h"
 #include "../../../../lib/uikit/uikit.h"
 

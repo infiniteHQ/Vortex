@@ -1,6 +1,10 @@
 
 #include "ProjectManager.hpp"
 
+#include <algorithm>
+#include <cctype>
+#include <unordered_set>
+
 static std::vector<std::string> labels = {"Open a project", "Create a new project"};
 static int selected = 0;
 static int selected_template = 0;
@@ -8,10 +12,96 @@ static bool template_is_selected = false;
 static bool project_creation = false;
 static std::shared_ptr<TemplateInterface> selected_template_object;
 static std::shared_ptr<EnvProject> selected_envproject;
+static std::shared_ptr<EnvProject> selected_envproject_to_remove;
 static std::string title = "none";
 static std::string default_project_avatar = "/usr/local/include/Vortex/imgs/base_vortex.png";
 static std::string operating_system_banner = "/usr/local/include/Vortex/1.1/imgs/operating_system_banner.png";
 static std::string _parent;
+
+static char ProjectSearch[256];
+static float threshold = 0.4;
+
+bool isOnlySpacesOrEmpty(const char *str)
+{
+    if (str == nullptr || std::strlen(str) == 0)
+    {
+        return true;
+    }
+
+    for (size_t i = 0; i < std::strlen(str); ++i)
+    {
+        if (str[i] != ' ')
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+std::string toLowerCase(const std::string &str)
+{
+    std::string result = str;
+    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    return result;
+}
+
+int levenshteinDistance(const std::string &s1, const std::string &s2)
+{
+    const size_t m = s1.size();
+    const size_t n = s2.size();
+    std::vector<std::vector<int>> dp(m + 1, std::vector<int>(n + 1));
+
+    for (size_t i = 0; i <= m; ++i)
+    {
+        for (size_t j = 0; j <= n; ++j)
+        {
+            if (i == 0)
+            {
+                dp[i][j] = j;
+            }
+            else if (j == 0)
+            {
+                dp[i][j] = i;
+            }
+            else
+            {
+                int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
+                dp[i][j] = std::min({dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost});
+            }
+        }
+    }
+    return dp[m][n];
+}
+
+bool hasCommonLetters(const std::string &s1, const std::string &s2)
+{
+    std::unordered_set<char> set1(s1.begin(), s1.end());
+    for (char c : s2)
+    {
+        if (set1.find(c) != set1.end())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool areStringsSimilar(const std::string &s1, const std::string &s2, double threshold)
+{
+    std::string lower_s1 = toLowerCase(s1);
+    std::string lower_s2 = toLowerCase(s2);
+
+    int dist = levenshteinDistance(lower_s1, lower_s2);
+    int maxLength = std::max(lower_s1.size(), lower_s2.size());
+    double similarity = 1.0 - (static_cast<double>(dist) / maxLength);
+
+    if (std::strlen(ProjectSearch) < 5)
+    {
+        return similarity >= threshold || hasCommonLetters(lower_s1, lower_s2);
+    }
+
+    return similarity >= threshold;
+}
 
 static std::vector<uint8_t> loadPngHex(const std::string &filePath)
 {
@@ -57,9 +147,9 @@ void addTexture(const std::string &name, const std::string &path)
 
         if (!hexTable.empty())
         {
-    ImGuiWindow* win = ImGui::GetCurrentWindow();
+            ImGuiWindow *win = ImGui::GetCurrentWindow();
             void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
-            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  _parent, data);
+            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, _parent, data);
             logos.push_back(_icon);
             VX_FREE(data);
             if (data)
@@ -88,10 +178,10 @@ void addTexture(const std::string &name, const std::string &path)
 
         if (!hexTable.empty())
         {
-    ImGuiWindow* win = ImGui::GetCurrentWindow();
+            ImGuiWindow *win = ImGui::GetCurrentWindow();
 
             void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
-            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  _parent, data);
+            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, _parent, data);
             logos.push_back(_icon);
             VX_FREE(data);
             if (data)
@@ -138,11 +228,11 @@ static void logo(const std::string &path, int index, int total)
 
     if (total > logos.size() && !hexTable.empty())
     {
-    ImGuiWindow* win = ImGui::GetCurrentWindow();
+        ImGuiWindow *win = ImGui::GetCurrentWindow();
         void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
         if (data)
         {
-            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  _parent, data);
+            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, _parent, data);
             logos.push_back(_icon);
             VX_FREE(data);
             ImTextureID addIcon = _icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -179,11 +269,11 @@ static void logo(const std::string &path, int index, int total, ImDrawList *draw
 
     if (total > logos.size() && !hexTable.empty())
     {
-    ImGuiWindow* win = ImGui::GetCurrentWindow();
+        ImGuiWindow *win = ImGui::GetCurrentWindow();
         void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
         if (data)
         {
-            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  _parent, data);
+            std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, _parent, data);
             logos.push_back(_icon);
             VX_FREE(data);
             ImTextureID addIcon = _icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL); // Utiliser 0 pour la simulation
@@ -206,7 +296,7 @@ static void logo(const std::string &path, int index, int total, ImDrawList *draw
     }
 }
 
-ProjectManager::ProjectManager(VxContext *_ctx, const std::string& parent)
+ProjectManager::ProjectManager(VxContext *_ctx, const std::string &parent)
 {
     this->ctx = _ctx;
 
@@ -223,31 +313,31 @@ ProjectManager::ProjectManager(VxContext *_ctx, const std::string& parent)
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_project, icons::i_project_size, w, h);
-        m_ProjectIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
+        m_ProjectIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_open, icons::i_open_size, w, h);
-        m_OpenIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
+        m_OpenIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
-        m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
+        m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
-        m_TrashIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
+        m_TrashIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-        m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA,  parent, data);
+        m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
     std::cout << "8" << std::endl;
@@ -415,7 +505,7 @@ void MyBanner(const std::string &path)
     ImVec2 smallRectPos(cursorPos.x + squareSize.x - smallRectSize.x - 5, cursorPos.y + squareSize.y - smallRectSize.y - 5);
 }
 
-void ProjectManager::OnImGuiRender(const std::string& parent, std::function<void(ImGuiWindow*)> controller)
+void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller)
 {
     static ImTextureID projectIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -426,13 +516,66 @@ void ProjectManager::OnImGuiRender(const std::string& parent, std::function<void
     if (ImGui::UIKit_BeginLogoWindow("Project managers", &projectIcon, &this->opened, window_flags))
         this->menubar();
 
-    static ImGuiWindow* win = ImGui::GetCurrentWindow();
+    static ImGuiWindow *win = ImGui::GetCurrentWindow();
     this->parent = parent;
     std::cout << "[" << win->Name << "] -> " << this->parent << std::endl;
 
     controller(win);
-    
-    
+
+    static bool open_deletion_modal = false;
+    static bool user_string_validation = false;
+    static char string_validation[256] = "";
+
+    if (open_deletion_modal)
+    {
+
+        if (ImGui::BeginPopupModal("Delete a project", NULL, NULL))
+        {
+            // Set the size of the modal to 200x75 pixels the first time it is created
+
+            // 3 text inputs
+            static char path_input_all[512];
+            // inputs widget
+            ImGui::TextWrapped("WARNING, if you click on the Delete button, the project will be erase forever.");
+            ImGui::InputText("Please", string_validation, sizeof(string_validation));
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                open_deletion_modal = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+
+            std::cout << string_validation << selected_envproject_to_remove->name.c_str() << std::endl;
+
+            if (strcmp(string_validation, selected_envproject_to_remove->name.c_str()) != 0)
+            {
+                ImGui::BeginDisabled();
+            }
+
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.2f, 0.2f, 0.9f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.2f, 0.2f, 1.8f));
+            if (ImGui::Button("Delete", ImVec2(120, 0)))
+            {
+                // Delete
+                VortexMaker::DeleteProject(selected_envproject_to_remove->path);
+
+                open_deletion_modal = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::PopStyleColor(3);
+            if (strcmp(string_validation, selected_envproject_to_remove->name.c_str()) != 0)
+            {
+                ImGui::EndDisabled();
+            }
+            ImGui::EndPopup();
+        }
+    }
+
+    if (open_deletion_modal)
+        ImGui::OpenPopup("Delete a project");
+
     if (!project_creation)
     {
         float columnWidths[2] = {345.0f, 100.0f};
@@ -468,7 +611,10 @@ void ProjectManager::OnImGuiRender(const std::string& parent, std::function<void
             {
                 for (int row = 0; row < this->ctx->IO.sys_projects.size(); row++)
                 {
-                    MyButton(this->ctx->IO.sys_projects[row]);
+                    if (areStringsSimilar(this->ctx->IO.sys_projects[row]->name, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+                    {
+                        MyButton(this->ctx->IO.sys_projects[row]);
+                    }
                 }
             }
             else if (i == 1)
@@ -534,8 +680,10 @@ void ProjectManager::OnImGuiRender(const std::string& parent, std::function<void
 
                     ImGui::SetCursorPos(ImVec2(firstButtonPosX, buttonPosY));
 
-                    if (ImGui::Button("Settings", buttonSize))
+                    if (ImGui::Button("Delete", buttonSize))
                     {
+                        selected_envproject_to_remove = selected_envproject;
+                        open_deletion_modal = true;
                     }
 
                     ImGui::SameLine();
@@ -780,6 +928,14 @@ void ProjectManager::mainButtonsMenuItem()
         {
             project_creation = true;
         }
+        ImGui::Separator();
+
+        if (ImGui::UIKit_ImageButtonWithText(addIcon, "Import project(s)", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+        {
+        }
+        ImGui::PushItemWidth(200);
+        ImGui::InputText("", ProjectSearch, sizeof(ProjectSearch));
+        ImGui::PopItemWidth();
     }
     else
     {

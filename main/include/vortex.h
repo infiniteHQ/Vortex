@@ -203,9 +203,13 @@ namespace VortexMaker
     VORTEX_API void CreateProject(const std::string &name, const std::string &path);
     VORTEX_API void CreateProject(const std::string &name, const std::string &author, const std::string &version, const std::string &description, const std::string &path, const std::string &template_name);
 
+    VORTEX_API void DeleteProject(const std::string &path);
+    
+    VORTEX_API void ImportProject(const std::string &path);
+
     VORTEX_API void InstallContentOnSystem(const std::string &directory);
 
-    VORTEX_API void UpdateProjectData();
+    VORTEX_API void UpdateProjectData(const std::string& old_name, const std::string& path);
     VORTEX_API void InitEnvironment();
 
     VORTEX_API void RefreshEnvironmentProjects();
