@@ -3,6 +3,7 @@
 #include "../../../../main/include/modules/load.h"
 #include "../core/ProjectManager.hpp"
 #include "../core/SystemSettings.hpp"
+#include "../core/LauncherLogUtility.hpp"
 #include "../core/Details.hpp"
 using namespace VortexMaker;
 
@@ -33,6 +34,12 @@ public:
     {
       static ProjectManager projectManager(this->m_ctx, this->ParentWindow);
       projectManager.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
+    } 
+
+    if (this->ShowLogUtility)
+    {
+      static LauncherLogUtility logUtility(this->m_ctx, this->ParentWindow);
+      logUtility.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
     } 
     
     if (this->ShowSystemSettings)
@@ -75,6 +82,7 @@ public:
   bool ShowProjectViewer = false;
   bool ShowModulesManager = false;
   bool ShowProjectManager = true;
+  bool ShowLogUtility = true;
   bool ShowSystemSettings = false;
 
 private:

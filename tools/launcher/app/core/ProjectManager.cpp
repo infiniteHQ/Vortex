@@ -278,7 +278,6 @@ static void logo(const std::string &path, int index, int total, ImDrawList *draw
             VX_FREE(data);
             ImTextureID addIcon = _icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL); // Utiliser 0 pour la simulation
             textures.push_back(addIcon);
-            std::cout << textures.size() << std::endl;
         }
         else
         {
@@ -340,7 +339,6 @@ ProjectManager::ProjectManager(VxContext *_ctx, const std::string &parent)
         m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
-    std::cout << "8" << std::endl;
 }
 
 void MyButton(const std::string &name, int w, int h)
@@ -489,7 +487,6 @@ void MyBanner(const std::string &path)
 
     if (ImGui::InvisibleButton("##squ5684areButtonWithText2", squareSize))
     {
-        std::cout << "Hello World 2" << std::endl;
     }
 
     if (ImGui::IsItemHovered())
@@ -518,7 +515,6 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
 
     static ImGuiWindow *win = ImGui::GetCurrentWindow();
     this->parent = parent;
-    std::cout << "[" << win->Name << "] -> " << this->parent << std::endl;
 
     controller(win);
 
@@ -546,8 +542,6 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
             ImGui::SetItemDefaultFocus();
             ImGui::SameLine();
 
-            std::cout << string_validation << selected_envproject_to_remove->name.c_str() << std::endl;
-
             if (strcmp(string_validation, selected_envproject_to_remove->name.c_str()) != 0)
             {
                 ImGui::BeginDisabled();
@@ -559,7 +553,9 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
             if (ImGui::Button("Delete", ImVec2(120, 0)))
             {
                 // Delete
-                VortexMaker::DeleteProject(selected_envproject_to_remove->path);
+                VortexMaker::DeleteProject(selected_envproject_to_remove->path, selected_envproject_to_remove->name);
+
+                VortexMaker::RefreshEnvironmentProjects();
 
                 open_deletion_modal = false;
                 ImGui::CloseCurrentPopup();

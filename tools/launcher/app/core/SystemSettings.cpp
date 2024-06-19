@@ -76,8 +76,6 @@ static void CheckAllTemplatesStates(std::vector<std::shared_ptr<TemplateInterfac
 {
     VxContext *ctx = VortexMaker::GetCurrentContext();
 
-    std::cout << finded_templates.size() << std::endl;
-    std::cout << finded_templates[100] << std::endl;
     all_templates_to_add.clear();
 
     for (auto template_ : finded_templates)
@@ -217,7 +215,6 @@ static void addTexture(const std::string &name, const std::string &path)
             {
                 ImTextureID addIcon = _icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                 associated_textures.push_back(std::make_pair(name, addIcon));
-                std::cout << "Premiere Texture ajoutée : " << name << std::endl;
             }
             else
             {

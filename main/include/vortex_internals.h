@@ -182,7 +182,7 @@ struct VxContext
 {
   bool initialized;
   bool logger;
-  bool logger_registering;
+  bool logger_registering = true;
   VxIO IO;
   SessionState state;
   VortexMakerDebugAllocInfo debugAllocInfo;

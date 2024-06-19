@@ -57,6 +57,8 @@ void LauncherLayer::menubar(const std::shared_ptr<LauncherLayer> &exampleLayer, 
     {
         if (ImGui::MenuItem("Show project settings", "Get some useful tools in a bottom bar.", &this->ShowSystemSettings))
             handleShowBottomToolbar();
+        if (ImGui::MenuItem("Show log utility", "Get some useful tools in a bottom bar.", &this->ShowLogUtility))
+            handleShowBottomToolbar();
         if (ImGui::MenuItem("Show bottom toolbar", "Get some useful tools in a bottom bar."))
             handleShowBottomToolbar();
         if (ImGui::MenuItem("Show simplified header", "Reduce the size of header"))

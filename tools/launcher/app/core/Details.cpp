@@ -3,23 +3,18 @@
 
 Details::Details(VxContext *_ctx, const std::string &_parent)
 {
-    std::cout << "df" << std::endl;
     this->ctx = _ctx;
 
-    std::cout << "df" << std::endl;
     this->Refresh();
 
-    std::cout << "df" << std::endl;
     parent = _parent;
 
-    std::cout << "df" << std::endl;
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_list, icons::i_list_size, w, h);
         m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
-    std::cout << "d" << std::endl;
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_project, icons::i_project_size, w, h);
@@ -50,7 +45,6 @@ Details::Details(VxContext *_ctx, const std::string &_parent)
         m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
-    std::cout << "8" << std::endl;
 }
 
 static std::vector<std::tuple<std::string, std::string, std::string>> modifiable_values;
@@ -193,7 +187,6 @@ void Details::OnImGuiRender(const std::string &parent, std::function<void(ImGuiW
     }
 
     ImGui::End();
-    std::cout << "222" << std::endl;
 }
 
 static void handleRefresh()

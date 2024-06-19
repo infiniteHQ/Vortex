@@ -78,172 +78,165 @@ void Crash::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWin
     ImGui::GetFont()->Scale = oldsize;
     ImGui::PopFont();
 
-ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255,255,255,105));
+    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
     ImGui::TextWrapped("A Vortex process has encountered a fatal error or produced a bad output. This could be due to a faulty module, plugins, or a malfunction in the Vortex process itself. You can now review the last states and investigate what happened. However, it is safe to close this window.");
-ImGui::PopStyleColor(1);
+    ImGui::PopStyleColor(1);
 
-ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255,255,255,50));
+    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 50));
     ImGui::TextWrapped("Error topic ID : ");
-ImGui::PopStyleColor(1);
+    ImGui::PopStyleColor(1);
 
-ImGui::SameLine();
+    ImGui::SameLine();
 
-ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255,255,255,105));
+    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
     ImGui::TextWrapped("identifier");
-ImGui::PopStyleColor(1);
+    ImGui::PopStyleColor(1);
 
     ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
     if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags))
     {
         if (ImGui::BeginTabItem("Summary"))
         {
-    float oldsize = ImGui::GetFont()->Scale;
-    ImGui::GetFont()->Scale *= 1.3;
-    ImGui::PushFont(ImGui::GetFont());
-ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255,255,255,100));
-    ImGui::TextWrapped("Latest informations");
-ImGui::PopStyleColor(1);
-    ImGui::GetFont()->Scale = oldsize;
-    ImGui::PopFont();
-
-
+            float oldsize = ImGui::GetFont()->Scale;
+            ImGui::GetFont()->Scale *= 1.3;
+            ImGui::PushFont(ImGui::GetFont());
+            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 100));
+            ImGui::TextWrapped("Latest informations");
+            ImGui::PopStyleColor(1);
+            ImGui::GetFont()->Scale = oldsize;
+            ImGui::PopFont();
 
             static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-                if (ImGui::BeginTable("table_deps", 2, flags))
+            if (ImGui::BeginTable("table_deps", 2, flags))
+            {
+                ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableHeadersRow();
+                for (int i = 0; i < 4; i++)
                 {
-                    ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableHeadersRow();
-                    for (int i = 0; i < 4; i++)
+                    ImGui::TableNextRow();
+                    for (int column = 0; column < 2; column++)
                     {
-                            ImGui::TableNextRow();
-                            for (int column = 0; column < 2; column++)
+                        ImGui::TableSetColumnIndex(column);
+
+                        if (i == 0)
+                        {
+                            if (column == 0)
                             {
-                                ImGui::TableSetColumnIndex(column);
-                                
-                                if(i == 0)
-                                {
-                                    if (column == 0)
-                                    {
-                                        ImGui::Text("Latest fatal error");
-                                    }
-                                    else if (column == 1)
-                                    {
-                                        ImGui::Text("The current path doesn't exist !");
-                                    }
-                                }
-                                else if(i == 1)
-                                {
-                                    if (column == 0)
-                                    {
-                                        ImGui::Text("Latest error");
-                                    }
-                                    else if (column == 1)
-                                    {
-                                        ImGui::Text("My big project");
-                                    }
-                                }
-                                else if(i == 2)
-                                {
-                                    if (column == 0)
-                                    {
-                                        ImGui::Text("Latest warning");
-                                    }
-                                    else if (column == 1)
-                                    {
-                                        ImGui::Text("4qsfdsgsd");
-                                    }
-                                }
-                                else if(i == 3)
-                                {
-                                    if (column == 0)
-                                    {
-                                        ImGui::Text("Latest information");
-                                    }
-                                    else if (column == 1)
-                                    {
-                                        ImGui::Text("4fhdgfhdfgg");
-                                    }
-                                }
-                            
+                                ImGui::Text("Latest fatal error");
+                            }
+                            else if (column == 1)
+                            {
+                                ImGui::Text("The current path doesn't exist !");
+                            }
+                        }
+                        else if (i == 1)
+                        {
+                            if (column == 0)
+                            {
+                                ImGui::Text("Latest error");
+                            }
+                            else if (column == 1)
+                            {
+                                ImGui::Text("My big project");
+                            }
+                        }
+                        else if (i == 2)
+                        {
+                            if (column == 0)
+                            {
+                                ImGui::Text("Latest warning");
+                            }
+                            else if (column == 1)
+                            {
+                                ImGui::Text("4qsfdsgsd");
+                            }
+                        }
+                        else if (i == 3)
+                        {
+                            if (column == 0)
+                            {
+                                ImGui::Text("Latest information");
+                            }
+                            else if (column == 1)
+                            {
+                                ImGui::Text("4fhdgfhdfgg");
+                            }
                         }
                     }
-                    ImGui::EndTable();
                 }
+                ImGui::EndTable();
+            }
 
+            ImGui::GetFont()->Scale *= 1.3;
+            ImGui::PushFont(ImGui::GetFont());
+            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 100));
+            ImGui::TextWrapped("Master context");
+            ImGui::PopStyleColor(1);
+            ImGui::GetFont()->Scale = oldsize;
+            ImGui::PopFont();
 
-    ImGui::GetFont()->Scale *= 1.3;
-    ImGui::PushFont(ImGui::GetFont());
-ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255,255,255,100));
-    ImGui::TextWrapped("Master context");
-ImGui::PopStyleColor(1);
-    ImGui::GetFont()->Scale = oldsize;
-    ImGui::PopFont();
-
-
-                if (ImGui::BeginTable("table_deps", 2, flags))
+            if (ImGui::BeginTable("table_deps", 2, flags))
+            {
+                ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableHeadersRow();
+                for (int i = 0; i < 8; i++)
                 {
-                    ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
-                    ImGui::TableHeadersRow();
-                    for (int i = 0; i < 8; i++)
+                    ImGui::TableNextRow();
+                    for (int column = 0; column < 2; column++)
                     {
-                            ImGui::TableNextRow();
-                            for (int column = 0; column < 2; column++)
+                        ImGui::TableSetColumnIndex(column);
+
+                        if (i == 0)
+                        {
+                            if (column == 0)
                             {
-                                ImGui::TableSetColumnIndex(column);
-                                
-                                if(i == 0)
-                                {
-                                    if (column == 0)
-                                    {
-                                        ImGui::Text("Vortex Version");
-                                    }
-                                    else if (column == 1)
-                                    {
-                                        ImGui::Text("1.1");
-                                    }
-                                }
-                                else if(i == 1)
-                                {
-                                    if (column == 0)
-                                    {
-                                        ImGui::Text("Project name");
-                                    }
-                                    else if (column == 1)
-                                    {
-                                        ImGui::Text("My big project");
-                                    }
-                                }
-                                else if(i == 2)
-                                {
-                                    if (column == 0)
-                                    {
-                                        ImGui::Text("Number of modules loaded");
-                                    }
-                                    else if (column == 1)
-                                    {
-                                        ImGui::Text("4");
-                                    }
-                                }
-                                else if(i == 3)
-                                {
-                                    if (column == 0)
-                                    {
-                                        ImGui::Text("Number of plugins loaded");
-                                    }
-                                    else if (column == 1)
-                                    {
-                                        ImGui::Text("4");
-                                    }
-                                }
-                            
+                                ImGui::Text("Vortex Version");
+                            }
+                            else if (column == 1)
+                            {
+                                ImGui::Text("1.1");
+                            }
+                        }
+                        else if (i == 1)
+                        {
+                            if (column == 0)
+                            {
+                                ImGui::Text("Project name");
+                            }
+                            else if (column == 1)
+                            {
+                                ImGui::Text("My big project");
+                            }
+                        }
+                        else if (i == 2)
+                        {
+                            if (column == 0)
+                            {
+                                ImGui::Text("Number of modules loaded");
+                            }
+                            else if (column == 1)
+                            {
+                                ImGui::Text("4");
+                            }
+                        }
+                        else if (i == 3)
+                        {
+                            if (column == 0)
+                            {
+                                ImGui::Text("Number of plugins loaded");
+                            }
+                            else if (column == 1)
+                            {
+                                ImGui::Text("4");
+                            }
                         }
                     }
-                    ImGui::EndTable();
                 }
-
+                ImGui::EndTable();
+            }
 
             ImGui::EndTabItem();
         }
@@ -268,34 +261,33 @@ ImGui::PopStyleColor(1);
     ImGui::Checkbox("I consent send to Infinite data about my hardware & OS technical infos. ", &consent_data_inspection);
     ImGui::Checkbox("I consent Infinite can contact me to get more informations. ", &consent_response);
 
-            ImVec2 windowSize = ImGui::GetWindowSize();
-            ImVec2 contentSize = ImGui::GetContentRegionAvail();
-            ImVec2 buttonSize = ImVec2(170, 30);
-            ImVec2 bitButtonSize = ImVec2(300, 30);
+    ImVec2 windowSize = ImGui::GetWindowSize();
+    ImVec2 contentSize = ImGui::GetContentRegionAvail();
+    ImVec2 buttonSize = ImVec2(170, 30);
+    ImVec2 bitButtonSize = ImVec2(300, 30);
 
-            float ysection = windowSize.y - 280;            
-            float buttonPosY = windowSize.y - buttonSize.y - ImGui::GetStyle().ItemSpacing.y * 2 - bitButtonSize.y;
+    float ysection = windowSize.y - 280;
+    float buttonPosY = windowSize.y - buttonSize.y - ImGui::GetStyle().ItemSpacing.y * 2 - bitButtonSize.y;
 
-            ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX(), buttonPosY));
+    ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX(), buttonPosY));
 
-            if (ImGui::Button("Don't send and close", buttonSize))
-            {
-            }
+    if (ImGui::Button("Don't send and close", buttonSize))
+    {
+    }
 
-            float firstButtonPosX = windowSize.x - buttonSize.x - bitButtonSize.y - 80 * 2 - ImGui::GetStyle().ItemSpacing.x * 3;
+    float firstButtonPosX = windowSize.x - buttonSize.x - bitButtonSize.y - 80 * 2 - ImGui::GetStyle().ItemSpacing.x * 3;
 
+    ImGui::SetCursorPos(ImVec2(firstButtonPosX, buttonPosY));
 
-            ImGui::SetCursorPos(ImVec2(firstButtonPosX, buttonPosY));
+    if (ImGui::Button("Send and close", buttonSize))
+    {
+    }
 
-            if (ImGui::Button("Send and close", buttonSize))
-            {
-            }
+    ImGui::SameLine();
 
-            ImGui::SameLine();
-
-            if (ImGui::Button("Send and restart", buttonSize))
-            {
-            }
+    if (ImGui::Button("Send and restart", buttonSize))
+    {
+    }
 
     ImGui::End();
 }

@@ -45,6 +45,9 @@ VORTEX_API void VortexMaker::RefreshEnvironmentProjects()
 
     std::string json_file = path + "/projects.json";
 
+    // Clear project list
+    ctx.IO.sys_projects.clear();
+
     // Verify if the project is valid
     try
     {
