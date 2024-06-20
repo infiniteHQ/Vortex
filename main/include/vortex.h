@@ -132,6 +132,7 @@ struct hString;
 struct hArgs;
 struct VxHost;
 struct VxGPOSystem;
+struct EnvProject;
 
 struct CommandOutput;
 struct VxToolchain;
@@ -207,6 +208,7 @@ namespace VortexMaker
     VORTEX_API void RemoveSystemProjectEntry(const std::string& project_name);
 
     VORTEX_API void ImportProject(const std::string &path);
+    VORTEX_API std::vector<std::shared_ptr<EnvProject>> FindProjectInFolder(const std::string &path);
 
     VORTEX_API void InstallContentOnSystem(const std::string &directory);
 

@@ -28,8 +28,6 @@ public:
   {
     PushStyle();
 
-    ImGui::ShowDemoWindow();
-
     if (this->ShowProjectManager)
     {
       static ProjectManager projectManager(this->m_ctx, this->ParentWindow);
@@ -48,8 +46,8 @@ public:
       systemSettings.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
     } 
 
-    static Details details(this->m_ctx, this->ParentWindow);
-    details.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
+    /*static Details details(this->m_ctx, this->ParentWindow);
+    details.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);*/
 
     PopStyle();
   }
@@ -82,7 +80,7 @@ public:
   bool ShowProjectViewer = false;
   bool ShowModulesManager = false;
   bool ShowProjectManager = true;
-  bool ShowLogUtility = true;
+  bool ShowLogUtility = false;
   bool ShowSystemSettings = false;
 
 private:

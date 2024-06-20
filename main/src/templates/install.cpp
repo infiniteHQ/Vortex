@@ -2,7 +2,7 @@
 
 VORTEX_API void VortexMaker::InstallTemplateOnSystem(const std::string &directory)
 {
-    std::string modules_path = "~/.vx/templates";
+    std::string templates_path = "~/.vx/templates";
     std::string json_file = directory + "/template.json";
 
     // Verify if the module is valid
@@ -18,27 +18,32 @@ VORTEX_API void VortexMaker::InstallTemplateOnSystem(const std::string &director
         std::string author = json_data["author"].get<std::string>();
 
         // std::string origin_path = path.substr(0, path.find_last_of("/"));
-        modules_path += "/" + name + "." + version;
+        templates_path += "/" + name + "." + version;
 
-        VortexMaker::LogInfo("Core", "Installing the module " + name + "...");
+        VortexMaker::LogInfo("Core", "Installing the template " + name + "...");
 
         // Create directory
         {
-            std::string cmd = "mkdir " + modules_path;
+            std::string cmd = "mkdir " + templates_path;
             system(cmd.c_str());
         }
 
         // Move the module in the final system path
         {
-            std::string cmd = "cp -r " + directory + "/* " + modules_path;
+            std::string cmd = "cp -r " + directory + "/* " + templates_path;
             system(cmd.c_str());
         }
+
+        VortexMaker::LogInfo("Core", "The template " + name +  "is now installed on system !");
+        return;
     }
     catch (const std::exception &e)
     {
         // Print error if an exception occurs
-        std::cerr << "Error: " << e.what() << std::endl;
+        VortexMaker::LogError("Core", e.what());
     }
+
+    VortexMaker::LogError("Core", "Cannot find template registered at" + directory +  " !");
 }
 
 VORTEX_API void VortexMaker::InstallTemplate(const std::string &name, const std::string &path)

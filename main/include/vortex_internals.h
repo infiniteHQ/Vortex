@@ -125,6 +125,7 @@ struct EnvProject
     std::string name;
     std::string path;
     std::string version;
+    std::string compatibleWith;
     std::string description;
     std::string logoPath;
     std::string author;

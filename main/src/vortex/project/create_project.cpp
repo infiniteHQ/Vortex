@@ -38,6 +38,8 @@ void VortexMaker::CreateProject(const std::string& name, const std::string& path
         j["project"]["name"] = name;
         j["project"]["type"] = "???";
         j["project"]["version"] = "1.0.0";
+        j["project"]["logoPath"] = "??";
+        j["project"]["lastOpened"] = "Never";
         j["project"]["compatibleWith"] = VORTEX_VERSION;
         j["project"]["include_system_templates"] = true;
 

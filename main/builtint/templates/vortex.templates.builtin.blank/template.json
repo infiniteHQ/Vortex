@@ -9,6 +9,6 @@
     ],
     "deps": [],
     "tarball": "./base.tar.gz",
-    "picture": "./assets/logo.png",
+    "picture": "/assets/icon.png",
     "description": "This is a module that allow the creation, manipulation, development & production of a toolchain"
 }

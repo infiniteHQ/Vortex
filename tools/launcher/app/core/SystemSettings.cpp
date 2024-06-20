@@ -5,7 +5,9 @@ static std::shared_ptr<ModuleInterface> selected_module;
 static std::shared_ptr<TemplateInterface> selected_template;
 static std::string default_project_avatar = "/usr/local/include/Vortex/1.1/imgs/base_vortex.png";
 static std::string _parent;
+
     static bool open_module_deletion_modal = false;
+    static bool open_template_deletion_modal = false;
     static bool open_import_module = false;
     static bool open_import_all_module = false;
     static bool open_import_all_templates = false;
@@ -56,6 +58,11 @@ void RegisterAvailableVersions()
     }
 }
 
+enum class ProjectStates
+{
+    SAME_NAME_ALREADY_EXIST,
+    NOT_INSTALLED,
+};
 enum class ModulesStates
 {
     ALREADY_INSTALLED_WITH_CORRECT_VERSION,
@@ -818,7 +825,7 @@ void SystemSettings::OnImGuiRender(const std::string &parent, std::function<void
                         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9f, 0.2f, 0.2f, 1.8f));
                         if (ImGui::Button("Delete template", bitButtonSize))
                         {
-                            // beh
+                            open_template_deletion_modal = true;
                         }
                         ImGui::PopStyleColor(3);
                     }
@@ -932,7 +939,6 @@ void SystemSettings::menubar()
     static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-
     if (open_import_all_templates)
     {
         static ImGuiTableFlags window_flags = ImGuiWindowFlags_MenuBar;
@@ -985,18 +991,12 @@ void SystemSettings::menubar()
                             {
                                 if (all_templates_to_add[row].first == TemplatesStates::SAME_NAME_DETECTED)
                                 {
-                                    std::string label = "Install another";
-                                    if (ImGui::Button(label.c_str()))
-                                    {
-                                        VxContext *ctx = VortexMaker::GetCurrentContext();
-                                        VortexMaker::InstallTemplateOnSystem(all_templates_to_add[row].second->m_path);
-                                        VortexMaker::LoadSystemTemplates(ctx->IO.sys_templates);
-                                        CheckAllTemplatesStates(VortexMaker::FindTemplatesInDirectory(path_input_template_all));
-                                    }
+                                    ImGui::Text("Handle versions !!! But already here");
                                 }
                                 else if (all_templates_to_add[row].first == TemplatesStates::NOT_INSTALLED)
                                 {
-                                    if (ImGui::Button("Install"))
+                                    std::string label = "Install###" + row; 
+                                    if (ImGui::Button(label.c_str()))
                                     {
                                         VxContext *ctx = VortexMaker::GetCurrentContext();
                                         VortexMaker::InstallTemplateOnSystem(all_templates_to_add[row].second->m_path);
@@ -1015,6 +1015,7 @@ void SystemSettings::menubar()
                             }
                             else if (column == 3)
                             {
+                                ImGui::Text(all_templates_to_add[row].second->m_version.c_str());
                             }
                         }
                     }
@@ -1052,9 +1053,50 @@ void SystemSettings::menubar()
         }
     }
 
+
+    if (open_template_deletion_modal)
+    {
+        ImGui::SetNextWindowSize(ImVec2(300, 200));
+
+        static ImGuiTableFlags window_flags = ImGuiWindowFlags_NoResize;
+        if (ImGui::BeginPopupModal("Delete a system template", NULL, window_flags))
+        {
+            // Set the size of the modal to 200x75 pixels the first time it is created
+
+            // 3 text inputs
+            static char path_input_all[512];
+            // inputs widget
+            ImGui::TextWrapped("WARNING, if you click on the Delete button, the project will be erase forever.");
+            ImGui::SetItemDefaultFocus();
+
+
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                open_template_deletion_modal = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine();
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.2f, 0.2f, 0.9f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.2f, 0.2f, 1.8f));
+            if (ImGui::Button("Delete", ImVec2(120, 0)))
+            {
+                // Delete
+                VortexMaker::DeleteSystemTemplate(selected_template->m_name, selected_template->m_version);
+                VortexMaker::LoadSystemTemplates(this->ctx->IO.sys_templates);
+
+                open_template_deletion_modal = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::PopStyleColor(3);
+            ImGui::EndPopup();
+        }
+    }
+
+
+
     if (open_module_deletion_modal)
     {
-
         ImGui::SetNextWindowSize(ImVec2(300, 200));
 
         static ImGuiTableFlags window_flags = ImGuiWindowFlags_NoResize;
@@ -1289,6 +1331,9 @@ void SystemSettings::menubar()
 
     if (open_module_deletion_modal)
         ImGui::OpenPopup("Delete a system module");
+
+    if (open_template_deletion_modal)
+        ImGui::OpenPopup("Delete a system template");
 
     if (ImGui::BeginMenuBar())
     {

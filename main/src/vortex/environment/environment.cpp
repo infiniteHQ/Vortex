@@ -60,6 +60,7 @@ VORTEX_API void VortexMaker::RefreshEnvironmentProjects()
             newproject->name = project["name"].get<std::string>();
             newproject->version = project["version"].get<std::string>();
             newproject->description = project["description"].get<std::string>();
+            newproject->compatibleWith = project["compatibleWith"].get<std::string>();
             newproject->path = project["path"].get<std::string>();
             newproject->logoPath = project["logoPath"].get<std::string>();
             newproject->lastOpened = project["lastOpened"].get<std::string>();

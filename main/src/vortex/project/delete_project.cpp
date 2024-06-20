@@ -12,6 +12,16 @@
  */
 VORTEX_API void VortexMaker::DeleteProject(const std::string &path, const std::string &project_name)
 {
+    // Vérifiez si le fichier existe avant de l'ouvrir
+    if (!std::filesystem::exists(path + "/vortex.config"))
+    {
+        // Lancez une exception si le fichier n'existe pas
+        VortexMaker::LogError("Core", "Project not found (File not found: " + path + "/vortex.config)");
+        VortexMaker::LogWarn("Core", "Delete the project entry of environment.");
+        VortexMaker::RemoveSystemProjectEntry(project_name);
+        return;
+    }
+
     // Load JSON data from the module configuration file
     auto json_data = VortexMaker::DumpJSON(path + "/vortex.config");
 
@@ -33,9 +43,7 @@ VORTEX_API void VortexMaker::DeleteProject(const std::string &path, const std::s
                     }
                     else
                     {
-                        VortexMaker::LogError("Core", "Failed to delete the project \"" + json_data["project"]["name"].get<std::string>() + "\" at path \"" + json_data["path"].get<std::string>() + "\"");
-                        VortexMaker::RemoveSystemProjectEntry(project_name);
-                        return;
+                        VortexMaker::LogError("Core", "Failed to delete the project \"" + json_data["project"]["name"].get<std::string>() + "\" at path \"" + json_data["path"].get<std::string>() + "\"");                        return;
                     }
                 }
             }

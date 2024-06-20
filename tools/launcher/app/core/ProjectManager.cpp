@@ -9,10 +9,12 @@ static std::vector<std::string> labels = {"Open a project", "Create a new projec
 static int selected = 0;
 static int selected_template = 0;
 static bool template_is_selected = false;
+static bool open_import_projects = false;
 static bool project_creation = false;
 static std::shared_ptr<TemplateInterface> selected_template_object;
 static std::shared_ptr<EnvProject> selected_envproject;
 static std::shared_ptr<EnvProject> selected_envproject_to_remove;
+static std::vector<std::shared_ptr<EnvProject>> finded_projects;
 static std::string title = "none";
 static std::string default_project_avatar = "/usr/local/include/Vortex/imgs/base_vortex.png";
 static std::string operating_system_banner = "/usr/local/include/Vortex/1.1/imgs/operating_system_banner.png";
@@ -372,12 +374,55 @@ void MyButton(const std::string &name, int w, int h)
         ImGui::SameLine();
 }
 
+
+// Fonction pour dessiner du texte avec des correspondances mises en surbrillance
+void DrawHighlightedText(ImDrawList* drawList, ImVec2 textPos, const char* text, const char* search, ImU32 highlightColor, ImU32 textColor, ImU32 highlightTextColor)
+{
+    if (!text || !search || !*search)
+    {
+        drawList->AddText(textPos, textColor, text);
+        return;
+    }
+
+    const char* start = text;
+    const char* found = strstr(start, search);
+    while (found)
+    {
+        // Dessiner le texte avant la correspondance
+        if (found > start)
+        {
+            std::string preText(start, found);
+            drawList->AddText(textPos, textColor, preText.c_str());
+            textPos.x += ImGui::CalcTextSize(preText.c_str()).x;
+        }
+
+        // Dessiner la correspondance mise en surbrillance avec un texte noir
+        ImVec2 highlightPos = textPos;
+        ImVec2 highlightSize = ImGui::CalcTextSize(search);
+        drawList->AddRectFilled(highlightPos, ImVec2(highlightPos.x + highlightSize.x, highlightPos.y + highlightSize.y), highlightColor);
+        drawList->AddText(textPos, highlightTextColor, search);
+        textPos.x += highlightSize.x;
+
+        // Passer à la partie suivante du texte
+        start = found + strlen(search);
+        found = strstr(start, search);
+    }
+
+    // Dessiner le texte restant après la dernière correspondance
+    if (*start)
+    {
+        drawList->AddText(textPos, textColor, start);
+    }
+}
+
+
 void MyButton(const std::shared_ptr<EnvProject> envproject)
 {
     ImVec2 squareSize(100, 100);
 
     const char *originalText = envproject->name.c_str();
     char truncatedText[12];
+    const char* versionText = envproject->compatibleWith.c_str();
 
     if (strlen(originalText) > 8)
     {
@@ -414,11 +459,17 @@ void MyButton(const std::shared_ptr<EnvProject> envproject)
     ImVec2 smallRectPos(cursorPos.x + squareSize.x - smallRectSize.x - 5, cursorPos.y + squareSize.y - smallRectSize.y - 5);
 
     drawList->AddRectFilled(smallRectPos, ImVec2(smallRectPos.x + smallRectSize.x, smallRectPos.y + smallRectSize.y), IM_COL32(0, 0, 0, 255));
-    ImVec2 versionTextPos = ImVec2(smallRectPos.x + (smallRectSize.x - ImGui::CalcTextSize(envproject->version.c_str()).x) / 2, smallRectPos.y + (smallRectSize.y - ImGui::CalcTextSize("version").y) / 2);
-    drawList->AddText(versionTextPos, IM_COL32(255, 255, 255, 255), envproject->version.c_str());
+    ImVec2 versionTextPos = ImVec2(smallRectPos.x + (smallRectSize.x - ImGui::CalcTextSize(versionText).x) / 2, smallRectPos.y + (smallRectSize.y - ImGui::CalcTextSize("version").y) / 2);
+    drawList->AddText(versionTextPos, IM_COL32(255, 255, 255, 255), versionText);
 
-    ImVec2 textPos = ImVec2(cursorPos.x + (squareSize.x - textSize.x) / 2, cursorPos.y + squareSize.y + 5);
-    drawList->AddText(textPos, IM_COL32(255, 255, 255, 255), truncatedText);
+    ImVec2 textPos = ImVec2(cursorPos.x + (squareSize.x - textSize.x) / 2, cursorPos.y + squareSize.y + 5);    
+    
+    ImU32 textColor = IM_COL32(255, 255, 255, 255);
+    ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
+    ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
+
+    DrawHighlightedText(drawList, textPos, truncatedText, ProjectSearch, highlightColor, textColor, highlightTextColor);
+
 
     float windowVisibleX2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
     if (cursorPos.x + totalSize.x < windowVisibleX2)
@@ -460,8 +511,9 @@ void MyButton(const std::shared_ptr<TemplateInterface> templateinterface)
 
     ImDrawList *drawList = ImGui::GetWindowDrawList();
 
-    addTexture("test", default_project_avatar);
-    getTexture("test", drawList, cursorPos, squareSize);
+    std::string logo_path = templateinterface->m_logo_path;
+    addTexture(logo_path, logo_path);
+    getTexture(logo_path, drawList, cursorPos, squareSize);
 
     ImVec2 smallRectSize(40, 20);
     ImVec2 smallRectPos(cursorPos.x + squareSize.x - smallRectSize.x - 5, cursorPos.y + squareSize.y - smallRectSize.y - 5);
@@ -522,6 +574,127 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
     static bool user_string_validation = false;
     static char string_validation[256] = "";
 
+    if (open_import_projects)
+    {
+        static ImGuiTableFlags window_flags = ImGuiWindowFlags_MenuBar;
+        static bool first_time = true;
+
+
+        if (first_time)
+        {
+            ImGui::SetNextWindowSize(ImVec2(820, 420));
+        }
+
+        if (ImGui::BeginPopupModal("Search for project(s) to add", NULL, window_flags))
+        {
+            if (first_time)
+            {
+                first_time = false;
+            }
+
+            static char path_input_all[512];
+
+            if (ImGui::BeginMenuBar())
+            {
+                ImGui::Text("Please chose a folder");
+
+                if (ImGui::ImageButtonWithText(projectIcon, "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+                {
+                }
+                ImGui::InputText("###Path", path_input_all, IM_ARRAYSIZE(path_input_all));
+                std::string label = "Find###templates";
+                if (ImGui::Button(label.c_str()))
+                {
+                    finded_projects = VortexMaker::FindProjectInFolder(path_input_all);
+                }
+                ImGui::EndMenuBar();
+            }
+
+            if (!finded_projects.empty())
+            {
+                static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+                // Advanced mode : (Make a boolean with a simple mod (only, name, state & progress))
+                if (ImGui::BeginTable("ModulesToAddTable", 4, flags))
+                {
+                    ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Author", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Vortex version", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableHeadersRow();
+
+                    for (int i = 0; i <= finded_projects.size(); i++)
+                    {
+                        static std::pair<char[128], char[128]> newItem;
+                        static char label[128];
+
+                        ImGui::TableNextRow();
+                        for (int column = 0; column < 4; column++)
+                        {
+                            ImGui::TableSetColumnIndex(column);
+
+                            if (column == 0)
+                            {
+                                if(ImGui::Button("Import"))
+                                {
+                                    // Search if a same name exist, if yes, rename this project
+                                    if(false)
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        VortexMaker::ImportProject(path_input_all);
+                                    }
+                                }
+                            }
+                            else if (column == 1)
+                            {
+                                ImGui::Text(finded_projects[i]->name.c_str());
+                            }
+                            else if (column == 2)
+                            {
+                                ImGui::Text(finded_projects[i]->author.c_str());
+                            }
+                            else if (column == 3)
+                            {
+                                ImGui::Text(finded_projects[i]->compatibleWith.c_str());
+                            }
+                        }
+                    }
+
+                    ImGui::EndTable();
+                }
+            }
+        
+            ImVec2 windowSize = ImGui::GetWindowSize();
+            ImVec2 buttonSize = ImVec2(100, 30);
+            ImVec2 bitButtonSize = ImVec2(150, 30);
+            float ysection = windowSize.y - 280;
+            ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX(), ysection));
+
+            float firstButtonPosX = windowSize.x - buttonSize.x - 75 * 2 - ImGui::GetStyle().ItemSpacing.x * 3;
+
+            float buttonPosY = windowSize.y - buttonSize.y - ImGui::GetStyle().ItemSpacing.y * 2 - 10;
+
+            ImGui::SetCursorPos(ImVec2(firstButtonPosX, buttonPosY));
+
+            if (ImGui::Button("Done", ImVec2(120, 0)))
+            {
+
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SetItemDefaultFocus();
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                open_import_projects = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+    }
+
     if (open_deletion_modal)
     {
 
@@ -571,6 +744,11 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
 
     if (open_deletion_modal)
         ImGui::OpenPopup("Delete a project");
+
+    if (open_import_projects)
+        ImGui::OpenPopup("Search for project(s) to add");
+
+        
 
     if (!project_creation)
     {
@@ -853,8 +1031,8 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
                     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.2f, 0.0f, 1.8f));
                     if (ImGui::Button("Create new project", bitButtonSize))
                     {
-
                         VortexMaker::CreateProject(name, auth, version, desc, path, selected_template_object->m_name);
+                        VortexMaker::RefreshEnvironmentProjects();
 
                         std::string projectPath = path;
 
@@ -928,6 +1106,7 @@ void ProjectManager::mainButtonsMenuItem()
 
         if (ImGui::UIKit_ImageButtonWithText(addIcon, "Import project(s)", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
         {
+            open_import_projects = true;
         }
         ImGui::PushItemWidth(200);
         ImGui::InputText("", ProjectSearch, sizeof(ProjectSearch));
