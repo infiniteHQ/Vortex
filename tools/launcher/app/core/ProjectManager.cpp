@@ -452,8 +452,12 @@ void MyButton(const std::shared_ptr<EnvProject> envproject)
 
     ImDrawList *drawList = ImGui::GetWindowDrawList();
 
-    addTexture("test", default_project_avatar);
-    getTexture("test", drawList, cursorPos, squareSize);
+    if(!envproject->logoPath.empty())
+    {
+    addTexture(envproject->logoPath, envproject->logoPath);
+    getTexture(envproject->logoPath, drawList, cursorPos, squareSize);
+
+    }
 
     ImVec2 smallRectSize(40, 20);
     ImVec2 smallRectPos(cursorPos.x + squareSize.x - smallRectSize.x - 5, cursorPos.y + squareSize.y - smallRectSize.y - 5);
@@ -801,9 +805,9 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
                 {
                     {
                         ImGui::BeginChild("LOGO_", ImVec2(70, 70), false, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar);
-                        if (selected_envproject->logoPath.empty())
+                        if(!selected_envproject->logoPath.empty())
                         {
-                            MyButton("tezt", 60, 60);
+                            MyButton(selected_envproject->logoPath, 60, 60);
                         }
                         ImGui::EndChild();
                         ImGui::SameLine();
@@ -968,7 +972,7 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
                         ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
                         if (!selected_template_object->m_logo_path.empty())
                         {
-                            MyButton("tezt", 60, 60);
+                            MyButton(selected_template_object->m_logo_path, 60, 60);
                         }
 
                         ImGui::EndChild();
@@ -1031,9 +1035,11 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
                     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.2f, 0.2f, 0.0f, 1.8f));
                     if (ImGui::Button("Create new project", bitButtonSize))
                     {
-                        VortexMaker::CreateProject(name, auth, version, desc, path, selected_template_object->m_name);
+                        VortexMaker::CreateProject(name, auth, version, desc, path, path + "/icon.png", selected_template_object->m_name);
                         VortexMaker::RefreshEnvironmentProjects();
-
+                        
+                        if(open)
+                        {
                         std::string projectPath = path;
 
                         std::thread([projectPath]()
@@ -1041,6 +1047,9 @@ void ProjectManager::OnImGuiRender(const std::string &parent, std::function<void
         std::string cmd = "cd " + projectPath + " && vortex -e";
         system(cmd.c_str()); })
                             .detach();
+
+                        }
+
                     }
                     ImGui::PopStyleColor(3);
                 }

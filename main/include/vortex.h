@@ -202,7 +202,7 @@ namespace VortexMaker
     VORTEX_API void AddModuleToProject(const std::string &module_name);
 
     VORTEX_API void CreateProject(const std::string &name, const std::string &path);
-    VORTEX_API void CreateProject(const std::string &name, const std::string &author, const std::string &version, const std::string &description, const std::string &path, const std::string &template_name);
+    VORTEX_API void CreateProject(const std::string &name, const std::string &author, const std::string &version, const std::string &description, const std::string &path, const std::string& logo_path, const std::string &template_name);
 
     VORTEX_API void DeleteProject(const std::string &path, const std::string& project_name);
     VORTEX_API void RemoveSystemProjectEntry(const std::string& project_name);
@@ -221,6 +221,7 @@ namespace VortexMaker
 
     VORTEX_API void RefreshEnvironmentProjects();
     VORTEX_API void UpdateEnvironmentProject();
+    VORTEX_API void UpdateEnvironmentProject(const std::string &name, const std::string &author, const std::string &version, const std::string& compatibleWith, const std::string &description, const std::string &path, const std::string &logo_path, const std::string &template_name);
     VORTEX_API void UpdateEnvironmentProject(const std::string& oldname);
 
     VORTEX_API std::string getCurrentTimeStamp();

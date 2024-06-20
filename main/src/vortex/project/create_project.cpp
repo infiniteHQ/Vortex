@@ -3,31 +3,31 @@
 
 /**
  * @brief CreateProject creates a new project with the specified name and path.
- * 
+ *
  * This function creates a new project directory structure and initializes necessary files
  * such as 'vortex.config'.
- * 
+ *
  * @param name The name of the project.
  * @param path The path where the project will be created.
  */
-void VortexMaker::CreateProject(const std::string& name, const std::string& path)
+void VortexMaker::CreateProject(const std::string &name, const std::string &path)
 {
     std::string projectPath;
 
     // Creating main project folder
     {
         projectPath = path + "/" + name + "/";
-        std::string cmd = "mkdir "  +projectPath;
+        std::string cmd = "mkdir " + projectPath;
         system(cmd.c_str());
     }
 
     // Creating subdirectories and files
     {
-        std::string cmd = "mkdir "  + projectPath + "/.vx";
+        std::string cmd = "mkdir " + projectPath + "/.vx";
         system(cmd.c_str());
     }
     {
-        std::string cmd = "touch "  + projectPath + "/vortex.config";
+        std::string cmd = "touch " + projectPath + "/vortex.config";
         system(cmd.c_str());
     }
     // Creating and populating JSON data for vortex.config
@@ -62,81 +62,75 @@ void VortexMaker::CreateProject(const std::string& name, const std::string& path
 
     // Creating data directory
     {
-        std::string cmd = "mkdir "  + projectPath + "/.vx/data";
+        std::string cmd = "mkdir " + projectPath + "/.vx/data";
         system(cmd.c_str());
     }
     // Creating subdirectories in data directory
     {
-        std::string cmd = "mkdir "  + projectPath + "/.vx/data/hosts";
+        std::string cmd = "mkdir " + projectPath + "/.vx/data/hosts";
         system(cmd.c_str());
     }
     {
-        std::string cmd = "mkdir "  + projectPath + "/.vx/data/kernels";
+        std::string cmd = "mkdir " + projectPath + "/.vx/data/kernels";
         system(cmd.c_str());
     }
     // (Additional subdirectories omitted for brevity)
 
     // Creating dist directory
     {
-        std::string cmd = "mkdir "  + projectPath + "/.vx/dist";
+        std::string cmd = "mkdir " + projectPath + "/.vx/dist";
         system(cmd.c_str());
     }
     // Creating subdirectories in dist directory
     {
-        std::string cmd = "mkdir "  + projectPath + "/.vx/dist/hosts";
+        std::string cmd = "mkdir " + projectPath + "/.vx/dist/hosts";
         system(cmd.c_str());
     }
     // (Additional subdirectories omitted for brevity)
 
     // Creating temporary directory
     {
-        std::string cmd = "mkdir "  + projectPath + "/.vx/temp";
+        std::string cmd = "mkdir " + projectPath + "/.vx/temp";
         system(cmd.c_str());
     }
 }
 
-VORTEX_API void VortexMaker::CreateProject(const std::string &name, const std::string &author, const std::string &version, const std::string &description, const std::string &path, const std::string &template_name)
+VORTEX_API void VortexMaker::CreateProject(const std::string &name, const std::string &author, const std::string &version, const std::string &description, const std::string &path, const std::string& logo_path, const std::string &template_name)
 {
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
+
+    // Verify the name
+    for(auto existing_project : ctx.IO.sys_projects)
+    {
+        if(existing_project->name == name)
+        {
+            VortexMaker::LogError("Core", "Cannot create a new project \"" + name + "\" because another project is already nammed like this !");
+            return;
+        }
+    }
+
     VortexMaker::createFolderIfNotExists(path);
     VortexMaker::InstallTemplate(template_name, path);
 
     std::string vortex_version = VORTEX_VERSION;
 
-
     std::string config_file = path + "/vortex.config";
 
-        // Load JSON data from the project configuration file
-        auto config_data = VortexMaker::DumpJSON(config_file);
+    // Load JSON data from the project configuration file
+    auto config_data = VortexMaker::DumpJSON(config_file);
 
-                // Project with the old name exists, update its information
-                config_data["project"]["name"] = name;
-                config_data["project"]["compatibleWith"] = vortex_version;
-                config_data["project"]["version"] = version;
-                config_data["project"]["author"] = author;
-                config_data["project"]["description"] = description;
+    // Project with the old name exists, update its information
+    config_data["project"]["name"] = name;
+    config_data["project"]["compatibleWith"] = vortex_version;
+    config_data["project"]["version"] = version;
+    config_data["project"]["author"] = author;
+    config_data["project"]["description"] = description;
 
+    // Write the updated JSON data back to the file
+    std::ofstream output(config_file);
+    output << config_data.dump(4); // Use pretty print with indentation of 4 spaces
+    output.close();
 
-        // Write the updated JSON data back to the file
-        std::ofstream output(config_file);
-        output << config_data.dump(4); // Use pretty print with indentation of 4 spaces
-        output.close();
-
-    // Creating and populating JSON data for vortex.config
-    /*
-    {
-        nlohmann::json j;
-        j["project"]["author"] = author;
-        j["project"]["description"] = description;
-        j["project"]["name"] = name;
-        j["project"]["type"] = "???";
-        j["project"]["version"] = "1.0.0";
-        j["project"]["compatibleWith"] = version;
-        j["project"]["include_system_templates"] = true;
-
-        // Store JSON into vortex.config file
-        std::ofstream o(path + "/vortex.config");
-        o << std::setw(4) << j << std::endl;
-        o.close();
-    }*/
-
+    VortexMaker::UpdateEnvironmentProject(name, author, version, vortex_version, description, path, logo_path, template_name);
 }
