@@ -31,6 +31,20 @@ VORTEX_API void VortexMaker::CreateSessionTopic(const std::string &post_topic)
         }
     }
 
+    std::string log_path = topic_path + "/logs";
+
+    {
+        std::string cmd = "mkdir " + log_path;
+        if (std::system(cmd.c_str()) == 0)
+        {
+            VortexMaker::LogInfo("Core", "Session logs folder of \"" + post_topic + "\" is created with success !");
+        }
+        else
+        {
+            VortexMaker::LogError("Core", "Failed to create session logs folder of \"" + post_topic + "\"!");
+        }
+    }
+
     {
         std::string cmd = "touch " + crash_path + "/core_dump.txt";
         if (std::system(cmd.c_str()) == 0)

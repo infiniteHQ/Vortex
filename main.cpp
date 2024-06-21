@@ -12,6 +12,8 @@
 #include "./main/include/templates/load.h"
 #include "./lib/uikit/src/EntryPoint.h"
 
+static std::string session_id = "unknow";
+
 void PrintInfinite()
 {
     std::cout << R"(
@@ -107,7 +109,15 @@ VxContext *InitRuntime(bool logger)
 {
     std::cout << "Initializing runtime..." << std::endl;
     VxContext *ctx = VortexMaker::CreateContext();
+
+    ctx->state.session_id = session_id;
+
+    VortexMaker::CreateGlobalLogger();
+    VortexMaker::CreateConsoleLogger();
     ctx->logger = logger;
+
+    VortexMaker::CreateSessionTopic(ctx->state.session_id);
+
     std::ifstream file("vortex.config");
 
     if (file)
@@ -131,7 +141,14 @@ VxContext *InitRuntime(bool logger)
 VxContext *InitBlankRuntime(bool logger)
 {
     VxContext *ctx = VortexMaker::CreateContext();
+
+    ctx->state.session_id = session_id;
+
+    VortexMaker::CreateGlobalLogger();
+    VortexMaker::CreateConsoleLogger();
     VortexMaker::LogInfo("Bootstrapp", "Initializing runtime...");
+
+    VortexMaker::CreateSessionTopic(ctx->state.session_id);
 
     // Initialize environment
     VortexMaker::InitEnvironment();
@@ -168,20 +185,18 @@ int main(int argc, char *argv[])
         else if (std::string(argv[1]) == "-crash" || std::string(argv[1]) == "--get-last-crash")
         {
             PrintHeader();
-            InitBlankRuntime(true);
-            VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
-
-            VxContext *ctx = VortexMaker::GetCurrentContext();
-            std::string session_id;
 
             if (argc > 2) {
                 std::string arg2 = argv[2];
                 if (arg2.rfind("--session_id=", 0) == 0) {
                     session_id = arg2.substr(13);
-                    VxContext *ctx = VortexMaker::GetCurrentContext();
-                    ctx->state.session_id = session_id;
                 }
             }
+
+            InitBlankRuntime(true);
+            VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
+
+            VxContext *ctx = VortexMaker::GetCurrentContext();
 
             std::thread receiveThread;
                 std::thread Thread([&]()
@@ -261,21 +276,15 @@ int main(int argc, char *argv[])
         else if (std::string(argv[1]) == "-l" || std::string(argv[1]) == "--launcher")
         {
             PrintHeader();
-            InitBlankRuntime(true);
-            VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
-
-            std::string session_id;
 
             if (argc > 2) {
                 std::string arg2 = argv[2];
                 if (arg2.rfind("--session_id=", 0) == 0) {
                     session_id = arg2.substr(13);
-                    VxContext *ctx = VortexMaker::GetCurrentContext();
-                    ctx->state.session_id = session_id;
-
-                    VortexMaker::CreateSessionTopic(ctx->state.session_id);
                 }
             }
+            InitBlankRuntime(true);
+            VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
 
             std::thread receiveThread;
             try

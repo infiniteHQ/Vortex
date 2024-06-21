@@ -1,30 +1,26 @@
+# CMakeLists.txt pour le projet principal
 cmake_minimum_required(VERSION 3.16)
 project(vortex)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC")
 set(VORTEX_VERSION "1.1")
 
 # Liste des fichiers sources pour la bibliothèque partagée
 file(GLOB_RECURSE VORTEX_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
-file(GLOB_RECURSE VORTEXEDITOR_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tools/editor/*.cpp")
-file(GLOB_RECURSE VORTEXEDITOR_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tools/launcher/*.cpp")
-file(GLOB_RECURSE VORTEXEDITOR_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tools/crash_handler/*.cpp")
 
 # Création de la bibliothèque partagée
-add_library(vortex_shared SHARED 
-${VORTEX_SHARED_SOURCES}
-${VORTEXEDITOR_SHARED_SOURCES}
-)
+add_library(vortex_shared SHARED ${VORTEX_SHARED_SOURCES})
 
 # Définir les chemins d'inclusion pour la bibliothèque partagée
 target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include
     ${CMAKE_CURRENT_SOURCE_DIR}/main/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/tools/editor
 )
 
-# Liste des fichiers sources pour l'exécutable principal
-file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
+# Ajouter des dépendances supplémentaires à la bibliothèque partagée si nécessaire
 
 # Add editor
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/editor editor_build)
@@ -38,13 +34,15 @@ target_link_libraries(vortex_shared PUBLIC crash_handler)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/launcher launcher_build)
 target_link_libraries(vortex_shared PUBLIC launcher)
 
+# Liste des fichiers sources pour l'exécutable principal
+file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
+
 # Création de l'exécutable principal
 add_executable(vortex ${VORTEX_SOURCES} main.cpp)
+target_link_libraries(vortex PRIVATE vortex_shared)
 
 add_executable(vx ${VORTEX_SOURCES} bootstrapp.cpp)
-
-# Liaison avec la bibliothèque partagée
-target_link_libraries(vortex PRIVATE vortex_shared)
+target_link_libraries(vx PRIVATE vortex_shared)
 
 # Ajouter d'autres dépendances ou configurations pour l'exécutable principal
 

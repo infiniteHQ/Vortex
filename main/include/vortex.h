@@ -73,6 +73,10 @@ namespace fs = std::filesystem;
 #include "../../lib/uikit/lib/stb-image/stb_image.h"
 #include "../../lib/uikit/lib/glfw/include/GLFW/glfw3.h"
 #include "../../lib/spdlog/include/spdlog/spdlog.h"
+#include "../../lib/spdlog/include/spdlog/sinks/stdout_color_sinks.h"
+#include "../../lib/spdlog/include/spdlog/sinks/basic_file_sink.h"
+#include "../../lib/spdlog/include/spdlog/sinks/rotating_file_sink.h"
+#include "../../lib/spdlog/include/spdlog/sinks/daily_file_sink.h"
 #include "../../lib/json/single_include/nlohmann/json.hpp"
 
 
@@ -148,9 +152,6 @@ struct Task;
 struct VxContext;
 //_____________________________________________________________________________
 
-typedef int VortexMakerChannel_Props;
-typedef int VortexMakerMatrix_Props;
-
 // Callback and functions types
 typedef void *(*VortexMakerMemAllocFunc)(size_t sz, void *user_data); // Function signature for VortexMaker::SetAllocatorFunctions()
 typedef void (*VortexMakerMemFreeFunc)(void *ptr, void *user_data);   // Function signature for VortexMaker::SetAllocatorFunctions()
@@ -175,6 +176,9 @@ namespace VortexMaker
     // Definitions : /src/vortex/logger/logger.cpp
     VORTEX_API void LogInfo(const std::string &scope, const std::string &message);
 #define VXINFO(scope, message) LogInfo(scope, message);
+
+    VORTEX_API void LogInfo(const std::string &pool_name, const std::string &scope, const std::string &message);
+#define VXPOOLINFO(pool_name, scope, message) LogInfo(pool_name, scope, message);
 
     VORTEX_API void LogWarn(const std::string &scope, const std::string &message);
 #define VXWARN(scope, message) LogWarn(scope, message);
@@ -230,6 +234,10 @@ namespace VortexMaker
     VORTEX_API void UpdateEnvironmentProject(const std::string& oldname);
 
     VORTEX_API std::string getCurrentTimeStamp();
+
+    VORTEX_API std::shared_ptr<spdlog::logger> CreateLogPool(const std::string &pool_name);
+    VORTEX_API std::shared_ptr<spdlog::logger> CreateGlobalLogger();
+    VORTEX_API std::shared_ptr<spdlog::logger> CreateConsoleLogger();
 
     VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename);
     VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename, int recursions);

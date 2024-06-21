@@ -184,9 +184,17 @@ struct VxPaths
 //-----------------------------------------------------------------------------
 struct VxContext
 {
+  // Master flags
   bool initialized;
+
+  // Loger
   bool logger;
   bool logger_registering = true;
+  std::shared_ptr<spdlog::logger> global_logger;
+  std::shared_ptr<spdlog::logger> console_logger;
+  std::vector<std::pair<std::string, std::shared_ptr<spdlog::logger>>> pool_loggers;
+
+  // Components
   VxIO IO;
   SessionState state;
   VortexMakerDebugAllocInfo debugAllocInfo;

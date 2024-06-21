@@ -277,9 +277,7 @@ void Crash::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWin
     static std::string core_dumped_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + this->ctx->state.session_id + "/crash/core_dumped.txt";
     if (!loadFileToString(core_dumped_file, text, bufferSize)) {
         // Handle error opening or reading the file
-        ImGui::Begin("Error");
         ImGui::Text("Failed to open or read file: %s", core_dumped_file.c_str());
-        ImGui::End();
     }
 
             static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
