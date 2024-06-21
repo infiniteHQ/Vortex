@@ -40,6 +40,12 @@ public:
   EditorLayer(){};
 
   void menubar(const std::shared_ptr<EditorLayer> &applayer, UIKit::Application *app);
+
+  void OnFinish() override
+  {
+    
+  }
+
   void OnUIRender() override
   {
     PushStyle();

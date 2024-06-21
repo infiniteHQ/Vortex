@@ -6,23 +6,18 @@ static bool consent_response;
 
 Crash::Crash(VxContext *_ctx, const std::string &_parent)
 {
-    std::cout << "df" << std::endl;
     this->ctx = _ctx;
 
-    std::cout << "df" << std::endl;
     this->Refresh();
 
-    std::cout << "df" << std::endl;
     parent = _parent;
 
-    std::cout << "df" << std::endl;
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_list, icons::i_list_size, w, h);
         m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
-    std::cout << "d" << std::endl;
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_project, icons::i_project_size, w, h);
@@ -53,7 +48,33 @@ Crash::Crash(VxContext *_ctx, const std::string &_parent)
         m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
         free(data);
     }
-    std::cout << "8" << std::endl;
+}
+
+// Updated loadFileToString function
+bool loadFileToString(const std::string& filename, char* text, size_t maxSize)
+{
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        return false; // Unable to open file
+    }
+
+    std::string line;
+    size_t index = 0;
+
+    while (std::getline(file, line)) {
+        if (index + line.size() < maxSize - 1) { // Check boundary to avoid overflow
+            std::strcpy(text + index, line.c_str()); // Copy line into text buffer
+            index += line.size();
+            text[index++] = '\n'; // Add newline character
+        } else {
+            break; // Text buffer full
+        }
+    }
+
+    text[index] = '\0'; // Null-terminate the string
+
+    file.close();
+    return true;
 }
 
 static std::vector<std::tuple<std::string, std::string, std::string>> modifiable_values;
@@ -89,7 +110,7 @@ void Crash::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWin
     ImGui::SameLine();
 
     ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
-    ImGui::TextWrapped("identifier");
+    ImGui::TextWrapped(this->ctx->state.session_id.c_str());
     ImGui::PopStyleColor(1);
 
     ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
@@ -246,8 +267,23 @@ void Crash::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWin
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Processus report"))
-        {
-            ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah");
+        { 
+
+    static const int bufferSize = 1024 * 16;
+    // Declare the text buffer
+    static char text[bufferSize];
+
+    // Load content from file into text variable
+    static std::string core_dumped_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + this->ctx->state.session_id + "/crash/core_dumped.txt";
+    if (!loadFileToString(core_dumped_file, text, bufferSize)) {
+        // Handle error opening or reading the file
+        ImGui::Begin("Error");
+        ImGui::Text("Failed to open or read file: %s", core_dumped_file.c_str());
+        ImGui::End();
+    }
+
+            static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
+            ImGui::InputTextMultiline("##processus_source", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags);
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Send details"))

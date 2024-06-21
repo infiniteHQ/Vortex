@@ -188,6 +188,8 @@ namespace VortexMaker
     VORTEX_API void Initialize();
     VORTEX_API void InitProject(const nlohmann::json &main_config);
 
+    VORTEX_API void FinishProcess();
+
     VORTEX_API void DeployEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name);
     VORTEX_API void DeployEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, void (*callback)(std::shared_ptr<hArgs> _args));
 
@@ -215,7 +217,10 @@ namespace VortexMaker
     VORTEX_API void UpdateProjectData(const std::string& old_name, const std::string& path);
     VORTEX_API void InitEnvironment();
 
+    VORTEX_API void CreateSessionTopic(const std::string& post_topic);
+    VORTEX_API void DeleteSessionTopic(const std::string &post_topic);
     VORTEX_API void PostSessionState(const std::string& post_topic);
+    VORTEX_API void PostSessionCoreDump(const std::string& post_topic);
     VORTEX_API nlohmann::json GetLastModuleOfLastSession(const std::string& post_topic);
     VORTEX_API nlohmann::json GetLastSession(const std::string& post_topic);
 

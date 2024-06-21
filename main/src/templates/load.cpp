@@ -64,7 +64,7 @@ namespace VortexMaker
                 }
                 catch (std::exception e)
                 {
-                    std::cerr << e.what() << std::endl;
+                    VortexMaker::LogError("Core", e.what());
                 }
 
                 VXINFO("Template registered in system ", new_template->m_name + " loaded with success !")

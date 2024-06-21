@@ -60,3 +60,29 @@ VORTEX_API void VortexMaker::PostSessionState(const std::string& post_topic)
         VortexMaker::createJsonFileIfNotExists(session_path + "/last_module.json", json);
     }
 }
+
+/**
+ * @brief Post a core dump of a Vortex process
+ * 
+ * This function can post a state of the current context to prevent crashs & log everything.
+ * 
+ * @param post_topic The topic where post the state of context.
+ */
+VORTEX_API void VortexMaker::PostSessionCoreDump(const std::string& post_topic)
+{
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
+
+    // Init the path of the sessions data.
+    std::string session_path = VortexMaker::getHomeDirectory() + "/.vx/sessions";
+
+    // Init the path of current session data folder.
+    std::string current_session_path = session_path + "/.vx/sessions/" + post_topic;
+
+    // Create the session folder if not exist
+    VortexMaker::createFolderIfNotExists(session_path);
+
+    // Create the current session folder if not exist
+    VortexMaker::createFolderIfNotExists(current_session_path);
+
+}

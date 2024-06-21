@@ -83,11 +83,25 @@ std::string FindCompatibleVersion()
 {
 }
 
+// Move crash process report into cras/coredumped et get/post
+
+void initialize_random() {
+    srand(static_cast<unsigned int>(time(0)));
+}
+
 
 void LaunchVortex(const std::string& version) {
-    std::string command = "/usr/local/bin/Vortex/" + version + "/vortex --launcher";
-    if(std::system(command.c_str()) != 0){
-        std::string crash_handle_command = "/usr/local/bin/Vortex/" + version + "/vortex -crash";
+    // Create a session id
+    initialize_random();
+    std::string session_id = "launcher-" + VortexMaker::gen_random(8);
+    std::string command = "/usr/local/bin/Vortex/" + version + "/vortex --launcher --session_id=" + session_id;
+    std::string target_path = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + session_id + "/crash/core_dumped.txt";
+    std::string crash_script_command = "bash /usr/local/bin/Vortex/" + version + "/handle_crash.sh " + target_path + " " + command;
+
+   std::cout << "Bootstrapp"<< "Starting with command : " << crash_script_command << std::endl;;
+
+    if(std::system(crash_script_command.c_str()) != 0){
+        std::string crash_handle_command = "/usr/local/bin/Vortex/" + version + "/vortex -crash --session_id=" + session_id;
         std::system(crash_handle_command.c_str());
     }
 }

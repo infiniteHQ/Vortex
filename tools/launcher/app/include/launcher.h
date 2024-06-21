@@ -28,6 +28,8 @@ public:
   {
     PushStyle();
 
+    ImGui::ShowDemoWindow();
+
     if (this->ShowProjectManager)
     {
       static ProjectManager projectManager(this->m_ctx, this->ParentWindow);

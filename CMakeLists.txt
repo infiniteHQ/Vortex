@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(vortex)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC")
 set(VORTEX_VERSION "1.1")
 
 # Liste des fichiers sources pour la bibliothèque partagée
@@ -91,3 +91,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/.cache/
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/vortex_desktop.desktop
         DESTINATION /usr/share/applications/)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/build/handle_crash.sh
+        DESTINATION ${INSTALL_BIN_DIR}/)

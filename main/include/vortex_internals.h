@@ -134,6 +134,9 @@ struct EnvProject
 
 struct SessionState
 {
+    //
+    std::string session_id;
+
     // Master
     std::string session_started_at;
     std::string session_started_on_os;

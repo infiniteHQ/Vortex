@@ -171,6 +171,18 @@ int main(int argc, char *argv[])
             InitBlankRuntime(true);
             VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
 
+            VxContext *ctx = VortexMaker::GetCurrentContext();
+            std::string session_id;
+
+            if (argc > 2) {
+                std::string arg2 = argv[2];
+                if (arg2.rfind("--session_id=", 0) == 0) {
+                    session_id = arg2.substr(13);
+                    VxContext *ctx = VortexMaker::GetCurrentContext();
+                    ctx->state.session_id = session_id;
+                }
+            }
+
             std::thread receiveThread;
                 std::thread Thread([&]()
                                    { VortexMaker::VortexCrashHandler(argc, argv); });
@@ -252,10 +264,23 @@ int main(int argc, char *argv[])
             InitBlankRuntime(true);
             VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
 
+            std::string session_id;
+
+            if (argc > 2) {
+                std::string arg2 = argv[2];
+                if (arg2.rfind("--session_id=", 0) == 0) {
+                    session_id = arg2.substr(13);
+                    VxContext *ctx = VortexMaker::GetCurrentContext();
+                    ctx->state.session_id = session_id;
+
+                    VortexMaker::CreateSessionTopic(ctx->state.session_id);
+                }
+            }
+
             std::thread receiveThread;
             try
             {
-                if (std::string(argv[2]) == "-v")
+                if (std::string(argv[2]) == "-v" || std::string(argv[3]) == "-v")
                 {
                     VortexMaker::LogWarn("Bootstrapp", "Opening the graphical interface...");
                     std::thread Thread([&]()

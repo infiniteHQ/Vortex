@@ -171,6 +171,6 @@ UIKit::Application *CreateEditor(int argc, char **argv)
 }
 
 int VortexMaker::VortexEditor(int argc, char **argv)
-  {
+{
     return UIKit::ThirdMain(argc, argv, CreateEditor);
-  }
+}

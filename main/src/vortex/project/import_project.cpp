@@ -2,7 +2,7 @@
 #include "../../../include/vortex_internals.h"
 
 /**
- * @brief 
+ * @brief
  */
 VORTEX_API std::vector<std::shared_ptr<EnvProject>> VortexMaker::FindProjectInFolder(const std::string &path)
 {
@@ -15,33 +15,29 @@ VORTEX_API std::vector<std::shared_ptr<EnvProject>> VortexMaker::FindProjectInFo
     // Iterate through each found module file
     for (const auto &file : module_files)
     {
-        try
-        {
-            // Load JSON data from the module configuration file
-            auto json_data = VortexMaker::DumpJSON(file);
+        // Load JSON data from the module configuration file
+        auto json_data = VortexMaker::DumpJSON(file);
 
-            std::shared_ptr<EnvProject> newproject = std::make_shared<EnvProject>();
+        if(json_data.empty())
+        continue;
 
-            newproject->name = json_data["name"].get<std::string>();
-            newproject->version = json_data["version"].get<std::string>();
-            newproject->description = json_data["description"].get<std::string>();
-            newproject->compatibleWith = json_data["compatibleWith"].get<std::string>();
-            newproject->path = "path - file";
-            newproject->logoPath = json_data["logoPath"].get<std::string>();
-            newproject->lastOpened = json_data["lastOpened"].get<std::string>();
+        std::shared_ptr<EnvProject> newproject = std::make_shared<EnvProject>();
 
-            projects.push_back(newproject);
-        }
-        catch (std::exception e)
-        {
-            std::cout << e.what() << std::endl;
-        }
+        newproject->name = json_data["name"].get<std::string>();
+        newproject->version = json_data["version"].get<std::string>();
+        newproject->description = json_data["description"].get<std::string>();
+        newproject->compatibleWith = json_data["compatibleWith"].get<std::string>();
+        newproject->path = "path - file";
+        newproject->logoPath = json_data["logoPath"].get<std::string>();
+        newproject->lastOpened = json_data["lastOpened"].get<std::string>();
+
+        projects.push_back(newproject);
     }
     return projects;
 }
 
 /**
- * @brief 
+ * @brief
  */
 VORTEX_API void VortexMaker::ImportProject(const std::string &path)
 {
