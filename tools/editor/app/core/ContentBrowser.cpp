@@ -13,6 +13,88 @@ static std::string _parent;
 static char ProjectSearch[256];
 static float threshold = 0.4;
 
+static bool isOnlySpacesOrEmpty(const char *str)
+{
+	if (str == nullptr || std::strlen(str) == 0)
+	{
+		return true;
+	}
+
+	for (size_t i = 0; i < std::strlen(str); ++i)
+	{
+		if (str[i] != ' ')
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+static std::string toLowerCase(const std::string &str)
+{
+	std::string result = str;
+	std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+	return result;
+}
+
+static int levenshteinDistance(const std::string &s1, const std::string &s2)
+{
+	const size_t m = s1.size();
+	const size_t n = s2.size();
+	std::vector<std::vector<int>> dp(m + 1, std::vector<int>(n + 1));
+
+	for (size_t i = 0; i <= m; ++i)
+	{
+		for (size_t j = 0; j <= n; ++j)
+		{
+			if (i == 0)
+			{
+				dp[i][j] = j;
+			}
+			else if (j == 0)
+			{
+				dp[i][j] = i;
+			}
+			else
+			{
+				int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
+				dp[i][j] = std::min({dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost});
+			}
+		}
+	}
+	return dp[m][n];
+}
+
+static bool hasCommonLetters(const std::string &s1, const std::string &s2)
+{
+	std::unordered_set<char> set1(s1.begin(), s1.end());
+	for (char c : s2)
+	{
+		if (set1.find(c) != set1.end())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+static bool areStringsSimilar(const std::string &s1, const std::string &s2, double threshold)
+{
+	std::string lower_s1 = toLowerCase(s1);
+	std::string lower_s2 = toLowerCase(s2);
+
+	int dist = levenshteinDistance(lower_s1, lower_s2);
+	int maxLength = std::max(lower_s1.size(), lower_s2.size());
+	double similarity = 1.0 - (static_cast<double>(dist) / maxLength);
+
+	if (std::strlen(ProjectSearch) < 5)
+	{
+		return similarity >= threshold || hasCommonLetters(lower_s1, lower_s2);
+	}
+
+	return similarity >= threshold;
+}
+
 static const std::string File_LICENSE_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_license_file.png";
 static const std::string File_ASM_Logo = "/usr/local/include/Vortex/1.1/imgs/file_asm_logo.png";
 static const std::string File_GIT_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_git_file.png";
@@ -21,7 +103,12 @@ static const std::string File_C_H_Logo = "/usr/local/include/Vortex/1.1/imgs/ico
 static const std::string File_CPP_H_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_cpp_h_file.png";
 static const std::string File_CPP_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_cpp_file.png";
 static const std::string File_UNKNOW_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_unknow_file.png";
+static const std::string File_PICTURE_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_picture_file.png";
 static const std::string Folder_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_folder.png";
+
+static const std::string Icon_Left_Arrow = "/usr/local/include/Vortex/1.1/imgs/left_arrow.png";
+static const std::string Icon_Right_Arrow = "/usr/local/include/Vortex/1.1/imgs/right_arrow.png";
+
 static std::string default_project_avatar = "/usr/local/include/Vortex/imgs/base_vortex.png";
 
 static std::vector<uint8_t> loadPngHex(const std::string &filePath)
@@ -329,14 +416,12 @@ void MyButton(const std::string &name, const std::string &description, const std
 	drawList->AddRectFilled(cursorPos, ImVec2(cursorPos.x + totalSize.x, cursorPos.y + thumbnailIconOffsetY + squareSize.y), IM_COL32(26, 26, 26, 255), borderRadius, ImDrawFlags_RoundCornersTop);
 	drawList->AddRect(cursorPos, ImVec2(cursorPos.x + totalSize.x, cursorPos.y + totalSize.y), borderColor, borderRadius, 0, 1.0f);
 
-
-
 	// Ajouter votre code pour dessiner le logo ici
 	ImVec2 logoPos = ImVec2(cursorPos.x + (totalSize.x - squareSize.x) / 2, cursorPos.y + padding); // Centrer le logo
 	addTexture(logo, logo);
 	getTexture(logo, drawList, logoPos, squareSize);
 
-ImVec2 sizePos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY - 20 + textOffsetY);
+	ImVec2 sizePos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY - 20 + textOffsetY);
 	ImGui::SetCursorScreenPos(sizePos);
 
 	ImGui::GetFont()->Scale *= 0.7;
@@ -360,7 +445,13 @@ ImVec2 sizePos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thum
 	ImVec2 textPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY + textOffsetY);
 	ImGui::SetCursorScreenPos(textPos);
 	ImGui::PushItemWidth(maxTextWidth);
-	ImGui::TextUnformatted(truncatedText.c_str());
+	//ImGui::TextUnformatted(truncatedText.c_str());
+    ImU32 textColor = IM_COL32(255, 255, 255, 255);
+    ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
+    ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
+
+	DrawHighlightedText(drawList, textPos, truncatedText.c_str(), ProjectSearch, highlightColor, textColor, highlightTextColor);
+
 	ImGui::PopItemWidth();
 
 	ImGui::GetFont()->Scale = oldsize;
@@ -420,6 +511,9 @@ FileTypes detect_file(const std::string &path)
 		{"gitignore", FileTypes::File_GIT},
 		{"gitmodules", FileTypes::File_GIT},
 		{"git", FileTypes::File_GIT},
+		{"png", FileTypes::File_PICTURE},
+		{"jpg", FileTypes::File_PICTURE},
+		{"jpeg", FileTypes::File_PICTURE},
 	};
 
 	std::string extension = get_extension(path);
@@ -464,6 +558,9 @@ void ContentBrowserPanel::menubar()
 {
 	static ImTextureID refreshIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
+	addTexture(Icon_Left_Arrow, Icon_Left_Arrow);
+	addTexture(Icon_Right_Arrow, Icon_Right_Arrow);
+
 	if (ImGui::BeginMenuBar())
 	{
 
@@ -477,17 +574,17 @@ void ContentBrowserPanel::menubar()
 
 		ImGui::Separator();
 
-		if (ImGui::Button("<-"))
+		if (ImGui::ImageButtonWithText(getTexture(Icon_Left_Arrow), "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
 		{
+			GoBack();
 		}
-		if (ImGui::Button("->"))
+
+		if (ImGui::ImageButtonWithText(getTexture(Icon_Right_Arrow), "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
 		{
+			GoForward();
 		}
 
 		ImGui::Separator();
-		if (ImGui::ImageButtonWithText(refreshIcon, "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
-		{
-		}
 
 		ImGui::Text("All / Main / Sources");
 		// Place le bouton à droite de la barre de menu
@@ -502,21 +599,59 @@ void ContentBrowserPanel::menubar()
 	}
 }
 
-static std::string formatFileSize(size_t size) {
-    const char* units[] = {"o", "ko", "Mo", "Go", "To"};
-    int unitIndex = 0;
-    double displaySize = static_cast<double>(size);
+static std::string formatFileSize(size_t size)
+{
+	const char *units[] = {"o", "ko", "Mo", "Go", "To"};
+	int unitIndex = 0;
+	double displaySize = static_cast<double>(size);
 
-    while (displaySize >= 1024 && unitIndex < 4) {
-        displaySize /= 1024;
-        ++unitIndex;
-    }
+	while (displaySize >= 1024 && unitIndex < 4)
+	{
+		displaySize /= 1024;
+		++unitIndex;
+	}
 
-    char formattedSize[20];
-    snprintf(formattedSize, sizeof(formattedSize), "%.2f %s", displaySize, units[unitIndex]);
-    return std::string(formattedSize);
+	char formattedSize[20];
+	snprintf(formattedSize, sizeof(formattedSize), "%.2f %s", displaySize, units[unitIndex]);
+	return std::string(formattedSize);
 }
 
+void ContentBrowserPanel::GoBack()
+{
+	if (!m_BackHistory.empty())
+	{
+		m_ForwardHistory.push(m_CurrentDirectory);
+		m_CurrentDirectory = m_BackHistory.top();
+		m_BackHistory.pop();
+	}
+}
+
+void ContentBrowserPanel::GoForward()
+{
+	if (!m_ForwardHistory.empty())
+	{
+		m_BackHistory.push(m_CurrentDirectory);
+		m_CurrentDirectory = m_ForwardHistory.top();
+		m_ForwardHistory.pop();
+	}
+}
+
+void ContentBrowserPanel::ChangeDirectory(const std::filesystem::path &newDirectory)
+{
+	if (newDirectory != m_CurrentDirectory)
+	{
+		if (!m_CurrentDirectory.empty())
+		{
+			m_BackHistory.push(m_CurrentDirectory);
+			// Clear forward history when a new directory is selected
+			while (!m_ForwardHistory.empty())
+			{
+				m_ForwardHistory.pop();
+			}
+		}
+		m_CurrentDirectory = newDirectory;
+	}
+}
 
 void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller)
 {
@@ -526,7 +661,9 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 
 	ImGui::SetNextWindowDockID(ImGui::GetID("MainDockspace"), ImGuiCond_FirstUseEver);
 	if (ImGui::UIKit_BeginLogoWindow("Content Browser", &projectIcon, &this->opened, window_flags))
+	{
 		this->menubar();
+	}
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
 	static ImGuiWindow *win = ImGui::GetCurrentWindow();
@@ -542,13 +679,12 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	if (columnCount < 1)
 		columnCount = 1;
 
+	ImGui::InputText("Search", ProjectSearch, sizeof(ProjectSearch));
 	ImGui::Columns(columnCount, 0, false);
 
-	// Vecteurs pour stocker les dossiers et les fichiers
 	std::vector<std::filesystem::directory_entry> directories;
 	std::vector<std::filesystem::directory_entry> files;
 
-	// Parcours des entrées du répertoire
 	for (auto &directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 	{
 		if (directoryEntry.is_directory())
@@ -561,73 +697,103 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 		}
 	}
 
-	// Tri des dossiers par ordre alphabétique
 	std::sort(directories.begin(), directories.end(), [](const auto &a, const auto &b)
 			  { return a.path().filename().string() < b.path().filename().string(); });
 
-	// Affichage des dossiers
 	for (auto &directoryEntry : directories)
 	{
 		const auto &path = directoryEntry.path();
 		std::string filenameString = path.filename().string();
 
-		// Affichage de l'icône de dossier et du nom
-		ImGui::PushID(filenameString.c_str());
-		addTexture(Folder_Logo, Folder_Logo);
-		static ImTextureID folderTexture = getTexture(Folder_Logo);
-		ImGui::ImageButton(folderTexture, {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
 		{
-			m_CurrentDirectory = path;
-		}
-		ImGui::TextWrapped(filenameString.c_str());
-		ImGui::PopID();
+			ImGui::PushID(filenameString.c_str());
 
-		ImGui::NextColumn();
+			// Réduire légèrement la taille du dossier
+			float reducedThumbnailSize = thumbnailSize * 0.9f;
+
+			// Calculer les positions pour centrer l'image du dossier et le texte
+			float availableWidth = ImGui::GetContentRegionAvail().x;
+			float imageOffsetX = (availableWidth - reducedThumbnailSize) * 0.5f;
+
+			// Enlever le fond gris, les contours et la bordure
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+
+			// Centrer l'image du dossier
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + imageOffsetX);
+			addTexture(Folder_Logo, Folder_Logo);
+			ImGui::ImageButton(getTexture(Folder_Logo), {reducedThumbnailSize, reducedThumbnailSize}, {-1, 0}, {0, 1});
+
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			{
+				ChangeDirectory(path);
+			}
+
+			ImGui::PopStyleVar(2); // Pop FrameBorderSize and FramePadding
+			ImGui::PopStyleColor(3);
+
+			// Centrer le texte
+			float textWidth = ImGui::CalcTextSize(filenameString.c_str()).x;
+			float textOffsetX = (availableWidth - textWidth) * 0.5f;
+
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + textOffsetX);
+			ImGui::TextWrapped(filenameString.c_str());
+
+			ImGui::PopID();
+			ImGui::NextColumn();
+		}
 	}
 
-for (auto &fileEntry : files)
-{
-    const auto &path = fileEntry.path();
-    std::string filenameString = path.filename().string();
-    size_t fileSize = std::filesystem::file_size(path);
-    std::string fileSizeString = formatFileSize(fileSize);
+	for (auto &fileEntry : files)
+	{
+		const auto &path = fileEntry.path();
+		std::string filenameString = path.filename().string();
 
-    FileTypes fileType = detect_file(path.string());
+		if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+		{
+			size_t fileSize = std::filesystem::file_size(path);
+			std::string fileSizeString = formatFileSize(fileSize);
 
-    // Affichage spécifique en fonction du type de fichier
-    switch (fileType)
-    {
-    case FileTypes::File_GIT:
-        MyButton(filenameString, "Git File", fileSizeString, File_GIT_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
-        break;
-    case FileTypes::File_H:
-        MyButton(filenameString, "C Header File", fileSizeString, File_C_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255));
-        break;
-    case FileTypes::File_C:
-        MyButton(filenameString, "C Source File", fileSizeString, File_C_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
-        break;
-    case FileTypes::File_HPP:
-        MyButton(filenameString, "C++ Header File", fileSizeString, File_CPP_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
-        break;
-    case FileTypes::File_CPP:
-        MyButton(filenameString, "C++ Source File", fileSizeString, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
-        break;
-    case FileTypes::File_INI:
-        MyButton(filenameString, "Init File", fileSizeString, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255));
-        break;
-    default:
-        MyButton(filenameString, "File", fileSizeString, File_UNKNOW_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255));
-        break;
-    }
+			FileTypes fileType = detect_file(path.string());
 
-    ImGui::NextColumn();
-}
+			switch (fileType)
+			{
+			case FileTypes::File_PICTURE:
+				MyButton(filenameString, "Picture file", fileSizeString, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(255, 100, 150, 255));
+				break;
+			case FileTypes::File_GIT:
+				MyButton(filenameString, "Git File", fileSizeString, File_GIT_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
+				break;
+			case FileTypes::File_H:
+				MyButton(filenameString, "C Header File", fileSizeString, File_C_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255));
+				break;
+			case FileTypes::File_C:
+				MyButton(filenameString, "C Source File", fileSizeString, File_C_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
+				break;
+			case FileTypes::File_HPP:
+				MyButton(filenameString, "C++ Header File", fileSizeString, File_CPP_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
+				break;
+			case FileTypes::File_CPP:
+				MyButton(filenameString, "C++ Source File", fileSizeString, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
+				break;
+			case FileTypes::File_INI:
+				MyButton(filenameString, "Init File", fileSizeString, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255));
+				break;
+			default:
+				MyButton(filenameString, "File", fileSizeString, File_UNKNOW_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255));
+				break;
+			}
 
+			ImGui::NextColumn();
+		}
+	}
 
 	ImGui::Columns(1);
 	ImGui::PopStyleVar();
 
-	// TODO: status bar
 	ImGui::End();
 }

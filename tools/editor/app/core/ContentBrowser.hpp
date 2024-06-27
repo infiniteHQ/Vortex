@@ -1,3 +1,7 @@
+#include <stack>
+#include <algorithm>
+#include <cctype>
+#include <unordered_set>
 
 #ifndef CONTENTBROWSER_H
 #define CONTENTBROWSER_H
@@ -28,6 +32,7 @@ enum class FileTypes
 	// Misc
 	File_CFG,
 	File_JSON,
+	File_PICTURE,
 	File_TXT,
 	File_MD,
 	File_YAML,
@@ -57,6 +62,10 @@ public:
 
 	void OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller);
 
+    void ChangeDirectory(const std::filesystem::path &newDirectory);
+    void GoBack();
+    void GoForward();
+
 	VxContext *ctx;
 	std::string parent;
 	void menubar();
@@ -71,7 +80,10 @@ private:
 	bool m_ShowSizes = false;
 
 	std::filesystem::path m_BaseDirectory;
-	std::filesystem::path m_CurrentDirectory;
+
+    std::filesystem::path m_CurrentDirectory;
+    std::stack<std::filesystem::path> m_BackHistory;
+    std::stack<std::filesystem::path> m_ForwardHistory;
 
 	std::shared_ptr<UIKit::Image> m_ProjectIcon;
 	std::shared_ptr<UIKit::Image> m_FileIcon;
