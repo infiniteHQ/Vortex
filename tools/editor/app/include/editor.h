@@ -61,8 +61,8 @@ public:
 
     if (this->ShowContentBrowser)
     {
-      static ContentBrowserPanel contentBrowser;
-      contentBrowser.OnImGuiRender();
+      //static ContentBrowserPanel contentBrowser(this->m_ctx, &factory);
+      //contentBrowser.OnImGuiRender();
     }
 
     if (this->ShowProjectViewer)

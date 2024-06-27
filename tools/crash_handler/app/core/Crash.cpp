@@ -51,22 +51,27 @@ Crash::Crash(VxContext *_ctx, const std::string &_parent)
 }
 
 // Updated loadFileToString function
-bool loadFileToString(const std::string& filename, char* text, size_t maxSize)
+bool loadFileToString(const std::string &filename, char *text, size_t maxSize)
 {
     std::ifstream file(filename);
-    if (!file.is_open()) {
+    if (!file.is_open())
+    {
         return false; // Unable to open file
     }
 
     std::string line;
     size_t index = 0;
 
-    while (std::getline(file, line)) {
-        if (index + line.size() < maxSize - 1) { // Check boundary to avoid overflow
+    while (std::getline(file, line))
+    {
+        if (index + line.size() < maxSize - 1)
+        {                                            // Check boundary to avoid overflow
             std::strcpy(text + index, line.c_str()); // Copy line into text buffer
             index += line.size();
             text[index++] = '\n'; // Add newline character
-        } else {
+        }
+        else
+        {
             break; // Text buffer full
         }
     }
@@ -263,22 +268,38 @@ void Crash::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWin
         }
         if (ImGui::BeginTabItem("Informations"))
         {
-            ImGui::Text("This is the Cucumber tab!\nblah blah blah blah blah");
+
+            static const int bufferSize = 1024 * 16;
+            // Declare the text buffer
+            static char text[bufferSize];
+
+            // Load content from file into text variable
+            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + this->ctx->state.session_id + "/logs/global.log";
+            if (!loadFileToString(log_file, text, bufferSize))
+            {
+                // Handle error opening or reading the file
+                ImGui::Text("Failed to open or read file: %s", log_file.c_str());
+            }
+
+            static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
+            ImGui::InputTextMultiline("##logs_source", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags);
+
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Processus report"))
-        { 
+        {
 
-    static const int bufferSize = 1024 * 16;
-    // Declare the text buffer
-    static char text[bufferSize];
+            static const int bufferSize = 1024 * 16;
+            // Declare the text buffer
+            static char text[bufferSize];
 
-    // Load content from file into text variable
-    static std::string core_dumped_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + this->ctx->state.session_id + "/crash/core_dumped.txt";
-    if (!loadFileToString(core_dumped_file, text, bufferSize)) {
-        // Handle error opening or reading the file
-        ImGui::Text("Failed to open or read file: %s", core_dumped_file.c_str());
-    }
+            // Load content from file into text variable
+            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + this->ctx->state.session_id + "/crash/core_dumped.txt";
+            if (!loadFileToString(log_file, text, bufferSize))
+            {
+                // Handle error opening or reading the file
+                ImGui::Text("Failed to open or read file: %s", log_file.c_str());
+            }
 
             static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
             ImGui::InputTextMultiline("##processus_source", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags);

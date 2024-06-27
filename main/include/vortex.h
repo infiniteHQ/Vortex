@@ -238,6 +238,7 @@ namespace VortexMaker
     VORTEX_API std::shared_ptr<spdlog::logger> CreateLogPool(const std::string &pool_name);
     VORTEX_API std::shared_ptr<spdlog::logger> CreateGlobalLogger();
     VORTEX_API std::shared_ptr<spdlog::logger> CreateConsoleLogger();
+    VORTEX_API void DropLoggers();
 
     VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename);
     VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename, int recursions);

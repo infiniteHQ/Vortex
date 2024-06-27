@@ -1,6 +1,7 @@
 #include "../../../../lib/uikit/src/EntryPoint.h"
 #include "../../../../main/include/vortex.h"
 #include "../../../../main/include/modules/load.h"
+#include "../../../editor/app/core/ContentBrowser.hpp"
 #include "../core/ProjectManager.hpp"
 #include "../core/SystemSettings.hpp"
 #include "../core/LauncherLogUtility.hpp"
@@ -28,8 +29,6 @@ public:
   {
     PushStyle();
 
-    ImGui::ShowDemoWindow();
-
     if (this->ShowProjectManager)
     {
       static ProjectManager projectManager(this->m_ctx, this->ParentWindow);
@@ -48,8 +47,11 @@ public:
       systemSettings.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
     } 
 
-    /*static Details details(this->m_ctx, this->ParentWindow);
-    details.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);*/
+    static Details details(this->m_ctx, this->ParentWindow);
+    details.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
+
+    static ContentBrowserPanel cbrowser(this->m_ctx, this->ParentWindow);
+    cbrowser.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
 
     PopStyle();
   }

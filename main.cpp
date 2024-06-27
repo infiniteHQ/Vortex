@@ -128,6 +128,7 @@ VxContext *InitRuntime(bool logger)
     }
     else
     {
+        //
     }
 
     return ctx;

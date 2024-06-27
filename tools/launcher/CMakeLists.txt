@@ -25,6 +25,7 @@ add_library(launcher
     ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/uikit/assets/icons.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/ProjectManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/SystemSettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../editor/app/core/ContentBrowser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/Details.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/core/LauncherLogUtility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/src/launcher.cpp
