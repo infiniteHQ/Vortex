@@ -445,10 +445,10 @@ void MyButton(const std::string &name, const std::string &description, const std
 	ImVec2 textPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY + textOffsetY);
 	ImGui::SetCursorScreenPos(textPos);
 	ImGui::PushItemWidth(maxTextWidth);
-	//ImGui::TextUnformatted(truncatedText.c_str());
-    ImU32 textColor = IM_COL32(255, 255, 255, 255);
-    ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
-    ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
+	// ImGui::TextUnformatted(truncatedText.c_str());
+	ImU32 textColor = IM_COL32(255, 255, 255, 255);
+	ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
+	ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
 
 	DrawHighlightedText(drawList, textPos, truncatedText.c_str(), ProjectSearch, highlightColor, textColor, highlightTextColor);
 
@@ -564,22 +564,27 @@ void ContentBrowserPanel::menubar()
 	if (ImGui::BeginMenuBar())
 	{
 
-		if (ImGui::ImageButtonWithText(refreshIcon, "Add", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+	float oldsize = ImGui::GetFont()->Scale;
+	ImGui::GetFont()->Scale *= 0.85;
+	ImGui::PushFont(ImGui::GetFont());
+
+		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "Add", ImVec2(15, 15)))
 		{
 		}
-
-		if (ImGui::ImageButtonWithText(refreshIcon, "Import", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+	ImGui::GetFont()->Scale = oldsize;
+	ImGui::PopFont();
+		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "Import", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
 		{
 		}
 
 		ImGui::Separator();
 
-		if (ImGui::ImageButtonWithText(getTexture(Icon_Left_Arrow), "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+		if (ImGui::UIKit_ImageButtonWithText(getTexture(Icon_Left_Arrow), "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
 		{
 			GoBack();
 		}
 
-		if (ImGui::ImageButtonWithText(getTexture(Icon_Right_Arrow), "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+		if (ImGui::UIKit_ImageButtonWithText(getTexture(Icon_Right_Arrow), "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
 		{
 			GoForward();
 		}
@@ -590,7 +595,7 @@ void ContentBrowserPanel::menubar()
 		// Place le bouton à droite de la barre de menu
 		ImGui::SameLine(ImGui::GetWindowWidth() - ImGui::CalcTextSize("YourButtonLabel").x - 30.0f);
 
-		if (ImGui::ImageButtonWithText(refreshIcon, "RightButton", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "RightButton", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
 		{
 			// Action à effectuer lorsque le bouton de droite est cliqué
 		}
@@ -653,6 +658,32 @@ void ContentBrowserPanel::ChangeDirectory(const std::filesystem::path &newDirect
 	}
 }
 
+void Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2) {
+    ImVec2 backup_pos = ImGui::GetCursorPos();
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); // Gris
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.6f, 0.6f, 1.0f)); // Gris clair pour hover
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.7f, 0.7f, 1.0f)); // Gris plus clair pour actif
+
+    if (split_vertically) {
+        ImGui::SetCursorPosX(backup_pos.x + *size1);
+        ImGui::InvisibleButton("##Splitter", ImVec2(thickness, ImGui::GetContentRegionAvail().y));
+    } else {
+        ImGui::SetCursorPosY(backup_pos.y + *size1);
+        ImGui::InvisibleButton("##Splitter", ImVec2(ImGui::GetContentRegionAvail().x, thickness));
+    }
+
+    if (ImGui::IsItemActive()) {
+        float mouse_delta = (split_vertically ? ImGui::GetIO().MouseDelta.x : ImGui::GetIO().MouseDelta.y);
+        if (mouse_delta < min_size1 - *size1) mouse_delta = min_size1 - *size1;
+        if (mouse_delta > *size2 - min_size2) mouse_delta = *size2 - min_size2;
+        *size1 += mouse_delta;
+        *size2 -= mouse_delta;
+    }
+
+    ImGui::SetCursorPos(backup_pos);
+    ImGui::PopStyleColor(3); // Restaurer les couleurs précédentes
+}
+
 void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller)
 {
 	static ImTextureID projectIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -670,6 +701,105 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	this->parent = parent;
 	controller(win);
 
+
+    static float size1 = 200.0f;
+    static float size2 = 200.0f;
+    float min_size1 = 200.0f;
+    float min_size2 = 200.0f;
+    float splitter_thickness = 4.0f;
+
+	
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
+
+    ImGui::BeginChild("Child1", ImVec2(size1, 0), true);
+    if (ImGui::CollapsingHeader("Toolchain informations"))
+    {
+        ImGui::PopStyleVar(1);
+        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Resizable | ImGuiTableColumnFlags_NoHeaderLabel;
+
+        if (ImGui::BeginTable("tablhjke_", 2, flags))
+        {
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+
+            ImGui::PushStyleColor(ImGuiCol_TableRowBg, IM_COL32(200, 200, 200, 255));
+            ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, IM_COL32(200, 200, 200, 255));
+
+            for (int row = 0; row < 4; row++)
+            {
+                ImGui::TableNextRow();
+                for (int column = 0; column < 2; column++)
+                {
+                    ImGui::TableSetColumnIndex(column);
+
+                    if (column == 0)
+                    {
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 50));
+                        ImGui::AlignTextToFramePadding();
+                        ImGui::Indent(10.0f);
+                        if (row == 0)
+                        {
+                            ImGui::Text("Toolchain Name");
+                        }
+                        else if (row == 1)
+                        {
+                            ImGui::Text("Always Use it");
+                        }
+                        else if (row == 2)
+                        {
+                            ImGui::Text("Toolchain Description");
+                        }
+                        else if (row == 3)
+                        {
+                            ImGui::Text("Toolchain Version");
+                        }
+                        else if (row == 4)
+                        {
+                            ImGui::Text("Toolchain Author");
+                        }
+                        ImGui::Unindent(10.0f);
+                    }
+                    else if (column == 1)
+                    {
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 50));
+                        static char tochanbgf[128] = "";
+                        std::string label = "###Rest" + row;
+                        ImGui::InputText(label.c_str(), tochanbgf, 128);
+                    }
+                    ImGui::Separator();
+                }
+            }
+
+            ImGui::PopStyleColor(2);
+            ImGui::PopStyleVar();
+            ImGui::EndTable();
+        }
+    }
+
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar(5);
+
+    ImGui::SameLine();
+
+// Sauvegarder les styles actuels
+ImGuiStyle& style = ImGui::GetStyle();
+ImVec4 originalChildBgColor = style.Colors[ImGuiCol_ChildBg];
+ImVec4 originalBorderColor = style.Colors[ImGuiCol_Border];
+ImVec4 originalBorderShadowColor = style.Colors[ImGuiCol_BorderShadow];
+
+// Modifier la couleur de fond et les bordures pour les rendre transparentes
+style.Colors[ImGuiCol_ChildBg] = ImVec4(0, 0, 0, 0);
+style.Colors[ImGuiCol_Border] = ImVec4(0, 0, 0, 0);
+style.Colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
+
+    ImGui::BeginChild("Child2", ImVec2(0, 0), true);
+
 	static float padding = 16.0f;
 	static float thumbnailSize = 94.0f;
 	float cellSize = thumbnailSize + padding;
@@ -684,7 +814,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 
 	std::vector<std::filesystem::directory_entry> directories;
 	std::vector<std::filesystem::directory_entry> files;
-
+	
 	for (auto &directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 	{
 		if (directoryEntry.is_directory())
@@ -731,6 +861,89 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				ChangeDirectory(path);
+			}
+
+			float oldsize = ImGui::GetFont()->Scale;
+			if (ImGui::BeginPopupContextItem("ContextPopup"))
+			{
+
+				// Appliquer le nouveau scale
+				ImGui::GetFont()->Scale *= 0.9;
+				ImGui::PushFont(ImGui::GetFont());
+
+				// Ajouter un espace au-dessus
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f); // Ajustez la valeur selon vos besoins
+
+				// Changer la couleur du texte en gris
+				ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);			// Gris (50% blanc)
+				ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // Gris (50% blanc)
+				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+
+				ImGui::Text("Main");
+
+				// Restaurer la couleur du texte précédente
+				ImGui::PopStyleColor();
+
+				// Changer la couleur du separator en gris
+				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+				ImGui::Separator();
+				ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+
+				// Restaurer l'ancien scale de la police
+				ImGui::GetFont()->Scale = oldsize;
+				ImGui::PopFont();
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f); // Ajustez la valeur selon vos besoins
+
+				if (ImGui::MenuItem("Open", "Ctrl + O"))
+				{
+					ChangeDirectory(path);
+					ImGui::CloseCurrentPopup();
+				}
+				if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
+				{
+					ChangeDirectory(path);
+					ImGui::CloseCurrentPopup();
+				}
+				if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
+				{
+					ChangeDirectory(path);
+					ImGui::CloseCurrentPopup();
+				}
+
+				// Appliquer le nouveau scale
+				ImGui::GetFont()->Scale *= 0.9;
+				ImGui::PushFont(ImGui::GetFont());
+
+				// Ajouter un espace au-dessus
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f); // Ajustez la valeur selon vos besoins
+
+				// Changer la couleur du texte en gris
+				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+
+				ImGui::Text("Main");
+
+				// Restaurer la couleur du texte précédente
+				ImGui::PopStyleColor();
+
+				// Changer la couleur du separator en gris
+				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+				ImGui::Separator();
+				ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+
+				// Restaurer l'ancien scale de la police
+				ImGui::GetFont()->Scale = oldsize;
+				ImGui::PopFont();
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f); // Ajustez la valeur selon vos besoins
+
+				if (ImGui::MenuItem("Change color"))
+				{
+				}
+				if (ImGui::MenuItem("Mark as favorite"))
+				{
+				}
+				// Ajouter d'autres options de menu ici...
+
+				ImGui::EndPopup();
 			}
 
 			ImGui::PopStyleVar(2); // Pop FrameBorderSize and FramePadding
@@ -792,6 +1005,14 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 		}
 	}
 
+
+    ImGui::EndChild();
+	
+
+// Restaurer les couleurs originales
+style.Colors[ImGuiCol_ChildBg] = originalChildBgColor;
+style.Colors[ImGuiCol_Border] = originalBorderColor;
+style.Colors[ImGuiCol_BorderShadow] = originalBorderShadowColor;
 	ImGui::Columns(1);
 	ImGui::PopStyleVar();
 
