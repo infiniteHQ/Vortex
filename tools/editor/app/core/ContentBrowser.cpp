@@ -13,6 +13,8 @@ static std::string _parent;
 static char ProjectSearch[256];
 static float threshold = 0.4;
 
+static ImU32 folder_color = IM_COL32(255, 255, 0, 255);
+
 static bool isOnlySpacesOrEmpty(const char *str)
 {
 	if (str == nullptr || std::strlen(str) == 0)
@@ -106,8 +108,10 @@ static const std::string File_UNKNOW_Logo = "/usr/local/include/Vortex/1.1/imgs/
 static const std::string File_PICTURE_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_picture_file.png";
 static const std::string Folder_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_folder.png";
 
-static const std::string Icon_Left_Arrow = "/usr/local/include/Vortex/1.1/imgs/left_arrow.png";
-static const std::string Icon_Right_Arrow = "/usr/local/include/Vortex/1.1/imgs/right_arrow.png";
+static const std::string Icon_Left_Arrow_Enabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_l_enabled.png";
+static const std::string Icon_Left_Arrow_Disabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_l_disabled.png";
+static const std::string Icon_Right_Arrow_Enabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_r_enabled.png";
+static const std::string Icon_Right_Arrow_Disabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_r_disabled.png";
 
 static std::string default_project_avatar = "/usr/local/include/Vortex/imgs/base_vortex.png";
 
@@ -392,15 +396,13 @@ void MyButton(const std::string &name, const std::string &description, const std
 		truncatedText = name + "\n";
 	}
 
-	ImVec2 textSize = ImGui::CalcTextSize(truncatedText.c_str(), nullptr, false, maxTextWidth);
-	ImVec2 totalSize(maxTextWidth + padding, squareSize.y + textSize.y + extraHeight);
+	// Utiliser une taille fixe pour le composant
+	ImVec2 fixedSize(maxTextWidth + padding * 2, logoSize + extraHeight + padding * 2);
 
 	ImVec2 cursorPos = ImGui::GetCursorScreenPos();
 
-	float oldsize = ImGui::GetFont()->Scale;
-
 	std::string button_id = name + "squareButtonWithText" + name;
-	if (ImGui::InvisibleButton(button_id.c_str(), totalSize))
+	if (ImGui::InvisibleButton(button_id.c_str(), fixedSize))
 	{
 		// Traitement de l'événement (ouverture d'une ressource)
 	}
@@ -412,12 +414,12 @@ void MyButton(const std::string &name, const std::string &description, const std
 
 	ImDrawList *drawList = ImGui::GetWindowDrawList();
 
-	drawList->AddRectFilled(cursorPos, ImVec2(cursorPos.x + totalSize.x, cursorPos.y + totalSize.y), bgColor, borderRadius);
-	drawList->AddRectFilled(cursorPos, ImVec2(cursorPos.x + totalSize.x, cursorPos.y + thumbnailIconOffsetY + squareSize.y), IM_COL32(26, 26, 26, 255), borderRadius, ImDrawFlags_RoundCornersTop);
-	drawList->AddRect(cursorPos, ImVec2(cursorPos.x + totalSize.x, cursorPos.y + totalSize.y), borderColor, borderRadius, 0, 1.0f);
+	drawList->AddRectFilled(cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y), bgColor, borderRadius);
+	drawList->AddRectFilled(cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + thumbnailIconOffsetY + squareSize.y), IM_COL32(26, 26, 26, 255), borderRadius, ImDrawFlags_RoundCornersTop);
+	drawList->AddRect(cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y), borderColor, borderRadius, 0, 1.0f);
 
 	// Ajouter votre code pour dessiner le logo ici
-	ImVec2 logoPos = ImVec2(cursorPos.x + (totalSize.x - squareSize.x) / 2, cursorPos.y + padding); // Centrer le logo
+	ImVec2 logoPos = ImVec2(cursorPos.x + (fixedSize.x - squareSize.x) / 2, cursorPos.y + padding); // Centrer le logo
 	addTexture(logo, logo);
 	getTexture(logo, drawList, logoPos, squareSize);
 
@@ -432,11 +434,11 @@ void MyButton(const std::string &name, const std::string &description, const std
 	ImGui::PopItemWidth();
 	ImGui::PopStyleColor();
 
-	ImGui::GetFont()->Scale = oldsize;
+	ImGui::GetFont()->Scale = 1.0f;
 	ImGui::PopFont();
 
 	ImVec2 lineStart = ImVec2(cursorPos.x, cursorPos.y + squareSize.y + thumbnailIconOffsetY + separatorHeight);			 // Déplacer la ligne vers le bas
-	ImVec2 lineEnd = ImVec2(cursorPos.x + totalSize.x, cursorPos.y + squareSize.y + thumbnailIconOffsetY + separatorHeight); // Déplacer la ligne vers le bas
+	ImVec2 lineEnd = ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + squareSize.y + thumbnailIconOffsetY + separatorHeight); // Déplacer la ligne vers le bas
 	drawList->AddLine(lineStart, lineEnd, lineColor, separatorHeight);
 
 	ImGui::GetFont()->Scale *= 0.9;
@@ -445,7 +447,6 @@ void MyButton(const std::string &name, const std::string &description, const std
 	ImVec2 textPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY + textOffsetY);
 	ImGui::SetCursorScreenPos(textPos);
 	ImGui::PushItemWidth(maxTextWidth);
-	// ImGui::TextUnformatted(truncatedText.c_str());
 	ImU32 textColor = IM_COL32(255, 255, 255, 255);
 	ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
 	ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
@@ -454,7 +455,7 @@ void MyButton(const std::string &name, const std::string &description, const std
 
 	ImGui::PopItemWidth();
 
-	ImGui::GetFont()->Scale = oldsize;
+	ImGui::GetFont()->Scale = 1.0f;
 	ImGui::PopFont();
 
 	ImVec2 descriptionPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY + 35 + textOffsetY);
@@ -468,15 +469,18 @@ void MyButton(const std::string &name, const std::string &description, const std
 	ImGui::PopItemWidth();
 	ImGui::PopStyleColor();
 
-	ImGui::GetFont()->Scale = oldsize;
+	ImGui::GetFont()->Scale = 1.0f;
 	ImGui::PopFont();
 
-	ImVec2 smallRectPos = ImVec2(cursorPos.x + totalSize.x - versionBoxWidth - padding, cursorPos.y + totalSize.y - versionBoxHeight - padding);
+	ImVec2 smallRectPos = ImVec2(cursorPos.x + fixedSize.x - versionBoxWidth - padding, cursorPos.y + fixedSize.y - versionBoxHeight - padding);
 	drawList->AddRectFilled(smallRectPos, ImVec2(smallRectPos.x + versionBoxWidth, smallRectPos.y + versionBoxHeight), IM_COL32(0, 0, 0, 255), borderRadius);
 
 	float windowVisibleX2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
-	if (cursorPos.x + totalSize.x < windowVisibleX2)
+	if (cursorPos.x + fixedSize.x < windowVisibleX2)
 		ImGui::SameLine();
+
+	// Ajouter un espacement vertical après chaque bouton pour éviter le chevauchement
+	ImGui::SetCursorScreenPos(ImVec2(cursorPos.x, cursorPos.y + fixedSize.y + padding));
 }
 
 // Helper function to get file extension
@@ -558,46 +562,108 @@ void ContentBrowserPanel::menubar()
 {
 	static ImTextureID refreshIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	addTexture(Icon_Left_Arrow, Icon_Left_Arrow);
-	addTexture(Icon_Right_Arrow, Icon_Right_Arrow);
+	addTexture(Icon_Left_Arrow_Enabled, Icon_Left_Arrow_Enabled);
+	addTexture(Icon_Right_Arrow_Enabled, Icon_Right_Arrow_Enabled);
+	addTexture(Icon_Left_Arrow_Disabled, Icon_Left_Arrow_Disabled);
+	addTexture(Icon_Right_Arrow_Disabled, Icon_Right_Arrow_Disabled);
 
 	if (ImGui::BeginMenuBar())
 	{
 
-	float oldsize = ImGui::GetFont()->Scale;
-	ImGui::GetFont()->Scale *= 0.85;
-	ImGui::PushFont(ImGui::GetFont());
+		float oldsize = ImGui::GetFont()->Scale;
+		ImGui::GetFont()->Scale *= 0.85;
+		ImGui::PushFont(ImGui::GetFont());
 
 		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "Add", ImVec2(15, 15)))
 		{
 		}
-	ImGui::GetFont()->Scale = oldsize;
-	ImGui::PopFont();
+		ImGui::GetFont()->Scale = oldsize;
+		ImGui::PopFont();
 		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "Import", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
 		{
 		}
 
 		ImGui::Separator();
 
-		if (ImGui::UIKit_ImageButtonWithText(getTexture(Icon_Left_Arrow), "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		if (m_BackHistory.empty())
 		{
-			GoBack();
+			if (ImGui::UIKit_ImageButtonWithText(getTexture(Icon_Left_Arrow_Disabled), "##LEFT_ARROW", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+			{
+				//
+			}
+		}
+		else
+		{
+			if (ImGui::UIKit_ImageButtonWithText(getTexture(Icon_Left_Arrow_Enabled), "##LEFT_ARROW", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+			{
+				GoBack();
+			}
+
+			if (ImGui::IsMouseClicked(3))
+			{
+				GoBack();
+			}
 		}
 
-		if (ImGui::UIKit_ImageButtonWithText(getTexture(Icon_Right_Arrow), "", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+		if (m_ForwardHistory.empty())
 		{
-			GoForward();
+			if (ImGui::UIKit_ImageButtonWithText(getTexture(Icon_Right_Arrow_Disabled), "##RIGHT_ARROW", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+			{
+				//
+			}
 		}
+		else
+		{
+			if (ImGui::UIKit_ImageButtonWithText(getTexture(Icon_Right_Arrow_Enabled), "##RIGHT_ARROW", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+			{
+				GoForward();
+			}
+
+			if (ImGui::IsMouseClicked(4))
+			{
+				GoForward();
+			}
+		}
+		ImGui::PopStyleColor();
 
 		ImGui::Separator();
 
 		ImGui::Text("All / Main / Sources");
-		// Place le bouton à droite de la barre de menu
-		ImGui::SameLine(ImGui::GetWindowWidth() - ImGui::CalcTextSize("YourButtonLabel").x - 30.0f);
 
-		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "RightButton", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+		// Calculer la largeur du texte du bouton
+		float buttonWidth = ImGui::CalcTextSize("RightButton").x;
+		float spacing = 30.0f;
+
+		// Placer le bouton à droite de la barre de menu
+		ImGui::SameLine(ImGui::GetWindowWidth() - buttonWidth - spacing);
+
+		// Utilisation de ImageButton ou de votre bouton personnalisé
+		if (ImGui::ImageButton(refreshIcon, ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
 		{
-			// Action à effectuer lorsque le bouton de droite est cliqué
+			ImGui::OpenPopup("SettingPopup");
+		}
+
+		// Ouvrir le popup contextuel si l'utilisateur a cliqué sur le bouton
+		if (ImGui::BeginPopup("SettingPopup"))
+		{
+			// Ajouter une entrée de menu pour "Change folder color"
+			if (ImGui::BeginMenu("Change folder color"))
+			{
+				static bool alpha_preview = true;
+				static bool alpha_half_preview = false;
+				static bool drag_and_drop = true;
+				static bool options_menu = true;
+				static bool hdr = false;
+				ImGuiColorEditFlags misc_flags = (hdr ? ImGuiColorEditFlags_HDR : 0) |
+												 (drag_and_drop ? 0 : ImGuiColorEditFlags_NoDragDrop) |
+												 (alpha_half_preview ? ImGuiColorEditFlags_AlphaPreviewHalf : (alpha_preview ? ImGuiColorEditFlags_AlphaPreview : 0)) |
+												 (options_menu ? 0 : ImGuiColorEditFlags_NoOptions);
+
+				ImGui::ColorEdit3("MyColor##1", (float *)&folder_color, misc_flags);
+				ImGui::EndMenu(); // Fin du sous-menu "Change folder color"
+			}
+			ImGui::EndPopup();
 		}
 
 		ImGui::EndMenuBar();
@@ -658,30 +724,140 @@ void ContentBrowserPanel::ChangeDirectory(const std::filesystem::path &newDirect
 	}
 }
 
-void Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2) {
-    ImVec2 backup_pos = ImGui::GetCursorPos();
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); // Gris
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.6f, 0.6f, 1.0f)); // Gris clair pour hover
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.7f, 0.7f, 1.0f)); // Gris plus clair pour actif
+void Splitter(bool split_vertically, float thickness, float *size1, float *size2, float min_size1, float min_size2)
+{
+	ImVec2 backup_pos = ImGui::GetCursorPos();
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));		   // Gris
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.6f, 0.6f, 1.0f)); // Gris clair pour hover
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));  // Gris plus clair pour actif
 
-    if (split_vertically) {
-        ImGui::SetCursorPosX(backup_pos.x + *size1);
-        ImGui::InvisibleButton("##Splitter", ImVec2(thickness, ImGui::GetContentRegionAvail().y));
-    } else {
-        ImGui::SetCursorPosY(backup_pos.y + *size1);
-        ImGui::InvisibleButton("##Splitter", ImVec2(ImGui::GetContentRegionAvail().x, thickness));
-    }
+	if (split_vertically)
+	{
+		ImGui::SetCursorPosX(backup_pos.x + *size1);
+		ImGui::InvisibleButton("##Splitter", ImVec2(thickness, ImGui::GetContentRegionAvail().y));
+	}
+	else
+	{
+		ImGui::SetCursorPosY(backup_pos.y + *size1);
+		ImGui::InvisibleButton("##Splitter", ImVec2(ImGui::GetContentRegionAvail().x, thickness));
+	}
 
-    if (ImGui::IsItemActive()) {
-        float mouse_delta = (split_vertically ? ImGui::GetIO().MouseDelta.x : ImGui::GetIO().MouseDelta.y);
-        if (mouse_delta < min_size1 - *size1) mouse_delta = min_size1 - *size1;
-        if (mouse_delta > *size2 - min_size2) mouse_delta = *size2 - min_size2;
-        *size1 += mouse_delta;
-        *size2 -= mouse_delta;
-    }
+	if (ImGui::IsItemActive())
+	{
+		float mouse_delta = (split_vertically ? ImGui::GetIO().MouseDelta.x : ImGui::GetIO().MouseDelta.y);
+		if (mouse_delta < min_size1 - *size1)
+			mouse_delta = min_size1 - *size1;
+		if (mouse_delta > *size2 - min_size2)
+			mouse_delta = *size2 - min_size2;
+		*size1 += mouse_delta;
+		*size2 -= mouse_delta;
+	}
 
-    ImGui::SetCursorPos(backup_pos);
-    ImGui::PopStyleColor(3); // Restaurer les couleurs précédentes
+	ImGui::SetCursorPos(backup_pos);
+	ImGui::PopStyleColor(3); // Restaurer les couleurs précédentes
+}
+
+void ContentBrowserPanel::DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color)
+{
+	ImDrawList *drawList = ImGui::GetWindowDrawList();
+
+	// Calcul des positions des différentes parties du dossier
+	float folderFlapHeight = size.y * 0.3f;
+	float flapSlopeWidth = size.x * 0.15f;
+	float borderRadius = size.y * 0.1f;
+
+	ImVec2 flapTopLeft = pos;
+	ImVec2 flapBottomRight = ImVec2(pos.x + size.x * 0.6f, pos.y + folderFlapHeight);
+	ImVec2 flapSlopeEnd = ImVec2(flapBottomRight.x + flapSlopeWidth, flapBottomRight.y);
+
+	ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + folderFlapHeight);
+	ImVec2 bodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
+
+	// Couleur pour le dégradé
+	ImU32 darkColor = IM_COL32(200, 200, 0, 255); // Couleur plus foncée
+
+	// Dessiner la languette du dossier avec pente et dégradé
+	drawList->AddRectFilled(flapTopLeft, ImVec2(flapBottomRight.x, flapBottomRight.y - borderRadius), color, borderRadius, ImDrawFlags_RoundCornersTopLeft);
+	drawList->AddRectFilled(flapTopLeft, ImVec2(flapBottomRight.x, flapBottomRight.y), color); // Cette partie de la languette sans arrondi
+	drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x, flapTopLeft.y), color);
+
+	// Dessiner le corps du dossier avec dégradé et coins arrondis
+	drawList->AddRectFilledMultiColor(bodyTopLeft, bodyBottomRight, color, color, darkColor, darkColor);
+	drawList->AddRect(bodyTopLeft, bodyBottomRight, color, borderRadius, ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersBottomRight | ImDrawFlags_RoundCornersTopRight);
+}
+/*
+void ContentBrowserPanel::DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color)
+{
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	// Calcul des positions des différentes parties du dossier
+	float folderFlapHeight = size.y * 0.3f;
+	float flapSlopeWidth = size.x * 0.15f;
+	ImVec2 flapTopLeft = pos;
+	ImVec2 flapBottomRight = ImVec2(pos.x + size.x * 0.6f, pos.y + folderFlapHeight);
+	ImVec2 flapSlopeEnd = ImVec2(flapBottomRight.x + flapSlopeWidth, flapBottomRight.y);
+
+	ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + folderFlapHeight);
+	ImVec2 bodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
+
+	// Couleur pour le dégradé
+	ImU32 darkColor = IM_COL32(200, 200, 0, 255); // Couleur plus foncée
+
+	// Dessiner le corps du dossier avec dégradé
+	drawList->AddRectFilledMultiColor(bodyTopLeft, bodyBottomRight, color, color, darkColor, darkColor);
+
+	// Dessiner la languette du dossier avec pente et dégradé
+	drawList->AddRectFilledMultiColor(flapTopLeft, flapBottomRight, color, color, darkColor, darkColor);
+	drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x, flapTopLeft.y), darkColor);
+}
+
+void ContentBrowserPanel::DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color)
+{
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+	// Calcul des positions des différentes parties du dossier
+	float folderFlapHeight = size.y * 0.3f;
+	float flapSlopeWidth = size.x * 0.15f;
+	float borderRadius = size.y * 0.1f;
+
+	ImVec2 flapTopLeft = pos;
+	ImVec2 flapBottomRight = ImVec2(pos.x + size.x * 0.6f, pos.y + folderFlapHeight);
+	ImVec2 flapSlopeEnd = ImVec2(flapBottomRight.x + flapSlopeWidth, flapBottomRight.y);
+
+	ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + folderFlapHeight);
+	ImVec2 bodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
+
+	// Couleur pour le dégradé
+	ImU32 darkColor = IM_COL32(200, 200, 0, 255); // Couleur plus foncée
+
+	// Dessiner la languette du dossier avec pente et dégradé
+	drawList->AddRectFilled(flapTopLeft, ImVec2(flapBottomRight.x, flapBottomRight.y - borderRadius), color, borderRadius, ImDrawFlags_RoundCornersTopLeft);
+	drawList->AddRectFilled(flapTopLeft, ImVec2(flapBottomRight.x, flapBottomRight.y), color); // Cette partie de la languette sans arrondi
+	drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x, flapTopLeft.y), color);
+
+	// Dessiner le corps du dossier avec dégradé et coins arrondis
+	drawList->AddRectFilledMultiColor(bodyTopLeft, bodyBottomRight, color, color, darkColor, darkColor);
+	drawList->AddRect(bodyTopLeft, bodyBottomRight, color, borderRadius, ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersBottomRight | ImDrawFlags_RoundCornersTopRight);
+}
+*/
+
+void ContentBrowserPanel::MyFolderButton(const char *id, ImVec2 size, ImU32 color, const std::string &path)
+{
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+
+	ImGui::InvisibleButton(id, size);
+	if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+	{
+		ChangeDirectory(path);
+	}
+
+	// Dessiner l'icône du dossier
+	DrawFolderIcon(pos, size, color);
+
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	}
 }
 
 void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller)
@@ -701,104 +877,101 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	this->parent = parent;
 	controller(win);
 
+	static float size1 = 200.0f;
+	static float size2 = 200.0f;
+	float min_size1 = 200.0f;
+	float min_size2 = 200.0f;
+	float splitter_thickness = 4.0f;
 
-    static float size1 = 200.0f;
-    static float size2 = 200.0f;
-    float min_size1 = 200.0f;
-    float min_size2 = 200.0f;
-    float splitter_thickness = 4.0f;
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
 
-	
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
+	ImGui::BeginChild("Child1", ImVec2(size1, 0), true);
+	if (ImGui::CollapsingHeader("Toolchain informations"))
+	{
+		ImGui::PopStyleVar(1);
+		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Resizable | ImGuiTableColumnFlags_NoHeaderLabel;
 
-    ImGui::BeginChild("Child1", ImVec2(size1, 0), true);
-    if (ImGui::CollapsingHeader("Toolchain informations"))
-    {
-        ImGui::PopStyleVar(1);
-        static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Resizable | ImGuiTableColumnFlags_NoHeaderLabel;
+		if (ImGui::BeginTable("tablhjke_", 2, flags))
+		{
+			ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 
-        if (ImGui::BeginTable("tablhjke_", 2, flags))
-        {
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
-            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+			ImGui::PushStyleColor(ImGuiCol_TableRowBg, IM_COL32(200, 200, 200, 255));
+			ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, IM_COL32(200, 200, 200, 255));
 
-            ImGui::PushStyleColor(ImGuiCol_TableRowBg, IM_COL32(200, 200, 200, 255));
-            ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, IM_COL32(200, 200, 200, 255));
+			for (int row = 0; row < 4; row++)
+			{
+				ImGui::TableNextRow();
+				for (int column = 0; column < 2; column++)
+				{
+					ImGui::TableSetColumnIndex(column);
 
-            for (int row = 0; row < 4; row++)
-            {
-                ImGui::TableNextRow();
-                for (int column = 0; column < 2; column++)
-                {
-                    ImGui::TableSetColumnIndex(column);
+					if (column == 0)
+					{
+						ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 50));
+						ImGui::AlignTextToFramePadding();
+						ImGui::Indent(10.0f);
+						if (row == 0)
+						{
+							ImGui::Text("Toolchain Name");
+						}
+						else if (row == 1)
+						{
+							ImGui::Text("Always Use it");
+						}
+						else if (row == 2)
+						{
+							ImGui::Text("Toolchain Description");
+						}
+						else if (row == 3)
+						{
+							ImGui::Text("Toolchain Version");
+						}
+						else if (row == 4)
+						{
+							ImGui::Text("Toolchain Author");
+						}
+						ImGui::Unindent(10.0f);
+					}
+					else if (column == 1)
+					{
+						ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 50));
+						static char tochanbgf[128] = "";
+						std::string label = "###Rest" + row;
+						ImGui::InputText(label.c_str(), tochanbgf, 128);
+					}
+					ImGui::Separator();
+				}
+			}
 
-                    if (column == 0)
-                    {
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 50));
-                        ImGui::AlignTextToFramePadding();
-                        ImGui::Indent(10.0f);
-                        if (row == 0)
-                        {
-                            ImGui::Text("Toolchain Name");
-                        }
-                        else if (row == 1)
-                        {
-                            ImGui::Text("Always Use it");
-                        }
-                        else if (row == 2)
-                        {
-                            ImGui::Text("Toolchain Description");
-                        }
-                        else if (row == 3)
-                        {
-                            ImGui::Text("Toolchain Version");
-                        }
-                        else if (row == 4)
-                        {
-                            ImGui::Text("Toolchain Author");
-                        }
-                        ImGui::Unindent(10.0f);
-                    }
-                    else if (column == 1)
-                    {
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 50));
-                        static char tochanbgf[128] = "";
-                        std::string label = "###Rest" + row;
-                        ImGui::InputText(label.c_str(), tochanbgf, 128);
-                    }
-                    ImGui::Separator();
-                }
-            }
+			ImGui::PopStyleColor(2);
+			ImGui::PopStyleVar();
+			ImGui::EndTable();
+		}
+	}
 
-            ImGui::PopStyleColor(2);
-            ImGui::PopStyleVar();
-            ImGui::EndTable();
-        }
-    }
+	ImGui::EndChild();
+	ImGui::PopStyleVar(5);
 
+	ImGui::SameLine();
 
-    ImGui::EndChild();
-    ImGui::PopStyleVar(5);
+	// Sauvegarder les styles actuels
+	ImGuiStyle &style = ImGui::GetStyle();
+	ImVec4 originalChildBgColor = style.Colors[ImGuiCol_ChildBg];
+	ImVec4 originalBorderColor = style.Colors[ImGuiCol_Border];
+	ImVec4 originalBorderShadowColor = style.Colors[ImGuiCol_BorderShadow];
 
-    ImGui::SameLine();
+	// Modifier la couleur de fond et les bordures pour les rendre transparentes
+	style.Colors[ImGuiCol_ChildBg] = ImVec4(0, 0, 0, 0);
+	style.Colors[ImGuiCol_Border] = ImVec4(0, 0, 0, 0);
+	style.Colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
 
-// Sauvegarder les styles actuels
-ImGuiStyle& style = ImGui::GetStyle();
-ImVec4 originalChildBgColor = style.Colors[ImGuiCol_ChildBg];
-ImVec4 originalBorderColor = style.Colors[ImGuiCol_Border];
-ImVec4 originalBorderShadowColor = style.Colors[ImGuiCol_BorderShadow];
-
-// Modifier la couleur de fond et les bordures pour les rendre transparentes
-style.Colors[ImGuiCol_ChildBg] = ImVec4(0, 0, 0, 0);
-style.Colors[ImGuiCol_Border] = ImVec4(0, 0, 0, 0);
-style.Colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
-
-    ImGui::BeginChild("Child2", ImVec2(0, 0), true);
+	ImGui::BeginChild("Child2", ImVec2(0, 0), true);
 
 	static float padding = 16.0f;
 	static float thumbnailSize = 94.0f;
@@ -814,7 +987,7 @@ style.Colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
 
 	std::vector<std::filesystem::directory_entry> directories;
 	std::vector<std::filesystem::directory_entry> files;
-	
+
 	for (auto &directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 	{
 		if (directoryEntry.is_directory())
@@ -853,15 +1026,25 @@ style.Colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 
-			// Centrer l'image du dossier
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + imageOffsetX);
+			// Old folder logo
+			/*ImGui::SetCursorPosX(ImGui::GetCursorPosX() + imageOffsetX);
 			addTexture(Folder_Logo, Folder_Logo);
 			ImGui::ImageButton(getTexture(Folder_Logo), {reducedThumbnailSize, reducedThumbnailSize}, {-1, 0}, {0, 1});
 
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				ChangeDirectory(path);
-			}
+			}*/
+
+			// Définir la taille et la couleur de l'icône du dossier
+			ImVec2 folderSize(reducedThumbnailSize, reducedThumbnailSize); // Taille de l'icône
+			// ImU32 folderColor = ;				   // Jaune
+
+			// Chemin du dossier à ouvrir
+			std::string folderPath = "path/to/folder";
+
+			// Dessiner le bouton dossier
+			MyFolderButton("folder_icon", folderSize, folder_color, path);
 
 			float oldsize = ImGui::GetFont()->Scale;
 			if (ImGui::BeginPopupContextItem("ContextPopup"))
@@ -1005,14 +1188,12 @@ style.Colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
 		}
 	}
 
+	ImGui::EndChild();
 
-    ImGui::EndChild();
-	
-
-// Restaurer les couleurs originales
-style.Colors[ImGuiCol_ChildBg] = originalChildBgColor;
-style.Colors[ImGuiCol_Border] = originalBorderColor;
-style.Colors[ImGuiCol_BorderShadow] = originalBorderShadowColor;
+	// Restaurer les couleurs originales
+	style.Colors[ImGuiCol_ChildBg] = originalChildBgColor;
+	style.Colors[ImGuiCol_Border] = originalBorderColor;
+	style.Colors[ImGuiCol_BorderShadow] = originalBorderShadowColor;
 	ImGui::Columns(1);
 	ImGui::PopStyleVar();
 

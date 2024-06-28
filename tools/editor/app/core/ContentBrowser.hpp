@@ -66,6 +66,9 @@ public:
     void GoBack();
     void GoForward();
 
+void DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color);
+void MyFolderButton(const char* id, ImVec2 size, ImU32 color, const std::string& path);
+
 	VxContext *ctx;
 	std::string parent;
 	void menubar();
