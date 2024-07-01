@@ -13,7 +13,7 @@ static std::string _parent;
 static char ProjectSearch[256];
 static float threshold = 0.4;
 
-static ImU32 folder_color = IM_COL32(255, 255, 0, 255);
+static ImU32 folder_color = IM_COL32(255, 255, 75, 255);
 
 static bool isOnlySpacesOrEmpty(const char *str)
 {
@@ -361,8 +361,10 @@ static void DrawHighlightedText(ImDrawList *drawList, ImVec2 textPos, const char
 	}
 }
 
-void MyButton(const std::string &name, const std::string &description, const std::string &size, const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255), ImU32 borderColor = IM_COL32(150, 150, 150, 255), ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 100.0f, float borderRadius = 5.0f)
+bool MyButton(const std::string &name, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255), ImU32 borderColor = IM_COL32(150, 150, 150, 255), ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 100.0f, float borderRadius = 5.0f)
 {
+	bool pressed = false;
+
 	// Configuration des tailles et positions
 	float logoSize = 60.0f;				// Taille du logo
 	float extraHeight = 80.0f;			// Hauteur supplémentaire pour le bouton global
@@ -372,6 +374,12 @@ void MyButton(const std::string &name, const std::string &description, const std
 	float versionBoxWidth = 10.0f;		// Largeur de la boîte de version
 	float versionBoxHeight = 20.0f;		// Hauteur de la boîte de version
 	float thumbnailIconOffsetY = 30.0f; // Hauteur de la boîte de version
+
+	if (selected)
+	{
+		bgColor = IM_COL32(80, 80, 240, 255);
+		borderColor = IM_COL32(150, 150, 255, 255);
+	}
 
 	ImVec2 squareSize(logoSize, logoSize);
 
@@ -404,7 +412,7 @@ void MyButton(const std::string &name, const std::string &description, const std
 	std::string button_id = name + "squareButtonWithText" + name;
 	if (ImGui::InvisibleButton(button_id.c_str(), fixedSize))
 	{
-		// Traitement de l'événement (ouverture d'une ressource)
+		pressed = true;
 	}
 
 	if (ImGui::IsItemHovered())
@@ -481,6 +489,8 @@ void MyButton(const std::string &name, const std::string &description, const std
 
 	// Ajouter un espacement vertical après chaque bouton pour éviter le chevauchement
 	ImGui::SetCursorScreenPos(ImVec2(cursorPos.x, cursorPos.y + fixedSize.y + padding));
+
+	return pressed;
 }
 
 // Helper function to get file extension
@@ -532,7 +542,7 @@ FileTypes detect_file(const std::string &path)
 	}
 }
 ContentBrowserPanel::ContentBrowserPanel(VxContext *_ctx, const std::string &parentwindow)
-	: m_BaseDirectory("../../"), m_CurrentDirectory(m_BaseDirectory)
+	: m_BaseDirectory("/"), m_CurrentDirectory(m_BaseDirectory)
 {
 	this->ctx = _ctx;
 	parent = parentwindow;
@@ -567,9 +577,10 @@ void ContentBrowserPanel::menubar()
 	addTexture(Icon_Left_Arrow_Disabled, Icon_Left_Arrow_Disabled);
 	addTexture(Icon_Right_Arrow_Disabled, Icon_Right_Arrow_Disabled);
 
+	ImGui::SetNextWindowSize(ImVec2(200, 300));
+	ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 200, 300));
 	if (ImGui::BeginMenuBar())
 	{
-
 		float oldsize = ImGui::GetFont()->Scale;
 		ImGui::GetFont()->Scale *= 0.85;
 		ImGui::PushFont(ImGui::GetFont());
@@ -666,8 +677,25 @@ void ContentBrowserPanel::menubar()
 			ImGui::EndPopup();
 		}
 
+		ImGui::PopStyleVar();
+
 		ImGui::EndMenuBar();
 	}
+}
+
+static std::uintmax_t getDirectorySize(const fs::path &directoryPath)
+{
+	std::uintmax_t size = 0;
+
+	for (const auto &entry : fs::recursive_directory_iterator(directoryPath))
+	{
+		if (fs::is_regular_file(entry.path()))
+		{
+			size += fs::file_size(entry.path());
+		}
+	}
+
+	return size;
 }
 
 static std::string formatFileSize(size_t size)
@@ -759,87 +787,41 @@ void Splitter(bool split_vertically, float thickness, float *size1, float *size2
 
 void ContentBrowserPanel::DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color)
 {
-	ImDrawList *drawList = ImGui::GetWindowDrawList();
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-	// Calcul des positions des différentes parties du dossier
-	float folderFlapHeight = size.y * 0.3f;
-	float flapSlopeWidth = size.x * 0.15f;
-	float borderRadius = size.y * 0.1f;
+    // Calcul des positions des différentes parties du dossier
+    float folderFlapHeight = size.y * 0.2f;
+    float flapSlopeWidth = size.x * 0.15f;
+    float borderRadius = size.y * 0.1f;
 
-	ImVec2 flapTopLeft = pos;
-	ImVec2 flapBottomRight = ImVec2(pos.x + size.x * 0.6f, pos.y + folderFlapHeight);
-	ImVec2 flapSlopeEnd = ImVec2(flapBottomRight.x + flapSlopeWidth, flapBottomRight.y);
+    ImVec2 flapTopLeft = pos;
+    ImVec2 flapBottomRight = ImVec2(pos.x + size.x * 0.6f, pos.y + folderFlapHeight);
+    ImVec2 flapSlopeEnd = ImVec2(flapBottomRight.x + flapSlopeWidth, flapBottomRight.y);
 
-	ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + folderFlapHeight);
-	ImVec2 bodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
+    ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + folderFlapHeight);
+    ImVec2 bodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
 
-	// Couleur pour le dégradé
-	ImU32 darkColor = IM_COL32(200, 200, 0, 255); // Couleur plus foncée
+    // Couleur pour le dégradé
+    ImU32 darkColor = IM_COL32(130, 180, 75, 255); // Couleur plus foncée
 
-	// Dessiner la languette du dossier avec pente et dégradé
-	drawList->AddRectFilled(flapTopLeft, ImVec2(flapBottomRight.x, flapBottomRight.y - borderRadius), color, borderRadius, ImDrawFlags_RoundCornersTopLeft);
-	drawList->AddRectFilled(flapTopLeft, ImVec2(flapBottomRight.x, flapBottomRight.y), color); // Cette partie de la languette sans arrondi
-	drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x, flapTopLeft.y), color);
+    // Dessiner le corps du dossier avec coins arrondis et dégradé
+    drawList->AddRectFilledMultiColor(bodyTopLeft, bodyBottomRight, color, color, darkColor, darkColor);
 
-	// Dessiner le corps du dossier avec dégradé et coins arrondis
-	drawList->AddRectFilledMultiColor(bodyTopLeft, bodyBottomRight, color, color, darkColor, darkColor);
-	drawList->AddRect(bodyTopLeft, bodyBottomRight, color, borderRadius, ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersBottomRight | ImDrawFlags_RoundCornersTopRight);
-}
-/*
-void ContentBrowserPanel::DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color)
-{
-	ImDrawList* drawList = ImGui::GetWindowDrawList();
+    // Dessiner un rectangle blanc au centre
+    ImVec2 centerRectTopLeft = ImVec2(pos.x + size.x * 0.2f, pos.y + 0.2f + size.y * 0.2f);
+    ImVec2 centerRectBottomRight = ImVec2(pos.x + size.x * 0.8f, pos.y + size.y * 0.8f);
+    drawList->AddRectFilled(centerRectTopLeft, centerRectBottomRight, IM_COL32_WHITE, 0.0f, 0);
 
-	// Calcul des positions des différentes parties du dossier
-	float folderFlapHeight = size.y * 0.3f;
-	float flapSlopeWidth = size.x * 0.15f;
-	ImVec2 flapTopLeft = pos;
-	ImVec2 flapBottomRight = ImVec2(pos.x + size.x * 0.6f, pos.y + folderFlapHeight);
-	ImVec2 flapSlopeEnd = ImVec2(flapBottomRight.x + flapSlopeWidth, flapBottomRight.y);
-
-	ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + folderFlapHeight);
-	ImVec2 bodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
-
-	// Couleur pour le dégradé
-	ImU32 darkColor = IM_COL32(200, 200, 0, 255); // Couleur plus foncée
-
-	// Dessiner le corps du dossier avec dégradé
-	drawList->AddRectFilledMultiColor(bodyTopLeft, bodyBottomRight, color, color, darkColor, darkColor);
-
-	// Dessiner la languette du dossier avec pente et dégradé
-	drawList->AddRectFilledMultiColor(flapTopLeft, flapBottomRight, color, color, darkColor, darkColor);
-	drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x, flapTopLeft.y), darkColor);
+    ImVec2 secondBodyTopLeft = ImVec2(pos.x, pos.y - 0.8f);
+    ImVec2 secondBodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y - 0.8f);
+	
+    // Dessiner la languette du dossier avec pente et coins arrondis
+    drawList->AddRectFilled(flapTopLeft, flapBottomRight, color, borderRadius, ImDrawFlags_RoundCornersTopLeft);
+    drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x - 3, flapTopLeft.y), color);
 }
 
-void ContentBrowserPanel::DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color)
-{
-	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-	// Calcul des positions des différentes parties du dossier
-	float folderFlapHeight = size.y * 0.3f;
-	float flapSlopeWidth = size.x * 0.15f;
-	float borderRadius = size.y * 0.1f;
 
-	ImVec2 flapTopLeft = pos;
-	ImVec2 flapBottomRight = ImVec2(pos.x + size.x * 0.6f, pos.y + folderFlapHeight);
-	ImVec2 flapSlopeEnd = ImVec2(flapBottomRight.x + flapSlopeWidth, flapBottomRight.y);
-
-	ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + folderFlapHeight);
-	ImVec2 bodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
-
-	// Couleur pour le dégradé
-	ImU32 darkColor = IM_COL32(200, 200, 0, 255); // Couleur plus foncée
-
-	// Dessiner la languette du dossier avec pente et dégradé
-	drawList->AddRectFilled(flapTopLeft, ImVec2(flapBottomRight.x, flapBottomRight.y - borderRadius), color, borderRadius, ImDrawFlags_RoundCornersTopLeft);
-	drawList->AddRectFilled(flapTopLeft, ImVec2(flapBottomRight.x, flapBottomRight.y), color); // Cette partie de la languette sans arrondi
-	drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x, flapTopLeft.y), color);
-
-	// Dessiner le corps du dossier avec dégradé et coins arrondis
-	drawList->AddRectFilledMultiColor(bodyTopLeft, bodyBottomRight, color, color, darkColor, darkColor);
-	drawList->AddRect(bodyTopLeft, bodyBottomRight, color, borderRadius, ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersBottomRight | ImDrawFlags_RoundCornersTopRight);
-}
-*/
 
 void ContentBrowserPanel::MyFolderButton(const char *id, ImVec2 size, ImU32 color, const std::string &path)
 {
@@ -860,22 +842,77 @@ void ContentBrowserPanel::MyFolderButton(const char *id, ImVec2 size, ImU32 colo
 	}
 }
 
+// Fonction pour afficher un en-tête avec une icône
+bool CollapsingHeaderWithIcon(const char *label, ImTextureID icon)
+{
+	ImGui::PushID(label);
+
+	bool open = ImGui::CollapsingHeader("##hidden", ImGuiTreeNodeFlags_AllowItemOverlap);
+
+	// Positionnez l'image avant le texte
+	ImVec2 textPos = ImGui::GetCursorPos();
+	ImGui::SameLine();
+	ImGui::SetCursorPosX(textPos.x + ImGui::GetStyle().FramePadding.x);
+
+	ImGui::Image(icon, ImVec2(16, 16)); // Ajustez la taille selon vos besoins
+	ImGui::SameLine();
+
+	ImGui::SetCursorPosY(textPos.y);
+	ImGui::TextUnformatted(label);
+
+	ImGui::PopID();
+
+	return open;
+}
+
+bool MyCollapsingHeader(const char *label, ImTextureID my_texture)
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
+	bool *p_open = ImGui::GetStateStorage()->GetBoolRef(ImGui::GetID(label), false);
+
+	ImGuiStyle &style = ImGui::GetStyle();
+
+	// Calculate the size of the texture and padding
+	float texture_size = ImGui::GetFontSize(); // Adjust the size of the texture as needed
+	float padding = style.ItemInnerSpacing.x;
+
+	// Create a horizontal layout
+	ImGui::BeginGroup();
+	if (ImGui::UIKit_ImageButtonWithText(my_texture, label, ImVec2(-FLT_MIN, 0.0f)))
+		*p_open ^= 1;
+
+	// Adjust arrow position considering the texture
+	ImVec2 arrow_pos = ImVec2(ImGui::GetItemRectMax().x - style.FramePadding.x - ImGui::GetFontSize(), ImGui::GetItemRectMin().y + style.FramePadding.y);
+	ImGui::RenderArrow(ImGui::GetWindowDrawList(), arrow_pos, ImGui::GetColorU32(ImGuiCol_Text), *p_open ? ImGuiDir_Down : ImGuiDir_Right);
+	ImGui::EndGroup();
+
+	ImGui::PopStyleVar();
+	return *p_open;
+}
+
+static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>> recognized_modules_items;
+
 void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller)
 {
 	static ImTextureID projectIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
-
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::SetNextWindowDockID(ImGui::GetID("MainDockspace"), ImGuiCond_FirstUseEver);
+
 	if (ImGui::UIKit_BeginLogoWindow("Content Browser", &projectIcon, &this->opened, window_flags))
 	{
+		// Render the menubar with proper paddin
 		this->menubar();
 	}
+
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
 	static ImGuiWindow *win = ImGui::GetCurrentWindow();
 	this->parent = parent;
 	controller(win);
+
+	ImGui::PopStyleVar(); // Pop the ItemSpacing style
 
 	static float size1 = 200.0f;
 	static float size2 = 200.0f;
@@ -883,80 +920,21 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	float min_size2 = 200.0f;
 	float splitter_thickness = 4.0f;
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
 
 	ImGui::BeginChild("Child1", ImVec2(size1, 0), true);
-	if (ImGui::CollapsingHeader("Toolchain informations"))
+	if (MyCollapsingHeader("Favorites", projectIcon))
 	{
-		ImGui::PopStyleVar(1);
-		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Resizable | ImGuiTableColumnFlags_NoHeaderLabel;
-
-		if (ImGui::BeginTable("tablhjke_", 2, flags))
-		{
-			ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
-			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
-
-			ImGui::PushStyleColor(ImGuiCol_TableRowBg, IM_COL32(200, 200, 200, 255));
-			ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, IM_COL32(200, 200, 200, 255));
-
-			for (int row = 0; row < 4; row++)
-			{
-				ImGui::TableNextRow();
-				for (int column = 0; column < 2; column++)
-				{
-					ImGui::TableSetColumnIndex(column);
-
-					if (column == 0)
-					{
-						ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 50));
-						ImGui::AlignTextToFramePadding();
-						ImGui::Indent(10.0f);
-						if (row == 0)
-						{
-							ImGui::Text("Toolchain Name");
-						}
-						else if (row == 1)
-						{
-							ImGui::Text("Always Use it");
-						}
-						else if (row == 2)
-						{
-							ImGui::Text("Toolchain Description");
-						}
-						else if (row == 3)
-						{
-							ImGui::Text("Toolchain Version");
-						}
-						else if (row == 4)
-						{
-							ImGui::Text("Toolchain Author");
-						}
-						ImGui::Unindent(10.0f);
-					}
-					else if (column == 1)
-					{
-						ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 50));
-						static char tochanbgf[128] = "";
-						std::string label = "###Rest" + row;
-						ImGui::InputText(label.c_str(), tochanbgf, 128);
-					}
-					ImGui::Separator();
-				}
-			}
-
-			ImGui::PopStyleColor(2);
-			ImGui::PopStyleVar();
-			ImGui::EndTable();
-		}
+	}
+	if (MyCollapsingHeader("All", projectIcon))
+	{
 	}
 
 	ImGui::EndChild();
-	ImGui::PopStyleVar(5);
+	ImGui::PopStyleVar(4);
 
 	ImGui::SameLine();
 
@@ -988,8 +966,26 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	std::vector<std::filesystem::directory_entry> directories;
 	std::vector<std::filesystem::directory_entry> files;
 
+	recognized_modules_items.clear();
+
 	for (auto &directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 	{
+		bool isItem = false;
+		for (auto item : this->ctx->IO.contentbrowser_items)
+		{
+			std::string path = directoryEntry.path().string();
+			if (item->f_Detect(path))
+			{
+				recognized_modules_items.push_back({item, path});
+				isItem = true;
+			}
+		}
+
+		if(isItem)
+		{
+			continue;
+		}
+
 		if (directoryEntry.is_directory())
 		{
 			directories.push_back(directoryEntry);
@@ -1144,46 +1140,288 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 		}
 	}
 
+	for (auto &itemEntry : recognized_modules_items)
+	{
+		const auto &path = itemEntry.second;
+		fs::path fsPath(path);
+		std::string filenameString = fsPath.filename().string();
+
+		bool selected = false;
+
+		if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
+		{
+			selected = true;
+		}
+
+		if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+		{
+			std::uintmax_t folderSize = getDirectorySize(path);
+			std::string folderSizeString = formatFileSize(folderSize);
+			ImGui::PushID(filenameString.c_str());
+
+			if (MyButton(filenameString, itemEntry.first->m_Description, folderSizeString, selected, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(itemEntry.first->m_LineColor.x, itemEntry.first->m_LineColor.y, itemEntry.first->m_LineColor.z, itemEntry.first->m_LineColor.w)))
+			{
+				if (ImGui::IsMouseDoubleClicked(0))
+				{
+					itemEntry.first->f_Execute(path);
+					VXERROR("te", "tyr");
+				}
+
+				if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+				{
+					m_Selected.push_back(path);
+				}
+				else
+				{
+					m_Selected.clear();
+					m_Selected.push_back(path);
+				}
+			}
+
+			ImGui::PopID();
+			ImGui::NextColumn();
+		}
+	}
+
 	for (auto &fileEntry : files)
 	{
 		const auto &path = fileEntry.path();
 		std::string filenameString = path.filename().string();
 
+		bool selected = false;
+
+		if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
+		{
+			selected = true;
+		}
+
 		if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
 		{
 			size_t fileSize = std::filesystem::file_size(path);
 			std::string fileSizeString = formatFileSize(fileSize);
+			ImGui::PushID(filenameString.c_str());
 
 			FileTypes fileType = detect_file(path.string());
 
 			switch (fileType)
 			{
 			case FileTypes::File_PICTURE:
-				MyButton(filenameString, "Picture file", fileSizeString, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(255, 100, 150, 255));
+			{
+				if (MyButton(filenameString, "Picture file", fileSizeString, selected, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(255, 100, 150, 255)))
+				{
+					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+					{
+						m_Selected.push_back(path);
+					}
+					else
+					{
+						m_Selected.clear();
+						m_Selected.push_back(path);
+					}
+				}
 				break;
+			}
 			case FileTypes::File_GIT:
-				MyButton(filenameString, "Git File", fileSizeString, File_GIT_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
+			{
+				if (MyButton(filenameString, "Git File", fileSizeString, selected, File_GIT_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+				{
+					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+					{
+						m_Selected.push_back(path);
+					}
+					else
+					{
+						m_Selected.clear();
+						m_Selected.push_back(path);
+					}
+				}
 				break;
+			}
 			case FileTypes::File_H:
-				MyButton(filenameString, "C Header File", fileSizeString, File_C_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255));
+			{
+				if (MyButton(filenameString, "C Header File", fileSizeString, selected, File_C_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255)))
+				{
+					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+					{
+						m_Selected.push_back(path);
+					}
+					else
+					{
+						m_Selected.clear();
+						m_Selected.push_back(path);
+					}
+				}
 				break;
+			}
 			case FileTypes::File_C:
-				MyButton(filenameString, "C Source File", fileSizeString, File_C_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
+			{
+				if (MyButton(filenameString, "C Source File", fileSizeString, selected, File_C_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+				{
+					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+					{
+						m_Selected.push_back(path);
+					}
+					else
+					{
+						m_Selected.clear();
+						m_Selected.push_back(path);
+					}
+				}
 				break;
+			}
 			case FileTypes::File_HPP:
-				MyButton(filenameString, "C++ Header File", fileSizeString, File_CPP_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
+			{
+				if (MyButton(filenameString, "C++ Header File", fileSizeString, selected, File_CPP_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+				{
+					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+					{
+						m_Selected.push_back(path);
+					}
+					else
+					{
+						m_Selected.clear();
+						m_Selected.push_back(path);
+					}
+				}
 				break;
+			}
 			case FileTypes::File_CPP:
-				MyButton(filenameString, "C++ Source File", fileSizeString, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255));
+			{
+				if (MyButton(filenameString, "C++ Source File", fileSizeString, selected, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+				{
+					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+					{
+						m_Selected.push_back(path);
+					}
+					else
+					{
+						m_Selected.clear();
+						m_Selected.push_back(path);
+					}
+				}
 				break;
+			}
 			case FileTypes::File_INI:
-				MyButton(filenameString, "Init File", fileSizeString, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255));
+			{
+				if (MyButton(filenameString, "Init File", fileSizeString, selected, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
+				{
+					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+					{
+						m_Selected.push_back(path);
+					}
+					else
+					{
+						m_Selected.clear();
+						m_Selected.push_back(path);
+					}
+				}
 				break;
+			}
 			default:
-				MyButton(filenameString, "File", fileSizeString, File_UNKNOW_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255));
+			{
+				if (MyButton(filenameString, "File", fileSizeString, selected, File_UNKNOW_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
+				{
+					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+					{
+						m_Selected.push_back(path);
+					}
+					else
+					{
+						m_Selected.clear();
+						m_Selected.push_back(path);
+					}
+				}
 				break;
 			}
 
+				ImGui::PopStyleVar(2); // Pop FrameBorderSize and FramePadding
+				ImGui::PopStyleColor(3);
+			}
+			float oldsize = ImGui::GetFont()->Scale;
+
+			if (ImGui::BeginPopupContextItem("ItemContextPopup"))
+			{
+
+				// Appliquer le nouveau scale
+				ImGui::GetFont()->Scale *= 0.9;
+				ImGui::PushFont(ImGui::GetFont());
+
+				// Ajouter un espace au-dessus
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f); // Ajustez la valeur selon vos besoins
+
+				// Changer la couleur du texte en gris
+				ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);			// Gris (50% blanc)
+				ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // Gris (50% blanc)
+				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+
+				ImGui::Text("Main");
+
+				// Restaurer la couleur du texte précédente
+				ImGui::PopStyleColor();
+
+				// Changer la couleur du separator en gris
+				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+				ImGui::Separator();
+				ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+
+				// Restaurer l'ancien scale de la police
+				ImGui::GetFont()->Scale = oldsize;
+				ImGui::PopFont();
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f); // Ajustez la valeur selon vos besoins
+
+				if (ImGui::MenuItem("Open", "Ctrl + O"))
+				{
+					ChangeDirectory(path);
+					ImGui::CloseCurrentPopup();
+				}
+				if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
+				{
+					ChangeDirectory(path);
+					ImGui::CloseCurrentPopup();
+				}
+				if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
+				{
+					ChangeDirectory(path);
+					ImGui::CloseCurrentPopup();
+				}
+
+				// Appliquer le nouveau scale
+				ImGui::GetFont()->Scale *= 0.9;
+				ImGui::PushFont(ImGui::GetFont());
+
+				// Ajouter un espace au-dessus
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f); // Ajustez la valeur selon vos besoins
+
+				// Changer la couleur du texte en gris
+				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+
+				ImGui::Text("Main");
+
+				// Restaurer la couleur du texte précédente
+				ImGui::PopStyleColor();
+
+				// Changer la couleur du separator en gris
+				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+				ImGui::Separator();
+				ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+
+				// Restaurer l'ancien scale de la police
+				ImGui::GetFont()->Scale = oldsize;
+				ImGui::PopFont();
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f); // Ajustez la valeur selon vos besoins
+
+				if (ImGui::MenuItem("Change color"))
+				{
+				}
+				if (ImGui::MenuItem("Mark as favorite"))
+				{
+				}
+				// Ajouter d'autres options de menu ici...
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
 			ImGui::NextColumn();
 		}
 	}
@@ -1195,7 +1433,6 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	style.Colors[ImGuiCol_Border] = originalBorderColor;
 	style.Colors[ImGuiCol_BorderShadow] = originalBorderShadowColor;
 	ImGui::Columns(1);
-	ImGui::PopStyleVar();
 
 	ImGui::End();
 }

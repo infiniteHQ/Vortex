@@ -88,6 +88,10 @@ private:
     std::stack<std::filesystem::path> m_BackHistory;
     std::stack<std::filesystem::path> m_ForwardHistory;
 
+    std::vector<std::filesystem::path> m_Selected;
+
+    std::vector<std::filesystem::path> m_Favorites;
+
 	std::shared_ptr<UIKit::Image> m_ProjectIcon;
 	std::shared_ptr<UIKit::Image> m_FileIcon;
 	std::shared_ptr<UIKit::Image> m_DirectoryIcon;

@@ -7,15 +7,16 @@
 class ModuleManager
 {
 public:
-	ModuleManager(VxContext *_ctx, InstanceFactory* _factory);
+	ModuleManager(VxContext *_ctx, InstanceFactory* _factory, const std::string &parent);
 
-	void OnImGuiRender();
+	void OnImGuiRender(const std::string& parent, std::function<void(ImGuiWindow*)> controller);	
 	void menubar();
 	void addModuleModal();
 
 
 	VxContext *ctx;
 	InstanceFactory* factory;
+	std::string m_Parent;
 
 private:
 	bool opened;

@@ -61,8 +61,8 @@ public:
 
     if (this->ShowContentBrowser)
     {
-      //static ContentBrowserPanel contentBrowser(this->m_ctx, &factory);
-      //contentBrowser.OnImGuiRender();
+      static ContentBrowserPanel contentBrowser(this->m_ctx, this->ParentWindow);
+      contentBrowser.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
     }
 
     if (this->ShowProjectViewer)
@@ -79,8 +79,8 @@ public:
 
     if (this->ShowModulesManager)
     {
-      static ModuleManager moduleManager(this->m_ctx, &factory);
-      moduleManager.OnImGuiRender();
+      static ModuleManager moduleManager(this->m_ctx, &factory, this->ParentWindow);
+      moduleManager.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
     }
 
     if (this->ShowTemplateManager)
@@ -147,7 +147,7 @@ public:
   // TaskProcessor taskProcessor;
 
   std::thread receiveThread;
-  bool ShowContentBrowser = false;
+  bool ShowContentBrowser = true;
   bool ShowProjectViewer = false;
   bool ShowModulesManager = false;
   bool ShowTemplateManager = false;

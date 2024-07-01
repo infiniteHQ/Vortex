@@ -29,6 +29,8 @@ public:
   {
     PushStyle();
 
+    ImGui::ShowDemoWindow();
+
     if (this->ShowProjectManager)
     {
       static ProjectManager projectManager(this->m_ctx, this->ParentWindow);
@@ -65,15 +67,15 @@ public:
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 11.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 11.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 7.0f));
+  //  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+   // ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 7.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(9.0f, 3.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
   }
 
   void PopStyle()
   {
-    ImGui::PopStyleVar(8);
+    ImGui::PopStyleVar(6);
   }
 
   // Global TaskProcessor instance

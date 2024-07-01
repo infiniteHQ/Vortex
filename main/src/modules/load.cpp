@@ -196,7 +196,7 @@ namespace VortexMaker
             catch (const std::exception &e)
             {
                 // Print error if an exception occurs
-                std::cerr << "Error: " << e.what() << std::endl;
+                VortexMaker::LogError("Core", 'Error: ' + e.what());
             }
         }
     }

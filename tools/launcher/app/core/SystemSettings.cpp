@@ -6,11 +6,11 @@ static std::shared_ptr<TemplateInterface> selected_template;
 static std::string default_project_avatar = "/usr/local/include/Vortex/1.1/imgs/base_vortex.png";
 static std::string _parent;
 
-    static bool open_module_deletion_modal = false;
-    static bool open_template_deletion_modal = false;
-    static bool open_import_module = false;
-    static bool open_import_all_module = false;
-    static bool open_import_all_templates = false;
+static bool open_module_deletion_modal = false;
+static bool open_template_deletion_modal = false;
+static bool open_import_module = false;
+static bool open_import_all_module = false;
+static bool open_import_all_templates = false;
 
 static std::shared_ptr<ModuleInterface> single_module_to_add;
 
@@ -995,7 +995,7 @@ void SystemSettings::menubar()
                                 }
                                 else if (all_templates_to_add[row].first == TemplatesStates::NOT_INSTALLED)
                                 {
-                                    std::string label = "Install###" + row; 
+                                    std::string label = "Install###" + row;
                                     if (ImGui::Button(label.c_str()))
                                     {
                                         VxContext *ctx = VortexMaker::GetCurrentContext();
@@ -1053,7 +1053,6 @@ void SystemSettings::menubar()
         }
     }
 
-
     if (open_template_deletion_modal)
     {
         ImGui::SetNextWindowSize(ImVec2(300, 200));
@@ -1068,7 +1067,6 @@ void SystemSettings::menubar()
             // inputs widget
             ImGui::TextWrapped("WARNING, if you click on the Delete button, the project will be erase forever.");
             ImGui::SetItemDefaultFocus();
-
 
             if (ImGui::Button("Cancel", ImVec2(120, 0)))
             {
@@ -1093,8 +1091,6 @@ void SystemSettings::menubar()
         }
     }
 
-
-
     if (open_module_deletion_modal)
     {
         ImGui::SetNextWindowSize(ImVec2(300, 200));
@@ -1109,7 +1105,6 @@ void SystemSettings::menubar()
             // inputs widget
             ImGui::TextWrapped("WARNING, if you click on the Delete button, the project will be erase forever.");
             ImGui::SetItemDefaultFocus();
-
 
             if (ImGui::Button("Cancel", ImVec2(120, 0)))
             {
@@ -1138,7 +1133,6 @@ void SystemSettings::menubar()
     {
         static ImGuiTableFlags window_flags = ImGuiWindowFlags_MenuBar;
         static bool first_time = true;
-
 
         if (first_time)
         {

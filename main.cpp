@@ -118,6 +118,14 @@ VxContext *InitRuntime(bool logger)
 
     VortexMaker::CreateSessionTopic(ctx->state.session_id);
 
+    // Initialize environment
+    VortexMaker::InitEnvironment();
+
+    // Refresh environment registered projects
+    VortexMaker::RefreshEnvironmentProjects();
+
+    VortexMaker::LoadSystemTemplates(ctx->IO.sys_templates);
+
     std::ifstream file("vortex.config");
 
     if (file)
@@ -245,20 +253,22 @@ int main(int argc, char *argv[])
         else if (std::string(argv[1]) == "-e" || std::string(argv[1]) == "--editor")
         {
             PrintHeader();
-            InitBlankRuntime(true);
-            if (!CheckDirectory())
-            {
-                return 1;
-            };
+
+            if (argc > 2) {
+                std::string arg2 = argv[2];
+                if (arg2.rfind("--session_id=", 0) == 0) {
+                    session_id = arg2.substr(13);
+                }
+            }
+            InitRuntime(true);
             VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
 
             std::thread receiveThread;
             try
             {
-                if (std::string(argv[2]) == "-v")
+                if (std::string(argv[2]) == "-v" || std::string(argv[3]) == "-v")
                 {
                     VortexMaker::LogWarn("Bootstrapp", "Opening the graphical interface...");
-                    InitRuntime(true);
                     std::thread Thread([&]()
                                        { VortexMaker::VortexEditor(argc, argv); });
                     receiveThread.swap(Thread);
@@ -266,7 +276,6 @@ int main(int argc, char *argv[])
             }
             catch (std::exception e)
             {
-                InitRuntime(false);
                 std::thread Thread([&]()
                                    { VortexMaker::VortexEditor(argc, argv); });
                 receiveThread.swap(Thread);

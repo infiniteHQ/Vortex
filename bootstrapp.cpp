@@ -14,7 +14,6 @@
 #include "main/include/modules/runtime.h"
 #include "main/include/templates/load.h"
 
-
 /*
     TODO : Parent process for vortex executables regitered in /usr/local/bin/Vortex/VERSION/vortex
     This command can detect the version of a project and execute the correspondant project.
@@ -85,12 +84,13 @@ std::string FindCompatibleVersion()
 
 // Move crash process report into cras/coredumped et get/post
 
-void initialize_random() {
+void initialize_random()
+{
     srand(static_cast<unsigned int>(time(0)));
 }
 
-
-void LaunchVortex(const std::string& version) {
+void LaunchVortex(const std::string &version)
+{
     // Create a session id
     initialize_random();
     std::string session_id = "launcher-" + VortexMaker::gen_random(8);
@@ -98,18 +98,29 @@ void LaunchVortex(const std::string& version) {
     std::string target_path = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + session_id + "/crash/core_dumped.txt";
     std::string crash_script_command = "bash /usr/local/bin/Vortex/" + version + "/handle_crash.sh " + target_path + " " + command;
 
-   std::cout << "Bootstrapp"<< "Starting with command : " << crash_script_command << std::endl;;
+    std::cout << "Bootstrapp" << "Starting with command : " << crash_script_command << std::endl;
 
-    if(std::system(crash_script_command.c_str()) != 0){
+    if (std::system(crash_script_command.c_str()) != 0)
+    {
         std::string crash_handle_command = "/usr/local/bin/Vortex/" + version + "/vortex -crash --session_id=" + session_id;
         std::system(crash_handle_command.c_str());
     }
 }
 
-void LaunchVortexEditor(const std::string& version) {
-    std::string command = "/usr/local/bin/Vortex/" + version + "/vortex --editor";
-    if(std::system(command.c_str()) != 0){
-        std::string crash_handle_command = "/usr/local/bin/Vortex/" + version + "/vortex -crash";
+void LaunchVortexEditor(const std::string &version)
+{
+    // Create a session id
+    initialize_random();
+
+    std::string session_id = "editor-" + VortexMaker::gen_random(8);
+    std::string command = "/usr/local/bin/Vortex/" + version + "/vortex --editor --session_id=" + session_id;
+    std::string target_path = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + session_id + "/crash/core_dumped.txt";
+    std::string crash_script_command = "bash /usr/local/bin/Vortex/" + version + "/handle_crash.sh " + target_path + " " + command;
+    std::cout << "Bootstrapp" << "Starting with command : " << crash_script_command << std::endl;
+
+    if (std::system(crash_script_command.c_str()) != 0)
+    {
+        std::string crash_handle_command = "/usr/local/bin/Vortex/" + version + "/vortex -crash --session_id=" + session_id;
         std::system(crash_handle_command.c_str());
     }
 }
@@ -125,52 +136,119 @@ bool CheckDirectory()
     return true;
 }
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     RegisterAvailableVersions();
 
     std::cout << "Available versions:" << std::endl;
-    for (const std::string &version : available_versions) {
+    for (const std::string &version : available_versions)
+    {
         std::cout << version << std::endl;
     }
 
-    if (argc > 1) {
+    if (argc > 1)
+    {
         std::string arg1 = argv[1];
-        if (arg1 == "-l" || arg1 == "--launcher") {
+        if (arg1 == "-l" || arg1 == "--launcher")
+        {
             std::string specified_version;
 
             // Check for --version argument
-            if (argc > 2) {
+            if (argc > 2)
+            {
                 std::string arg2 = argv[2];
-                if (arg2.rfind("--version=", 0) == 0) {
+                if (arg2.rfind("--version=", 0) == 0)
+                {
                     specified_version = arg2.substr(10); // Extract version number
                 }
             }
 
-            if (specified_version.empty()) {
+            if (specified_version.empty())
+            {
                 // Launch the last version if --version is not specified
-                if (!available_versions.empty()) {
+                if (!available_versions.empty())
+                {
                     LaunchVortex(available_versions.back());
-                } else {
+                }
+                else
+                {
                     std::cerr << "No available versions found." << std::endl;
                 }
-            } else {
+            }
+            else
+            {
                 // Launch the specified version
-                if (std::find(available_versions.begin(), available_versions.end(), specified_version) != available_versions.end()) {
+                if (std::find(available_versions.begin(), available_versions.end(), specified_version) != available_versions.end())
+                {
                     LaunchVortex(specified_version);
-                } else {
+                }
+                else
+                {
                     std::cerr << "Specified version not found." << std::endl;
                 }
             }
-        } else if (arg1 == "-test") {
+        }
+        else if (arg1 == "-test")
+        {
             std::cout << "ok" << std::endl;
             return 0;
         }
-    } else {
+        else if (arg1 == "-e" || arg1 == "--editor")
+        {
+            std::string specified_version;
+
+            // TODO : Auto detect version from a project.
+
+            // Check for --version argument
+            if (argc > 2)
+            {
+                std::string arg2 = argv[2];
+                if (arg2.rfind("--version=", 0) == 0)
+                {
+                    specified_version = arg2.substr(10); // Extract version number
+                }
+            }
+
+            if (specified_version.empty())
+            {
+                // Launch the last version if --version is not specified
+                if (!available_versions.empty())
+                {
+                    LaunchVortexEditor(available_versions.back());
+                }
+                else
+                {
+                    std::cerr << "No available versions found." << std::endl;
+                }
+            }
+            else
+            {
+                // Launch the specified version
+                if (std::find(available_versions.begin(), available_versions.end(), specified_version) != available_versions.end())
+                {
+                    LaunchVortexEditor(specified_version);
+                }
+                else
+                {
+                    std::cerr << "Specified version not found." << std::endl;
+                }
+            }
+        }
+        else if (arg1 == "-test")
+        {
+            std::cout << "ok" << std::endl;
+            return 0;
+        }
+    }
+    else
+    {
         // Default behavior: launch the last version
-        if (!available_versions.empty()) {
+        if (!available_versions.empty())
+        {
             LaunchVortex(available_versions.back());
-        } else {
+        }
+        else
+        {
             std::cerr << "No available versions found." << std::endl;
         }
     }

@@ -114,7 +114,7 @@ void insert_item(const std::string &section, VortexEditor_Integer value)
     new_item.second = value.get_name();
 
     // Utiliser une référence pour itérer à travers itemMap
-    for (auto& pair : itemMap)
+    for (auto &pair : itemMap)
     {
         if (pair.first == section)
         {
@@ -129,8 +129,6 @@ void insert_item(const std::string &section, VortexEditor_Integer value)
     new_section.second.push_back(new_item);
     itemMap.push_back(new_section);
 }
-
-
 
 void insert_item(const std::string &section, VortexEditor_String value)
 {
@@ -141,7 +139,7 @@ void insert_item(const std::string &section, VortexEditor_String value)
     new_item.second = value.get_name();
 
     // Utiliser une référence pour itérer à travers itemMap
-    for (auto& pair : itemMap)
+    for (auto &pair : itemMap)
     {
         if (pair.first == section)
         {
@@ -156,7 +154,6 @@ void insert_item(const std::string &section, VortexEditor_String value)
     new_section.second.push_back(new_item);
     itemMap.push_back(new_section);
 }
-
 
 Details::Details(VxContext *_ctx, const std::string &_parent)
 {
@@ -239,83 +236,78 @@ void Details::OnImGuiRender(const std::string &parent, std::function<void(ImGuiW
         {
             ImGui::PopStyleVar(1);
 
+            static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableColumnFlags_NoHeaderLabel | ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInnerV;
 
-
-static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableColumnFlags_NoHeaderLabel | ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInnerV;
-
-if (ImGui::BeginTable("tablhjke_", 2, flags))
-{
-    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
-    ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
-
-    // Pushing style color for borders
-    ImGui::PushStyleColor(ImGuiCol_TableBorderStrong, IM_COL32(0, 0, 0, 255)); // Color for outer borders
-    ImGui::PushStyleColor(ImGuiCol_TableBorderLight, IM_COL32(0, 0, 0, 255));  // Color for inner borders
-
-    ImGui::PushStyleColor(ImGuiCol_TableRowBg, IM_COL32(200, 200, 200, 255));
-    ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, IM_COL32(200, 200, 200, 255));
-
-    std::cout << "f" << section.second.size() << std::endl;
-
-    for (int row = 0; row < section.second.size(); row++)
-    {
-        ImGui::TableNextRow();
-        for (int column = 0; column < 2; column++)
-        {
-            ImGui::TableSetColumnIndex(column);
-
-            if (column == 0)
+            if (ImGui::BeginTable("tablhjke_", 2, flags))
             {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 40));
-                ImGui::AlignTextToFramePadding();
-                ImGui::Indent(10.0f);
-                ImGui::TextWrapped(section.second[row].second.c_str());
-                ImGui::Unindent(10.0f);
-            }
-            else if (column == 1)
-            {
-                ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 40));
-                std::string label = "###Rest" + section.second[row].second;
+                ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
 
-                if (section.second[row].first == VortexEditor_Type::VortexEditor_Integer_)
+                // Pushing style color for borders
+                ImGui::PushStyleColor(ImGuiCol_TableBorderStrong, IM_COL32(0, 0, 0, 255)); // Color for outer borders
+                ImGui::PushStyleColor(ImGuiCol_TableBorderLight, IM_COL32(0, 0, 0, 255));  // Color for inner borders
+
+                ImGui::PushStyleColor(ImGuiCol_TableRowBg, IM_COL32(200, 200, 200, 255));
+                ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, IM_COL32(200, 200, 200, 255));
+
+                std::cout << "f" << section.second.size() << std::endl;
+
+                for (int row = 0; row < section.second.size(); row++)
                 {
-                    std::shared_ptr<int> value = get_integer(section.second[row].second);
-                    if (value)
+                    ImGui::TableNextRow();
+                    for (int column = 0; column < 2; column++)
                     {
-                        ImGui::SetNextItemWidth(-FLT_MIN);  // Set the item width to take the full width
-                        ImGui::InputInt(label.c_str(), value.get());
-                    }
-                    else
-                    {
-                        ImGui::Text("INVALID VALUE");
+                        ImGui::TableSetColumnIndex(column);
+
+                        if (column == 0)
+                        {
+                            ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 40));
+                            ImGui::AlignTextToFramePadding();
+                            ImGui::Indent(10.0f);
+                            ImGui::TextWrapped(section.second[row].second.c_str());
+                            ImGui::Unindent(10.0f);
+                        }
+                        else if (column == 1)
+                        {
+                            ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(100, 100, 100, 40));
+                            std::string label = "###Rest" + section.second[row].second;
+
+                            if (section.second[row].first == VortexEditor_Type::VortexEditor_Integer_)
+                            {
+                                std::shared_ptr<int> value = get_integer(section.second[row].second);
+                                if (value)
+                                {
+                                    ImGui::SetNextItemWidth(-FLT_MIN); // Set the item width to take the full width
+                                    ImGui::InputInt(label.c_str(), value.get());
+                                }
+                                else
+                                {
+                                    ImGui::Text("INVALID VALUE");
+                                }
+                            }
+                            else if (section.second[row].first == VortexEditor_Type::VortexEditor_String_)
+                            {
+                                std::shared_ptr<char> value = get_string(section.second[row].second);
+                                if (value)
+                                {
+                                    ImGui::SetNextItemWidth(-FLT_MIN); // Set the item width to take the full width
+                                    ImGui::InputText(label.c_str(), value.get(), sizeof(value.get()));
+                                }
+                                else
+                                {
+                                    ImGui::Text("INVALID VALUE");
+                                }
+                            }
+                        }
                     }
                 }
-                else if (section.second[row].first == VortexEditor_Type::VortexEditor_String_)
-                {
-                    std::shared_ptr<char> value = get_string(section.second[row].second);
-                    if (value)
-                    {
-                        ImGui::SetNextItemWidth(-FLT_MIN);  // Set the item width to take the full width
-                        ImGui::InputText(label.c_str(), value.get(), sizeof(value.get()));
-                    }
-                    else
-                    {
-                        ImGui::Text("INVALID VALUE");
-                    }
-                }
+
+                ImGui::PopStyleColor(4); // Popping 4 style colors: 2 for borders and 2 for row backgrounds
+                ImGui::PopStyleVar();
+                ImGui::EndTable();
             }
         }
-    }
-
-    ImGui::PopStyleColor(4); // Popping 4 style colors: 2 for borders and 2 for row backgrounds
-    ImGui::PopStyleVar();
-    ImGui::EndTable();
-}
-
-
-
-  }
     }
 
     if (ImGui::CollapsingHeader("Toolchain informations"))

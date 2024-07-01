@@ -122,35 +122,56 @@ struct VxSystemLog
 
 struct EnvProject
 {
-    std::string name;
-    std::string path;
-    std::string version;
-    std::string compatibleWith;
-    std::string description;
-    std::string logoPath;
-    std::string author;
-    std::string lastOpened;
+  std::string name;
+  std::string path;
+  std::string version;
+  std::string compatibleWith;
+  std::string description;
+  std::string logoPath;
+  std::string author;
+  std::string lastOpened;
+};
+
+class ContenBrowserItem
+{
+public:
+  void(*f_Execute)(const std::string &path);
+  bool(*f_Detect)(const std::string &path);
+
+  std::string m_Name;
+
+  ImTextureID m_Logo;
+  ImVec4 m_LineColor;
+  std::string m_Description;
+};
+
+class ModuleInterfaceUtility
+{
+  virtual void render() {};
+
+  std::string m_Name;
+  ImTextureID m_Logo;
 };
 
 struct SessionState
 {
-    //
-    std::string session_id;
+  //
+  std::string session_id;
 
-    // Master
-    std::string session_started_at;
-    std::string session_started_on_os;
-    std::string session_started_on_arch;
+  // Master
+  std::string session_started_at;
+  std::string session_started_on_os;
+  std::string session_started_on_arch;
 
-    // Last module
-    std::shared_ptr<ModuleInterface> last_used_module;
+  // Last module
+  std::shared_ptr<ModuleInterface> last_used_module;
 
-    bool master_initialized = false;
-    bool logs_modified = false;
-    bool last_used_module_modified = false;
-    bool last_used_plugin_modified = false;
-    bool last_used_module_input_event_modified = false;
-    bool last_used_module_output_event_modified = false;
+  bool master_initialized = false;
+  bool logs_modified = false;
+  bool last_used_module_modified = false;
+  bool last_used_plugin_modified = false;
+  bool last_used_module_input_event_modified = false;
+  bool last_used_module_output_event_modified = false;
 };
 
 struct VxIO
@@ -168,6 +189,12 @@ struct VxIO
   // Templates
   std::vector<std::shared_ptr<TemplateInterface>> templates;
   std::vector<std::shared_ptr<TemplateInterface>> sys_templates;
+
+  // Content browser items
+  std::vector<std::shared_ptr<ContenBrowserItem>> contentbrowser_items;
+
+  // Main utilities
+  std::vector<std::shared_ptr<ModuleInterfaceUtility>> em_utilities;
 };
 
 struct VxPaths
@@ -235,6 +262,8 @@ namespace VortexMaker
 
   // Utils & Base
   VORTEX_API void DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr, size_t size); // size >= 0 : alloc, size = -1 : free
+  VORTEX_API void AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility);
+  VORTEX_API void AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item);
 
 }
 //_____________________________________________________________________________

@@ -1,0 +1,9 @@
+{
+    "data_pools":
+    [
+        {
+            "name": "Data",
+            "emplacement": "./Data"
+        }
+    ]
+}

@@ -774,4 +774,19 @@ VORTEX_API void VortexMaker::InstallContentOnSystem(const std::string &directory
     }
 }
 
+
+VORTEX_API void VortexMaker::AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item)
+{
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
+
+    ctx.IO.contentbrowser_items.push_back(item);
+}
+
+
+VORTEX_API void VortexMaker::AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility)
+{
+    
+}
+
 #endif // VORTEX_DISABLE

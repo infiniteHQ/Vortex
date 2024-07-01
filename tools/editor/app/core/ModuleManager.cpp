@@ -4,6 +4,8 @@
 
 static int item_current = 0;    
 static bool open_ADDMODULE = false;
+static std::string s_Parent;
+
 
 // Left
 static int mb_selected = 0;
@@ -91,7 +93,7 @@ static void logo(const std::string &path, std::string index_group, int total)
     if (total > logos.size())
     {
         void *data = UIKit::Image::Decode(hexData, hexTable.size(), w, h);
-        std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data); // ML
+        std::shared_ptr<UIKit::Image> _icon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, s_Parent, data); // ML
         logos.push_back(_icon);
         VX_FREE(data);
         ImTextureID addIcon = logos[index]->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -101,61 +103,64 @@ static void logo(const std::string &path, std::string index_group, int total)
     ImGui::Image(textures[index], ImVec2(50, 50));
 }
 
-ModuleManager::ModuleManager(VxContext *_ctx, InstanceFactory *_factory)
+ModuleManager::ModuleManager(VxContext *_ctx, InstanceFactory *_factory, const std::string &parent)
 {
     this->ctx = _ctx;
     this->factory = _factory;
+
+    s_Parent = parent;
+
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_stop, icons::i_stop_size, w, h);
-        m_StopIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_StopIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, s_Parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_start, icons::i_start_size, w, h);
-        m_StartIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_StartIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, s_Parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_logs, icons::i_logs_size, w, h);
-        m_LogsIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_LogsIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, s_Parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_list, icons::i_list_size, w, h);
-        m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_ListIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, s_Parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_module, icons::i_module_size, w, h);
-        m_ModuleIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_ModuleIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, s_Parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
-        m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_RefreshIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, s_Parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
-        m_TrashIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_TrashIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, s_Parent, data);
         free(data);
     }
     {
         uint32_t w, h;
         void *data = UIKit::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-        m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, data);
+        m_AddIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, s_Parent, data);
         free(data);
     }
 }
 
-void ModuleManager::OnImGuiRender()
+void ModuleManager::OnImGuiRender(const std::string& parent, std::function<void(ImGuiWindow*)> controller)
 {
     static ImTextureID listIcon = this->m_ListIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID trashIcon = this->m_TrashIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -166,6 +171,10 @@ void ModuleManager::OnImGuiRender()
 
     if (ImGui::Begin("Modules manager", &moduleIcon, &this->opened, ImGuiWindowFlags_MenuBar))
         this->menubar();
+
+        static ImGuiWindow *win = ImGui::GetCurrentWindow();
+        this->m_Parent = s_Parent;
+        controller(win);
 
     float oldsize = ImGui::GetFont()->Scale;
     ImGui::GetFont()->Scale *= 1.3;
@@ -478,8 +487,6 @@ void ModuleManager::menubar()
 {
     static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-
 
     for (auto em : ctx->IO.sys_em)
     {
