@@ -135,14 +135,50 @@ struct EnvProject
 class ContenBrowserItem
 {
 public:
-  void(*f_Execute)(const std::string &path);
-  bool(*f_Detect)(const std::string &path);
+  bool (*f_Detect)(const std::string &path);
 
   std::string m_Name;
 
   ImTextureID m_Logo;
   ImVec4 m_LineColor;
   std::string m_Description;
+
+  ContenBrowserItem(bool (*detect_function)(const std::string &path), const std::string& name, const std::string& description, const ImVec4& line_color):
+  m_Name(name), m_Description(description), f_Detect(detect_function), m_LineColor(line_color)
+  {};
+  
+};
+
+class ContenBrowserHandler
+{
+public:
+  void (*f_Execute)(const std::string &path);
+
+  std::string m_Name;
+
+  ImTextureID m_Logo;
+  ImVec4 m_LineColor;
+  std::string m_Description;
+};
+
+// All custom pinned folder.
+class ContenBrowserPinnedFolder
+{
+public:
+  std::string m_Name;
+  std::string m_Path;
+  std::string m_Logo;
+  ImVec4 m_Color;
+};
+
+// On a custom folder, we can change the logo, the color, if it is favorite.
+class ContenBrowserCustomFolder
+{
+public:
+  std::string m_Name;
+  ImTextureID m_Logo;
+  ImVec4 m_LineColor;
+  bool m_IsFavorite;
 };
 
 class ModuleInterfaceUtility
@@ -174,6 +210,13 @@ struct SessionState
   bool last_used_module_output_event_modified = false;
 };
 
+struct ContentBrowserCustomFolder
+{
+  std::string path;
+  std::string m_Color;
+  bool m_IsFav;
+};
+
 struct VxIO
 {
   int MetricsActiveAllocations;
@@ -192,6 +235,9 @@ struct VxIO
 
   // Content browser items
   std::vector<std::shared_ptr<ContenBrowserItem>> contentbrowser_items;
+  std::vector<std::shared_ptr<ContentBrowserCustomFolder>> contentbrowser_customfolders;
+  std::string contentbrowser_basepath;
+  std::vector<std::string> contentbrowser_pools;
 
   // Main utilities
   std::vector<std::shared_ptr<ModuleInterfaceUtility>> em_utilities;
@@ -265,6 +311,22 @@ namespace VortexMaker
   VORTEX_API void AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility);
   VORTEX_API void AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item);
 
+  // Publish to ROM
+  VORTEX_API void PublishContentBrowserCustomFolder(const std::string& path, const std::string &hex_color, const bool& isFav);
+  VORTEX_API void PostCustomFolderToJson();
+  VORTEX_API void AddNewFolderPool(const std::string& path);
+
+  // Fetch from ROM
+  VORTEX_API void FetchCustomFolders();
+  VORTEX_API void FetchPools();
+
+  // Cotnent browser IO manipulations
+  VORTEX_API bool ContentBrowserFolderIsFav(const std::string& path);
+  VORTEX_API bool GetContentBrowserFolderColor(const std::string& path, ImU32* color);
+
+
+  VORTEX_API ImU32 HexToImU32(const std::string& hex);
+  VORTEX_API std::string ImU32ToHex(ImU32 color);
 }
 //_____________________________________________________________________________
 

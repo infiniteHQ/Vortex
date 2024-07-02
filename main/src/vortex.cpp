@@ -316,8 +316,6 @@ void VortexMaker::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
     }*/
 }
 
-
-
 //-----------------------------------------------------------------------------
 // [SECTION] ImGuiTextBuffer, ImGuiTextIndex
 //-----------------------------------------------------------------------------
@@ -517,7 +515,7 @@ VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs> &args, con
  * @param module_name The name of the module where the event should be called.
  * @param origin The name of the caller
  */
-VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, const std::string& origin)
+VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, const std::string &origin)
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
@@ -545,26 +543,24 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args,
                     if (input_event->m_foo)
                     {
                         // Trigger a information trigger in the input event
-                        input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Calling module input event \"" + input_event->m_name +"\" of module \"" + em->m_name + "\" from \"" + origin +"\"");
+                        input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Calling module input event \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin + "\"");
 
                         // Call the corresponding event function with the provided arguments
                         input_event->m_foo(args);
 
                         // Trigger a information trigger in the input event
-                        input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Input event \"" + input_event->m_name +"\" of module \"" + em->m_name + "\" called succefully from \"" + origin +"\" !");
+                        input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Input event \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" called succefully from \"" + origin + "\" !");
                     }
                     else
-                    {   
+                    {
                         // Trigger a information trigger in the input event
-                        input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Trying to call \"" + input_event->m_name +"\" of module \"" + em->m_name + "\" from \"" + origin +"\" but it not exist !");
+                        input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Trying to call \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin + "\" but it not exist !");
                     }
                 }
             }
         }
     }
 }
-
-
 
 /**
  * @brief Call an event of a specific module with the specified arguments and callback.
@@ -583,7 +579,7 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args,
  * @param callback The callback function to be called after executing the event function.
  * @param origin The name of the caller
  */
-VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> args), const std::string& origin)
+VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> args), const std::string &origin)
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
@@ -633,10 +629,9 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args,
     }
 }
 
-
 /**
  * @brief Call an event of a specific module with the specified arguments.
- * 
+ *
  * Surcharge : This function simplify the identification process (to allow random callers)
  *
  * This function calls an event with the specified event name and arguments
@@ -655,12 +650,11 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args,
     VortexMaker::CallModuleEvent(args, event_name, module_name, "unknow");
 }
 
-
 /**
  * @brief Call an event of a specific module with the specified arguments and callback.
  *
  * Surcharge : This function simplify the identification process (to allow random callers)
- * 
+ *
  * This function calls an event with the specified event name and arguments
  * for a specific module in the Vortex context.
  * It iterates through each EventManager in the Vortex context, checks if the module
@@ -697,7 +691,7 @@ VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path)
         std::string description = json_data["description"].get<std::string>();
         std::string author = json_data["author"].get<std::string>();
 
-        //std::string origin_path = path.substr(0, path.find_last_of("/"));
+        // std::string origin_path = path.substr(0, path.find_last_of("/"));
         modules_path += "/" + name + "." + version;
 
         VortexMaker::LogInfo("Core", "Installing the module " + name + "...");
@@ -755,7 +749,8 @@ VORTEX_API void VortexMaker::InstallContentOnSystem(const std::string &directory
     fs::path dir_path(directory);
 
     // Vérifier si le répertoire existe
-    if (!fs::exists(dir_path) || !fs::is_directory(dir_path)) {
+    if (!fs::exists(dir_path) || !fs::is_directory(dir_path))
+    {
         VortexMaker::LogError("Core", "So such file or directory.");
         return;
     }
@@ -763,17 +758,16 @@ VORTEX_API void VortexMaker::InstallContentOnSystem(const std::string &directory
     // Vérifier la présence des fichiers module.json et template.json
     bool module_found = fs::exists(dir_path / "module.json");
     bool template_found = fs::exists(dir_path / "template.json");
-    
-    if(module_found)
+
+    if (module_found)
     {
         VortexMaker::InstallModuleToSystem(directory);
     }
-    else if(template_found)
+    else if (template_found)
     {
         VortexMaker::InstallTemplateOnSystem(directory);
     }
 }
-
 
 VORTEX_API void VortexMaker::AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item)
 {
@@ -783,10 +777,158 @@ VORTEX_API void VortexMaker::AddContentBrowserItem(const std::shared_ptr<ContenB
     ctx.IO.contentbrowser_items.push_back(item);
 }
 
-
 VORTEX_API void VortexMaker::AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility)
 {
-    
+}
+
+VORTEX_API void VortexMaker::PostCustomFolderToJson()
+{
+    VxContext &ctx = *CVortexMaker;
+    std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
+    VortexMaker::createFolderIfNotExists(path);
+
+    std::string file_path = path + "/customized_folders.json";
+
+    nlohmann::json json_data;
+
+    json_data["custom_folders"] = nlohmann::json::array();
+
+    for (auto folder : ctx.IO.contentbrowser_customfolders)
+    {
+        nlohmann::json folder_data;
+        folder_data["color"] = folder->m_Color;
+        folder_data["isFav"] = folder->m_IsFav;
+        folder_data["path"] = folder->path;
+
+        json_data["custom_folders"].push_back(folder_data);
+    }
+
+    VortexMaker::PopulateJSON(json_data, file_path);
+}
+
+VORTEX_API void VortexMaker::PublishContentBrowserCustomFolder(const std::string &path, const std::string &hex_color, const bool &isFav)
+{
+    VxContext &ctx = *CVortexMaker;
+
+    for (auto folder : ctx.IO.contentbrowser_customfolders)
+    {
+        if (folder->path == path)
+        {
+            folder->m_Color = hex_color;
+            folder->m_IsFav = isFav;
+            folder->path = path;
+            VortexMaker::PostCustomFolderToJson();
+            return;
+        }
+    }
+
+    std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
+    new_folder->m_Color = hex_color;
+    new_folder->m_IsFav = isFav;
+    new_folder->path = path;
+
+    ctx.IO.contentbrowser_customfolders.push_back(new_folder);
+
+    VortexMaker::PostCustomFolderToJson();
+}
+
+VORTEX_API void VortexMaker::AddNewFolderPool(const std::string &path)
+{
+}
+
+VORTEX_API bool VortexMaker::ContentBrowserFolderIsFav(const std::string &path)
+{
+    VxContext &ctx = *CVortexMaker;
+
+    for (auto customized_folder : ctx.IO.contentbrowser_customfolders)
+    {
+        if (customized_folder->path == path)
+        {
+            return customized_folder->m_IsFav;
+        }
+    }
+    return false;
+}
+
+VORTEX_API bool VortexMaker::GetContentBrowserFolderColor(const std::string &path, ImU32 *color)
+{
+    VxContext &ctx = *CVortexMaker;
+
+    for (auto customized_folder : ctx.IO.contentbrowser_customfolders)
+    {
+        if (customized_folder->path == path)
+        {
+            *color = HexToImU32(customized_folder->m_Color);
+            return true;
+        }
+    }
+    return false;
+}
+
+VORTEX_API ImU32 VortexMaker::HexToImU32(const std::string &hex)
+{
+    if (hex[0] != '#' || hex.length() != 7)
+    {
+        throw std::invalid_argument("Invalid hex format");
+    }
+
+    unsigned int r, g, b;
+    std::stringstream ss;
+    ss << std::hex << hex.substr(1, 2);
+    ss >> r;
+    ss.clear();
+    ss << std::hex << hex.substr(3, 2);
+    ss >> g;
+    ss.clear();
+    ss << std::hex << hex.substr(5, 2);
+    ss >> b;
+
+    return IM_COL32(r, g, b, 255); // Alpha is set to 255 (opaque)
+}
+
+VORTEX_API std::string VortexMaker::ImU32ToHex(ImU32 color)
+{
+    unsigned char r = (color >> IM_COL32_R_SHIFT) & 0xFF;
+    unsigned char g = (color >> IM_COL32_G_SHIFT) & 0xFF;
+    unsigned char b = (color >> IM_COL32_B_SHIFT) & 0xFF;
+
+    std::stringstream ss;
+    ss << "#" << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(r)
+       << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(g)
+       << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(b);
+
+    return ss.str();
+}
+
+VORTEX_API void VortexMaker::FetchCustomFolders()
+{
+    VxContext &ctx = *CVortexMaker;
+    std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
+    VortexMaker::createFolderIfNotExists(path);
+
+    std::string file_path = path + "/customized_folders.json";
+
+    nlohmann::json json_data;
+
+    VortexMaker::createJsonFileIfNotExists(file_path, json_data);
+
+    std::ifstream file(file_path);
+
+    file >> json_data;
+
+    for (auto directory : json_data["custom_folders"])
+    {
+        std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
+        new_folder->m_Color = directory["color"].get<std::string>();
+        new_folder->m_IsFav = directory["isFav"].get<bool>();
+        new_folder->path = directory["path"].get<std::string>();
+
+        ctx.IO.contentbrowser_customfolders.push_back(new_folder);
+    }
+}
+
+VORTEX_API void VortexMaker::FetchPools()
+{
 }
 
 #endif // VORTEX_DISABLE

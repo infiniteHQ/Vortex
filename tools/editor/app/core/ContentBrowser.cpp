@@ -13,7 +13,10 @@ static std::string _parent;
 static char ProjectSearch[256];
 static float threshold = 0.4;
 
-static ImU32 folder_color = IM_COL32(255, 255, 75, 255);
+static ImU32 folder_color = IM_COL32(150, 128, 50, 255);
+
+static std::pair<std::string, ImU32> current_editing_folder;
+static bool current_editing_folder_is_favorite;
 
 static bool isOnlySpacesOrEmpty(const char *str)
 {
@@ -541,12 +544,73 @@ FileTypes detect_file(const std::string &path)
 		return FileTypes::File_UNKNOW;
 	}
 }
+
+// Here's some code anyone can copy and paste to reproduce your issue
+static void DrawHierarchy(std::filesystem::path path, bool isDir)
+	{
+		ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_AllowItemOverlap
+			| ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+		//auto openFolder = std::find(m_OpenDirs.begin(), m_OpenDirs.end(), path.filename().string());
+
+		// Open the current node if it's been opened
+		/*if (openFolder != m_OpenDirs.end())
+			treeNodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;*/
+
+
+		// Use invisible buttons
+		ImVec2 cursorPos = ImGui::GetCursorPos();
+		// Render the tree node
+		ImGui::SetItemAllowOverlap();
+		if (ImGui::TreeNode(path.filename().string().c_str()))
+		{
+			// Toggle the current node if it's been clicked
+			/*if (openFolder != m_OpenDirs.end())
+				m_OpenDirs.erase(openFolder);
+			else
+				m_OpenDirs.push_back(path.filename().string());*/
+
+			for (auto& dirEntry : std::filesystem::directory_iterator(path))
+			{
+				const std::filesystem::path& otherPath = dirEntry.path();
+				// Don't show meta files
+				if (otherPath.extension().string() == ".meta")
+					continue;
+
+				DrawHierarchy(otherPath, dirEntry.is_directory());
+			}
+
+			ImGui::TreePop();
+		}
+		ImVec2 finalCursorPos = ImGui::GetCursorPos();
+		ImVec2 size = ImGui::GetItemRectSize();
+
+		if (!isDir)
+		{
+			ImGui::SetCursorPos(cursorPos);
+			ImGui::SetItemAllowOverlap();
+
+			if (ImGui::InvisibleButton(("##" + path.string()).c_str(), size))
+			{
+				// Set properties panel path
+				//m_PropertiesPanel->SetAsset(path);
+			}
+
+			//AddDragSource(path);
+
+			ImGui::SetCursorPos(finalCursorPos);
+		}
+		
+	}
+
+
 ContentBrowserPanel::ContentBrowserPanel(VxContext *_ctx, const std::string &parentwindow)
 	: m_BaseDirectory("/"), m_CurrentDirectory(m_BaseDirectory)
 {
 	this->ctx = _ctx;
 	parent = parentwindow;
 	_parent = parentwindow;
+
+	VortexMaker::FetchCustomFolders();
 
 	{
 		uint32_t w, h;
@@ -565,6 +629,39 @@ ContentBrowserPanel::ContentBrowserPanel(VxContext *_ctx, const std::string &par
 		void *data = UIKit::Image::Decode(icons::i_project, icons::i_project_size, w, h);
 		m_ProjectIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
 		free(data);
+	}
+}
+
+void ContentBrowserPanel::DrawPathBar()
+{
+	// Split the current directory path into its components
+	std::vector<std::filesystem::path> pathComponents;
+	std::filesystem::path currentPath = m_CurrentDirectory;
+
+	// Traverse the path and push each component to the vector
+	for (const auto &part : currentPath)
+	{
+		pathComponents.push_back(part);
+	}
+
+	std::cout << "Path components : " << pathComponents.size() << std::endl;
+
+	// Draw each component as a button with an arrow after it (except the last component)
+	std::filesystem::path accumulatedPath;
+	for (size_t i = 0; i < pathComponents.size(); ++i)
+	{
+		accumulatedPath /= pathComponents[i];
+		if (ImGui::Button(pathComponents[i].string().c_str()))
+		{
+			ImGui::SameLine();
+			ChangeDirectory(accumulatedPath);
+		}
+
+		if (i < pathComponents.size() - 1)
+		{
+			ImGui::SameLine();
+			ImGui::Text(">");
+		}
 	}
 }
 
@@ -640,7 +737,7 @@ void ContentBrowserPanel::menubar()
 
 		ImGui::Separator();
 
-		ImGui::Text("All / Main / Sources");
+		DrawPathBar();
 
 		// Calculer la largeur du texte du bouton
 		float buttonWidth = ImGui::CalcTextSize("RightButton").x;
@@ -785,43 +882,51 @@ void Splitter(bool split_vertically, float thickness, float *size1, float *size2
 	ImGui::PopStyleColor(3); // Restaurer les couleurs précédentes
 }
 
-void ContentBrowserPanel::DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color)
-{
-    ImDrawList* drawList = ImGui::GetWindowDrawList();
+static ImU32 DarkenColor(ImU32 color, float amount) {
+    int r = (color & 0xFF000000) >> 24;
+    int g = (color & 0x00FF0000) >> 16;
+    int b = (color & 0x0000FF00) >> 8;
+    int a = color & 0x000000FF;
 
-    // Calcul des positions des différentes parties du dossier
-    float folderFlapHeight = size.y * 0.2f;
-    float flapSlopeWidth = size.x * 0.15f;
-    float borderRadius = size.y * 0.1f;
+    r = static_cast<int>(r * (1.0f - amount));
+    g = static_cast<int>(g * (1.0f - amount));
+    b = static_cast<int>(b * (1.0f - amount));
 
-    ImVec2 flapTopLeft = pos;
-    ImVec2 flapBottomRight = ImVec2(pos.x + size.x * 0.6f, pos.y + folderFlapHeight);
-    ImVec2 flapSlopeEnd = ImVec2(flapBottomRight.x + flapSlopeWidth, flapBottomRight.y);
-
-    ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + folderFlapHeight);
-    ImVec2 bodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
-
-    // Couleur pour le dégradé
-    ImU32 darkColor = IM_COL32(130, 180, 75, 255); // Couleur plus foncée
-
-    // Dessiner le corps du dossier avec coins arrondis et dégradé
-    drawList->AddRectFilledMultiColor(bodyTopLeft, bodyBottomRight, color, color, darkColor, darkColor);
-
-    // Dessiner un rectangle blanc au centre
-    ImVec2 centerRectTopLeft = ImVec2(pos.x + size.x * 0.2f, pos.y + 0.2f + size.y * 0.2f);
-    ImVec2 centerRectBottomRight = ImVec2(pos.x + size.x * 0.8f, pos.y + size.y * 0.8f);
-    drawList->AddRectFilled(centerRectTopLeft, centerRectBottomRight, IM_COL32_WHITE, 0.0f, 0);
-
-    ImVec2 secondBodyTopLeft = ImVec2(pos.x, pos.y - 0.8f);
-    ImVec2 secondBodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y - 0.8f);
-	
-    // Dessiner la languette du dossier avec pente et coins arrondis
-    drawList->AddRectFilled(flapTopLeft, flapBottomRight, color, borderRadius, ImDrawFlags_RoundCornersTopLeft);
-    drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x - 3, flapTopLeft.y), color);
+    return IM_COL32(r, g, b, a);
 }
 
+void ContentBrowserPanel::DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color)
+{
+	ImDrawList *drawList = ImGui::GetWindowDrawList();
 
+	// Calcul des positions des différentes parties du dossier
+	float folderFlapHeight = size.y * 0.2f;
+	float flapSlopeWidth = size.x * 0.15f;
+	float borderRadius = size.y * 0.1f;
 
+	ImVec2 flapTopLeft = pos;
+	ImVec2 flapBottomRight = ImVec2(pos.x + size.x * 0.6f, pos.y + folderFlapHeight);
+	ImVec2 flapSlopeEnd = ImVec2(flapBottomRight.x + flapSlopeWidth, flapBottomRight.y);
+
+	ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + folderFlapHeight);
+	ImVec2 bodyBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
+
+	// Dessiner le corps du dossier avec coins arrondis et dégradé
+	drawList->AddRectFilled(bodyTopLeft, bodyBottomRight, color);
+
+	// Dessiner un rectangle blanc au centre
+	ImVec2 centerRectTopLeft = ImVec2(pos.x + size.x * 0.2f, pos.y + 0.2f + size.y * 0.2f + 6.8f);
+	ImVec2 centerRectBottomRight = ImVec2(pos.x + size.x * 0.8f, pos.y + size.y * 0.8f - 2.8f);
+	drawList->AddRectFilled(centerRectTopLeft, centerRectBottomRight, IM_COL32_WHITE, 0.0f, 0);
+
+	ImVec2 secondRectTopLeft = ImVec2(pos.x + size.x * 0.2f, pos.y + 0.2f + size.y * 0.2f + 11.8f);
+	ImVec2 secondRectBottomRight = ImVec2(pos.x + size.x, pos.y + size.y);
+	drawList->AddRectFilled(secondRectTopLeft, secondRectBottomRight, color, 0.0f, 0);
+
+	// Dessiner la languette du dossier avec pente et coins arrondis
+	drawList->AddRectFilled(flapTopLeft, flapBottomRight, color, borderRadius, ImDrawFlags_RoundCornersTopLeft);
+	drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x - 3, flapTopLeft.y), color);
+}
 
 void ContentBrowserPanel::MyFolderButton(const char *id, ImVec2 size, ImU32 color, const std::string &path)
 {
@@ -865,7 +970,9 @@ bool CollapsingHeaderWithIcon(const char *label, ImTextureID icon)
 	return open;
 }
 
-bool MyCollapsingHeader(const char *label, ImTextureID my_texture)
+// TODO Fix l'include de module dans les projets et l'ajout dans le system
+
+bool MyCollapsingHeader(const char *label, ImTextureID my_texture, float width)
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
 	bool *p_open = ImGui::GetStateStorage()->GetBoolRef(ImGui::GetID(label), false);
@@ -878,7 +985,7 @@ bool MyCollapsingHeader(const char *label, ImTextureID my_texture)
 
 	// Create a horizontal layout
 	ImGui::BeginGroup();
-	if (ImGui::UIKit_ImageButtonWithText(my_texture, label, ImVec2(-FLT_MIN, 0.0f)))
+	if (ImGui::UIKit_ImageSizeButtonWithText(my_texture, width, label, ImVec2(-FLT_MIN, 0.0f)))
 		*p_open ^= 1;
 
 	// Adjust arrow position considering the texture
@@ -888,6 +995,58 @@ bool MyCollapsingHeader(const char *label, ImTextureID my_texture)
 
 	ImGui::PopStyleVar();
 	return *p_open;
+}
+
+bool ColorPicker3U32(const char *label, ImU32 *color, ImGuiColorEditFlags flags = 0)
+{
+	float col[3];
+	col[0] = (float)((*color >> 0) & 0xFF) / 255.0f;  // Extract red component
+	col[1] = (float)((*color >> 8) & 0xFF) / 255.0f;  // Extract green component
+	col[2] = (float)((*color >> 16) & 0xFF) / 255.0f; // Extract blue component
+
+	bool result = ImGui::ColorPicker3(label, col, flags);
+
+	if (result)
+	{
+		*color = ((ImU32)(col[0] * 255.0f)) |
+				 ((ImU32)(col[1] * 255.0f) << 8) |
+				 ((ImU32)(col[2] * 255.0f) << 16) |
+				 ((ImU32)(255) << 24); // Ensure alpha is set to 255
+	}
+
+	ImVec4 buttonColor = ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
+	ImVec4 buttonHoveredColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+	ImVec4 buttonActiveColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+	ImVec4 cancelButtonColor = ImVec4(0.4f, 0.2f, 0.2f, 1.0f);
+
+	ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonActiveColor);
+
+	// Bouton "Cancel"
+	if (ImGui::Button("Cancel", ImVec2(75.0f, 0.0f)))
+	{
+		// Action à prendre lors du clic sur "Cancel"
+	}
+
+	ImGui::PopStyleColor(3);
+
+	ImGui::SameLine();
+
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.4f, 0.8f, 1.0f));		   // Couleur bleue pour le bouton "Done"
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.5f, 0.9f, 1.0f)); // Couleur survolée
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.3f, 0.7f, 1.0f));  // Couleur cliquée
+
+	// Bouton "Done"
+	if (ImGui::Button("Done", ImVec2(75.0f, 0.0f)))
+	{
+		*color = ImColor(col[0], col[1], col[2]);
+		VortexMaker::PublishContentBrowserCustomFolder(current_editing_folder.first, VortexMaker::ImU32ToHex(*color), current_editing_folder_is_favorite);
+	}
+
+	ImGui::PopStyleColor(3);
+
+	return result;
 }
 
 static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>> recognized_modules_items;
@@ -926,13 +1085,21 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
 
 	ImGui::BeginChild("Child1", ImVec2(size1, 0), true);
-	if (MyCollapsingHeader("Favorites", projectIcon))
+
+	float oldsize = ImGui::GetFont()->Scale;
+	ImGui::GetFont()->Scale *= 0.85;
+	ImGui::PushFont(ImGui::GetFont());
+
+	if (MyCollapsingHeader("Favorites", projectIcon, 100.0f))
 	{
 	}
-	if (MyCollapsingHeader("All", projectIcon))
+	if (MyCollapsingHeader("All", projectIcon, 100.0f))
 	{
+		DrawHierarchy(m_BaseDirectory, true);
 	}
 
+	ImGui::GetFont()->Scale = oldsize;
+	ImGui::PopFont();
 	ImGui::EndChild();
 	ImGui::PopStyleVar(4);
 
@@ -981,7 +1148,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 			}
 		}
 
-		if(isItem)
+		if (isItem)
 		{
 			continue;
 		}
@@ -1040,12 +1207,42 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 			std::string folderPath = "path/to/folder";
 
 			// Dessiner le bouton dossier
-			MyFolderButton("folder_icon", folderSize, folder_color, path);
+			if (current_editing_folder.first == path.string())
+			{
+				MyFolderButton("folder_icon", folderSize, current_editing_folder.second, path);
+			}
+			else
+			{
+				ImU32 col;
+
+				if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
+				{
+					MyFolderButton("folder_icon", folderSize, col, path);
+				}
+				else
+				{
+					MyFolderButton("folder_icon", folderSize, folder_color, path);
+				}
+			}
 
 			float oldsize = ImGui::GetFont()->Scale;
+
+			// Changer la couleur du texte en gris
+			ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);				// Gris (50% blanc)
+			ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);		// Gris (50% blanc)
+			ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f); // Fond plus foncé
+			ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);		// Bordure plus claire
+
+			// Pousser le style pour le fond plus foncé
+			ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+
+			// Pousser le style pour la bordure plus claire
+			ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+
+			// Pousser le style pour les bords arrondis moins prononcés
+			ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f); // Ajustez la valeur selon vos besoins
 			if (ImGui::BeginPopupContextItem("ContextPopup"))
 			{
-
 				// Appliquer le nouveau scale
 				ImGui::GetFont()->Scale *= 0.9;
 				ImGui::PushFont(ImGui::GetFont());
@@ -1053,20 +1250,13 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				// Ajouter un espace au-dessus
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f); // Ajustez la valeur selon vos besoins
 
-				// Changer la couleur du texte en gris
-				ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);			// Gris (50% blanc)
-				ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // Gris (50% blanc)
 				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-
 				ImGui::Text("Main");
-
-				// Restaurer la couleur du texte précédente
 				ImGui::PopStyleColor();
 
-				// Changer la couleur du separator en gris
 				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
 				ImGui::Separator();
-				ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+				ImGui::PopStyleColor();
 
 				// Restaurer l'ancien scale de la police
 				ImGui::GetFont()->Scale = oldsize;
@@ -1096,34 +1286,79 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				// Ajouter un espace au-dessus
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f); // Ajustez la valeur selon vos besoins
 
-				// Changer la couleur du texte en gris
 				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-
-				ImGui::Text("Main");
-
-				// Restaurer la couleur du texte précédente
+				ImGui::Text("Customization");
 				ImGui::PopStyleColor();
 
-				// Changer la couleur du separator en gris
 				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
 				ImGui::Separator();
-				ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+				ImGui::PopStyleColor();
 
 				// Restaurer l'ancien scale de la police
 				ImGui::GetFont()->Scale = oldsize;
 				ImGui::PopFont();
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f); // Ajustez la valeur selon vos besoins
 
-				if (ImGui::MenuItem("Change color"))
+				static bool EditingColor = false;
+				static bool ColorChanged = false;
+
+				current_editing_folder_is_favorite = VortexMaker::ContentBrowserFolderIsFav(directoryEntry.path().string());
+
+				if (ImGui::BeginMenu("Change color"))
 				{
+					if (!EditingColor)
+					{
+						current_editing_folder = {directoryEntry.path().string(), folder_color};
+
+						ImU32 col;
+						if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
+						{
+							current_editing_folder = {directoryEntry.path().string(), col};
+						}
+						else
+						{
+							current_editing_folder = {directoryEntry.path().string(), folder_color};
+						}
+
+						current_editing_folder_is_favorite = VortexMaker::ContentBrowserFolderIsFav(directoryEntry.path().string());
+					}
+
+					EditingColor = true;
+
+					static bool alpha_preview = true;
+					static bool alpha_half_preview = false;
+					static bool drag_and_drop = true;
+					static bool options_menu = true;
+					static bool hdr = false;
+
+					ColorPicker3U32("MyColor", &current_editing_folder.second);
+
+					if (VortexMaker::ImU32ToHex(current_editing_folder.second) != VortexMaker::ImU32ToHex(folder_color))
+					{
+						ColorChanged = true;
+					}
+
+					ImGui::EndMenu(); // Fin du sous-menu "Change folder color"
 				}
-				if (ImGui::MenuItem("Mark as favorite"))
+				else
 				{
+					EditingColor = false;
+				}
+
+				if (ImGui::MenuItem("Mark as favorite", "", current_editing_folder_is_favorite))
+				{
+					current_editing_folder = {directoryEntry.path().string(), current_editing_folder.second};
+
+					current_editing_folder_is_favorite = !current_editing_folder_is_favorite;
+					VortexMaker::PublishContentBrowserCustomFolder(current_editing_folder.first, VortexMaker::ImU32ToHex(current_editing_folder.second), current_editing_folder_is_favorite);
 				}
 				// Ajouter d'autres options de menu ici...
 
 				ImGui::EndPopup();
 			}
+			// Pop les styles appliqués
+			ImGui::PopStyleVar();	 // Pour les bords arrondis
+			ImGui::PopStyleColor(2); // Pour le fond et la bordure
 
 			ImGui::PopStyleVar(2); // Pop FrameBorderSize and FramePadding
 			ImGui::PopStyleColor(3);
@@ -1163,7 +1398,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 			{
 				if (ImGui::IsMouseDoubleClicked(0))
 				{
-					itemEntry.first->f_Execute(path);
+					// itemEntry.first->f_Execute(path);
 					VXERROR("te", "tyr");
 				}
 

@@ -251,7 +251,8 @@ namespace VortexMaker
     VORTEX_API void CopyAllContent();
     VORTEX_API void ExecuteCommand();
 
-    VORTEX_API nlohmann::json DumpJSON(const std::string &file);
+    VORTEX_API nlohmann::json DumpJSON(const std::string &file);    
+    VORTEX_API void PopulateJSON(const nlohmann::json& json_data, const std::string &file);
 
     VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
     VORTEX_API std::string replacePlaceholders(const std::string &command, const std::unordered_map<std::string, std::string> &replacements);

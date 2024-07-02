@@ -65,6 +65,7 @@ public:
     void ChangeDirectory(const std::filesystem::path &newDirectory);
     void GoBack();
     void GoForward();
+    void DrawPathBar();
 
 void DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color);
 void MyFolderButton(const char* id, ImVec2 size, ImU32 color, const std::string& path);
