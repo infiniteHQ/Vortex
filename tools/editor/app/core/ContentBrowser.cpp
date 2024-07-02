@@ -545,63 +545,39 @@ FileTypes detect_file(const std::string &path)
 	}
 }
 
-// Here's some code anyone can copy and paste to reproduce your issue
-static void DrawHierarchy(std::filesystem::path path, bool isDir)
+void ContentBrowserPanel::DrawHierarchy(std::filesystem::path path, bool isDir)
+{
+	ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+	ImVec2 cursorPos = ImGui::GetCursorPos();
+	ImGui::SetItemAllowOverlap();
+	if (ImGui::TreeNode(path.filename().string().c_str()))
 	{
-		ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_AllowItemOverlap
-			| ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
-		//auto openFolder = std::find(m_OpenDirs.begin(), m_OpenDirs.end(), path.filename().string());
-
-		// Open the current node if it's been opened
-		/*if (openFolder != m_OpenDirs.end())
-			treeNodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;*/
-
-
-		// Use invisible buttons
-		ImVec2 cursorPos = ImGui::GetCursorPos();
-		// Render the tree node
-		ImGui::SetItemAllowOverlap();
-		if (ImGui::TreeNode(path.filename().string().c_str()))
+		for (auto &dirEntry : std::filesystem::directory_iterator(path))
 		{
-			// Toggle the current node if it's been clicked
-			/*if (openFolder != m_OpenDirs.end())
-				m_OpenDirs.erase(openFolder);
-			else
-				m_OpenDirs.push_back(path.filename().string());*/
+			const std::filesystem::path &otherPath = dirEntry.path();
 
-			for (auto& dirEntry : std::filesystem::directory_iterator(path))
-			{
-				const std::filesystem::path& otherPath = dirEntry.path();
-				// Don't show meta files
-				if (otherPath.extension().string() == ".meta")
-					continue;
-
-				DrawHierarchy(otherPath, dirEntry.is_directory());
-			}
-
-			ImGui::TreePop();
+			DrawHierarchy(otherPath, dirEntry.is_directory());
 		}
-		ImVec2 finalCursorPos = ImGui::GetCursorPos();
-		ImVec2 size = ImGui::GetItemRectSize();
 
-		if (!isDir)
-		{
-			ImGui::SetCursorPos(cursorPos);
-			ImGui::SetItemAllowOverlap();
-
-			if (ImGui::InvisibleButton(("##" + path.string()).c_str(), size))
-			{
-				// Set properties panel path
-				//m_PropertiesPanel->SetAsset(path);
-			}
-
-			//AddDragSource(path);
-
-			ImGui::SetCursorPos(finalCursorPos);
-		}
-		
+		this->ChangeDirectory(path);
+		ImGui::TreePop();
 	}
+	ImVec2 finalCursorPos = ImGui::GetCursorPos();
+	ImVec2 size = ImGui::GetItemRectSize();
 
+	//if (!isDir)
+	//{
+		/*ImGui::SetCursorPos(cursorPos);
+		ImGui::SetItemAllowOverlap();
+
+		if (ImGui::InvisibleButton(("##" + path.string()).c_str(), size))
+		{
+			this->ChangeDirectory(path);
+		}
+
+		ImGui::SetCursorPos(finalCursorPos);*/
+	//}
+}
 
 ContentBrowserPanel::ContentBrowserPanel(VxContext *_ctx, const std::string &parentwindow)
 	: m_BaseDirectory("/"), m_CurrentDirectory(m_BaseDirectory)
@@ -849,50 +825,18 @@ void ContentBrowserPanel::ChangeDirectory(const std::filesystem::path &newDirect
 	}
 }
 
-void Splitter(bool split_vertically, float thickness, float *size1, float *size2, float min_size1, float min_size2)
+static ImU32 DarkenColor(ImU32 color, float amount)
 {
-	ImVec2 backup_pos = ImGui::GetCursorPos();
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));		   // Gris
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6f, 0.6f, 0.6f, 1.0f)); // Gris clair pour hover
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));  // Gris plus clair pour actif
+	int r = (color & 0xFF000000) >> 24;
+	int g = (color & 0x00FF0000) >> 16;
+	int b = (color & 0x0000FF00) >> 8;
+	int a = color & 0x000000FF;
 
-	if (split_vertically)
-	{
-		ImGui::SetCursorPosX(backup_pos.x + *size1);
-		ImGui::InvisibleButton("##Splitter", ImVec2(thickness, ImGui::GetContentRegionAvail().y));
-	}
-	else
-	{
-		ImGui::SetCursorPosY(backup_pos.y + *size1);
-		ImGui::InvisibleButton("##Splitter", ImVec2(ImGui::GetContentRegionAvail().x, thickness));
-	}
+	r = static_cast<int>(r * (1.0f - amount));
+	g = static_cast<int>(g * (1.0f - amount));
+	b = static_cast<int>(b * (1.0f - amount));
 
-	if (ImGui::IsItemActive())
-	{
-		float mouse_delta = (split_vertically ? ImGui::GetIO().MouseDelta.x : ImGui::GetIO().MouseDelta.y);
-		if (mouse_delta < min_size1 - *size1)
-			mouse_delta = min_size1 - *size1;
-		if (mouse_delta > *size2 - min_size2)
-			mouse_delta = *size2 - min_size2;
-		*size1 += mouse_delta;
-		*size2 -= mouse_delta;
-	}
-
-	ImGui::SetCursorPos(backup_pos);
-	ImGui::PopStyleColor(3); // Restaurer les couleurs précédentes
-}
-
-static ImU32 DarkenColor(ImU32 color, float amount) {
-    int r = (color & 0xFF000000) >> 24;
-    int g = (color & 0x00FF0000) >> 16;
-    int b = (color & 0x0000FF00) >> 8;
-    int a = color & 0x000000FF;
-
-    r = static_cast<int>(r * (1.0f - amount));
-    g = static_cast<int>(g * (1.0f - amount));
-    b = static_cast<int>(b * (1.0f - amount));
-
-    return IM_COL32(r, g, b, a);
+	return IM_COL32(r, g, b, a);
 }
 
 void ContentBrowserPanel::DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color)
@@ -1051,6 +995,57 @@ bool ColorPicker3U32(const char *label, ImU32 *color, ImGuiColorEditFlags flags 
 
 static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>> recognized_modules_items;
 
+// Fonction pour gérer le redimensionnement
+
+bool Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2)
+{
+    using namespace ImGui;
+    ImGuiContext& g = *GImGui;
+    ImGuiWindow* window = g.CurrentWindow;
+    ImDrawList* draw_list = GetWindowDrawList();
+
+    ImVec2 backup_pos = window->DC.CursorPos;
+    if (split_vertically)
+        window->DC.CursorPos = ImVec2(window->DC.CursorPos.x, window->DC.CursorPos.y);
+    else
+        window->DC.CursorPos = ImVec2(window->DC.CursorPos.x, window->DC.CursorPos.y);
+
+    PushID("#Splitter");
+    InvisibleButton("##Splitter", ImVec2(split_vertically ? thickness : -1.0f, split_vertically ? -1.0f : thickness));
+    PopID();
+
+    bool hovered = IsItemHovered();
+    bool held = IsItemActive();
+    if (hovered || held)
+        SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+
+    bool updated = false;
+    if (held)
+    {
+        float mouse_delta = split_vertically ? g.IO.MouseDelta.x : g.IO.MouseDelta.y;
+        if (mouse_delta != 0.0f)
+        {
+            if (mouse_delta < min_size1 - *size1)
+                mouse_delta = min_size1 - *size1;
+            if (mouse_delta > *size2 - min_size2)
+                mouse_delta = *size2 - min_size2;
+
+            *size1 += mouse_delta;
+            *size2 -= mouse_delta;
+            updated = true;
+        }
+    }
+
+    window->DC.CursorPos = backup_pos;
+
+    ImU32 color = GetColorU32(hovered || held ? ImGuiCol_ResizeGripActive : ImGuiCol_ResizeGrip);
+    ImVec2 pos = window->DC.CursorPos;
+    ImVec2 end_pos = split_vertically ? ImVec2(pos.x + thickness, pos.y + window->Size.y) : ImVec2(pos.x + window->Size.x, pos.y + thickness);
+    draw_list->AddRectFilled(pos, end_pos, IM_COL32(255, 0, 0, 255));
+
+    return updated;
+}
+
 void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller)
 {
 	static ImTextureID projectIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -1073,16 +1068,15 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 
 	ImGui::PopStyleVar(); // Pop the ItemSpacing style
 
-	static float size1 = 200.0f;
-	static float size2 = 200.0f;
-	float min_size1 = 200.0f;
-	float min_size2 = 200.0f;
-	float splitter_thickness = 4.0f;
+    static float size1 = 200.0f;
+    static float size2 = 200.0f;
+    float min_size = 50.0f;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
+
 
 	ImGui::BeginChild("Child1", ImVec2(size1, 0), true);
 
@@ -1090,10 +1084,17 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	ImGui::GetFont()->Scale *= 0.85;
 	ImGui::PushFont(ImGui::GetFont());
 
-	if (MyCollapsingHeader("Favorites", projectIcon, 100.0f))
+	if (MyCollapsingHeader("Favorites", projectIcon, size1 - 50.0f))
 	{
+		for(auto custom_dir : this->ctx->IO.contentbrowser_customfolders)
+		{
+			if(custom_dir->m_IsFav)
+			{
+				DrawHierarchy(custom_dir->path, true);
+			}
+		}
 	}
-	if (MyCollapsingHeader("All", projectIcon, 100.0f))
+	if (MyCollapsingHeader(this->ctx->name.c_str(), projectIcon, size1 - 50.0f))
 	{
 		DrawHierarchy(m_BaseDirectory, true);
 	}
@@ -1103,8 +1104,15 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	ImGui::EndChild();
 	ImGui::PopStyleVar(4);
 
-	ImGui::SameLine();
 
+        ImGui::SameLine();
+
+        if (Splitter(true, 4.0f, &size1, &size2, min_size, min_size))
+        {
+            // Optionnel : Faites quelque chose en cas de redimensionnement
+        }
+
+        ImGui::SameLine();
 	// Sauvegarder les styles actuels
 	ImGuiStyle &style = ImGui::GetStyle();
 	ImVec4 originalChildBgColor = style.Colors[ImGuiCol_ChildBg];
