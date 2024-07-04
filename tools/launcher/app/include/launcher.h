@@ -51,11 +51,7 @@ public:
 
     static Details details(this->m_ctx, this->ParentWindow);
     details.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
-
-    static ContentBrowserPanel cbrowser(this->m_ctx, this->ParentWindow);
-    cbrowser.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
-
-    PopStyle();
+        PopStyle();
   }
 
   VxContext *m_ctx;

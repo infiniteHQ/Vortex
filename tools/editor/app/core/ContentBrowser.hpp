@@ -69,7 +69,7 @@ public:
 
 void DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color);
 void MyFolderButton(const char* id, ImVec2 size, ImU32 color, const std::string& path);
-void DrawHierarchy(std::filesystem::path path, bool isDir);
+void DrawHierarchy(std::filesystem::path path, bool isDir, const std::string& label);
 
 	VxContext *ctx;
 	std::string parent;
@@ -83,6 +83,12 @@ private:
 
 	bool m_ShowTypes = false;
 	bool m_ShowSizes = false;
+
+// !!!
+	bool m_ShowFolderPannel = true;
+	bool m_ShowFilterPannel = false;
+	bool m_ShowThumbnailVisualizer = false;
+	bool m_ShowSelectionQuantifier = false;
 
 	std::filesystem::path m_BaseDirectory;
 

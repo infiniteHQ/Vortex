@@ -545,12 +545,37 @@ FileTypes detect_file(const std::string &path)
 	}
 }
 
-void ContentBrowserPanel::DrawHierarchy(std::filesystem::path path, bool isDir)
+void ContentBrowserPanel::DrawHierarchy(std::filesystem::path path, bool isDir, const std::string& label = "")
 {
+	std::string tree_label = "???";
+	if(label.empty())
+	{
+		tree_label = path.filename().string() + "###treenode";
+	}
+	else
+	{
+		tree_label = label + "###treenode";
+	}
+	
 	ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 	ImVec2 cursorPos = ImGui::GetCursorPos();
 	ImGui::SetItemAllowOverlap();
-	if (ImGui::TreeNode(path.filename().string().c_str()))
+
+
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+	ImU32 col;
+
+	if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
+	{
+		DrawFolderIcon(pos, ImVec2(12,12), col);
+	}
+	else
+	{
+		DrawFolderIcon(pos, ImVec2(12,12), folder_color);
+	}
+
+	//ImGui::SameLine();
+	if (ImGui::TreeNode(tree_label.c_str()))
 	{
 		for (auto &dirEntry : std::filesystem::directory_iterator(path))
 		{
@@ -559,23 +584,23 @@ void ContentBrowserPanel::DrawHierarchy(std::filesystem::path path, bool isDir)
 			DrawHierarchy(otherPath, dirEntry.is_directory());
 		}
 
-		this->ChangeDirectory(path);
+		//this->ChangeDirectory(path);
 		ImGui::TreePop();
 	}
 	ImVec2 finalCursorPos = ImGui::GetCursorPos();
 	ImVec2 size = ImGui::GetItemRectSize();
 
-	//if (!isDir)
+	// if (!isDir)
 	//{
-		/*ImGui::SetCursorPos(cursorPos);
-		ImGui::SetItemAllowOverlap();
+	/*ImGui::SetCursorPos(cursorPos);
+	ImGui::SetItemAllowOverlap();
 
-		if (ImGui::InvisibleButton(("##" + path.string()).c_str(), size))
-		{
-			this->ChangeDirectory(path);
-		}
+	if (ImGui::InvisibleButton(("##" + path.string()).c_str(), size))
+	{
+		this->ChangeDirectory(path);
+	}
 
-		ImGui::SetCursorPos(finalCursorPos);*/
+	ImGui::SetCursorPos(finalCursorPos);*/
 	//}
 }
 
@@ -652,24 +677,52 @@ void ContentBrowserPanel::menubar()
 
 	ImGui::SetNextWindowSize(ImVec2(200, 300));
 	ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 200, 300));
+		ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
+
 	if (ImGui::BeginMenuBar())
 	{
 		float oldsize = ImGui::GetFont()->Scale;
 		ImGui::GetFont()->Scale *= 0.85;
 		ImGui::PushFont(ImGui::GetFont());
 
+		float menuBarHeight = ImGui::GetCurrentWindow()->MenuBarHeight();
+
+		float buttonHeight = 24;
+
+		float offsetY = (menuBarHeight - buttonHeight) * 0.5f;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 6));
+
+		float initialCursorPosY = ImGui::GetCursorPosY();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
+
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
 		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "Add", ImVec2(15, 15)))
 		{
+			// Action du bouton
 		}
-		ImGui::GetFont()->Scale = oldsize;
-		ImGui::PopFont();
-		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "Import", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+		ImGui::PopStyleColor();
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(62, 62, 62, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(62, 62, 62, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(62, 62, 62, 0));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(62, 62, 62, 0));
+		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "Import", ImVec2(15, 15)))
 		{
 		}
+		ImGui::PopStyleColor(4);
+		ImGui::SetCursorPosY(initialCursorPosY);
 
+		ImGui::PopStyleVar();
+
+		ImGui::GetFont()->Scale = oldsize;
+		ImGui::PopFont();
 		ImGui::Separator();
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
+
 		if (m_BackHistory.empty())
 		{
 			if (ImGui::UIKit_ImageButtonWithText(getTexture(Icon_Left_Arrow_Disabled), "##LEFT_ARROW", ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
@@ -709,51 +762,98 @@ void ContentBrowserPanel::menubar()
 				GoForward();
 			}
 		}
+		ImGui::PopStyleVar();
+
 		ImGui::PopStyleColor();
 
 		ImGui::Separator();
 
-		DrawPathBar();
+		if (m_Selected.size() > 0)
+		{
+			std::string label = std::to_string(m_Selected.size()) + " element(s) selected";
+			ImGui::Text(label.c_str());
+		}
 
-		// Calculer la largeur du texte du bouton
 		float buttonWidth = ImGui::CalcTextSize("RightButton").x;
 		float spacing = 30.0f;
 
-		// Placer le bouton à droite de la barre de menu
 		ImGui::SameLine(ImGui::GetWindowWidth() - buttonWidth - spacing);
 
-		// Utilisation de ImageButton ou de votre bouton personnalisé
-		if (ImGui::ImageButton(refreshIcon, ImVec2(this->m_ProjectIcon->GetWidth(), this->m_ProjectIcon->GetHeight())))
+		if (ImGui::BeginMenu("Settings"))
 		{
-			ImGui::OpenPopup("SettingPopup");
-		}
 
-		// Ouvrir le popup contextuel si l'utilisateur a cliqué sur le bouton
-		if (ImGui::BeginPopup("SettingPopup"))
-		{
-			// Ajouter une entrée de menu pour "Change folder color"
-			if (ImGui::BeginMenu("Change folder color"))
+			float oldsize = ImGui::GetFont()->Scale;
+
+			ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+			ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+			ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
+			ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+
+			ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+			ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+			ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+
+			ImGui::GetFont()->Scale *= 0.9;
+			ImGui::PushFont(ImGui::GetFont());
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+			ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+			ImGui::Text("Pannels");
+			ImGui::PopStyleColor();
+
+			ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+			ImGui::Separator();
+			ImGui::PopStyleColor();
+
+			ImGui::GetFont()->Scale = oldsize;
+			ImGui::PopFont();
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+			ImGui::Checkbox("Show folders", &m_ShowFolderPannel);
+			ImGui::Checkbox("Show visualizer", &m_ShowThumbnailVisualizer);
+			ImGui::Checkbox("Show selected", &m_ShowSelectionQuantifier);
+			ImGui::Checkbox("Show filters", &m_ShowFilterPannel);
+
+			if (ImGui::MenuItem("Open", "Ctrl + O"))
 			{
-				static bool alpha_preview = true;
-				static bool alpha_half_preview = false;
-				static bool drag_and_drop = true;
-				static bool options_menu = true;
-				static bool hdr = false;
-				ImGuiColorEditFlags misc_flags = (hdr ? ImGuiColorEditFlags_HDR : 0) |
-												 (drag_and_drop ? 0 : ImGuiColorEditFlags_NoDragDrop) |
-												 (alpha_half_preview ? ImGuiColorEditFlags_AlphaPreviewHalf : (alpha_preview ? ImGuiColorEditFlags_AlphaPreview : 0)) |
-												 (options_menu ? 0 : ImGuiColorEditFlags_NoOptions);
-
-				ImGui::ColorEdit3("MyColor##1", (float *)&folder_color, misc_flags);
-				ImGui::EndMenu(); // Fin du sous-menu "Change folder color"
 			}
-			ImGui::EndPopup();
+			if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
+			{
+			}
+			if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
+			{
+			}
+
+			ImGui::GetFont()->Scale *= 0.9;
+			ImGui::PushFont(ImGui::GetFont());
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+			ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+			ImGui::Text("Customization");
+			ImGui::PopStyleColor();
+
+			ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+			ImGui::Separator();
+			ImGui::PopStyleColor();
+
+			ImGui::GetFont()->Scale = oldsize;
+			ImGui::PopFont();
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor(2);
+
+			ImGui::EndMenu();
 		}
 
 		ImGui::PopStyleVar();
 
 		ImGui::EndMenuBar();
 	}
+
+	ImGui::PopStyleColor();
 }
 
 static std::uintmax_t getDirectorySize(const fs::path &directoryPath)
@@ -995,55 +1095,53 @@ bool ColorPicker3U32(const char *label, ImU32 *color, ImGuiColorEditFlags flags 
 
 static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>> recognized_modules_items;
 
-// Fonction pour gérer le redimensionnement
-
-bool Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2)
+bool Splitter(bool split_vertically, float thickness, float *sizebefore, float *size, float *size_after, float min_size1, float min_size2)
 {
-    using namespace ImGui;
-    ImGuiContext& g = *GImGui;
-    ImGuiWindow* window = g.CurrentWindow;
-    ImDrawList* draw_list = GetWindowDrawList();
+	using namespace ImGui;
+	ImGuiContext &g = *GImGui;
+	ImGuiWindow *window = g.CurrentWindow;
+	ImDrawList *draw_list = GetWindowDrawList();
 
-    ImVec2 backup_pos = window->DC.CursorPos;
-    if (split_vertically)
-        window->DC.CursorPos = ImVec2(window->DC.CursorPos.x, window->DC.CursorPos.y);
-    else
-        window->DC.CursorPos = ImVec2(window->DC.CursorPos.x, window->DC.CursorPos.y);
+	ImVec2 backup_pos = window->DC.CursorPos;
+	if (split_vertically)
+		window->DC.CursorPos = ImVec2(window->DC.CursorPos.x, window->DC.CursorPos.y);
+	else
+		window->DC.CursorPos = ImVec2(window->DC.CursorPos.x, window->DC.CursorPos.y);
 
-    PushID("#Splitter");
-    InvisibleButton("##Splitter", ImVec2(split_vertically ? thickness : -1.0f, split_vertically ? -1.0f : thickness));
-    PopID();
+	PushID("#Splitter");
+	InvisibleButton("##Splitter", ImVec2(split_vertically ? thickness : window->Size.x, split_vertically ? window->Size.y : thickness));
+	PopID();
 
-    bool hovered = IsItemHovered();
-    bool held = IsItemActive();
-    if (hovered || held)
-        SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+	bool hovered = IsItemHovered();
+	bool held = IsItemActive();
+	if (hovered || held)
+		SetMouseCursor(split_vertically ? ImGuiMouseCursor_ResizeEW : ImGuiMouseCursor_ResizeNS);
 
-    bool updated = false;
-    if (held)
-    {
-        float mouse_delta = split_vertically ? g.IO.MouseDelta.x : g.IO.MouseDelta.y;
-        if (mouse_delta != 0.0f)
-        {
-            if (mouse_delta < min_size1 - *size1)
-                mouse_delta = min_size1 - *size1;
-            if (mouse_delta > *size2 - min_size2)
-                mouse_delta = *size2 - min_size2;
+	bool updated = false;
+	if (held)
+	{
+		float mouse_delta = split_vertically ? g.IO.MouseDelta.x : g.IO.MouseDelta.y;
+		if (mouse_delta != 0.0f)
+		{
+			if (*size + mouse_delta < min_size1)
+				mouse_delta = -(*size - min_size1);
+			if (*sizebefore - mouse_delta < min_size2)
+				mouse_delta = *sizebefore - min_size2;
 
-            *size1 += mouse_delta;
-            *size2 -= mouse_delta;
-            updated = true;
-        }
-    }
+			*sizebefore += mouse_delta;
+			*size -= mouse_delta;
+			updated = true;
+		}
+	}
 
-    window->DC.CursorPos = backup_pos;
+	window->DC.CursorPos = backup_pos;
 
-    ImU32 color = GetColorU32(hovered || held ? ImGuiCol_ResizeGripActive : ImGuiCol_ResizeGrip);
-    ImVec2 pos = window->DC.CursorPos;
-    ImVec2 end_pos = split_vertically ? ImVec2(pos.x + thickness, pos.y + window->Size.y) : ImVec2(pos.x + window->Size.x, pos.y + thickness);
-    draw_list->AddRectFilled(pos, end_pos, IM_COL32(255, 0, 0, 255));
+	ImU32 color = IM_COL32(45, 45, 45, 255); // Gris clair
+	ImVec2 pos = split_vertically ? ImVec2(backup_pos.x, backup_pos.y) : ImVec2(backup_pos.x, backup_pos.y);
+	ImVec2 end_pos = split_vertically ? ImVec2(pos.x + thickness, pos.y + window->Size.y) : ImVec2(pos.x + window->Size.x, pos.y + thickness);
+	draw_list->AddRectFilled(pos, end_pos, color);
 
-    return updated;
+	return updated;
 }
 
 void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller)
@@ -1054,11 +1152,14 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::SetNextWindowDockID(ImGui::GetID("MainDockspace"), ImGuiCond_FirstUseEver);
 
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 12));
+		
 	if (ImGui::UIKit_BeginLogoWindow("Content Browser", &projectIcon, &this->opened, window_flags))
 	{
 		// Render the menubar with proper paddin
 		this->menubar();
 	}
+	ImGui::PopStyleVar();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
@@ -1068,51 +1169,94 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 
 	ImGui::PopStyleVar(); // Pop the ItemSpacing style
 
-    static float size1 = 200.0f;
-    static float size2 = 200.0f;
-    float min_size = 50.0f;
+	static float size1 = 200.0f;
+	static float size2 = 200.0f;
+	static float size4 = 200.0f;
+	static float size3 = ImGui::GetWindowWidth();
+
+	if (m_ShowFolderPannel)
+		size3 - size1;
+
+	if (m_ShowFilterPannel)
+		size3 - size2;
+
+	if (m_ShowThumbnailVisualizer)
+		size3 - size4;
+
+	float min_size = 50.0f;
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
 
-
-	ImGui::BeginChild("Child1", ImVec2(size1, 0), true);
-
 	float oldsize = ImGui::GetFont()->Scale;
-	ImGui::GetFont()->Scale *= 0.85;
-	ImGui::PushFont(ImGui::GetFont());
 
-	if (MyCollapsingHeader("Favorites", projectIcon, size1 - 50.0f))
+	if (m_ShowFolderPannel)
 	{
-		for(auto custom_dir : this->ctx->IO.contentbrowser_customfolders)
+
+		ImGui::BeginChild("Child1", ImVec2(size1, 0), true);
+
+		ImGui::GetFont()->Scale *= 0.85;
+		ImGui::PushFont(ImGui::GetFont());
+
+		if (MyCollapsingHeader("Favorites", projectIcon, size1 - 50.0f))
 		{
-			if(custom_dir->m_IsFav)
+			for (auto custom_dir : this->ctx->IO.contentbrowser_customfolders)
 			{
-				DrawHierarchy(custom_dir->path, true);
+				if (custom_dir->m_IsFav)
+				{
+					DrawHierarchy(custom_dir->path, true);
+				}
 			}
 		}
+		if (MyCollapsingHeader(this->ctx->name.c_str(), projectIcon, size1 - 50.0f))
+		{
+			DrawHierarchy(m_BaseDirectory, true, this->ctx->name);
+		}
+
+		if (MyCollapsingHeader("Pools & Collections", projectIcon, size1 - 50.0f))
+		{
+		}
+		ImGui::GetFont()->Scale = oldsize;
+		ImGui::PopFont();
+		ImGui::EndChild();
+		ImGui::PopStyleVar(4);
+
+		ImGui::SameLine(0.0f, 0.0f);
+
+		if (Splitter(true, 2.0f, &size1, &size2, &size3, min_size, min_size))
+		{
+			// Optionnel : Faites quelque chose en cas de redimensionnement
+		}
+
+		ImGui::SameLine(0.0f, 0.0f);
 	}
-	if (MyCollapsingHeader(this->ctx->name.c_str(), projectIcon, size1 - 50.0f))
+
+	if (m_ShowFilterPannel)
 	{
-		DrawHierarchy(m_BaseDirectory, true);
+		ImGui::BeginChild("Child2", ImVec2(size2, 0), true);
+
+		ImGui::GetFont()->Scale *= 0.85;
+		ImGui::PushFont(ImGui::GetFont());
+
+		if (MyCollapsingHeader("Pools & Collections", projectIcon, size1 - 50.0f))
+		{
+		}
+		ImGui::GetFont()->Scale = oldsize;
+		ImGui::PopFont();
+		ImGui::EndChild();
+
+		ImGui::SameLine(0.0f, 0.0f);
+
+		if (Splitter(true, 2.0f, &size2, &size3, &size4, min_size, min_size))
+		{
+			// Optionnel : Faites quelque chose en cas de redimensionnement
+		}
+
+		ImGui::SameLine(0.0f, 0.0f);
 	}
 
-	ImGui::GetFont()->Scale = oldsize;
-	ImGui::PopFont();
-	ImGui::EndChild();
-	ImGui::PopStyleVar(4);
-
-
-        ImGui::SameLine();
-
-        if (Splitter(true, 4.0f, &size1, &size2, min_size, min_size))
-        {
-            // Optionnel : Faites quelque chose en cas de redimensionnement
-        }
-
-        ImGui::SameLine();
 	// Sauvegarder les styles actuels
 	ImGuiStyle &style = ImGui::GetStyle();
 	ImVec4 originalChildBgColor = style.Colors[ImGuiCol_ChildBg];
@@ -1124,9 +1268,9 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	style.Colors[ImGuiCol_Border] = ImVec4(0, 0, 0, 0);
 	style.Colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
 
-	ImGui::BeginChild("Child2", ImVec2(0, 0), true);
+	ImGui::BeginChild("Child3", ImVec2(size3, 0), true);
 
-	static float padding = 16.0f;
+	static float padding = 30.0f;
 	static float thumbnailSize = 94.0f;
 	float cellSize = thumbnailSize + padding;
 
@@ -1248,7 +1392,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 			ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
 
 			// Pousser le style pour les bords arrondis moins prononcés
-			ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f); // Ajustez la valeur selon vos besoins
+			ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 			if (ImGui::BeginPopupContextItem("ContextPopup"))
 			{
 				// Appliquer le nouveau scale
@@ -1256,7 +1400,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				ImGui::PushFont(ImGui::GetFont());
 
 				// Ajouter un espace au-dessus
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f); // Ajustez la valeur selon vos besoins
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
 
 				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
 				ImGui::Text("Main");
@@ -1269,7 +1413,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				// Restaurer l'ancien scale de la police
 				ImGui::GetFont()->Scale = oldsize;
 				ImGui::PopFont();
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f); // Ajustez la valeur selon vos besoins
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
 				if (ImGui::MenuItem("Open", "Ctrl + O"))
 				{
@@ -1292,7 +1436,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				ImGui::PushFont(ImGui::GetFont());
 
 				// Ajouter un espace au-dessus
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f); // Ajustez la valeur selon vos besoins
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 
 				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
 				ImGui::Text("Customization");
@@ -1305,7 +1449,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				// Restaurer l'ancien scale de la police
 				ImGui::GetFont()->Scale = oldsize;
 				ImGui::PopFont();
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f); // Ajustez la valeur selon vos besoins
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
 				static bool EditingColor = false;
 				static bool ColorChanged = false;
@@ -1383,48 +1527,134 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 		}
 	}
 
-	for (auto &itemEntry : recognized_modules_items)
-	{
-		const auto &path = itemEntry.second;
-		fs::path fsPath(path);
-		std::string filenameString = fsPath.filename().string();
 
-		bool selected = false;
+for (auto &itemEntry : recognized_modules_items)
+{
+    const auto &path = itemEntry.second;
+    fs::path fsPath(path);
+    std::string filenameString = fsPath.filename().string();
 
-		if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
-		{
-			selected = true;
-		}
+    bool selected = false;
 
-		if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
-		{
-			std::uintmax_t folderSize = getDirectorySize(path);
-			std::string folderSizeString = formatFileSize(folderSize);
-			ImGui::PushID(filenameString.c_str());
+    if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
+    {
+        selected = true;
+    }
 
-			if (MyButton(filenameString, itemEntry.first->m_Description, folderSizeString, selected, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(itemEntry.first->m_LineColor.x, itemEntry.first->m_LineColor.y, itemEntry.first->m_LineColor.z, itemEntry.first->m_LineColor.w)))
-			{
-				if (ImGui::IsMouseDoubleClicked(0))
-				{
-					// itemEntry.first->f_Execute(path);
-					VXERROR("te", "tyr");
-				}
+    if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+    {
+        std::uintmax_t folderSize = getDirectorySize(path);
+        std::string folderSizeString = formatFileSize(folderSize);
+        ImGui::PushID(filenameString.c_str());
 
-				if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-				{
-					m_Selected.push_back(path);
-				}
-				else
-				{
-					m_Selected.clear();
-					m_Selected.push_back(path);
-				}
-			}
+        if (MyButton(filenameString, itemEntry.first->m_Description, folderSizeString, selected, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(itemEntry.first->m_LineColor.x, itemEntry.first->m_LineColor.y, itemEntry.first->m_LineColor.z, itemEntry.first->m_LineColor.w)))
+        {
+            if (ImGui::IsMouseDoubleClicked(0))
+            {
+                // itemEntry.first->f_Execute(path);
+                VXERROR("te", "tyr");
+            }
 
-			ImGui::PopID();
-			ImGui::NextColumn();
-		}
-	}
+            if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+            {
+                m_Selected.push_back(path);
+            }
+            else
+            {
+                m_Selected.clear();
+                m_Selected.push_back(path);
+            }
+        }
+
+        // Vérifiez le clic droit pour ouvrir le menu contextuel
+        if (ImGui::BeginPopupContextItem("ContextPopup_"))
+        {
+            // Appliquer le nouveau scale
+            ImGui::GetFont()->Scale *= 0.9;
+            ImGui::PushFont(ImGui::GetFont());
+
+            // Ajouter un espace au-dessus
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+            ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);             // Gris (50% blanc)
+            ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);    // Gris (50% blanc)
+            ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f); // Fond plus foncé
+            ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);       // Bordure plus claire
+
+            // Pousser le style pour le fond plus foncé
+            ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+
+            // Pousser le style pour la bordure plus claire
+            ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+
+            // Pousser le style pour les bords arrondis moins prononcés
+            ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+
+            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+            ImGui::Text("Main");
+            ImGui::PopStyleColor();
+
+            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+            ImGui::Separator();
+            ImGui::PopStyleColor();
+
+            // Restaurer l'ancien scale de la police
+            ImGui::GetFont()->Scale = oldsize;
+            ImGui::PopFont();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+            if (ImGui::MenuItem("Open", "Ctrl + O"))
+            {
+                ChangeDirectory(path);
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
+            {
+                ChangeDirectory(path);
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
+            {
+                ChangeDirectory(path);
+                ImGui::CloseCurrentPopup();
+            }
+
+            // Appliquer le nouveau scale
+            ImGui::GetFont()->Scale *= 0.9;
+            ImGui::PushFont(ImGui::GetFont());
+
+            // Ajouter un espace au-dessus
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+            ImGui::Text("Customization");
+            ImGui::PopStyleColor();
+
+            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+            ImGui::Separator();
+            ImGui::PopStyleColor();
+
+            // Restaurer l'ancien scale de la police
+            ImGui::GetFont()->Scale = oldsize;
+            ImGui::PopFont();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+            static bool EditingColor = false;
+            static bool ColorChanged = false;
+
+            // Ajouter d'autres options de menu ici...
+
+            ImGui::EndPopup();
+            
+            // Pop les styles appliqués
+            ImGui::PopStyleVar();    // Pour les bords arrondis
+            ImGui::PopStyleColor(2); // Pour le fond et la bordure
+        }
+
+        ImGui::PopID();
+        ImGui::NextColumn();
+    }
+}
 
 	for (auto &fileEntry : files)
 	{
@@ -1590,7 +1820,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				ImGui::PushFont(ImGui::GetFont());
 
 				// Ajouter un espace au-dessus
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f); // Ajustez la valeur selon vos besoins
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
 
 				// Changer la couleur du texte en gris
 				ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);			// Gris (50% blanc)
@@ -1610,7 +1840,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				// Restaurer l'ancien scale de la police
 				ImGui::GetFont()->Scale = oldsize;
 				ImGui::PopFont();
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f); // Ajustez la valeur selon vos besoins
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
 				if (ImGui::MenuItem("Open", "Ctrl + O"))
 				{
@@ -1633,7 +1863,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				ImGui::PushFont(ImGui::GetFont());
 
 				// Ajouter un espace au-dessus
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f); // Ajustez la valeur selon vos besoins
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 
 				// Changer la couleur du texte en gris
 				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
@@ -1651,7 +1881,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				// Restaurer l'ancien scale de la police
 				ImGui::GetFont()->Scale = oldsize;
 				ImGui::PopFont();
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f); // Ajustez la valeur selon vos besoins
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
 				if (ImGui::MenuItem("Change color"))
 				{
@@ -1670,6 +1900,30 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	}
 
 	ImGui::EndChild();
+
+	if (m_ShowThumbnailVisualizer)
+	{
+		ImGui::SameLine(0.0f, 0.0f);
+
+		if (Splitter(true, 2.0f, &size3, &size4, 0, min_size, min_size))
+		{
+			// Optionnel : Faites quelque chose en cas de redimensionnement
+		}
+
+		ImGui::SameLine(0.0f, 0.0f);
+
+		ImGui::BeginChild("Child4", ImVec2(size4, 0), true);
+
+		ImGui::GetFont()->Scale *= 0.85;
+		ImGui::PushFont(ImGui::GetFont());
+
+		if (MyCollapsingHeader("Pools & Collections", projectIcon, size1 - 50.0f))
+		{
+		}
+		ImGui::GetFont()->Scale = oldsize;
+		ImGui::PopFont();
+		ImGui::EndChild();
+	}
 
 	// Restaurer les couleurs originales
 	style.Colors[ImGuiCol_ChildBg] = originalChildBgColor;
