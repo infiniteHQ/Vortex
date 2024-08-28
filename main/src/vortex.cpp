@@ -806,6 +806,30 @@ VORTEX_API void VortexMaker::PostCustomFolderToJson()
     VortexMaker::PopulateJSON(json_data, file_path);
 }
 
+VORTEX_API void VortexMaker::PublishPool(const std::string &absolute_pool_path)
+{
+    VxContext &ctx = *CVortexMaker;
+
+    std::size_t endPos = absolute_pool_path.size() - 1;
+
+    if (absolute_pool_path[endPos] == '/' || absolute_pool_path[endPos] == '\\')
+    {
+        endPos--;
+    }
+
+    for (auto path : ctx.IO.contentbrowser_pools)
+    {
+        if (path == absolute_pool_path)
+        {
+            return;
+        }
+    }
+
+    ctx.IO.contentbrowser_pools.push_back(absolute_pool_path);
+
+    VortexMaker::PostPoolsToJson();
+}
+
 VORTEX_API void VortexMaker::PublishContentBrowserCustomFolder(const std::string &path, const std::string &hex_color, const bool &isFav)
 {
     VxContext &ctx = *CVortexMaker;
@@ -830,10 +854,6 @@ VORTEX_API void VortexMaker::PublishContentBrowserCustomFolder(const std::string
     ctx.IO.contentbrowser_customfolders.push_back(new_folder);
 
     VortexMaker::PostCustomFolderToJson();
-}
-
-VORTEX_API void VortexMaker::AddNewFolderPool(const std::string &path)
-{
 }
 
 VORTEX_API bool VortexMaker::ContentBrowserFolderIsFav(const std::string &path)
@@ -900,6 +920,60 @@ VORTEX_API std::string VortexMaker::ImU32ToHex(ImU32 color)
     return ss.str();
 }
 
+VORTEX_API void VortexMaker::FetchPools()
+{
+    VxContext &ctx = *CVortexMaker;
+    std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
+    VortexMaker::createFolderIfNotExists(path);
+
+    std::string file_path = path + "/pools.json";
+
+    nlohmann::json json_data;
+
+    VortexMaker::createJsonFileIfNotExists(file_path, json_data);
+
+    std::ifstream file(file_path);
+
+    file >> json_data;
+
+    // From master pool relative path (from project path)
+    ctx.IO.contentbrowser_mainpool = json_data["main_pool"].get<std::string>();
+
+    std::string projectPath = ctx.projectPath.c_str();
+    ctx.IO.contentbrowser_absolute_mainpool = projectPath + "/" + ctx.IO.contentbrowser_mainpool;
+
+    // From other pool absolute paths
+    for (auto directory : json_data["other_pools"])
+    {
+        std::string path = directory["path"].get<std::string>();
+        ctx.IO.contentbrowser_pools.push_back(path);
+    }
+}
+
+VORTEX_API void VortexMaker::PostPoolsToJson()
+{
+    VxContext &ctx = *CVortexMaker;
+    std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
+    VortexMaker::createFolderIfNotExists(path);
+
+    std::string file_path = path + "/pools.json";
+
+    nlohmann::json json_data;
+
+    json_data["pools"] = nlohmann::json::array();
+    json_data["main_pool"] = ctx.IO.contentbrowser_mainpool;
+
+    for (const std::string &path : ctx.IO.contentbrowser_pools)
+    {
+        nlohmann::json folder_data;
+        folder_data["path"] = path;
+
+        json_data["pools"].push_back(folder_data);
+    }
+
+    VortexMaker::PopulateJSON(json_data, file_path);
+}
+
 VORTEX_API void VortexMaker::FetchCustomFolders()
 {
     VxContext &ctx = *CVortexMaker;
@@ -927,8 +1001,161 @@ VORTEX_API void VortexMaker::FetchCustomFolders()
     }
 }
 
-VORTEX_API void VortexMaker::FetchPools()
+VORTEX_API void VortexMaker::Copy(std::vector<std::string> selection, bool in_addition)
 {
+    VxContext &ctx = *CVortexMaker;
+
+    if (!in_addition)
+    {
+        ctx.IO.copy_selection.clear();
+    }
+
+    for (auto selected : selection)
+    {
+        ctx.IO.copy_selection.push_back(selected);
+    }
 }
 
+VORTEX_API void VortexMaker::Cut(std::vector<std::string> selection, bool in_addition)
+{
+    VxContext &ctx = *CVortexMaker;
+
+    if (!in_addition)
+    {
+        ctx.IO.cut_selection.clear();
+    }
+
+    for (auto selected : selection)
+    {
+        ctx.IO.cut_selection.push_back(selected);
+    }
+}
+
+VORTEX_API void VortexMaker::ClearCutSelection()
+{
+    VxContext &ctx = *CVortexMaker;
+
+    ctx.IO.cut_selection.clear();
+}
+
+VORTEX_API void VortexMaker::ClearCopySelection()
+{
+    VxContext &ctx = *CVortexMaker;
+
+    ctx.IO.copy_selection.clear();
+}
+
+VORTEX_API void VortexMaker::PasteAllSelections(const std::string &target_path)
+{
+    VxContext &ctx = *CVortexMaker;
+
+    for (auto cut_selected : ctx.IO.copy_selection)
+    {
+        std::string cmd = "cp -r " + cut_selected + " " + target_path;
+        system(cmd.c_str());
+    }
+
+    for (auto copy_selected : ctx.IO.cut_selection)
+    {
+        std::string cmd = "mv " + copy_selected + " " + target_path;
+        system(cmd.c_str());
+    }
+}
+
+VORTEX_API void VortexMaker::RenameFolder(const std::string& target_path, const std::string& new_name) {
+    namespace fs = std::filesystem;
+
+    try {
+        fs::path target(target_path);
+        if (!fs::exists(target) || !fs::is_directory(target)) {
+            throw std::runtime_error("Target path does not exist or is not a directory.");
+        }
+
+        fs::path new_path = target.parent_path() / new_name;
+        fs::rename(target, new_path);
+    } catch (const fs::filesystem_error& e) {
+        throw std::runtime_error(std::string("Filesystem error: ") + e.what());
+    } catch (const std::exception& e) {
+        throw std::runtime_error(std::string("Error: ") + e.what());
+    }
+}
+
+VORTEX_API void VortexMaker::RenameFile(const std::string& target_path, const std::string& new_name) 
+{
+    namespace fs = std::filesystem;
+
+    try {
+        fs::path target(target_path);
+        if (!fs::exists(target) || !fs::is_regular_file(target)) {
+            throw std::runtime_error("Target path does not exist or is not a file.");
+        }
+
+        fs::path new_path = target.parent_path() / new_name;
+        fs::rename(target, new_path);
+    } catch (const fs::filesystem_error& e) {
+        throw std::runtime_error(std::string("Filesystem error: ") + e.what());
+    } catch (const std::exception& e) {
+        throw std::runtime_error(std::string("Error: ") + e.what());
+    }
+}
+
+VORTEX_API void VortexMaker::DeleteFile(const std::string& target_path) {
+    try {
+        // Check if the target path exists and is a file
+        if (!std::filesystem::exists(target_path) || !std::filesystem::is_regular_file(target_path)) {
+            throw std::invalid_argument("The specified path does not exist or is not a file.");
+        }
+
+        // Attempt to remove the file
+        std::filesystem::remove(target_path);
+    } catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << '\n';
+        // Additional handling for different types of filesystem errors can be done here
+    } catch (const std::exception& e) {
+        std::cerr << "General error: " << e.what() << '\n';
+    } catch (...) {
+        std::cerr << "An unknown error occurred while deleting the file." << '\n';
+    }
+}
+
+VORTEX_API void VortexMaker::DeleteFolder(const std::string& target_path) {
+    try {
+        // Check if the target path exists and is a directory
+        if (!std::filesystem::exists(target_path) || !std::filesystem::is_directory(target_path)) {
+            throw std::invalid_argument("The specified path does not exist or is not a directory.");
+        }
+
+        // Attempt to remove the directory and its contents
+        std::filesystem::remove_all(target_path);
+    } catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << '\n';
+        // Additional handling for different types of filesystem errors can be done here
+    } catch (const std::exception& e) {
+        std::cerr << "General error: " << e.what() << '\n';
+    } catch (...) {
+        std::cerr << "An unknown error occurred while deleting the folder." << '\n';
+    }
+}
+
+VORTEX_API void VortexMaker::DeletePath(const std::string& target_path) {
+    try {
+        // Check if the path exists
+        if (!std::filesystem::exists(target_path)) {
+            throw std::invalid_argument("The specified path does not exist.");
+        }
+
+        // Determine if it's a file or directory
+        if (std::filesystem::is_directory(target_path)) {
+            DeleteFolder(target_path);
+        } else if (std::filesystem::is_regular_file(target_path)) {
+            DeleteFile(target_path);
+        } else {
+            throw std::invalid_argument("The specified path is neither a regular file nor a directory.");
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << '\n';
+    } catch (...) {
+        std::cerr << "An unknown error occurred while processing the path." << '\n';
+    }
+}
 #endif // VORTEX_DISABLE

@@ -7,7 +7,52 @@ Selection (dont multiple),
 Cpy, Past, etc...
 
 
+- Main pool, Collections & Pools
+- Copy, Paste, Cut (with multi selection) (make copy x elements)
+- Rename
+- Register handler and launch with handler
+- Filters
+- Up menubar
+- Show mode
+
+- Widjets for Details, Contents
+- Toolchains & other modules
+- Finish (winbehavior + components) + Doc !
+
+
 */
+static float padding = 30.0f;
+static float thumbnailSize = 94.0f;
+
+static std::string pathToRename = "";
+static char pathRename[256];
+
+static const std::string File_LICENSE_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_license_file.png";
+static const std::string File_ASM_Logo = "/usr/local/include/Vortex/1.1/imgs/file_asm_logo.png";
+static const std::string File_GIT_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_git_file.png";
+static const std::string File_C_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_c_file.png";
+static const std::string File_C_H_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_c_h_file.png";
+static const std::string File_CPP_H_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_cpp_h_file.png";
+static const std::string File_CPP_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_cpp_file.png";
+static const std::string File_UNKNOW_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_unknow_file.png";
+static const std::string File_PICTURE_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_picture_file.png";
+static const std::string Folder_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_folder.png";
+static const std::string Star_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_star.png";
+static const std::string Collection_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_collection.png";
+static const std::string Home_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_home.png";
+static const std::string Add_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_add.png";
+static const std::string Import_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_import.png";
+static const std::string Save_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_save.png";
+static const std::string Settings_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_settings.png";
+static const std::string Return_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_settings.png";
+
+static const std::string Icon_Left_Arrow_Enabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_l_enabled.png";
+static const std::string Icon_Left_Arrow_Disabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_l_disabled.png";
+static const std::string Icon_Right_Arrow_Enabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_r_enabled.png";
+static const std::string Icon_Right_Arrow_Disabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_r_disabled.png";
+
+static bool pool_add_mode = false;
+static char pool_add_path[512];
 
 static std::string _parent;
 static char ProjectSearch[256];
@@ -99,22 +144,6 @@ static bool areStringsSimilar(const std::string &s1, const std::string &s2, doub
 
 	return similarity >= threshold;
 }
-
-static const std::string File_LICENSE_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_license_file.png";
-static const std::string File_ASM_Logo = "/usr/local/include/Vortex/1.1/imgs/file_asm_logo.png";
-static const std::string File_GIT_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_git_file.png";
-static const std::string File_C_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_c_file.png";
-static const std::string File_C_H_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_c_h_file.png";
-static const std::string File_CPP_H_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_cpp_h_file.png";
-static const std::string File_CPP_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_cpp_file.png";
-static const std::string File_UNKNOW_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_unknow_file.png";
-static const std::string File_PICTURE_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_picture_file.png";
-static const std::string Folder_Logo = "/usr/local/include/Vortex/1.1/imgs/icon_folder.png";
-
-static const std::string Icon_Left_Arrow_Enabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_l_enabled.png";
-static const std::string Icon_Left_Arrow_Disabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_l_disabled.png";
-static const std::string Icon_Right_Arrow_Enabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_r_enabled.png";
-static const std::string Icon_Right_Arrow_Disabled = "/usr/local/include/Vortex/1.1/imgs/icon_arrow_r_disabled.png";
 
 static std::string default_project_avatar = "/usr/local/include/Vortex/imgs/base_vortex.png";
 
@@ -364,7 +393,7 @@ static void DrawHighlightedText(ImDrawList *drawList, ImVec2 textPos, const char
 	}
 }
 
-bool MyButton(const std::string &name, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255), ImU32 borderColor = IM_COL32(150, 150, 150, 255), ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 100.0f, float borderRadius = 5.0f)
+bool ContentBrowserPanel::MyButton(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255), ImU32 borderColor = IM_COL32(150, 150, 150, 255), ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 100.0f, float borderRadius = 5.0f)
 {
 	bool pressed = false;
 
@@ -423,6 +452,177 @@ bool MyButton(const std::string &name, const std::string &description, const std
 		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 	}
 
+	// Changer la couleur du texte en gris
+	ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);				// Gris (50% blanc)
+	ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);		// Gris (50% blanc)
+	ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f); // Fond plus foncé
+	ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);		// Bordure plus claire
+
+	// Pousser le style pour le fond plus foncé
+	ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+
+	// Pousser le style pour la bordure plus claire
+	ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+
+	// Pousser le style pour les bords arrondis moins prononcés
+	ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+
+	static bool open_deletion_modal = false;
+
+	static bool delete_single_file = false;
+	static std::string delete_single_file_path = "";
+
+	if (open_deletion_modal)
+	{
+		ImGui::SetNextWindowSize(ImVec2(300, 200));
+
+		static ImGuiTableFlags window_flags = ImGuiWindowFlags_NoResize;
+		if (ImGui::BeginPopupModal("Delete file(s)", NULL, window_flags))
+		{
+			// Set the size of the modal to 200x75 pixels the first time it is created
+
+			// 3 text inputs
+			static char path_input_all[512];
+			// inputs widget
+
+			if (delete_single_file)
+			{
+				ImGui::TextWrapped("WARNING, one file");
+			}
+			else
+			{
+				ImGui::TextWrapped("WARNING, if you click on the Delete button, the project will be erase forever.");
+			}
+
+			ImGui::SetItemDefaultFocus();
+
+			if (ImGui::Button("Cancel", ImVec2(120, 0)))
+			{
+				open_deletion_modal = false;
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.2f, 0.2f, 0.9f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(1.0f, 0.2f, 0.2f, 1.8f));
+			if (ImGui::Button("Delete", ImVec2(120, 0)))
+			{
+				if (delete_single_file)
+				{
+					VortexMaker::DeletePath(delete_single_file_path);
+					delete_single_file_path = "";
+					delete_single_file = false;
+				}
+				else
+				{
+					for (auto item : m_Selected)
+					{
+						VortexMaker::DeletePath(item);
+					}
+				}
+
+				open_deletion_modal = false;
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::PopStyleColor(3);
+			ImGui::EndPopup();
+		}
+	}
+	if (open_deletion_modal)
+		ImGui::OpenPopup("Delete file(s)");
+
+	if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+	{
+		m_Selected.push_back(path);
+	}
+
+	if (ImGui::BeginPopupContextItem("ContextPopup"))
+	{
+		// Appliquer le nouveau scale
+		ImGui::GetFont()->Scale *= 0.9;
+		ImGui::PushFont(ImGui::GetFont());
+
+		// Ajouter un espace au-dessus
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+		ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+		ImGui::Text("Main");
+		ImGui::PopStyleColor();
+
+		if (ImGui::MenuItem("Rename", "Ctrl + R"))
+		{
+			pathToRename = path;
+			strncpy(pathRename, name.c_str(), sizeof(pathRename));
+			pathRename[sizeof(pathRename) - 1] = '\0';
+		}
+
+		std::string cpy_label = "Copy (" + std::to_string(m_Selected.size()) + ") selected";
+
+		if (ImGui::MenuItem(cpy_label.c_str(), "Ctrl + C"))
+		{
+			VortexMaker::Copy(m_Selected, false);
+			m_Selected.clear();
+
+			ImGui::CloseCurrentPopup();
+		}
+
+		if (this->ctx->IO.copy_selection.size() > 0)
+		{
+			std::string label = "Copy in addition (" + std::to_string(this->ctx->IO.copy_selection.size()) + " copies)";
+			if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + C"))
+			{
+				VortexMaker::Copy(m_Selected, true);
+				m_Selected.clear();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		if (ImGui::MenuItem("Delete", "Suppr"))
+		{
+			delete_single_file = true;
+			delete_single_file_path = path;
+			open_deletion_modal = true;
+			ImGui::CloseCurrentPopup();
+		}
+
+		if (m_Selected.size() > 1)
+		{
+			std::string label = "Delete (" + std::to_string(m_Selected.size()) + " selected)";
+			if (ImGui::MenuItem(label.c_str(), "Alt + Suppr"))
+			{
+				//
+				open_deletion_modal = true;
+				ImGui::CloseCurrentPopup();
+			}
+		}
+
+		ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+		ImGui::Separator();
+		ImGui::PopStyleColor();
+
+		// Appliquer le nouveau scale
+		ImGui::GetFont()->Scale *= 0.9;
+		ImGui::PushFont(ImGui::GetFont());
+
+		// Ajouter un espace au-dessus
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+		ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+		ImGui::Text("Customization");
+		ImGui::PopStyleColor();
+
+		ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+		ImGui::Separator();
+		ImGui::PopStyleColor();
+
+		// Ajouter d'autres options de menu ici...
+
+		ImGui::EndPopup();
+	}
+	// Pop les styles appliqués
+	ImGui::PopStyleVar();	 // Pour les bords arrondis
+	ImGui::PopStyleColor(2); // Pour le fond et la bordure
+
 	ImDrawList *drawList = ImGui::GetWindowDrawList();
 
 	drawList->AddRectFilled(cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y), bgColor, borderRadius);
@@ -462,7 +662,26 @@ bool MyButton(const std::string &name, const std::string &description, const std
 	ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
 	ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
 
-	DrawHighlightedText(drawList, textPos, truncatedText.c_str(), ProjectSearch, highlightColor, textColor, highlightTextColor);
+	if (pathToRename == path)
+	{
+		ImGui::SetItemAllowOverlap();
+		ImGui::PushID(path.c_str());
+		if (ImGui::InputText("", pathRename, sizeof(pathRename), ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			std::cout << "Renamed file to: " << pathRename << std::endl;
+			pathToRename = "";
+		}
+		if (ImGui::IsItemDeactivatedAfterEdit())
+		{
+			std::cout << "Renamed file to: " << pathRename << std::endl;
+			pathToRename = "";
+		}
+		ImGui::PopID();
+	}
+	else
+	{
+		DrawHighlightedText(drawList, textPos, truncatedText.c_str(), ProjectSearch, highlightColor, textColor, highlightTextColor);
+	}
 
 	ImGui::PopItemWidth();
 
@@ -545,10 +764,11 @@ FileTypes detect_file(const std::string &path)
 	}
 }
 
-void ContentBrowserPanel::DrawHierarchy(std::filesystem::path path, bool isDir, const std::string& label = "")
+void ContentBrowserPanel::DrawHierarchy(std::filesystem::path path, bool isDir, const std::string &label = "")
 {
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12.0f);
 	std::string tree_label = "???";
-	if(label.empty())
+	if (label.empty())
 	{
 		tree_label = path.filename().string() + "###treenode";
 	}
@@ -556,25 +776,23 @@ void ContentBrowserPanel::DrawHierarchy(std::filesystem::path path, bool isDir, 
 	{
 		tree_label = label + "###treenode";
 	}
-	
+
 	ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 	ImVec2 cursorPos = ImGui::GetCursorPos();
 	ImGui::SetItemAllowOverlap();
-
 
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 	ImU32 col;
 
 	if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
 	{
-		DrawFolderIcon(pos, ImVec2(12,12), col);
+		DrawFolderIcon(pos, ImVec2(12, 12), col);
 	}
 	else
 	{
-		DrawFolderIcon(pos, ImVec2(12,12), folder_color);
+		DrawFolderIcon(pos, ImVec2(12, 12), folder_color);
 	}
 
-	//ImGui::SameLine();
 	if (ImGui::TreeNode(tree_label.c_str()))
 	{
 		for (auto &dirEntry : std::filesystem::directory_iterator(path))
@@ -584,34 +802,31 @@ void ContentBrowserPanel::DrawHierarchy(std::filesystem::path path, bool isDir, 
 			DrawHierarchy(otherPath, dirEntry.is_directory());
 		}
 
-		//this->ChangeDirectory(path);
 		ImGui::TreePop();
 	}
 	ImVec2 finalCursorPos = ImGui::GetCursorPos();
 	ImVec2 size = ImGui::GetItemRectSize();
-
-	// if (!isDir)
-	//{
-	/*ImGui::SetCursorPos(cursorPos);
-	ImGui::SetItemAllowOverlap();
-
-	if (ImGui::InvisibleButton(("##" + path.string()).c_str(), size))
-	{
-		this->ChangeDirectory(path);
-	}
-
-	ImGui::SetCursorPos(finalCursorPos);*/
-	//}
 }
 
 ContentBrowserPanel::ContentBrowserPanel(VxContext *_ctx, const std::string &parentwindow)
-	: m_BaseDirectory("/"), m_CurrentDirectory(m_BaseDirectory)
+	: m_BaseDirectory(VortexMaker::getHomeDirectory()), m_CurrentDirectory(m_BaseDirectory)
 {
 	this->ctx = _ctx;
-	parent = parentwindow;
-	_parent = parentwindow;
 
 	VortexMaker::FetchCustomFolders();
+	VortexMaker::FetchPools();
+
+	if (!this->ctx->IO.contentbrowser_absolute_mainpool.empty())
+	{
+		m_BaseDirectory = this->ctx->IO.contentbrowser_absolute_mainpool;
+	}
+
+	m_CurrentDirectory = m_BaseDirectory;
+
+	VortexMaker::LogInfo("contentbrowser_absolute_mainpool", this->ctx->IO.contentbrowser_absolute_mainpool);
+
+	parent = parentwindow;
+	_parent = parentwindow;
 
 	{
 		uint32_t w, h;
@@ -631,6 +846,20 @@ ContentBrowserPanel::ContentBrowserPanel(VxContext *_ctx, const std::string &par
 		m_ProjectIcon = std::make_shared<UIKit::Image>(w, h, UIKit::ImageFormat::RGBA, parent, data);
 		free(data);
 	}
+
+	addTexture(Icon_Left_Arrow_Enabled, Icon_Left_Arrow_Enabled);
+	addTexture(Icon_Right_Arrow_Enabled, Icon_Right_Arrow_Enabled);
+	addTexture(Icon_Left_Arrow_Disabled, Icon_Left_Arrow_Disabled);
+	addTexture(Icon_Right_Arrow_Disabled, Icon_Right_Arrow_Disabled);
+	addTexture(Add_Logo, Add_Logo);
+	addTexture(Home_Logo, Home_Logo);
+	addTexture(Collection_Logo, Collection_Logo);
+	addTexture(Star_Logo, Star_Logo);
+	addTexture(Import_Logo, Import_Logo);
+	addTexture(Save_Logo, Save_Logo);
+	addTexture(Settings_Logo, Settings_Logo);
+	addTexture(Return_Logo, Return_Logo);
+	addTexture(File_PICTURE_Logo, File_PICTURE_Logo);
 }
 
 void ContentBrowserPanel::DrawPathBar()
@@ -670,14 +899,18 @@ void ContentBrowserPanel::menubar()
 {
 	static ImTextureID refreshIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	addTexture(Icon_Left_Arrow_Enabled, Icon_Left_Arrow_Enabled);
-	addTexture(Icon_Right_Arrow_Enabled, Icon_Right_Arrow_Enabled);
-	addTexture(Icon_Left_Arrow_Disabled, Icon_Left_Arrow_Disabled);
-	addTexture(Icon_Right_Arrow_Disabled, Icon_Right_Arrow_Disabled);
+	ImGuiStyle &style = ImGui::GetStyle();
+	ImVec2 framePadding = style.FramePadding;
+
+	// Calculate the adjusted window position
+	ImGuiIO &io = ImGui::GetIO();
+	float menuBarHeight = ImGui::GetFrameHeight(); // Get the height of the menu bar
+	ImVec2 windowPos = ImVec2(io.DisplaySize.x - 200 - framePadding.x, framePadding.y);
 
 	ImGui::SetNextWindowSize(ImVec2(200, 300));
-	ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 200, 300));
-		ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
+	ImGui::SetNextWindowPos(windowPos);
+
+	ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
 
 	if (ImGui::BeginMenuBar())
 	{
@@ -697,7 +930,7 @@ void ContentBrowserPanel::menubar()
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
 
 		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
-		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "Add", ImVec2(15, 15)))
+		if (ImGui::UIKit_ImageButtonWithText(getTexture(Add_Logo), "Add", ImVec2(15, 15)))
 		{
 			// Action du bouton
 		}
@@ -707,7 +940,10 @@ void ContentBrowserPanel::menubar()
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(62, 62, 62, 0));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(62, 62, 62, 0));
 		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(62, 62, 62, 0));
-		if (ImGui::UIKit_ImageButtonWithText(refreshIcon, "Import", ImVec2(15, 15)))
+		if (ImGui::UIKit_ImageButtonWithText(getTexture(Save_Logo), "Save all", ImVec2(15, 15)))
+		{
+		}
+		if (ImGui::UIKit_ImageButtonWithText(getTexture(Import_Logo), "Import", ImVec2(15, 15)))
 		{
 		}
 		ImGui::PopStyleColor(4);
@@ -768,9 +1004,22 @@ void ContentBrowserPanel::menubar()
 
 		ImGui::Separator();
 
+		if (this->ctx->IO.copy_selection.size() > 0)
+		{
+
+			std::string label = std::to_string(this->ctx->IO.copy_selection.size()) + " copies";
+			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), label.c_str());
+		}
+
+		if (this->ctx->IO.cut_selection.size() > 0)
+		{
+			std::string label = std::to_string(this->ctx->IO.cut_selection.size()) + " cuts";
+			ImGui::Text(label.c_str());
+		}
+
 		if (m_Selected.size() > 0)
 		{
-			std::string label = std::to_string(m_Selected.size()) + " element(s) selected";
+			std::string label = std::to_string(m_Selected.size()) + " selected.";
 			ImGui::Text(label.c_str());
 		}
 
@@ -779,10 +1028,24 @@ void ContentBrowserPanel::menubar()
 
 		ImGui::SameLine(ImGui::GetWindowWidth() - buttonWidth - spacing);
 
-		if (ImGui::BeginMenu("Settings"))
-		{
+		ImGui::GetFont()->Scale *= 0.85;
+		ImGui::PushFont(ImGui::GetFont());
 
-			float oldsize = ImGui::GetFont()->Scale;
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(62, 62, 62, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(62, 62, 62, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(62, 62, 62, 0));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(62, 62, 62, 0));
+		if (ImGui::UIKit_ImageButtonWithText(getTexture(Settings_Logo), "Settings", ImVec2(15, 15)))
+		{
+			ImGui::OpenPopup("SettingsPopup");
+		}
+		ImGui::PopStyleColor(4);
+
+		ImGui::GetFont()->Scale = oldsize;
+		ImGui::PopFont();
+
+		if (ImGui::BeginPopup("SettingsPopup"))
+		{
 
 			ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
 			ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
@@ -797,6 +1060,44 @@ void ContentBrowserPanel::menubar()
 			ImGui::PushFont(ImGui::GetFont());
 
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+			ImGui::GetFont()->Scale *= 0.9;
+			ImGui::PushFont(ImGui::GetFont());
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+			ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+			ImGui::Text("Show mode");
+			ImGui::PopStyleColor();
+
+			ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+			ImGui::Separator();
+			ImGui::PopStyleColor();
+
+			ImGui::GetFont()->Scale = oldsize;
+			ImGui::PopFont();
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+			static bool ThumbmailsMode;
+			static bool ListMode;
+			static bool ColumnsMode;
+
+			ImGui::Checkbox("Thumbmails", &ThumbmailsMode);
+			ImGui::Checkbox("Columns", &ColumnsMode);
+			ImGui::Checkbox("List", &ListMode);
+
+			if (ThumbmailsMode)
+			{
+				this->m_ShowMode = ContentShowMode::Thumbmails;
+			}
+			else if (ListMode)
+			{
+				this->m_ShowMode = ContentShowMode::List;
+			}
+			else if (ColumnsMode)
+			{
+				this->m_ShowMode = ContentShowMode::Columns;
+			}
 
 			ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
 			ImGui::Text("Pannels");
@@ -845,7 +1146,7 @@ void ContentBrowserPanel::menubar()
 			ImGui::PopStyleVar();
 			ImGui::PopStyleColor(2);
 
-			ImGui::EndMenu();
+			ImGui::EndPopup();
 		}
 
 		ImGui::PopStyleVar();
@@ -982,8 +1283,16 @@ void ContentBrowserPanel::MyFolderButton(const char *id, ImVec2 size, ImU32 colo
 		ChangeDirectory(path);
 	}
 
+	// Calculer l'offset pour centrer l'icône du dossier horizontalement
+	float thumbmailWidth = thumbnailSize; // Assurez-vous que size.x est la largeur du thumbnail
+	float folderWidth = size.x;
+	float offsetX = (thumbmailWidth - folderWidth) / 2.0f;
+
+	// Ajuster la position de dessin de l'icône du dossier
+	ImVec2 iconPos = ImVec2(pos.x + offsetX + 7.5f, pos.y);
+
 	// Dessiner l'icône du dossier
-	DrawFolderIcon(pos, size, color);
+	DrawFolderIcon(iconPos, size, color);
 
 	if (ImGui::IsItemHovered())
 	{
@@ -1149,16 +1458,15 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	static ImTextureID projectIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::SetNextWindowDockID(ImGui::GetID("MainDockspace"), ImGuiCond_FirstUseEver);
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 12));
-		
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 12));
+
 	if (ImGui::UIKit_BeginLogoWindow("Content Browser", &projectIcon, &this->opened, window_flags))
 	{
-		// Render the menubar with proper paddin
 		this->menubar();
 	}
+
 	ImGui::PopStyleVar();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
@@ -1200,7 +1508,7 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 		ImGui::GetFont()->Scale *= 0.85;
 		ImGui::PushFont(ImGui::GetFont());
 
-		if (MyCollapsingHeader("Favorites", projectIcon, size1 - 50.0f))
+		if (MyCollapsingHeader("Favorites", getTexture(Star_Logo), size1 - 50.0f))
 		{
 			for (auto custom_dir : this->ctx->IO.contentbrowser_customfolders)
 			{
@@ -1210,16 +1518,55 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 				}
 			}
 		}
-		if (MyCollapsingHeader(this->ctx->name.c_str(), projectIcon, size1 - 50.0f))
+		if (MyCollapsingHeader(this->ctx->name.c_str(), getTexture(Home_Logo), size1 - 50.0f))
 		{
+			VXINFO("ér", m_BaseDirectory);
 			DrawHierarchy(m_BaseDirectory, true, this->ctx->name);
 		}
 
-		if (MyCollapsingHeader("Pools & Collections", projectIcon, size1 - 50.0f))
+		if (MyCollapsingHeader("Pools & Collections", getTexture(Collection_Logo), size1 - 50.0f))
 		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 2.0f));
+
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
+			if (!pool_add_mode)
+			{
+				if (ImGui::UIKit_ImageSizeButtonWithText(getTexture(Add_Logo), size1 - 40.0f, "Add pool"))
+				{
+					pool_add_mode = true;
+				}
+			}
+			else
+			{
+				ImGui::Text("Please enter a path");
+				ImGui::SetNextItemWidth(-FLT_MIN); // Set the item width to take the full width
+				ImGui::InputText("###AddPool", pool_add_path, sizeof(pool_add_path));
+				if (ImGui::UIKit_ImageButtonWithText(getTexture(Add_Logo), "Add"))
+				{
+					VortexMaker::PublishPool(pool_add_path);
+					pool_add_mode = false;
+				}
+				ImGui::SameLine();
+				if (ImGui::UIKit_ImageButtonWithText(getTexture(Return_Logo), "Cancel"))
+				{
+					pool_add_mode = false;
+				}
+			}
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
 		}
 		ImGui::GetFont()->Scale = oldsize;
 		ImGui::PopFont();
+
+		for (auto custom_dir : this->ctx->IO.contentbrowser_pools)
+		{
+			std::size_t lastSlashPos = custom_dir.find_last_of("/\\");
+
+			std::string name = custom_dir.substr(lastSlashPos + 1);
+
+			DrawHierarchy(custom_dir, true, name);
+		}
+
 		ImGui::EndChild();
 		ImGui::PopStyleVar(4);
 
@@ -1270,8 +1617,6 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 
 	ImGui::BeginChild("Child3", ImVec2(size3, 0), true);
 
-	static float padding = 30.0f;
-	static float thumbnailSize = 94.0f;
 	float cellSize = thumbnailSize + padding;
 
 	float panelWidth = ImGui::GetContentRegionAvail().x;
@@ -1280,7 +1625,6 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 		columnCount = 1;
 
 	ImGui::InputText("Search", ProjectSearch, sizeof(ProjectSearch));
-	ImGui::Columns(columnCount, 0, false);
 
 	std::vector<std::filesystem::directory_entry> directories;
 	std::vector<std::filesystem::directory_entry> files;
@@ -1318,584 +1662,1019 @@ void ContentBrowserPanel::OnImGuiRender(const std::string &parent, std::function
 	std::sort(directories.begin(), directories.end(), [](const auto &a, const auto &b)
 			  { return a.path().filename().string() < b.path().filename().string(); });
 
-	for (auto &directoryEntry : directories)
+	if (this->m_ShowMode == ContentShowMode::Thumbmails)
 	{
-		const auto &path = directoryEntry.path();
-		std::string filenameString = path.filename().string();
+		ImGui::Columns(columnCount, 0, false);
 
-		if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+		// Changer la couleur du texte en gris
+		ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);				// Gris (50% blanc)
+		ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);		// Gris (50% blanc)
+		ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f); // Fond plus foncé
+		ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);		// Bordure plus claire
+
+		// Pousser le style pour le fond plus foncé
+		ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+
+		// Pousser le style pour la bordure plus claire
+		ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+
+		// Pousser le style pour les bords arrondis moins prononcés
+		ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+
+		if (ImGui::IsWindowHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
 		{
-			ImGui::PushID(filenameString.c_str());
+			m_Selected.clear();
+			ImGui::OpenPopup("EmptySpacePopup");
+		}
 
-			// Réduire légèrement la taille du dossier
-			float reducedThumbnailSize = thumbnailSize * 0.9f;
+		if (ImGui::IsWindowHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+		{
+			m_Selected.clear();
+		}
 
-			// Calculer les positions pour centrer l'image du dossier et le texte
-			float availableWidth = ImGui::GetContentRegionAvail().x;
-			float imageOffsetX = (availableWidth - reducedThumbnailSize) * 0.5f;
+		if (ImGui::BeginPopup("EmptySpacePopup"))
+		{ // Appliquer le nouveau scale
+			ImGui::GetFont()->Scale *= 0.9;
+			ImGui::PushFont(ImGui::GetFont());
 
-			// Enlever le fond gris, les contours et la bordure
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+			// Ajouter un espace au-dessus
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
 
-			// Old folder logo
-			/*ImGui::SetCursorPosX(ImGui::GetCursorPosX() + imageOffsetX);
-			addTexture(Folder_Logo, Folder_Logo);
-			ImGui::ImageButton(getTexture(Folder_Logo), {reducedThumbnailSize, reducedThumbnailSize}, {-1, 0}, {0, 1});
+			ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+			ImGui::Text("Main");
+			ImGui::PopStyleColor();
+			std::string label = "Paste (" + std::to_string(this->ctx->IO.copy_selection.size() + this->ctx->IO.cut_selection.size()) + " items)";
 
-			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			if (ImGui::Selectable(label.c_str()))
 			{
-				ChangeDirectory(path);
-			}*/
-
-			// Définir la taille et la couleur de l'icône du dossier
-			ImVec2 folderSize(reducedThumbnailSize, reducedThumbnailSize); // Taille de l'icône
-			// ImU32 folderColor = ;				   // Jaune
-
-			// Chemin du dossier à ouvrir
-			std::string folderPath = "path/to/folder";
-
-			// Dessiner le bouton dossier
-			if (current_editing_folder.first == path.string())
-			{
-				MyFolderButton("folder_icon", folderSize, current_editing_folder.second, path);
+				VortexMaker::PasteAllSelections(m_CurrentDirectory);
 			}
-			else
-			{
-				ImU32 col;
+			ImGui::GetFont()->Scale = 1.0f;
+			ImGui::PushFont(ImGui::GetFont());
+			ImGui::EndPopup();
+		}
 
-				if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
+		// Pop les styles appliqués
+		ImGui::PopStyleVar();	 // Pour les bords arrondis
+		ImGui::PopStyleColor(2); // Pour le fond et la bordure
+		for (auto &directoryEntry : directories)
+		{
+			const auto &path = directoryEntry.path();
+			std::string filenameString = path.filename().string();
+
+			if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+			{
+				ImGui::PushID(filenameString.c_str());
+
+				// Réduire légèrement la taille du dossier
+				float reducedThumbnailSize = thumbnailSize * 0.9f;
+
+				// Calculer les positions pour centrer l'image du dossier et le texte
+				float availableWidth = ImGui::GetContentRegionAvail().x;
+				float imageOffsetX = (availableWidth - reducedThumbnailSize) * 0.5f;
+
+				// Enlever le fond gris, les contours et la bordure
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+
+				// Old folder logo
+				/*ImGui::SetCursorPosX(ImGui::GetCursorPosX() + imageOffsetX);
+				addTexture(Folder_Logo, Folder_Logo);
+				ImGui::ImageButton(getTexture(Folder_Logo), {reducedThumbnailSize, reducedThumbnailSize}, {-1, 0}, {0, 1});
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 				{
-					MyFolderButton("folder_icon", folderSize, col, path);
+					ChangeDirectory(path);
+				}*/
+
+				// Définir la taille et la couleur de l'icône du dossier
+				ImVec2 folderSize(reducedThumbnailSize, reducedThumbnailSize); // Taille de l'icône
+				// ImU32 folderColor = ;				   // Jaune
+
+				// Chemin du dossier à ouvrir
+				std::string folderPath = "path/to/folder";
+
+				// Dessiner le bouton dossier
+				if (current_editing_folder.first == path.string())
+				{
+					MyFolderButton("folder_icon", folderSize, current_editing_folder.second, path);
 				}
 				else
 				{
-					MyFolderButton("folder_icon", folderSize, folder_color, path);
-				}
-			}
+					ImU32 col;
 
-			float oldsize = ImGui::GetFont()->Scale;
-
-			// Changer la couleur du texte en gris
-			ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);				// Gris (50% blanc)
-			ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);		// Gris (50% blanc)
-			ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f); // Fond plus foncé
-			ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);		// Bordure plus claire
-
-			// Pousser le style pour le fond plus foncé
-			ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
-
-			// Pousser le style pour la bordure plus claire
-			ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
-
-			// Pousser le style pour les bords arrondis moins prononcés
-			ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
-			if (ImGui::BeginPopupContextItem("ContextPopup"))
-			{
-				// Appliquer le nouveau scale
-				ImGui::GetFont()->Scale *= 0.9;
-				ImGui::PushFont(ImGui::GetFont());
-
-				// Ajouter un espace au-dessus
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
-
-				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-				ImGui::Text("Main");
-				ImGui::PopStyleColor();
-
-				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-				ImGui::Separator();
-				ImGui::PopStyleColor();
-
-				// Restaurer l'ancien scale de la police
-				ImGui::GetFont()->Scale = oldsize;
-				ImGui::PopFont();
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-				if (ImGui::MenuItem("Open", "Ctrl + O"))
-				{
-					ChangeDirectory(path);
-					ImGui::CloseCurrentPopup();
-				}
-				if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
-				{
-					ChangeDirectory(path);
-					ImGui::CloseCurrentPopup();
-				}
-				if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
-				{
-					ChangeDirectory(path);
-					ImGui::CloseCurrentPopup();
-				}
-
-				// Appliquer le nouveau scale
-				ImGui::GetFont()->Scale *= 0.9;
-				ImGui::PushFont(ImGui::GetFont());
-
-				// Ajouter un espace au-dessus
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
-
-				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-				ImGui::Text("Customization");
-				ImGui::PopStyleColor();
-
-				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-				ImGui::Separator();
-				ImGui::PopStyleColor();
-
-				// Restaurer l'ancien scale de la police
-				ImGui::GetFont()->Scale = oldsize;
-				ImGui::PopFont();
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-				static bool EditingColor = false;
-				static bool ColorChanged = false;
-
-				current_editing_folder_is_favorite = VortexMaker::ContentBrowserFolderIsFav(directoryEntry.path().string());
-
-				if (ImGui::BeginMenu("Change color"))
-				{
-					if (!EditingColor)
+					if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
 					{
-						current_editing_folder = {directoryEntry.path().string(), folder_color};
+						MyFolderButton("folder_icon", folderSize, col, path);
+					}
+					else
+					{
+						MyFolderButton("folder_icon", folderSize, folder_color, path);
+					}
+				}
 
-						ImU32 col;
-						if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
-						{
-							current_editing_folder = {directoryEntry.path().string(), col};
-						}
-						else
+				float oldsize = ImGui::GetFont()->Scale;
+
+				// Changer la couleur du texte en gris
+				ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);				// Gris (50% blanc)
+				ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);		// Gris (50% blanc)
+				ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f); // Fond plus foncé
+				ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);		// Bordure plus claire
+
+				// Pousser le style pour le fond plus foncé
+				ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+
+				// Pousser le style pour la bordure plus claire
+				ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+
+				// Pousser le style pour les bords arrondis moins prononcés
+				ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+				if (ImGui::BeginPopupContextItem("ContextPopup"))
+				{
+					// Appliquer le nouveau scale
+					ImGui::GetFont()->Scale *= 0.9;
+					ImGui::PushFont(ImGui::GetFont());
+
+					// Ajouter un espace au-dessus
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+					ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+					ImGui::Text("Main");
+					ImGui::PopStyleColor();
+
+					ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+					ImGui::Separator();
+					ImGui::PopStyleColor();
+
+					// Restaurer l'ancien scale de la police
+					ImGui::GetFont()->Scale = oldsize;
+					ImGui::PopFont();
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+					if (ImGui::MenuItem("Open", "Ctrl + O"))
+					{
+						ChangeDirectory(path);
+						ImGui::CloseCurrentPopup();
+					}
+					if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
+					{
+						ChangeDirectory(path);
+						ImGui::CloseCurrentPopup();
+					}
+					if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
+					{
+						ChangeDirectory(path);
+						ImGui::CloseCurrentPopup();
+					}
+
+					// Appliquer le nouveau scale
+					ImGui::GetFont()->Scale *= 0.9;
+					ImGui::PushFont(ImGui::GetFont());
+
+					// Ajouter un espace au-dessus
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+					ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+					ImGui::Text("Customization");
+					ImGui::PopStyleColor();
+
+					ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+					ImGui::Separator();
+					ImGui::PopStyleColor();
+
+					// Restaurer l'ancien scale de la police
+					ImGui::GetFont()->Scale = oldsize;
+					ImGui::PopFont();
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+					static bool EditingColor = false;
+					static bool ColorChanged = false;
+
+					current_editing_folder_is_favorite = VortexMaker::ContentBrowserFolderIsFav(directoryEntry.path().string());
+
+					if (ImGui::BeginMenu("Change color"))
+					{
+						if (!EditingColor)
 						{
 							current_editing_folder = {directoryEntry.path().string(), folder_color};
+
+							ImU32 col;
+							if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
+							{
+								current_editing_folder = {directoryEntry.path().string(), col};
+							}
+							else
+							{
+								current_editing_folder = {directoryEntry.path().string(), folder_color};
+							}
+
+							current_editing_folder_is_favorite = VortexMaker::ContentBrowserFolderIsFav(directoryEntry.path().string());
 						}
 
-						current_editing_folder_is_favorite = VortexMaker::ContentBrowserFolderIsFav(directoryEntry.path().string());
-					}
+						EditingColor = true;
 
-					EditingColor = true;
+						static bool alpha_preview = true;
+						static bool alpha_half_preview = false;
+						static bool drag_and_drop = true;
+						static bool options_menu = true;
+						static bool hdr = false;
 
-					static bool alpha_preview = true;
-					static bool alpha_half_preview = false;
-					static bool drag_and_drop = true;
-					static bool options_menu = true;
-					static bool hdr = false;
+						ColorPicker3U32("MyColor", &current_editing_folder.second);
 
-					ColorPicker3U32("MyColor", &current_editing_folder.second);
+						if (VortexMaker::ImU32ToHex(current_editing_folder.second) != VortexMaker::ImU32ToHex(folder_color))
+						{
+							ColorChanged = true;
+						}
 
-					if (VortexMaker::ImU32ToHex(current_editing_folder.second) != VortexMaker::ImU32ToHex(folder_color))
-					{
-						ColorChanged = true;
-					}
-
-					ImGui::EndMenu(); // Fin du sous-menu "Change folder color"
-				}
-				else
-				{
-					EditingColor = false;
-				}
-
-				if (ImGui::MenuItem("Mark as favorite", "", current_editing_folder_is_favorite))
-				{
-					current_editing_folder = {directoryEntry.path().string(), current_editing_folder.second};
-
-					current_editing_folder_is_favorite = !current_editing_folder_is_favorite;
-					VortexMaker::PublishContentBrowserCustomFolder(current_editing_folder.first, VortexMaker::ImU32ToHex(current_editing_folder.second), current_editing_folder_is_favorite);
-				}
-				// Ajouter d'autres options de menu ici...
-
-				ImGui::EndPopup();
-			}
-			// Pop les styles appliqués
-			ImGui::PopStyleVar();	 // Pour les bords arrondis
-			ImGui::PopStyleColor(2); // Pour le fond et la bordure
-
-			ImGui::PopStyleVar(2); // Pop FrameBorderSize and FramePadding
-			ImGui::PopStyleColor(3);
-
-			// Centrer le texte
-			float textWidth = ImGui::CalcTextSize(filenameString.c_str()).x;
-			float textOffsetX = (availableWidth - textWidth) * 0.5f;
-
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + textOffsetX);
-			ImGui::TextWrapped(filenameString.c_str());
-
-			ImGui::PopID();
-			ImGui::NextColumn();
-		}
-	}
-
-
-for (auto &itemEntry : recognized_modules_items)
-{
-    const auto &path = itemEntry.second;
-    fs::path fsPath(path);
-    std::string filenameString = fsPath.filename().string();
-
-    bool selected = false;
-
-    if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
-    {
-        selected = true;
-    }
-
-    if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
-    {
-        std::uintmax_t folderSize = getDirectorySize(path);
-        std::string folderSizeString = formatFileSize(folderSize);
-        ImGui::PushID(filenameString.c_str());
-
-        if (MyButton(filenameString, itemEntry.first->m_Description, folderSizeString, selected, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(itemEntry.first->m_LineColor.x, itemEntry.first->m_LineColor.y, itemEntry.first->m_LineColor.z, itemEntry.first->m_LineColor.w)))
-        {
-            if (ImGui::IsMouseDoubleClicked(0))
-            {
-                // itemEntry.first->f_Execute(path);
-                VXERROR("te", "tyr");
-            }
-
-            if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-            {
-                m_Selected.push_back(path);
-            }
-            else
-            {
-                m_Selected.clear();
-                m_Selected.push_back(path);
-            }
-        }
-
-        // Vérifiez le clic droit pour ouvrir le menu contextuel
-        if (ImGui::BeginPopupContextItem("ContextPopup_"))
-        {
-            // Appliquer le nouveau scale
-            ImGui::GetFont()->Scale *= 0.9;
-            ImGui::PushFont(ImGui::GetFont());
-
-            // Ajouter un espace au-dessus
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
-
-            ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);             // Gris (50% blanc)
-            ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);    // Gris (50% blanc)
-            ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f); // Fond plus foncé
-            ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);       // Bordure plus claire
-
-            // Pousser le style pour le fond plus foncé
-            ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
-
-            // Pousser le style pour la bordure plus claire
-            ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
-
-            // Pousser le style pour les bords arrondis moins prononcés
-            ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
-
-            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-            ImGui::Text("Main");
-            ImGui::PopStyleColor();
-
-            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-            ImGui::Separator();
-            ImGui::PopStyleColor();
-
-            // Restaurer l'ancien scale de la police
-            ImGui::GetFont()->Scale = oldsize;
-            ImGui::PopFont();
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-            if (ImGui::MenuItem("Open", "Ctrl + O"))
-            {
-                ChangeDirectory(path);
-                ImGui::CloseCurrentPopup();
-            }
-            if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
-            {
-                ChangeDirectory(path);
-                ImGui::CloseCurrentPopup();
-            }
-            if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
-            {
-                ChangeDirectory(path);
-                ImGui::CloseCurrentPopup();
-            }
-
-            // Appliquer le nouveau scale
-            ImGui::GetFont()->Scale *= 0.9;
-            ImGui::PushFont(ImGui::GetFont());
-
-            // Ajouter un espace au-dessus
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
-
-            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-            ImGui::Text("Customization");
-            ImGui::PopStyleColor();
-
-            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-            ImGui::Separator();
-            ImGui::PopStyleColor();
-
-            // Restaurer l'ancien scale de la police
-            ImGui::GetFont()->Scale = oldsize;
-            ImGui::PopFont();
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-            static bool EditingColor = false;
-            static bool ColorChanged = false;
-
-            // Ajouter d'autres options de menu ici...
-
-            ImGui::EndPopup();
-            
-            // Pop les styles appliqués
-            ImGui::PopStyleVar();    // Pour les bords arrondis
-            ImGui::PopStyleColor(2); // Pour le fond et la bordure
-        }
-
-        ImGui::PopID();
-        ImGui::NextColumn();
-    }
-}
-
-	for (auto &fileEntry : files)
-	{
-		const auto &path = fileEntry.path();
-		std::string filenameString = path.filename().string();
-
-		bool selected = false;
-
-		if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
-		{
-			selected = true;
-		}
-
-		if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
-		{
-			size_t fileSize = std::filesystem::file_size(path);
-			std::string fileSizeString = formatFileSize(fileSize);
-			ImGui::PushID(filenameString.c_str());
-
-			FileTypes fileType = detect_file(path.string());
-
-			switch (fileType)
-			{
-			case FileTypes::File_PICTURE:
-			{
-				if (MyButton(filenameString, "Picture file", fileSizeString, selected, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(255, 100, 150, 255)))
-				{
-					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-					{
-						m_Selected.push_back(path);
+						ImGui::EndMenu(); // Fin du sous-menu "Change folder color"
 					}
 					else
 					{
-						m_Selected.clear();
-						m_Selected.push_back(path);
+						EditingColor = false;
 					}
+
+					if (ImGui::MenuItem("Mark as favorite", "", current_editing_folder_is_favorite))
+					{
+						current_editing_folder = {directoryEntry.path().string(), current_editing_folder.second};
+
+						current_editing_folder_is_favorite = !current_editing_folder_is_favorite;
+						VortexMaker::PublishContentBrowserCustomFolder(current_editing_folder.first, VortexMaker::ImU32ToHex(current_editing_folder.second), current_editing_folder_is_favorite);
+					}
+					// Ajouter d'autres options de menu ici...
+
+					ImGui::EndPopup();
 				}
-				break;
-			}
-			case FileTypes::File_GIT:
-			{
-				if (MyButton(filenameString, "Git File", fileSizeString, selected, File_GIT_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
-				{
-					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-					{
-						m_Selected.push_back(path);
-					}
-					else
-					{
-						m_Selected.clear();
-						m_Selected.push_back(path);
-					}
-				}
-				break;
-			}
-			case FileTypes::File_H:
-			{
-				if (MyButton(filenameString, "C Header File", fileSizeString, selected, File_C_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255)))
-				{
-					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-					{
-						m_Selected.push_back(path);
-					}
-					else
-					{
-						m_Selected.clear();
-						m_Selected.push_back(path);
-					}
-				}
-				break;
-			}
-			case FileTypes::File_C:
-			{
-				if (MyButton(filenameString, "C Source File", fileSizeString, selected, File_C_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
-				{
-					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-					{
-						m_Selected.push_back(path);
-					}
-					else
-					{
-						m_Selected.clear();
-						m_Selected.push_back(path);
-					}
-				}
-				break;
-			}
-			case FileTypes::File_HPP:
-			{
-				if (MyButton(filenameString, "C++ Header File", fileSizeString, selected, File_CPP_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
-				{
-					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-					{
-						m_Selected.push_back(path);
-					}
-					else
-					{
-						m_Selected.clear();
-						m_Selected.push_back(path);
-					}
-				}
-				break;
-			}
-			case FileTypes::File_CPP:
-			{
-				if (MyButton(filenameString, "C++ Source File", fileSizeString, selected, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
-				{
-					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-					{
-						m_Selected.push_back(path);
-					}
-					else
-					{
-						m_Selected.clear();
-						m_Selected.push_back(path);
-					}
-				}
-				break;
-			}
-			case FileTypes::File_INI:
-			{
-				if (MyButton(filenameString, "Init File", fileSizeString, selected, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
-				{
-					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-					{
-						m_Selected.push_back(path);
-					}
-					else
-					{
-						m_Selected.clear();
-						m_Selected.push_back(path);
-					}
-				}
-				break;
-			}
-			default:
-			{
-				if (MyButton(filenameString, "File", fileSizeString, selected, File_UNKNOW_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
-				{
-					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
-					{
-						m_Selected.push_back(path);
-					}
-					else
-					{
-						m_Selected.clear();
-						m_Selected.push_back(path);
-					}
-				}
-				break;
-			}
+				// Pop les styles appliqués
+				ImGui::PopStyleVar();	 // Pour les bords arrondis
+				ImGui::PopStyleColor(2); // Pour le fond et la bordure
 
 				ImGui::PopStyleVar(2); // Pop FrameBorderSize and FramePadding
 				ImGui::PopStyleColor(3);
-			}
-			float oldsize = ImGui::GetFont()->Scale;
 
-			if (ImGui::BeginPopupContextItem("ItemContextPopup"))
+				// Centrer le texte
+				float textWidth = ImGui::CalcTextSize(filenameString.c_str()).x;
+				float textOffsetX = (availableWidth - textWidth) * 0.5f;
+
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + textOffsetX);
+				ImGui::TextWrapped(filenameString.c_str());
+
+				ImGui::PopID();
+				ImGui::NextColumn();
+			}
+		}
+
+		for (auto &itemEntry : recognized_modules_items)
+		{
+			const auto &path = itemEntry.second;
+			fs::path fsPath(path);
+			std::string filenameString = fsPath.filename().string();
+
+			bool selected = false;
+
+			if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
 			{
-
-				// Appliquer le nouveau scale
-				ImGui::GetFont()->Scale *= 0.9;
-				ImGui::PushFont(ImGui::GetFont());
-
-				// Ajouter un espace au-dessus
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
-
-				// Changer la couleur du texte en gris
-				ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);			// Gris (50% blanc)
-				ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // Gris (50% blanc)
-				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-
-				ImGui::Text("Main");
-
-				// Restaurer la couleur du texte précédente
-				ImGui::PopStyleColor();
-
-				// Changer la couleur du separator en gris
-				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-				ImGui::Separator();
-				ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
-
-				// Restaurer l'ancien scale de la police
-				ImGui::GetFont()->Scale = oldsize;
-				ImGui::PopFont();
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-				if (ImGui::MenuItem("Open", "Ctrl + O"))
-				{
-					ChangeDirectory(path);
-					ImGui::CloseCurrentPopup();
-				}
-				if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
-				{
-					ChangeDirectory(path);
-					ImGui::CloseCurrentPopup();
-				}
-				if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
-				{
-					ChangeDirectory(path);
-					ImGui::CloseCurrentPopup();
-				}
-
-				// Appliquer le nouveau scale
-				ImGui::GetFont()->Scale *= 0.9;
-				ImGui::PushFont(ImGui::GetFont());
-
-				// Ajouter un espace au-dessus
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
-
-				// Changer la couleur du texte en gris
-				ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-
-				ImGui::Text("Main");
-
-				// Restaurer la couleur du texte précédente
-				ImGui::PopStyleColor();
-
-				// Changer la couleur du separator en gris
-				ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-				ImGui::Separator();
-				ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
-
-				// Restaurer l'ancien scale de la police
-				ImGui::GetFont()->Scale = oldsize;
-				ImGui::PopFont();
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-				if (ImGui::MenuItem("Change color"))
-				{
-				}
-				if (ImGui::MenuItem("Mark as favorite"))
-				{
-				}
-				// Ajouter d'autres options de menu ici...
-
-				ImGui::EndPopup();
+				selected = true;
 			}
 
-			ImGui::PopID();
-			ImGui::NextColumn();
+			if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+			{
+				std::uintmax_t folderSize = getDirectorySize(path);
+				std::string folderSizeString = formatFileSize(folderSize);
+				ImGui::PushID(filenameString.c_str());
+
+				if (MyButton(filenameString, path, itemEntry.first->m_Description, folderSizeString, selected, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(itemEntry.first->m_LineColor.x, itemEntry.first->m_LineColor.y, itemEntry.first->m_LineColor.z, itemEntry.first->m_LineColor.w)))
+				{
+					if (ImGui::IsMouseDoubleClicked(0))
+					{
+						// itemEntry.first->f_Execute(path);
+						VXERROR("te", "tyr");
+					}
+
+					if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+					{
+						m_Selected.push_back(path);
+					}
+					else
+					{
+						m_Selected.clear();
+						m_Selected.push_back(path);
+					}
+				}
+
+				ImGui::PopID();
+				ImGui::NextColumn();
+			}
+		}
+
+		for (auto &fileEntry : files)
+		{
+			const auto &path = fileEntry.path();
+			std::string filenameString = path.filename().string();
+
+			bool selected = false;
+
+			if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
+			{
+				selected = true;
+			}
+
+			if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+			{
+				size_t fileSize = std::filesystem::file_size(path);
+				std::string fileSizeString = formatFileSize(fileSize);
+				ImGui::PushID(filenameString.c_str());
+
+				FileTypes fileType = detect_file(path.string());
+
+				switch (fileType)
+				{
+				case FileTypes::File_PICTURE:
+				{
+					if (MyButton(filenameString, path, "Picture file", fileSizeString, selected, File_PICTURE_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(255, 100, 150, 255)))
+					{
+						if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.clear();
+							m_Selected.push_back(path);
+						}
+					}
+					break;
+				}
+				case FileTypes::File_GIT:
+				{
+					if (MyButton(filenameString, path, "Git File", fileSizeString, selected, File_GIT_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+					{
+						if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.clear();
+							m_Selected.push_back(path);
+						}
+					}
+					break;
+				}
+				case FileTypes::File_H:
+				{
+					if (MyButton(filenameString, path, "C Header File", fileSizeString, selected, File_C_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255)))
+					{
+						if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.clear();
+							m_Selected.push_back(path);
+						}
+					}
+					break;
+				}
+				case FileTypes::File_C:
+				{
+					if (MyButton(filenameString, path, "C Source File", fileSizeString, selected, File_C_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+					{
+						if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.clear();
+							m_Selected.push_back(path);
+						}
+					}
+					break;
+				}
+				case FileTypes::File_HPP:
+				{
+					if (MyButton(filenameString, path, "C++ Header File", fileSizeString, selected, File_CPP_H_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+					{
+						if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.clear();
+							m_Selected.push_back(path);
+						}
+					}
+					break;
+				}
+				case FileTypes::File_CPP:
+				{
+					if (MyButton(filenameString, path, "C++ Source File", fileSizeString, selected, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+					{
+						if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.clear();
+							m_Selected.push_back(path);
+						}
+					}
+					break;
+				}
+				case FileTypes::File_INI:
+				{
+					if (MyButton(filenameString, path, "Init File", fileSizeString, selected, File_CPP_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
+					{
+						if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.clear();
+							m_Selected.push_back(path);
+						}
+					}
+					break;
+				}
+				default:
+				{
+					if (MyButton(filenameString, path, "File", fileSizeString, selected, File_UNKNOW_Logo, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
+					{
+						if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.clear();
+							m_Selected.push_back(path);
+						}
+					}
+					break;
+				}
+
+					ImGui::PopStyleVar(2); // Pop FrameBorderSize and FramePadding
+					ImGui::PopStyleColor(3);
+				}
+				float oldsize = ImGui::GetFont()->Scale;
+
+				if (ImGui::BeginPopupContextItem("ItemContextPopup"))
+				{
+
+					// Appliquer le nouveau scale
+					ImGui::GetFont()->Scale *= 0.9;
+					ImGui::PushFont(ImGui::GetFont());
+
+					// Ajouter un espace au-dessus
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+					// Changer la couleur du texte en gris
+					ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);			// Gris (50% blanc)
+					ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // Gris (50% blanc)
+					ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+
+					ImGui::Text("Main");
+
+					// Restaurer la couleur du texte précédente
+					ImGui::PopStyleColor();
+
+					// Changer la couleur du separator en gris
+					ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+					ImGui::Separator();
+					ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+
+					// Restaurer l'ancien scale de la police
+					ImGui::GetFont()->Scale = oldsize;
+					ImGui::PopFont();
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+					if (ImGui::MenuItem("Open", "Ctrl + O"))
+					{
+						ChangeDirectory(path);
+						ImGui::CloseCurrentPopup();
+					}
+					if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
+					{
+						VortexMaker::Copy(m_Selected, false);
+						m_Selected.clear();
+						ImGui::CloseCurrentPopup();
+					}
+					if (this->ctx->IO.copy_selection.size() > 0)
+					{
+						std::string label = "Copy in addition (" + this->ctx->IO.copy_selection.size() + ' copies)';
+						if (ImGui::MenuItem(label.c_str(), "Ctrl + C"))
+						{
+							VortexMaker::Copy(m_Selected, true);
+							m_Selected.clear();
+							ImGui::CloseCurrentPopup();
+						}
+					}
+					if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
+					{
+						ChangeDirectory(path);
+						ImGui::CloseCurrentPopup();
+					}
+
+					// Appliquer le nouveau scale
+					ImGui::GetFont()->Scale *= 0.9;
+					ImGui::PushFont(ImGui::GetFont());
+
+					// Ajouter un espace au-dessus
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+					// Changer la couleur du texte en gris
+					ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+
+					ImGui::Text("Main");
+
+					// Restaurer la couleur du texte précédente
+					ImGui::PopStyleColor();
+
+					// Changer la couleur du separator en gris
+					ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+					ImGui::Separator();
+					ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+
+					// Restaurer l'ancien scale de la police
+					ImGui::GetFont()->Scale = oldsize;
+					ImGui::PopFont();
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+					if (ImGui::MenuItem("Change color"))
+					{
+					}
+					if (ImGui::MenuItem("Mark as favorite"))
+					{
+					}
+					// Ajouter d'autres options de menu ici...
+
+					ImGui::EndPopup();
+				}
+
+				ImGui::PopID();
+				ImGui::NextColumn();
+			}
+		}
+
+		ImGui::Columns(1);
+	}
+
+	ImGui::Text(std::to_string(m_Selected.size()).c_str());
+
+	if (this->m_ShowMode == ContentShowMode::Columns)
+	{
+		static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+
+		if (ImGui::BeginTable("tablhjke_", 5, flags))
+		{
+			ImGui::TableSetupColumn("Icon", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableSetupColumn("Last Updated", ImGuiTableColumnFlags_WidthFixed);
+			ImGui::TableHeadersRow();
+
+			ImGui::PopStyleVar(4);
+
+			for (auto &directoryEntry : directories)
+			{
+				const auto &path = directoryEntry.path();
+				std::string filenameString = path.filename().string();
+
+				if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+				{
+					bool selected = false;
+					bool rename = false;
+					if (path == pathToRename)
+					{
+						rename = true;
+					}
+
+					if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
+					{
+						selected = true;
+					}
+
+					std::cout << "Selected : " << m_Selected.size() << std::endl;
+
+					ImGui::TableNextRow();
+					ImGui::TableNextColumn();
+
+					// Utiliser ImGui::Selectable avec la variable selected pour capturer la sélection
+					if (selected)
+					{
+						ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.0f, 0.0f, 1.0f, 0.5f)); // Bleu avec transparence
+						ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.0f, 0.0f, 1.0f, 0.5f));
+						ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.0f, 0.0f, 1.0f, 0.5f));
+					}
+					if (ImGui::Selectable("", &selected, ImGuiSelectableFlags_SpanAllColumns))
+					{
+						if (selected)
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.erase(std::remove(m_Selected.begin(), m_Selected.end(), path), m_Selected.end());
+						}
+					}
+
+					if (selected)
+					{
+						ImGui::PopStyleColor(3);
+					}
+
+					// Ajoutez le menu contextuel ici
+					std::string label = "RowContextMenu###" + filenameString;
+					// Changer la couleur du texte en gris
+					ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);				// Gris (50% blanc)
+					ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);		// Gris (50% blanc)
+					ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f); // Fond plus foncé
+					ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);		// Bordure plus claire
+
+					// Pousser le style pour le fond plus foncé
+					ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+
+					// Pousser le style pour la bordure plus claire
+					ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+					// Ajoutez le chemin à m_Selected lorsque la ligne est sélectionnée
+					/*	if (ImGui::IsMouseDoubleClicked(0))
+						{
+							ChangeDirectory(path);
+						}*/
+
+					if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+					{
+
+						if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
+						{
+							m_Selected.push_back(path);
+						}
+						else
+						{
+							m_Selected.clear();
+							m_Selected.push_back(path);
+						}
+					}
+
+					// Pousser le style pour les bords arrondis moins prononcés
+					ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+					if (ImGui::BeginPopupContextItem(label.c_str()))
+					{
+						ImGui::GetFont()->Scale *= 0.9;
+						ImGui::PushFont(ImGui::GetFont());
+
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+						ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+						ImGui::Text("Main");
+						ImGui::PopStyleColor();
+
+						ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+						ImGui::Separator();
+						ImGui::PopStyleColor();
+
+						ImGui::GetFont()->Scale = oldsize;
+						ImGui::PopFont();
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+						if (ImGui::MenuItem("Open", "Ctrl + O"))
+						{
+							ChangeDirectory(path);
+							ImGui::CloseCurrentPopup();
+						}
+						if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
+						{
+							ChangeDirectory(path);
+							ImGui::CloseCurrentPopup();
+						}
+						if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
+						{
+							ChangeDirectory(path);
+							ImGui::CloseCurrentPopup();
+						}
+
+						ImGui::GetFont()->Scale *= 0.9;
+						ImGui::PushFont(ImGui::GetFont());
+
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+						ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+						ImGui::Text("Customization");
+						ImGui::PopStyleColor();
+
+						ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+						ImGui::Separator();
+						ImGui::PopStyleColor();
+
+						ImGui::GetFont()->Scale = oldsize;
+						ImGui::PopFont();
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+						static bool EditingColor = false;
+						static bool ColorChanged = false;
+
+						current_editing_folder_is_favorite = VortexMaker::ContentBrowserFolderIsFav(directoryEntry.path().string());
+
+						if (ImGui::BeginMenu("Change color"))
+						{
+							if (!EditingColor)
+							{
+								current_editing_folder = {directoryEntry.path().string(), folder_color};
+
+								ImU32 col;
+								if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
+								{
+									current_editing_folder = {directoryEntry.path().string(), col};
+								}
+								else
+								{
+									current_editing_folder = {directoryEntry.path().string(), folder_color};
+								}
+
+								current_editing_folder_is_favorite = VortexMaker::ContentBrowserFolderIsFav(directoryEntry.path().string());
+							}
+
+							EditingColor = true;
+
+							static bool alpha_preview = true;
+							static bool alpha_half_preview = false;
+							static bool drag_and_drop = true;
+							static bool options_menu = true;
+							static bool hdr = false;
+
+							ColorPicker3U32("MyColor", &current_editing_folder.second);
+
+							if (VortexMaker::ImU32ToHex(current_editing_folder.second) != VortexMaker::ImU32ToHex(folder_color))
+							{
+								ColorChanged = true;
+							}
+
+							ImGui::EndMenu(); // Fin du sous-menu "Change folder color"
+						}
+						else
+						{
+							EditingColor = false;
+						}
+
+						if (ImGui::MenuItem("Mark as favorite", "", current_editing_folder_is_favorite))
+						{
+							current_editing_folder = {directoryEntry.path().string(), current_editing_folder.second};
+
+							current_editing_folder_is_favorite = !current_editing_folder_is_favorite;
+							VortexMaker::PublishContentBrowserCustomFolder(current_editing_folder.first, VortexMaker::ImU32ToHex(current_editing_folder.second), current_editing_folder_is_favorite);
+						}
+						// Ajouter d'autres options de menu ici...
+
+						ImGui::EndPopup();
+					}
+
+					// Pop les styles appliqués
+					ImGui::PopStyleVar();	 // Pour les bords arrondis
+					ImGui::PopStyleColor(2); // Pour le fond et la bordure
+
+					for (int column = 0; column < 4; column++)
+					{
+						ImGui::TableSetColumnIndex(column);
+
+						if (column == 0)
+						{
+							ImVec2 pos = ImGui::GetCursorScreenPos();
+							ImU32 col;
+
+							if (VortexMaker::GetContentBrowserFolderColor(path.string(), &col))
+							{
+								DrawFolderIcon(pos, ImVec2(12, 12), col);
+							}
+							else
+							{
+								DrawFolderIcon(pos, ImVec2(12, 12), folder_color);
+							}
+						}
+						else if (column == 1)
+						{
+							ImGui::Text(filenameString.c_str());
+						}
+						else if (column == 2)
+						{
+							ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Folder");
+						}
+						else if (column == 3)
+						{
+							ImGui::Text("---");
+						}
+						else if (column == 4)
+						{
+							ImGui::Text("---");
+						}
+					}
+				}
+			}
+
+			for (auto &fileEntry : files)
+			{
+				const auto &path = fileEntry.path();
+				std::string filenameString = path.filename().string();
+
+				bool selected = false;
+
+				if (std::find(m_Selected.begin(), m_Selected.end(), path) != m_Selected.end())
+				{
+					selected = true;
+				}
+
+				if (areStringsSimilar(filenameString, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+				{
+					size_t fileSize = std::filesystem::file_size(path);
+					std::string fileSizeString = formatFileSize(fileSize);
+					ImGui::PushID(filenameString.c_str());
+
+					ImGui::TableNextRow();
+					ImGui::TableNextColumn();
+
+					FileTypes fileType = detect_file(path.string());
+
+					switch (fileType)
+					{
+					case FileTypes::File_PICTURE:
+					{
+						for (int column = 0; column < 4; column++)
+						{
+							ImGui::TableSetColumnIndex(column);
+
+							if (column == 0)
+							{
+								ImGui::Image(getTexture(File_PICTURE_Logo), ImVec2(15, 15));
+							}
+							else if (column == 1)
+							{
+								ImGui::Text(filenameString.c_str());
+							}
+							else if (column == 2)
+							{
+								ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Folder");
+							}
+							else if (column == 3)
+							{
+								ImGui::Text("---");
+							}
+							else if (column == 4)
+							{
+								ImGui::Text("---");
+							}
+						}
+					}
+					case FileTypes::File_GIT:
+					{
+
+						break;
+					}
+					case FileTypes::File_H:
+					{
+
+						break;
+					}
+					case FileTypes::File_C:
+					{
+
+						break;
+					}
+					case FileTypes::File_HPP:
+					{
+
+						break;
+					}
+					case FileTypes::File_CPP:
+					{
+
+						break;
+					}
+					case FileTypes::File_INI:
+					{
+						break;
+					}
+					default:
+					{
+
+						break;
+					}
+
+						ImGui::PopStyleVar(2); // Pop FrameBorderSize and FramePadding
+						ImGui::PopStyleColor(3);
+					}
+					float oldsize = ImGui::GetFont()->Scale;
+
+					if (ImGui::BeginPopupContextItem("ItemContextPopup"))
+					{
+
+						// Appliquer le nouveau scale
+						ImGui::GetFont()->Scale *= 0.9;
+						ImGui::PushFont(ImGui::GetFont());
+
+						// Ajouter un espace au-dessus
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+						// Changer la couleur du texte en gris
+						ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);			// Gris (50% blanc)
+						ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // Gris (50% blanc)
+						ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+
+						ImGui::Text("Main");
+
+						// Restaurer la couleur du texte précédente
+						ImGui::PopStyleColor();
+
+						// Changer la couleur du separator en gris
+						ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+						ImGui::Separator();
+						ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+
+						// Restaurer l'ancien scale de la police
+						ImGui::GetFont()->Scale = oldsize;
+						ImGui::PopFont();
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+						if (ImGui::MenuItem("Open", "Ctrl + O"))
+						{
+							ChangeDirectory(path);
+							ImGui::CloseCurrentPopup();
+						}
+						if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
+						{
+							VortexMaker::Copy(m_Selected, false);
+							m_Selected.clear();
+							ImGui::CloseCurrentPopup();
+						}
+						if (this->ctx->IO.copy_selection.size() > 0)
+						{
+							std::string label = "Copy in addition (" + this->ctx->IO.copy_selection.size() + ' copies)';
+							if (ImGui::MenuItem(label.c_str(), "Ctrl + C"))
+							{
+								VortexMaker::Copy(m_Selected, true);
+								m_Selected.clear();
+								ImGui::CloseCurrentPopup();
+							}
+						}
+						if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
+						{
+							ChangeDirectory(path);
+							ImGui::CloseCurrentPopup();
+						}
+
+						// Appliquer le nouveau scale
+						ImGui::GetFont()->Scale *= 0.9;
+						ImGui::PushFont(ImGui::GetFont());
+
+						// Ajouter un espace au-dessus
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+						// Changer la couleur du texte en gris
+						ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+
+						ImGui::Text("Main");
+
+						// Restaurer la couleur du texte précédente
+						ImGui::PopStyleColor();
+
+						// Changer la couleur du separator en gris
+						ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+						ImGui::Separator();
+						ImGui::PopStyleColor(); // Restaurer la couleur du separator précédente
+
+						// Restaurer l'ancien scale de la police
+						ImGui::GetFont()->Scale = oldsize;
+						ImGui::PopFont();
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+						if (ImGui::MenuItem("Change color"))
+						{
+						}
+						if (ImGui::MenuItem("Mark as favorite"))
+						{
+						}
+						// Ajouter d'autres options de menu ici...
+
+						ImGui::EndPopup();
+					}
+
+					ImGui::PopID();
+					ImGui::NextColumn();
+				}
+			}
+
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.0f);
+
+			ImGui::EndTable();
 		}
 	}
 
@@ -1929,7 +2708,6 @@ for (auto &itemEntry : recognized_modules_items)
 	style.Colors[ImGuiCol_ChildBg] = originalChildBgColor;
 	style.Colors[ImGuiCol_Border] = originalBorderColor;
 	style.Colors[ImGuiCol_BorderShadow] = originalBorderShadowColor;
-	ImGui::Columns(1);
 
 	ImGui::End();
 }

@@ -8,6 +8,13 @@
 
 #include "../include/instanceFactory.h"
 
+enum class ContentShowMode
+{
+	Thumbmails,
+	List,
+	Columns
+};
+
 enum class FileTypes
 {
 	// Very low level
@@ -61,15 +68,33 @@ public:
 	ContentBrowserPanel(VxContext *_ctx, const std::string &parent);
 
 	void OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller);
+	bool MyButton(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor, ImU32 borderColor, ImU32 lineColor, float maxTextWidth, float borderRadius);
 
-    void ChangeDirectory(const std::filesystem::path &newDirectory);
-    void GoBack();
-    void GoForward();
-    void DrawPathBar();
+	void ChangeDirectory(const std::filesystem::path &newDirectory);
+	void GoBack();
+	void GoForward();
+	void DrawPathBar();
 
-void DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color);
-void MyFolderButton(const char* id, ImVec2 size, ImU32 color, const std::string& path);
-void DrawHierarchy(std::filesystem::path path, bool isDir, const std::string& label);
+	void Select(const std::string &path)
+	{
+		for (auto already : m_Selected)
+		{
+			if (path == already)
+			{
+				return;
+			}
+		}
+		m_Selected.push_back(path);
+	}
+
+	void ChangeShowMode(ContentShowMode mode)
+	{
+		this->m_ShowMode = mode;
+	}
+
+	void DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color);
+	void MyFolderButton(const char *id, ImVec2 size, ImU32 color, const std::string &path);
+	void DrawHierarchy(std::filesystem::path path, bool isDir, const std::string &label);
 
 	VxContext *ctx;
 	std::string parent;
@@ -84,21 +109,23 @@ private:
 	bool m_ShowTypes = false;
 	bool m_ShowSizes = false;
 
-// !!!
+	// !!!
 	bool m_ShowFolderPannel = true;
 	bool m_ShowFilterPannel = false;
 	bool m_ShowThumbnailVisualizer = false;
 	bool m_ShowSelectionQuantifier = false;
 
+	ContentShowMode m_ShowMode = ContentShowMode::Thumbmails;
+
 	std::filesystem::path m_BaseDirectory;
 
-    std::filesystem::path m_CurrentDirectory;
-    std::stack<std::filesystem::path> m_BackHistory;
-    std::stack<std::filesystem::path> m_ForwardHistory;
+	std::filesystem::path m_CurrentDirectory;
+	std::stack<std::filesystem::path> m_BackHistory;
+	std::stack<std::filesystem::path> m_ForwardHistory;
 
-    std::vector<std::filesystem::path> m_Selected;
+	std::vector<std::string> m_Selected;
 
-    std::vector<std::filesystem::path> m_Favorites;
+	std::vector<std::filesystem::path> m_Favorites;
 
 	std::shared_ptr<UIKit::Image> m_ProjectIcon;
 	std::shared_ptr<UIKit::Image> m_FileIcon;

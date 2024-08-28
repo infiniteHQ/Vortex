@@ -236,8 +236,12 @@ struct VxIO
   // Content browser items
   std::vector<std::shared_ptr<ContenBrowserItem>> contentbrowser_items;
   std::vector<std::shared_ptr<ContentBrowserCustomFolder>> contentbrowser_customfolders;
-  std::string contentbrowser_basepath;
+  std::string contentbrowser_mainpool;
+  std::string contentbrowser_absolute_mainpool;
   std::vector<std::string> contentbrowser_pools;
+  std::vector<std::string> copy_selection;
+  std::vector<std::string> cut_selection;
+  float past_state; // from 0.0f (0%) to 1.0f (100%)
 
   // Main utilities
   std::vector<std::shared_ptr<ModuleInterfaceUtility>> em_utilities;
@@ -313,8 +317,9 @@ namespace VortexMaker
 
   // Publish to ROM
   VORTEX_API void PublishContentBrowserCustomFolder(const std::string& path, const std::string &hex_color, const bool& isFav);
+  VORTEX_API void PublishPool(const std::string& absolute_pool_path);
   VORTEX_API void PostCustomFolderToJson();
-  VORTEX_API void AddNewFolderPool(const std::string& path);
+  VORTEX_API void PostPoolsToJson();
 
   // Fetch from ROM
   VORTEX_API void FetchCustomFolders();
@@ -324,6 +329,19 @@ namespace VortexMaker
   VORTEX_API bool ContentBrowserFolderIsFav(const std::string& path);
   VORTEX_API bool GetContentBrowserFolderColor(const std::string& path, ImU32* color);
 
+
+  VORTEX_API void Copy(std::vector<std::string> selection, bool in_addition);
+  VORTEX_API void Cut(std::vector<std::string> selection, bool in_addition);
+  VORTEX_API void ClearCopySelection();
+  VORTEX_API void ClearCutSelection();
+  VORTEX_API void PasteAllSelections(const std::string& target_path);
+
+  VORTEX_API void DeleteFolder(const std::string& target_path);
+  VORTEX_API void DeleteFile(const std::string& target_path);
+  VORTEX_API void DeletePath(const std::string& target_path);
+
+  VORTEX_API void RenameFolder(const std::string& target_path, const std::string& new_name);
+  VORTEX_API void RenameFile(const std::string& target_path, const std::string& new_name);
 
   VORTEX_API ImU32 HexToImU32(const std::string& hex);
   VORTEX_API std::string ImU32ToHex(ImU32 color);
