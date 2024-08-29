@@ -59,11 +59,11 @@ public:
     ImGui::PopStyleVar(2);
     ImGui::PopStyleColor(1);
 
-    if (this->ShowContentBrowser)
+  /* if (this->ShowContentBrowser)
     {
       static ContentBrowserPanel contentBrowser(this->m_ctx, this->ParentWindow);
       contentBrowser.OnImGuiRender(this->ParentWindow, this->m_WindowControlCallbalck);
-    }
+    }*/
 
     if (this->ShowProjectViewer)
     {
