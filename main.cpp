@@ -4,13 +4,13 @@
 #include <fstream>
 
 // UI instances
-#include "./tools/editor/app/include/editor.h"
-#include "./tools/launcher/app/include/launcher.h"
-#include "./tools/crash_handler/app/include/crash_handler.h"
+#include "./ui/editor/app/include/editor.h"
+#include "./ui/crash_handler/app/include/crash_handler.h"
 
 #include "./main/include/vortex.h"
 #include "./main/include/templates/load.h"
-#include "./lib/uikit/src/EntryPoint.h"
+#include "./lib/cherry/cherry.hpp"
+
 
 static std::string session_id = "unknow";
 
@@ -278,39 +278,6 @@ int main(int argc, char *argv[])
             {
                 std::thread Thread([&]()
                                    { VortexMaker::VortexEditor(argc, argv); });
-                receiveThread.swap(Thread);
-            }
-
-            receiveThread.join();
-        }
-        else if (std::string(argv[1]) == "-l" || std::string(argv[1]) == "--launcher")
-        {
-            PrintHeader();
-
-            if (argc > 2) {
-                std::string arg2 = argv[2];
-                if (arg2.rfind("--session_id=", 0) == 0) {
-                    session_id = arg2.substr(13);
-                }
-            }
-            InitBlankRuntime(true);
-            VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
-
-            std::thread receiveThread;
-            try
-            {
-                if (std::string(argv[2]) == "-v" || std::string(argv[3]) == "-v")
-                {
-                    VortexMaker::LogWarn("Bootstrapp", "Opening the graphical interface...");
-                    std::thread Thread([&]()
-                                       { VortexMaker::VortexLauncher(argc, argv); });
-                    receiveThread.swap(Thread);
-                }
-            }
-            catch (std::exception e)
-            {
-                std::thread Thread([&]()
-                                   { VortexMaker::VortexLauncher(argc, argv); });
                 receiveThread.swap(Thread);
             }
 
