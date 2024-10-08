@@ -81,12 +81,12 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ui/editor/assets/
-        DESTINATION ${INSTALL_BIN_DIR}/assets
+        DESTINATION ${INSTALL_BIN_DIR}/
         FILES_MATCHING PATTERN "*"
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/assets/
-        DESTINATION ${INSTALL_BIN_DIR}/assets
+        DESTINATION ${INSTALL_BIN_DIR}/
         FILES_MATCHING PATTERN "*"
 )
 
