@@ -23,3 +23,6 @@
 [submodule "lib/uikit"]
 	path = lib/uikit
 	url = https://github.com/infiniteHQ/uikit
+[submodule "lib/cherry"]
+	path = lib/cherry
+	url = https://github.com/infiniteHQ/Cherry
