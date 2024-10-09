@@ -18,13 +18,6 @@ using namespace VortexMaker;
 #ifndef EDITOR_H
 #define EDITOR_H
 
-//static std::vector<std::shared_ptr<ModuleDetails>> moduleDetailsInstances;
-
-class Instance : public InstanceFactory
-{
-public:
-};
-
 class EditorLayer : public Cherry::Layer
 {
 public:
@@ -143,17 +136,10 @@ public:
   bool ShowProjectSettings = false;
   bool ShowLogUtility = false;
 
-  Instance factory;
+  //Instance factory;
 
 private:
   std::vector<std::string> instanciedWindowsNames;
-};
-
-
-class Layer : public Cherry::Layer
-{
-public:
-  Layer() {};
 };
 
 class Editor

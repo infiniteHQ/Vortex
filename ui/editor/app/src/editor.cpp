@@ -347,14 +347,14 @@ void EditorLayer::menubar(const std::shared_ptr<EditorLayer> &exampleLayer, Cher
 Cherry::Application *CreateEditor(int argc, char **argv)
 {
   Cherry::ApplicationSpecification spec;
-  std::shared_ptr<Layer> layer = std::make_shared<Layer>();
+  std::shared_ptr<EditorLayer> layer = std::make_shared<EditorLayer>();
 
   std::string name = "Vortex Editor";
   spec.Name = name;
   spec.MinHeight = 500;
   spec.MinWidth = 500;
-  spec.Height = 600;
-  spec.Width = 1200;
+  spec.Height = 920;
+  spec.Width = 1080;
   spec.CustomTitlebar = true;
   spec.DisableWindowManagerTitleBar = true;
   spec.WindowOnlyClosable = true;

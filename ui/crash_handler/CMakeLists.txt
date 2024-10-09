@@ -10,9 +10,9 @@ if(NOT TARGET cherry)
 endif()
 
 file(GLOB_RECURSE UI_CRASH_HANDLER CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/app/*.h" 
-    "${CMAKE_CURRENT_SOURCE_DIR}/app/*.hpp" 
-    "${CMAKE_CURRENT_SOURCE_DIR}/app/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
 
 message(STATUS "UI_CRASH_HANDLER sources: ${UI_CRASH_HANDLER}")

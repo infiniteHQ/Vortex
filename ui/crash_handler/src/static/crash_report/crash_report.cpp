@@ -1,53 +1,47 @@
-
-#include "Crash.hpp"
+#include "crash_report.hpp"
 
 static bool consent_data_inspection;
 static bool consent_response;
 
-Crash::Crash(VxContext *_ctx, const std::string &_parent)
+Crash::Crash(const std::string &name)
 {
-    this->ctx = _ctx;
+    this->ctx = VortexMaker::GetCurrentContext();
+    m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
+    m_AppWindow->SetIcon("/usr/local/include/Vortex/imgs/vortex.png");
+    m_AppWindow->SetClosable(false);
 
-    this->Refresh();
+    m_AppWindow->m_TabMenuCallback = []()
+    {
+        ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+        ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+        ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
+        ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+        if (ImGui::BeginMenu("Edit"))
+        {
+            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+            ImGui::Text("Main stuff");
+            ImGui::PopStyleColor();
 
-    parent = _parent;
+            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+            ImGui::Separator();
+            ImGui::PopStyleColor();
 
-    {
-        uint32_t w, h;
-        void *data = Cherry::Image::Decode(icons::i_list, icons::i_list_size, w, h);
-        m_ListIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, parent, data);
-        free(data);
-    }
-    {
-        uint32_t w, h;
-        void *data = Cherry::Image::Decode(icons::i_project, icons::i_project_size, w, h);
-        m_ProjectIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, parent, data);
-        free(data);
-    }
-    {
-        uint32_t w, h;
-        void *data = Cherry::Image::Decode(icons::i_open, icons::i_open_size, w, h);
-        m_OpenIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, parent, data);
-        free(data);
-    }
-    {
-        uint32_t w, h;
-        void *data = Cherry::Image::Decode(icons::i_refresh, icons::i_refresh_size, w, h);
-        m_RefreshIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, parent, data);
-        free(data);
-    }
-    {
-        uint32_t w, h;
-        void *data = Cherry::Image::Decode(icons::i_trash, icons::i_trash_size, w, h);
-        m_TrashIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, parent, data);
-        free(data);
-    }
-    {
-        uint32_t w, h;
-        void *data = Cherry::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-        m_AddIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, parent, data);
-        free(data);
-    }
+            if (ImGui::MenuItem("Logs Utility", "Overview of all logs"))
+            {
+            }
+
+            if (ImGui::MenuItem("Logs2 Utility", "Overview of all logs"))
+            {
+            }
+
+            ImGui::EndMenu();
+        }
+    };
+
+    m_AppWindow->SetInternalPaddingX(10.0f);
+    m_AppWindow->SetInternalPaddingY(10.0f);
+
+    std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
 }
 
 // Updated loadFileToString function
@@ -84,17 +78,8 @@ bool loadFileToString(const std::string &filename, char *text, size_t maxSize)
 
 static std::vector<std::tuple<std::string, std::string, std::string>> modifiable_values;
 
-void Crash::OnImGuiRender(const std::string &parent, std::function<void(ImGuiWindow *)> controller)
+void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
 {
-    static ImTextureID projectIcon = this->m_ProjectIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    ImGui::SetNextWindowDockID(ImGui::GetID("MainDockspace"), ImGuiCond_FirstUseEver);
-    if (ImGui::UIKit_BeginLogoWindow("Crash Report", &projectIcon, &this->opened, NULL))
-        this->menubar();
-    static ImGuiWindow *win = ImGui::GetCurrentWindow();
-    this->parent = parent;
-    controller(win);
-
     float oldsize = ImGui::GetFont()->Scale;
     ImGui::GetFont()->Scale *= 1.5;
     ImGui::PushFont(ImGui::GetFont());
@@ -383,8 +368,6 @@ void Crash::addModuleModal()
 
 void Crash::mainButtonsMenuItem()
 {
-    static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
 void Crash::filterMenuItem()
@@ -438,9 +421,6 @@ void Crash::searchMenuItem()
 
 void Crash::menubar()
 {
-    static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
     if (ImGui::BeginMenuBar())
     {
         this->mainButtonsMenuItem();
@@ -448,14 +428,5 @@ void Crash::menubar()
     }
 }
 
-void Crash::Refresh()
-{
-    project_templates.clear();
-    for (auto tem : this->ctx->IO.sys_templates)
-    {
-        if (tem->m_type == "project")
-        {
-            project_templates.push_back(tem);
-        }
-    }
+void Crash::Refresh() {
 };

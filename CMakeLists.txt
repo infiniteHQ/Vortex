@@ -16,13 +16,6 @@ target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/src
 )
 
-if (POLICY CMP0002)
-    cmake_policy(SET CMP0002 NEW)
-endif()
-
-if (POLICY CMP0079)
-    cmake_policy(SET CMP0079 NEW)
-endif()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/editor ui_editor_build)
 target_link_libraries(vortex_shared PUBLIC editor)
@@ -65,8 +58,8 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ui/editor/app/
         PATTERN "*.inl"
 )
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/app/
-        DESTINATION ${INSTALL_INCLUDE_DIR}/ui/crash_handler/app/
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/src/
+        DESTINATION ${INSTALL_INCLUDE_DIR}/ui/crash_handler/src/
         PATTERN "*.h"
         PATTERN "*.hpp"
         PATTERN "*.inl"
@@ -91,6 +84,9 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/assets/
 )
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/assets/desktop/vortex_desktop.desktop
+        DESTINATION ${INSTALL_MAIN_DIR}/)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/vortex_banner.png
         DESTINATION ${INSTALL_MAIN_DIR}/)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/build/handle_crash.sh

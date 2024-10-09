@@ -5,7 +5,7 @@
 
 // UI instances
 #include "./ui/editor/app/include/editor.h"
-#include "./ui/crash_handler/app/include/crash_handler.h"
+#include "./ui/crash_handler/crash_handler.hpp"
 
 #include "./main/include/vortex.h"
 #include "./main/include/templates/load.h"
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
 
             std::thread receiveThread;
                 std::thread Thread([&]()
-                                   { VortexMaker::VortexCrashHandler(argc, argv); });
+                                   { VortexMaker::VortexCrash(argc, argv); });
                 receiveThread.swap(Thread);
             
 
