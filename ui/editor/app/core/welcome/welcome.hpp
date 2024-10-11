@@ -5,7 +5,9 @@
 #ifndef WELCOME_WINDOW_H
 #define WELCOME_WINDOW_H
 
-namespace Cherry
+using namespace Cherry;
+
+namespace VortexEditor
 {
     // This window can be a "subappwindow" of a parent if you use the constructor with parent parameter.
     class WelcomeWindow

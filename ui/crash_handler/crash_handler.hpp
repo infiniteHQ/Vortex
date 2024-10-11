@@ -6,8 +6,6 @@
 #include <thread>
 #include <memory>
 
-
-
 namespace VortexMaker
 {
    int VortexCrash(int argc, char **argv);
@@ -30,8 +28,6 @@ public:
     Cherry::AddWindow(crash_handler->GetAppWindow()); // Publish this window into the workspace
   };
 
-
-
 private:
   std::shared_ptr<Crash> crash_handler;
 };
@@ -43,23 +39,24 @@ Cherry::Application *CreateCrash(int argc, char **argv)
   Cherry::ApplicationSpecification spec;
   std::shared_ptr<CrashHandlerLayer> layer = std::make_shared<CrashHandlerLayer>();
 
-  std::string name = "Vortex Launcher";
+  std::string name = "Vortex Crash Reporter";
   spec.Name = name;
   spec.MinHeight = 500;
   spec.MinWidth = 500;
-  spec.Height = 600;
-  spec.Width = 1200;
+  spec.Height = 650;
+  spec.Width = 800;
   spec.CustomTitlebar = true;
   spec.DisableWindowManagerTitleBar = true;
   spec.WindowOnlyClosable = true;
+  spec.DisableResize = true;
   spec.RenderMode = Cherry::WindowRenderingMethod::DockingWindows;
 
   spec.DisableTitle = true;
   spec.WindowSaves = false;
-  spec.IconPath = Cherry::GetPath("ressources/imgs/icon.png");
+  spec.IconPath = Cherry::GetPath("ressources/imgs/icon_crash.png");
 
   Cherry::Application *app = new Cherry::Application(spec);
-  app->SetFavIconPath(Cherry::GetPath("ressources/imgs/favicon.png"));
+  app->SetFavIconPath(Cherry::GetPath("ressources/imgs/icon_crash.png"));
   app->AddFont("Consola", Cherry::GetPath("ressources/fonts/consola.ttf"), 17.0f);
 
   app->AddLocale("fr", Cherry::GetPath("ressources/locales/fr.json"));

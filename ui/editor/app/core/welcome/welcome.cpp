@@ -1,6 +1,8 @@
 #include "./welcome.hpp"
 
-namespace Cherry
+using namespace Cherry;
+
+namespace VortexEditor
 {
     WelcomeWindow::WelcomeWindow(const std::string &name)
     {

@@ -233,6 +233,13 @@ struct VxIO
   std::vector<std::shared_ptr<TemplateInterface>> templates;
   std::vector<std::shared_ptr<TemplateInterface>> sys_templates;
 
+  // Pools
+  std::vector<std::string> sys_projects_pools;
+  std::vector<std::string> sys_vortex_versions_pools;
+  std::vector<std::string> sys_modules_pools;
+  std::vector<std::string> sys_templates_pools;
+  std::vector<std::string> sys_plugins_pools;
+
   // Content browser items
   std::vector<std::shared_ptr<ContenBrowserItem>> contentbrowser_items;
   std::vector<std::shared_ptr<ContentBrowserCustomFolder>> contentbrowser_customfolders;

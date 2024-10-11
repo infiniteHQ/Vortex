@@ -80,6 +80,8 @@ static std::vector<std::tuple<std::string, std::string, std::string>> modifiable
 
 void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
 {
+        m_AppWindow->SetRenderCallback([instance]()
+                                       {
     float oldsize = ImGui::GetFont()->Scale;
     ImGui::GetFont()->Scale *= 1.5;
     ImGui::PushFont(ImGui::GetFont());
@@ -100,7 +102,7 @@ void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
     ImGui::SameLine();
 
     ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
-    ImGui::TextWrapped(this->ctx->state.session_id.c_str());
+    ImGui::TextWrapped(instance->ctx->state.session_id.c_str());
     ImGui::PopStyleColor(1);
 
     ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
@@ -253,13 +255,12 @@ void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
         }
         if (ImGui::BeginTabItem("Informations"))
         {
-
             static const int bufferSize = 1024 * 16;
             // Declare the text buffer
             static char text[bufferSize];
 
             // Load content from file into text variable
-            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + this->ctx->state.session_id + "/logs/global.log";
+            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + instance->ctx->state.session_id + "/logs/global.log";
             if (!loadFileToString(log_file, text, bufferSize))
             {
                 // Handle error opening or reading the file
@@ -279,7 +280,7 @@ void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
             static char text[bufferSize];
 
             // Load content from file into text variable
-            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + this->ctx->state.session_id + "/crash/core_dumped.txt";
+            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + instance->ctx->state.session_id + "/crash/core_dumped.txt";
             if (!loadFileToString(log_file, text, bufferSize))
             {
                 // Handle error opening or reading the file
@@ -329,7 +330,7 @@ void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
     {
     }
 
-    ImGui::End();
+                                       });
 }
 
 static void handleRefresh()

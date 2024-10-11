@@ -72,6 +72,35 @@ VORTEX_API void VortexMaker::RefreshEnvironmentProjects()
     }
 }
 
+VORTEX_API void VortexMaker::RefreshEnvironmentVortexVersionsPools()
+{
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
+
+    std::string path = VortexMaker::getHomeDirectory() + "/.vx/configs/";
+
+    std::string json_file = path + "/vortex_versions_pools.json";
+
+    // Clear project list
+    ctx.IO.sys_vortex_versions_pools.clear();
+
+    // Verify if the project is valid
+    try
+    {
+        // Load JSON data from the project configuration file
+        auto json_data = VortexMaker::DumpJSON(json_file);
+        for (auto pool : json_data["vortex_versions_pools"])
+        {
+            ctx.IO.sys_vortex_versions_pools.push_back(pool);
+        }
+    }
+    catch (const std::exception &e)
+    {
+        // Print error if an exception occurs
+        VortexMaker::LogError("Error: ", e.what());
+    }
+}
+
 VORTEX_API void VortexMaker::UpdateEnvironmentProject(const std::string &name, const std::string &author, const std::string &version, const std::string &compatibleWith, const std::string &description, const std::string &path, const std::string &logo_path, const std::string &template_name)
 { // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;

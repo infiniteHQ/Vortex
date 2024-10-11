@@ -4,7 +4,7 @@
 #include <fstream>
 
 // UI instances
-#include "./ui/editor/app/include/editor.h"
+#include "./ui/editor/app/src/editor.hpp"
 #include "./ui/crash_handler/crash_handler.hpp"
 
 #include "./main/include/vortex.h"
@@ -14,6 +14,25 @@
 
 static std::string session_id = "unknow";
 
+/*
+    TODO : Parent process for vortex executables regitered in /usr/local/bin/Vortex/VERSION/vortex
+    This command can detect the version of a project and execute the correspondant project.
+
+    Usage :
+
+    vortex -e --version=1.1 -> Execute a project editor 1.1 in the directory of a project
+    vortex -e --version=1.1 --contained=docker -> Execute a project editor 1.1 in the directory of a project in a docker container
+    vortex -e --version=1.1 --templates_path=PATH -> With a template path preset
+    vortex -e --version=1.1 --projects_path=PATH -> With a project path preset
+
+    vortex -l --version=1.1 -> Execute a launcher with vortex 1.1
+
+
+    Before lauching everything, this process can detect all version registered in the system by checking /usr/local/bin and run healthy command
+
+
+
+*/
 void PrintInfinite()
 {
     std::cout << R"(
@@ -127,6 +146,7 @@ VxContext *InitRuntime(bool logger)
     VortexMaker::LoadSystemTemplates(ctx->IO.sys_templates);
 
     std::ifstream file("vortex.config");
+    std::cout << "Qsd" << std::endl;
 
     if (file)
     {
@@ -134,11 +154,7 @@ VxContext *InitRuntime(bool logger)
         file >> jsonContenu;
         VortexMaker::InitProject(jsonContenu);
     }
-    else
-    {
-        //
-    }
-
+    
     return ctx;
 }
  // Project sys size== 0
