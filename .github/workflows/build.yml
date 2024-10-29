@@ -30,5 +30,5 @@ jobs:
         git submodule update --init --recursive
 
         # Configure and build
-        cd "build"
+        cd build
         sudo bash ./build.sh

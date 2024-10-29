@@ -100,7 +100,7 @@ namespace VortexEditor
         bool m_Initialized = false;
         bool m_InitializedSec = false;
         bool m_InitializedTh = false;
-        ImVec4 m_BackgroundColor = ImVec4(0.0f,0.0f,0.0f,0.0f);
+        ImVec4 m_BackgroundColor = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
         void Enable()
         {
@@ -121,19 +121,16 @@ namespace VortexEditor
               m_MaxSize(max_size) {}
     };
 
-    // This window can be a "subappwindow" of a parent if you use the constructor with parent parameter.
-    class ContentBrowserAppWindow
+    class ContentBrowserAppWindow : public std::enable_shared_from_this<ContentBrowserAppWindow>
     {
     public:
         ContentBrowserAppWindow(const std::string &name, const std::string &start_path);
-        // ContentBrowserAppWindow(const std::string &name);
 
-        std::shared_ptr<AppWindow> &GetAppWindow()
-        {
-            return m_AppWindow;
-        }
+        std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
+        static std::shared_ptr<ContentBrowserAppWindow> Create(const std::string &name, const std::string &base_path);
+        void SetupRenderCallback();
+        void Render();
 
-        void RefreshRender(const std::shared_ptr<ContentBrowserAppWindow> &instance);
         bool MyButton(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor, ImU32 borderColor, ImU32 lineColor, float maxTextWidth, float borderRadius);
         void AddChild(const ContentBrowserChild &child);
         void ChangeDirectory(const std::filesystem::path &newDirectory);

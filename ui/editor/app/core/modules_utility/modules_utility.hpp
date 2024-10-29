@@ -24,7 +24,7 @@ namespace VortexEditor
         }
     };
 
-    class ModulesUtilityAppWindow
+    class ModulesUtilityAppWindow : public std::enable_shared_from_this<ModulesUtilityAppWindow>
     {
     public:
         ModulesUtilityAppWindow(const std::string &name);
@@ -32,12 +32,11 @@ namespace VortexEditor
         void AddChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child);
         void RemoveChild(const std::string &child_name);
         std::function<void()> GetChild(const std::string &child_name);
-        void RefreshRender(const std::shared_ptr<ModulesUtilityAppWindow>& instance);
-
-        std::shared_ptr<Cherry::AppWindow> &GetAppWindow()
-        {
-            return m_AppWindow;
-        }
+    
+        std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
+        static std::shared_ptr<ModulesUtilityAppWindow> Create(const std::string &name);
+        void SetupRenderCallback();
+        void Render();
 
         std::vector<ModulesUtilityAppWindowChild> m_Childs;
 

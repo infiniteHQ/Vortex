@@ -18,13 +18,13 @@ namespace VortexEditor
         std::function<void()> m_Callback;
 
         TemplatesUtilityAppWindowChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child) : m_Parent(parent_name),
-                                                                                                                                m_ChildName(child_name),
-                                                                                                                                m_Callback(child)
+                                                                                                                                            m_ChildName(child_name),
+                                                                                                                                            m_Callback(child)
         {
         }
     };
 
-    class TemplatesUtilityAppWindow
+    class TemplatesUtilityAppWindow : public std::enable_shared_from_this<TemplatesUtilityAppWindow>
     {
     public:
         TemplatesUtilityAppWindow(const std::string &name);
@@ -32,12 +32,11 @@ namespace VortexEditor
         void AddChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child);
         void RemoveChild(const std::string &child_name);
         std::function<void()> GetChild(const std::string &child_name);
-        void RefreshRender(const std::shared_ptr<TemplatesUtilityAppWindow>& instance);
 
-        std::shared_ptr<Cherry::AppWindow> &GetAppWindow()
-        {
-            return m_AppWindow;
-        }
+        std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
+        static std::shared_ptr<TemplatesUtilityAppWindow> Create(const std::string &name);
+        void SetupRenderCallback();
+        void Render();
 
         std::vector<TemplatesUtilityAppWindowChild> m_Childs;
 

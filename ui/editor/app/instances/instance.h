@@ -283,31 +283,6 @@ public:
 
     void setup(std::shared_ptr<VxHost> _host)
     {
-        {
-            uint32_t w, h;
-            void *data = Cherry::Image::Decode(icons::i_save, icons::i_save_size, w, h);
-            m_SaveIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, data);
-            free(data);
-        }
-        {
-            uint32_t w, h;
-            void *data = Cherry::Image::Decode(icons::i_add, icons::i_add_size, w, h);
-            m_AddIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, data);
-            free(data);
-        }
-        {
-            uint32_t w, h;
-            void *data = Cherry::Image::Decode(icons::i_folder, icons::i_folder_size, w, h);
-            m_FolderIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, data);
-            free(data);
-        }
-        {
-            uint32_t w, h;
-            void *data = Cherry::Image::Decode(icons::i_settings, icons::i_settings_size, w, h);
-            m_SettingsIcon = std::make_shared<Cherry::Image>(w, h, Cherry::ImageFormat::RGBA, data);
-            free(data);
-        }
-
         this->host = _host;
     }
 

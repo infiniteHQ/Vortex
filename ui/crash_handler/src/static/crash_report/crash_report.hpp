@@ -5,10 +5,10 @@
 #ifndef CRASH_H
 #define CRASH_H
 
-class Crash
+class CrashAppWindow : public std::enable_shared_from_this<CrashAppWindow>
 {
 public:
-	Crash(const std::string& name);
+	CrashAppWindow(const std::string& name);
 
 	void menubar();
 	void addModuleModal();
@@ -16,12 +16,11 @@ public:
 	void Refresh();
 	void Update();
 
-        void RefreshRender(const std::shared_ptr<Crash>& instance);
+    std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
+    static std::shared_ptr<CrashAppWindow> Create(const std::string &name);
+    void SetupRenderCallback();
+    void Render();
 
-        std::shared_ptr<Cherry::AppWindow> &GetAppWindow()
-        {
-            return m_AppWindow;
-        }
 
 	/**
 	 * @brief Menu items

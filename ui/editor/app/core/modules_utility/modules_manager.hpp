@@ -11,19 +11,18 @@ using namespace Cherry;
 
 namespace VortexEditor
 {
-	class ModuleManagerAppWindow
+	class ModuleManagerAppWindow : public std::enable_shared_from_this<ModuleManagerAppWindow>
 	{
 	public:
 		ModuleManagerAppWindow(const std::string &name);
 
 		void menubar();
 		void addModuleModal();
-		void RefreshRender(const std::shared_ptr<ModuleManagerAppWindow> &instance);
-
-		std::shared_ptr<Cherry::AppWindow> &GetAppWindow()
-		{
-			return m_AppWindow;
-		}
+		
+        std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
+        static std::shared_ptr<ModuleManagerAppWindow> Create(const std::string &name);
+        void SetupRenderCallback();
+        void Render();
 
 	private:
 		bool opened;

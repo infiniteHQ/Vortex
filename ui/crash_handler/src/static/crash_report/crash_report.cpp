@@ -3,7 +3,7 @@
 static bool consent_data_inspection;
 static bool consent_response;
 
-Crash::Crash(const std::string &name)
+CrashAppWindow::CrashAppWindow(const std::string &name)
 {
     this->ctx = VortexMaker::GetCurrentContext();
     m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
@@ -78,10 +78,30 @@ bool loadFileToString(const std::string &filename, char *text, size_t maxSize)
 
 static std::vector<std::tuple<std::string, std::string, std::string>> modifiable_values;
 
-void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
+std::shared_ptr<Cherry::AppWindow> &CrashAppWindow::GetAppWindow()
 {
-        m_AppWindow->SetRenderCallback([instance]()
-                                       {
+    return m_AppWindow;
+}
+
+std::shared_ptr<CrashAppWindow> CrashAppWindow::Create(const std::string &name)
+{
+    auto instance = std::shared_ptr<CrashAppWindow>(new CrashAppWindow(name));
+    instance->SetupRenderCallback();
+    return instance;
+}
+
+void CrashAppWindow::SetupRenderCallback()
+{
+    auto self = shared_from_this();
+    m_AppWindow->SetRenderCallback([self]()
+                                   {
+            if (self) {
+                self->Render();
+            } });
+}
+
+void CrashAppWindow::Render()
+{
     float oldsize = ImGui::GetFont()->Scale;
     ImGui::GetFont()->Scale *= 1.5;
     ImGui::PushFont(ImGui::GetFont());
@@ -102,7 +122,7 @@ void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
     ImGui::SameLine();
 
     ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
-    ImGui::TextWrapped(instance->ctx->state.session_id.c_str());
+    ImGui::TextWrapped(ctx->state.session_id.c_str());
     ImGui::PopStyleColor(1);
 
     ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
@@ -260,7 +280,7 @@ void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
             static char text[bufferSize];
 
             // Load content from file into text variable
-            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + instance->ctx->state.session_id + "/logs/global.log";
+            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + ctx->state.session_id + "/logs/global.log";
             if (!loadFileToString(log_file, text, bufferSize))
             {
                 // Handle error opening or reading the file
@@ -280,7 +300,7 @@ void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
             static char text[bufferSize];
 
             // Load content from file into text variable
-            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + instance->ctx->state.session_id + "/crash/core_dumped.txt";
+            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + ctx->state.session_id + "/crash/core_dumped.txt";
             if (!loadFileToString(log_file, text, bufferSize))
             {
                 // Handle error opening or reading the file
@@ -329,8 +349,6 @@ void Crash::RefreshRender(const std::shared_ptr<Crash> &instance)
     if (ImGui::Button("Send and restart", buttonSize))
     {
     }
-
-                                       });
 }
 
 static void handleRefresh()
@@ -363,15 +381,15 @@ static void handleSearch()
     // Behavior
 }
 
-void Crash::addModuleModal()
+void CrashAppWindow::addModuleModal()
 {
 }
 
-void Crash::mainButtonsMenuItem()
+void CrashAppWindow::mainButtonsMenuItem()
 {
 }
 
-void Crash::filterMenuItem()
+void CrashAppWindow::filterMenuItem()
 {
     ImGui::Separator();
     if (ImGui::BeginMenu("Filters"))
@@ -388,7 +406,7 @@ void Crash::filterMenuItem()
     }
 }
 
-void Crash::createMenuItem()
+void CrashAppWindow::createMenuItem()
 {
     if (ImGui::BeginMenu("Create a module"))
     {
@@ -404,7 +422,7 @@ void Crash::createMenuItem()
     }
 }
 
-void Crash::searchMenuItem()
+void CrashAppWindow::searchMenuItem()
 {
     if (ImGui::BeginMenu("Search"))
     {
@@ -420,7 +438,7 @@ void Crash::searchMenuItem()
     }
 }
 
-void Crash::menubar()
+void CrashAppWindow::menubar()
 {
     if (ImGui::BeginMenuBar())
     {
@@ -429,5 +447,5 @@ void Crash::menubar()
     }
 }
 
-void Crash::Refresh() {
+void CrashAppWindow::Refresh() {
 };

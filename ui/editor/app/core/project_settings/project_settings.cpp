@@ -12,19 +12,12 @@ namespace VortexEditor
         m_AppWindow->SetInternalPaddingX(10.0f);
         m_AppWindow->SetInternalPaddingY(10.0f);
 
-        this->AddChild("General", "Project informations", [this]()
-                       {
-                       });
+        this->AddChild("General", "Project informations", [this]() {});
 
-        this->AddChild("General", "Compatibility", [this]()
-                       {
-                       });
-                       
-        this->AddChild("General", "Migrate", [this]()
-                       {
-                       });
+        this->AddChild("General", "Compatibility", [this]() {});
+
+        this->AddChild("General", "Migrate", [this]() {});
     }
-
 
     void ProjectSettingsAppWindow::AddChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child)
     {
@@ -47,168 +40,183 @@ namespace VortexEditor
         return nullptr;
     }
 
-
-    void ProjectSettingsAppWindow::RefreshRender(const std::shared_ptr<ProjectSettingsAppWindow> &instance)
+    std::shared_ptr<Cherry::AppWindow> &ProjectSettingsAppWindow::GetAppWindow()
     {
-        m_AppWindow->SetRenderCallback([instance]()
+        return m_AppWindow;
+    }
+
+    std::shared_ptr<ProjectSettingsAppWindow> ProjectSettingsAppWindow::Create(const std::string &name)
+    {
+        auto instance = std::shared_ptr<ProjectSettingsAppWindow>(new ProjectSettingsAppWindow(name));
+        instance->SetupRenderCallback();
+        return instance;
+    }
+
+    void ProjectSettingsAppWindow::SetupRenderCallback()
+    {
+        auto self = shared_from_this();
+        m_AppWindow->SetRenderCallback([self]()
                                        {
-                                          static float leftPaneWidth = 300.0f;
-                                           const float minPaneWidth = 50.0f;
-                                           const float splitterWidth = 1.5f;
-                                           static int selected;
+            if (self) {
+                self->Render();
+            } });
+    }
 
+    void ProjectSettingsAppWindow::Render()
+    {
+        static float leftPaneWidth = 300.0f;
+        const float minPaneWidth = 50.0f;
+        const float splitterWidth = 1.5f;
+        static int selected;
 
-      std::map<std::string, std::vector<ProjectSettingsChild>> groupedByParent;
-                                       for (const auto &child : instance->m_Childs)
-                                       {
-                                           groupedByParent[child.m_Parent].push_back(child);
-                                       }
+        std::map<std::string, std::vector<ProjectSettingsChild>> groupedByParent;
+        for (const auto &child : m_Childs)
+        {
+            groupedByParent[child.m_Parent].push_back(child);
+        }
 
-                                           ImGui::BeginChild("left_pane", ImVec2(leftPaneWidth, 0), true, ImGuiWindowFlags_NoBackground);
+        ImGui::BeginChild("left_pane", ImVec2(leftPaneWidth, 0), true, ImGuiWindowFlags_NoBackground);
 
-                            ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);        
-                            ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+        ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+        ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
 
-            TitleThree("Manage Modules");
-for (const auto &[parent, children] : groupedByParent)
-                                       {
-                                        
-                              ImGui::GetFont()->Scale *= 0.8;
-                              ImGui::PushFont(ImGui::GetFont());
+        TitleThree("Manage Modules");
+        for (const auto &[parent, children] : groupedByParent)
+        {
 
-                              ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+            ImGui::GetFont()->Scale *= 0.8;
+            ImGui::PushFont(ImGui::GetFont());
 
-                              ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-                              ImGui::Text(parent.c_str());
-                              ImGui::PopStyleColor();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
 
-                              ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-                              ImGui::Separator();
-                              ImGui::PopStyleColor();
+            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+            ImGui::Text(parent.c_str());
+            ImGui::PopStyleColor();
 
-                              ImGui::GetFont()->Scale = 0.84;
-                              ImGui::PopFont();
-                              ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+            ImGui::Separator();
+            ImGui::PopStyleColor();
 
-                                           for (const auto &child : children)
-                                           {
-                                               if (child.m_ChildName == instance->m_SelectedChildName)
-                                               {
-                                                   ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-                                               }
-                                               else
-                                               {
-                                                   ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-                                               }
+            ImGui::GetFont()->Scale = 0.84;
+            ImGui::PopFont();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
-                                               if (TextButtonUnderline(child.m_ChildName.c_str()))
-                                               {
-                                                   instance->m_SelectedChildName = child.m_ChildName;
-                                               }
+            for (const auto &child : children)
+            {
+                if (child.m_ChildName == m_SelectedChildName)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                }
+                else
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+                }
 
-                                               ImGui::PopStyleColor();
-                                           }
+                if (TextButtonUnderline(child.m_ChildName.c_str()))
+                {
+                    m_SelectedChildName = child.m_ChildName;
+                }
 
-                                       }
-                                           
-                                           ImGui::EndChild();
+                ImGui::PopStyleColor();
+            }
+        }
 
-                                           ImGui::SameLine();
+        ImGui::EndChild();
 
-                                           ImGui::PushStyleColor(ImGuiCol_Button, HexToRGBA("#44444466"));
-                                           ImGui::Button("splitter", ImVec2(splitterWidth, -1));
-                                           ImGui::PopStyleVar();
+        ImGui::SameLine();
 
-                                           if (ImGui::IsItemHovered())
-                                           {
-                                               ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
-                                           }
+        ImGui::PushStyleColor(ImGuiCol_Button, HexToRGBA("#44444466"));
+        ImGui::Button("splitter", ImVec2(splitterWidth, -1));
+        ImGui::PopStyleVar();
 
-                                           if (ImGui::IsItemActive())
-                                           {
-                                               float delta = ImGui::GetIO().MouseDelta.x;
-                                               leftPaneWidth += delta;
-                                               if (leftPaneWidth < minPaneWidth)
-                                                   leftPaneWidth = minPaneWidth;
-                                           }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        }
 
-                                           ImGui::SameLine();
-                                           ImGui::BeginGroup();
+        if (ImGui::IsItemActive())
+        {
+            float delta = ImGui::GetIO().MouseDelta.x;
+            leftPaneWidth += delta;
+            if (leftPaneWidth < minPaneWidth)
+                leftPaneWidth = minPaneWidth;
+        }
 
-                                           if(!instance->m_SelectedChildName.empty())
-                                           {
-                                                std::function<void()> pannel_render = instance->GetChild(instance->m_SelectedChildName);
-                                                if(pannel_render)
-                                                {
-                                                    pannel_render();
-                                                }
-                                           }
-                                        
-                                           ImGui::EndGroup();
+        ImGui::SameLine();
+        ImGui::BeginGroup();
 
+        if (!m_SelectedChildName.empty())
+        {
+            std::function<void()> pannel_render = GetChild(m_SelectedChildName);
+            if (pannel_render)
+            {
+                pannel_render();
+            }
+        }
 
-                                           /*float oldsize = ImGui::GetFont()->Scale;
-                                           ImGui::GetFont()->Scale *= 1.3;
-                                           ImGui::PushFont(ImGui::GetFont());
+        ImGui::EndGroup();
 
-                                           ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Project settings of");
-                                           ImGui::SameLine();
-                                           ImGui::Text(VortexMaker::GetCurrentContext()->name.c_str());
+        /*float oldsize = ImGui::GetFont()->Scale;
+        ImGui::GetFont()->Scale *= 1.3;
+        ImGui::PushFont(ImGui::GetFont());
 
-                                           ImGui::GetFont()->Scale = oldsize;
-                                           ImGui::PopFont();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Project settings of");
+        ImGui::SameLine();
+        ImGui::Text(VortexMaker::GetCurrentContext()->name.c_str());
 
-                                           oldsize = ImGui::GetFont()->Scale;
-                                           ImGui::GetFont()->Scale *= 0.9;
-                                           ImGui::PushFont(ImGui::GetFont());
+        ImGui::GetFont()->Scale = oldsize;
+        ImGui::PopFont();
 
-                                           ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Vortex version");
-                                           ImGui::SameLine();
-                                           ImGui::Text(VortexMaker::GetCurrentContext()->version.c_str());
+        oldsize = ImGui::GetFont()->Scale;
+        ImGui::GetFont()->Scale *= 0.9;
+        ImGui::PushFont(ImGui::GetFont());
 
-                                           ImGui::GetFont()->Scale = oldsize;
-                                           ImGui::PopFont();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Vortex version");
+        ImGui::SameLine();
+        ImGui::Text(VortexMaker::GetCurrentContext()->version.c_str());
 
-                                           ImGui::Separator();
+        ImGui::GetFont()->Scale = oldsize;
+        ImGui::PopFont();
 
-                                           {
-                                               ImGui::BeginChild("left pane", ImVec2(230, -1), true);
+        ImGui::Separator();
 
-                                               for (int i = 0; i < labels.size(); i++)
-                                               {
-                                                   if (ImGui::Selectable(labels[i].c_str(), selected == i))
-                                                       selected = i;
-                                               }
-                                               ImGui::EndChild();
-                                           }
-                                           ImGui::SameLine();
-                                           ImGui::Separator();
-                                           ImGui::SameLine();
+        {
+            ImGui::BeginChild("left pane", ImVec2(230, -1), true);
 
-                                           if (selected == 0)
-                                           {
-                                               ImGui::BeginGroup();
-                                               ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(9.0f, 9.0f));
-                                               ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
-                                               ImGui::InputText("Project name", instance->current_save->name, 128);
-                                               ImGui::InputText("Project author", instance->current_save->author, 128);
-                                               ImGui::InputText("Project version", instance->current_save->version, 128);
-                                               ImGui::InputTextMultiline("Project description", instance->current_save->description, 128);
-                                               ImGui::InputText("Project type", instance->current_save->type, 128);
-                                               ImGui::Checkbox("Include system template", &instance->current_save->include_system_templates);
+            for (int i = 0; i < labels.size(); i++)
+            {
+                if (ImGui::Selectable(labels[i].c_str(), selected == i))
+                    selected = i;
+            }
+            ImGui::EndChild();
+        }
+        ImGui::SameLine();
+        ImGui::Separator();
+        ImGui::SameLine();
 
-                                               ImGui::PopStyleVar(2);
-                                               ImGui::EndGroup();
-                                           }
-                                           else if (selected == 1)
-                                           {
-                                               ImGui::Text("1");
-                                           }
-                                           else if (selected == 2)
-                                           {
-                                               ImGui::Text("2");
-                                           }*/
-                                       });
+        if (selected == 0)
+        {
+            ImGui::BeginGroup();
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(9.0f, 9.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
+            ImGui::InputText("Project name", current_save->name, 128);
+            ImGui::InputText("Project author", current_save->author, 128);
+            ImGui::InputText("Project version", current_save->version, 128);
+            ImGui::InputTextMultiline("Project description", current_save->description, 128);
+            ImGui::InputText("Project type", current_save->type, 128);
+            ImGui::Checkbox("Include system template", &current_save->include_system_templates);
+
+            ImGui::PopStyleVar(2);
+            ImGui::EndGroup();
+        }
+        else if (selected == 1)
+        {
+            ImGui::Text("1");
+        }
+        else if (selected == 2)
+        {
+            ImGui::Text("2");
+        }*/
     }
 
     // Helper functions for menu items
@@ -249,14 +257,14 @@ for (const auto &[parent, children] : groupedByParent)
 
     void ProjectSettingsAppWindow::mainButtonsMenuItem()
     {
-        
-        /*if (ImGui::ImageButtonWithText(refreshIcon, "Save", ImVec2(instance->m_RefreshIcon->GetWidth(), instance->m_RefreshIcon->GetHeight())))
+
+        /*if (ImGui::ImageButtonWithText(refreshIcon, "Save", ImVec2(m_RefreshIcon->GetWidth(), m_RefreshIcon->GetHeight())))
         {
-            instance->Update();
+            Update();
         }
-        if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(instance->m_RefreshIcon->GetWidth(), instance->m_RefreshIcon->GetHeight())))
+        if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(m_RefreshIcon->GetWidth(), m_RefreshIcon->GetHeight())))
         {
-            instance->Refresh();
+            Refresh();
         }*/
     }
 
@@ -311,8 +319,6 @@ for (const auto &[parent, children] : groupedByParent)
 
     void ProjectSettingsAppWindow::menubar()
     {
-
-
     }
 
     void ProjectSettingsAppWindow::Refresh()

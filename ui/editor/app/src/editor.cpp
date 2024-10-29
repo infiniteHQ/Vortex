@@ -27,7 +27,7 @@ static void handleLogUtility()
 
 static void handleShowSimplifiedHeader(Cherry::Application *app)
 {
-    app->m_Specification.CustomTitlebar = !app->m_Specification.CustomTitlebar;
+    app->m_DefaultSpecification.CustomTitlebar = !app->m_DefaultSpecification.CustomTitlebar;
 }
 
 static void handleSpawnWindow(Cherry::Application *app)

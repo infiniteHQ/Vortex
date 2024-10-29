@@ -11,23 +11,23 @@ static std::vector<std::string> mb_syslabels;
 
 namespace VortexEditor
 {
-    void ShowSystemModules(const std::string& filter = "none")
+    void ShowSystemModules(const std::string &filter = "none")
     {
-            for (int row = 0; row < m_VortexRegisteredVersions.size(); row++)
-            {
-                if (areStringsSimilar(m_VortexRegisteredVersions[row]->m_VersionName, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
-                {
-                    VersionButton(m_VortexRegisteredVersions[row]->m_VersionName, 300, 100, m_VortexRegisteredVersions[row]->m_Version);
-                }
-            }
-    }
-    
-    void ShowModules(const std::string& filter = "none")
-    {
-/*for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.em.size(); i++)
+        for (int row = 0; row < m_VortexRegisteredVersions.size(); row++)
         {
-            resetValue(VortexMaker::GetCurrentContext()->IO.em[i]->m_group);
-        }*/
+            if (areStringsSimilar(m_VortexRegisteredVersions[row]->m_VersionName, ProjectSearch, threshold) || isOnlySpacesOrEmpty(ProjectSearch))
+            {
+                VersionButton(m_VortexRegisteredVersions[row]->m_VersionName, 300, 100, m_VortexRegisteredVersions[row]->m_Version);
+            }
+        }
+    }
+
+    void ShowModules(const std::string &filter = "none")
+    {
+        /*for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.em.size(); i++)
+                {
+                    resetValue(VortexMaker::GetCurrentContext()->IO.em[i]->m_group);
+                }*/
 
         for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.em.size(); i++)
         {
@@ -40,7 +40,7 @@ namespace VortexEditor
                 {
                     ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
 
-                    ImGui::Image(Cherry::GetTexture(Cherry::GetPath(VortexMaker::GetCurrentContext()->IO.em[i]->m_logo_path)), ImVec2(15,15));
+                    ImGui::Image(Cherry::GetTexture(Cherry::GetPath(VortexMaker::GetCurrentContext()->IO.em[i]->m_logo_path)), ImVec2(15, 15));
 
                     ImGui::EndChild();
                     ImGui::SameLine();
@@ -135,8 +135,8 @@ namespace VortexEditor
                     if (ImGui::Button("Details"))
                     {
                         // Behavior
-                        //std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(VortexMaker::GetCurrentContext(), VortexMaker::GetCurrentContext()->IO.em[i]);
-                        //this->factory->SpawnInstance(instance);
+                        // std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(VortexMaker::GetCurrentContext(), VortexMaker::GetCurrentContext()->IO.em[i]);
+                        // this->factory->SpawnInstance(instance);
                     }
                 }
 
@@ -179,12 +179,12 @@ namespace VortexEditor
                     }*/
                 }
 
-                //incrementValue(VortexMaker::GetCurrentContext()->IO.em[i]->m_group);
+                // incrementValue(VortexMaker::GetCurrentContext()->IO.em[i]->m_group);
                 ImGui::EndChild();
             }
         }
     }
-    
+
     ModulesUtilityAppWindow::ModulesUtilityAppWindow(const std::string &name)
     {
         m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
@@ -225,24 +225,16 @@ namespace VortexEditor
 
         m_SelectedChildName = "?loc:loc.window_names.welcome.overview";
 
-
-
         this->AddChild("All modules in project", "All modules (453)", [this]()
-                       {
-                        ShowSystemModules();
-                       });
+                       { ShowSystemModules(); });
 
         this->AddChild("All modules in project (groups)", "Visual Development (21)", [this]()
-                       {
-                        ShowModules();
-                       });
+                       { ShowModules(); });
 
         this->AddChild("Import/Install", "Import a module from system", [this]()
                        {
-                        ShowModules();
-                        
+                           ShowModules();
                        });
-                       
 
         std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
     }
@@ -268,104 +260,121 @@ namespace VortexEditor
         return nullptr;
     }
 
-
-    void ModulesUtilityAppWindow::RefreshRender(const std::shared_ptr<ModulesUtilityAppWindow> &instance)
+    std::shared_ptr<Cherry::AppWindow> &ModulesUtilityAppWindow::GetAppWindow()
     {
-        m_AppWindow->SetRenderCallback([instance]()
+        return m_AppWindow;
+    }
+
+    std::shared_ptr<ModulesUtilityAppWindow> ModulesUtilityAppWindow::Create(const std::string &name)
+    {
+        auto instance = std::shared_ptr<ModulesUtilityAppWindow>(new ModulesUtilityAppWindow(name));
+        instance->SetupRenderCallback();
+        return instance;
+    }
+
+    void ModulesUtilityAppWindow::SetupRenderCallback()
+    {
+        auto self = shared_from_this();
+        m_AppWindow->SetRenderCallback([self]()
                                        {
-                                           static float leftPaneWidth = 300.0f;
-                                           const float minPaneWidth = 50.0f;
-                                           const float splitterWidth = 1.5f;
-                                           static int selected;
+            if (self) {
+                self->Render();
+            } });
+    }
 
+    void ModulesUtilityAppWindow::Render()
+    {
+        static float leftPaneWidth = 300.0f;
+        const float minPaneWidth = 50.0f;
+        const float splitterWidth = 1.5f;
+        static int selected;
 
-      std::map<std::string, std::vector<ModulesUtilityAppWindowChild>> groupedByParent;
-                                       for (const auto &child : instance->m_Childs)
-                                       {
-                                           groupedByParent[child.m_Parent].push_back(child);
-                                       }
+        std::map<std::string, std::vector<ModulesUtilityAppWindowChild>> groupedByParent;
+        for (const auto &child : m_Childs)
+        {
+            groupedByParent[child.m_Parent].push_back(child);
+        }
 
-                                           ImGui::BeginChild("left_pane", ImVec2(leftPaneWidth, 0), true, ImGuiWindowFlags_NoBackground);
+        ImGui::BeginChild("left_pane", ImVec2(leftPaneWidth, 0), true, ImGuiWindowFlags_NoBackground);
 
-                            ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);        
-                            ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+        ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+        ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
 
-            TitleThree("Manage Modules");
-for (const auto &[parent, children] : groupedByParent)
-                                       {
-                                        
-                              ImGui::GetFont()->Scale *= 0.8;
-                              ImGui::PushFont(ImGui::GetFont());
+        TitleThree("Manage Modules");
+        for (const auto &[parent, children] : groupedByParent)
+        {
 
-                              ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+            ImGui::GetFont()->Scale *= 0.8;
+            ImGui::PushFont(ImGui::GetFont());
 
-                              ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-                              ImGui::Text(parent.c_str());
-                              ImGui::PopStyleColor();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
 
-                              ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-                              ImGui::Separator();
-                              ImGui::PopStyleColor();
+            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+            ImGui::Text(parent.c_str());
+            ImGui::PopStyleColor();
 
-                              ImGui::GetFont()->Scale = 0.84;
-                              ImGui::PopFont();
-                              ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+            ImGui::Separator();
+            ImGui::PopStyleColor();
 
-                                           for (const auto &child : children)
-                                           {
-                                               if (child.m_ChildName == instance->m_SelectedChildName)
-                                               {
-                                                   ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-                                               }
-                                               else
-                                               {
-                                                   ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-                                               }
+            ImGui::GetFont()->Scale = 0.84;
+            ImGui::PopFont();
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
-                                               if (TextButtonUnderline(child.m_ChildName.c_str()))
-                                               {
-                                                   instance->m_SelectedChildName = child.m_ChildName;
-                                               }
+            for (const auto &child : children)
+            {
+                if (child.m_ChildName == m_SelectedChildName)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                }
+                else
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+                }
 
-                                               ImGui::PopStyleColor();
-                                           }
+                if (TextButtonUnderline(child.m_ChildName.c_str()))
+                {
+                    m_SelectedChildName = child.m_ChildName;
+                }
 
-                                       }
-                                           
-                                           ImGui::EndChild();
+                ImGui::PopStyleColor();
+            }
+        }
 
-                                           ImGui::SameLine();
+        ImGui::EndChild();
 
-                                           ImGui::PushStyleColor(ImGuiCol_Button, HexToRGBA("#44444466"));
-                                           ImGui::Button("splitter", ImVec2(splitterWidth, -1));
-                                           ImGui::PopStyleVar();
+        ImGui::SameLine();
 
-                                           if (ImGui::IsItemHovered())
-                                           {
-                                               ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
-                                           }
+        ImGui::PushStyleColor(ImGuiCol_Button, HexToRGBA("#44444466"));
+        ImGui::Button("splitter", ImVec2(splitterWidth, -1));
+        ImGui::PopStyleVar();
 
-                                           if (ImGui::IsItemActive())
-                                           {
-                                               float delta = ImGui::GetIO().MouseDelta.x;
-                                               leftPaneWidth += delta;
-                                               if (leftPaneWidth < minPaneWidth)
-                                                   leftPaneWidth = minPaneWidth;
-                                           }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        }
 
-                                           ImGui::SameLine();
-                                           ImGui::BeginGroup();
+        if (ImGui::IsItemActive())
+        {
+            float delta = ImGui::GetIO().MouseDelta.x;
+            leftPaneWidth += delta;
+            if (leftPaneWidth < minPaneWidth)
+                leftPaneWidth = minPaneWidth;
+        }
 
-                                           if(!instance->m_SelectedChildName.empty())
-                                           {
-                                                std::function<void()> pannel_render = instance->GetChild(instance->m_SelectedChildName);
-                                                if(pannel_render)
-                                                {
-                                                    pannel_render();
-                                                }
-                                           }
-                                        
-                                           ImGui::EndGroup(); });
+        ImGui::SameLine();
+        ImGui::BeginGroup();
+
+        if (!m_SelectedChildName.empty())
+        {
+            std::function<void()> pannel_render = GetChild(m_SelectedChildName);
+            if (pannel_render)
+            {
+                pannel_render();
+            }
+        }
+
+        ImGui::EndGroup();
     }
 
 }

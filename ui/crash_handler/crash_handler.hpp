@@ -23,13 +23,12 @@ public:
   CrashHandler()
   {
     // Render static windows
-    crash_handler = std::make_shared<Crash>("Crash report");
-    crash_handler->RefreshRender(crash_handler);
-    Cherry::AddWindow(crash_handler->GetAppWindow()); // Publish this window into the workspace
+    crash_handler = CrashAppWindow::Create("Crash report");
+    Cherry::AddAppWindow(crash_handler->GetAppWindow()); // Publish this window into the workspace
   };
 
 private:
-  std::shared_ptr<Crash> crash_handler;
+  std::shared_ptr<CrashAppWindow> crash_handler;
 };
 
 static std::shared_ptr<CrashHandler> c_CrashHandler;

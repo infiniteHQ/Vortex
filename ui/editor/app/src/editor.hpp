@@ -85,24 +85,20 @@ class Editor
 public:
   Editor()
   {
-    m_WelcomeAppWindow = std::make_shared<VortexEditor::WelcomeWindow>("?loc:loc.window_names.welcome");
-    m_WelcomeAppWindow->RefreshRender(m_WelcomeAppWindow);
-    Cherry::AddWindow(m_WelcomeAppWindow->GetAppWindow());
+    m_WelcomeAppWindow = VortexEditor::WelcomeWindow::Create("?loc:loc.window_names.welcome");
+    Cherry::AddAppWindow(m_WelcomeAppWindow->GetAppWindow());
 
-    m_ModuleUtilityAppWindow = std::make_shared<VortexEditor::ModulesUtilityAppWindow>("Modules utily");
-    m_ModuleUtilityAppWindow->RefreshRender(m_ModuleUtilityAppWindow);
+    m_ModuleUtilityAppWindow = VortexEditor::ModulesUtilityAppWindow::Create("Modules utily");
     m_ModuleUtilityAppWindow->GetAppWindow()->SetVisibility(false);
-    Cherry::AddWindow(m_ModuleUtilityAppWindow->GetAppWindow());
+    Cherry::AddAppWindow(m_ModuleUtilityAppWindow->GetAppWindow());
 
-    m_ProjectSettingsAppWindow = std::make_shared<VortexEditor::ProjectSettingsAppWindow>("Project settings");
-    m_ProjectSettingsAppWindow->RefreshRender(m_ProjectSettingsAppWindow);
+    m_ProjectSettingsAppWindow = VortexEditor::ProjectSettingsAppWindow::Create("Project settings");
     m_ProjectSettingsAppWindow->GetAppWindow()->SetVisibility(false);
-    Cherry::AddWindow(m_ProjectSettingsAppWindow->GetAppWindow());
+    Cherry::AddAppWindow(m_ProjectSettingsAppWindow->GetAppWindow());
 
-    m_TemplatesUtilityAppWindow = std::make_shared<VortexEditor::TemplatesUtilityAppWindow>("Templates utility");
-    m_TemplatesUtilityAppWindow->RefreshRender(m_TemplatesUtilityAppWindow);
+    m_TemplatesUtilityAppWindow = VortexEditor::TemplatesUtilityAppWindow::Create("Templates utility");
     m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(false);
-    Cherry::AddWindow(m_TemplatesUtilityAppWindow->GetAppWindow());
+    Cherry::AddAppWindow(m_TemplatesUtilityAppWindow->GetAppWindow());
   };
 
   void SetTemplatesUtilityVisibility(const bool &visibility)
@@ -150,8 +146,7 @@ public:
   {
     std::string label = "logs-" + std::to_string(c_LogsUtilityInstances.size() + 1);
     std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser = std::make_shared<VortexEditor::ContentBrowserAppWindow>(label.c_str(), "/home/diego");
-    ContentBrowser->RefreshRender(ContentBrowser);
-    Cherry::Application::Get().PutWindow(ContentBrowser->GetAppWindow());
+    Cherry::AddAppWindow(ContentBrowser->GetAppWindow());
     c_ContentBrowserInstances.push_back(ContentBrowser);
   }
 
@@ -159,8 +154,7 @@ public:
   {
     std::string label = "logs-" + std::to_string(c_LogsUtilityInstances.size() + 1);
     std::shared_ptr<VortexEditor::LogsUtilityAppWindow> LogsUtility = std::make_shared<VortexEditor::LogsUtilityAppWindow>(label.c_str());
-    LogsUtility->RefreshRender(LogsUtility);
-    Cherry::Application::Get().PutWindow(LogsUtility->GetAppWindow());
+    Cherry::AddAppWindow(LogsUtility->GetAppWindow());
     c_LogsUtilityInstances.push_back(LogsUtility);
   }
 

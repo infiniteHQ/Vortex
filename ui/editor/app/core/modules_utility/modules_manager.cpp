@@ -109,11 +109,30 @@ namespace VortexEditor
         m_AppWindow->SetInternalPaddingY(10.0f);
     }
 
-
-    void ModuleManagerAppWindow::RefreshRender(const std::shared_ptr<ModuleManagerAppWindow> &instance)
+    std::shared_ptr<Cherry::AppWindow> &ModuleManagerAppWindow::GetAppWindow()
     {
-        m_AppWindow->SetRenderCallback([instance]()
+        return m_AppWindow;
+    }
+
+    std::shared_ptr<ModuleManagerAppWindow> ModuleManagerAppWindow::Create(const std::string &name)
+    {
+        auto instance = std::shared_ptr<ModuleManagerAppWindow>(new ModuleManagerAppWindow(name));
+        instance->SetupRenderCallback();
+        return instance;
+    }
+
+    void ModuleManagerAppWindow::SetupRenderCallback()
+    {
+        auto self = shared_from_this();
+        m_AppWindow->SetRenderCallback([self]()
                                        {
+            if (self) {
+                self->Render();
+            } });
+    }
+
+    void ModuleManagerAppWindow::Render()
+    {
         float oldsize = ImGui::GetFont()->Scale;
         ImGui::GetFont()->Scale *= 1.3;
         ImGui::PushFont(ImGui::GetFont());
@@ -330,8 +349,8 @@ namespace VortexEditor
                     if (ImGui::Button("Details"))
                     {
                         // Behavior
-                        //std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(VortexMaker::GetCurrentContext(), VortexMaker::GetCurrentContext()->IO.em[i]);
-                        //this->factory->SpawnInstance(instance);
+                        // std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(VortexMaker::GetCurrentContext(), VortexMaker::GetCurrentContext()->IO.em[i]);
+                        // this->factory->SpawnInstance(instance);
                     }
                 }
 
@@ -380,7 +399,6 @@ namespace VortexEditor
         }
 
         ImGui::EndChildFrame();
-                                       });
     }
 
     // Helper functions for menu items

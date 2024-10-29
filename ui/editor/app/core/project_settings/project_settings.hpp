@@ -28,34 +28,33 @@ namespace VortexEditor
 		std::function<void()> m_Callback;
 
 		ProjectSettingsChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child) : m_Parent(parent_name),
-																																		  m_ChildName(child_name),
-																																		  m_Callback(child)
+																																  m_ChildName(child_name),
+																																  m_Callback(child)
 		{
 			//
 		}
 	};
 
-	class ProjectSettingsAppWindow
+	class ProjectSettingsAppWindow : public std::enable_shared_from_this<ProjectSettingsAppWindow>
 	{
 	public:
 		ProjectSettingsAppWindow(const std::string &name);
 
-        void AddChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child);
-        void RemoveChild(const std::string &child_name);
-        std::function<void()> GetChild(const std::string &child_name);
-        void RefreshRender(const std::shared_ptr<ProjectSettingsAppWindow>& instance);
+		void AddChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child);
+		void RemoveChild(const std::string &child_name);
+		std::function<void()> GetChild(const std::string &child_name);
+		void RefreshRender(const std::shared_ptr<ProjectSettingsAppWindow> &instance);
+
+		std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
+		static std::shared_ptr<ProjectSettingsAppWindow> Create(const std::string &name);
+		void SetupRenderCallback();
+		void Render();
 
 		void menubar();
 		void addModuleModal();
 
 		void Refresh();
-		void Update();       
-		
-		std::shared_ptr<Cherry::AppWindow> &GetAppWindow()
-        {
-            return m_AppWindow;
-        }
-
+		void Update();
 
 		/**
 		 * @brief Menu items
@@ -69,10 +68,10 @@ namespace VortexEditor
 
 	private:
 		bool opened;
-        std::vector<ProjectSettingsChild> m_Childs;
-        std::shared_ptr<Cherry::AppWindow> m_AppWindow;
+		std::vector<ProjectSettingsChild> m_Childs;
+		std::shared_ptr<Cherry::AppWindow> m_AppWindow;
 
-        std::string m_SelectedChildName;
+		std::string m_SelectedChildName;
 	};
 }
 #endif // PROJECTSETTINGSAppWindow_H

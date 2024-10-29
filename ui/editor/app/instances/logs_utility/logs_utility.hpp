@@ -19,7 +19,7 @@ using namespace Cherry;
 
 namespace VortexEditor
 {
-	class LogsUtilityAppWindow
+	class LogsUtilityAppWindow : public std::enable_shared_from_this<LogsUtilityAppWindow>
 	{
 	public:
 		LogsUtilityAppWindow(const std::string &name);
@@ -27,15 +27,13 @@ namespace VortexEditor
 		void OnImGuiRender();
 		void menubar();
 
-		VxContext *ctx;
-		void RefreshRender(const std::shared_ptr<LogsUtilityAppWindow> &instance);
-
-		std::shared_ptr<AppWindow> &GetAppWindow()
-		{
-			return m_AppWindow;
-		}
+		std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
+		static std::shared_ptr<LogsUtilityAppWindow> Create(const std::string &name);
+		void SetupRenderCallback();
+		void Render();
 
 	private:
+		VxContext *ctx;
 		bool opened;
 		std::shared_ptr<VxToolchain> latest_toolchain;
 		std::shared_ptr<AppWindow> m_AppWindow;
