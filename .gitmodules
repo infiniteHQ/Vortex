@@ -4,25 +4,6 @@
 [submodule "lib/spdlog"]
 	path = lib/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "main/builtint/vortex.modules.builtin.toolchains"]
-	path = main/builtint/vortex.modules.builtin.toolchains
-	url = https://github.com/infiniteHQ/vortex.modules.builtin.toolchains
-	branch = main
-[submodule "main/builtint/vortex.modules.builtin.packages"]
-	path = main/builtint/vortex.modules.builtin.packages
-	url = https://github.com/infiniteHQ/vortex.modules.builtin.packages
-	branch = main
-[submodule "main/builtint/vortex.modules.builtin.tasks"]
-	path = main/builtint/vortex.modules.builtin.tasks
-	url = https://github.com/infiniteHQ/vortex.modules.builtin.tasks
-	branch = main
-[submodule "main/builtint/vortex.modules.builtin.tasklists"]
-	path = main/builtint/vortex.modules.builtin.tasklists
-	url = https://github.com/infiniteHQ/vortex.modules.builtin.tasklists
-	branch = main
-[submodule "lib/uikit"]
-	path = lib/uikit
-	url = https://github.com/infiniteHQ/uikit
 [submodule "lib/cherry"]
 	path = lib/cherry
 	url = https://github.com/infiniteHQ/Cherry

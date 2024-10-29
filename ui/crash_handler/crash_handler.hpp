@@ -53,14 +53,14 @@ Cherry::Application *CreateCrash(int argc, char **argv)
 
   spec.DisableTitle = true;
   spec.WindowSaves = false;
-  spec.IconPath = Cherry::GetPath("ressources/imgs/icon_crash.png");
+  spec.IconPath = Cherry::GetPath("resources/imgs/icon_crash.png");
 
   Cherry::Application *app = new Cherry::Application(spec);
-  app->SetFavIconPath(Cherry::GetPath("ressources/imgs/icon_crash.png"));
-  app->AddFont("Consola", Cherry::GetPath("ressources/fonts/consola.ttf"), 17.0f);
+  app->SetFavIconPath(Cherry::GetPath("resources/imgs/icon_crash.png"));
+  app->AddFont("Consola", Cherry::GetPath("resources/fonts/consola.ttf"), 17.0f);
 
-  app->AddLocale("fr", Cherry::GetPath("ressources/locales/fr.json"));
-  app->AddLocale("en", Cherry::GetPath("ressources/locales/en.json"));
+  app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));
+  app->AddLocale("en", Cherry::GetPath("resources/locales/en.json"));
   app->SetDefaultLocale("en");
   app->SetLocale("fr");
 

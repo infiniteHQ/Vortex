@@ -360,30 +360,30 @@ namespace VortexEditor
         m_AppWindow->SetIcon("/usr/local/include/Vortex/imgs/vortex.png");
         std::shared_ptr<AppWindow> win = m_AppWindow;
 
-        cp_SaveButton = Application::Get().CreateComponent<ImageTextButtonSimple>("save_button", Application::Get().GetLocale("loc.content_browser.save_all") + "####content_browser.save_all", Application::CookPath("ressources/imgs/icons/misc/icon_save.png"));
+        cp_SaveButton = Application::Get().CreateComponent<ImageTextButtonSimple>("save_button", Application::Get().GetLocale("loc.content_browser.save_all") + "####content_browser.save_all", Application::CookPath("resources/imgs/icons/misc/icon_save.png"));
         cp_SaveButton->SetScale(0.85f);
         cp_SaveButton->SetLogoSize(15, 15);
         cp_SaveButton->SetBackgroundColorIdle("#00000000");
         cp_SaveButton->SetBorderColorIdle("#00000000");
 
-        cp_ImportButton = Application::Get().CreateComponent<ImageTextButtonSimple>("import_button", Application::Get().GetLocale("loc.content_browser.import") + "####content_browser.import", Application::CookPath("ressources/imgs/icons/misc/icon_import.png"));
+        cp_ImportButton = Application::Get().CreateComponent<ImageTextButtonSimple>("import_button", Application::Get().GetLocale("loc.content_browser.import") + "####content_browser.import", Application::CookPath("resources/imgs/icons/misc/icon_import.png"));
         cp_ImportButton->SetScale(0.85f);
         cp_ImportButton->SetLogoSize(15, 15);
         cp_ImportButton->SetBackgroundColorIdle("#00000000");
         cp_ImportButton->SetBorderColorIdle("#00000000");
 
-        cp_AddButton = Application::Get().CreateComponent<ImageTextButtonSimple>("add_button", Application::Get().GetLocale("loc.content_browser.add") + "####content_browser.add", Application::CookPath("ressources/imgs/icons/misc/icon_add.png"));
+        cp_AddButton = Application::Get().CreateComponent<ImageTextButtonSimple>("add_button", Application::Get().GetLocale("loc.content_browser.add") + "####content_browser.add", Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
         cp_AddButton->SetScale(0.85f);
         cp_AddButton->SetInternalMarginX(10.0f);
         cp_AddButton->SetLogoSize(15, 15);
 
-        cp_SettingsButton = Application::Get().CreateComponent<CustomDrowpdownImageButtonSimple>("setgings_button", Application::Get().GetLocale("loc.content_browser.add") + "####content_browser.settings", Application::CookPath("ressources/imgs/icons/misc/icon_add.png"));
+        cp_SettingsButton = Application::Get().CreateComponent<CustomDrowpdownImageButtonSimple>("setgings_button", Application::Get().GetLocale("loc.content_browser.add") + "####content_browser.settings", Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
         cp_SettingsButton->SetScale(0.85f);
         cp_SettingsButton->SetInternalMarginX(10.0f);
         cp_SettingsButton->SetLogoSize(15, 15);
 
-        cp_DirectoryUndo = Application::Get().CreateComponent<ImageButtonSimple>("directory_undo", Application::CookPath("ressources/imgs/icons/misc/icon_arrow_l_disabled.png"));
-        cp_DirectoryRedo = Application::Get().CreateComponent<ImageButtonSimple>("directory_redo", Application::CookPath("ressources/imgs/icons/misc/icon_arrow_r_disabled.png"));
+        cp_DirectoryUndo = Application::Get().CreateComponent<ImageButtonSimple>("directory_undo", Application::CookPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
+        cp_DirectoryRedo = Application::Get().CreateComponent<ImageButtonSimple>("directory_redo", Application::CookPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
 
         cp_DirectoryRedo->SetBackgroundColorIdle("#00000000");
         cp_DirectoryRedo->SetBorderColorIdle("#00000000");
@@ -429,7 +429,7 @@ namespace VortexEditor
 
 		if (m_BackHistory.empty())
 		{
-            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("ressources/imgs/icons/misc/icon_arrow_l_disabled.png"));
+            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
 			if (cp_DirectoryUndo->Render("normal"))
 			{
 				//
@@ -437,7 +437,7 @@ namespace VortexEditor
 		}
 		else
 		{
-            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("ressources/imgs/icons/misc/icon_arrow_l_enabled.png"));
+            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"));
 			if (cp_DirectoryUndo->Render("normal"))
 			{
 				GoBack();
@@ -451,7 +451,7 @@ namespace VortexEditor
 
 		if (m_ForwardHistory.empty())
 		{
-            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("ressources/imgs/icons/misc/icon_arrow_r_disabled.png"));
+            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
 			if (cp_DirectoryRedo->Render("normal"))
 			{
 				//
@@ -459,7 +459,7 @@ namespace VortexEditor
 		}
 		else
 		{
-            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("ressources/imgs/icons/misc/icon_arrow_r_enabled.png"));
+            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"));
 			if (cp_DirectoryRedo->Render("normal"))
 			{
 				GoForward();
@@ -981,17 +981,17 @@ namespace VortexEditor
 
     void ContentBrowserAppWindow::RenderSideBar()
     {
-        CustomCollapsingHeaderLogo("Favorite", Application::CookPath("ressources/imgs/icons/misc/icon_star.png"), [this]()
+        CustomCollapsingHeaderLogo("Favorite", Application::CookPath("resources/imgs/icons/misc/icon_star.png"), [this]()
                                    {
                                        for (auto custom_dir : m_FavoriteFolders)
                                        {
                                            DrawHierarchy(custom_dir, true);
                                        } });
 
-        CustomCollapsingHeaderLogo("Main", Application::CookPath("ressources/imgs/icons/misc/icon_home.png"), [this]()
+        CustomCollapsingHeaderLogo("Main", Application::CookPath("resources/imgs/icons/misc/icon_home.png"), [this]()
                                    { DrawHierarchy(m_BaseDirectory, true, "Main"); });
 
-        CustomCollapsingHeaderLogo("Pools & Collections", Application::CookPath("ressources/imgs/icons/misc/icon_collection.png"), [this]()
+        CustomCollapsingHeaderLogo("Pools & Collections", Application::CookPath("resources/imgs/icons/misc/icon_collection.png"), [this]()
                                    {
                                        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 2.0f));
 
@@ -1034,7 +1034,7 @@ namespace VortexEditor
 
     void ContentBrowserAppWindow::RenderFiltersBar()
     {
-        CustomCollapsingHeaderLogo("Favorite", Application::CookPath("ressources/imgs/icons/misc/icon_star.png"), [this]()
+        CustomCollapsingHeaderLogo("Favorite", Application::CookPath("resources/imgs/icons/misc/icon_star.png"), [this]()
                                    {
                                        for (auto custom_dir : m_FavoriteFolders)
                                        {
@@ -1340,7 +1340,7 @@ namespace VortexEditor
                     std::string folderSizeString = formatFileSize(folderSize);
                     ImGui::PushID(filenameString.c_str());
 
-                    if (MyButton(filenameString, path, itemEntry.first->m_Description, folderSizeString, selected, Application::CookPath("ressources/imgs/icons/files/icon_picture_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(itemEntry.first->m_LineColor.x, itemEntry.first->m_LineColor.y, itemEntry.first->m_LineColor.z, itemEntry.first->m_LineColor.w)))
+                    if (MyButton(filenameString, path, itemEntry.first->m_Description, folderSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_picture_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(itemEntry.first->m_LineColor.x, itemEntry.first->m_LineColor.y, itemEntry.first->m_LineColor.z, itemEntry.first->m_LineColor.w)))
                     {
                         if (ImGui::IsMouseDoubleClicked(0))
                         {
@@ -1388,7 +1388,7 @@ namespace VortexEditor
                     {
                     case FileTypes::File_PICTURE:
                     {
-                        if (MyButton(filenameString, path, "Picture file", fileSizeString, selected, Application::CookPath("ressources/imgs/icons/files/icon_picture_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(255, 100, 150, 255)))
+                        if (MyButton(filenameString, path, "Picture file", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_picture_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(255, 100, 150, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1404,7 +1404,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_GIT:
                     {
-                        if (MyButton(filenameString, path, "Git File", fileSizeString, selected, Application::CookPath("ressources/imgs/icons/files/icon_git_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+                        if (MyButton(filenameString, path, "Git File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_git_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1420,7 +1420,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_H:
                     {
-                        if (MyButton(filenameString, path, "C Header File", fileSizeString, selected, Application::CookPath("ressources/imgs/icons/files/icon_c_h_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255)))
+                        if (MyButton(filenameString, path, "C Header File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_c_h_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1436,7 +1436,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_C:
                     {
-                        if (MyButton(filenameString, path, "C Source File", fileSizeString, selected, Application::CookPath("ressources/imgs/icons/files/icon_c_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+                        if (MyButton(filenameString, path, "C Source File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_c_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1452,7 +1452,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_HPP:
                     {
-                        if (MyButton(filenameString, path, "C++ Header File", fileSizeString, selected, Application::CookPath("ressources/imgs/icons/files/icon_cpp_h_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+                        if (MyButton(filenameString, path, "C++ Header File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_cpp_h_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1468,7 +1468,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_CPP:
                     {
-                        if (MyButton(filenameString, path, "C++ Source File", fileSizeString, selected, Application::CookPath("ressources/imgs/icons/files/icon_cpp_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+                        if (MyButton(filenameString, path, "C++ Source File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_cpp_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1484,7 +1484,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_INI:
                     {
-                        if (MyButton(filenameString, path, "Init File", fileSizeString, selected, Application::CookPath("ressources/imgs/icons/files/icon_ini_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
+                        if (MyButton(filenameString, path, "Init File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_ini_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1500,7 +1500,7 @@ namespace VortexEditor
                     }
                     default:
                     {
-                        if (MyButton(filenameString, path, "File", fileSizeString, selected, Application::CookPath("ressources/imgs/icons/files/icon_unknow_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
+                        if (MyButton(filenameString, path, "File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_unknow_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1879,7 +1879,7 @@ namespace VortexEditor
 
                                 if (column == 0)
                                 {
-                                    ImGui::Image(Application::GetCurrentRenderedWindow()->get_texture(Application::CookPath("ressources/imgs/icons/files/icon_picture_file.png")), ImVec2(15, 15));
+                                    ImGui::Image(Application::GetCurrentRenderedWindow()->get_texture(Application::CookPath("resources/imgs/icons/files/icon_picture_file.png")), ImVec2(15, 15));
                                 }
                                 else if (column == 1)
                                 {

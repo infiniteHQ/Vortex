@@ -238,7 +238,7 @@ static void MyButton(const std::string &name, int w, int h)
     }
     else
     {
-        drawList->AddImage(Cherry::GetTexture(Cherry::GetPath("ressources/imgs/icons/misc/icon_vortex_default.png")), cursorPos, ImVec2(cursorPos.x + squareSize.x, cursorPos.y + squareSize.y));
+        drawList->AddImage(Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_vortex_default.png")), cursorPos, ImVec2(cursorPos.x + squareSize.x, cursorPos.y + squareSize.y));
     }
 
     ImVec2 smallRectSize(40, 20);
@@ -330,7 +330,7 @@ static void VersionButton(const std::string &envproject, int xsize = 100, int ys
     }
     else
     {
-        drawList->AddImage(Cherry::GetTexture(Cherry::GetPath("ressources/imgs/vortex_banner_unknow.png")), cursorPos, ImVec2(cursorPos.x + squareSize.x, cursorPos.y + squareSize.y));
+        drawList->AddImage(Cherry::GetTexture(Cherry::GetPath("resources/imgs/vortex_banner_unknow.png")), cursorPos, ImVec2(cursorPos.x + squareSize.x, cursorPos.y + squareSize.y));
     }
 
     ImVec2 smallRectSize(40, 20);
@@ -499,7 +499,7 @@ static void MyButton(const std::shared_ptr<EnvProject> envproject, int xsize = 1
     }
     else
     {
-        drawList->AddImage(Cherry::GetTexture(Cherry::GetPath("ressources/imgs/icons/misc/icon_vortex_default.png")), cursorPos, ImVec2(cursorPos.x + squareSize.x, cursorPos.y + squareSize.y));
+        drawList->AddImage(Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_vortex_default.png")), cursorPos, ImVec2(cursorPos.x + squareSize.x, cursorPos.y + squareSize.y));
     }
 
     ImVec2 smallRectSize(40, 20);

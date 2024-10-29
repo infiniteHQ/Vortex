@@ -28,7 +28,7 @@ add_executable(vortex ${VORTEX_SOURCES} main.cpp)
 target_link_libraries(vortex PRIVATE vortex_shared)
 
 if(UNIX AND NOT APPLE)
-    set(INSTALL_BASE_DIR /opt/Vortex/${VORTEX_VERSION})
+    set(INSTALL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_VERSION})
     set(INSTALL_MAIN_DIR ${INSTALL_BASE_DIR}/)
     set(INSTALL_BIN_DIR ${INSTALL_BASE_DIR}/bin)
     set(INSTALL_INCLUDE_DIR ${INSTALL_BASE_DIR}/include)

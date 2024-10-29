@@ -363,14 +363,14 @@ Cherry::Application *CreateEditor(int argc, char **argv)
 
     spec.DisableTitle = true;
     spec.WindowSaves = false;
-    spec.IconPath = Cherry::Application::CookPath("ressources/imgs/icon.png");
+    spec.IconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
 
     Cherry::Application *app = new Cherry::Application(spec);
-    app->SetFavIconPath(Cherry::Application::CookPath("ressources/imgs/favicon.png"));
-    app->AddFont("Consola", Cherry::Application::CookPath("ressources/fonts/consola.ttf"), 17.0f);
+    app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/favicon.png"));
+    app->AddFont("Consola", Cherry::Application::CookPath("resources/fonts/consola.ttf"), 17.0f);
 
-    app->AddLocale("fr", Cherry::GetPath("ressources/locales/fr.json"));
-    app->AddLocale("en", Cherry::GetPath("ressources/locales/en.json"));
+    app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));
+    app->AddLocale("en", Cherry::GetPath("resources/locales/en.json"));
     app->SetDefaultLocale("en");
     app->SetLocale("fr");
 
