@@ -23,7 +23,7 @@ else()
     message(FATAL_ERROR "No source files found for the crash_handler target.")
 endif()
 
-target_link_libraries(crash_handler PRIVATE cherry)
+target_link_libraries(crash_handler PUBLIC cherry)
 
 add_custom_command(TARGET crash_handler POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory

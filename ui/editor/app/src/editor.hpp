@@ -144,16 +144,16 @@ public:
 
   void SpawnContentBrowser()
   {
-    std::string label = "logs-" + std::to_string(c_LogsUtilityInstances.size() + 1);
-    std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser = std::make_shared<VortexEditor::ContentBrowserAppWindow>(label.c_str(), "/home/diego");
+    std::string label = "Content Browser ####-" + std::to_string(c_ContentBrowserInstances.size() + 1);
+    std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser = VortexEditor::ContentBrowserAppWindow::Create(label.c_str(), "/home/diego");
     Cherry::AddAppWindow(ContentBrowser->GetAppWindow());
     c_ContentBrowserInstances.push_back(ContentBrowser);
   }
 
   void SpawnLogsUtility()
   {
-    std::string label = "logs-" + std::to_string(c_LogsUtilityInstances.size() + 1);
-    std::shared_ptr<VortexEditor::LogsUtilityAppWindow> LogsUtility = std::make_shared<VortexEditor::LogsUtilityAppWindow>(label.c_str());
+    std::string label = "Logs utility ####-" + std::to_string(c_LogsUtilityInstances.size() + 1);
+    std::shared_ptr<VortexEditor::LogsUtilityAppWindow> LogsUtility = VortexEditor::LogsUtilityAppWindow::Create(label.c_str());
     Cherry::AddAppWindow(LogsUtility->GetAppWindow());
     c_LogsUtilityInstances.push_back(LogsUtility);
   }

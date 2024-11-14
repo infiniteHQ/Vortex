@@ -23,7 +23,7 @@ else()
     message(FATAL_ERROR "No source files found for the editor target.")
 endif()
 
-target_link_libraries(editor PRIVATE cherry)
+target_link_libraries(editor PUBLIC cherry)
 
 add_custom_command(TARGET editor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory

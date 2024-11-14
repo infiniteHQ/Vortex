@@ -1,3 +1,16 @@
 build
 build_spdlog
 dist
+shipping
+.cmake
+bin
+CMakeFiles
+dist
+restcpp_build
+shipping
+ui_editor_build
+ui_crash_handler_build
+build.ninja
+cmake_install.cmake
+CMakeCache.txt
+compile_commands.json
