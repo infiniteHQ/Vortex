@@ -37,11 +37,14 @@ namespace VortexEditor
         static std::shared_ptr<ModulesUtilityAppWindow> Create(const std::string &name);
         void SetupRenderCallback();
         void Render();
+        
+        bool ModuleCard(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor, ImU32 borderColor, ImU32 lineColor, float maxTextWidth, float borderRadius);
 
+    void ShowModules();
+
+        char ModulesSearch[512];
         std::vector<ModulesUtilityAppWindowChild> m_Childs;
-
         std::string m_SelectedChildName;
-
         std::shared_ptr<Cherry::AppWindow> m_AppWindow;
     };
 }
