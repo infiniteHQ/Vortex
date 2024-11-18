@@ -998,7 +998,7 @@ namespace VortexMaker
         T GetJsonValue(const std::string& val) { return nlohmann::json::parse(val).get<T>(); };
 
         void SetValue(const std::string &val) { value = val; };
-        void SetJsonValue(const nlohmann::json &val) { value = val; };
+        void SetJsonValue(const nlohmann::json &val) { value = val.dump(); };
 
     private:
         std::string value = "null";
