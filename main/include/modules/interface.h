@@ -50,7 +50,9 @@ public:
     void AddLogo(const uint8_t* hexa, size_t size);
     void AddLogo(const std::string& relative_path);
     void AddFunction(std::function<void()> foo, const std::string& name);
-    void AddFunction(std::function<void(const VortexMaker::Values&)> foo, const std::string& name);
+    void AddFunction(std::function<void(ArgumentValues&)> foo, const std::string& name);
+    void AddFunction(std::function<void(ReturnValues&)> foo, const std::string& name);
+    void AddFunction(std::function<void(ArgumentValues&, ReturnValues&)> foo, const std::string& name);
 
     //void AddFunction(void (*item)(), const std::string& name, Parameters params);
     void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
@@ -59,7 +61,9 @@ public:
     std::shared_ptr<ModuleInterface> GetInterface();
 
     void ExecFunction(const std::string& name);
-    void ExecFunction(const std::string& name, const VortexMaker::Values& args);
+    void ExecFunction(const std::string& name, ArgumentValues& args);
+    void ExecFunction(const std::string& name, ReturnValues& ret);
+    void ExecFunction(const std::string& name, ArgumentValues& args, ReturnValues& ret);
     // TODO Exec function with call back + Link to the VortexMaker API
 
     void ExecInputEvent(const std::string& name, std::shared_ptr<hArgs> args);

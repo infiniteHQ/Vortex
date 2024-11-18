@@ -111,6 +111,22 @@ void ModuleInterface::AddFunction(std::function<void()> foo, const std::string &
     this->m_functions.push_back(p_function);
 }
 
+/**
+ * @brief Adds a function to the ModuleInterface.
+ *
+ * This function creates a shared_ptr to a ModuleFunction and adds it to the ModuleInterface's list of functions.
+ *
+ * @param item Pointer to the function.
+ * @param name Name of the function.
+ */
+void ModuleInterface::AddFunction(std::function<void(ArgumentValues &)> foo, const std::string &name)
+{
+    // Create a shared_ptr to the ModuleFunction
+    std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(foo, name);
+
+    // Add the shared_ptr to the list of functions
+    this->m_functions.push_back(p_function);
+}
 
 /**
  * @brief Adds a function to the ModuleInterface.
@@ -120,7 +136,7 @@ void ModuleInterface::AddFunction(std::function<void()> foo, const std::string &
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-void ModuleInterface::AddFunction(std::function<void(const VortexMaker::Values&)> foo, const std::string &name)
+void ModuleInterface::AddFunction(std::function<void(ReturnValues &)> foo, const std::string &name)
 {
     // Create a shared_ptr to the ModuleFunction
     std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(foo, name);
@@ -129,7 +145,22 @@ void ModuleInterface::AddFunction(std::function<void(const VortexMaker::Values&)
     this->m_functions.push_back(p_function);
 }
 
+/**
+ * @brief Adds a function to the ModuleInterface.
+ *
+ * This function creates a shared_ptr to a ModuleFunction and adds it to the ModuleInterface's list of functions.
+ *
+ * @param item Pointer to the function.
+ * @param name Name of the function.
+ */
+void ModuleInterface::AddFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
+{
+    // Create a shared_ptr to the ModuleFunction
+    std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(foo, name);
 
+    // Add the shared_ptr to the list of functions
+    this->m_functions.push_back(p_function);
+}
 
 /**
  * @brief Adds an input event to the ModuleInterface.
@@ -142,9 +173,9 @@ void ModuleInterface::AddFunction(std::function<void(const VortexMaker::Values&)
 void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs> &args), const std::string &name)
 {
     // Checking if the event already exist
-    for(auto existing_events : this->m_input_events)
+    for (auto existing_events : this->m_input_events)
     {
-        if(name == existing_events->m_name)
+        if (name == existing_events->m_name)
         {
             this->LogError("\"" + name + "\" event already registered ! Abording.");
             return;
@@ -158,12 +189,12 @@ void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs> &a
     this->m_input_events.push_back(p_event);
 }
 
-void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name, DevFlag devflag, const std::string& description, const std::vector<std::tuple<std::string, std::string, std::string>>& args_def, const bool& can_callback)
+void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs> &args), const std::string &name, DevFlag devflag, const std::string &description, const std::vector<std::tuple<std::string, std::string, std::string>> &args_def, const bool &can_callback)
 {
     // Checking if the event already exist
-    for(auto existing_events : this->m_input_events)
+    for (auto existing_events : this->m_input_events)
     {
-        if(name == existing_events->m_name)
+        if (name == existing_events->m_name)
         {
             this->LogError("\"" + name + "\" event already registered ! Abording.");
             return;
@@ -173,7 +204,7 @@ void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& a
     // Create a shared_ptr to the ModuleInputEvent
     std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
 
-    p_event->m_can_callback = can_callback;    
+    p_event->m_can_callback = can_callback;
     p_event->m_devflag = devflag;
     p_event->m_description = description;
     p_event->m_params = args_def;
@@ -181,7 +212,6 @@ void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& a
     // Add the shared_ptr to the list of input events
     this->m_input_events.push_back(p_event);
 }
-    
 
 /**
  * @brief Adds an output event to the ModuleInterface.
@@ -254,7 +284,9 @@ void ModuleInterface::ExecFunction(const std::string &name)
     {
         if (foo->m_name == name)
         {
-            foo->m_function(VortexMaker::Values());
+            ArgumentValues empty_args;
+            ReturnValues empty_ret;
+            foo->m_function(empty_args, empty_ret);
             return; // Exit after executing the function
         }
     }
@@ -268,13 +300,55 @@ void ModuleInterface::ExecFunction(const std::string &name)
  *
  * @param name The name of the function to execute.
  */
-void ModuleInterface::ExecFunction(const std::string& name, const VortexMaker::Values& args)
+void ModuleInterface::ExecFunction(const std::string &name, ReturnValues &ret)
 {
     for (auto foo : this->m_functions)
     {
         if (foo->m_name == name)
         {
-            foo->m_function(args);
+            ArgumentValues empty_args;
+            foo->m_function(empty_args, ret);
+            return; // Exit after executing the function
+        }
+    }
+}
+
+/**
+ * @brief Executes a function by name with arguments.
+ *
+ * This function searches for a ModuleFunction with the specified name
+ * and executes its associated function if found.
+ *
+ * @param name The name of the function to execute.
+ */
+void ModuleInterface::ExecFunction(const std::string &name, ArgumentValues &args)
+{
+    for (auto foo : this->m_functions)
+    {
+        if (foo->m_name == name)
+        {
+            ReturnValues empty_ret;
+            foo->m_function(args, empty_ret);
+            return; // Exit after executing the function
+        }
+    }
+}
+
+/**
+ * @brief Executes a function by name with arguments.
+ *
+ * This function searches for a ModuleFunction with the specified name
+ * and executes its associated function if found.
+ *
+ * @param name The name of the function to execute.
+ */
+void ModuleInterface::ExecFunction(const std::string &name, ArgumentValues &args, ReturnValues &ret)
+{
+    for (auto foo : this->m_functions)
+    {
+        if (foo->m_name == name)
+        {
+            foo->m_function(args, ret);
             return; // Exit after executing the function
         }
     }
@@ -583,7 +657,6 @@ void ModuleInterface::Stop()
         this->m_state = "stopped";
     }
 }
-
 
 void ModuleInterface::CallInputEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> _args))
 {

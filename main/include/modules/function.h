@@ -31,13 +31,15 @@ enum class ModuleFunctionScope
 class ModuleFunction
 {
 public:
-    ModuleFunction(std::function<void(const VortexMaker::Values&)> foo, const std::string& name);
+    ModuleFunction(std::function<void(ArgumentValues&, ReturnValues&)> foo, const std::string& name);
+    ModuleFunction(std::function<void(ArgumentValues&)> foo, const std::string& name);
+    ModuleFunction(std::function<void(ReturnValues &)> foo, const std::string &name);
     ModuleFunction(std::function<void()> foo, const std::string& name);
 
     virtual void execute() {};
 
-    std::function<void(const VortexMaker::Values&)> m_function;
-    VortexMaker::Values m_return_values;
+    std::function<void(ArgumentValues&, ReturnValues&)> m_function;
+    ArgumentValues m_return_values;
     ModuleFunctionScope m_scope;
 
     std::string m_name;

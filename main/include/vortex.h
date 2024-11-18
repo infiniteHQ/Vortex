@@ -994,6 +994,9 @@ namespace VortexMaker
         std::string GetValue() { return value; };
         nlohmann::json GetJsonValue() { return nlohmann::json::parse(value); };
 
+        template<typename T>
+        T GetJsonValue(const std::string& val) { return nlohmann::json::parse(val).get<T>(); };
+
         void SetValue(const std::string &val) { value = val; };
         void SetJsonValue(const nlohmann::json &val) { value = val; };
 
@@ -1001,5 +1004,14 @@ namespace VortexMaker
         std::string value = "null";
     };
 }
+
+struct ArgumentValues : public VortexMaker::Values {
+    using VortexMaker::Values::Values;
+};
+
+struct ReturnValues : public VortexMaker::Values {
+    using VortexMaker::Values::Values;
+};
+
 
 #endif // #ifndef VORTEX_DISABLE
