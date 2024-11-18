@@ -1,6 +1,7 @@
 #pragma once
 #include "../../../../../main/include/vortex.h"
 #include "../../../../../main/include/vortex_internals.h"
+#include "../../../../../main/include/modules/delete.h"
 
 #include "../utils.hpp"
 
@@ -38,7 +39,7 @@ namespace VortexEditor
         void SetupRenderCallback();
         void Render();
         
-        bool ModuleCard(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor, ImU32 borderColor, ImU32 lineColor, float maxTextWidth, float borderRadius);
+        bool ModuleCard(const std::shared_ptr<ModuleInterface>& module, const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor, ImU32 borderColor, ImU32 lineColor, float maxTextWidth, float borderRadius);
 
     void ShowModules();
 

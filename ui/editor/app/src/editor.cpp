@@ -512,15 +512,27 @@ Cherry::Application *CreateEditor(int argc, char **argv)
 
                             if (ImGui::BeginMenu("Project"))
                             {
-        if (ImGui::MenuItem("Modules utility", "Open the modules utility", c_Editor->GetModuleUtilityVisibility()))
+                        Cherry::MenuItemTextSeparator("Logical contents");
+                              
+        if (ImGui::MenuItem("Modules utility", "Open the modules utility", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_bricksearch.png")), c_Editor->GetModuleUtilityVisibility()))
         {
             c_Editor->SetModuleUtilityVisibility(true);
+        }           
+        if (ImGui::MenuItem("Plugins utility", "Open the plugins utility", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_plugin.png")), c_Editor->GetModuleUtilityVisibility()))
+        {
         }
-        if (ImGui::MenuItem("Templates utility", "Open the templates utility", c_Editor->GetTemplatesUtilityVisibility()))
+
+                        Cherry::MenuItemTextSeparator("Static contents");
+        if (ImGui::MenuItem("Templates utility", "Open the templates utility", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")), c_Editor->GetTemplatesUtilityVisibility()))
         {
             c_Editor->SetTemplatesUtilityVisibility(true);
         }
-        if (ImGui::MenuItem("Project settings", "Open the main settings of this project", c_Editor->GetProjectSettingsVisibility()))
+        if (ImGui::MenuItem("Contents utility", "Open the contents utility", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")), c_Editor->GetTemplatesUtilityVisibility()))
+        {
+        }
+
+                        Cherry::MenuItemTextSeparator("Configurations & Settings");
+        if (ImGui::MenuItem("Project settings", "Open the main settings of this project", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png")), c_Editor->GetProjectSettingsVisibility()))
         {
             c_Editor->SetProjectSettingsVisibility(true);
         }

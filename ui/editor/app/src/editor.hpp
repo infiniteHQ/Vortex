@@ -1,3 +1,5 @@
+#pragma once
+#define CHERRY_V1
 #include "../../../../lib/cherry/cherry.hpp"
 
 // Static windows

@@ -1,4 +1,5 @@
 #include "./modules_utility.hpp"
+#include "../../instances/modules_details/modules_details.hpp"
 
 using namespace Cherry;
 
@@ -31,11 +32,11 @@ namespace VortexEditor
 
         for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.em.size(); i++)
         {
-            ModuleCard(VortexMaker::GetCurrentContext()->IO.em[i]->m_proper_name, VortexMaker::GetCurrentContext()->IO.em[i]->m_path, VortexMaker::GetCurrentContext()->IO.em[i]->m_name, VortexMaker::GetCurrentContext()->IO.em[i]->m_version, false, VortexMaker::GetCurrentContext()->IO.em[i]->m_logo_path, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), Cherry::HexToImU32("#B1FF31FF"), 100.0f, 5.0f);
+            ModuleCard(VortexMaker::GetCurrentContext()->IO.em[i], VortexMaker::GetCurrentContext()->IO.em[i]->m_proper_name, VortexMaker::GetCurrentContext()->IO.em[i]->m_path, VortexMaker::GetCurrentContext()->IO.em[i]->m_name, VortexMaker::GetCurrentContext()->IO.em[i]->m_version, false, VortexMaker::GetCurrentContext()->IO.em[i]->m_logo_path, IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), Cherry::HexToImU32("#B1FF31FF"), 100.0f, 5.0f);
         }
     }
 
-    bool ModulesUtilityAppWindow::ModuleCard(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255), ImU32 borderColor = IM_COL32(150, 150, 150, 255), ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 100.0f, float borderRadius = 5.0f)
+    bool ModulesUtilityAppWindow::ModuleCard(const std::shared_ptr<ModuleInterface> &module, const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255), ImU32 borderColor = IM_COL32(150, 150, 150, 255), ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 100.0f, float borderRadius = 5.0f)
     {
         bool pressed = false;
 
@@ -171,7 +172,7 @@ namespace VortexEditor
         ImGui::SetCursorScreenPos(firstButtonPos);
 
         /*
-        
+
         TODO :
 
         Version
@@ -185,12 +186,49 @@ namespace VortexEditor
         BUttons :
         Start/Stop
         Settings/Properties
-        
-        
+
+
         */
 
+        if (module->m_state == "failed")
         {
-            auto btn = std::make_shared<Cherry::ImageButtonSimple>("create_project_button", Cherry::GetPath("resources/imgs/icons/misc/icon_add.png"));
+
+            {
+                auto btn = std::make_shared<Cherry::ImageButtonSimple>("create_project_button", Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"));
+                btn->SetScale(0.20f);
+                btn->SetInternalMarginX(1.0f);
+                btn->SetInternalMarginY(1.0f);
+                btn->SetLogoSize(5, 5);
+                btn->SetBorderColorIdle("#00000000");
+                btn->SetBackgroundColorClicked("#00000000");
+
+                if (btn->Render("StartModule"))
+                {
+                    module->Start();
+                }
+            }
+        }
+        else if (module->m_state == "unknow" || module->m_state == "stopped")
+        {
+            {
+                auto btn = std::make_shared<Cherry::ImageButtonSimple>("create_project_button", Cherry::GetPath("resources/imgs/icons/misc/icon_start.png"));
+                btn->SetScale(0.20f);
+                btn->SetInternalMarginX(1.0f);
+                btn->SetInternalMarginY(1.0f);
+                btn->SetLogoSize(5, 5);
+                btn->SetBorderColorIdle("#00000000");
+                btn->SetBackgroundColorClicked("#00000000");
+
+                if (btn->Render("StartModule2"))
+                {
+                    module->Start();
+                }
+            }
+        }
+        else
+        {
+        {
+            auto btn = std::make_shared<Cherry::ImageButtonSimple>("four_button", Cherry::GetPath("resources/imgs/icons/misc/icon_stop.png"));
             btn->SetScale(0.20f);
             btn->SetInternalMarginX(1.0f);
             btn->SetInternalMarginY(1.0f);
@@ -198,17 +236,18 @@ namespace VortexEditor
             btn->SetBorderColorIdle("#00000000");
             btn->SetBackgroundColorClicked("#00000000");
 
-            if (btn->Render("create"))
+            if (btn->Render("StopModule"))
             {
-                std::cout << "Create Project Button Clicked" << std::endl;
+                module->Stop();
             }
+        }
         }
 
         ImVec2 secondButtonPos = ImVec2(firstButtonPos.x - buttonWidth - buttonSpacing, firstButtonPos.y);
         ImGui::SetCursorScreenPos(secondButtonPos);
 
         {
-            auto btn = std::make_shared<Cherry::ImageButtonSimple>("second_button", Cherry::GetPath("resources/imgs/icons/misc/icon_add.png"));
+            auto btn = std::make_shared<Cherry::ImageButtonSimple>("second_button", Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png"));
             btn->SetScale(0.20f);
             btn->SetInternalMarginX(1.0f);
             btn->SetInternalMarginY(1.0f);
@@ -218,7 +257,8 @@ namespace VortexEditor
 
             if (btn->Render("edit"))
             {
-                std::cout << "Second Button Clicked" << std::endl;
+                module->Stop();
+                // TODO VortexMaker::DeleteProjectModule
             }
         }
         ImVec2 thirdButtonPos = ImVec2(secondButtonPos.x - buttonWidth - buttonSpacing, secondButtonPos.y);
@@ -233,11 +273,55 @@ namespace VortexEditor
             btn->SetBorderColorIdle("#00000000");
             btn->SetBackgroundColorClicked("#00000000");
 
-            if (btn->Render("delete"))
+            if (btn->Render("OpenModulesDetails"))
             {
-                std::cout << "Third Button Clicked" << std::endl;
+                std::string label = "Details of " + module->m_proper_name + "####" + path;
+                std::shared_ptr<ModuleDetails> window = ModuleDetails::Create(label, module);
+                Cherry::AddAppWindow(window->GetAppWindow());
             }
         }
+
+        /*
+
+           if (ctx->IO.em[i]->m_state == "failed")
+            {
+                if (ImGui::ImageButtonWithText(listIcon, "Retry to launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    ctx->IO.em[i]->Start();
+                }
+                ImGui::SameLine();
+                if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    // Behavior
+                }
+                ImGui::SameLine();
+                if (ImGui::ImageButtonWithText(logIcon, "Details", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    // Behavior
+                    std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(this->ctx, ctx->IO.em[i]);
+                    this->factory->SpawnInstance(instance);
+                }
+            }
+            if (ctx->IO.em[i]->m_state == "unknow" || ctx->IO.em[i]->m_state == "stopped")
+            {
+                if (ImGui::ImageButtonWithText(startIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    ctx->IO.em[i]->Start();
+                }
+                ImGui::SameLine();
+                if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    // Behavior
+                }
+                ImGui::SameLine();
+                if (ImGui::ImageButtonWithText(logIcon, "Details", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
+                {
+                    // Behavior
+                    std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(this->ctx, ctx->IO.em[i]);
+                    this->factory->SpawnInstance(instance);
+                }
+            }
+*/
 
         float windowVisibleX2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
         if (cursorPos.x + fixedSize.x < windowVisibleX2)
@@ -306,8 +390,6 @@ namespace VortexEditor
                                                   {
                         ImGui::Button("Import a module");
                         ImGui::Button("Search modules"); });
-
-        std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
     }
 
     void ModulesUtilityAppWindow::AddChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child)
