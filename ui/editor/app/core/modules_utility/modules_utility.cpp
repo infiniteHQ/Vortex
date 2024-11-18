@@ -111,7 +111,7 @@ namespace VortexEditor
 
         ImVec2 logoPos = ImVec2(cursorPos.x + (fixedSize.x - squareSize.x) / 2, cursorPos.y + padding);
 
-        ImVec2 sizePos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY - 20 + textOffsetY);
+        ImVec2 sizePos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY - 25 + textOffsetY);
         ImGui::SetCursorScreenPos(sizePos);
 
         ImTextureID logotexture = Application::GetCurrentRenderedWindow()->get_texture(logo);
@@ -149,8 +149,8 @@ namespace VortexEditor
         ImGui::GetFont()->Scale = oldfontsize;
         ImGui::PopFont();
 
-        ImVec2 descriptionPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY + 35 + textOffsetY);
-        ImGui::SetCursorScreenPos(descriptionPos);
+        ImVec2 labelPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y - 20 + thumbnailIconOffsetY + 35 + textOffsetY);
+        ImGui::SetCursorScreenPos(labelPos);
 
         ImGui::GetFont()->Scale = 0.7f;
         ImGui::PushFont(ImGui::GetFont());
@@ -158,6 +158,15 @@ namespace VortexEditor
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
         ImGui::PushItemWidth(maxTextWidth);
         ImGui::TextWrapped(description.c_str());
+        ImGui::PopItemWidth();
+        ImGui::PopStyleColor();
+
+        ImVec2 descriptionPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY + 35 + textOffsetY);
+        ImGui::SetCursorScreenPos(descriptionPos);
+
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+        ImGui::PushItemWidth(maxTextWidth);
+        ImGui::TextWrapped(module->m_description.c_str());
         ImGui::PopItemWidth();
         ImGui::PopStyleColor();
 
@@ -171,28 +180,8 @@ namespace VortexEditor
         ImVec2 firstButtonPos = ImVec2(cursorPos.x + fixedSize.x - padding - buttonWidth, cursorPos.y + padding);
         ImGui::SetCursorScreenPos(firstButtonPos);
 
-        /*
-
-        TODO :
-
-        Version
-        Title (proper name),
-        Description,
-        Tag (name)
-
-        Right : Author & Vortex Version
-
-
-        BUttons :
-        Start/Stop
-        Settings/Properties
-
-
-        */
-
         if (module->m_state == "failed")
         {
-
             {
                 auto btn = std::make_shared<Cherry::ImageButtonSimple>("create_project_button", Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"));
                 btn->SetScale(0.20f);
@@ -251,7 +240,7 @@ namespace VortexEditor
             btn->SetScale(0.20f);
             btn->SetInternalMarginX(1.0f);
             btn->SetInternalMarginY(1.0f);
-            btn->SetLogoSize(5, 5);
+            btn->SetLogoSize(7, 7);
             btn->SetBorderColorIdle("#00000000");
             btn->SetBackgroundColorClicked("#00000000");
 

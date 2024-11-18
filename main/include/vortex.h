@@ -55,7 +55,6 @@
 #include <dirent.h>
 #include <deque>
 
-
 namespace fs = std::filesystem;
 
 #ifndef VORTEX_API
@@ -197,35 +196,35 @@ namespace VortexMaker
 
     VORTEX_API void InstallModuleToSystem(const std::string &path);
 
-    VORTEX_API void InstallModule(const std::string &module_name, const std::string &version, bool& restart_modules);
+    VORTEX_API void InstallModule(const std::string &module_name, const std::string &version, bool &restart_modules);
     VORTEX_API void AddModuleToProject(const std::string &module_name);
 
     VORTEX_API void CreateProject(const std::string &name, const std::string &path);
-    VORTEX_API void CreateProject(const std::string &name, const std::string &author, const std::string &version, const std::string &description, const std::string &path, const std::string& logo_path, const std::string &template_name);
+    VORTEX_API void CreateProject(const std::string &name, const std::string &author, const std::string &version, const std::string &description, const std::string &path, const std::string &logo_path, const std::string &template_name);
     VORTEX_API void RefreshEnvironmentVortexVersionsPools();
 
-    VORTEX_API void DeleteProject(const std::string &path, const std::string& project_name);
-    VORTEX_API void RemoveSystemProjectEntry(const std::string& project_name);
+    VORTEX_API void DeleteProject(const std::string &path, const std::string &project_name);
+    VORTEX_API void RemoveSystemProjectEntry(const std::string &project_name);
 
     VORTEX_API void ImportProject(const std::string &path);
     VORTEX_API std::vector<std::shared_ptr<EnvProject>> FindProjectInFolder(const std::string &path);
 
     VORTEX_API void InstallContentOnSystem(const std::string &directory);
 
-    VORTEX_API void UpdateProjectData(const std::string& old_name, const std::string& path);
+    VORTEX_API void UpdateProjectData(const std::string &old_name, const std::string &path);
     VORTEX_API void InitEnvironment();
 
-    VORTEX_API void CreateSessionTopic(const std::string& post_topic);
+    VORTEX_API void CreateSessionTopic(const std::string &post_topic);
     VORTEX_API void DeleteSessionTopic(const std::string &post_topic);
-    VORTEX_API void PostSessionState(const std::string& post_topic);
-    VORTEX_API void PostSessionCoreDump(const std::string& post_topic);
-    VORTEX_API nlohmann::json GetLastModuleOfLastSession(const std::string& post_topic);
-    VORTEX_API nlohmann::json GetLastSession(const std::string& post_topic);
+    VORTEX_API void PostSessionState(const std::string &post_topic);
+    VORTEX_API void PostSessionCoreDump(const std::string &post_topic);
+    VORTEX_API nlohmann::json GetLastModuleOfLastSession(const std::string &post_topic);
+    VORTEX_API nlohmann::json GetLastSession(const std::string &post_topic);
 
     VORTEX_API void RefreshEnvironmentProjects();
     VORTEX_API void UpdateEnvironmentProject();
-    VORTEX_API void UpdateEnvironmentProject(const std::string &name, const std::string &author, const std::string &version, const std::string& compatibleWith, const std::string &description, const std::string &path, const std::string &logo_path, const std::string &template_name);
-    VORTEX_API void UpdateEnvironmentProject(const std::string& oldname);
+    VORTEX_API void UpdateEnvironmentProject(const std::string &name, const std::string &author, const std::string &version, const std::string &compatibleWith, const std::string &description, const std::string &path, const std::string &logo_path, const std::string &template_name);
+    VORTEX_API void UpdateEnvironmentProject(const std::string &oldname);
 
     VORTEX_API std::string getCurrentTimeStamp();
 
@@ -245,17 +244,16 @@ namespace VortexMaker
     VORTEX_API void CopyAllContent();
     VORTEX_API void ExecuteCommand();
 
-    VORTEX_API nlohmann::json DumpJSON(const std::string &file);    
-    VORTEX_API void PopulateJSON(const nlohmann::json& json_data, const std::string &file);
+    VORTEX_API nlohmann::json DumpJSON(const std::string &file);
+    VORTEX_API void PopulateJSON(const nlohmann::json &json_data, const std::string &file);
 
     VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
     VORTEX_API std::string replacePlaceholders(const std::string &command, const std::unordered_map<std::string, std::string> &replacements);
 
     VORTEX_API std::string gen_random(const int len);
     VORTEX_API std::string getHomeDirectory();
-    VORTEX_API void createFolderIfNotExists(const std::string& path);
+    VORTEX_API void createFolderIfNotExists(const std::string &path);
     VORTEX_API void createJsonFileIfNotExists(const std::string &filename, const nlohmann::json &defaultData);
-
 
     // Memory Allocators
     // - Those functions are not reliant on the current context.
@@ -936,8 +934,8 @@ private:
         T storedValue;
     };
 
-    public:
-    hArgs(){};
+public:
+    hArgs() {};
 
     template <typename T>
     void add(const hString &tag, T value)
@@ -977,162 +975,31 @@ private:
 
     hVector<hString> registered_arguments;
 
-
     hMap<hString, ArgumentBase *> arguments;
 };
 //=============================================================================
 
-//_____________________________________________________________________________
-// [SECTION] Structures [OBSOLETE]
-//_____________________________________________________________________________
-
-struct VxDiag
+namespace VortexMaker
 {
-    std::string properName;
-    std::string statut;
-    std::string description;
-    std::string output;
-    int code;
-};
+    /**
+     * @brief Data structure for modules & plugins functions, events and other stuff, oriented around
+     * JSON architecture to easely communicate complex types or large amount of data. Formatted in std::string
+     * to increase the simplicity of data transferts
+     */
+    struct Values
+    {
+    public:
+        Values(){};
+        Values(const std::string& val): value(val) {};
+        std::string GetValue() { return value; };
+        nlohmann::json GetJsonValue() { return nlohmann::json::parse(value); };
 
-struct VxScriptSave
-{
-    char name[128] = "unknow";
-    char author[128] = "unknow";
-};
+        void SetValue(const std::string &val) { value = val; };
+        void SetJsonValue(const nlohmann::json &val) { value = val; };
 
-struct VxScript
-{
-    std::string name = "unknow";           // Proper name of the script
-    std::string author = "unknow";         // Proper name of the script
-    std::string description = "unknow";    // Short description of the script
-    std::string configFilePath = "unknow"; // Short description of the script
-    std::string path = "unknow";           // Path to script
-    void Refresh();
-    void PushSave(std::shared_ptr<VxScriptSave> save);
-};
-
-struct ToolchainSave
-{
-    char name[128] = "unknow";
-    char author[128] = "unknow";
-    char version[128] = "unknow";
-    char description[128] = "unknow";
-    char type[128] = "unknow";
-    char state[128] = "unknow";
-    char host_arch[128] = "unknow";
-    char host_vendor[128] = "unknow";
-    char host_platform[128] = "unknow";
-    char host_cpu[128] = "unknow";
-    char host_fpu[128] = "unknow";
-    char builder_arch[128] = "unknow";
-    char builder_vendor[128] = "unknow";
-    char builder_platform[128] = "unknow";
-    char builder_cpu[128] = "unknow";
-    char builder_fpu[128] = "unknow";
-    char target_arch[128] = "unknow";
-    char target_vendor[128] = "unknow";
-    char target_platform[128] = "unknow";
-    char target_cpu[128] = "unknow";
-    char target_fpu[128] = "unknow";
-    char toolchain_type[128] = "unknow";
-    char compression[128] = "unknow";
-    char toolchains_compilation[128] = "unknow";
-    char localPackagePath[128] = "unknow";
-    char localScriptsPath[128] = "unknow";
-    char localPatchsPath[128] = "unknow";
-    std::vector<std::pair<char[128], char[128]>> registeredPackages;
-    std::vector<std::pair<char[128], char[128]>> registeredTasklists;
-};
-
-struct HostSave
-{
-    char name[128] = "unknow";
-    char author[128] = "unknow";
-    char version[128] = "unknow";
-    char description[128] = "unknow";
-    char type[128] = "unknow";
-    char state[128] = "unknow";
-    char vendor[128] = "unknow";
-    char platform[128] = "unknow";
-    char host_arch[128] = "unknow";
-    char target_arch[128] = "unknow";
-    char toolchainToUse[128] = "unknow";
-    char localPackagePath[128] = "unknow";
-    char localScriptsPath[128] = "unknow";
-    char localPatchsPath[128] = "unknow";
-    std::vector<std::pair<char[128], char[128]>> registeredPackages;
-};
-
-struct VxActionReport
-{
-    std::string actionType;
-    std::string label;
-    std::string result;
-    std::string state;
-    std::string report;
-};
-
-struct VxHostSnapshot
-{
-    std::string date;
-    std::string name;
-    // VxHostCurrentSystem snapshotSystem; // to import from
-};
-struct VxDistHost
-{
-    // Vortex project informations
-    std::string name;
-    std::string author;
-    std::string target;
-    std::string description;
-    std::string type;
-    std::string path;
-    std::string state;
-    std::string vendor;
-    std::string platform;
-
-    std::string CC;
-    std::string CXX;
-    std::string AR;
-    std::string AS;
-    std::string RANLIB;
-    std::string LD;
-    std::string STRIP;
-
-    void TestingChroot();
-};
-
-struct VxDistToolchainSave
-{
-    char CC_value[128];
-    char CXX_value[128];
-    char AR_value[128];
-    char AS_value[128];
-    char RANLIB_value[128];
-    char LD_value[128];
-    char STRIP_value[128];
-};
-
-struct VxDistToolchain
-{
-    // Vortex project informations
-    std::string name;
-    std::string author;
-    std::string target;
-    std::string description;
-    std::string type;
-    std::string state;
-    std::string path;
-    std::string vendor;
-    std::string platform;
-    std::string CC;
-    std::string CXX;
-    std::string AR;
-    std::string AS;
-    std::string RANLIB;
-    std::string LD;
-    std::string STRIP;
-};
+    private:
+        std::string value = "null";
+    };
+}
 
 #endif // #ifndef VORTEX_DISABLE

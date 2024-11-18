@@ -26,6 +26,8 @@ struct ModuleInputEventHappening
     std::string m_timestamp;
 };
 
+// TODO : Replace all args by json values (input and output)
+
 /**
  * @brief Executed by other with custom parameters
  */

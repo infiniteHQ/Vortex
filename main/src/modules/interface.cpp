@@ -102,10 +102,10 @@ void ModuleInterface::AddLogo(const std::string &relative_path)
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-void ModuleInterface::AddFunction(void (*item)(), const std::string &name)
+void ModuleInterface::AddFunction(std::function<void()> foo, const std::string &name)
 {
     // Create a shared_ptr to the ModuleFunction
-    std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(item, name);
+    std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(foo, name);
 
     // Add the shared_ptr to the list of functions
     this->m_functions.push_back(p_function);
@@ -120,14 +120,10 @@ void ModuleInterface::AddFunction(void (*item)(), const std::string &name)
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-void ModuleInterface::AddFunction(void (*item)(const std::shared_ptr<hArgs>& args), const std::string &name, const std::string& description, const std::vector<std::tuple<std::string, std::string, std::string>>& args_def, const bool& can_callback)
+void ModuleInterface::AddFunction(std::function<void(const VortexMaker::Values&)> foo, const std::string &name)
 {
     // Create a shared_ptr to the ModuleFunction
-    std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(item, name);
-
-    p_function->m_description = description;
-    p_function->m_params_def = args_def;
-    p_function->m_can_callback = can_callback;
+    std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(foo, name);
 
     // Add the shared_ptr to the list of functions
     this->m_functions.push_back(p_function);
@@ -258,7 +254,7 @@ void ModuleInterface::ExecFunction(const std::string &name)
     {
         if (foo->m_name == name)
         {
-            foo->m_foo();
+            foo->m_function(VortexMaker::Values());
             return; // Exit after executing the function
         }
     }
@@ -272,14 +268,13 @@ void ModuleInterface::ExecFunction(const std::string &name)
  *
  * @param name The name of the function to execute.
  */
-void ModuleInterface::ExecFunction(const std::string& name, std::shared_ptr<hArgs> args)
+void ModuleInterface::ExecFunction(const std::string& name, const VortexMaker::Values& args)
 {
     for (auto foo : this->m_functions)
     {
         if (foo->m_name == name)
         {
-            foo->m_args = args;
-            foo->m_args_foo(args);
+            foo->m_function(args);
             return; // Exit after executing the function
         }
     }
