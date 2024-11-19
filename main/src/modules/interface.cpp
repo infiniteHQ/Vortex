@@ -25,7 +25,7 @@ void ModuleInterface::AddModuleFunction(const ModuleFunction &function)
  *
  * @param event The ModuleOutputEvent to add.
  */
-void ModuleInterface::AddModuleOutputEvent(const ModuleOutputEvent &event)
+void ModuleInterface::AddOutputEvent(const ModuleOutputEvent &event)
 {
     // Create a shared_ptr to the ModuleOutputEvent
     std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(event);
@@ -34,8 +34,28 @@ void ModuleInterface::AddModuleOutputEvent(const ModuleOutputEvent &event)
     this->m_output_events.push_back(p_event);
 }
 
-void ModuleInterface::AddModuleInputEvent(const ModuleInputEvent &event)
+void ModuleInterface::AddInputEvent(const ModuleInputEvent &event)
 {
+    // Create a shared_ptr to the ModuleOutputEvent
+    std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(event);
+
+    // Add the shared_ptr to the list of output events
+    this->m_input_events.push_back(p_event);
+}
+
+void ModuleInterface::SetMainWindow(const std::shared_ptr<Cherry::AppWindow> &win)
+{
+    // Remove potential old main window
+    for(auto& window : Cherry::Application::Get().m_AppWindows)
+    {
+        if(m_main_window->m_IdName == window->m_IdName)
+        {
+            Cherry::DeleteAppWindow(window);
+        }
+    }
+
+    // Add/Set the new one 
+    Cherry::AddAppWindow(win);
 }
 
 /**
@@ -49,30 +69,6 @@ void ModuleInterface::AddModuleRenderInstance(const std::shared_ptr<ModuleRender
 {
     // Add the shared_ptr to the list of render instances
     this->m_render_instances.push_back(renderInstance);
-}
-
-/**
- * @brief Adds an argument to the ModuleInterface's argument container.
- *
- * This function adds a key-value pair to the ModuleInterface's argument container.
- * If the container does not exist, it creates a new one and adds the argument.
- *
- * @tparam T The type of the argument value.
- * @param key The key for the argument.
- * @param value The value of the argument.
- */
-template <typename T>
-void ModuleInterface::AddArg(const std::string &key, T value)
-{
-    if (this->m_args == nullptr)
-    {
-        // Create a new argument container if it doesn't exist
-        std::shared_ptr<hArgs> args = std::make_shared<hArgs>();
-        this->m_args = args;
-    }
-
-    // Add the argument to the container
-    this->m_args->add<T>(key.c_str(), value);
 }
 
 /**
@@ -132,18 +128,38 @@ void ModuleInterface::AddOutputEvent(std::function<void(ArgumentValues &, Return
 
 void ModuleInterface::AddInputEvent(std::function<void()> foo, const std::string &name)
 {
+    // Create a shared_ptr to the ModuleOutputEvent
+    std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(foo, name);
+
+    // Add the shared_ptr to the list of output events
+    this->m_input_events.push_back(p_event);
 }
 
 void ModuleInterface::AddInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
 {
+    // Create a shared_ptr to the ModuleOutputEvent
+    std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(foo, name);
+
+    // Add the shared_ptr to the list of output events
+    this->m_input_events.push_back(p_event);
 }
 
 void ModuleInterface::AddInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
 {
+    // Create a shared_ptr to the ModuleOutputEvent
+    std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(foo, name);
+
+    // Add the shared_ptr to the list of output events
+    this->m_input_events.push_back(p_event);
 }
 
 void ModuleInterface::AddInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
 {
+    // Create a shared_ptr to the ModuleOutputEvent
+    std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(foo, name);
+
+    // Add the shared_ptr to the list of output events
+    this->m_input_events.push_back(p_event);
 }
 
 /**
@@ -637,13 +653,13 @@ void ModuleInterface::Stop()
     }
 }
 
-void ModuleInterface::CallOutputEvent(const std::string &event_name, ArgumentValues& args, ReturnValues& ret)
-{ 
+void ModuleInterface::CallOutputEvent(const std::string &event_name, ArgumentValues &args, ReturnValues &ret)
+{
     VortexMaker::CallOutputEvent(event_name, args, ret, this->m_name);
 }
 
-void ModuleInterface::CallInputEvent(const std::string &module_name, const std::string &event_name, ArgumentValues& args, ReturnValues& ret)
-{ 
+void ModuleInterface::CallInputEvent(const std::string &module_name, const std::string &event_name, ArgumentValues &args, ReturnValues &ret)
+{
     VortexMaker::CallInputEvent(module_name, event_name, args, ret, this->m_name);
 }
 

@@ -413,18 +413,18 @@ VORTEX_API void VortexMaker::CallOutputEvent(const std::string &event_name, Argu
                 if (output_event->m_function)
                 {
                     // Trigger a information trigger in the input event
-                    output_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Calling module input event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin + "\"");
+                    output_event->trigger_happening(origin + ":call_output_event", HappeningState::INFO, "Calling module output event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin + "\"");
 
                     // Call the corresponding event function with the provided arguments
                     output_event->m_function(args, ret);
 
                     // Trigger a information trigger in the input event
-                    output_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Input event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" called succefully from \"" + origin + "\" !");
+                    output_event->trigger_happening(origin + ":call_output_event", HappeningState::INFO, "Output event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" called succefully from \"" + origin + "\" !");
                 }
                 else
                 {
                     // Trigger a information trigger in the input event
-                    output_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Trying to call \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin + "\" but it not exist !");
+                    output_event->trigger_happening(origin + ":call_output_event", HappeningState::INFO, "Trying to call \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin + "\" but it not exist !");
                 }
             }
         }
