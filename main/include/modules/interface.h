@@ -75,6 +75,7 @@ public:
     void AddInputEvent(const ModuleInputEvent& event);
 
     // GUI stuffs
+    void RefreshMainWindow();
     void SetMainWindow(const std::shared_ptr<Cherry::AppWindow>& win);
     void AddWindow(const std::shared_ptr<Cherry::AppWindow>& win);
 

@@ -43,19 +43,30 @@ void ModuleInterface::AddInputEvent(const ModuleInputEvent &event)
     this->m_input_events.push_back(p_event);
 }
 
-void ModuleInterface::SetMainWindow(const std::shared_ptr<Cherry::AppWindow> &win)
+void ModuleInterface::RefreshMainWindow()
 {
     // Remove potential old main window
-    for(auto& window : Cherry::Application::Get().m_AppWindows)
+    for (auto &window : Cherry::Application::Get().m_AppWindows)
     {
-        if(m_main_window->m_IdName == window->m_IdName)
+        if (m_main_window)
         {
-            Cherry::DeleteAppWindow(window);
+            if (m_main_window->m_IdName == window->m_IdName)
+            {
+                Cherry::DeleteAppWindow(window);
+            }
         }
     }
 
-    // Add/Set the new one 
-    Cherry::AddAppWindow(win);
+    // Add/Set the new one
+    if(m_main_window)
+    {
+        Cherry::AddAppWindow(m_main_window);
+    }   
+}
+
+void ModuleInterface::SetMainWindow(const std::shared_ptr<Cherry::AppWindow> &win)
+{
+    m_main_window = win;
 }
 
 /**

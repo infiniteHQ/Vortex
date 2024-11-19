@@ -374,6 +374,11 @@ Cherry::Application *CreateEditor(int argc, char **argv)
     app->SetDefaultLocale("en");
     app->SetLocale("fr");
 
+    for(auto& modules : VortexMaker::GetCurrentContext()->IO.em)
+    {
+        modules->RefreshMainWindow();
+    }
+
     app->PushLayer(layer);
     app->SetFramebarCallback([app, layer]()
                              {
