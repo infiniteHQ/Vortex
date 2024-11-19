@@ -52,7 +52,6 @@ public:
     std::function<void(ArgumentValues&, ReturnValues&)> m_function;
     void trigger_happening(const std::string& trigger_name, HappeningState state, const std::string& log);
 
-    void(*m_foo)(const std::shared_ptr<hArgs>& args);
     std::string m_name;
     std::string m_description;
     std::vector<std::tuple<std::string, std::string, std::string>> m_params;
@@ -78,7 +77,6 @@ public:
 
     virtual void execute() {};
 
-    void(*m_foo)(const std::shared_ptr<hArgs>& args);
     std::string m_name;
     std::vector<std::shared_ptr<ModuleOutputEventHappening>> m_happenings;
 };

@@ -215,74 +215,6 @@ void ModuleInterface::AddFunction(std::function<void(ArgumentValues &, ReturnVal
 }
 
 /**
- * @brief Adds an input event to the ModuleInterface.
- *
- * This function creates a shared_ptr to a ModuleInputEvent and adds it to the ModuleInterface's list of input events.
- *
- * @param item Pointer to the input event function.
- * @param name Name of the input event.
- */
-void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs> &args), const std::string &name)
-{
-    // Checking if the event already exist
-    for (auto existing_events : this->m_input_events)
-    {
-        if (name == existing_events->m_name)
-        {
-            this->LogError("\"" + name + "\" event already registered ! Abording.");
-            return;
-        }
-    }
-
-    // Create a shared_ptr to the ModuleInputEvent
-    std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
-
-    // Add the shared_ptr to the list of input events
-    this->m_input_events.push_back(p_event);
-}
-
-void ModuleInterface::AddInputEvent(void (*item)(const std::shared_ptr<hArgs> &args), const std::string &name, DevFlag devflag, const std::string &description, const std::vector<std::tuple<std::string, std::string, std::string>> &args_def, const bool &can_callback)
-{
-    // Checking if the event already exist
-    for (auto existing_events : this->m_input_events)
-    {
-        if (name == existing_events->m_name)
-        {
-            this->LogError("\"" + name + "\" event already registered ! Abording.");
-            return;
-        }
-    }
-
-    // Create a shared_ptr to the ModuleInputEvent
-    std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(item, name);
-
-    p_event->m_can_callback = can_callback;
-    p_event->m_devflag = devflag;
-    p_event->m_description = description;
-    p_event->m_params = args_def;
-
-    // Add the shared_ptr to the list of input events
-    this->m_input_events.push_back(p_event);
-}
-
-/**
- * @brief Adds an output event to the ModuleInterface.
- *
- * This function creates a shared_ptr to a ModuleOutputEvent and adds it to the ModuleInterface's list of output events.
- *
- * @param item Pointer to the output event function.
- * @param name Name of the output event.
- */
-void ModuleInterface::AddOutputEvent(void (*item)(const std::shared_ptr<hArgs> &args), const std::string &name)
-{
-    // Create a shared_ptr to the ModuleOutputEvent
-    std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(item, name);
-
-    // Add the shared_ptr to the list of output events
-    this->m_output_events.push_back(p_event);
-}
-
-/**
  * @brief Gets a shared_ptr to a copy of the ModuleInterface.
  *
  * This function creates a shared_ptr to a new ModuleInterface object, copying the contents
@@ -705,14 +637,14 @@ void ModuleInterface::Stop()
     }
 }
 
-void ModuleInterface::CallInputEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> _args))
-{
-    VortexMaker::CallModuleEvent(args, event_name, module_name, callback, this->m_name);
+void ModuleInterface::CallOutputEvent(const std::string &event_name, ArgumentValues& args, ReturnValues& ret)
+{ 
+    VortexMaker::CallOutputEvent(event_name, args, ret, this->m_name);
 }
 
-void ModuleInterface::CallInputEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name)
-{
-    VortexMaker::CallModuleEvent(args, event_name, module_name, this->m_name);
+void ModuleInterface::CallInputEvent(const std::string &module_name, const std::string &event_name, ArgumentValues& args, ReturnValues& ret)
+{ 
+    VortexMaker::CallInputEvent(module_name, event_name, args, ret, this->m_name);
 }
 
 void ModuleInterface::CheckVersion()

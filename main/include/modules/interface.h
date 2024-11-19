@@ -41,8 +41,6 @@ public:
     void OnInputEvent();
     void OnOutputEvent();
     
-    void AddInputEventHandler();
-    void AddOutputEventHandler();
 
     template<typename T>
     void AddArg(const std::string& key, T value);
@@ -81,9 +79,6 @@ public:
     // TODO : AddMainWindow
 
     //void AddFunction(void (*item)(), const std::string& name, Parameters params);
-    void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
-    void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name, DevFlag devflag, const std::string& description, const std::vector<std::tuple<std::string, std::string, std::string>>& args_def, const bool& can_callback);
-    void AddOutputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
     std::shared_ptr<ModuleInterface> GetInterface();
 
     void ExecuteFunction(const std::string& name);
@@ -112,8 +107,10 @@ public:
     void LogWarning(const std::string& message);
     void LogError(const std::string& message);
     void LogFatal(const std::string& message);
-    void CallInputEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> _args));
-    void CallInputEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name);
+
+    void CallOutputEvent(const std::string &event_name, ArgumentValues& args, ReturnValues& ret);
+    void CallInputEvent(const std::string &module_name, const std::string &event_name, ArgumentValues& args, ReturnValues& ret);
+
 
     static std::shared_ptr<ModuleInterface> GetEditorModuleByName(const std::string& name);
 
