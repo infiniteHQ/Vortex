@@ -35,13 +35,7 @@ namespace VortexEditor
 	private:
 		VxContext *ctx;
 		bool opened;
-		std::shared_ptr<VxToolchain> latest_toolchain;
 		std::shared_ptr<AppWindow> m_AppWindow;
-
-		std::shared_ptr<Cherry::Image> m_JournalIcon;
-		std::shared_ptr<Cherry::Image> m_ListIcon;
-		std::shared_ptr<Cherry::Image> m_RefreshIcon;
-		std::shared_ptr<Cherry::Image> m_AddIcon;
 	};
 }
 

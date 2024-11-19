@@ -281,18 +281,12 @@ public:
         }
     }
 
-    void setup(std::shared_ptr<VxHost> _host)
-    {
-        this->host = _host;
-    }
-
     bool opened;
     bool show_UI_ContentWindow = false;
     bool show_UI_ParametersWindow = false;
 
     std::string name;
     VxContext *m_ctx;
-    std::shared_ptr<VxHost> host;
     ImGuiID dockspaceID;
 
     std::shared_ptr<Cherry::Image> m_Icon;

@@ -30,7 +30,7 @@ ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &)> foo, const 
 ModuleFunction::ModuleFunction(std::function<void(ReturnValues &)> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &ret)
                  {
-                     foo(ret); // Appeler la fonction avec uniquement `ReturnValues`
+                     foo(ret);
                  }),
       m_name(name)
 {

@@ -125,38 +125,7 @@ namespace VortexEditor
 
     void LogsUtilityAppWindow::menubar()
     {
-        static ImTextureID refreshIcon = this->m_RefreshIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        static ImTextureID addIcon = this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-        if (ImGui::BeginMenuBar())
-        {
-
-            if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
-            {
-            }
-            if (ImGui::ImageButtonWithText(addIcon, "Add", ImVec2(this->m_AddIcon->GetWidth(), this->m_AddIcon->GetHeight())))
-            {
-                ImGui::OpenPopup("CreationMenu");
-            }
-            ImGui::Separator();
-            if (ImGui::BeginMenu("Filters"))
-            {
-                ImGui::Checkbox("Show informations", &InfoFilter);
-                ImGui::Checkbox("Show fatal errors", &FatalFilter);
-                ImGui::Checkbox("Show errors", &ErrorFilter);
-                ImGui::Checkbox("Show warnings", &WarnFilter);
-                if (ImGui::MenuItem("Build/Rebuild single parts"))
-                {
-                    // Behavior
-                }
-                if (ImGui::MenuItem("Global build"))
-                {
-                    // Behavior
-                }
-                ImGui::EndMenu();
-            }
-            ImGui::EndMenuBar();
-        }
+        //
     }
 
 }

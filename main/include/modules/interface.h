@@ -54,19 +54,46 @@ public:
     void AddFunction(std::function<void(ReturnValues&)> foo, const std::string& name);
     void AddFunction(std::function<void(ArgumentValues&, ReturnValues&)> foo, const std::string& name);
 
+    // IMPORTANT : These AddOutputEvent declaration are in reality "Handlers" of output events triggered by other compenents.
+    // Remember: 
+    //    - A output event is triggered via VortexMaker::ExecuteOutputEvent() by the current component to all concerned extern components with the output event added.
+    //    - A input event is triggered via VortexMaker::ExecuteInputEvent() by a extern component to the current component with the input component added.
+    void AddOutputEvent(std::function<void()> foo, const std::string& name);
+    void AddOutputEvent(std::function<void(ArgumentValues&)> foo, const std::string& name);
+    void AddOutputEvent(std::function<void(ReturnValues&)> foo, const std::string& name);
+    void AddOutputEvent(std::function<void(ArgumentValues&, ReturnValues&)> foo, const std::string& name);
+    void AddInputEvent(std::function<void()> foo, const std::string& name);
+    void AddInputEvent(std::function<void(ArgumentValues&)> foo, const std::string& name);
+    void AddInputEvent(std::function<void(ReturnValues&)> foo, const std::string& name);
+    void AddInputEvent(std::function<void(ArgumentValues&, ReturnValues&)> foo, const std::string& name);
+
+    // TODO : AddParameterToFunction
+    // TODO : AddParameterToInputEvent
+    // TODO : AddParameterToOutputEvent
+    // TODO : AddReturnToFunction
+    // TODO : AddReturnToInputEvent
+    // TODO : AddReturnToOutputEvent
+
+    // TODO : AddSpawnableWindow
+    // TODO : AddContentBrowserItemHandler
+    // TODO : AddContentBrowserItemIdentifier
+    // TODO : AddCommonUtility
+    // TODO : AddMainWindow
+
     //void AddFunction(void (*item)(), const std::string& name, Parameters params);
     void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
     void AddInputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name, DevFlag devflag, const std::string& description, const std::vector<std::tuple<std::string, std::string, std::string>>& args_def, const bool& can_callback);
     void AddOutputEvent(void (*item)(const std::shared_ptr<hArgs>& args), const std::string& name);
     std::shared_ptr<ModuleInterface> GetInterface();
 
-    void ExecFunction(const std::string& name);
-    void ExecFunction(const std::string& name, ArgumentValues& args);
-    void ExecFunction(const std::string& name, ReturnValues& ret);
-    void ExecFunction(const std::string& name, ArgumentValues& args, ReturnValues& ret);
-    // TODO Exec function with call back + Link to the VortexMaker API
+    void ExecuteFunction(const std::string& name);
+    void ExecuteFunction(const std::string& name, ArgumentValues& args);
+    void ExecuteFunction(const std::string& name, ReturnValues& ret);
+    void ExecuteFunction(const std::string& name, ArgumentValues& args, ReturnValues& ret);
 
-    void ExecInputEvent(const std::string& name, std::shared_ptr<hArgs> args);
+    void ExecuteOutputEvent(const std::string& name, ArgumentValues& args, ReturnValues& ret);
+    void ExecuteInputEvent(const std::string& name, ArgumentValues& args, ReturnValues& ret); 
+
 
     // Trigger all output events for every modules/plugins
     void DeployOutputEvent(const std::string& name, std::shared_ptr<hArgs> args);

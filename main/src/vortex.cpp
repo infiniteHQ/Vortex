@@ -500,32 +500,46 @@ VORTEX_API void VortexMaker::DeployEvent(const std::shared_ptr<hArgs> &args, con
     }
 }
 
-/**
- * @brief Call an event of a specific module with the specified arguments.
- *
- * This function calls an event with the specified event name and arguments
- * for a specific module in the Vortex context.
- * It iterates through each EventManager in the Vortex context, checks if the module
- * name matches the provided module name, and then checks if the input event name
- * matches the provided event name. If both conditions are met, it calls the
- * corresponding event function with the provided arguments.
- *
- * @param args A shared pointer to the arguments for the event.
- * @param event_name The name of the event to call.
- * @param module_name The name of the module where the event should be called.
- * @param origin The name of the caller
- */
-VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, const std::string &origin)
+VORTEX_API void VortexMaker::CallOutputEvent(const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string& origin)
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
 
-    // Ensure args is not null before proceeding
-    if (!args)
+    // Iterate through each EventManager in the Vortex context
+    for (auto em : ctx.IO.em)
     {
-        VortexMaker::LogError("Core", "Null argument provided to DeployEvent.");
-        return;
+        // Iterate through each input event in the EventManager
+        for (auto output_event : em->m_output_events)
+        {
+            // Check if the input event name matches the provided event name
+            if (output_event->m_name == event_name)
+            {
+                // Check if the event function pointer is valid
+                if (output_event->m_function)
+                {
+                    // Trigger a information trigger in the input event
+                    output_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Calling module input event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin + "\"");
+
+                    // Call the corresponding event function with the provided arguments
+                    output_event->m_function(args, ret);
+
+                    // Trigger a information trigger in the input event
+                    output_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Input event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" called succefully from \"" + origin + "\" !");
+                }
+                else
+                {
+                    // Trigger a information trigger in the input event
+                    output_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Trying to call \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin + "\" but it not exist !");
+                }
+            }
+        }
     }
+}
+
+VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name, const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string& origin)
+{ 
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
 
     // Iterate through each EventManager in the Vortex context
     for (auto em : ctx.IO.em)
@@ -540,13 +554,13 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args,
                 if (input_event->m_name == event_name)
                 {
                     // Check if the event function pointer is valid
-                    if (input_event->m_foo)
+                    if (input_event->m_function)
                     {
                         // Trigger a information trigger in the input event
                         input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Calling module input event \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin + "\"");
 
                         // Call the corresponding event function with the provided arguments
-                        input_event->m_foo(args);
+                        input_event->m_function(args, ret);
 
                         // Trigger a information trigger in the input event
                         input_event->trigger_happening(origin + ":call_input_event", HappeningState::INFO, "Input event \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" called succefully from \"" + origin + "\" !");
@@ -560,118 +574,7 @@ VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args,
             }
         }
     }
-}
 
-/**
- * @brief Call an event of a specific module with the specified arguments and callback.
- *
- * This function calls an event with the specified event name and arguments
- * for a specific module in the Vortex context.
- * It iterates through each EventManager in the Vortex context, checks if the module
- * name matches the provided module name, and then checks if the input event name
- * matches the provided event name. If both conditions are met, it calls the
- * corresponding event function with the provided arguments and then calls
- * the provided callback function with the arguments.
- *
- * @param args A shared pointer to the arguments for the event.
- * @param event_name The name of the event to call.
- * @param module_name The name of the module where the event should be called.
- * @param callback The callback function to be called after executing the event function.
- * @param origin The name of the caller
- */
-VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> args), const std::string &origin)
-{
-    // Get reference to the Vortex context
-    VxContext &ctx = *CVortexMaker;
-
-    // Ensure args is not null before proceeding
-    if (!args)
-    {
-        VortexMaker::LogError("Core", "Null argument provided to CallModuleEvent.");
-        return;
-    }
-
-    // Ensure callback is not null before proceeding
-    if (!callback)
-    {
-        VortexMaker::LogError("Core", "Null callback provided to CallModuleEvent.");
-        return;
-    }
-
-    // Iterate through each EventManager in the Vortex context
-    for (auto em : ctx.IO.em)
-    {
-        // Check if the EventManager corresponds to the specified module
-        if (em->m_name == module_name)
-        {
-            // Iterate through each input event in the EventManager
-            for (auto input_event : em->m_input_events)
-            {
-                // Check if the input event name matches the provided event name
-                if (input_event->m_name == event_name)
-                {
-                    // Check if the event function pointer is valid
-                    if (input_event->m_foo)
-                    {
-                        // Call the corresponding event function with the provided arguments
-                        input_event->m_foo(args);
-                        // Call the provided callback function with the arguments
-                        callback(args);
-                    }
-                    else
-                    {
-                        // Print an error message if the event function is null
-                        VortexMaker::LogError("Core", "Event function is null for event " + event_name + " in module " + module_name);
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
- * @brief Call an event of a specific module with the specified arguments.
- *
- * Surcharge : This function simplify the identification process (to allow random callers)
- *
- * This function calls an event with the specified event name and arguments
- * for a specific module in the Vortex context.
- * It iterates through each EventManager in the Vortex context, checks if the module
- * name matches the provided module name, and then checks if the input event name
- * matches the provided event name. If both conditions are met, it calls the
- * corresponding event function with the provided arguments.
- *
- * @param args A shared pointer to the arguments for the event.
- * @param event_name The name of the event to call.
- * @param module_name The name of the module where the event should be called.
- */
-VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name)
-{
-    VortexMaker::CallModuleEvent(args, event_name, module_name, "unknow");
-}
-
-/**
- * @brief Call an event of a specific module with the specified arguments and callback.
- *
- * Surcharge : This function simplify the identification process (to allow random callers)
- *
- * This function calls an event with the specified event name and arguments
- * for a specific module in the Vortex context.
- * It iterates through each EventManager in the Vortex context, checks if the module
- * name matches the provided module name, and then checks if the input event name
- * matches the provided event name. If both conditions are met, it calls the
- * corresponding event function with the provided arguments and then calls
- * the provided callback function with the arguments.
- *
- * @param args A shared pointer to the arguments for the event.
- * @param event_name The name of the event to call.
- * @param module_name The name of the module where the event should be called.
- * @param callback The callback function to be called after executing the event function.
- * @param origin The name of the caller
- */
-VORTEX_API void VortexMaker::CallModuleEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name, const std::string &module_name, void (*callback)(std::shared_ptr<hArgs> _args))
-{
-    VortexMaker::CallModuleEvent(args, event_name, module_name, callback, "unknow");
 }
 
 VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path)
@@ -1062,99 +965,142 @@ VORTEX_API void VortexMaker::PasteAllSelections(const std::string &target_path)
     }
 }
 
-VORTEX_API void VortexMaker::RenameFolder(const std::string& target_path, const std::string& new_name) {
+VORTEX_API void VortexMaker::RenameFolder(const std::string &target_path, const std::string &new_name)
+{
     namespace fs = std::filesystem;
 
-    try {
+    try
+    {
         fs::path target(target_path);
-        if (!fs::exists(target) || !fs::is_directory(target)) {
+        if (!fs::exists(target) || !fs::is_directory(target))
+        {
             throw std::runtime_error("Target path does not exist or is not a directory.");
         }
 
         fs::path new_path = target.parent_path() / new_name;
         fs::rename(target, new_path);
-    } catch (const fs::filesystem_error& e) {
+    }
+    catch (const fs::filesystem_error &e)
+    {
         throw std::runtime_error(std::string("Filesystem error: ") + e.what());
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         throw std::runtime_error(std::string("Error: ") + e.what());
     }
 }
 
-VORTEX_API void VortexMaker::RenameFile(const std::string& target_path, const std::string& new_name) 
+VORTEX_API void VortexMaker::RenameFile(const std::string &target_path, const std::string &new_name)
 {
     namespace fs = std::filesystem;
 
-    try {
+    try
+    {
         fs::path target(target_path);
-        if (!fs::exists(target) || !fs::is_regular_file(target)) {
+        if (!fs::exists(target) || !fs::is_regular_file(target))
+        {
             throw std::runtime_error("Target path does not exist or is not a file.");
         }
 
         fs::path new_path = target.parent_path() / new_name;
         fs::rename(target, new_path);
-    } catch (const fs::filesystem_error& e) {
+    }
+    catch (const fs::filesystem_error &e)
+    {
         throw std::runtime_error(std::string("Filesystem error: ") + e.what());
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         throw std::runtime_error(std::string("Error: ") + e.what());
     }
 }
 
-VORTEX_API void VortexMaker::DeleteFile(const std::string& target_path) {
-    try {
+VORTEX_API void VortexMaker::DeleteFile(const std::string &target_path)
+{
+    try
+    {
         // Check if the target path exists and is a file
-        if (!std::filesystem::exists(target_path) || !std::filesystem::is_regular_file(target_path)) {
+        if (!std::filesystem::exists(target_path) || !std::filesystem::is_regular_file(target_path))
+        {
             throw std::invalid_argument("The specified path does not exist or is not a file.");
         }
 
         // Attempt to remove the file
         std::filesystem::remove(target_path);
-    } catch (const std::filesystem::filesystem_error& e) {
+    }
+    catch (const std::filesystem::filesystem_error &e)
+    {
         std::cerr << "Filesystem error: " << e.what() << '\n';
         // Additional handling for different types of filesystem errors can be done here
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << "General error: " << e.what() << '\n';
-    } catch (...) {
+    }
+    catch (...)
+    {
         std::cerr << "An unknown error occurred while deleting the file." << '\n';
     }
 }
 
-VORTEX_API void VortexMaker::DeleteFolder(const std::string& target_path) {
-    try {
+VORTEX_API void VortexMaker::DeleteFolder(const std::string &target_path)
+{
+    try
+    {
         // Check if the target path exists and is a directory
-        if (!std::filesystem::exists(target_path) || !std::filesystem::is_directory(target_path)) {
+        if (!std::filesystem::exists(target_path) || !std::filesystem::is_directory(target_path))
+        {
             throw std::invalid_argument("The specified path does not exist or is not a directory.");
         }
 
         // Attempt to remove the directory and its contents
         std::filesystem::remove_all(target_path);
-    } catch (const std::filesystem::filesystem_error& e) {
+    }
+    catch (const std::filesystem::filesystem_error &e)
+    {
         std::cerr << "Filesystem error: " << e.what() << '\n';
         // Additional handling for different types of filesystem errors can be done here
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << "General error: " << e.what() << '\n';
-    } catch (...) {
+    }
+    catch (...)
+    {
         std::cerr << "An unknown error occurred while deleting the folder." << '\n';
     }
 }
 
-VORTEX_API void VortexMaker::DeletePath(const std::string& target_path) {
-    try {
+VORTEX_API void VortexMaker::DeletePath(const std::string &target_path)
+{
+    try
+    {
         // Check if the path exists
-        if (!std::filesystem::exists(target_path)) {
+        if (!std::filesystem::exists(target_path))
+        {
             throw std::invalid_argument("The specified path does not exist.");
         }
 
         // Determine if it's a file or directory
-        if (std::filesystem::is_directory(target_path)) {
+        if (std::filesystem::is_directory(target_path))
+        {
             DeleteFolder(target_path);
-        } else if (std::filesystem::is_regular_file(target_path)) {
+        }
+        else if (std::filesystem::is_regular_file(target_path))
+        {
             DeleteFile(target_path);
-        } else {
+        }
+        else
+        {
             throw std::invalid_argument("The specified path is neither a regular file nor a directory.");
         }
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << "Error: " << e.what() << '\n';
-    } catch (...) {
+    }
+    catch (...)
+    {
         std::cerr << "An unknown error occurred while processing the path." << '\n';
     }
 }

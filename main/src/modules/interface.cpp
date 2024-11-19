@@ -94,6 +94,58 @@ void ModuleInterface::AddLogo(const std::string &relative_path)
 {
 }
 
+void ModuleInterface::AddOutputEvent(std::function<void()> foo, const std::string &name)
+{
+    // Create a shared_ptr to the ModuleOutputEvent
+    std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(foo, name);
+
+    // Add the shared_ptr to the list of output events
+    this->m_output_events.push_back(p_event);
+}
+
+void ModuleInterface::AddOutputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
+{
+    // Create a shared_ptr to the ModuleOutputEvent
+    std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(foo, name);
+
+    // Add the shared_ptr to the list of output events
+    this->m_output_events.push_back(p_event);
+}
+
+void ModuleInterface::AddOutputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
+{
+    // Create a shared_ptr to the ModuleOutputEvent
+    std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(foo, name);
+
+    // Add the shared_ptr to the list of output events
+    this->m_output_events.push_back(p_event);
+}
+
+void ModuleInterface::AddOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
+{
+    // Create a shared_ptr to the ModuleOutputEvent
+    std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(foo, name);
+
+    // Add the shared_ptr to the list of output events
+    this->m_output_events.push_back(p_event);
+}
+
+void ModuleInterface::AddInputEvent(std::function<void()> foo, const std::string &name)
+{
+}
+
+void ModuleInterface::AddInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
+{
+}
+
+void ModuleInterface::AddInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
+{
+}
+
+void ModuleInterface::AddInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
+{
+}
+
 /**
  * @brief Adds a function to the ModuleInterface.
  *
@@ -278,7 +330,7 @@ std::shared_ptr<ModuleInterface> ModuleInterface::GetEditorModuleByName(const st
  *
  * @param name The name of the function to execute.
  */
-void ModuleInterface::ExecFunction(const std::string &name)
+void ModuleInterface::ExecuteFunction(const std::string &name)
 {
     for (auto foo : this->m_functions)
     {
@@ -300,7 +352,7 @@ void ModuleInterface::ExecFunction(const std::string &name)
  *
  * @param name The name of the function to execute.
  */
-void ModuleInterface::ExecFunction(const std::string &name, ReturnValues &ret)
+void ModuleInterface::ExecuteFunction(const std::string &name, ReturnValues &ret)
 {
     for (auto foo : this->m_functions)
     {
@@ -321,7 +373,7 @@ void ModuleInterface::ExecFunction(const std::string &name, ReturnValues &ret)
  *
  * @param name The name of the function to execute.
  */
-void ModuleInterface::ExecFunction(const std::string &name, ArgumentValues &args)
+void ModuleInterface::ExecuteFunction(const std::string &name, ArgumentValues &args)
 {
     for (auto foo : this->m_functions)
     {
@@ -342,7 +394,7 @@ void ModuleInterface::ExecFunction(const std::string &name, ArgumentValues &args
  *
  * @param name The name of the function to execute.
  */
-void ModuleInterface::ExecFunction(const std::string &name, ArgumentValues &args, ReturnValues &ret)
+void ModuleInterface::ExecuteFunction(const std::string &name, ArgumentValues &args, ReturnValues &ret)
 {
     for (auto foo : this->m_functions)
     {
@@ -360,37 +412,32 @@ void ModuleInterface::ExecFunction(const std::string &name, ArgumentValues &args
  * This function searches for a ModuleInputEvent with the specified name
  * and executes its associated function with the provided arguments if found.
  *
- * @param name The name of the input event to execute.
- * @param args The arguments to pass to the input event function.
  */
-void ModuleInterface::ExecInputEvent(const std::string &name, std::shared_ptr<hArgs> args)
+void ModuleInterface::ExecuteInputEvent(const std::string &name, ArgumentValues &args, ReturnValues &ret)
 {
     for (auto event : this->m_input_events)
     {
         if (event->m_name == name)
         {
-            event->m_foo(args);
+            event->m_function(args, ret);
             return; // Exit after executing the input event
         }
     }
 }
-
 /**
- * @brief Executes an output event by name.
+ * @brief Executes an input event by name.
  *
- * This function searches for a ModuleOutputEvent with the specified name
+ * This function searches for a ModuleInputEvent with the specified name
  * and executes its associated function with the provided arguments if found.
  *
- * @param name The name of the output event to execute.
- * @param args The arguments to pass to the output event function.
  */
-void ModuleInterface::ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args)
+void ModuleInterface::ExecuteOutputEvent(const std::string &name, ArgumentValues &args, ReturnValues &ret)
 {
     for (auto event : this->m_output_events)
     {
         if (event->m_name == name)
         {
-            event->m_foo(args);
+            event->m_function(args, ret);
             return; // Exit after executing the output event
         }
     }

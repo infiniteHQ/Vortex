@@ -18,6 +18,7 @@ enum class HappeningState
     ERROR,
     FATAL,
 };
+
 struct ModuleInputEventHappening
 {
     std::string m_trigger_name;
@@ -25,6 +26,15 @@ struct ModuleInputEventHappening
     std::string m_log;
     std::string m_timestamp;
 };
+
+struct ModuleOutputEventHappening
+{
+    std::string m_trigger_name;
+    HappeningState m_state;
+    std::string m_log;
+    std::string m_timestamp;
+};
+
 
 // TODO : Replace all args by json values (input and output)
 
@@ -34,10 +44,12 @@ struct ModuleInputEventHappening
 class ModuleInputEvent
 {
 public:
-    ModuleInputEvent(void(*foo)(const std::shared_ptr<hArgs>& args), const std::string& name);
-    
-    virtual void execute(){};
+    ModuleInputEvent(std::function<void(ArgumentValues&, ReturnValues&)> foo, const std::string& name);
+    ModuleInputEvent(std::function<void(ArgumentValues&)> foo, const std::string& name);
+    ModuleInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name);
+    ModuleInputEvent(std::function<void()> foo, const std::string& name);
 
+    std::function<void(ArgumentValues&, ReturnValues&)> m_function;
     void trigger_happening(const std::string& trigger_name, HappeningState state, const std::string& log);
 
     void(*m_foo)(const std::shared_ptr<hArgs>& args);
@@ -55,11 +67,20 @@ public:
 class ModuleOutputEvent
 {
 public:
-    ModuleOutputEvent(void(*foo)(const std::shared_ptr<hArgs>& args), const std::string& name);
+    ModuleOutputEvent(std::function<void(ArgumentValues&, ReturnValues&)> foo, const std::string& name);
+    ModuleOutputEvent(std::function<void(ArgumentValues&)> foo, const std::string& name);
+    ModuleOutputEvent(std::function<void(ReturnValues &)> foo, const std::string &name);
+    ModuleOutputEvent(std::function<void()> foo, const std::string& name);
+
+    std::function<void(ArgumentValues&, ReturnValues&)> m_function;
+    
+    void trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log);
+
     virtual void execute() {};
 
     void(*m_foo)(const std::shared_ptr<hArgs>& args);
     std::string m_name;
+    std::vector<std::shared_ptr<ModuleOutputEventHappening>> m_happenings;
 };
 
 #endif
