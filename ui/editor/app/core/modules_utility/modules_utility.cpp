@@ -76,6 +76,23 @@ namespace VortexEditor
             truncatedText = name + "\n";
         }
 
+
+        const char *originalDesc = module->m_description.c_str();
+        std::string truncatedDesc = module->m_description;
+
+        if (ImGui::CalcTextSize(originalDesc).x > maxTextWidth)
+        {
+            truncatedDesc = module->m_description.substr(0, 20);
+            if (ImGui::CalcTextSize(truncatedDesc.c_str()).x > maxTextWidth)
+            {
+                truncatedDesc = module->m_description.substr(0, 10) + "\n" + module->m_description.substr(10, 10);
+            }
+        }
+        else
+        {
+            truncatedDesc = module->m_description + "\n";
+        }
+
         ImVec2 fixedSize(maxTextWidth + padding * 2 + 150.0f, logoSize + extraHeight + padding * 2);
 
         ImVec2 cursorPos = ImGui::GetCursorScreenPos();
@@ -166,7 +183,8 @@ namespace VortexEditor
 
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
         ImGui::PushItemWidth(maxTextWidth);
-        ImGui::TextWrapped(module->m_description.c_str());
+        
+        DrawDescription(drawList, descriptionPos, truncatedDesc.c_str(), ModulesSearch, highlightColor, textColor, highlightTextColor);
         ImGui::PopItemWidth();
         ImGui::PopStyleColor();
 

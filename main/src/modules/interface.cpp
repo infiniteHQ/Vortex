@@ -45,6 +45,11 @@ void ModuleInterface::AddInputEvent(const ModuleInputEvent &event)
 
 void ModuleInterface::RefreshMainWindow()
 {
+    if(!&Cherry::Application::Get())
+    {
+        return;
+    }
+
     // Remove potential old main window
     for (auto &window : Cherry::Application::Get().m_AppWindows)
     {
@@ -67,6 +72,11 @@ void ModuleInterface::RefreshMainWindow()
 void ModuleInterface::SetMainWindow(const std::shared_ptr<Cherry::AppWindow> &win)
 {
     m_main_window = win;
+
+    if(&Cherry::Application::Get())
+    {
+        RefreshMainWindow();
+    }
 }
 
 /**

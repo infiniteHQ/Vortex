@@ -374,7 +374,7 @@ Cherry::Application *CreateEditor(int argc, char **argv)
     app->SetDefaultLocale("en");
     app->SetLocale("fr");
 
-    for(auto& modules : VortexMaker::GetCurrentContext()->IO.em)
+    for (auto &modules : VortexMaker::GetCurrentContext()->IO.em)
     {
         modules->RefreshMainWindow();
     }
@@ -556,14 +556,20 @@ Cherry::Application *CreateEditor(int argc, char **argv)
 
                             if (ImGui::BeginMenu("Tools"))
                             {
-        if (ImGui::MenuItem("Content Browser", "Open a new project content browser", false))
+
+                        Cherry::MenuItemTextSeparator("Contents, managment");
+                              
+        if (ImGui::MenuItem("Content Browser", "Open a content browser", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png")), c_Editor->GetModuleUtilityVisibility()))
         {
             c_Editor->SpawnContentBrowser();
-        }
-        if (ImGui::MenuItem("Logs utility", "Open a new console logs", false))
+        }           
+
+                        Cherry::MenuItemTextSeparator("Console, logs, debugging");
+        if (ImGui::MenuItem("Console logs", "Open a console with logs", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_journal.png")), c_Editor->GetModuleUtilityVisibility()))
         {
             c_Editor->SpawnLogsUtility();
-        }
+        }           
+
                               ImGui::EndMenu();
                             }
 

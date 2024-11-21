@@ -493,16 +493,46 @@ namespace VortexEditor
 			std::string label = std::to_string(m_Selected.size()) + " selected.";
 			ImGui::Text(label.c_str());
 		} });
+        m_AppWindow->m_Closable = true;
+        m_AppWindow->SetCloseCallback([this]()
+                                      { Cherry::DeleteAppWindow(m_AppWindow); });
 
         m_AppWindow->SetRightMenubarCallback([this]()
                                              {
-            ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
-            
-        if(cp_SettingsButton->Render())
-        {
-            //
-        }
-		ImGui::PopStyleColor(); });
+ {
+            static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("LogicContentManager.FindModules.Filter", "####filder");
+            btn->SetScale(0.85f);
+            btn->SetInternalMarginX(10.0f);
+            btn->SetLogoSize(15, 15);
+
+            btn->SetDropDownImage(Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
+            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"));
+         if (btn->Render("LogicContentManager"))
+{
+    ImVec2 mousePos = ImGui::GetMousePos();
+    ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+    ImVec2 popupSize(150, 100);
+
+    if (mousePos.x + popupSize.x > displaySize.x) {
+        mousePos.x -= popupSize.x;
+    }
+    if (mousePos.y + popupSize.y > displaySize.y) {
+        mousePos.y -= popupSize.y;
+    }
+
+    ImGui::SetNextWindowPos(mousePos);
+    ImGui::OpenPopup("ContextMenu");
+}
+
+if (ImGui::BeginPopup("ContextMenu"))
+{
+    ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
+    ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);
+
+    ImGui::EndPopup();
+}
+
+        } });
 
         m_BaseDirectory = start_path;
         m_CurrentDirectory = m_BaseDirectory;
@@ -510,22 +540,25 @@ namespace VortexEditor
         ContentBrowserChild sidebar("RenderSideBar", [this]()
                                     { RenderSideBar(); });
         sidebar.Enable();
-        sidebar.m_BackgroundColor = ImVec4(0.0f, 0.6f, 0.6f, 1.0f);
+        sidebar.m_DefaultSize = 250.0f;
         AddChild(sidebar);
 
         ContentBrowserChild filterbar("RenderFiltersBar", [this]()
                                       { RenderFiltersBar(); });
         filterbar.Disable();
+        filterbar.m_DefaultSize = 250.0f;
         AddChild(filterbar);
 
         ContentBrowserChild contentbar("RenderContentBar", [this]()
                                        { RenderContentBar(); });
         contentbar.Enable();
+        contentbar.m_DefaultSize = 750.0f;
         AddChild(ContentBrowserChild(contentbar));
 
         ContentBrowserChild detailsbar("RenderDetailsBar", [this]()
                                        { RenderDetailsBar(); });
         detailsbar.Disable();
+        detailsbar.m_DefaultSize = 250.0f;
         AddChild(ContentBrowserChild(detailsbar));
     }
 
@@ -571,7 +604,7 @@ namespace VortexEditor
         }
     }
 
-    bool ContentBrowserAppWindow::MyButton(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255), ImU32 borderColor = IM_COL32(150, 150, 150, 255), ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 100.0f, float borderRadius = 5.0f)
+    bool ContentBrowserAppWindow::ItemCard(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255), ImU32 borderColor = IM_COL32(150, 150, 150, 255), ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 100.0f, float borderRadius = 5.0f)
     {
         bool pressed = false;
 
@@ -1340,7 +1373,7 @@ namespace VortexEditor
                     std::string folderSizeString = formatFileSize(folderSize);
                     ImGui::PushID(filenameString.c_str());
 
-                    if (MyButton(filenameString, path, itemEntry.first->m_Description, folderSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_picture_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(itemEntry.first->m_LineColor.x, itemEntry.first->m_LineColor.y, itemEntry.first->m_LineColor.z, itemEntry.first->m_LineColor.w)))
+                    if (ItemCard(filenameString, path, itemEntry.first->m_Description, folderSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_picture_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(itemEntry.first->m_LineColor.x, itemEntry.first->m_LineColor.y, itemEntry.first->m_LineColor.z, itemEntry.first->m_LineColor.w)))
                     {
                         if (ImGui::IsMouseDoubleClicked(0))
                         {
@@ -1388,7 +1421,7 @@ namespace VortexEditor
                     {
                     case FileTypes::File_PICTURE:
                     {
-                        if (MyButton(filenameString, path, "Picture file", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_picture_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(255, 100, 150, 255)))
+                        if (ItemCard(filenameString, path, "Picture file", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_picture_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(255, 100, 150, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1404,7 +1437,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_GIT:
                     {
-                        if (MyButton(filenameString, path, "Git File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_git_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+                        if (ItemCard(filenameString, path, "Git File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_git_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1420,7 +1453,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_H:
                     {
-                        if (MyButton(filenameString, path, "C Header File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_c_h_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255)))
+                        if (ItemCard(filenameString, path, "C Header File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_c_h_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(220, 100, 220, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1436,7 +1469,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_C:
                     {
-                        if (MyButton(filenameString, path, "C Source File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_c_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+                        if (ItemCard(filenameString, path, "C Source File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_c_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1452,7 +1485,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_HPP:
                     {
-                        if (MyButton(filenameString, path, "C++ Header File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_cpp_h_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+                        if (ItemCard(filenameString, path, "C++ Header File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_cpp_h_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1468,7 +1501,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_CPP:
                     {
-                        if (MyButton(filenameString, path, "C++ Source File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_cpp_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
+                        if (ItemCard(filenameString, path, "C++ Source File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_cpp_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(100, 100, 255, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1484,7 +1517,7 @@ namespace VortexEditor
                     }
                     case FileTypes::File_INI:
                     {
-                        if (MyButton(filenameString, path, "Init File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_ini_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
+                        if (ItemCard(filenameString, path, "Init File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_ini_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -1500,7 +1533,7 @@ namespace VortexEditor
                     }
                     default:
                     {
-                        if (MyButton(filenameString, path, "File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_unknow_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
+                        if (ItemCard(filenameString, path, "File", fileSizeString, selected, Application::CookPath("resources/imgs/icons/files/icon_unknow_file.png"), IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255), IM_COL32(150, 150, 150, 255)))
                         {
                             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl))
                             {
@@ -2045,9 +2078,9 @@ namespace VortexEditor
         return m_AppWindow;
     }
 
-    std::shared_ptr<ContentBrowserAppWindow> ContentBrowserAppWindow::Create(const std::string &name, const std::string& base_path)
+    std::shared_ptr<ContentBrowserAppWindow> ContentBrowserAppWindow::Create(const std::string &name, const std::string &base_path)
     {
-        auto instance = std::shared_ptr<ContentBrowserAppWindow>(new ContentBrowserAppWindow(name,base_path));
+        auto instance = std::shared_ptr<ContentBrowserAppWindow>(new ContentBrowserAppWindow(name, base_path));
         instance->SetupRenderCallback();
         return instance;
     }
@@ -2061,95 +2094,134 @@ namespace VortexEditor
                 self->Render();
             } });
     }
+void ContentBrowserAppWindow::Render()
+{
+    const float splitterWidth = 1.5f;
+    const float margin = 10.0f;
 
-    void ContentBrowserAppWindow::Render()
+    auto &children = m_Childs;
+    ImVec2 availableSize = ImGui::GetContentRegionAvail();
+
+    for (size_t i = 0; i < children.size(); ++i)
     {
-        const float splitterWidth = 2.5f;
-        const float margin = 10.0f;
+        auto &child = children[i];
 
-        auto &children = m_Childs;
-        static float lastTotalWidth = 0.0f;
-
-        ImVec2 availableSize = ImGui::GetContentRegionAvail();
-        float totalAvailableSize = availableSize.x - (children.size() - 1) * splitterWidth - 40.0f;
-
-        float usedSize = 0.0f;
-        int childrenWithoutDefaultSize = 0;
-
-        if (totalAvailableSize != lastTotalWidth && lastTotalWidth > 0.0f)
+        if (child.m_Name == "RenderFiltersBar")
         {
-            float scale = totalAvailableSize / lastTotalWidth;
-
-            for (auto &child : children)
-            {
-                child.m_Size *= scale;
-            }
-
-            lastTotalWidth = totalAvailableSize;
+            child.m_Disabled = !m_ShowFilterPannel;
         }
 
-        if (lastTotalWidth == 0.0f)
+        if (child.m_Name == "RenderDetailsBar")
         {
-            float totalSizeAssigned = 0.0f;
+            child.m_Disabled = !m_ShowThumbnailVisualizer;
+        }
+    }
 
-            for (auto &child : children)
-            {
-                if (child.m_Disabled)
-                {
-                    continue;
-                }
+    if (m_ShowFilterPannel != m_PreviousFilterPannelState || m_ShowThumbnailVisualizer != m_PreviousThumbnailVisualizerState)
+    {
+        m_ChildSizesInitialized = false;
+    }
 
-                if (!child.m_Initialized || totalAvailableSize != lastTotalWidth)
-                {
-                    if (child.m_DefaultSize > 0.0f)
-                    {
-                        child.m_Size = child.m_DefaultSize;
-                    }
-                    else
-                    {
-                        child.m_Size = totalAvailableSize / children.size();
-                    }
-                    child.m_Initialized = true;
-                }
-                totalSizeAssigned += child.m_Size;
-            }
+    if (!m_ChildSizesInitialized)
+    {
+        float totalAvailableWidth = availableSize.x - (children.size() - 1) * splitterWidth;
+        int visibleChildrenCount = 0;
 
-            if (totalSizeAssigned < totalAvailableSize)
-            {
-                float remainingSize = totalAvailableSize - totalSizeAssigned;
-                for (auto &child : children)
-                {
-                    child.m_Size += remainingSize / children.size();
-                }
-            }
-
-            lastTotalWidth = totalAvailableSize;
+        for (auto &child : children)
+        {
+            if (!child.m_Disabled)
+                visibleChildrenCount++;
         }
 
-        for (size_t i = 0; i < children.size(); ++i)
+        float defaultSize = visibleChildrenCount > 0 ? totalAvailableWidth / visibleChildrenCount : 0.0f;
+
+        for (auto &child : children)
         {
-            auto &child = children[i];
-
-            ImGui::PushStyleColor(ImGuiCol_ChildBg, child.m_BackgroundColor);
-            ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-
-            std::string childname = child.m_Name + "##cbchildnh" + m_AppWindow->m_Name;
-            ImGui::BeginChild(childname.c_str(), ImVec2(child.m_Size, availableSize.y), true);
-
-            child.m_Child();
-
-            ImGui::EndChild();
-            ImGui::PopStyleColor(2);
-
-            if (i + 1 < children.size())
+            if (!child.m_Disabled)
             {
-                auto &next_child = children[i + 1];
+                child.m_Size = std::max(defaultSize, 50.0f);
+            }
+            else
+            {
+                child.m_Size = 0.0f;
+            }
+        }
+
+        m_ChildSizesInitialized = true;
+    }
+
+    float totalChildSize = 0.0f;
+    int visibleChildrenCount = 0;
+
+    for (auto &child : children)
+    {
+        if (!child.m_Disabled)
+        {
+            totalChildSize += child.m_Size;
+            visibleChildrenCount++;
+        }
+    }
+
+    totalChildSize += (visibleChildrenCount - 1) * splitterWidth;
+
+    if (totalChildSize > availableSize.x)
+    {
+        float scaleFactor = availableSize.x / totalChildSize;
+
+        for (auto &child : children)
+        {
+            if (!child.m_Disabled)
+            {
+                child.m_Size = std::max(child.m_Size * scaleFactor, 50.0f);
+            }
+        }
+    }
+
+    for (size_t i = 0; i < children.size(); ++i)
+    {
+        auto &child = children[i];
+
+        if (child.m_Disabled)
+        {
+            continue;
+        }
+
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, child.m_BackgroundColor);
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+        std::string childname = child.m_Name + "##cbchildnh" + m_AppWindow->m_Name + child.m_Name;
+        ImGui::BeginChild(childname.c_str(), ImVec2(child.m_Size, availableSize.y), true);
+
+        child.m_Child();
+
+        ImGui::EndChild();
+        ImGui::PopStyleColor(2);
+
+        int nextChildIndex = -1;
+        for (size_t j = i + 1; j < children.size(); ++j)
+        {
+            if (!children[j].m_Disabled)
+            {
+                nextChildIndex = j;
+                break;
+            }
+        }
+
+        if (nextChildIndex != -1)
+        {
+            VortexEditor::ContentBrowserChild &next_child = children[nextChildIndex];
+
+            if (i + 1 < children.size() && !children[i].m_Disabled && !next_child.m_Disabled)
+            {
                 ImGui::SameLine();
 
-                std::string lab = "##cbsplitter" + child.m_Name + m_AppWindow->m_Name;
+                std::string lab = child.m_Name + m_AppWindow->m_Name + "####" + child.m_Name;
 
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-                ImGui::Button(lab.c_str(), ImVec2(splitterWidth, -1));
+                if(ImGui::Button(lab.c_str(), ImVec2(splitterWidth, -1)))
+                {
+                    std::cout << "CLICKED " << lab << std::endl;
+                }
                 ImGui::PopStyleColor();
 
                 if (ImGui::IsItemHovered())
@@ -2161,26 +2233,26 @@ namespace VortexEditor
                 {
                     float delta = ImGui::GetIO().MouseDelta.x;
 
-                    if (child.m_Size + delta < child.m_MinSize + margin)
+                    if (child.m_Size >= 50.0f || child.m_Size == 0.0f)
                     {
-                        delta = child.m_MinSize + margin - child.m_Size;
-                    }
-                    if (next_child.m_Size - delta < next_child.m_MinSize + margin)
-                    {
-                        delta = next_child.m_Size - next_child.m_MinSize - margin;
+                        if (next_child.m_Size >= 50.0f || next_child.m_Size == 0.0f)
+                        {
+                            child.m_Size += delta;
+                            next_child.m_Size -= delta;
+                        }
                     }
 
-                    if (child.m_Size + delta >= child.m_MinSize + margin && next_child.m_Size - delta >= next_child.m_MinSize + margin)
-                    {
-                        child.m_Size += delta;
-                        next_child.m_Size -= delta;
-                        lastTotalWidth = totalAvailableSize;
-                    }
+                    child.m_Size = std::max(child.m_Size, 50.0f);
+                    next_child.m_Size = std::max(next_child.m_Size, 50.0f);
                 }
 
                 ImGui::SameLine();
             }
         }
     }
+
+    m_PreviousFilterPannelState = m_ShowFilterPannel;
+    m_PreviousThumbnailVisualizerState = m_ShowThumbnailVisualizer;
+}
 
 }

@@ -248,6 +248,41 @@ static void MyButton(const std::string &name, int w, int h)
     if (cursorPos.x + totalSize.x < windowVisibleX2)
         ImGui::SameLine();
 }
+static void DrawDescription(ImDrawList *drawList, ImVec2 textPos, const char *text, const char *search, ImU32 highlightColor, ImU32 textColor, ImU32 highlightTextColor)
+{
+    if (!text || !search || !*search)
+    {
+        drawList->AddText(textPos, textColor, text);
+        return;
+    }
+
+    const char *start = text;
+    const char *found = strstr(start, search);
+    while (found)
+    {
+        if (found > start)
+        {
+            std::string preText(start, found);
+            drawList->AddText(textPos, textColor, preText.c_str());
+            textPos.x += ImGui::CalcTextSize(preText.c_str()).x;
+        }
+
+        ImVec2 highlightPos = textPos;
+        ImVec2 highlightSize = ImGui::CalcTextSize(search);
+        drawList->AddRectFilled(highlightPos, ImVec2(highlightPos.x + highlightSize.x, highlightPos.y + highlightSize.y), highlightColor);
+        drawList->AddText(textPos, highlightTextColor, search);
+        textPos.x += highlightSize.x;
+
+        start = found + strlen(search);
+        found = strstr(start, search);
+    }
+
+    if (*start)
+    {
+        drawList->AddText(textPos, textColor, start);
+    }
+}
+
 
 static void DrawHighlightedText(ImDrawList *drawList, ImVec2 textPos, const char *text, const char *search, ImU32 highlightColor, ImU32 textColor, ImU32 highlightTextColor)
 {
@@ -261,7 +296,6 @@ static void DrawHighlightedText(ImDrawList *drawList, ImVec2 textPos, const char
     const char *found = strstr(start, search);
     while (found)
     {
-        // Dessiner le texte avant la correspondance
         if (found > start)
         {
             std::string preText(start, found);
@@ -269,19 +303,16 @@ static void DrawHighlightedText(ImDrawList *drawList, ImVec2 textPos, const char
             textPos.x += ImGui::CalcTextSize(preText.c_str()).x;
         }
 
-        // Dessiner la correspondance mise en surbrillance avec un texte noir
         ImVec2 highlightPos = textPos;
         ImVec2 highlightSize = ImGui::CalcTextSize(search);
         drawList->AddRectFilled(highlightPos, ImVec2(highlightPos.x + highlightSize.x, highlightPos.y + highlightSize.y), highlightColor);
         drawList->AddText(textPos, highlightTextColor, search);
         textPos.x += highlightSize.x;
 
-        // Passer à la partie suivante du texte
         start = found + strlen(search);
         found = strstr(start, search);
     }
 
-    // Dessiner le texte restant après la dernière correspondance
     if (*start)
     {
         drawList->AddText(textPos, textColor, start);

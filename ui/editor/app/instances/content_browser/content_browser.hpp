@@ -85,41 +85,30 @@ namespace VortexEditor
         std::string handler_plugin_name;
     };
 
-    struct ContentBrowserChild
+struct ContentBrowserChild
+{
+    std::function<void()> m_Child;
+    std::string m_Name;
+    bool m_Disabled = true;
+    float m_DefaultSize = 0.0f;
+    float m_Size = 0.0f;
+    ImVec4 m_BackgroundColor = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    void Enable()
     {
-        std::function<void()> m_Child;
-        std::string m_Name;
-        bool m_Disabled = true;
-        float m_DefaultSize = 0.0f;
-        float m_MinSize;
-        float m_MaxSize;
-        float m_Size = 200.0f;
-        float m_Ratio = 0.0f;
-        bool m_Resizable = true;
-        bool m_ResizeDisabled = false;
-        bool m_Initialized = false;
-        bool m_InitializedSec = false;
-        bool m_InitializedTh = false;
-        ImVec4 m_BackgroundColor = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+        m_Disabled = false;
+    }
 
-        void Enable()
-        {
-            m_Disabled = true;
-        }
+    void Disable()
+    {
+        m_Disabled = true;
+    }
 
-        void Disable()
-        {
-            m_Disabled = false;
-        }
+    ContentBrowserChild(const std::string &name, const std::function<void()> &child, float defaultSize = 0.0f)
+        : m_Name(name), m_Child(child), m_DefaultSize(defaultSize), m_Size(defaultSize) {}
+        ContentBrowserChild(){};
+};
 
-        ContentBrowserChild(const std::string &name, const std::function<void()> &child, const float &default_size = 0.0f, const bool &resize_disabled = false, const float &min_size = 0.0f, const float &max_size = 0.0f)
-            : m_Name(name),
-              m_Child(child),
-              m_ResizeDisabled(resize_disabled),
-              m_DefaultSize(default_size),
-              m_MinSize(min_size),
-              m_MaxSize(max_size) {}
-    };
 
     class ContentBrowserAppWindow : public std::enable_shared_from_this<ContentBrowserAppWindow>
     {
@@ -131,7 +120,7 @@ namespace VortexEditor
         void SetupRenderCallback();
         void Render();
 
-        bool MyButton(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor, ImU32 borderColor, ImU32 lineColor, float maxTextWidth, float borderRadius);
+        bool ItemCard(const std::string &name, const std::string &path, const std::string &description, const std::string &size, bool selected, const std::string &logo, ImU32 bgColor, ImU32 borderColor, ImU32 lineColor, float maxTextWidth, float borderRadius);
         void AddChild(const ContentBrowserChild &child);
         void ChangeDirectory(const std::filesystem::path &newDirectory);
         void GoBack();
@@ -195,11 +184,16 @@ namespace VortexEditor
         bool m_ShowTypes = false;
         bool m_ShowSizes = false;
 
-        // !!!
-        bool m_ShowFolderPannel = true;
         bool m_ShowFilterPannel = false;
         bool m_ShowThumbnailVisualizer = false;
+        bool m_PreviousFilterPannelState = false;
+        bool m_PreviousThumbnailVisualizerState = false;
+
+        // !!!
+        bool m_ShowFolderPannel = true;
         bool m_ShowSelectionQuantifier = false;
+        bool m_ChildSizesInitialized = false;
+
 
         ContentShowMode m_ShowMode = ContentShowMode::Thumbmails;
 
