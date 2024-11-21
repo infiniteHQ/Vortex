@@ -228,7 +228,7 @@ bool ColorPicker3U32(const char *label, ImU32 *color, ImGuiColorEditFlags flags 
     if (ImGui::Button("Done", ImVec2(75.0f, 0.0f)))
     {
         *color = ImColor(col[0], col[1], col[2]);
-        // VortexMaker::PublishContentBrowserCustomFolder(current_editing_folder.first, VortexMaker::ImU32ToHex(*color), current_editing_folder_is_favorite);
+        VortexMaker::PublishContentBrowserCustomFolder(current_editing_folder.first, VortexMaker::ImU32ToHex(*color), current_editing_folder_is_favorite);
     }
 
     ImGui::PopStyleColor(3);
@@ -427,49 +427,60 @@ namespace VortexEditor
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
 
+static bool wasButtonX1Pressed = false;
+static bool wasButtonX2Pressed = false;
+
 		if (m_BackHistory.empty())
-		{
-            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
-			if (cp_DirectoryUndo->Render("normal"))
-			{
-				//
-			}
-		}
-		else
-		{
-            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"));
-			if (cp_DirectoryUndo->Render("normal"))
-			{
-				GoBack();
-			}
+{
+    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
+    if (cp_DirectoryUndo->Render("GoBack"))
+    {
+        //
+    }
+}
+else
+{
+    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"));
+    if (cp_DirectoryUndo->Render("GoBack"))
+    {
+        GoBack();
+    }
 
-			if (ImGui::IsMouseClicked(3))
-			{
-				GoBack();
-			}
-		}
+    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
 
-		if (m_ForwardHistory.empty())
-		{
-            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
-			if (cp_DirectoryRedo->Render("normal"))
-			{
-				//
-			}
-		}
-		else
-		{
-            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"));
-			if (cp_DirectoryRedo->Render("normal"))
-			{
-				GoForward();
-			}
+    bool isButtonX1Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X1);
+    if (isButtonX1Pressed && !wasButtonX1Pressed) 
+    {
+        GoBack();
+    }
+    wasButtonX1Pressed = isButtonX1Pressed;
+}
 
-			if (ImGui::IsMouseClicked(4))
-			{
-				GoForward();
-			}
-		}
+if (m_ForwardHistory.empty())
+{
+    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
+    if (cp_DirectoryRedo->Render("GoForward"))
+    {
+        //
+    }
+}
+else
+{
+    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"));
+    if (cp_DirectoryRedo->Render("GoForward"))
+    {
+        GoForward();
+    }
+
+    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
+    bool isButtonX2Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X2);
+    if (isButtonX2Pressed && !wasButtonX2Pressed)
+    {
+        GoForward();
+    }
+    wasButtonX2Pressed = isButtonX2Pressed;
+}
+
 		ImGui::PopStyleVar();
 
 		ImGui::PopStyleColor();
@@ -552,7 +563,7 @@ if (ImGui::BeginPopup("ContextMenu"))
         ContentBrowserChild contentbar("RenderContentBar", [this]()
                                        { RenderContentBar(); });
         contentbar.Enable();
-        contentbar.m_DefaultSize = 750.0f;
+        contentbar.m_DefaultSize = 0.0;
         AddChild(ContentBrowserChild(contentbar));
 
         ContentBrowserChild detailsbar("RenderDetailsBar", [this]()
@@ -876,12 +887,10 @@ if (ImGui::BeginPopup("ContextMenu"))
             ImGui::PushID(path.c_str());
             if (ImGui::InputText("", pathRename, sizeof(pathRename), ImGuiInputTextFlags_EnterReturnsTrue))
             {
-                std::cout << "Renamed file to: " << pathRename << std::endl;
                 pathToRename = "";
             }
             if (ImGui::IsItemDeactivatedAfterEdit())
             {
-                std::cout << "Renamed file to: " << pathRename << std::endl;
                 pathToRename = "";
             }
             ImGui::PopID();
@@ -1043,7 +1052,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                                            ImGui::InputText("###AddPool", pool_add_path, sizeof(pool_add_path));
                                            if (ImGui::ImageButtonWithText(Application::Get().GetCurrentRenderedWindow()->get_texture("/usr/local/include/Vortex/imgs/vortex.png"), "Add", ImVec2(0, 0), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1)))
                                            {
-                                               // FIX VortexMaker::PublishPool(pool_add_path);
+                                                VortexMaker::PublishPool(pool_add_path);
                                                pool_add_mode = false;
                                            }
                                            ImGui::SameLine();
@@ -1687,8 +1696,6 @@ if (ImGui::BeginPopup("ContextMenu"))
                             selected = true;
                         }
 
-                        std::cout << "Selected : " << m_Selected.size() << std::endl;
-
                         ImGui::TableNextRow();
                         ImGui::TableNextColumn();
 
@@ -1839,7 +1846,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                                 current_editing_folder = {directoryEntry.path().string(), current_editing_folder.second};
 
                                 current_editing_folder_is_favorite = !current_editing_folder_is_favorite;
-                                // VortexMaker::PublishContentBrowserCustomFolder(current_editing_folder.first, VortexMaker::ImU32ToHex(current_editing_folder.second), current_editing_folder_is_favorite);
+                                VortexMaker::PublishContentBrowserCustomFolder(current_editing_folder.first, VortexMaker::ImU32ToHex(current_editing_folder.second), current_editing_folder_is_favorite);
                             }
 
                             ImGui::EndPopup();
@@ -2094,165 +2101,170 @@ if (ImGui::BeginPopup("ContextMenu"))
                 self->Render();
             } });
     }
-void ContentBrowserAppWindow::Render()
-{
-    const float splitterWidth = 1.5f;
-    const float margin = 10.0f;
 
-    auto &children = m_Childs;
-    ImVec2 availableSize = ImGui::GetContentRegionAvail();
-
-    for (size_t i = 0; i < children.size(); ++i)
+    void ContentBrowserAppWindow::Render()
     {
-        auto &child = children[i];
+        const float splitterWidth = 1.5f;
+        const float margin = 10.0f;
 
-        if (child.m_Name == "RenderFiltersBar")
+        auto &children = m_Childs;
+        ImVec2 availableSize = ImGui::GetContentRegionAvail();
+
+        for (size_t i = 0; i < children.size(); ++i)
         {
-            child.m_Disabled = !m_ShowFilterPannel;
+            auto &child = children[i];
+
+            if (child.m_Name == "RenderFiltersBar")
+            {
+                child.m_Disabled = !m_ShowFilterPannel;
+            }
+
+            if (child.m_Name == "RenderDetailsBar")
+            {
+                child.m_Disabled = !m_ShowThumbnailVisualizer;
+            }
         }
 
-        if (child.m_Name == "RenderDetailsBar")
+        if (m_ShowFilterPannel != m_PreviousFilterPannelState || m_ShowThumbnailVisualizer != m_PreviousThumbnailVisualizerState)
         {
-            child.m_Disabled = !m_ShowThumbnailVisualizer;
+            m_ChildSizesInitialized = false;
         }
-    }
 
-    if (m_ShowFilterPannel != m_PreviousFilterPannelState || m_ShowThumbnailVisualizer != m_PreviousThumbnailVisualizerState)
-    {
-        m_ChildSizesInitialized = false;
-    }
+        if (!m_ChildSizesInitialized)
+        {
+            float totalAvailableWidth = availableSize.x - (children.size() - 1) * splitterWidth;
+            int visibleChildrenCount = 0;
 
-    if (!m_ChildSizesInitialized)
-    {
-        float totalAvailableWidth = availableSize.x - (children.size() - 1) * splitterWidth;
+            for (auto &child : children)
+            {
+                if (!child.m_Disabled)
+                    visibleChildrenCount++;
+            }
+
+            float defaultSize = visibleChildrenCount > 0 ? totalAvailableWidth / visibleChildrenCount : 0.0f;
+
+            for (auto &child : children)
+            {
+                if (!child.m_Disabled)
+                {
+                    if (child.m_DefaultSize == 0.0f)
+                    {
+                        child.m_Size = std::max(defaultSize, 50.0f);
+                    }
+                    else
+                    {
+                        child.m_Size = child.m_DefaultSize;
+                    }
+                }
+                else
+                {
+                    child.m_Size = 0.0f;
+                }
+            }
+
+            m_ChildSizesInitialized = true;
+        }
+
+        float totalChildSize = 0.0f;
         int visibleChildrenCount = 0;
 
         for (auto &child : children)
         {
             if (!child.m_Disabled)
+            {
+                totalChildSize += child.m_Size;
                 visibleChildrenCount++;
-        }
-
-        float defaultSize = visibleChildrenCount > 0 ? totalAvailableWidth / visibleChildrenCount : 0.0f;
-
-        for (auto &child : children)
-        {
-            if (!child.m_Disabled)
-            {
-                child.m_Size = std::max(defaultSize, 50.0f);
-            }
-            else
-            {
-                child.m_Size = 0.0f;
             }
         }
 
-        m_ChildSizesInitialized = true;
-    }
+        totalChildSize += (visibleChildrenCount - 1) * splitterWidth;
 
-    float totalChildSize = 0.0f;
-    int visibleChildrenCount = 0;
-
-    for (auto &child : children)
-    {
-        if (!child.m_Disabled)
+        if (totalChildSize > availableSize.x)
         {
-            totalChildSize += child.m_Size;
-            visibleChildrenCount++;
-        }
-    }
+            float scaleFactor = availableSize.x / totalChildSize;
 
-    totalChildSize += (visibleChildrenCount - 1) * splitterWidth;
-
-    if (totalChildSize > availableSize.x)
-    {
-        float scaleFactor = availableSize.x / totalChildSize;
-
-        for (auto &child : children)
-        {
-            if (!child.m_Disabled)
+            for (auto &child : children)
             {
-                child.m_Size = std::max(child.m_Size * scaleFactor, 50.0f);
-            }
-        }
-    }
-
-    for (size_t i = 0; i < children.size(); ++i)
-    {
-        auto &child = children[i];
-
-        if (child.m_Disabled)
-        {
-            continue;
-        }
-
-        ImGui::PushStyleColor(ImGuiCol_ChildBg, child.m_BackgroundColor);
-        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-
-        std::string childname = child.m_Name + "##cbchildnh" + m_AppWindow->m_Name + child.m_Name;
-        ImGui::BeginChild(childname.c_str(), ImVec2(child.m_Size, availableSize.y), true);
-
-        child.m_Child();
-
-        ImGui::EndChild();
-        ImGui::PopStyleColor(2);
-
-        int nextChildIndex = -1;
-        for (size_t j = i + 1; j < children.size(); ++j)
-        {
-            if (!children[j].m_Disabled)
-            {
-                nextChildIndex = j;
-                break;
-            }
-        }
-
-        if (nextChildIndex != -1)
-        {
-            VortexEditor::ContentBrowserChild &next_child = children[nextChildIndex];
-
-            if (i + 1 < children.size() && !children[i].m_Disabled && !next_child.m_Disabled)
-            {
-                ImGui::SameLine();
-
-                std::string lab = child.m_Name + m_AppWindow->m_Name + "####" + child.m_Name;
-
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-                if(ImGui::Button(lab.c_str(), ImVec2(splitterWidth, -1)))
+                if (!child.m_Disabled)
                 {
-                    std::cout << "CLICKED " << lab << std::endl;
+                    child.m_Size = std::max(child.m_Size * scaleFactor, 50.0f);
                 }
-                ImGui::PopStyleColor();
+            }
+        }
 
-                if (ImGui::IsItemHovered())
+        for (size_t i = 0; i < children.size(); ++i)
+        {
+            auto &child = children[i];
+
+            if (child.m_Disabled)
+            {
+                continue;
+            }
+
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, child.m_BackgroundColor);
+            ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+            std::string childname = child.m_Name + "##cbchildnh" + m_AppWindow->m_Name + child.m_Name;
+            ImGui::BeginChild(childname.c_str(), ImVec2(child.m_Size, availableSize.y), true);
+
+            child.m_Child();
+
+            ImGui::EndChild();
+            ImGui::PopStyleColor(2);
+
+            int nextChildIndex = -1;
+            for (size_t j = i + 1; j < children.size(); ++j)
+            {
+                if (!children[j].m_Disabled)
                 {
-                    ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+                    nextChildIndex = j;
+                    break;
                 }
+            }
 
-                if (ImGui::IsItemActive())
+            if (nextChildIndex != -1)
+            {
+                VortexEditor::ContentBrowserChild &next_child = children[nextChildIndex];
+
+                if (i + 1 < children.size() && !children[i].m_Disabled && !next_child.m_Disabled)
                 {
-                    float delta = ImGui::GetIO().MouseDelta.x;
+                    ImGui::SameLine();
 
-                    if (child.m_Size >= 50.0f || child.m_Size == 0.0f)
+                    std::string lab = child.m_Name + m_AppWindow->m_Name + "####" + child.m_Name;
+
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+                    ImGui::Button(lab.c_str(), ImVec2(splitterWidth, -1));
+                    ImGui::PopStyleColor();
+
+                    if (ImGui::IsItemHovered())
                     {
-                        if (next_child.m_Size >= 50.0f || next_child.m_Size == 0.0f)
-                        {
-                            child.m_Size += delta;
-                            next_child.m_Size -= delta;
-                        }
+                        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
                     }
 
-                    child.m_Size = std::max(child.m_Size, 50.0f);
-                    next_child.m_Size = std::max(next_child.m_Size, 50.0f);
-                }
+                    if (ImGui::IsItemActive())
+                    {
+                        float delta = ImGui::GetIO().MouseDelta.x;
 
-                ImGui::SameLine();
+                        if (child.m_Size >= 50.0f || child.m_Size == 0.0f)
+                        {
+                            if (next_child.m_Size >= 50.0f || next_child.m_Size == 0.0f)
+                            {
+                                child.m_Size += delta;
+                                next_child.m_Size -= delta;
+                            }
+                        }
+
+                        child.m_Size = std::max(child.m_Size, 50.0f);
+                        next_child.m_Size = std::max(next_child.m_Size, 50.0f);
+                    }
+
+                    ImGui::SameLine();
+                }
             }
         }
-    }
 
-    m_PreviousFilterPannelState = m_ShowFilterPannel;
-    m_PreviousThumbnailVisualizerState = m_ShowThumbnailVisualizer;
-}
+        m_PreviousFilterPannelState = m_ShowFilterPannel;
+        m_PreviousThumbnailVisualizerState = m_ShowThumbnailVisualizer;
+    }
 
 }
