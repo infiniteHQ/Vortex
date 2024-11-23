@@ -16,11 +16,12 @@ target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/src
 )
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler ui_crash_handler_build)
+target_link_libraries(vortex_shared PUBLIC crash_handler)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/editor ui_editor_build)
 target_link_libraries(vortex_shared PUBLIC editor)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler ui_crash_handler_build)
-target_link_libraries(vortex_shared PUBLIC crash_handler)
 
 target_link_libraries(vortex_shared PUBLIC cherry)
 

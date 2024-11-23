@@ -76,16 +76,18 @@ namespace VortexEditor
             truncatedText = name + "\n";
         }
 
-
-        const char *originalDesc = module->m_description.c_str();
-        std::string truncatedDesc = module->m_description;
+std::string truncatedDesc = module->m_description;
+if (truncatedDesc.length() > 100) {
+    truncatedDesc = truncatedDesc.substr(0, 97) + "...";
+}
+const char *originalDesc = truncatedDesc.c_str();
 
         if (ImGui::CalcTextSize(originalDesc).x > maxTextWidth)
         {
-            truncatedDesc = module->m_description.substr(0, 20);
+            truncatedDesc = module->m_description.substr(0, 90);
             if (ImGui::CalcTextSize(truncatedDesc.c_str()).x > maxTextWidth)
             {
-                truncatedDesc = module->m_description.substr(0, 10) + "\n" + module->m_description.substr(10, 10);
+                truncatedDesc = module->m_description.substr(0, 55) + "\n" + module->m_description.substr(55, 55);
             }
         }
         else
@@ -182,9 +184,9 @@ namespace VortexEditor
         ImGui::SetCursorScreenPos(descriptionPos);
 
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-        ImGui::PushItemWidth(maxTextWidth);
+        ImGui::PushItemWidth(fixedSize.x);
         
-        DrawDescription(drawList, descriptionPos, truncatedDesc.c_str(), ModulesSearch, highlightColor, textColor, highlightTextColor);
+        DrawDescription(drawList, descriptionPos, truncatedDesc.c_str(), ModulesSearch, highlightColor, Cherry::HexToImU32("#8A8A8AFF"), highlightTextColor, oldfontsize);
         ImGui::PopItemWidth();
         ImGui::PopStyleColor();
 

@@ -372,7 +372,7 @@ Cherry::Application *CreateEditor(int argc, char **argv)
     app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));
     app->AddLocale("en", Cherry::GetPath("resources/locales/en.json"));
     app->SetDefaultLocale("en");
-    app->SetLocale("fr");
+    app->SetLocale("en");
 
     for (auto &modules : VortexMaker::GetCurrentContext()->IO.em)
     {

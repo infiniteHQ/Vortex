@@ -248,8 +248,12 @@ static void MyButton(const std::string &name, int w, int h)
     if (cursorPos.x + totalSize.x < windowVisibleX2)
         ImGui::SameLine();
 }
-static void DrawDescription(ImDrawList *drawList, ImVec2 textPos, const char *text, const char *search, ImU32 highlightColor, ImU32 textColor, ImU32 highlightTextColor)
+static void DrawDescription(ImDrawList *drawList, ImVec2 textPos, const char *text, const char *search, ImU32 highlightColor, ImU32 textColor, ImU32 highlightTextColor, float oldfontsize)
 {
+
+    ImGui::GetFont()->Scale = 0.7f;
+    ImGui::PushFont(ImGui::GetFont());
+
     if (!text || !search || !*search)
     {
         drawList->AddText(textPos, textColor, text);
@@ -281,8 +285,9 @@ static void DrawDescription(ImDrawList *drawList, ImVec2 textPos, const char *te
     {
         drawList->AddText(textPos, textColor, start);
     }
+    ImGui::GetFont()->Scale = oldfontsize;
+    ImGui::PopFont();
 }
-
 
 static void DrawHighlightedText(ImDrawList *drawList, ImVec2 textPos, const char *text, const char *search, ImU32 highlightColor, ImU32 textColor, ImU32 highlightTextColor)
 {
@@ -538,18 +543,15 @@ static void MyButton(const std::shared_ptr<EnvProject> envproject, int xsize = 1
 
     drawList->AddRectFilled(smallRectPos, ImVec2(smallRectPos.x + smallRectSize.x, smallRectPos.y + smallRectSize.y), IM_COL32(0, 0, 0, 255));
     ImVec2 versionTextPos = ImVec2(smallRectPos.x + (smallRectSize.x - ImGui::CalcTextSize(versionText).x) / 2, smallRectPos.y + (smallRectSize.y - ImGui::CalcTextSize("version").y) / 2);
-    
-    if(CheckIfVortexVersionExist(envproject->compatibleWith))
+
+    if (CheckIfVortexVersionExist(envproject->compatibleWith))
     {
-    drawList->AddText(versionTextPos, IM_COL32(255, 255, 255, 255), versionText);
-
+        drawList->AddText(versionTextPos, IM_COL32(255, 255, 255, 255), versionText);
     }
-    else{
-    drawList->AddText(versionTextPos, IM_COL32(255, 20, 20, 255), versionText);
-
+    else
+    {
+        drawList->AddText(versionTextPos, IM_COL32(255, 20, 20, 255), versionText);
     }
-    
-    
 
     ImVec2 textPos = ImVec2(cursorPos.x + (squareSize.x - textSize.x) / 2, cursorPos.y + squareSize.y + 5);
 

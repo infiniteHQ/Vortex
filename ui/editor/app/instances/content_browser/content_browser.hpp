@@ -58,23 +58,69 @@ namespace VortexEditor
         File_COBOL,
         File_PASCAL,
         File_CARBON,
+        File_PYTHON,
+        File_RUBY,
+        File_PHP,
+        File_SWIFT,
+        File_CSHARP,
+        File_VB,
+        File_DART,
+        File_KOTLIN,
+        File_SCALA,
+        File_PERL,
+        File_SHELL,
+        File_BATCH,
+        File_LUA,
+        File_R,
+        File_MATLAB,
+        File_JULIA,
+        File_SQL,
+        File_GROOVY,
+        File_FORTRAN,
+        File_ERLANG,
+        File_ELIXIR,
+        File_OCAML,
 
-        // Misc
+        // Web and Markup
+        File_HTML,
+        File_CSS,
+        File_XML,
+
+        // Config
         File_CFG,
         File_JSON,
-        File_PICTURE,
-        File_TXT,
-        File_MD,
         File_YAML,
         File_INI,
+
+        // Git
         File_GIT,
 
-        // Vortex
-        File_VORTEX_CONFIG,
+        // Documents
+        File_TXT,
+        File_MD,
+        File_DOC,
+        File_PDF,
+
+        // Pictures
+        File_PICTURE,
+
+        // Videos
+        File_VIDEO,
+
+        // Audio
+        File_AUDIO,
+
+        // Archives
+        File_ARCHIVE,
+
+        // Miscellaneous
+        File_LOG,
+        File_BACKUP,
+        File_TEMP,
+        File_DATA,
 
         // Other
-        File_UNKNOW,
-
+        File_UNKNOWN,
     };
 
     struct FileHandler
@@ -85,30 +131,29 @@ namespace VortexEditor
         std::string handler_plugin_name;
     };
 
-struct ContentBrowserChild
-{
-    std::function<void()> m_Child;
-    std::string m_Name;
-    bool m_Disabled = true;
-    float m_DefaultSize = 0.0f;
-    float m_Size = 0.0f;
-    ImVec4 m_BackgroundColor = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-
-    void Enable()
+    struct ContentBrowserChild
     {
-        m_Disabled = false;
-    }
+        std::function<void()> m_Child;
+        std::string m_Name;
+        bool m_Disabled = true;
+        float m_DefaultSize = 0.0f;
+        float m_Size = 0.0f;
+        ImVec4 m_BackgroundColor = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    void Disable()
-    {
-        m_Disabled = true;
-    }
+        void Enable()
+        {
+            m_Disabled = false;
+        }
 
-    ContentBrowserChild(const std::string &name, const std::function<void()> &child, float defaultSize = 0.0f)
-        : m_Name(name), m_Child(child), m_DefaultSize(defaultSize), m_Size(defaultSize) {}
-        ContentBrowserChild(){};
-};
+        void Disable()
+        {
+            m_Disabled = true;
+        }
 
+        ContentBrowserChild(const std::string &name, const std::function<void()> &child, float defaultSize = 0.0f)
+            : m_Name(name), m_Child(child), m_DefaultSize(defaultSize), m_Size(defaultSize) {}
+        ContentBrowserChild() {};
+    };
 
     class ContentBrowserAppWindow : public std::enable_shared_from_this<ContentBrowserAppWindow>
     {
@@ -125,7 +170,7 @@ struct ContentBrowserChild
         void ChangeDirectory(const std::filesystem::path &newDirectory);
         void GoBack();
         void GoForward();
-        void DrawPathBar();
+        void DrawPathBar(const std::string &path);
 
         void RenderSideBar();
         void RenderFiltersBar();
@@ -158,12 +203,20 @@ struct ContentBrowserChild
 
         std::string GetContentBrowserFolderColor(const std::string &path)
         {
+            size_t lastSlashIndex = path.find_last_of('/');
+            std::string folderName = path.substr(lastSlashIndex + 1);
+
             for (auto &colored_folder : m_FolderColors)
             {
                 if (colored_folder.first == path)
                 {
                     return colored_folder.second;
                 }
+            }
+
+            if (!folderName.empty() && folderName[0] == '.')
+            {
+                return "#544F46FF";
             }
 
             return "#997D44FF";
@@ -194,7 +247,6 @@ struct ContentBrowserChild
         bool m_ShowSelectionQuantifier = false;
         bool m_ChildSizesInitialized = false;
 
-
         ContentShowMode m_ShowMode = ContentShowMode::Thumbmails;
 
         std::filesystem::path m_BaseDirectory;
@@ -208,6 +260,7 @@ struct ContentBrowserChild
         std::vector<std::string> m_CutSelection;
 
         std::string m_DefaultFolderColor;
+        std::string m_DefaultHiddenFolderColor;
 
         // Path/Color
         std::vector<std::pair<std::string, std::string>> m_FolderColors;

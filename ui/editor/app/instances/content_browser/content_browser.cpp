@@ -2,6 +2,16 @@
 
 using namespace Cherry;
 
+/*
+TODO
+- FIX Favortie/Colors/Pools
+- centered folders
+
+- Fix side navigation
+- Add pools
+- Home on Pathbar
+*/
+
 // To move in class members
 static float padding = 30.0f;
 static float thumbnailSize = 94.0f;
@@ -316,8 +326,11 @@ namespace VortexEditor
     FileTypes detect_file(const std::string &path)
     {
         static const std::unordered_map<std::string, FileTypes> extension_map = {
+            // Very low level
             {"asm", FileTypes::File_ASM},
             {"bin", FileTypes::File_BIN},
+
+            // Programming languages
             {"c", FileTypes::File_C},
             {"h", FileTypes::File_H},
             {"cpp", FileTypes::File_CPP},
@@ -326,18 +339,103 @@ namespace VortexEditor
             {"rs", FileTypes::File_RUST},
             {"zig", FileTypes::File_ZIG},
             {"go", FileTypes::File_GO},
-            {"cfg", FileTypes::File_CFG},
+            {"java", FileTypes::File_JAVA},
+            {"js", FileTypes::File_JAVASCRIPT},
+            {"ts", FileTypes::File_JAVASCRIPT}, // TypeScript as JavaScript
+            {"cob", FileTypes::File_COBOL},
+            {"p", FileTypes::File_PASCAL},
+            {"pas", FileTypes::File_PASCAL},
+            {"carbon", FileTypes::File_CARBON},
+            {"py", FileTypes::File_PYTHON},
+            {"rb", FileTypes::File_RUBY},
+            {"php", FileTypes::File_PHP},
+            {"swift", FileTypes::File_SWIFT},
+            {"cs", FileTypes::File_CSHARP},
+            {"vb", FileTypes::File_VB},
+            {"dart", FileTypes::File_DART},
+            {"kt", FileTypes::File_KOTLIN},
+            {"scala", FileTypes::File_SCALA},
+            {"pl", FileTypes::File_PERL},
+            {"sh", FileTypes::File_SHELL},
+            {"bat", FileTypes::File_BATCH},
+            {"lua", FileTypes::File_LUA},
+            {"r", FileTypes::File_R},
+            {"m", FileTypes::File_MATLAB},
+            {"jl", FileTypes::File_JULIA},
+            {"sql", FileTypes::File_SQL},
+            {"groovy", FileTypes::File_GROOVY},
+            {"f90", FileTypes::File_FORTRAN},
+            {"erl", FileTypes::File_ERLANG},
+            {"ex", FileTypes::File_ELIXIR},
+            {"ml", FileTypes::File_OCAML},
+
+            // Web and Markup
+            {"html", FileTypes::File_HTML},
+            {"htm", FileTypes::File_HTML},
+            {"css", FileTypes::File_CSS},
+            {"scss", FileTypes::File_CSS},
+            {"xml", FileTypes::File_XML},
             {"json", FileTypes::File_JSON},
-            {"txt", FileTypes::File_TXT},
-            {"md", FileTypes::File_MD},
             {"yaml", FileTypes::File_YAML},
+            {"yml", FileTypes::File_YAML},
+
+            // Config
+            {"cfg", FileTypes::File_CFG},
             {"ini", FileTypes::File_INI},
+            {"env", FileTypes::File_INI},
+
+            // Git
             {"gitignore", FileTypes::File_GIT},
             {"gitmodules", FileTypes::File_GIT},
-            {"git", FileTypes::File_GIT},
+            {"gitattributes", FileTypes::File_GIT},
+
+            // Documents
+            {"txt", FileTypes::File_TXT},
+            {"md", FileTypes::File_MD},
+            {"rst", FileTypes::File_MD},
+            {"doc", FileTypes::File_DOC},
+            {"docx", FileTypes::File_DOC},
+            {"pdf", FileTypes::File_PDF},
+            {"odt", FileTypes::File_DOC},
+
+            // Pictures
             {"png", FileTypes::File_PICTURE},
             {"jpg", FileTypes::File_PICTURE},
             {"jpeg", FileTypes::File_PICTURE},
+            {"bmp", FileTypes::File_PICTURE},
+            {"gif", FileTypes::File_PICTURE},
+            {"svg", FileTypes::File_PICTURE},
+            {"webp", FileTypes::File_PICTURE},
+            {"ico", FileTypes::File_PICTURE},
+
+            // Videos
+            {"mp4", FileTypes::File_VIDEO},
+            {"avi", FileTypes::File_VIDEO},
+            {"mkv", FileTypes::File_VIDEO},
+            {"mov", FileTypes::File_VIDEO},
+            {"wmv", FileTypes::File_VIDEO},
+            {"flv", FileTypes::File_VIDEO},
+
+            // Audio
+            {"mp3", FileTypes::File_AUDIO},
+            {"wav", FileTypes::File_AUDIO},
+            {"flac", FileTypes::File_AUDIO},
+            {"aac", FileTypes::File_AUDIO},
+            {"ogg", FileTypes::File_AUDIO},
+
+            // Archives
+            {"zip", FileTypes::File_ARCHIVE},
+            {"rar", FileTypes::File_ARCHIVE},
+            {"7z", FileTypes::File_ARCHIVE},
+            {"tar", FileTypes::File_ARCHIVE},
+            {"gz", FileTypes::File_ARCHIVE},
+            {"bz2", FileTypes::File_ARCHIVE},
+
+            // Miscellaneous
+            {"log", FileTypes::File_LOG},
+            {"bak", FileTypes::File_BACKUP},
+            {"tmp", FileTypes::File_TEMP},
+            {"dat", FileTypes::File_DATA},
         };
 
         std::string extension = get_extension(path);
@@ -348,36 +446,75 @@ namespace VortexEditor
         }
         else
         {
-            return FileTypes::File_UNKNOW;
+            return FileTypes::File_UNKNOWN;
         }
     }
 
     static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>> recognized_modules_items;
+    void ContentBrowserAppWindow::DrawPathBar(const std::string &path)
+    {
+        // Calculer automatiquement la taille en fonction du contenu
+        ImVec2 contentSize(ImGui::CalcTextSize(path.c_str()).x + 70.0f, 0);
+        ImGui::BeginChild("PathBar", ImVec2(contentSize.x, 0), ImGuiWindowFlags_NoScrollbar); // Réduire la hauteur à 25 (ou une valeur ajustée)
+
+#ifdef _WIN32
+        const char separator = '\\';
+#else
+        const char separator = '/';
+#endif
+
+        std::vector<std::string> elements;
+        std::stringstream ss(path);
+        std::string segment;
+
+        // Découper le chemin en segments
+        while (std::getline(ss, segment, separator))
+        {
+            elements.push_back(segment);
+        }
+
+        // Affichage des segments du chemin
+        for (size_t i = 0; i < elements.size(); ++i)
+        {
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", elements[i].c_str());
+
+            if (i < elements.size() - 1)
+            {
+                ImGui::SameLine();
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+                ImGui::TextUnformatted("/");
+                ImGui::PopStyleColor();
+                ImGui::SameLine();
+            }
+        }
+
+        ImGui::EndChild();
+    }
 
     ContentBrowserAppWindow::ContentBrowserAppWindow(const std::string &name, const std::string &start_path)
     {
         m_AppWindow = std::make_shared<AppWindow>(name, name);
-        m_AppWindow->SetIcon("/usr/local/include/Vortex/imgs/vortex.png");
+        m_AppWindow->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"));
         std::shared_ptr<AppWindow> win = m_AppWindow;
 
-        cp_SaveButton = Application::Get().CreateComponent<ImageTextButtonSimple>("save_button", Application::Get().GetLocale("loc.content_browser.save_all") + "####content_browser.save_all", Application::CookPath("resources/imgs/icons/misc/icon_save.png"));
+        cp_SaveButton = Application::Get().CreateComponent<ImageTextButtonSimple>("save_button", Application::Get().GetLocale("loc.window.content.content_browser.save") + "####content_browser.save_all", Application::CookPath("resources/imgs/icons/misc/icon_save.png"));
         cp_SaveButton->SetScale(0.85f);
         cp_SaveButton->SetLogoSize(15, 15);
         cp_SaveButton->SetBackgroundColorIdle("#00000000");
         cp_SaveButton->SetBorderColorIdle("#00000000");
 
-        cp_ImportButton = Application::Get().CreateComponent<ImageTextButtonSimple>("import_button", Application::Get().GetLocale("loc.content_browser.import") + "####content_browser.import", Application::CookPath("resources/imgs/icons/misc/icon_import.png"));
+        cp_ImportButton = Application::Get().CreateComponent<ImageTextButtonSimple>("import_button", Application::Get().GetLocale("loc.window.content.content_browser.import") + "####content_browser.import", Application::CookPath("resources/imgs/icons/misc/icon_import.png"));
         cp_ImportButton->SetScale(0.85f);
         cp_ImportButton->SetLogoSize(15, 15);
         cp_ImportButton->SetBackgroundColorIdle("#00000000");
         cp_ImportButton->SetBorderColorIdle("#00000000");
 
-        cp_AddButton = Application::Get().CreateComponent<ImageTextButtonSimple>("add_button", Application::Get().GetLocale("loc.content_browser.add") + "####content_browser.add", Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
+        cp_AddButton = Application::Get().CreateComponent<ImageTextButtonSimple>("add_button", Application::Get().GetLocale("loc.window.content.content_browser.add") + "####content_browser.add", Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
         cp_AddButton->SetScale(0.85f);
         cp_AddButton->SetInternalMarginX(10.0f);
         cp_AddButton->SetLogoSize(15, 15);
 
-        cp_SettingsButton = Application::Get().CreateComponent<CustomDrowpdownImageButtonSimple>("setgings_button", Application::Get().GetLocale("loc.content_browser.add") + "####content_browser.settings", Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
+        cp_SettingsButton = Application::Get().CreateComponent<CustomDrowpdownImageButtonSimple>("settings_button", Application::Get().GetLocale("loc.window.content.content_browser.options") + "####content_browser.settings", Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
         cp_SettingsButton->SetScale(0.85f);
         cp_SettingsButton->SetInternalMarginX(10.0f);
         cp_SettingsButton->SetLogoSize(15, 15);
@@ -393,117 +530,112 @@ namespace VortexEditor
         cp_DirectoryUndo->SetBorderColorIdle("#00000000");
         cp_DirectoryUndo->SetScale(0.85f);
 
+        for (auto custom_folder : VortexMaker::GetCurrentContext()->IO.contentbrowser_customfolders)
+        {
+            if (custom_folder->m_IsFav)
+            {
+                m_FavoriteFolders.push_back(custom_folder->path);
+            }
+
+            if (custom_folder->m_Color != "#fdaa00" || custom_folder->m_Color != m_DefaultFolderColor)
+            {
+                m_FolderColors.push_back({custom_folder->path, custom_folder->m_Color});
+            }
+        }
+
         m_AppWindow->SetLeftMenubarCallback([this]()
                                             {
-            ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
-            
-        if(cp_AddButton->Render())
-        {
-            ImGui::InsertNotification({ImGuiToastType::Success, 3000, "That is a success! %s", "(Format here)"});
-        }
+                                                ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
 
-		ImGui::PopStyleColor();
-        
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(62, 62, 62, 0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(62, 62, 62, 0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(62, 62, 62, 0));
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(62, 62, 62, 0));
-        
-        if(cp_SaveButton->Render())
-        {
-            //
-        }
+                                                if (cp_AddButton->Render())
+                                                {
+                                                    ImGui::InsertNotification({ImGuiToastType::Success, 3000, "That is a success! %s", "(Format here)"});
+                                                }
 
-        if(cp_ImportButton->Render())
-        {
-            //
-        }
-        
-		ImGui::PopStyleColor(4);
+                                                ImGui::PopStyleColor();
 
-		ImGui::Separator();
+                                                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(62, 62, 62, 0));
+                                                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(62, 62, 62, 0));
+                                                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(62, 62, 62, 0));
+                                                ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(62, 62, 62, 0));
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+                                                if (cp_SaveButton->Render())
+                                                {
+                                                    //
+                                                }
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
+                                                if (cp_ImportButton->Render())
+                                                {
+                                                    //
+                                                }
 
-static bool wasButtonX1Pressed = false;
-static bool wasButtonX2Pressed = false;
+                                                ImGui::PopStyleColor(4);
 
-		if (m_BackHistory.empty())
-{
-    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
-    if (cp_DirectoryUndo->Render("GoBack"))
-    {
-        //
-    }
-}
-else
-{
-    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"));
-    if (cp_DirectoryUndo->Render("GoBack"))
-    {
-        GoBack();
-    }
+                                                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+                                                ImGui::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444FF"));
+                                                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
+                                                ImGui::Separator();
 
-    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
+                                                static bool wasButtonX1Pressed = false;
+                                                static bool wasButtonX2Pressed = false;
 
-    bool isButtonX1Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X1);
-    if (isButtonX1Pressed && !wasButtonX1Pressed) 
-    {
-        GoBack();
-    }
-    wasButtonX1Pressed = isButtonX1Pressed;
-}
+                                                if (m_BackHistory.empty())
+                                                {
+                                                    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
+                                                    if (cp_DirectoryUndo->Render("GoBack"))
+                                                    {
+                                                        //
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"));
+                                                    if (cp_DirectoryUndo->Render("GoBack"))
+                                                    {
+                                                        GoBack();
+                                                    }
 
-if (m_ForwardHistory.empty())
-{
-    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
-    if (cp_DirectoryRedo->Render("GoForward"))
-    {
-        //
-    }
-}
-else
-{
-    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"));
-    if (cp_DirectoryRedo->Render("GoForward"))
-    {
-        GoForward();
-    }
+                                                    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
 
-    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
-    bool isButtonX2Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X2);
-    if (isButtonX2Pressed && !wasButtonX2Pressed)
-    {
-        GoForward();
-    }
-    wasButtonX2Pressed = isButtonX2Pressed;
-}
+                                                    bool isButtonX1Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X1);
+                                                    if (isButtonX1Pressed && !wasButtonX1Pressed)
+                                                    {
+                                                        GoBack();
+                                                    }
+                                                    wasButtonX1Pressed = isButtonX1Pressed;
+                                                }
 
-		ImGui::PopStyleVar();
+                                                if (m_ForwardHistory.empty())
+                                                {
+                                                    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
+                                                    if (cp_DirectoryRedo->Render("GoForward"))
+                                                    {
+                                                        //
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"));
+                                                    if (cp_DirectoryRedo->Render("GoForward"))
+                                                    {
+                                                        GoForward();
+                                                    }
 
-		ImGui::PopStyleColor();
+                                                    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
+                                                    bool isButtonX2Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X2);
+                                                    if (isButtonX2Pressed && !wasButtonX2Pressed)
+                                                    {
+                                                        GoForward();
+                                                    }
+                                                    wasButtonX2Pressed = isButtonX2Pressed;
+                                                }
 
-		ImGui::Separator();
+                                                ImGui::PopStyleVar();
 
-		if (m_Selected.size() > 0)
-		{
-			std::string label = std::to_string(m_Selected.size()) + " copies";
-			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), label.c_str());
-		}
+                                                ImGui::Separator();
+                                                ImGui::PopStyleColor(2);
 
-		if (m_CutSelection.size() > 0)
-		{
-			std::string label = std::to_string(m_CutSelection.size()) + " cuts";
-			ImGui::Text(label.c_str());
-		}
-
-		if (m_Selected.size() > 0)
-		{
-			std::string label = std::to_string(m_Selected.size()) + " selected.";
-			ImGui::Text(label.c_str());
-		} });
+                                                this->DrawPathBar(m_CurrentDirectory.string()); });
         m_AppWindow->m_Closable = true;
         m_AppWindow->SetCloseCallback([this]()
                                       { Cherry::DeleteAppWindow(m_AppWindow); });
@@ -511,13 +643,13 @@ else
         m_AppWindow->SetRightMenubarCallback([this]()
                                              {
  {
-            static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("LogicContentManager.FindModules.Filter", "####filder");
+            static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("LogicContentManager.FindModules.Filter", Application::Get().GetLocale("loc.window.content.content_browser.options"));
             btn->SetScale(0.85f);
             btn->SetInternalMarginX(10.0f);
             btn->SetLogoSize(15, 15);
 
             btn->SetDropDownImage(Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
-            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"));
+            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"));
          if (btn->Render("LogicContentManager"))
 {
     ImVec2 mousePos = ImGui::GetMousePos();
@@ -544,6 +676,8 @@ if (ImGui::BeginPopup("ContextMenu"))
 }
 
         } });
+        m_AppWindow->SetLeftBottombarCallback([this]()
+                                              { ImGui::Text("3 selected."); });
 
         m_BaseDirectory = start_path;
         m_CurrentDirectory = m_BaseDirectory;
@@ -627,6 +761,9 @@ if (ImGui::BeginPopup("ContextMenu"))
         float versionBoxWidth = 10.0f;
         float versionBoxHeight = 20.0f;
         float thumbnailIconOffsetY = 30.0f;
+
+        float oldfontsize = ImGui::GetFont()->Scale;
+        ImFont *oldFont = ImGui::GetFont();
 
         if (selected)
         {
@@ -748,14 +885,7 @@ if (ImGui::BeginPopup("ContextMenu"))
 
         if (ImGui::BeginPopupContextItem("ContextPopup"))
         {
-            ImGui::GetFont()->Scale *= 0.9;
-            ImGui::PushFont(ImGui::GetFont());
-
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
-
-            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-            ImGui::Text("Main");
-            ImGui::PopStyleColor();
+            Cherry::MenuItemTextSeparator("Main");
 
             if (ImGui::MenuItem("Rename", "Ctrl + R"))
             {
@@ -819,22 +949,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                 }
             }
 
-            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-            ImGui::Separator();
-            ImGui::PopStyleColor();
-
-            ImGui::GetFont()->Scale *= 0.9;
-            ImGui::PushFont(ImGui::GetFont());
-
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
-
-            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-            ImGui::Text("Customization");
-            ImGui::PopStyleColor();
-
-            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-            ImGui::Separator();
-            ImGui::PopStyleColor();
+            Cherry::MenuItemTextSeparator("Customizations");
 
             ImGui::EndPopup();
         }
@@ -856,7 +971,7 @@ if (ImGui::BeginPopup("ContextMenu"))
         static ImTextureID logotexture = Application::GetCurrentRenderedWindow()->get_texture(logo);
         drawList->AddImage(logotexture, logoPos, ImVec2(logoPos.x + squareSize.x, logoPos.y + squareSize.y));
 
-        ImGui::GetFont()->Scale *= 0.7;
+        ImGui::GetFont()->Scale = 0.7;
         ImGui::PushFont(ImGui::GetFont());
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
         ImGui::PushItemWidth(maxTextWidth);
@@ -864,14 +979,14 @@ if (ImGui::BeginPopup("ContextMenu"))
         ImGui::PopItemWidth();
         ImGui::PopStyleColor();
 
-        ImGui::GetFont()->Scale = 1.0f;
+        ImGui::GetFont()->Scale = oldfontsize;
         ImGui::PopFont();
 
         ImVec2 lineStart = ImVec2(cursorPos.x, cursorPos.y + squareSize.y + thumbnailIconOffsetY + separatorHeight);
         ImVec2 lineEnd = ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + squareSize.y + thumbnailIconOffsetY + separatorHeight);
         drawList->AddLine(lineStart, lineEnd, lineColor, separatorHeight);
 
-        ImGui::GetFont()->Scale *= 0.9;
+        ImGui::GetFont()->Scale = 0.9;
         ImGui::PushFont(ImGui::GetFont());
 
         ImVec2 textPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY + textOffsetY);
@@ -902,13 +1017,13 @@ if (ImGui::BeginPopup("ContextMenu"))
 
         ImGui::PopItemWidth();
 
-        ImGui::GetFont()->Scale = 1.0f;
+        ImGui::GetFont()->Scale = oldfontsize;
         ImGui::PopFont();
 
         ImVec2 descriptionPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY + 35 + textOffsetY);
         ImGui::SetCursorScreenPos(descriptionPos);
 
-        ImGui::GetFont()->Scale *= 0.7;
+        ImGui::GetFont()->Scale = 0.7;
         ImGui::PushFont(ImGui::GetFont());
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
         ImGui::PushItemWidth(maxTextWidth);
@@ -916,7 +1031,7 @@ if (ImGui::BeginPopup("ContextMenu"))
         ImGui::PopItemWidth();
         ImGui::PopStyleColor();
 
-        ImGui::GetFont()->Scale = 1.0f;
+        ImGui::GetFont()->Scale = oldfontsize;
         ImGui::PopFont();
 
         ImVec2 smallRectPos = ImVec2(cursorPos.x + fixedSize.x - versionBoxWidth - padding, cursorPos.y + fixedSize.y - versionBoxHeight - padding);
@@ -1090,7 +1205,7 @@ if (ImGui::BeginPopup("ContextMenu"))
         ImVec4 originalChildBgColor = style.Colors[ImGuiCol_ChildBg];
         ImVec4 originalBorderColor = style.Colors[ImGuiCol_Border];
         ImVec4 originalBorderShadowColor = style.Colors[ImGuiCol_BorderShadow];
-        float oldsize = ImGui::GetFont()->Scale;
+        float oldfontsize = ImGui::GetFont()->Scale;
 
         style.Colors[ImGuiCol_ChildBg] = ImVec4(0, 0, 0, 0);
         style.Colors[ImGuiCol_Border] = ImVec4(0, 0, 0, 0);
@@ -1103,7 +1218,37 @@ if (ImGui::BeginPopup("ContextMenu"))
         if (columnCount < 1)
             columnCount = 1;
 
-        ImGui::InputText("Search", ProjectSearch, sizeof(ProjectSearch));
+        {
+            static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("LogicContentManager.FindModules.Filter", "####filder");
+            btn->SetScale(0.85f);
+            btn->SetInternalMarginX(10.0f);
+            btn->SetLogoSize(15, 15);
+
+            btn->SetDropDownImage(Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
+            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"));
+            if (btn->Render("LogicContentManager"))
+            {
+                ImVec2 mousePos = ImGui::GetMousePos();
+                ImGui::SetNextWindowPos(mousePos);
+                ImGui::OpenPopup("ContextMenu");
+            }
+
+            if (ImGui::BeginPopup("ContextMenu"))
+            {
+                ImGui::Text("SearchFilters");
+                ImGui::EndPopup();
+            }
+        }
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(500.0f);
+        ImGui::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#222222FF"));
+        ImGui::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#232323FF"));
+        ImGui::InputText("####ContentBrowserSearch", ProjectSearch, sizeof(ProjectSearch));
+        ImGui::Separator();
+
+        ImGui::Spacing();
+
+        ImGui::PopStyleColor(2);
 
         std::vector<std::filesystem::directory_entry> directories;
         std::vector<std::filesystem::directory_entry> files;
@@ -1169,24 +1314,44 @@ if (ImGui::BeginPopup("ContextMenu"))
 
             if (ImGui::BeginPopup("EmptySpacePopup"))
             {
-                ImGui::GetFont()->Scale *= 0.9;
+                ImGui::GetFont()->Scale = 0.9;
                 ImGui::PushFont(ImGui::GetFont());
 
                 ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
 
-                ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-                ImGui::Text("Main");
-                ImGui::PopStyleColor();
+                Cherry::MenuItemTextSeparator("Add");
+                if (ImGui::MenuItem("Add", "Add a component", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_add.png")), NULL))
+                {
+                }
+                if (ImGui::MenuItem("Import", "Import a component", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_import.png")), NULL))
+                {
+                }
 
-                if (ImGui::Selectable("Paste"))
+                Cherry::MenuItemTextSeparator("Create");
+                if (ImGui::MenuItem("Create new folder", "Create a folder here", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png")), NULL))
+                {
+                }
+                if (ImGui::MenuItem("Create new file", "Create empty file here", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png")), NULL))
+                {
+                }
+
+                Cherry::MenuItemTextSeparator("Actions");
+
+                if (ImGui::MenuItem("Paste selection", "Paste selection here", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_down.png")), NULL))
                 {
                     if (m_PastePathsCallback)
                     {
                         m_PastePathsCallback({m_CurrentDirectory});
                     }
                 }
-                ImGui::GetFont()->Scale = 1.0f;
-                ImGui::PushFont(ImGui::GetFont());
+
+                if (ImGui::MenuItem("Select All", "Select eveything on this directory", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")), NULL))
+                {
+                }
+
+                ImGui::GetFont()->Scale = oldfontsize;
+                ImGui::PopFont();
+
                 ImGui::EndPopup();
             }
 
@@ -1223,7 +1388,6 @@ if (ImGui::BeginPopup("ContextMenu"))
                     }*/
 
                     ImVec2 folderSize(reducedThumbnailSize, reducedThumbnailSize);
-                    std::string folderPath = "path/to/folder";
 
                     if (current_editing_folder.first == path.string())
                     {
@@ -1248,7 +1412,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                     ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
                     if (ImGui::BeginPopupContextItem("ContextPopup"))
                     {
-                        ImGui::GetFont()->Scale *= 0.9;
+                        ImGui::GetFont()->Scale = 0.9;
                         ImGui::PushFont(ImGui::GetFont());
 
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
@@ -1261,8 +1425,9 @@ if (ImGui::BeginPopup("ContextMenu"))
                         ImGui::Separator();
                         ImGui::PopStyleColor();
 
-                        ImGui::GetFont()->Scale = oldsize;
+                        ImGui::GetFont()->Scale = oldfontsize;
                         ImGui::PopFont();
+
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
                         if (ImGui::MenuItem("Open", "Ctrl + O"))
@@ -1281,7 +1446,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                             ImGui::CloseCurrentPopup();
                         }
 
-                        ImGui::GetFont()->Scale *= 0.9;
+                        ImGui::GetFont()->Scale = 0.9;
                         ImGui::PushFont(ImGui::GetFont());
 
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
@@ -1294,8 +1459,9 @@ if (ImGui::BeginPopup("ContextMenu"))
                         ImGui::Separator();
                         ImGui::PopStyleColor();
 
-                        ImGui::GetFont()->Scale = oldsize;
+                        ImGui::GetFont()->Scale = oldfontsize;
                         ImGui::PopFont();
+
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
                         static bool EditingColor = false;
@@ -1342,6 +1508,24 @@ if (ImGui::BeginPopup("ContextMenu"))
 
                             current_editing_folder_is_favorite = !current_editing_folder_is_favorite;
                             SetColoredFolder(current_editing_folder.first, ImU32ToHex(current_editing_folder.second));
+
+                            VortexMaker::PublishContentBrowserCustomFolder(
+                                current_editing_folder.first,
+                                Cherry::ImU32ToHex(current_editing_folder.second),
+                                current_editing_folder_is_favorite);
+
+                            if (current_editing_folder_is_favorite)
+                            {
+                                m_FavoriteFolders.push_back(current_editing_folder.first);
+                            }
+                            else
+                            {
+                                auto it = std::find(m_FavoriteFolders.begin(), m_FavoriteFolders.end(), current_editing_folder.first);
+                                if (it != m_FavoriteFolders.end())
+                                {
+                                    m_FavoriteFolders.erase(it);
+                                }
+                            }
                         }
 
                         ImGui::EndPopup();
@@ -1564,7 +1748,7 @@ if (ImGui::BeginPopup("ContextMenu"))
 
                     if (ImGui::BeginPopupContextItem("ItemContextPopup"))
                     {
-                        ImGui::GetFont()->Scale *= 0.9;
+                        ImGui::GetFont()->Scale = 0.9;
                         ImGui::PushFont(ImGui::GetFont());
 
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
@@ -1581,8 +1765,9 @@ if (ImGui::BeginPopup("ContextMenu"))
                         ImGui::Separator();
                         ImGui::PopStyleColor();
 
-                        ImGui::GetFont()->Scale = oldsize;
+                        ImGui::GetFont()->Scale = oldfontsize;
                         ImGui::PopFont();
+
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
                         if (ImGui::MenuItem("Open", "Ctrl + O"))
@@ -1621,7 +1806,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                             ImGui::CloseCurrentPopup();
                         }
 
-                        ImGui::GetFont()->Scale *= 0.9;
+                        ImGui::GetFont()->Scale = 0.9;
                         ImGui::PushFont(ImGui::GetFont());
 
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
@@ -1636,8 +1821,9 @@ if (ImGui::BeginPopup("ContextMenu"))
                         ImGui::Separator();
                         ImGui::PopStyleColor();
 
-                        ImGui::GetFont()->Scale = oldsize;
+                        ImGui::GetFont()->Scale = oldfontsize;
                         ImGui::PopFont();
+
                         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
                         if (ImGui::MenuItem("Change color"))
@@ -1751,7 +1937,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                         ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
                         if (ImGui::BeginPopupContextItem(label.c_str()))
                         {
-                            ImGui::GetFont()->Scale *= 0.9;
+                            ImGui::GetFont()->Scale = 0.9;
                             ImGui::PushFont(ImGui::GetFont());
 
                             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
@@ -1764,7 +1950,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                             ImGui::Separator();
                             ImGui::PopStyleColor();
 
-                            ImGui::GetFont()->Scale = oldsize;
+                            ImGui::GetFont()->Scale = oldfontsize;
                             ImGui::PopFont();
                             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
@@ -1784,7 +1970,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                                 ImGui::CloseCurrentPopup();
                             }
 
-                            ImGui::GetFont()->Scale *= 0.9;
+                            ImGui::GetFont()->Scale = 0.9;
                             ImGui::PushFont(ImGui::GetFont());
 
                             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
@@ -1797,7 +1983,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                             ImGui::Separator();
                             ImGui::PopStyleColor();
 
-                            ImGui::GetFont()->Scale = oldsize;
+                            ImGui::GetFont()->Scale = oldfontsize;
                             ImGui::PopFont();
                             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
@@ -1982,7 +2168,7 @@ if (ImGui::BeginPopup("ContextMenu"))
 
                         if (ImGui::BeginPopupContextItem("ItemContextPopup"))
                         {
-                            ImGui::GetFont()->Scale *= 0.9;
+                            ImGui::GetFont()->Scale = 0.9;
                             ImGui::PushFont(ImGui::GetFont());
 
                             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
@@ -1999,8 +2185,9 @@ if (ImGui::BeginPopup("ContextMenu"))
                             ImGui::Separator();
                             ImGui::PopStyleColor();
 
-                            ImGui::GetFont()->Scale = oldsize;
+                            ImGui::GetFont()->Scale = oldfontsize;
                             ImGui::PopFont();
+
                             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
                             if (ImGui::MenuItem("Open", "Ctrl + O"))
@@ -2030,7 +2217,7 @@ if (ImGui::BeginPopup("ContextMenu"))
                                 ImGui::CloseCurrentPopup();
                             }
 
-                            ImGui::GetFont()->Scale *= 0.9;
+                            ImGui::GetFont()->Scale = 0.9;
                             ImGui::PushFont(ImGui::GetFont());
 
                             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
@@ -2045,8 +2232,9 @@ if (ImGui::BeginPopup("ContextMenu"))
                             ImGui::Separator();
                             ImGui::PopStyleColor();
 
-                            ImGui::GetFont()->Scale = oldsize;
+                            ImGui::GetFont()->Scale = oldfontsize;
                             ImGui::PopFont();
+
                             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
                             if (ImGui::MenuItem("Change color"))
@@ -2149,7 +2337,17 @@ if (ImGui::BeginPopup("ContextMenu"))
                 {
                     if (child.m_DefaultSize == 0.0f)
                     {
-                        child.m_Size = std::max(defaultSize, 50.0f);
+                        float total_child_size = 0.0f;
+
+                        for (auto child : children)
+                        {
+                            if (!child.m_Disabled)
+                            {
+                                total_child_size += child.m_DefaultSize;
+                            }
+                        }
+
+                        child.m_Size = totalAvailableWidth - total_child_size;
                     }
                     else
                     {

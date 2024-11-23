@@ -1,20 +1,29 @@
 {
     "locales": [
-        {"loc.menubar.show_logs_utility":"Afficher le journal"},
-        {"loc.menubar.show_logs_utility_brief":"Affiche le journal de logs."},
-
-        {"loc.window_names.project_manager":"Gestionnaire de projects"},
-        {"loc.window_names.settings":"Paramètres"},
-        {"loc.window_names.logs_utility":"Journal de logs"},
-
-        {"loc.window_names.welcome":"Bienvenue !"},
-        {"loc.window_names.welcome.title":"Bienvenue dans Vortex !"},
-        {"loc.window_names.welcome.fast_actions":"Action rapides"},
-        {"loc.window_names.welcome.trends":"Tendances"},
-        {"loc.window_names.welcome.overview":"Vue d'ensemble"},
-        {"loc.window_names.welcome.contribute":"Contribuer à Vortex"},
-        {"loc.window_names.welcome.sponsor":"Sponsorisze Vortex"},
-        {"loc.window_names.welcome.whats_news":"Nouveautés"},
-        {"loc.window_names.welcome.actuality":"Actualités"}
+        {"loc.menubar.menu.project": "Projet"},
+        {"loc.menubar.menu.edit": "Éditer"},
+        {"loc.menubar.menu.window": "Fenêtre"},
+        {"loc.menubar.menu.tools": "Outils"},
+        {"loc.menubar.menu.options": "Options"},
+        {"loc.menubar.menu.help": "Aide"},
+        {"loc.menubar.summary.logical_contents": "Contenus logiques"},
+        {"loc.menubar.summary.static_contents": "Contenus statiques"},
+        {"loc.menubar.summary.configurations_settings": "Paramètres et configurations"},
+        {"loc.menubar.menuitem.modules_utility": "Utilitaire de modules"},
+        {"loc.menubar.menuitem.plugins_utility": "Utilitaire de plugins"},
+        {"loc.menubar.menuitem.templates_utility": "Utilitaire de modèles"},
+        {"loc.menubar.menuitem.contents_utility": "Utilitaire de contenus"},
+        {"loc.menubar.menuitem.project_settings": "Paramètres du projet"},
+        {"loc.menubar.menuitem.content_browser": "Explorateur de contenus"},
+        {"loc.menubar.menuitem.console_logs": "Console et journaux"},
+        {"loc.window.title.content_browser": "Explorateur de contenus"},
+        {"loc.window.title.console_logs": "Console et journaux"},
+        {"loc.window.content.content_browser.add": "Ajouter"},
+        {"loc.window.content.content_browser.import": "Importer"},
+        {"loc.window.content.content_browser.save": "Sauvegarder"},
+        {"loc.window.content.content_browser.options": "Options"},
+        {"loc.window.content.content_browser.favorite": "Favoris"},
+        {"loc.window.content.content_browser.main": "Fichiers du projet"},
+        {"loc.window.content.content_browser.pools_collections": "Pools et collections"}
     ]
 }
