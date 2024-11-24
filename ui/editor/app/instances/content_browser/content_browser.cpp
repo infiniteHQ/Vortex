@@ -4,12 +4,11 @@ using namespace Cherry;
 
 /*
 TODO
-- FIX Favortie/Colors/Pools
 - centered folders
-
-- Fix side navigation
-- Add pools
 - Home on Pathbar
+- cpy/paste
+- creation & add
+- custom item & callbacks 
 */
 
 // To move in class members
@@ -21,6 +20,7 @@ static char pathRename[256];
 
 static bool pool_add_mode = false;
 static char pool_add_path[512];
+static char pool_add_name[512];
 
 static std::string _parent;
 static char ProjectSearch[256];
@@ -453,9 +453,8 @@ namespace VortexEditor
     static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>> recognized_modules_items;
     void ContentBrowserAppWindow::DrawPathBar(const std::string &path)
     {
-        // Calculer automatiquement la taille en fonction du contenu
         ImVec2 contentSize(ImGui::CalcTextSize(path.c_str()).x + 70.0f, 0);
-        ImGui::BeginChild("PathBar", ImVec2(contentSize.x, 0), ImGuiWindowFlags_NoScrollbar); // Réduire la hauteur à 25 (ou une valeur ajustée)
+        ImGui::BeginChild("PathBar", ImVec2(contentSize.x, 0), ImGuiWindowFlags_NoScrollbar);
 
 #ifdef _WIN32
         const char separator = '\\';
@@ -467,13 +466,11 @@ namespace VortexEditor
         std::stringstream ss(path);
         std::string segment;
 
-        // Découper le chemin en segments
         while (std::getline(ss, segment, separator))
         {
             elements.push_back(segment);
         }
 
-        // Affichage des segments du chemin
         for (size_t i = 0; i < elements.size(); ++i)
         {
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", elements[i].c_str());
@@ -491,11 +488,47 @@ namespace VortexEditor
         ImGui::EndChild();
     }
 
+    void ContentBrowserAppWindow::RefreshCustomFolders()
+    {
+        VortexMaker::FetchCustomFolders();
+        m_FavoriteFolders.clear();
+        m_FolderColors.clear();
+        for (auto custom_folder : VortexMaker::GetCurrentContext()->IO.contentbrowser_customfolders)
+        {
+            if (custom_folder->m_IsFav)
+            {
+                m_FavoriteFolders.push_back(custom_folder->path);
+            }
+
+            if (custom_folder->m_Color != "#fdaa00" || custom_folder->m_Color != m_DefaultFolderColor)
+            {
+                if (custom_folder->m_Color.size() <= 7)
+                {
+                    custom_folder->m_Color = custom_folder->m_Color + "ff"; // + ff to add a opaque bg if not provided
+                }
+                m_FolderColors.push_back({custom_folder->path, custom_folder->m_Color});
+            }
+        }
+    }
+
+    void ContentBrowserAppWindow::RefreshPools()
+    {
+        VortexMaker::FetchPools();
+        m_Pools.clear();
+        for (auto pool : VortexMaker::GetCurrentContext()->IO.contentbrowser_pools)
+        {
+            m_Pools.push_back(pool);
+        }
+    }
+
     ContentBrowserAppWindow::ContentBrowserAppWindow(const std::string &name, const std::string &start_path)
     {
         m_AppWindow = std::make_shared<AppWindow>(name, name);
         m_AppWindow->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"));
         std::shared_ptr<AppWindow> win = m_AppWindow;
+
+        RefreshCustomFolders();
+        RefreshPools();
 
         cp_SaveButton = Application::Get().CreateComponent<ImageTextButtonSimple>("save_button", Application::Get().GetLocale("loc.window.content.content_browser.save") + "####content_browser.save_all", Application::CookPath("resources/imgs/icons/misc/icon_save.png"));
         cp_SaveButton->SetScale(0.85f);
@@ -529,20 +562,6 @@ namespace VortexEditor
         cp_DirectoryUndo->SetBackgroundColorIdle("#00000000");
         cp_DirectoryUndo->SetBorderColorIdle("#00000000");
         cp_DirectoryUndo->SetScale(0.85f);
-
-        for (auto custom_folder : VortexMaker::GetCurrentContext()->IO.contentbrowser_customfolders)
-        {
-            if (custom_folder->m_IsFav)
-            {
-                m_FavoriteFolders.push_back(custom_folder->path);
-            }
-
-            if (custom_folder->m_Color != "#fdaa00" || custom_folder->m_Color != m_DefaultFolderColor)
-            {
-                m_FolderColors.push_back({custom_folder->path, custom_folder->m_Color});
-            }
-        }
-
         m_AppWindow->SetLeftMenubarCallback([this]()
                                             {
                                                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
@@ -1101,37 +1120,67 @@ if (ImGui::BeginPopup("ContextMenu"))
 
     void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path, bool isDir, const std::string &label = "")
     {
+        if (!isDir)
+            return;
+
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12.0f);
-        std::string tree_label = "???";
-        if (label.empty())
-        {
-            tree_label = path.filename().string() + "###treenode";
-        }
-        else
-        {
-            tree_label = label + "###treenode";
-        }
+
+        std::string uniqueID = path.string() + "###treenode";
+
+        std::string tree_label = label.empty()
+                                     ? path.filename().string() + "###" + uniqueID + label + path.string()
+                                     : label + "###" + uniqueID + label + path.string();
 
         ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+
         ImVec2 cursorPos = ImGui::GetCursorPos();
         ImGui::SetItemAllowOverlap();
-
         ImVec2 pos = ImGui::GetCursorScreenPos();
-        ImU32 col;
 
         DrawFolderIcon(pos, ImVec2(12, 12), HexToImU32(GetContentBrowserFolderColor(path)));
 
         if (ImGui::TreeNode(tree_label.c_str()))
         {
-            for (auto &dirEntry : std::filesystem::directory_iterator(path))
-            {
-                const std::filesystem::path &otherPath = dirEntry.path();
+            ChangeDirectory(path);
 
-                DrawHierarchy(otherPath, dirEntry.is_directory());
+            try
+            {
+                std::vector<std::filesystem::directory_entry> entries;
+                for (auto &dirEntry : std::filesystem::directory_iterator(path))
+                {
+                    if (dirEntry.is_directory())
+                    {
+                        entries.push_back(dirEntry);
+                    }
+                }
+
+                std::sort(entries.begin(), entries.end(), [](const auto &a, const auto &b)
+                          { return a.path().filename() < b.path().filename(); });
+
+                for (const auto &dirEntry : entries)
+                {
+                    try
+                    {
+                        const std::filesystem::path &otherPath = dirEntry.path();
+                        DrawHierarchy(otherPath, dirEntry.is_directory());
+                    }
+                    catch (const std::exception &e)
+                    {
+                        std::cerr << "Error while display the directory "
+                                  << dirEntry.path() << " - " << e.what() << std::endl;
+                        continue;
+                    }
+                }
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Error while display the directory "
+                          << path << " - " << e.what() << std::endl;
             }
 
             ImGui::TreePop();
         }
+
         ImVec2 finalCursorPos = ImGui::GetCursorPos();
         ImVec2 size = ImGui::GetItemRectSize();
     }
@@ -1150,8 +1199,8 @@ if (ImGui::BeginPopup("ContextMenu"))
 
         CustomCollapsingHeaderLogo("Pools & Collections", Application::CookPath("resources/imgs/icons/misc/icon_collection.png"), [this]()
                                    {
-                                       ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 2.0f));
 
+                                       ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 2.0f));
                                        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
                                        if (!pool_add_mode)
                                        {
@@ -1164,10 +1213,17 @@ if (ImGui::BeginPopup("ContextMenu"))
                                        {
                                            ImGui::Text("Please enter a path");
                                            ImGui::SetNextItemWidth(-FLT_MIN);
-                                           ImGui::InputText("###AddPool", pool_add_path, sizeof(pool_add_path));
+                                           ImGui::Text("Name ");
+                                           ImGui::SameLine();
+                                           ImGui::InputText("###AddPoolName", pool_add_name, sizeof(pool_add_name));
+
+                                           ImGui::Text("Path ");
+                                           ImGui::SameLine();
+                                           ImGui::InputText("###AddPoolPath", pool_add_path, sizeof(pool_add_path));
                                            if (ImGui::ImageButtonWithText(Application::Get().GetCurrentRenderedWindow()->get_texture("/usr/local/include/Vortex/imgs/vortex.png"), "Add", ImVec2(0, 0), ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1)))
                                            {
-                                                VortexMaker::PublishPool(pool_add_path);
+                                                VortexMaker::PublishPool(pool_add_path, pool_add_name);
+                                                RefreshPools();
                                                pool_add_mode = false;
                                            }
                                            ImGui::SameLine();
@@ -1176,17 +1232,15 @@ if (ImGui::BeginPopup("ContextMenu"))
                                                pool_add_mode = false;
                                            }
                                        }
+
+        for (auto pool : m_Pools)
+        {
+            DrawHierarchy(pool.first, true, pool.second);
+        }
+
                                        ImGui::PopStyleVar();
                                        ImGui::PopStyleColor(); });
 
-        for (auto custom_dir : m_Pools)
-        {
-            std::size_t lastSlashPos = custom_dir.find_last_of("/\\");
-
-            std::string name = custom_dir.substr(lastSlashPos + 1);
-
-            DrawHierarchy(custom_dir, true, name);
-        }
     }
 
     void ContentBrowserAppWindow::RenderFiltersBar()

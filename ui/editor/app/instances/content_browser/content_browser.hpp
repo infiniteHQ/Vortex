@@ -160,6 +160,9 @@ namespace VortexEditor
     public:
         ContentBrowserAppWindow(const std::string &name, const std::string &start_path);
 
+        void RefreshCustomFolders();
+        void RefreshPools();
+
         std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
         static std::shared_ptr<ContentBrowserAppWindow> Create(const std::string &name, const std::string &base_path);
         void SetupRenderCallback();
@@ -223,7 +226,17 @@ namespace VortexEditor
         }
 
         void AddReconizedItem(const std::shared_ptr<ContenBrowserItem> &item) {};
-        bool IsPathFavorite(const std::string &path) { return false; };
+        bool IsPathFavorite(const std::string &path) { 
+            for(auto fav_folder : m_FavoriteFolders)
+            {
+                if(fav_folder == path)
+                {
+                    return true;
+                }
+            }   
+            return false;
+         };
+
         void SetColoredFolder(const std::string &path, const std::string &hex_color) {};
 
         std::vector<ContentBrowserChild> m_Childs;
@@ -265,7 +278,7 @@ namespace VortexEditor
         // Path/Color
         std::vector<std::pair<std::string, std::string>> m_FolderColors;
         std::vector<std::string> m_FavoriteFolders;
-        std::vector<std::string> m_Pools;
+        std::vector<std::pair<std::string,std::string>> m_Pools;
         std::vector<std::shared_ptr<ContenBrowserItem>> m_ItemToReconize;
 
         std::vector<std::filesystem::path> m_Favorites;

@@ -245,7 +245,7 @@ struct VxIO
   std::vector<std::shared_ptr<ContentBrowserCustomFolder>> contentbrowser_customfolders;
   std::string contentbrowser_mainpool;
   std::string contentbrowser_absolute_mainpool;
-  std::vector<std::string> contentbrowser_pools;
+  std::vector<std::pair<std::string,std::string>> contentbrowser_pools;
   std::vector<std::string> copy_selection;
   std::vector<std::string> cut_selection;
   float past_state; // from 0.0f (0%) to 1.0f (100%)
@@ -324,7 +324,7 @@ namespace VortexMaker
 
   // Publish to ROM
   VORTEX_API void PublishContentBrowserCustomFolder(const std::string& path, const std::string &hex_color, const bool& isFav);
-  VORTEX_API void PublishPool(const std::string& absolute_pool_path);
+  VORTEX_API void PublishPool(const std::string& absolute_pool_path, const std::string& name);
   VORTEX_API void PostCustomFolderToJson();
   VORTEX_API void PostPoolsToJson();
 

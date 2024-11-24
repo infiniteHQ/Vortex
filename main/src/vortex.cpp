@@ -604,7 +604,7 @@ VORTEX_API void VortexMaker::PostCustomFolderToJson()
     VortexMaker::PopulateJSON(json_data, file_path);
 }
 
-VORTEX_API void VortexMaker::PublishPool(const std::string &absolute_pool_path)
+VORTEX_API void VortexMaker::PublishPool(const std::string &absolute_pool_path, const std::string& name)
 {
     VxContext &ctx = *CVortexMaker;
 
@@ -615,15 +615,15 @@ VORTEX_API void VortexMaker::PublishPool(const std::string &absolute_pool_path)
         endPos--;
     }
 
-    for (auto path : ctx.IO.contentbrowser_pools)
+    for (auto pool : ctx.IO.contentbrowser_pools)
     {
-        if (path == absolute_pool_path)
+        if (pool.first == absolute_pool_path)
         {
             return;
         }
     }
 
-    ctx.IO.contentbrowser_pools.push_back(absolute_pool_path);
+    ctx.IO.contentbrowser_pools.push_back({absolute_pool_path, name});
 
     VortexMaker::PostPoolsToJson();
 }
@@ -727,7 +727,9 @@ VORTEX_API void VortexMaker::FetchPools()
     std::string file_path = path + "/pools.json";
 
     nlohmann::json json_data;
-
+    json_data["main_pool"] = ctx.projectPath.string();
+    json_data["pools"] = nlohmann::json::array();
+    
     VortexMaker::createJsonFileIfNotExists(file_path, json_data);
 
     std::ifstream file(file_path);
@@ -741,10 +743,12 @@ VORTEX_API void VortexMaker::FetchPools()
     ctx.IO.contentbrowser_absolute_mainpool = projectPath + "/" + ctx.IO.contentbrowser_mainpool;
 
     // From other pool absolute paths
-    for (auto directory : json_data["other_pools"])
+    ctx.IO.contentbrowser_pools.clear();
+    for (auto directory : json_data["pools"])
     {
         std::string path = directory["path"].get<std::string>();
-        ctx.IO.contentbrowser_pools.push_back(path);
+        std::string name = directory["name"].get<std::string>();
+        ctx.IO.contentbrowser_pools.push_back({path, name});
     }
 }
 
@@ -761,10 +765,11 @@ VORTEX_API void VortexMaker::PostPoolsToJson()
     json_data["pools"] = nlohmann::json::array();
     json_data["main_pool"] = ctx.IO.contentbrowser_mainpool;
 
-    for (const std::string &path : ctx.IO.contentbrowser_pools)
+    for (const auto &pool : ctx.IO.contentbrowser_pools)
     {
         nlohmann::json folder_data;
-        folder_data["path"] = path;
+        folder_data["name"] = pool.second;
+        folder_data["path"] = pool.first;
 
         json_data["pools"].push_back(folder_data);
     }
@@ -787,6 +792,8 @@ VORTEX_API void VortexMaker::FetchCustomFolders()
     std::ifstream file(file_path);
 
     file >> json_data;
+
+    ctx.IO.contentbrowser_customfolders.clear();
 
     for (auto directory : json_data["custom_folders"])
     {
