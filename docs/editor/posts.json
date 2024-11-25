@@ -1,0 +1,178 @@
+{
+    "contents": [
+        {
+            "name": "editor",
+            "slug": "Editor",
+            "title": "Editor",
+            "sumary": "qsd",
+            "pages": [
+                {
+                    "name": "overview",
+                    "link": "overview.md",
+                    "description": "",
+                    "logo": "",
+                    "slug": "Overview",
+                    "subpages": [
+                        {
+                            "name": "overview_introduction",
+                            "slug": "Introduction",
+                            "description": "",
+                            "logo": "",
+                            "link": "overview_introduction.md"
+                        },
+                        {
+                            "name": "overview_interface_tour",
+                            "slug": "Interface tour",
+                            "description": "",
+                            "logo": "",
+                            "link": "overview_interface_tour.md"
+                        },
+                        {
+                            "name": "overview_docking",
+                            "slug": "Docking",
+                            "description": "",
+                            "logo": "",
+                            "link": "overview_docking.md"
+                        }
+                    ]
+                },
+                {
+                    "name": "manage_contents",
+                    "link": "manage_contents.md",
+                    "description": "",
+                    "logo": "",
+                    "slug": "Manage Contents",
+                    "subpages": [
+                        {
+                            "name": "manage_contents_use_the_content_browser",
+                            "slug": "Use the content browser",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_contents_use_the_content_browser.md"
+                        },
+                        {
+                            "name": "manage_contents_navigate_over_contents",
+                            "slug": "Navigate over contents",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_contents_navigate_over_contents.md"
+                        },
+                        {
+                            "name": "manage_contents_create_or_add_contents",
+                            "slug": "Create or add contents",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_contents_create_or_add_contents.md"
+                        },
+                        {
+                            "name": "manage_contents_copy_paste_delete_contents",
+                            "slug": "Copy, pase and delete contents",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_contents_copy_paste_delete_contents.md"
+                        }
+                    ]
+                },
+                {
+                    "name": "manage_contents",
+                    "link": "manage_contents.md",
+                    "description": "",
+                    "logo": "",
+                    "slug": "Manage Contents",
+                    "subpages": [
+                        {
+                            "name": "manage_contents_use_the_content_browser",
+                            "slug": "Use the content browser",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_contents_use_the_content_browser.md"
+                        },
+                        {
+                            "name": "manage_contents_navigate_over_contents",
+                            "slug": "Navigate over contents",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_contents_navigate_over_contents.md"
+                        },
+                        {
+                            "name": "manage_contents_create_or_add_contents",
+                            "slug": "Create or add contents",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_contents_create_or_add_contents.md"
+                        },
+                        {
+                            "name": "manage_contents_copy_paste_delete_contents",
+                            "slug": "Copy, pase and delete contents",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_contents_copy_paste_delete_contents.md"
+                        }
+                    ]
+                },
+                {
+                    "name": "see_and_debug",
+                    "link": "see_and_debug.md",
+                    "description": "",
+                    "logo": "",
+                    "slug": "See and Debug",
+                    "subpages": [
+                        {
+                            "name": "see_and_debug_use_the_console_logs",
+                            "slug": "Use the console logs",
+                            "description": "",
+                            "logo": "",
+                            "link": "see_and_debug_use_the_console_logs.md"
+                        }
+                    ]
+                },
+                {
+                    "name": "settings_and_confs",
+                    "link": "settings_and_confs.md",
+                    "description": "",
+                    "logo": "",
+                    "slug": "Settings and Configurations",
+                    "subpages": [
+                    ]
+                },
+                {
+                    "name": "manage_logical_contents",
+                    "link": "manage_logical_contents.md",
+                    "description": "",
+                    "logo": "",
+                    "slug": "Manage logical contents",
+                    "subpages": [
+                        {
+                            "name": "manage_logical_contents_add_a_module",
+                            "slug": "Add a module",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_logical_contents_add_a_module.md"
+                        },
+                        {
+                            "name": "manage_logical_contents_start_stop_restart_module",
+                            "slug": "Start, stop and restart a module",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_logical_contents_start_stop_restart_module.md"
+                        },
+                        {
+                            "name": "manage_logical_contents_delete_module",
+                            "slug": "Delete a module",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_logical_contents_delete_module.md"
+                        },
+                        {
+                            "name": "manage_logical_contents_upgrade_a_module",
+                            "slug": "Upgrade a module",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_logical_contents_upgrade_a_module.md"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

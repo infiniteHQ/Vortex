@@ -1,0 +1,1 @@
+Here we have all Vortex, VortexLauncher, VortexInstaller and other documentations.

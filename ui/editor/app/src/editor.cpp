@@ -356,7 +356,7 @@ Cherry::Application *CreateEditor(int argc, char **argv)
     spec.MinHeight = 500;
     spec.MinWidth = 500;
     spec.Height = 900;
-    spec.Width = 1600;
+    spec.Width = 1800;
     spec.CustomTitlebar = true;
     spec.DisableWindowManagerTitleBar = true;
     spec.RenderMode = Cherry::WindowRenderingMethod::DockingWindows;
@@ -364,9 +364,10 @@ Cherry::Application *CreateEditor(int argc, char **argv)
     spec.DisableTitle = true;
     spec.WindowSaves = false;
     spec.IconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
+    spec.FavIconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
 
     Cherry::Application *app = new Cherry::Application(spec);
-    app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/favicon.png"));
+    app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/icon.png"));
     app->AddFont("Consola", Cherry::Application::CookPath("resources/fonts/consola.ttf"), 17.0f);
 
     app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));

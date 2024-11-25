@@ -1,0 +1,171 @@
+{
+    "contents": [
+        {
+            "name": "get_started",
+            "slug": "Get Started",
+            "title": "Get started",
+            "sumary": "qsd",
+            "pages": [
+                {
+                    "name": "introduction",
+                    "slug": "Introduction",
+                    "description": "",
+                    "logo": "",
+                    "link": "introduction.md",
+                    "subpages": [
+                    ]
+                },
+                {
+                    "name": "install_vortex",
+                    "slug": "Install Vortex",
+                    "description": "",
+                    "logo": "",
+                    "link": "install_vortex.md",
+                    "subpages": [
+                    ]
+                },
+                {
+                    "name": "overview",
+                    "slug": "Overview",
+                    "description": "",
+                    "logo": "",
+                    "link": "overview.md",
+                    "subpages": [
+                    ]
+                },
+                {
+                    "name": "first_steps_introduction",
+                    "link": "first_steps_introduction.md",
+                    "description": "",
+                    "logo": "",
+                    "slug": "First steps",
+                    "subpages": [
+                        {
+                            "name": "first_steps_create_a_project",
+                            "slug": "Create a project",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_create_a_project.md"
+                        },
+                        {
+                            "name": "first_steps_open_a_project",
+                            "slug": "Open a project",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_open_a_project.md"
+                        },
+                        {
+                            "name": "first_steps_delete_a_project",
+                            "slug": "Delete a project",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_delete_a_project.md"
+                        },
+                        {
+                            "name": "first_steps_install_a_project",
+                            "slug": "Import a project",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_install_a_project.md"
+                        },
+                        {
+                            "name": "first_steps_install_a_module",
+                            "slug": "Install a module",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_install_a_module.md"
+                        },
+                        {
+                            "name": "first_steps_install_a_plugin",
+                            "slug": "Install a plugin",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_install_a_plugin.md"
+                        },
+                        {
+                            "name": "first_steps_delete_a_plugin_or_module",
+                            "slug": "Delete a module or a plugin",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_delete_a_plugin_or_module.md"
+                        },
+                        {
+                            "name": "first_steps_install_a_template",
+                            "slug": "Install a template",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_install_a_template.md"
+                        },
+                        {
+                            "name": "first_steps_install_a_content",
+                            "slug": "Install a content",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_install_a_content.md"
+                        },
+                        {
+                            "name": "first_steps_delete_a_template_or_content",
+                            "slug": "Delete a template or a content",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_delete_a_template_or_content.md"
+                        },
+                        {
+                            "name": "first_steps_configure_vortex",
+                            "slug": "Configure Vortex",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_configure_vortex.md"
+                        },
+                        {
+                            "name": "first_steps_subscribe_to_beta",
+                            "slug": "Subscribe to beta programs",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_subscribe_to_beta.md"
+                        },
+                        {
+                            "name": "first_steps_whats_next",
+                            "slug": "What's next ?",
+                            "description": "",
+                            "logo": "",
+                            "link": "first_steps_whats_next.md"
+                        }
+                    ]
+                },
+                {
+                    "name": "terminology",
+                    "slug": "Terminology",
+                    "description": "",
+                    "logo": "",
+                    "link": "terminology.md",
+                    "subpages": [
+                        {
+                            "name": "terminology_main",
+                            "slug": "Main terminology",
+                            "description": "",
+                            "logo": "",
+                            "link": "terminology_main.md"
+                        },
+                        {
+                            "name": "terminology_extended",
+                            "slug": "Extended terminology",
+                            "description": "",
+                            "logo": "",
+                            "link": "terminology_extended.md"
+                        }
+                    ]
+                },
+                {
+                    "name": "concepts",
+                    "slug": "Concepts",
+                    "description": "",
+                    "logo": "",
+                    "link": "concepts.md",
+                    "subpages": [
+                    ]
+                }
+            ]
+        }
+    ]
+}
