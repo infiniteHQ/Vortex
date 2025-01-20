@@ -2,13 +2,13 @@
 // [main header]
 
 // See licence in LICENSE
-// (c) 2022-2024, Diego E. Moreno
+// (c) 2022-2025, Diego E. Moreno
 
 //_____________________________________________________________________________
 // Versions & Build identification
 //_____________________________________________________________________________
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if VORTEX_VERSION_NUM >= 12345')
-#define VORTEX_VERSION "1.1.3"
+#define VORTEX_VERSION "1.0.0"
 #define VORTEX_VERSION_NUM 10000
 
 //_____________________________________________________________________________
