@@ -72,6 +72,50 @@ VORTEX_API void VortexMaker::RefreshEnvironmentProjects()
     }
 }
 
+
+VORTEX_API void VortexMaker::InitializePlatformVendor()
+{
+#if defined(__linux__)
+    VortexMaker::GetCurrentContext()->m_PlatformVendor = PlatformVendor::Linux;
+#elif defined(_WIN32) || defined(_WIN64)
+    VortexMaker::GetCurrentContext()->m_PlatformVendor = PlatformVendor::Windows;
+#elif defined(__APPLE__)
+    VortexMaker::GetCurrentContext()->m_PlatformVendor = PlatformVendor::Macos;
+#else
+    //
+#endif
+}
+
+VORTEX_API bool VortexMaker::IsLinux()
+{
+    return VortexMaker::GetCurrentContext()->m_PlatformVendor == PlatformVendor::Linux;
+}
+
+VORTEX_API bool VortexMaker::IsNotLinux()
+{
+    return !IsLinux();
+}
+
+VORTEX_API bool VortexMaker::IsWindows()
+{
+    return VortexMaker::GetCurrentContext()->m_PlatformVendor == PlatformVendor::Windows;
+}
+
+VORTEX_API bool VortexMaker::IsNotWindows()
+{
+    return !IsWindows();
+}
+
+VORTEX_API bool VortexMaker::IsMacOs()
+{
+    return VortexMaker::GetCurrentContext()->m_PlatformVendor == PlatformVendor::Macos;
+}
+
+VORTEX_API bool VortexMaker::IsNotMacOS()
+{
+    return !IsMacOs();
+}
+
 VORTEX_API void VortexMaker::RefreshEnvironmentVortexVersionsPools()
 {
     // Get reference to the Vortex context
@@ -100,6 +144,47 @@ VORTEX_API void VortexMaker::RefreshEnvironmentVortexVersionsPools()
         VortexMaker::LogError("Error: ", e.what());
     }
 }
+
+void VortexMaker::DetectPlatform()
+{
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
+
+#if defined(_WIN32) || defined(_WIN64)
+    ctx.platform = "windows";
+#elif defined(__APPLE__) && defined(__MACH__)
+    ctx.platform = "macos";
+#elif defined(__linux__)
+    ctx.platform = "linux";
+#elif defined(__FreeBSD__)
+    ctx.platform = "freebsd";
+#else
+    ctx.platform = "unknown";
+#endif
+}
+
+void VortexMaker::DetectArch()
+{
+    // Get reference to the Vortex context
+    VxContext &ctx = *CVortexMaker;
+
+#if defined(__x86_64__) || defined(_M_X64)
+    ctx.arch = "x86_64";
+#elif defined(__i386__) || defined(_M_IX86)
+    ctx.arch = "x86";
+#elif defined(__aarch64__) || defined(_M_ARM64)
+    ctx.arch = "arm64";
+#elif defined(__arm__) || defined(_M_ARM)
+    ctx.arch = "arm";
+#elif defined(__riscv)
+    ctx.arch = "riscv";
+#elif defined(__ppc64__)
+    ctx.arch = "ppc64";
+#else
+    ctx.arch = "unknown";
+#endif
+}
+
 
 VORTEX_API void VortexMaker::UpdateEnvironmentProject(const std::string &name, const std::string &author, const std::string &version, const std::string &compatibleWith, const std::string &description, const std::string &path, const std::string &logo_path, const std::string &template_name)
 { // Get reference to the Vortex context

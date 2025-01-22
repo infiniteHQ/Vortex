@@ -534,12 +534,32 @@ VORTEX_API std::string VortexMaker::replacePlaceholders(const std::string &comma
 
 VORTEX_API std::string VortexMaker::getHomeDirectory()
 {
-    const char *homePath = std::getenv("HOME");
-    if (homePath == nullptr)
+    if (VortexMaker::IsLinux() || VortexMaker::IsMacOs())
     {
-        throw std::runtime_error("HOME environment variable not set");
+        const char *homePath = std::getenv("HOME");
+        if (homePath == nullptr)
+        {
+            throw std::runtime_error("HOME environment variable not set");
+        }
+        return std::string(homePath);
     }
-    return std::string(homePath);
+    else if (VortexMaker::IsWindows())
+    {
+        const char *homePath = std::getenv("USERPROFILE");
+        if (homePath == nullptr)
+        {
+            const char *homeDrive = std::getenv("HOMEDRIVE");
+            const char *homePathEnv = std::getenv("HOMEPATH");
+            if (homeDrive == nullptr || homePathEnv == nullptr)
+            {
+                throw std::runtime_error("HOMEPATH environment variables not set");
+            }
+            return std::string(homeDrive) + std::string(homePathEnv);
+        }
+        return std::string(homePath);
+    }
+
+    throw std::runtime_error("Unknown platform: Unable to determine home directory");
 }
 
 VORTEX_API void VortexMaker::InstallContentOnSystem(const std::string &directory)

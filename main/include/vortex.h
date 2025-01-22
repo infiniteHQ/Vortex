@@ -236,6 +236,17 @@ namespace VortexMaker
     VORTEX_API void MoveAllContent();
     VORTEX_API void CopyAllContent();
     VORTEX_API void ExecuteCommand();
+    
+    VORTEX_API void InitializePlatformVendor();
+    VORTEX_API bool IsLinux();
+    VORTEX_API bool IsNotLinux();
+    VORTEX_API bool IsWindows();
+    VORTEX_API bool IsNotWindows();
+    VORTEX_API bool IsMacOs();
+    VORTEX_API bool IsNotMacOS();
+    VORTEX_API void DetectPlatform();
+    VORTEX_API void DetectArch();
+
 
     VORTEX_API nlohmann::json DumpJSON(const std::string &file);
     VORTEX_API void PopulateJSON(const nlohmann::json &json_data, const std::string &file);

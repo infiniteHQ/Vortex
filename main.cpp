@@ -60,7 +60,7 @@ void PrintInfinite()
               << std::endl;
 }
 
-void PrintHeader()
+void PrintHeader(const std::string& additions = "")
 {
     // Print this every time
     std::cout << std::endl;
@@ -69,7 +69,7 @@ void PrintHeader()
     std::cout << "\033[0m";
 
     std::cout << "\033[38;2;177;255;49m"
-              << " Vortex " << VORTEX_VERSION
+              << " Vortex " << VORTEX_VERSION << " " << additions
               << "\033[0m" << std::endl;
 
     std::cout << "┌────────────────────────────────────────────────────────────────────────────────────────────────┐" << std::endl;
@@ -128,8 +128,9 @@ bool CheckDirectory()
 
 VxContext *InitRuntime(bool logger)
 {
-    std::cout << "Initializing runtime..." << std::endl;
     VxContext *ctx = VortexMaker::CreateContext();
+    VortexMaker::InitializePlatformVendor();
+    std::cout << "Initializing runtime..." << std::endl;
 
     ctx->state.session_id = session_id;
 
@@ -141,6 +142,8 @@ VxContext *InitRuntime(bool logger)
 
     // Initialize environment
     VortexMaker::InitEnvironment();
+    VortexMaker::DetectPlatform();
+    VortexMaker::DetectArch();
 
     // Refresh environment registered projects
     VortexMaker::RefreshEnvironmentProjects();
@@ -171,6 +174,7 @@ VxContext *InitBlankRuntime(bool logger)
 
     ctx->state.session_id = session_id;
 
+    VortexMaker::InitializePlatformVendor();
     VortexMaker::CreateGlobalLogger();
     VortexMaker::CreateConsoleLogger();
     VortexMaker::LogInfo("Bootstrapp", "Initializing runtime...");
@@ -179,6 +183,8 @@ VxContext *InitBlankRuntime(bool logger)
 
     // Initialize environment
     VortexMaker::InitEnvironment();
+    VortexMaker::DetectPlatform();
+    VortexMaker::DetectArch();
 
     // Refresh environment registered projects
     VortexMaker::RefreshEnvironmentProjects();
@@ -211,7 +217,7 @@ int main(int argc, char *argv[])
         }
         else if (std::string(argv[1]) == "-crash" || std::string(argv[1]) == "--get-last-crash")
         {
-            PrintHeader();
+            PrintHeader("(Crash handler)");
 
             if (argc > 2) {
                 std::string arg2 = argv[2];
@@ -270,7 +276,7 @@ int main(int argc, char *argv[])
         }
         else if (std::string(argv[1]) == "-e" || std::string(argv[1]) == "--editor")
         {
-            PrintHeader();
+            PrintHeader("(Editor)");
 
             if (argc > 2) {
                 std::string arg2 = argv[2];

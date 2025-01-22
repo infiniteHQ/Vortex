@@ -189,6 +189,13 @@ class ModuleInterfaceUtility
   ImTextureID m_Logo;
 };
 
+enum class PlatformVendor
+{ 
+    Linux,
+    Windows,
+    Macos
+};
+
 struct SessionState
 {
   //
@@ -278,6 +285,9 @@ struct VxContext
   std::shared_ptr<spdlog::logger> console_logger;
   std::vector<std::pair<std::string, std::shared_ptr<spdlog::logger>>> pool_loggers;
 
+  // Vendor
+  PlatformVendor m_PlatformVendor;
+
   // Components
   VxIO IO;
   SessionState state;
@@ -301,6 +311,9 @@ struct VxContext
   std::string scriptsPath;
   std::string hostsPath;
   bool include_system_templates;
+  
+  std::string platform;
+  std::string arch;
 };
 //-----------------------------------------------------------------------------
 
