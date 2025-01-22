@@ -301,7 +301,7 @@ void ModuleDetails::Render()
                             {
                                 ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
                             }
-                            else if (this->m_module->m_input_events[i]->m_happenings[row]->m_state == HappeningState::ERROR)
+                            else if (this->m_module->m_input_events[i]->m_happenings[row]->m_state == HappeningState::ERR)
                             {
                                 ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
                             }

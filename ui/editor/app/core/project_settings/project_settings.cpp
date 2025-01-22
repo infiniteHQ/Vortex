@@ -323,7 +323,7 @@ namespace VortexEditor
 
     void ProjectSettingsAppWindow::Refresh()
     {
-        std::string path = VortexMaker::GetCurrentContext()->projectPath;
+        std::string path = VortexMaker::GetCurrentContext()->projectPath.string();
         path += "/vortex.config";
 
         nlohmann::json projectData = VortexMaker::DumpJSON(path);
@@ -371,7 +371,7 @@ namespace VortexEditor
         toolchainData["project"]["version"] = current_save->version;
         toolchainData["project"]["include_system_templates"] = current_save->include_system_templates;
 
-        std::string path = VortexMaker::GetCurrentContext()->projectPath;
+        std::string path = VortexMaker::GetCurrentContext()->projectPath.string();
         path += "/vortex.config";
 
         std::ofstream file(path);

@@ -24,6 +24,7 @@ else()
 endif()
 
 target_link_libraries(editor PUBLIC cherry)
+target_include_directories(editor PUBLIC "${PROJECT_SOURCE_DIR}/lib/spdlog/include/spdlog")
 
 add_custom_command(TARGET editor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory

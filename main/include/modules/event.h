@@ -11,11 +11,12 @@ enum class DevFlag
     READY, 
 };
 
+
 enum class HappeningState
 {
     INFO, 
     WARNING, 
-    ERROR,
+    ERR,
     FATAL,
 };
 

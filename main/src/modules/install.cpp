@@ -38,7 +38,7 @@ VORTEX_API void VortexMaker::InstallModule(const std::string &module_name, const
 
                 // Move the module into the project
                 {
-                    std::string cmd = "cp -r " + module_path + " " + ctx.projectPath.c_str() + "/.vx/modules/";
+                    std::string cmd = "cp -r " + module_path + " " + ctx.projectPath.string() + "/.vx/modules/";
                     system(cmd.c_str());
                 }
 
@@ -55,7 +55,7 @@ VORTEX_API void VortexMaker::InstallModule(const std::string &module_name, const
                     ctx.IO.em.clear();
 
                     // Load modules installed in the current project
-                    VortexMaker::LoadEditorModules(ctx.projectPath, ctx.IO.em_handles, ctx.IO.em);
+                    VortexMaker::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles, ctx.IO.em);
 
                     // Finally, start all loaded modules.
                     VortexMaker::StartAllModules();
@@ -98,12 +98,12 @@ VORTEX_API std::shared_ptr<ModuleInterface> VortexMaker::FindModuleInDirectory(c
 
             std::string module_path = file.substr(0, file.find_last_of("/"));
 
-            std::shared_ptr<ModuleInterface> interface = std::make_shared<ModuleInterface>();
+            std::shared_ptr<ModuleInterface> module_interface = std::make_shared<ModuleInterface>();
 
-            interface->m_name = json_data["name"].get<std::string>();
-            interface->m_version = json_data["version"].get<std::string>();
+            module_interface->m_name = json_data["name"].get<std::string>();
+            module_interface->m_version = json_data["version"].get<std::string>();
             
-            return interface;
+            return module_interface;
             
         }
         catch (std::exception e)
@@ -133,19 +133,19 @@ VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> VortexMaker::FindModule
 
             std::string module_path = file.substr(0, file.find_last_of("/"));
 
-            std::shared_ptr<ModuleInterface> interface = std::make_shared<ModuleInterface>();
-                    interface->m_name = json_data["name"].get<std::string>();
-                    interface->m_auto_exec = json_data["auto_exec"].get<bool>();
-                    interface->m_proper_name = json_data["proper_name"].get<std::string>();
-                    interface->m_type = json_data["type"].get<std::string>();
-                    interface->m_version = json_data["version"].get<std::string>();
-                    interface->m_description = json_data["description"].get<std::string>();
-                    interface->m_picture = json_data["picture"].get<std::string>();
-                    interface->m_logo_path = module_path + "/" + interface->m_picture;
-                    interface->m_path = module_path + "/";
-                    interface->m_author = json_data["author"].get<std::string>();
-                    interface->m_group = json_data["group"].get<std::string>();
-                    interface->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+            std::shared_ptr<ModuleInterface> module_interface = std::make_shared<ModuleInterface>();
+                    module_interface->m_name = json_data["name"].get<std::string>();
+                    module_interface->m_auto_exec = json_data["auto_exec"].get<bool>();
+                    module_interface->m_proper_name = json_data["proper_name"].get<std::string>();
+                    module_interface->m_type = json_data["type"].get<std::string>();
+                    module_interface->m_version = json_data["version"].get<std::string>();
+                    module_interface->m_description = json_data["description"].get<std::string>();
+                    module_interface->m_picture = json_data["picture"].get<std::string>();
+                    module_interface->m_logo_path = module_path + "/" + module_interface->m_picture;
+                    module_interface->m_path = module_path + "/";
+                    module_interface->m_author = json_data["author"].get<std::string>();
+                    module_interface->m_group = json_data["group"].get<std::string>();
+                    module_interface->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
 
                     for (auto dep : json_data["deps"])
                     {
@@ -156,12 +156,12 @@ VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> VortexMaker::FindModule
                         {
                             dependence->supported_versions.push_back(version);
                         }
-                        interface->m_dependencies.push_back(dependence);
+                        module_interface->m_dependencies.push_back(dependence);
                     }
 
-                    interface->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
+                    module_interface->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
 
-            interfaces.push_back(interface);
+            interfaces.push_back(module_interface);
             
         }
         catch (std::exception e)

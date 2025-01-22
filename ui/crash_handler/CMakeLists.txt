@@ -24,6 +24,7 @@ else()
 endif()
 
 target_link_libraries(crash_handler PUBLIC cherry)
+target_include_directories(crash_handler PUBLIC "${PROJECT_SOURCE_DIR}/lib/spdlog/include/spdlog")
 
 add_custom_command(TARGET crash_handler POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory

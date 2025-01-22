@@ -16,21 +16,19 @@ target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/src
 )
 
+find_package(Vulkan REQUIRED)
+include_directories(${Vulkan_INCLUDE_DIRS})
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler ui_crash_handler_build)
 target_link_libraries(vortex_shared PUBLIC crash_handler)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/editor ui_editor_build)
 target_link_libraries(vortex_shared PUBLIC editor)
 
-
 target_link_libraries(vortex_shared PUBLIC cherry)
 
 file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
 add_executable(vortex ${VORTEX_SOURCES} main.cpp)
-set_target_properties(vortex PROPERTIES
-    INSTALL_RPATH "$ORIGIN/../lib"
-    BUILD_RPATH "$ORIGIN/../lib"
-)
 
 target_link_libraries(vortex PRIVATE vortex_shared)
 
@@ -41,8 +39,7 @@ if(UNIX AND NOT APPLE)
     set(INSTALL_LIB_DIR ${INSTALL_BASE_DIR}/lib)
     set(INSTALL_INCLUDE_DIR ${INSTALL_BASE_DIR}/include)
 elseif(WIN32)
-    set(USER_PROFILE $ENV{USERPROFILE})
-    set(INSTALL_BASE_DIR "${USER_PROFILE}/AppData/Local/Vortex/${VORTEX_VERSION}")
+    set(INSTALL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_VERSION})
     set(INSTALL_BIN_DIR ${INSTALL_BASE_DIR}/bin)
     set(INSTALL_LIB_DIR ${INSTALL_BASE_DIR}/lib)
     set(INSTALL_MAIN_DIR ${INSTALL_BASE_DIR}/)
@@ -80,7 +77,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/assets/
     FILES_MATCHING PATTERN "*"
 )
 
-# Autres installations de fichiers de configuration
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/assets/desktop/vortex_desktop.desktop
     DESTINATION ${INSTALL_MAIN_DIR}/)
 
@@ -88,6 +84,9 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/vortex_banner.png
     DESTINATION ${INSTALL_MAIN_DIR}/)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/build/handle_crash.sh
+    DESTINATION ${INSTALL_BIN_DIR}/)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/build/handle_crash.bat
     DESTINATION ${INSTALL_BIN_DIR}/)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manifest.json

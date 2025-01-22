@@ -2,72 +2,126 @@
 #include "../../include/vortex_internals.h"
 #include "../../include/modules/load.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#include <stringapiset.h> // Pour WideCharToMultiByte et MultiByteToWideChar
+
+// Convertir std::string en std::wstring
+std::wstring ConvertToWideString(const std::string &str)
+{
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    if (size_needed == 0)
+    {
+        throw std::runtime_error("Error converting string to wide string");
+    }
+    std::wstring wide_string(size_needed, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wide_string[0], size_needed);
+    return wide_string;
+}
+
+// Convertir std::wstring en std::string
+std::string ConvertToString(const std::wstring &wstr)
+{
+    int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    if (size_needed == 0)
+    {
+        throw std::runtime_error("Error converting wide string to string");
+    }
+    std::string str(size_needed, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], size_needed, nullptr, nullptr);
+    return str;
+}
+#endif
+
 namespace VortexMaker
 {
-    /**
-     * @brief Load modules from the specified directory.
-     *
-     * This function searches for module files in the specified directory and loads them dynamically.
-     * It loads the module shared objects (SO files) and creates instances of modules using their factory functions.
-     *
-     * @param directory The directory where module files are located.
-     * @param modules_handlers A vector to store handles of loaded modules.
-     * @param modules A vector to store instances of loaded modules.
-     */
-    VORTEX_API void LoadEditorModules(const std::string &directory, std::vector<void *> &modules_handlers, std::vector<std::shared_ptr<ModuleInterface>> &modules)
+
+    VORTEX_API void LoadEditorModules(
+        const std::string &directory,
+        std::vector<void *> &modules_handlers,
+        std::vector<std::shared_ptr<ModuleInterface>> &modules)
     {
-        // Search for module files recursively in the directory
         auto module_files = VortexMaker::SearchFiles(directory, "module.json");
 
-        // Iterate through each found module file
         for (const auto &file : module_files)
         {
             try
             {
-                // Load JSON data from the module configuration file
                 auto json_data = VortexMaker::DumpJSON(file);
-
-                // Get the directory path containing the module file
                 std::string path = file.substr(0, file.find_last_of("/"));
 
-                // Search for shared object (SO) files in the same directory as the module configuration file
+#ifdef _WIN32
+                auto so_files = VortexMaker::SearchFiles(path, "module.dll");
+#else
                 auto so_files = VortexMaker::SearchFiles(path, "libmodule.so");
+#endif
 
-                // Iterate through each found SO file
                 for (const auto &so_file : so_files)
                 {
-                    // Load the shared object
-                    void *handle = dlopen(so_file.c_str(), RTLD_LAZY | RTLD_GLOBAL);
-                    const char *dlopen_error = dlerror();
+                    void *handle = nullptr;
+
+#ifdef _WIN32
+                    std::wstring wide_so_file = ConvertToWideString(so_file);
+
+                    handle = LoadLibraryW(wide_so_file.c_str());
                     if (!handle)
                     {
-                        // Print error if failed to load the shared object
-                        std::string output = "Failed to load module: ";
-                        output += dlopen_error;
-                        VortexMaker::LogFatal("Modules", output); // core dumped
+                        DWORD error_code = GetLastError();
+                        LPVOID msg_buffer;
+
+                        FormatMessageW(
+                            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                            nullptr, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                            (LPWSTR)&msg_buffer, 0, nullptr);
+
+                        std::wstring wide_error_msg = (LPWSTR)msg_buffer;
+                        LocalFree(msg_buffer);
+
+                        std::string error_msg = ConvertToString(wide_error_msg);
+                        VortexMaker::LogFatal("Modules", "Failed to load module: " + error_msg);
                         continue;
                     }
 
-                    // Reset errors
-                    dlerror();
+                    auto create_em = reinterpret_cast<ModuleInterface *(*)()>(GetProcAddress((HMODULE)handle, "create_em"));
+                    if (!create_em)
+                    {
+                        DWORD error_code = GetLastError();
+                        LPVOID msg_buffer;
 
-                    // Get the symbol for creating the module instance
+                        FormatMessageW(
+                            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                            nullptr, error_code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                            (LPWSTR)&msg_buffer, 0, nullptr);
+
+                        std::wstring wide_error_msg = (LPWSTR)msg_buffer;
+                        LocalFree(msg_buffer);
+
+                        std::string error_msg = ConvertToString(wide_error_msg);
+                        VortexMaker::LogFatal("Modules", "Failed to load symbol: " + error_msg);
+                        FreeLibrary((HMODULE)handle);
+                        continue;
+                    }
+#else
+                    handle = dlopen(so_file.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+                    if (!handle)
+                    {
+                        std::string error_msg = dlerror();
+                        VortexMaker::LogFatal("Modules", "Failed to load module: " + error_msg);
+                        continue;
+                    }
+
                     auto create_em = reinterpret_cast<ModuleInterface *(*)()>(dlsym(handle, "create_em"));
                     const char *dlsym_error = dlerror();
                     if (dlsym_error)
                     {
-                        // Print error if failed to load symbol
-                        std::string output = "Failed to load symbol: ";
-                        output += dlsym_error;
-                        VortexMaker::LogFatal("Modules", output);
+                        std::string error_msg = dlsym_error;
+                        VortexMaker::LogFatal("Modules", "Failed to load symbol: " + error_msg);
                         dlclose(handle);
                         continue;
                     }
+#endif
 
-                    // Create an instance of the module
                     std::shared_ptr<ModuleInterface> new_module(create_em());
-
-                    // Try to fetch module informations from module.json
                     try
                     {
                         new_module->m_name = json_data["name"].get<std::string>();
@@ -81,48 +135,19 @@ namespace VortexMaker
                         new_module->m_author = json_data["author"].get<std::string>();
                         new_module->m_group = json_data["group"].get<std::string>();
                         new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
-
-                        for (auto dep : json_data["deps"].get<std::vector<nlohmann::json>>())
-                        {
-                            std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
-                            dependence->name = dep["name"].get<std::string>();
-                            dependence->type = dep["type"].get<std::string>();
-                            for (auto version : dep["versions"])
-                            {
-                                dependence->supported_versions.push_back(version);
-                            }
-                            new_module->m_dependencies.push_back(dependence);
-                        }
-
-                        for (auto compat : json_data["compatibility"].get<std::vector<nlohmann::json>>())
-                        {
-                            new_module->m_supported_versions.push_back(compat.get<std::string>());
-                        }
                     }
-                    catch (std::exception e)
+                    catch (const std::exception &e)
                     {
-                        std::cerr << e.what() << std::endl;
+                        VortexMaker::LogError("Modules", "Failed to load module metadata: " + std::string(e.what()));
                     }
 
-                    if (!new_module)
-                    {
-                        // Print error if failed to create module instance
-                        std::cerr << "Failed to create module instance" << std::endl;
-                        dlclose(handle);
-                        continue;
-                    }
-
-                    VXINFO("Modules", new_module->m_name + " module loaded with success !")
-
-                    // Store the module instance and handle
                     modules.push_back(new_module);
                     modules_handlers.push_back(handle);
                 }
             }
             catch (const std::exception &e)
             {
-                // Print error if an exception occurs
-                std::cerr << "Error: " << e.what() << std::endl;
+                VortexMaker::LogError("Modules", "Error processing module file: " + std::string(e.what()));
             }
         }
     }
@@ -196,7 +221,7 @@ namespace VortexMaker
             catch (const std::exception &e)
             {
                 // Print error if an exception occurs
-                VortexMaker::LogError("Core", 'Error: ' + e.what());
+                VortexMaker::LogError("Core", std::string("Error: ") + e.what());
             }
         }
     }

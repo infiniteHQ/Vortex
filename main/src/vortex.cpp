@@ -739,7 +739,7 @@ VORTEX_API void VortexMaker::FetchPools()
     // From master pool relative path (from project path)
     ctx.IO.contentbrowser_mainpool = json_data["main_pool"].get<std::string>();
 
-    std::string projectPath = ctx.projectPath.c_str();
+    std::string projectPath = ctx.projectPath.string();
     ctx.IO.contentbrowser_absolute_mainpool = projectPath + "/" + ctx.IO.contentbrowser_mainpool;
 
     // From other pool absolute paths

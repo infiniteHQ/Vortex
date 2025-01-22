@@ -51,7 +51,7 @@ void ModuleInputEvent::trigger_happening(const std::string &trigger_name, Happen
     {
         VortexMaker::LogWarn("Modules Events", log);
     }
-    else if (state == HappeningState::ERROR)
+    else if (state == HappeningState::ERR)
     {
         VortexMaker::LogError("Modules Events", log);
     }
@@ -87,7 +87,7 @@ void ModuleOutputEvent::trigger_happening(const std::string &trigger_name, Happe
     {
         VortexMaker::LogWarn("Modules Events", log);
     }
-    else if (state == HappeningState::ERROR)
+    else if (state == HappeningState::ERR)
     {
         VortexMaker::LogError("Modules Events", log);
     }

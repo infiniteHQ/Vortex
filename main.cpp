@@ -1,3 +1,5 @@
+#define SDL_MAIN_HANDLED
+
 #include <iostream>
 #include <string>
 #include <thread>
@@ -236,7 +238,7 @@ int main(int argc, char *argv[])
             InitBlankRuntime(true);
             PrintHeader();
             VortexMaker::LogInfo("Bootstrapp", "Find and install component...");
-            std::string current_path = std::filesystem::current_path();
+            std::string current_path = std::filesystem::current_path().string();
             InitBlankRuntime(true);
             VortexMaker::InstallContentOnSystem(current_path);
         }
@@ -245,7 +247,7 @@ int main(int argc, char *argv[])
             InitBlankRuntime(true);
             PrintHeader();
             VortexMaker::LogInfo("Bootstrapp", "Find and build/install component...");
-            std::string current_path = std::filesystem::current_path();
+            std::string current_path = std::filesystem::current_path().string();
             InitBlankRuntime(true);
             VortexMaker::InstallContentOnSystem(current_path);
         }
@@ -262,7 +264,7 @@ int main(int argc, char *argv[])
                 VxContext *ctx = VortexMaker::CreateContext();
                 VortexMaker::LogInfo("Bootstrapp", "Creating a new project...");
                 std::string project_name = std::string(argv[2]);
-                std::string current_path = std::filesystem::current_path();
+                std::string current_path = std::filesystem::current_path().string();
                 VortexMaker::CreateProject(project_name, current_path);
             }
         }

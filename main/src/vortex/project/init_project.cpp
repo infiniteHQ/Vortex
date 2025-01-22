@@ -26,12 +26,6 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs)
     ctx.compatibleWith = main_configs["project"]["compatibleWith"].get<std::string>();
     ctx.include_system_templates = main_configs["project"]["include_system_templates"].get<bool>();
 
-    std::cout << "Qsd" << std::endl;
-    std::cout << "Qsd" << std::endl;
-    std::cout << "Qsd" << std::endl;
-    std::cout << "Qsd" << std::endl;
-    std::cout << "Qsd" << std::endl;
-
     // Set project path to current working directory
     ctx.projectPath = fs::current_path();
 
@@ -46,7 +40,7 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs)
     VortexMaker::UpdateEnvironmentProject();
 
     // Load modules installed in the current project
-    VortexMaker::LoadEditorModules(ctx.projectPath, ctx.IO.em_handles, ctx.IO.em);
+    VortexMaker::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles, ctx.IO.em);
 
     // Load modules installed in the system
     // Note: These modules are simply initialized in the project, not loaded, but we can add these in CLI/GUI
