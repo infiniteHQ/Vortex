@@ -10,7 +10,13 @@ VORTEX_API void VortexMaker::DropLoggers()
 VORTEX_API std::shared_ptr<spdlog::logger> VortexMaker::CreateLogPool(const std::string &pool_name)
 {
   VxContext &ctx = *CVortexMaker;
+
+#if defined(_WIN32) || defined(_WIN64)
+  std::string file_path = VortexMaker::getHomeDirectory() + "\\.vx\\sessions\\" + ctx.state.session_id + "\\logs\\" + pool_name + ".log";
+#else
   std::string file_path = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + ctx.state.session_id + "/logs/" + pool_name + ".log";
+#endif
+
   std::shared_ptr<spdlog::logger> new_logger = spdlog::daily_logger_mt(pool_name, file_path ,0 ,0);
   new_logger->flush_on(spdlog::level::info);
 
@@ -22,7 +28,13 @@ VORTEX_API std::shared_ptr<spdlog::logger> VortexMaker::CreateLogPool(const std:
 VORTEX_API std::shared_ptr<spdlog::logger> VortexMaker::CreateGlobalLogger()
 {
   VxContext &ctx = *CVortexMaker;
+
+#if defined(_WIN32) || defined(_WIN64)
+  std::string file_path = VortexMaker::getHomeDirectory() + "\\.vx\\sessions\\" + ctx.state.session_id + "\\logs\\global.log";
+#else
   std::string file_path = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + ctx.state.session_id + "/logs/global.log";
+#endif
+
   ctx.global_logger = spdlog::basic_logger_mt("global_logger", file_path);
   ctx.global_logger->flush_on(spdlog::level::info);
   return ctx.global_logger;

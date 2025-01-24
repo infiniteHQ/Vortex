@@ -29,6 +29,7 @@ target_link_libraries(vortex_shared PUBLIC editor)
 
 file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
 add_executable(vortex ${VORTEX_SOURCES} main.cpp)
+add_executable(vortex_utils utils.cpp)
 
 target_link_libraries(vortex PUBLIC vortex_shared)
 

@@ -13,7 +13,6 @@
 #include "./main/include/templates/load.h"
 #include "./lib/cherry/cherry.hpp"
 
-
 static std::string session_id = "unknow";
 
 /*
@@ -60,7 +59,7 @@ void PrintInfinite()
               << std::endl;
 }
 
-void PrintHeader(const std::string& additions = "")
+void PrintHeader(const std::string &additions = "")
 {
     // Print this every time
     std::cout << std::endl;
@@ -159,11 +158,10 @@ VxContext *InitRuntime(bool logger)
         file >> jsonContenu;
         VortexMaker::InitProject(jsonContenu);
     }
-    
+
     return ctx;
 }
- // Project sys size== 0
-
+// Project sys size== 0
 
 // Project creator,
 // Template deployment overrides (project, modules_content, etc...)
@@ -219,10 +217,12 @@ int main(int argc, char *argv[])
         {
             PrintHeader("(Crash handler)");
 
-            if (argc > 2) {
+            if (argc > 2)
+            {
                 std::string arg2 = argv[2];
-                if (arg2.rfind("--session_id=", 0) == 0) {
-                    session_id = arg2.substr(13);
+                if (arg2.rfind("--session_id=\"", 0) == 0 && arg2.back() == '\"')
+                {
+                    session_id = arg2.substr(13, arg2.length() - 14);
                 }
             }
 
@@ -232,10 +232,9 @@ int main(int argc, char *argv[])
             VxContext *ctx = VortexMaker::GetCurrentContext();
 
             std::thread receiveThread;
-                std::thread Thread([&]()
-                                   { VortexMaker::VortexCrash(argc, argv); });
-                receiveThread.swap(Thread);
-            
+            std::thread Thread([&]()
+                               { VortexMaker::VortexCrash(argc, argv); });
+            receiveThread.swap(Thread);
 
             receiveThread.join();
         }
@@ -277,13 +276,15 @@ int main(int argc, char *argv[])
         else if (std::string(argv[1]) == "-e" || std::string(argv[1]) == "--editor")
         {
             PrintHeader("(Editor)");
-
-            if (argc > 2) {
+            if (argc > 2)
+            {
                 std::string arg2 = argv[2];
-                if (arg2.rfind("--session_id=", 0) == 0) {
-                    session_id = arg2.substr(13);
+                if (arg2.rfind("--session_id=\"", 0) == 0 && arg2.back() == '\"')
+                {
+                    session_id = arg2.substr(13, arg2.length() - 14);
                 }
             }
+
             InitRuntime(true);
             VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
 
