@@ -8,7 +8,7 @@ TODO
 - Home on Pathbar
 - cpy/paste
 - creation & add
-- custom item & callbacks 
+- custom item & callbacks
 */
 
 // To move in class members
@@ -30,6 +30,8 @@ static ImU32 folder_color = IM_COL32(150, 128, 50, 255);
 
 static std::pair<std::string, ImU32> current_editing_folder;
 static bool current_editing_folder_is_favorite;
+
+static float c_FilterBarWidth = 250.0f;
 
 static bool isOnlySpacesOrEmpty(const char *str)
 {
@@ -453,7 +455,24 @@ namespace VortexEditor
     static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>> recognized_modules_items;
     void ContentBrowserAppWindow::DrawPathBar(const std::string &path)
     {
-        ImVec2 contentSize(ImGui::CalcTextSize(path.c_str()).x + 70.0f, 0);
+        // ImGui::Image(Cherry::GetTexture(Cherry::GetPath("resources/imgs/icon_vortex.png")), ImVec2(20, 20));
+        std::string homePath = VortexMaker::GetCurrentContext()->projectPath;
+        bool FirstPathPartIsHome = false;
+        std::string displayPath = path;
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.25f);
+
+        // Check if the beginning of the path matches homePath
+        if (path.rfind(homePath, 0) == 0)
+        {
+            FirstPathPartIsHome = true;
+            displayPath = path.substr(homePath.length());
+            if (!displayPath.empty() && (displayPath[0] == '\\' || displayPath[0] == '/'))
+            {
+                displayPath.erase(0, 1);
+            }
+        }
+
+        ImVec2 contentSize(ImGui::CalcTextSize(displayPath.c_str()).x + 70.0f, 0);
         ImGui::BeginChild("PathBar", ImVec2(contentSize.x, 0), ImGuiWindowFlags_NoScrollbar);
 
 #ifdef _WIN32
@@ -463,7 +482,7 @@ namespace VortexEditor
 #endif
 
         std::vector<std::string> elements;
-        std::stringstream ss(path);
+        std::stringstream ss(displayPath);
         std::string segment;
 
         while (std::getline(ss, segment, separator))
@@ -471,10 +490,22 @@ namespace VortexEditor
             elements.push_back(segment);
         }
 
+        if (FirstPathPartIsHome)
+        {
+            ImGui::Image(Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_home.png")), ImVec2(15.0f, 15.0f));
+            ImGui::SameLine();
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+            ImGui::TextUnformatted("/");
+            ImGui::PopStyleColor();
+            if (!elements.empty())
+            {
+                ImGui::SameLine();
+            }
+        }
+
         for (size_t i = 0; i < elements.size(); ++i)
         {
             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", elements[i].c_str());
-
             if (i < elements.size() - 1)
             {
                 ImGui::SameLine();
@@ -521,8 +552,180 @@ namespace VortexEditor
         }
     }
 
+    void ContentBrowserAppWindow::RenderRightMenubar()
+    {
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3.5f);
+
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
+
+        {
+            {
+                static std::shared_ptr<Cherry::ImageTextButtonSimple> btn = std::make_shared<Cherry::ImageTextButtonSimple>("LogicContentManager.FindModules.Filter", "Search");
+                btn->SetScale(0.85f);
+                btn->SetInternalMarginX(10.0f);
+                btn->SetLogoSize(15, 15);
+                btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
+                if (btn->Render("LogicContentManager"))
+                {
+                    m_SearchBar = !m_SearchBar;
+
+                    if (!m_SearchBar)
+                    {
+                        memset(ProjectSearch, 0, sizeof ProjectSearch);
+                        btn->SetLabel("Search");
+                    }
+                    else
+                    {
+                        btn->SetLabel("Stop search");
+                    }
+                }
+            }
+
+            {
+                static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("option_buttons", Application::Get().GetLocale("loc.window.content.content_browser.options"));
+                btn->SetScale(0.85f);
+                btn->SetInternalMarginX(10.0f);
+                btn->SetLogoSize(15, 15);
+
+                btn->SetDropDownImage(Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
+                btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"));
+                if (btn->Render("LogicContentManager"))
+                {
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+                    ImVec2 popupSize(150, 100);
+
+                    if (mousePos.x + popupSize.x > displaySize.x)
+                    {
+                        mousePos.x -= popupSize.x;
+                    }
+                    if (mousePos.y + popupSize.y > displaySize.y)
+                    {
+                        mousePos.y -= popupSize.y;
+                    }
+
+                    ImGui::SetNextWindowPos(mousePos);
+                    ImGui::OpenPopup("ContextMenu");
+                }
+            }
+
+
+            if (ImGui::BeginPopup("ContextMenu"))
+            {
+                ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
+                ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);
+
+                ImGui::EndPopup();
+            }
+        }
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3.0f);
+
+        ImGui::PopStyleColor();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1.5f);
+    }
+
+    void ContentBrowserAppWindow::RenderMenubar()
+    {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 3.0f);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.5f);
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
+
+        if (cp_AddButton->Render())
+        {
+            ImGui::InsertNotification({ImGuiToastType::Success, 3000, "That is a success! %s", "(Format here)"});
+        }
+
+        ImGui::PopStyleColor();
+
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(62, 62, 62, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(62, 62, 62, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(62, 62, 62, 0));
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(62, 62, 62, 0));
+
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.5f);
+        if (cp_SaveButton->Render())
+        {
+            //
+        }
+
+        if (cp_ImportButton->Render())
+        {
+            //
+        }
+
+        ImGui::PopStyleColor(4);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1.5f);
+
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444AA"));
+        ImGui::Separator();
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
+
+        static bool wasButtonX1Pressed = false;
+        static bool wasButtonX2Pressed = false;
+
+        if (m_BackHistory.empty())
+        {
+            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
+            if (cp_DirectoryUndo->Render("GoBack"))
+            {
+                //
+            }
+        }
+        else
+        {
+            cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"));
+            if (cp_DirectoryUndo->Render("GoBack"))
+            {
+                GoBack();
+            }
+
+            Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
+
+            bool isButtonX1Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X1);
+            if (isButtonX1Pressed && !wasButtonX1Pressed)
+            {
+                GoBack();
+            }
+            wasButtonX1Pressed = isButtonX1Pressed;
+        }
+
+        if (m_ForwardHistory.empty())
+        {
+            cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
+            if (cp_DirectoryRedo->Render("GoForward"))
+            {
+                //
+            }
+        }
+        else
+        {
+            cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"));
+            if (cp_DirectoryRedo->Render("GoForward"))
+            {
+                GoForward();
+            }
+
+            Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
+            bool isButtonX2Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X2);
+            if (isButtonX2Pressed && !wasButtonX2Pressed)
+            {
+                GoForward();
+            }
+            wasButtonX2Pressed = isButtonX2Pressed;
+        }
+
+        ImGui::PopStyleVar();
+
+        ImGui::Separator();
+        ImGui::PopStyleColor(2);
+
+        this->DrawPathBar(m_CurrentDirectory.string());
+    }
+
     ContentBrowserAppWindow::ContentBrowserAppWindow(const std::string &name, const std::string &start_path)
     {
+        std::cout << "Create with" << start_path << std::endl;
         m_AppWindow = std::make_shared<AppWindow>(name, name);
         m_AppWindow->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"));
         std::shared_ptr<AppWindow> win = m_AppWindow;
@@ -563,138 +766,13 @@ namespace VortexEditor
         cp_DirectoryUndo->SetBorderColorIdle("#00000000");
         cp_DirectoryUndo->SetScale(0.85f);
         m_AppWindow->SetLeftMenubarCallback([this]()
-                                            {
-                                                ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
-
-                                                if (cp_AddButton->Render())
-                                                {
-                                                    ImGui::InsertNotification({ImGuiToastType::Success, 3000, "That is a success! %s", "(Format here)"});
-                                                }
-
-                                                ImGui::PopStyleColor();
-
-                                                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(62, 62, 62, 0));
-                                                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(62, 62, 62, 0));
-                                                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(62, 62, 62, 0));
-                                                ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(62, 62, 62, 0));
-
-                                                if (cp_SaveButton->Render())
-                                                {
-                                                    //
-                                                }
-
-                                                if (cp_ImportButton->Render())
-                                                {
-                                                    //
-                                                }
-
-                                                ImGui::PopStyleColor(4);
-
-                                                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-                                                ImGui::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444FF"));
-                                                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
-                                                ImGui::Separator();
-
-                                                static bool wasButtonX1Pressed = false;
-                                                static bool wasButtonX2Pressed = false;
-
-                                                if (m_BackHistory.empty())
-                                                {
-                                                    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
-                                                    if (cp_DirectoryUndo->Render("GoBack"))
-                                                    {
-                                                        //
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"));
-                                                    if (cp_DirectoryUndo->Render("GoBack"))
-                                                    {
-                                                        GoBack();
-                                                    }
-
-                                                    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
-
-                                                    bool isButtonX1Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X1);
-                                                    if (isButtonX1Pressed && !wasButtonX1Pressed)
-                                                    {
-                                                        GoBack();
-                                                    }
-                                                    wasButtonX1Pressed = isButtonX1Pressed;
-                                                }
-
-                                                if (m_ForwardHistory.empty())
-                                                {
-                                                    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
-                                                    if (cp_DirectoryRedo->Render("GoForward"))
-                                                    {
-                                                        //
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"));
-                                                    if (cp_DirectoryRedo->Render("GoForward"))
-                                                    {
-                                                        GoForward();
-                                                    }
-
-                                                    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
-                                                    bool isButtonX2Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X2);
-                                                    if (isButtonX2Pressed && !wasButtonX2Pressed)
-                                                    {
-                                                        GoForward();
-                                                    }
-                                                    wasButtonX2Pressed = isButtonX2Pressed;
-                                                }
-
-                                                ImGui::PopStyleVar();
-
-                                                ImGui::Separator();
-                                                ImGui::PopStyleColor(2);
-
-                                                this->DrawPathBar(m_CurrentDirectory.string()); });
+                                            { RenderMenubar(); });
         m_AppWindow->m_Closable = true;
         m_AppWindow->SetCloseCallback([this]()
                                       { Cherry::DeleteAppWindow(m_AppWindow); });
 
         m_AppWindow->SetRightMenubarCallback([this]()
-                                             {
- {
-            static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("LogicContentManager.FindModules.Filter", Application::Get().GetLocale("loc.window.content.content_browser.options"));
-            btn->SetScale(0.85f);
-            btn->SetInternalMarginX(10.0f);
-            btn->SetLogoSize(15, 15);
-
-            btn->SetDropDownImage(Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
-            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"));
-         if (btn->Render("LogicContentManager"))
-{
-    ImVec2 mousePos = ImGui::GetMousePos();
-    ImVec2 displaySize = ImGui::GetIO().DisplaySize;
-    ImVec2 popupSize(150, 100);
-
-    if (mousePos.x + popupSize.x > displaySize.x) {
-        mousePos.x -= popupSize.x;
-    }
-    if (mousePos.y + popupSize.y > displaySize.y) {
-        mousePos.y -= popupSize.y;
-    }
-
-    ImGui::SetNextWindowPos(mousePos);
-    ImGui::OpenPopup("ContextMenu");
-}
-
-if (ImGui::BeginPopup("ContextMenu"))
-{
-    ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
-    ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);
-
-    ImGui::EndPopup();
-}
-
-        } });
+                                             { RenderRightMenubar(); });
         m_AppWindow->SetLeftBottombarCallback([this]()
                                               { ImGui::Text("3 selected."); });
 
@@ -704,13 +782,16 @@ if (ImGui::BeginPopup("ContextMenu"))
         ContentBrowserChild sidebar("RenderSideBar", [this]()
                                     { RenderSideBar(); });
         sidebar.Enable();
-        sidebar.m_DefaultSize = 250.0f;
+        sidebar.m_DefaultSize = c_FilterBarWidth;
+        sidebar.m_BackgroundColor = Cherry::HexToRGBA("#35353535");
+
         AddChild(sidebar);
 
         ContentBrowserChild filterbar("RenderFiltersBar", [this]()
                                       { RenderFiltersBar(); });
         filterbar.Disable();
         filterbar.m_DefaultSize = 250.0f;
+        filterbar.m_BackgroundColor = Cherry::HexToRGBA("#35353535");
         AddChild(filterbar);
 
         ContentBrowserChild contentbar("RenderContentBar", [this]()
@@ -1187,15 +1268,17 @@ if (ImGui::BeginPopup("ContextMenu"))
 
     void ContentBrowserAppWindow::RenderSideBar()
     {
+        const float header_width = c_FilterBarWidth - 32.0f;
+
         CustomCollapsingHeaderLogo("Favorite", Application::CookPath("resources/imgs/icons/misc/icon_star.png"), [this]()
                                    {
                                        for (auto custom_dir : m_FavoriteFolders)
                                        {
                                            DrawHierarchy(custom_dir, true);
-                                       } });
+                                       } }, header_width);
 
         CustomCollapsingHeaderLogo("Main", Application::CookPath("resources/imgs/icons/misc/icon_home.png"), [this]()
-                                   { DrawHierarchy(m_BaseDirectory, true, "Main"); });
+                                   { DrawHierarchy(m_BaseDirectory, true, "Main"); }, header_width);
 
         CustomCollapsingHeaderLogo("Pools & Collections", Application::CookPath("resources/imgs/icons/misc/icon_collection.png"), [this]()
                                    {
@@ -1239,8 +1322,7 @@ if (ImGui::BeginPopup("ContextMenu"))
         }
 
                                        ImGui::PopStyleVar();
-                                       ImGui::PopStyleColor(); });
-
+                                       ImGui::PopStyleColor(); }, header_width);
     }
 
     void ContentBrowserAppWindow::RenderFiltersBar()
@@ -1272,37 +1354,39 @@ if (ImGui::BeginPopup("ContextMenu"))
         if (columnCount < 1)
             columnCount = 1;
 
+        if (m_SearchBar)
         {
-            static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("LogicContentManager.FindModules.Filter", "####filder");
-            btn->SetScale(0.85f);
-            btn->SetInternalMarginX(10.0f);
-            btn->SetLogoSize(15, 15);
-
-            btn->SetDropDownImage(Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
-            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"));
-            if (btn->Render("LogicContentManager"))
             {
-                ImVec2 mousePos = ImGui::GetMousePos();
-                ImGui::SetNextWindowPos(mousePos);
-                ImGui::OpenPopup("ContextMenu");
-            }
+                static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("LogicContentManager.FindModules.Filter", "####filder");
+                btn->SetScale(0.85f);
+                btn->SetInternalMarginX(10.0f);
+                btn->SetLogoSize(15, 15);
 
-            if (ImGui::BeginPopup("ContextMenu"))
-            {
-                ImGui::Text("SearchFilters");
-                ImGui::EndPopup();
+                btn->SetDropDownImage(Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
+                btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"));
+                if (btn->Render("LogicContentManager"))
+                {
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    ImGui::SetNextWindowPos(mousePos);
+                    ImGui::OpenPopup("ContextMenu");
+                }
+
+                if (ImGui::BeginPopup("ContextMenu"))
+                {
+                    ImGui::Text("SearchFilters");
+                    ImGui::EndPopup();
+                }
             }
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(500.0f);
+            ImGui::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#222222FF"));
+            ImGui::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#232323FF"));
+            ImGui::InputText("####ContentBrowserSearch", ProjectSearch, sizeof(ProjectSearch));
+            ImGui::Separator();
+
+            ImGui::PopStyleColor(2);
         }
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(500.0f);
-        ImGui::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#222222FF"));
-        ImGui::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#232323FF"));
-        ImGui::InputText("####ContentBrowserSearch", ProjectSearch, sizeof(ProjectSearch));
-        ImGui::Separator();
-
         ImGui::Spacing();
-
-        ImGui::PopStyleColor(2);
 
         std::vector<std::filesystem::directory_entry> directories;
         std::vector<std::filesystem::directory_entry> files;
@@ -1900,8 +1984,6 @@ if (ImGui::BeginPopup("ContextMenu"))
             ImGui::Columns(1);
         }
 
-        ImGui::Text(std::to_string(m_Selected.size()).c_str());
-
         if (m_ShowMode == ContentShowMode::Columns)
         {
             static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
@@ -2451,6 +2533,11 @@ if (ImGui::BeginPopup("ContextMenu"))
             if (child.m_Disabled)
             {
                 continue;
+            }
+
+            if (child.m_Name == "RenderSideBar")
+            {
+                c_FilterBarWidth = child.m_Size;
             }
 
             ImGui::PushStyleColor(ImGuiCol_ChildBg, child.m_BackgroundColor);

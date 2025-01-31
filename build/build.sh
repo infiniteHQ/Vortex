@@ -16,6 +16,8 @@ make -j$(nproc) install
 
 cd ..
 
+cp -r ./build/bin/* dist/${VERSION}/bin
+
 # Prepare shipping folders
 rm -rf shipping/*
 mkdir -p shipping/vortex/linux

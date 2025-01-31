@@ -2,23 +2,16 @@
 
 void VortexMaker::createFolderIfNotExists(const std::string &path)
 {
-    if (!fs::exists(path))
+    try
     {
-        try
+        if (!fs::exists(path))
         {
-            std::string cmd = "mkdir " + path;
-            system(cmd.c_str());
-            VortexMaker::LogInfo("Core", "Path '" + path + "' created with success.");
-        }
-        catch (const std::exception &ex)
-        {
-            VortexMaker::LogError("Core", "Error while creating folder '" + path + "'");
-            VortexMaker::LogError("Core", ex.what());
+            fs::create_directories(path);
         }
     }
-    else
+    catch (const std::exception &e)
     {
-        VortexMaker::LogInfo("Core", "Path '" + path + "' already exist.");
+        VortexMaker::LogError("Core", "Error while creating folder '" + path + "' (" + e.what() + ")");
     }
 }
 

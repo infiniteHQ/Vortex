@@ -350,7 +350,7 @@ Cherry::Application *CreateEditor(int argc, char **argv)
 {
     Cherry::ApplicationSpecification spec;
     std::shared_ptr<EditorLayer> layer = std::make_shared<EditorLayer>();
-    
+
     std::cout << "Starting editor..." << std::endl;
 
     std::string name = "Vortex Editor";
@@ -562,7 +562,7 @@ Cherry::Application *CreateEditor(int argc, char **argv)
 
                         Cherry::MenuItemTextSeparator("Contents, managment");
                               
-        if (ImGui::MenuItem("Content Browser", "Open a content browser", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png")), c_Editor->GetModuleUtilityVisibility()))
+        if (ImGui::MenuItem("Content Browser", "Open a content browser", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"))))
         {
             c_Editor->SpawnContentBrowser();
         }           

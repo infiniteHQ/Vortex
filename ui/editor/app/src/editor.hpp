@@ -147,7 +147,7 @@ public:
   void SpawnContentBrowser()
   {
     std::string label = "Content Browser ####Content Browser-" + std::to_string(c_ContentBrowserInstances.size() + 1);
-    std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser = VortexEditor::ContentBrowserAppWindow::Create(label.c_str(), "/home/diego");
+    std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser = VortexEditor::ContentBrowserAppWindow::Create(label.c_str(), VortexMaker::GetCurrentContext()->projectPath);
     Cherry::AddAppWindow(ContentBrowser->GetAppWindow());
     c_ContentBrowserInstances.push_back(ContentBrowser);
   }

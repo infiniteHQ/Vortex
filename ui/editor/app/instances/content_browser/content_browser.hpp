@@ -179,6 +179,9 @@ namespace VortexEditor
         void RenderFiltersBar();
         void RenderContentBar();
         void RenderDetailsBar();
+        void RenderRightMenubar();
+
+    void RenderMenubar();
 
         void Select(const std::string &path)
         {
@@ -301,6 +304,8 @@ namespace VortexEditor
 
         std::shared_ptr<ImageButtonSimple> cp_DirectoryUndo;
         std::shared_ptr<ImageButtonSimple> cp_DirectoryRedo;
+
+        bool m_SearchBar = false;
     };
 }
 
