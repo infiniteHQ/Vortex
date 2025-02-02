@@ -609,7 +609,6 @@ namespace VortexEditor
                 }
             }
 
-
             if (ImGui::BeginPopup("ContextMenu"))
             {
                 ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
@@ -618,7 +617,8 @@ namespace VortexEditor
                 ImGui::EndPopup();
             }
         }
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3.0f);
+        
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3.0f);
 
         ImGui::PopStyleColor();
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1.5f);

@@ -45,7 +45,7 @@ void ModuleInterface::AddInputEvent(const ModuleInputEvent &event)
 
 void ModuleInterface::RefreshMainWindow()
 {
-    if(!&Cherry::Application::Get())
+    if (!&Cherry::Application::Get())
     {
         return;
     }
@@ -63,17 +63,17 @@ void ModuleInterface::RefreshMainWindow()
     }
 
     // Add/Set the new one
-    if(m_main_window)
+    if (m_main_window)
     {
         Cherry::AddAppWindow(m_main_window);
-    }   
+    }
 }
 
 void ModuleInterface::SetMainWindow(const std::shared_ptr<Cherry::AppWindow> &win)
 {
     m_main_window = win;
 
-    if(&Cherry::Application::Get())
+    if (&Cherry::Application::Get())
     {
         RefreshMainWindow();
     }
@@ -522,9 +522,10 @@ void ModuleInterface::Start()
     // Get current vortex version
     std::string version = VORTEX_VERSION;
 
-    // Get major, a medium idendifiers of version
-    std::size_t last_point = version.find('.', version.find('.') + 1);
-    std::string major = version.substr(0, last_point);
+    std::size_t first_dot = version.find('.');
+    std::size_t second_dot = version.find('.', first_dot + 1);
+
+    std::string major = version.substr(0, second_dot);
 
     if (!major.empty() && major.back() == '.')
     {
@@ -556,6 +557,7 @@ void ModuleInterface::Start()
     {
         if (version == major)
         {
+            std::cout << version << major << std::endl;
             isVersionCompatible = true;
         }
     }
@@ -596,7 +598,7 @@ void ModuleInterface::Start()
 
     if (!isVersionCompatible)
     {
-        this->LogError("The Vortex version (" + version + ", try to find \"" + major + "\") is incompatible with \"" + this->m_name + "\" supported version(s).");
+        this->LogError("This module isn't compatible with this version of Vortex (\"" + major + "\") ! Is incompatible with \"" + this->m_name + "\" supported version(s).");
 
         this->m_state = "failed";
         return;
