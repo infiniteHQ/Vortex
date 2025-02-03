@@ -395,7 +395,7 @@ bool VortexMaker::DebugCheckVersionAndDataLayout(const char *version)
     return !error; // Return true if no error occurred
 }
 
-VORTEX_API void VortexMaker::CallOutputEvent(const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string& origin)
+VORTEX_API void VortexMaker::CallOutputEvent(const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string &origin)
 {
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
@@ -431,8 +431,8 @@ VORTEX_API void VortexMaker::CallOutputEvent(const std::string &event_name, Argu
     }
 }
 
-VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name, const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string& origin)
-{ 
+VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name, const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string &origin)
+{
     // Get reference to the Vortex context
     VxContext &ctx = *CVortexMaker;
 
@@ -469,7 +469,6 @@ VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name, cons
             }
         }
     }
-
 }
 
 VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path)
@@ -624,7 +623,7 @@ VORTEX_API void VortexMaker::PostCustomFolderToJson()
     VortexMaker::PopulateJSON(json_data, file_path);
 }
 
-VORTEX_API void VortexMaker::PublishPool(const std::string &absolute_pool_path, const std::string& name)
+VORTEX_API void VortexMaker::PublishPool(const std::string &absolute_pool_path, const std::string &name)
 {
     VxContext &ctx = *CVortexMaker;
 
@@ -749,7 +748,7 @@ VORTEX_API void VortexMaker::FetchPools()
     nlohmann::json json_data;
     json_data["main_pool"] = ctx.projectPath.string();
     json_data["pools"] = nlohmann::json::array();
-    
+
     VortexMaker::createJsonFileIfNotExists(file_path, json_data);
 
     std::ifstream file(file_path);
@@ -798,51 +797,52 @@ VORTEX_API void VortexMaker::PostPoolsToJson()
 }
 
 VORTEX_API void VortexMaker::FetchCustomFolders()
-{ VxContext &ctx = *CVortexMaker;
-        std::string path = (ctx.projectPath / ".vx/configs/content_browser").string();
-        VortexMaker::createFolderIfNotExists(path);
+{
+    VxContext &ctx = *CVortexMaker;
+    std::string path = (ctx.projectPath / ".vx/configs/content_browser").string();
+    VortexMaker::createFolderIfNotExists(path);
 
-        std::string file_path = path + "/customized_folders.json";
+    std::string file_path = path + "/customized_folders.json";
 
-        nlohmann::json json_data = {
-            {"custom_folders", nlohmann::json::array()} // Par défaut, une liste vide de "custom_folders"
-        };
+    nlohmann::json json_data = {
+        {"custom_folders", nlohmann::json::array()} // Par défaut, une liste vide de "custom_folders"
+    };
 
-        VortexMaker::createJsonFileIfNotExists(file_path, json_data);
+    VortexMaker::createJsonFileIfNotExists(file_path, json_data);
 
-        try
+    try
+    {
+        std::ifstream file(file_path);
+
+        if (file.is_open())
         {
-            std::ifstream file(file_path);
-
-            if (file.is_open())
-            {
-                file >> json_data;
-                file.close();
-            }
-            else
-            {
-                throw std::ios_base::failure("Impossible d'ouvrir le fichier JSON");
-            }
-
-            ctx.IO.contentbrowser_customfolders.clear();
-
-            for (auto &directory : json_data["custom_folders"])
-            {
-                std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
-                new_folder->m_Color = directory["color"].get<std::string>();
-                new_folder->m_IsFav = directory["isFav"].get<bool>();
-                new_folder->path = directory["path"].get<std::string>();
-
-                // Vérifie si le dossier existe, sinon le crée
-                VortexMaker::createFolderIfNotExists(new_folder->path);
-
-                ctx.IO.contentbrowser_customfolders.push_back(new_folder);
-            }
+            file >> json_data;
+            file.close();
         }
-        catch (const std::exception &e)
+        else
         {
-            std::cerr << "Erreur lors de la lecture ou du traitement du fichier JSON : " << e.what() << std::endl;
+            throw std::ios_base::failure("Impossible d'ouvrir le fichier JSON");
         }
+
+        ctx.IO.contentbrowser_customfolders.clear();
+
+        for (auto &directory : json_data["custom_folders"])
+        {
+            std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
+            new_folder->m_Color = directory["color"].get<std::string>();
+            new_folder->m_IsFav = directory["isFav"].get<bool>();
+            new_folder->path = directory["path"].get<std::string>();
+
+            // Vérifie si le dossier existe, sinon le crée
+            VortexMaker::createFolderIfNotExists(new_folder->path);
+
+            ctx.IO.contentbrowser_customfolders.push_back(new_folder);
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Erreur lors de la lecture ou du traitement du fichier JSON : " << e.what() << std::endl;
+    }
 }
 
 VORTEX_API void VortexMaker::Copy(std::vector<std::string> selection, bool in_addition)

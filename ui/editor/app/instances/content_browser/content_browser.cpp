@@ -617,7 +617,7 @@ namespace VortexEditor
                 ImGui::EndPopup();
             }
         }
-        
+
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3.0f);
 
         ImGui::PopStyleColor();
@@ -774,7 +774,21 @@ namespace VortexEditor
         m_AppWindow->SetRightMenubarCallback([this]()
                                              { RenderRightMenubar(); });
         m_AppWindow->SetLeftBottombarCallback([this]()
-                                              { ImGui::Text("3 selected."); });
+                                              { 
+                                                if(m_Selected.size() > 0)
+                                                {
+                                                std::string terminaison = m_Selected.size() >= 0 ? "s" : "";
+                                                std::string label = std::to_string(m_Selected.size()) + " element" + terminaison + " selected.";
+                                                ImGui::Text(label.c_str()); 
+                                                } 
+
+                                                if(m_CopySelection.size() > 0)
+                                                {
+                                                std::string terminaison = m_CopySelection.size() > 0 ? "s" : "";
+                                                std::string label = std::to_string(m_CopySelection.size()) + " element" + terminaison + " copied.";
+                                                ImGui::Text(label.c_str()); 
+                                                }
+                                                });
 
         m_BaseDirectory = start_path;
         m_CurrentDirectory = m_BaseDirectory;
@@ -1000,7 +1014,7 @@ namespace VortexEditor
             {
                 if (m_CopyPathsCallback)
                 {
-                    m_CopyPathsCallback(m_Selected);
+                    m_CopyPathsCallback(m_Selected, true);
                     for (auto &path : m_Selected)
                     {
                         m_CopySelection.push_back(path);
@@ -1019,7 +1033,7 @@ namespace VortexEditor
                 {
                     if (m_CopyPathsCallback)
                     {
-                        m_CopyPathsCallback(m_Selected);
+                        m_CopyPathsCallback(m_Selected, true);
 
                         for (auto &path : m_Selected)
                         {
@@ -1575,7 +1589,12 @@ namespace VortexEditor
                         }
                         if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
                         {
-                            ChangeDirectory(path);
+                            if (m_CopyPathsCallback)
+                            {
+                                m_CopyPathsCallback(m_Selected, false);
+                            }
+
+                            m_Selected.clear();
                             ImGui::CloseCurrentPopup();
                         }
                         if (ImGui::MenuItem("Cut folder", "Ctrl + X"))
@@ -1917,7 +1936,7 @@ namespace VortexEditor
                         {
                             if (m_CopyPathsCallback)
                             {
-                                m_CopyPathsCallback(m_Selected);
+                                m_CopyPathsCallback(m_Selected, false);
                             }
 
                             m_Selected.clear();
@@ -1931,7 +1950,7 @@ namespace VortexEditor
                             {
                                 if (m_CopyPathsCallback)
                                 {
-                                    m_CopyPathsCallback(m_Selected);
+                                    m_CopyPathsCallback(m_Selected, true);
                                 }
 
                                 m_Selected.clear();
@@ -2333,6 +2352,11 @@ namespace VortexEditor
                             }
                             if (ImGui::MenuItem("Copy folder", "Ctrl + C"))
                             {
+                                if (m_CopyPathsCallback)
+                                {
+                                    m_CopyPathsCallback(m_Selected, false);
+                                }
+
                                 m_Selected.clear();
                                 ImGui::CloseCurrentPopup();
                             }

@@ -562,13 +562,13 @@ Cherry::Application *CreateEditor(int argc, char **argv)
 
                         Cherry::MenuItemTextSeparator("Contents, managment");
                               
-        if (ImGui::MenuItem("Content Browser", "Open a content browser", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"))))
+        if (ImGui::MenuItem("Content Browser", "Open a content browser", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png")), false))
         {
             c_Editor->SpawnContentBrowser();
         }           
 
                         Cherry::MenuItemTextSeparator("Console, logs, debugging");
-        if (ImGui::MenuItem("Console logs", "Open a console with logs", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_journal.png")), c_Editor->GetModuleUtilityVisibility()))
+        if (ImGui::MenuItem("Console logs", "Open a console with logs", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_journal.png")), false))
         {
             c_Editor->SpawnLogsUtility();
         }           

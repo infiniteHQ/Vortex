@@ -2,8 +2,13 @@
     "custom_folders": [
         {
             "color": "#544f46ff",
-            "isFav": true,
+            "isFav": false,
             "path": "/home/diego/Workspace/Vortex/tests/projects/sampleproject/.vx"
+        },
+        {
+            "color": "#449099",
+            "isFav": false,
+            "path": "/home/diego/Workspace/Vortex/tests/projects/sampleproject/Data"
         }
     ]
 }

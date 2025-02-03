@@ -181,7 +181,7 @@ namespace VortexEditor
         void RenderDetailsBar();
         void RenderRightMenubar();
 
-    void RenderMenubar();
+        void RenderMenubar();
 
         void Select(const std::string &path)
         {
@@ -229,20 +229,25 @@ namespace VortexEditor
         }
 
         void AddReconizedItem(const std::shared_ptr<ContenBrowserItem> &item) {};
-        bool IsPathFavorite(const std::string &path) { 
-            for(auto fav_folder : m_FavoriteFolders)
+        bool IsPathFavorite(const std::string &path)
+        {
+            for (auto fav_folder : m_FavoriteFolders)
             {
-                if(fav_folder == path)
+                if (fav_folder == path)
                 {
                     return true;
                 }
-            }   
+            }
             return false;
-         };
+        };
 
         void SetColoredFolder(const std::string &path, const std::string &hex_color) {};
 
         std::vector<ContentBrowserChild> m_Childs;
+
+        std::function<void(const std::string &)> m_DeletePathCallback;
+        std::function<void(const std::vector<std::string> &, bool)> m_CopyPathsCallback;
+        std::function<void(const std::string &)> m_PastePathsCallback;
 
     private:
         bool opened;
@@ -258,7 +263,6 @@ namespace VortexEditor
         bool m_PreviousFilterPannelState = false;
         bool m_PreviousThumbnailVisualizerState = false;
 
-        // !!!
         bool m_ShowFolderPannel = true;
         bool m_ShowSelectionQuantifier = false;
         bool m_ChildSizesInitialized = false;
@@ -281,7 +285,7 @@ namespace VortexEditor
         // Path/Color
         std::vector<std::pair<std::string, std::string>> m_FolderColors;
         std::vector<std::string> m_FavoriteFolders;
-        std::vector<std::pair<std::string,std::string>> m_Pools;
+        std::vector<std::pair<std::string, std::string>> m_Pools;
         std::vector<std::shared_ptr<ContenBrowserItem>> m_ItemToReconize;
 
         std::vector<std::filesystem::path> m_Favorites;
@@ -291,10 +295,6 @@ namespace VortexEditor
         std::shared_ptr<Image> m_DirectoryIcon;
 
         std::shared_ptr<AppWindow> m_AppWindow;
-
-        std::function<void(const std::string &)> m_DeletePathCallback;
-        std::function<void(const std::vector<std::string> &)> m_CopyPathsCallback;
-        std::function<void(const std::vector<std::string> &)> m_PastePathsCallback;
 
         std::shared_ptr<ImageTextButtonSimple> cp_SaveButton;
         std::shared_ptr<ImageTextButtonSimple> cp_ImportButton;

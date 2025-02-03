@@ -148,6 +148,10 @@ public:
   {
     std::string label = "Content Browser ####Content Browser-" + std::to_string(c_ContentBrowserInstances.size() + 1);
     std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser = VortexEditor::ContentBrowserAppWindow::Create(label.c_str(), VortexMaker::GetCurrentContext()->projectPath);
+    
+    ContentBrowser->m_CopyPathsCallback = VortexMaker::Copy;
+    ContentBrowser->m_PastePathsCallback = VortexMaker::PasteAllSelections;
+    ContentBrowser->m_DeletePathCallback = VortexMaker::DeletePath;
     Cherry::AddAppWindow(ContentBrowser->GetAppWindow());
     c_ContentBrowserInstances.push_back(ContentBrowser);
   }

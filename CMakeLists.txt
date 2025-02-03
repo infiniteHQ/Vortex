@@ -21,11 +21,15 @@ target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/src
 )
 
+if(VORTEX_DISABLE_UI)
+message("UI Disabled")
+else()
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler ui_crash_handler_build)
 target_link_libraries(vortex_shared PUBLIC crash_handler)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/editor ui_editor_build)
 target_link_libraries(vortex_shared PUBLIC editor)
+endif()
 
 file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
 add_executable(vortex ${VORTEX_SOURCES} main.cpp)
@@ -56,7 +60,6 @@ set_target_properties(vortex PROPERTIES
 install(TARGETS vortex DESTINATION ${INSTALL_BIN_DIR})
 install(TARGETS vortex_shared LIBRARY DESTINATION ${INSTALL_LIB_DIR})
 
-
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/main/include/
     DESTINATION ${INSTALL_INCLUDE_DIR}/main/include/
     PATTERN "*.h"
@@ -72,6 +75,10 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
     PATTERN "*.inl"
 )
 
+
+if(VORTEX_DISABLE_UI)
+message("UI Disabled")
+else()
 install(TARGETS spdlog
     LIBRARY DESTINATION ${INSTALL_LIB_DIR}
     ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
@@ -81,6 +88,8 @@ install(TARGETS cherry
     LIBRARY DESTINATION ${INSTALL_LIB_DIR}
     ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
     RUNTIME DESTINATION ${INSTALL_BIN_DIR})
+endif()
+
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/vortex_banner.png
     DESTINATION ${INSTALL_MAIN_DIR}/)
