@@ -17,31 +17,107 @@ namespace VortexEditor
         m_AppWindow->SetInternalPaddingY(8.0f);
         std::shared_ptr<AppWindow> win = m_AppWindow;
         m_CmdInputValue = std::make_shared<std::string>("");
+        m_LogSearchValue = std::make_shared<std::string>("");
 
         m_AppWindow->m_Closable = true;
         m_AppWindow->SetCloseCallback([this]()
                                       { Cherry::DeleteAppWindow(m_AppWindow); });
 
-        m_AppWindow->SetLeftMenubarCallback([]()
+        m_AppWindow->SetLeftMenubarCallback([this]()
                                             {
+
+                                                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
                                                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
 
-                                                {
-                                                    std::shared_ptr<ImageTextButtonSimple> btn = Application::Get().CreateComponent<ImageTextButtonSimple>("add_button", "Clear", Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
-                                                    btn->SetScale(0.85f);
-                                                    btn->SetInternalMarginX(10.0f);
-                                                    btn->SetLogoSize(15, 15);
+                                                  {
+                                                      ImGui::SetNextItemWidth(500.0f);
+                                                      ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5.0f,5.0f));
+                                                      auto input = Application::Get().CreateComponent<SimpleStringInput>("keyvaldouble_1", m_LogSearchValue, "###Search for logs###SearchLogs");
+                                                      
+                                                      input->Render("input");
+                                                      ImGui::PopStyleVar();
+                                                  } 
 
-                                                    if (btn->Render())
-                                                    {
-                                                    }
-                                                }
+            {
+                static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("filter_buttons", "Filters");
+                btn->SetScale(0.85f);
+                btn->SetInternalMarginX(10.0f);
+                btn->SetLogoSize(15, 15);
+
+                btn->SetDropDownImage(Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
+                btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"));
+                if (btn->Render("LogicContentManager"))
+                {
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+                    ImVec2 popupSize(150, 100);
+
+                    if (mousePos.x + popupSize.x > displaySize.x)
+                    {
+                        mousePos.x -= popupSize.x;
+                    }
+                    if (mousePos.y + popupSize.y > displaySize.y)
+                    {
+                        mousePos.y -= popupSize.y;
+                    }
+
+                    ImGui::SetNextWindowPos(mousePos);
+                    ImGui::OpenPopup("FilterMenu");
+                }
+            }
+
+            if (ImGui::BeginPopup("FilterMenu"))
+            {
+                //ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
+                //ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);
+
+                ImGui::EndPopup();
+            }
                                                 ImGui::PopStyleColor(); });
+
+        m_AppWindow->SetRightMenubarCallback([this]()
+                                             {
+   {
+                static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn = std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>("option_buttons", "Options");
+                btn->SetScale(0.85f);
+                btn->SetInternalMarginX(10.0f);
+                btn->SetLogoSize(15, 15);
+
+                btn->SetDropDownImage(Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
+                btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"));
+                if (btn->Render("LogicContentManager"))
+                {
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+                    ImVec2 popupSize(150, 100);
+
+                    if (mousePos.x + popupSize.x > displaySize.x)
+                    {
+                        mousePos.x -= popupSize.x;
+                    }
+                    if (mousePos.y + popupSize.y > displaySize.y)
+                    {
+                        mousePos.y -= popupSize.y;
+                    }
+
+                    ImGui::SetNextWindowPos(mousePos);
+                    ImGui::OpenPopup("OptionMenu");
+                }
+            }
+
+            if (ImGui::BeginPopup("OptionMenu"))
+            {
+                //ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
+                //ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);
+
+                ImGui::EndPopup();
+            } });
 
         m_AppWindow->SetLeftBottombarCallback([this]()
                                               {
+                                                ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 6.0f);
                                                 {
-                                                    std::shared_ptr<ImageTextButtonSimple> btn = Application::Get().CreateComponent<ImageTextButtonSimple>("add_button", "Options.add", Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
+                                                    std::shared_ptr<ImageTextButtonSimple> btn = Application::Get().CreateComponent<ImageTextButtonSimple>("send_button", "Send", Application::CookPath("resources/imgs/icons/misc/icon_send.png"));
                                                     btn->SetScale(0.85f);
                                                     btn->SetInternalMarginX(10.0f);
                                                     btn->SetLogoSize(15, 15);
@@ -51,9 +127,12 @@ namespace VortexEditor
                                                     }
                                                 }
                                                   {
-                                                      ImGui::SetNextItemWidth(300.0f);
-                                                      auto input = Application::Get().CreateComponent<SimpleStringInput>("keyvaldouble_1", m_CmdInputValue, "Simple string value");
+                                                      ImGui::SetNextItemWidth(500.0f);
+                                                      ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(5.0f,6.6f));
+                                                      auto input = Application::Get().CreateComponent<SimpleStringInput>("keyvaldouble_1", m_CmdInputValue, "###Enter a command here###Simple string value");
+                                                      
                                                       input->Render("input");
+                                                      ImGui::PopStyleVar();
                                                   } });
 
         this->ctx = VortexMaker::GetCurrentContext();
@@ -89,6 +168,8 @@ namespace VortexEditor
 
         const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("A").x;
 
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, ImVec2(0.0f, 0.0f));
         if (ImGui::BeginTable("LogsTable", 4, flags))
         {
             ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 6.0f));
@@ -233,6 +314,7 @@ namespace VortexEditor
             ImGui::EndTable();
         }
 
+        ImGui::PopStyleVar(2);
         ImGui::PopStyleColor();
     }
 

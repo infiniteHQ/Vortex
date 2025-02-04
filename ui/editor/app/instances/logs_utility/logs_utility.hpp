@@ -36,6 +36,7 @@ namespace VortexEditor
 		VxContext *ctx;
 		bool opened;
 		std::shared_ptr<std::string> m_CmdInputValue;
+		std::shared_ptr<std::string> m_LogSearchValue;
 		std::shared_ptr<AppWindow> m_AppWindow;
 	};
 }

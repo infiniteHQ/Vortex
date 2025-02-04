@@ -605,11 +605,11 @@ namespace VortexEditor
                     }
 
                     ImGui::SetNextWindowPos(mousePos);
-                    ImGui::OpenPopup("ContextMenu");
+                    ImGui::OpenPopup("OptionMenu");
                 }
             }
 
-            if (ImGui::BeginPopup("ContextMenu"))
+            if (ImGui::BeginPopup("OptionMenu"))
             {
                 ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
                 ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);

@@ -247,6 +247,14 @@ namespace VortexMaker
     VORTEX_API void DetectPlatform();
     VORTEX_API void DetectArch();
 
+    VORTEX_API void UpdateProjectName(const std::string& name);
+    VORTEX_API void UpdateProjectVersion(const std::string& version);
+    VORTEX_API void UpdateProjectAuthor(const std::string& author);
+    VORTEX_API void UpdateProjectDescription(const std::string& description);
+    VORTEX_API void UpdateProjectType(const std::string& type);
+    VORTEX_API void UpdateProjectLogoPath(const std::string& path);
+
+    VORTEX_API void RefreshProjectInformations();
 
     VORTEX_API nlohmann::json DumpJSON(const std::string &file);
     VORTEX_API void PopulateJSON(const nlohmann::json &json_data, const std::string &file);

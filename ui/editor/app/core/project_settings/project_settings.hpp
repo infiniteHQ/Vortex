@@ -64,7 +64,34 @@ namespace VortexEditor
 		void createMenuItem();
 		void searchMenuItem();
 
+		// Menubar
+		void RenderRightMenubar(); 
+
+		// Pannels
+		void RenderProjectInformations();
+
+		// Update detection
+		bool IsProjectInformationsUpdated();
+
+		// Update / Refresh
+		void UpdateProjectInformations();
+		void RefreshProjectInformations();
+
 		std::shared_ptr<ProjectSettingsSave> current_save;
+
+		std::string v_ProjectNameInitial;
+		std::string v_ProjectDescriptionInitial;
+		std::string v_ProjectAuthorInitial;
+		std::string v_ProjectVersionInitial;
+		std::shared_ptr<std::string> v_ProjectName;
+		std::shared_ptr<std::string> v_ProjectDescription;
+		std::shared_ptr<std::string> v_ProjectAuthor;
+		std::shared_ptr<std::string> v_ProjectVersion;
+
+		std::shared_ptr<DoubleKeyValString> cp_ProjectNameDoubleString;
+		std::shared_ptr<DoubleKeyValString> cp_ProjectDescriptionDoubleString;
+		std::shared_ptr<DoubleKeyValString> cp_AuthorsDoubleString;
+		std::shared_ptr<DoubleKeyValString> cp_VersionDoubleString;
 
 	private:
 		bool opened;

@@ -5,6 +5,119 @@ using namespace Cherry;
 
 namespace VortexEditor
 {
+    void ProjectSettingsAppWindow::RenderProjectInformations()
+    {
+        static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableColumnFlags_NoHeaderLabel | ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInnerV;
+
+        if (ImGui::BeginTable("ProjectInformations", 2, flags))
+        {
+            ImGui::TableSetupColumn("Information", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+
+            ImGui::PushStyleColor(ImGuiCol_TableBorderStrong, IM_COL32(0, 0, 0, 255));
+            ImGui::PushStyleColor(ImGuiCol_TableBorderLight, IM_COL32(0, 0, 0, 255));
+
+            ImGui::PushStyleColor(ImGuiCol_TableRowBg, IM_COL32(200, 200, 200, 255));
+            ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, IM_COL32(200, 200, 200, 255));
+
+            ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 10.0f));
+            ImGui::TableHeadersRow();
+            ImGui::PopStyleVar();
+
+            for (int srow = 0; srow <= 3; srow++)
+            {
+                ImGui::TableNextRow();
+                for (int scolumn = 0; scolumn < 2; scolumn++)
+                {
+                    ImGui::TableSetColumnIndex(scolumn);
+                    switch (srow)
+                    {
+                    case 0:
+                        cp_ProjectNameDoubleString->Render(scolumn);
+                        break;
+                    case 1:
+                        cp_ProjectDescriptionDoubleString->Render(scolumn);
+                        break;
+                    case 2:
+                        cp_VersionDoubleString->Render(scolumn);
+                        break;
+                    case 3:
+                        cp_AuthorsDoubleString->Render(scolumn);
+                        break;
+                    }
+                }
+            }
+
+            ImGui::PopStyleColor(4);
+            ImGui::PopStyleVar();
+            ImGui::EndTable();
+        }
+    }
+
+    void ProjectSettingsAppWindow::RenderRightMenubar()
+    {
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
+
+        {
+            if (!IsProjectInformationsUpdated())
+            {
+                ImGui::BeginDisabled();
+            }
+            static std::shared_ptr<Cherry::ImageTextButtonSimple> btn = std::make_shared<Cherry::ImageTextButtonSimple>("save_button", "Save");
+            btn->SetScale(0.85f);
+            btn->SetInternalMarginX(10.0f);
+            btn->SetLogoSize(15, 15);
+
+            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"));
+            if (btn->Render("LogicContentManager"))
+            {
+                if (m_SelectedChildName == "Project informations")
+                {
+                    UpdateProjectInformations();
+                }
+            }
+            if (!IsProjectInformationsUpdated())
+            {
+                ImGui::EndDisabled();
+            }
+        }
+
+        {
+            static std::shared_ptr<Cherry::ImageTextButtonSimple> btn = std::make_shared<Cherry::ImageTextButtonSimple>("refresh_button", "Refresh");
+            btn->SetScale(0.85f);
+            btn->SetInternalMarginX(10.0f);
+            btn->SetLogoSize(15, 15);
+
+            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"));
+            if (btn->Render("refresh_button"))
+            {
+                if (m_SelectedChildName == "Project informations")
+                {
+                    RefreshProjectInformations();
+                }
+            }
+        }
+
+        ImGui::PopStyleColor();
+    }
+
+    bool ProjectSettingsAppWindow::IsProjectInformationsUpdated()
+    {
+        if (v_ProjectNameInitial != *v_ProjectName.get() ||
+            v_ProjectAuthorInitial != *v_ProjectAuthor.get() ||
+            v_ProjectVersionInitial != *v_ProjectVersion.get() ||
+            v_ProjectDescriptionInitial != *v_ProjectDescription.get())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     ProjectSettingsAppWindow::ProjectSettingsAppWindow(const std::string &name)
     {
         m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
@@ -12,11 +125,33 @@ namespace VortexEditor
         m_AppWindow->SetInternalPaddingX(10.0f);
         m_AppWindow->SetInternalPaddingY(10.0f);
 
-        this->AddChild("General", "Project informations", [this]() {});
+        // Cherry Components
+        v_ProjectNameInitial = VortexMaker::GetCurrentContext()->name;
+        v_ProjectAuthorInitial = VortexMaker::GetCurrentContext()->author;
+        v_ProjectVersionInitial = VortexMaker::GetCurrentContext()->project_version;
+        v_ProjectDescriptionInitial = VortexMaker::GetCurrentContext()->description;
+
+        v_ProjectName = std::make_shared<std::string>(v_ProjectNameInitial);
+        v_ProjectAuthor = std::make_shared<std::string>(v_ProjectAuthorInitial);
+        v_ProjectVersion = std::make_shared<std::string>(v_ProjectVersionInitial);
+        v_ProjectDescription = std::make_shared<std::string>(v_ProjectDescriptionInitial);
+
+        cp_ProjectNameDoubleString = Application::Get().CreateComponent<DoubleKeyValString>("keyvaldouble_1", v_ProjectName, "Project name");
+        cp_ProjectDescriptionDoubleString = Application::Get().CreateComponent<DoubleKeyValString>("keyvaldouble_1", v_ProjectDescription, "Project description");
+        cp_VersionDoubleString = Application::Get().CreateComponent<DoubleKeyValString>("keyvaldouble_1", v_ProjectVersion, "Project version");
+        cp_AuthorsDoubleString = Application::Get().CreateComponent<DoubleKeyValString>("keyvaldouble_1", v_ProjectAuthor, "Project author(s)");
+
+        this->AddChild("General", "Project informations", [this]()
+                       { RenderProjectInformations(); });
 
         this->AddChild("General", "Compatibility", [this]() {});
 
         this->AddChild("General", "Migrate", [this]() {});
+
+        m_AppWindow->SetLeftMenubarCallback([this]()
+                                            { RenderRightMenubar(); });
+
+        m_SelectedChildName = "Project informations";
     }
 
     void ProjectSettingsAppWindow::AddChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child)
@@ -80,10 +215,9 @@ namespace VortexEditor
         ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
         ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
 
-        TitleThree("Manage Modules");
+        TitleThree("Project settings");
         for (const auto &[parent, children] : groupedByParent)
         {
-
             ImGui::GetFont()->Scale *= 0.8;
             ImGui::PushFont(ImGui::GetFont());
 
@@ -354,6 +488,40 @@ namespace VortexEditor
         newsave->include_system_templates = VortexMaker::GetCurrentContext()->include_system_templates;
 
         current_save = newsave;
+    }
+    
+
+    void ProjectSettingsAppWindow::RefreshProjectInformations()
+    {
+        VortexMaker::RefreshProjectInformations();
+
+        v_ProjectNameInitial = VortexMaker::GetCurrentContext()->name;
+        v_ProjectAuthorInitial = VortexMaker::GetCurrentContext()->author;
+        v_ProjectVersionInitial = VortexMaker::GetCurrentContext()->project_version;
+        v_ProjectDescriptionInitial = VortexMaker::GetCurrentContext()->description;
+
+        *v_ProjectName.get() = v_ProjectNameInitial;
+
+    }
+
+    void ProjectSettingsAppWindow::UpdateProjectInformations()
+    {
+        const std::string name = *v_ProjectName.get();
+        const std::string description = *v_ProjectDescription.get();
+        const std::string version = *v_ProjectVersion.get();
+        const std::string author = *v_ProjectAuthor.get();
+
+        VortexMaker::UpdateProjectName(name);
+        VortexMaker::UpdateProjectDescription(description);
+        VortexMaker::UpdateProjectVersion(version);
+        VortexMaker::UpdateProjectAuthor(author);
+
+        v_ProjectNameInitial = name;
+        v_ProjectDescriptionInitial = description;
+        v_ProjectVersionInitial = version;
+        v_ProjectAuthorInitial = author;
+
+        RefreshProjectInformations();
     }
 
     void ProjectSettingsAppWindow::Update()

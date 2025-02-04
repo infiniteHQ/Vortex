@@ -150,13 +150,12 @@ VxContext *InitRuntime(bool logger)
     VortexMaker::LoadSystemTemplates(ctx->IO.sys_templates);
 
     std::ifstream file("vortex.config");
-    std::cout << "Qsd" << std::endl;
 
     if (file)
     {
-        nlohmann::json jsonContenu;
-        file >> jsonContenu;
-        VortexMaker::InitProject(jsonContenu);
+        nlohmann::json jsonContent;
+        file >> jsonContent;
+        VortexMaker::InitProject(jsonContent);
     }
 
     return ctx;
