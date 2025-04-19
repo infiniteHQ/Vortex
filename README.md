@@ -40,14 +40,13 @@ Get started quickly or dive deep with full API and usage docs.
       <img src="https://img.shields.io/badge/Read-Docs-2563eb?style=for-the-badge&logo=bookstack&logoColor=white">
     </a>
 
----
 
 ## 🧪 The Lab  
 Try out experimental features and preview what's coming next.  
     <a href="https://lab.infinite.si/">
       <img src="https://img.shields.io/badge/Explore-Lab(Soon)-10b981?style=for-the-badge&logo=flask&logoColor=white">
     </a>
----
+
 
 ## ⭐ Awesome Vortex  
 A curated list of the best tools, plugins, and resources for Vortex.  
@@ -55,7 +54,6 @@ A curated list of the best tools, plugins, and resources for Vortex.
         <img src="https://img.shields.io/badge/Browse-Awesome-f59e0b?style=for-the-badge&logo=github&logoColor=white">
       </a>
 
----
 
 ## 🛠️ Contribute to Vortex
 
