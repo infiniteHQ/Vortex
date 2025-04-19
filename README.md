@@ -73,12 +73,11 @@ And of course, you can also help support the project financially to cover its co
 👉 **Join the contributor community** on our portal: [Contributor Portal](https://vortex.infinite.si/contribute)
 
 
+## About this repository  
+> This repository represents the Vortex Editor. The Vortex Editor can open Vortex projects or tools, start modules and plugins. It helps hackers or creators manage content and create or hack many things. The goal of the editor is to create a convenient, interoperable, and simple stack to help every part of a project work together with the others.
 
-## About this repository ?
-> This repository represent the Vortex Editor, the Vortex Editor can open vortex project or tools, start modules and plugins. It can help the hacker or the creator managing contents and create or hacks many things. The goal of the editor is to create a conviniant, interoperable and simple stack to help every part of a project woring with other parts together.
-
-### How to install the Editor ?
-> To properly install a Editor version to your system, it's recommended to use the [Vortex Launcher](https://github.com/infiniteHQ/VortexLauncher). The launcher help you managing differents versions of Vortex, and be able to work with many types of projects. The launcher also help you to post content to the community and get templates, contents, modules and plugins from other. It's defenetly increase your productivity in this hacker space !
+### How to install the Editor?  
+> To properly install a version of the Editor on your system, it is recommended to use the [Vortex Launcher](https://github.com/infiniteHQ/VortexLauncher). The launcher helps you manage different versions of Vortex and allows you to work with many types of projects. It also helps you share content with the community and get templates, content, modules, and plugins from others. It definitely increases your productivity in this hacker space!
 
 > [Download the Launcher here](https://vortex.infinite.si/)
 
