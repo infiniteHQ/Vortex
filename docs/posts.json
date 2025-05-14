@@ -1,9 +1,9 @@
 {
     "contents": [
         {
-            "name": "get_started",
-            "slug": "Get Started",
-            "title": "Get started",
+            "name": "introduction",
+            "slug": "Introduction",
+            "title": "Introduction",
             "sumary": "qsd",
             "pages": [
                 {
@@ -16,11 +16,11 @@
                     ]
                 },
                 {
-                    "name": "overview",
-                    "slug": "Overview",
+                    "name": "what_is_vortex",
+                    "slug": "What is Vortex ?",
                     "description": "",
                     "logo": "",
-                    "link": "overview.md",
+                    "link": "what_is_vortex.md",
                     "subpages": [
                     ]
                 },
@@ -31,106 +31,6 @@
                     "logo": "",
                     "link": "install_vortex.md",
                     "subpages": [
-                    ]
-                },
-                {
-                    "name": "first_steps_introduction",
-                    "link": "first_steps_introduction.md",
-                    "description": "",
-                    "logo": "",
-                    "slug": "First steps",
-                    "subpages": [
-                        {
-                            "name": "first_steps_create_a_project",
-                            "slug": "Create a project",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_create_a_project.md"
-                        },
-                        {
-                            "name": "first_steps_open_a_project",
-                            "slug": "Open a project",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_open_a_project.md"
-                        },
-                        {
-                            "name": "first_steps_delete_a_project",
-                            "slug": "Delete a project",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_delete_a_project.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_project",
-                            "slug": "Import a project",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_project.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_module",
-                            "slug": "Install a module",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_module.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_plugin",
-                            "slug": "Install a plugin",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_plugin.md"
-                        },
-                        {
-                            "name": "first_steps_delete_a_plugin_or_module",
-                            "slug": "Delete a module or a plugin",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_delete_a_plugin_or_module.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_template",
-                            "slug": "Install a template",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_template.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_content",
-                            "slug": "Install a content",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_content.md"
-                        },
-                        {
-                            "name": "first_steps_delete_a_template_or_content",
-                            "slug": "Delete a template or a content",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_delete_a_template_or_content.md"
-                        },
-                        {
-                            "name": "first_steps_configure_vortex",
-                            "slug": "Configure Vortex",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_configure_vortex.md"
-                        },
-                        {
-                            "name": "first_steps_subscribe_to_beta",
-                            "slug": "Subscribe to beta programs",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_subscribe_to_beta.md"
-                        },
-                        {
-                            "name": "first_steps_whats_next",
-                            "slug": "What's next ?",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_whats_next.md"
-                        }
                     ]
                 },
                 {
@@ -166,6 +66,32 @@
                     ]
                 }
             ]
-        }
+        },       
+         {
+            "name": "get_started",
+            "slug": "Get started",
+            "title": "Get started",
+            "sumary": "qsd",
+            "pages": [
+                {
+                    "name": "discover_interface",
+                    "slug": "Discover interface",
+                    "description": "",
+                    "logo": "",
+                    "link": "discover_interface.md",
+                    "subpages": [
+                    ]
+                },
+                {
+                    "name": "discover_interface",
+                    "slug": "Discover interface",
+                    "description": "",
+                    "logo": "",
+                    "link": "discover_interface.md",
+                    "subpages": [
+                    ]
+                }
+            ]
+            }
     ]
 }

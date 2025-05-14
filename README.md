@@ -71,7 +71,7 @@ And of course, you can also help support the project financially to cover its co
 <a title="Sponsor" href="https://fund.infinite.si/"><img alt="Sponsor" src="https://img.shields.io/badge/Sponsor-Infinite%20Fund-FF5999?style=for-the-badge&logo=githubsponsors&logoColor=white"></a>
 
 👉 **Join the contributor community** on our portal: [Contributor Portal](https://vortex.infinite.si/contribute)
-
+g
 
 ## About this repository  
 > This repository represents the Vortex Editor. The Vortex Editor can open Vortex projects or tools, start modules and plugins. It helps hackers or creators manage content and create or hack many things. The goal of the editor is to create a convenient, interoperable, and simple stack to help every part of a project work together with the others.

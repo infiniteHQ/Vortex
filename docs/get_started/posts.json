@@ -1,9 +1,9 @@
 {
     "contents": [
         {
-            "name": "get_started",
-            "slug": "Get Started",
-            "title": "Get started",
+            "name": "introduction",
+            "slug": "Introduction",
+            "title": "Introduction",
             "sumary": "qsd",
             "pages": [
                 {
@@ -12,8 +12,15 @@
                     "description": "",
                     "logo": "",
                     "link": "introduction.md",
-                    "subpages": [
-                    ]
+                    "subpages": []
+                },
+                {
+                    "name": "what_is_vortex",
+                    "slug": "What is Vortex ?",
+                    "description": "",
+                    "logo": "",
+                    "link": "what_is_vortex.md",
+                    "subpages": []
                 },
                 {
                     "name": "install_vortex",
@@ -21,148 +28,215 @@
                     "description": "",
                     "logo": "",
                     "link": "install_vortex.md",
-                    "subpages": [
-                    ]
+                    "subpages": []
                 },
                 {
-                    "name": "overview",
-                    "slug": "Overview",
+                    "name": "get_started",
+                    "slug": "Get started !",
                     "description": "",
                     "logo": "",
-                    "link": "overview.md",
-                    "subpages": [
-                    ]
+                    "link": "get_started.md",
+                    "subpages": []
+                }
+            ]
+        },
+        {
+            "name": "take_vortex_launcher",
+            "slug": "Take the Vortex Launcher",
+            "title": "Take Vortex Launcher",
+            "sumary": "qsd",
+            "pages": [
+                {
+                    "name": "discover_interface",
+                    "slug": "Discover interface",
+                    "description": "",
+                    "logo": "",
+                    "link": "discover_interface.md",
+                    "subpages": []
                 },
                 {
-                    "name": "first_steps_introduction",
-                    "link": "first_steps_introduction.md",
+                    "name": "update_launcher",
+                    "slug": "Update the Launcher",
                     "description": "",
                     "logo": "",
-                    "slug": "First steps",
+                    "link": "update_launcher.md",
+                    "subpages": []
+                },
+                {
+                    "name": "manage_projects",
+                    "slug": "Manage projects",
+                    "description": "",
+                    "logo": "",
+                    "link": "manage_projects.md",
+                    "subpages": []
+                },
+                {
+                    "name": "understand_logical_contents",
+                    "slug": "Understand logical contents",
+                    "description": "",
+                    "logo": "",
+                    "link": "understand_logical_contents.md",
                     "subpages": [
                         {
-                            "name": "first_steps_create_a_project",
-                            "slug": "Create a project",
+                            "name": "manage_system_modules",
+                            "slug": "Manage system modules",
                             "description": "",
                             "logo": "",
-                            "link": "first_steps_create_a_project.md"
+                            "link": "manage_system_modules.md"
                         },
                         {
-                            "name": "first_steps_open_a_project",
-                            "slug": "Open a project",
+                            "name": "manage_system_plugins",
+                            "slug": "Manage system plugins",
                             "description": "",
                             "logo": "",
-                            "link": "first_steps_open_a_project.md"
-                        },
-                        {
-                            "name": "first_steps_delete_a_project",
-                            "slug": "Delete a project",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_delete_a_project.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_project",
-                            "slug": "Import a project",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_project.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_module",
-                            "slug": "Install a module",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_module.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_plugin",
-                            "slug": "Install a plugin",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_plugin.md"
-                        },
-                        {
-                            "name": "first_steps_delete_a_plugin_or_module",
-                            "slug": "Delete a module or a plugin",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_delete_a_plugin_or_module.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_template",
-                            "slug": "Install a template",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_template.md"
-                        },
-                        {
-                            "name": "first_steps_install_a_content",
-                            "slug": "Install a content",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_install_a_content.md"
-                        },
-                        {
-                            "name": "first_steps_delete_a_template_or_content",
-                            "slug": "Delete a template or a content",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_delete_a_template_or_content.md"
-                        },
-                        {
-                            "name": "first_steps_configure_vortex",
-                            "slug": "Configure Vortex",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_configure_vortex.md"
-                        },
-                        {
-                            "name": "first_steps_subscribe_to_beta",
-                            "slug": "Subscribe to beta programs",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_subscribe_to_beta.md"
-                        },
-                        {
-                            "name": "first_steps_whats_next",
-                            "slug": "What's next ?",
-                            "description": "",
-                            "logo": "",
-                            "link": "first_steps_whats_next.md"
+                            "link": "manage_system_plugins.md"
                         }
                     ]
                 },
                 {
-                    "name": "terminology",
-                    "slug": "Terminology",
+                    "name": "understand_static_contents",
+                    "slug": "Understand static contents",
                     "description": "",
                     "logo": "",
-                    "link": "terminology.md",
+                    "link": "understand_static_contents.md",
                     "subpages": [
                         {
-                            "name": "terminology_main",
-                            "slug": "Main terminology",
+                            "name": "manage_system_templates",
+                            "slug": "Manage system templates",
                             "description": "",
                             "logo": "",
-                            "link": "terminology_main.md"
+                            "link": "manage_system_templates.md",
+                            "subpages": []
                         },
                         {
-                            "name": "terminology_extended",
-                            "slug": "Extended terminology",
+                            "name": "manage_system_contents",
+                            "slug": "Manage system contents",
                             "description": "",
                             "logo": "",
-                            "link": "terminology_extended.md"
+                            "link": "manage_system_contents.md",
+                            "subpages": []
                         }
                     ]
                 },
                 {
-                    "name": "concepts",
-                    "slug": "Concepts",
+                    "name": "manage_vortex_editor_versions",
+                    "slug": "Manage Vortex editors",
                     "description": "",
                     "logo": "",
-                    "link": "concepts.md",
+                    "link": "manage_vortex_editor_versions.md",
+                    "subpages": []
+                },
+                {
+                    "name": "subscribe_to_beta",
+                    "slug": "Subscribe to beta",
+                    "description": "",
+                    "logo": "",
+                    "link": "subscribe_to_beta.md",
+                    "subpages": []
+                }
+            ]
+        },
+        {
+            "name": "take_vortex_editor",
+            "slug": "Take the Vortex Editor",
+            "title": "Take the Vortex Editor",
+            "sumary": "qsd",
+            "pages": [
+                {
+                    "name": "discover_interface",
+                    "slug": "Discover interface",
+                    "description": "",
+                    "logo": "",
+                    "link": "discover_interface.md",
+                    "subpages": []
+                },
+                {
+                    "name": "content_browser",
+                    "slug": "Content browser",
+                    "description": "",
+                    "logo": "",
+                    "link": "content_browser.md",
+                    "subpages": []
+                },
+                {
+                    "name": "project_settings",
+                    "slug": "Project settings",
+                    "description": "",
+                    "logo": "",
+                    "link": "project_settings.md",
+                    "subpages": []
+                },
+                {
+                    "name": "console_logs",
+                    "slug": "Console logs",
+                    "description": "",
+                    "logo": "",
+                    "link": "console_logs.md",
+                    "subpages": []
+                },
+                {
+                    "name": "handle_modules",
+                    "slug": "Handle modules",
+                    "description": "",
+                    "logo": "",
+                    "link": "handle_modules.md",
+                    "subpages": []
+                },
+                {
+                    "name": "handle_plugins",
+                    "slug": "Handle plugins",
+                    "description": "",
+                    "logo": "",
+                    "link": "handle_plugins.md",
+                    "subpages": []
+                },
+                {
+                    "name": "import_contents",
+                    "slug": "Import contents",
+                    "description": "",
+                    "logo": "",
+                    "link": "import_contents.md",
+                    "subpages": []
+                },
+                {
+                    "name": "create_with_templates",
+                    "slug": "Create with templates",
+                    "description": "",
+                    "logo": "",
+                    "link": "create_with_templates.md",
+                    "subpages": []
+                },
+                {
+                    "name": "share_contents",
+                    "slug": "Share contents",
+                    "description": "",
+                    "logo": "",
+                    "link": "share_contents.md",
                     "subpages": [
+                        {
+                            "name": "export_project",
+                            "slug": "Export project/tool",
+                            "description": "",
+                            "logo": "",
+                            "link": "export_project.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "share_a_content",
+                            "slug": "Share a content",
+                            "description": "",
+                            "logo": "",
+                            "link": "share_a_content.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "create_a_template",
+                            "slug": "Create a template",
+                            "description": "",
+                            "logo": "",
+                            "link": "create_a_template.md",
+                            "subpages": []
+                        }
                     ]
                 }
             ]
