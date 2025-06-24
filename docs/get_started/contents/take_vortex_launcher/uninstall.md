@@ -1,15 +1,15 @@
 To uninstall Vortex, simply search your system or go to the installation directory and run the "Uninstall Vortex" program. A window will open, allowing you to select which parts you wish to remove.
 
 <image
-  src="vxuninstallerlogo.png"
+  src="vxuninstalllogo.png"
   type="bordered"
-  width="75"
+  width="250"
   height="423"
   alt="Vortex Launcher Projects def"
 />
 
 <image
-  src="vxuninstaller.png"
+  src="vxuninstall.png"
   type="bordered"
   width="828"
   height="423"
