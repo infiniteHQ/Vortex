@@ -46,3 +46,6 @@ To delete a template from your system, launch the Vortex Launcher. Open the stat
 
 
 Although the Vortex Launcher properly deletes templates, you can also manually and permanently delete a templates by removing its folder from where it is installed. Vortex does not keep any attachments to individual moudles installed in the system.
+
+
+### Create a template

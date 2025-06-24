@@ -48,3 +48,6 @@ To delete a content from your system, launch the Vortex Launcher. Open the stati
 
 
 Although the Vortex Launcher properly deletes contents, you can also manually and permanently delete a contents by removing its folder from where it is installed. Vortex does not keep any attachments to individual moudles installed in the system.
+
+
+### Create a content

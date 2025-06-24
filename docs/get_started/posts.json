@@ -47,6 +47,14 @@
             "sumary": "qsd",
             "pages": [
                 {
+                    "name": "understand_vortexlauncher",
+                    "slug": "Understand Vortex Launcher",
+                    "description": "",
+                    "logo": "",
+                    "link": "understand_vortexlauncher.md",
+                    "subpages": []
+                },
+                {
                     "name": "discover_interface",
                     "slug": "Discover interface",
                     "description": "",
@@ -133,6 +141,14 @@
                     "logo": "",
                     "link": "subscribe_to_beta.md",
                     "subpages": []
+                },
+                {
+                    "name": "uninstall",
+                    "slug": "Uninstallation",
+                    "description": "",
+                    "logo": "",
+                    "link": "uninstall.md",
+                    "subpages": []
                 }
             ]
         },
@@ -142,6 +158,14 @@
             "title": "Take the Vortex Editor",
             "sumary": "qsd",
             "pages": [
+            {
+                "name": "understand_vortexeditor",
+                "slug": "Understand Vortex Editor",
+                "description": "",
+                "logo": "",
+                "link": "understand_vortexeditor.md",
+                "subpages": []
+            },
                 {
                     "name": "discover_interface",
                     "slug": "Discover interface",
