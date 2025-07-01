@@ -5,7 +5,7 @@ VERSION=$(cat ../version.conf)
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
 VORTEX_PATH="${SCRIPT_DIR}/dist/${VERSION}/bin/"
-PROJECT_PATH="${SCRIPT_DIR}/../tests/projects/sampleproject"
+PROJECT_PATH="${SCRIPT_DIR}/../tests/project/"
 
 SESSION_ID="editor-$(date +%m-%d-%Y-%H-%M-%S)-$(shuf -i 1000-9999 -n 1)"
 
