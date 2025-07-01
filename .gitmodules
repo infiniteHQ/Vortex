@@ -10,9 +10,3 @@
 [submodule "tests/project"]
 	path = tests/project
 	url = https://github.com/infiniteHQ/VortexProjectSample
-[submodule "tests/em"]
-	path = tests/em
-	url = https://github.com/infiniteHQ/VortexModuleSample
-[submodule "tests/ep"]
-	path = tests/ep
-	url = https://github.com/infiniteHQ/VortexPluginSample
