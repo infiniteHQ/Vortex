@@ -4,7 +4,7 @@
 
 // Static windows
 // #include "../core/welcome/welcome.hpp"
-// #include "../core/modules_utility/modules_utility.hpp"
+#include "../core/modules_utility/modules_utility.hpp"
 // #include "../core/templates_utility/templates_utility.hpp"
 #include "../core/project_settings/project_settings.hpp"
 
@@ -86,10 +86,9 @@ public:
             VortexEditor::WelcomeWindow::Create("?loc:loc.window_names.welcome");
         Cherry::AddAppWindow(m_WelcomeAppWindow->GetAppWindow());*/
 
-    /*m_ModuleUtilityAppWindow =
-        VortexEditor::ModulesUtilityAppWindow::Create("Modules utily");
-    m_ModuleUtilityAppWindow->GetAppWindow()->SetVisibility(false);
-    Cherry::AddAppWindow(m_ModuleUtilityAppWindow->GetAppWindow());*/
+    m_ModulesUtility = VortexEditor::ModulesUtility::Create("Modules utily");
+    m_ModulesUtility->GetAppWindow()->SetVisibility(false);
+    Cherry::AddAppWindow(m_ModulesUtility->GetAppWindow());
 
     m_ProjectSettings =
         VortexEditor::ProjectSettings::Create("Project settings");
@@ -119,13 +118,12 @@ public:
     return m_ProjectSettings->GetAppWindow()->m_Visible;
   }
 
-  void SetModuleUtilityVisibility(const bool &visibility) {
-    // m_ModuleUtilityAppWindow->GetAppWindow()->SetVisibility(visibility);
+  void SetModulesUtilityVisibility(const bool &visibility) {
+    m_ModulesUtility->GetAppWindow()->SetVisibility(visibility);
   }
 
-  bool GetModuleUtilityVisibility() {
-    // return m_ModuleUtilityAppWindow->GetAppWindow()->m_Visible;
-    return false;
+  bool GetModulesUtilityVisibility() {
+    return m_ModulesUtility->GetAppWindow()->m_Visible;
   }
 
   void SetWelcomeWindowVisibility(const bool &visibility) {
@@ -165,8 +163,7 @@ public:
 
 private:
   // std::shared_ptr<VortexEditor::WelcomeWindow> m_WelcomeAppWindow;
-  // std::shared_ptr<VortexEditor::ModulesUtilityAppWindow>
-  //    m_ModuleUtilityAppWindow;
+  std::shared_ptr<VortexEditor::ModulesUtility> m_ModulesUtility;
   std::shared_ptr<VortexEditor::ProjectSettings> m_ProjectSettings;
   // std::shared_ptr<VortexEditor::TemplatesUtilityAppWindow>
   //  m_TemplatesUtilityAppWindow;

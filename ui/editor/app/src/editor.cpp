@@ -44,7 +44,6 @@ void EditorLayer::framebar(const std::shared_ptr<EditorLayer> &applayer,
   CherryGUI::PushFont(CherryGUI::GetFont());
 
   ImVec2 textSize = CherryGUI::CalcTextSize(text);
-  std::cout << "Name" << VortexMaker::GetCurrentContext()->name << std::endl;
 
   float circleRadius = 10.0f;
   float circlePadding = 12.0f;
@@ -489,13 +488,14 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
               "Modules utility", "Open the modules utility",
               Cherry::GetTexture(Cherry::GetPath(
                   "resources/imgs/icons/misc/icon_bricksearch.png")),
-              c_Editor->GetModuleUtilityVisibility())) {
-        c_Editor->SetModuleUtilityVisibility(true);
+              c_Editor->GetModulesUtilityVisibility())) {
+        c_Editor->SetModulesUtilityVisibility(
+            !c_Editor->GetModulesUtilityVisibility());
       }
       if (CherryGUI::MenuItem("Plugins utility", "Open the plugins utility",
                               Cherry::GetTexture(Cherry::GetPath(
                                   "resources/imgs/icons/misc/icon_plugin.png")),
-                              c_Editor->GetModuleUtilityVisibility())) {
+                              c_Editor->GetModulesUtilityVisibility())) {
       }
 
       CherryKit::SeparatorText("Static contents");
@@ -503,7 +503,8 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
                               Cherry::GetTexture(Cherry::GetPath(
                                   "resources/imgs/icons/misc/icon_stack.png")),
                               c_Editor->GetTemplatesUtilityVisibility())) {
-        c_Editor->SetTemplatesUtilityVisibility(true);
+        c_Editor->SetTemplatesUtilityVisibility(
+            !c_Editor->GetTemplatesUtilityVisibility());
       }
       if (CherryGUI::MenuItem("Contents utility", "Open the contents utility",
                               Cherry::GetTexture(Cherry::GetPath(
