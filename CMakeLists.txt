@@ -61,36 +61,20 @@ set_target_properties(vortex PROPERTIES
 install(TARGETS vortex DESTINATION ${INSTALL_BIN_DIR})
 install(TARGETS vortex_shared LIBRARY DESTINATION ${INSTALL_LIB_DIR})
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/main/include/
-    DESTINATION ${INSTALL_INCLUDE_DIR}/main/include/
-    PATTERN "*.h"
-    PATTERN "*.hpp"
-    PATTERN "*.inl"
-)
+#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/main/include/
+#    DESTINATION ${INSTALL_INCLUDE_DIR}/main/include/
+#    PATTERN "*.h"
+####    PATTERN "*.hpp"
+#    PATTERN "*.inl"
+#)
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
-    DESTINATION ${INSTALL_INCLUDE_DIR}/
-    FILES_MATCHING 
-    PATTERN "*.h"
-    PATTERN "*.hpp"
-    PATTERN "*.inl"
-)
-
-
-if(VORTEX_DISABLE_UI)
-message("UI Disabled")
-else()
-install(TARGETS spdlog
-    LIBRARY DESTINATION ${INSTALL_LIB_DIR}
-    ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
-    RUNTIME DESTINATION ${INSTALL_BIN_DIR})
-
-install(TARGETS cherry
-    LIBRARY DESTINATION ${INSTALL_LIB_DIR}
-    ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
-    RUNTIME DESTINATION ${INSTALL_BIN_DIR})
-endif()
-
+#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
+#    DESTINATION ${INSTALL_INCLUDE_DIR}/
+#    FILES_MATCHING 
+#    PATTERN "*.h"
+#    PATTERN "*.hpp"
+#    PATTERN "*.inl"
+#)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/vortex_banner.png
     DESTINATION ${INSTALL_MAIN_DIR}/)

@@ -1,562 +1,446 @@
+#include "./project_settings.hpp"
+#include "../../../../../lib/cherry/cherry.hpp"
 
-#include "project_settings.hpp"
+#include <cstdlib> // std::system
+#include <cstring>
+#include <iostream>
+#include <string>
 
-using namespace Cherry;
+#if defined(_WIN32)
+#include <shellapi.h>
+#include <windows.h>
+#elif defined(__APPLE__)
+#include <TargetConditionals.h>
+#include <stdlib.h>
+#elif defined(__linux__)
+#include <stdlib.h>
+#endif
 
-namespace VortexEditor
-{
-    void ProjectSettingsAppWindow::RenderProjectInformations()
-    {
-        static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableColumnFlags_NoHeaderLabel | ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInnerV;
+namespace VortexEditor {
 
-        if (ImGui::BeginTable("ProjectInformations", 2, flags))
-        {
-            ImGui::TableSetupColumn("Information", ImGuiTableColumnFlags_WidthStretch);
-            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
-            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+void PathListEditor(const std::string &type, std::vector<std::string> *list,
+                    std::string *newPath) {
+  if (!list || !newPath)
+    return;
 
-            ImGui::PushStyleColor(ImGuiCol_TableBorderStrong, IM_COL32(0, 0, 0, 255));
-            ImGui::PushStyleColor(ImGuiCol_TableBorderLight, IM_COL32(0, 0, 0, 255));
+  CherryGUI::PushStyleColor(ImGuiCol_TableRowBg,
+                            Cherry::HexToRGBA("#151515FF"));
+  if (CherryGUI::BeginTable("##project_paths", 2)) {
+    CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(8.0f, 8.0f));
 
-            ImGui::PushStyleColor(ImGuiCol_TableRowBg, IM_COL32(200, 200, 200, 255));
-            ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, IM_COL32(200, 200, 200, 255));
+    CherryGUI::TableSetupColumn("Path");
+    CherryGUI::TableSetupColumn("Action");
+    CherryGUI::TableHeadersRow();
 
-            ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 10.0f));
-            ImGui::TableHeadersRow();
-            ImGui::PopStyleVar();
+    for (size_t i = 0; i < list->size(); ++i) {
+      CherryGUI::TableNextRow();
 
-            for (int srow = 0; srow <= 3; srow++)
-            {
-                ImGui::TableNextRow();
-                for (int scolumn = 0; scolumn < 2; scolumn++)
-                {
-                    ImGui::TableSetColumnIndex(scolumn);
-                    switch (srow)
-                    {
-                    case 0:
-                        cp_ProjectNameDoubleString->Render(scolumn);
-                        break;
-                    case 1:
-                        cp_ProjectDescriptionDoubleString->Render(scolumn);
-                        break;
-                    case 2:
-                        cp_VersionDoubleString->Render(scolumn);
-                        break;
-                    case 3:
-                        cp_AuthorsDoubleString->Render(scolumn);
-                        break;
-                    }
-                }
-            }
+      CherryGUI::TableSetColumnIndex(0);
+      CherryGUI::PushStyleColor(ImGuiCol_TableRowBg,
+                                ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
 
-            ImGui::PopStyleColor(4);
-            ImGui::PopStyleVar();
-            ImGui::EndTable();
-        }
+      CherryGUI::Text("%s", (*list)[i].c_str());
+
+      CherryGUI::PopStyleColor();
+
+      CherryGUI::TableSetColumnIndex(1);
+      if (CherryKit::ButtonImageText(
+              CherryID("delete_entry" + type + std::to_string(i)), "",
+              Cherry::GetPath("resources/imgs/trash.png"))
+              .GetData("isClicked") == "true") {
+        list->erase(list->begin() + i);
+        --i;
+      }
     }
 
-    void ProjectSettingsAppWindow::RenderRightMenubar()
-    {
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
+    CherryGUI::PopStyleVar();
+    CherryGUI::EndTable();
+  }
 
-        {
-            if (!IsProjectInformationsUpdated())
-            {
-                ImGui::BeginDisabled();
-            }
-            static std::shared_ptr<Cherry::ImageTextButtonSimple> btn = std::make_shared<Cherry::ImageTextButtonSimple>("save_button", "Save");
-            btn->SetScale(0.85f);
-            btn->SetInternalMarginX(10.0f);
-            btn->SetLogoSize(15, 15);
+  CherryGUI::PopStyleColor();
 
-            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"));
-            if (btn->Render("LogicContentManager"))
-            {
-                if (m_SelectedChildName == "Project informations")
-                {
-                    UpdateProjectInformations();
-                }
-            }
-            if (!IsProjectInformationsUpdated())
-            {
-                ImGui::EndDisabled();
-            }
-        }
-
-        {
-            static std::shared_ptr<Cherry::ImageTextButtonSimple> btn = std::make_shared<Cherry::ImageTextButtonSimple>("refresh_button", "Refresh");
-            btn->SetScale(0.85f);
-            btn->SetInternalMarginX(10.0f);
-            btn->SetLogoSize(15, 15);
-
-            btn->SetImagePath(Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"));
-            if (btn->Render("refresh_button"))
-            {
-                if (m_SelectedChildName == "Project informations")
-                {
-                    RefreshProjectInformations();
-                }
-            }
-        }
-
-        ImGui::PopStyleColor();
+  if (CherryKit::ButtonImageText(
+          CherryID("add_entry" + type), "",
+          Cherry::GetPath("resources/imgs/icons/misc/icon_add.png"))
+          .GetData("isClicked") == "true") {
+    if (!newPath->empty()) {
+      list->push_back(*newPath);
+      newPath->clear();
     }
+  }
 
-    bool ProjectSettingsAppWindow::IsProjectInformationsUpdated()
-    {
-        if (v_ProjectNameInitial != *v_ProjectName.get() ||
-            v_ProjectAuthorInitial != *v_ProjectAuthor.get() ||
-            v_ProjectVersionInitial != *v_ProjectVersion.get() ||
-            v_ProjectDescriptionInitial != *v_ProjectDescription.get())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+  CherryGUI::SameLine();
 
-    ProjectSettingsAppWindow::ProjectSettingsAppWindow(const std::string &name)
-    {
-        m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
-        m_AppWindow->SetIcon("/usr/local/include/Vortex/imgs/vortex.png");
-        m_AppWindow->SetInternalPaddingX(10.0f);
-        m_AppWindow->SetInternalPaddingY(10.0f);
+  CherryKit::InputString("", newPath);
+}
 
-        // Cherry Components
-        v_ProjectNameInitial = VortexMaker::GetCurrentContext()->name;
-        v_ProjectAuthorInitial = VortexMaker::GetCurrentContext()->author;
-        v_ProjectVersionInitial = VortexMaker::GetCurrentContext()->project_version;
-        v_ProjectDescriptionInitial = VortexMaker::GetCurrentContext()->description;
+void ProjectSettings::ModulesRender() {
+  // Cherry::SetNextComponentProperty("color_text", "#B1FF31"); // Todo remplace
+  Cherry::PushFont("ClashBold");
+  CherryNextComponent.SetProperty("color_text", "#797979");
+  CherryKit::TitleOne("QSf");
+  Cherry::PopFont();
+  CherryNextComponent.SetProperty("color", "#252525");
+  CherryKit::Separator();
+}
 
-        v_ProjectName = std::make_shared<std::string>(v_ProjectNameInitial);
-        v_ProjectAuthor = std::make_shared<std::string>(v_ProjectAuthorInitial);
-        v_ProjectVersion = std::make_shared<std::string>(v_ProjectVersionInitial);
-        v_ProjectDescription = std::make_shared<std::string>(v_ProjectDescriptionInitial);
+std::string GetConfigFilePath() {
+  std::string homeDir = VortexMaker::getHomeDirectory();
+  std::string configPath;
+  if (VortexMaker::IsWindows()) {
+    configPath = homeDir + "\\.vx\\configs\\dists.json";
+  } else {
+    configPath = homeDir + "/.vx/configs/dists.json";
+  }
+  return configPath;
+}
 
-        cp_ProjectNameDoubleString = Application::Get().CreateComponent<DoubleKeyValString>("keyvaldouble_1", v_ProjectName, "Project name");
-        cp_ProjectDescriptionDoubleString = Application::Get().CreateComponent<DoubleKeyValString>("keyvaldouble_1", v_ProjectDescription, "Project description");
-        cp_VersionDoubleString = Application::Get().CreateComponent<DoubleKeyValString>("keyvaldouble_1", v_ProjectVersion, "Project version");
-        cp_AuthorsDoubleString = Application::Get().CreateComponent<DoubleKeyValString>("keyvaldouble_1", v_ProjectAuthor, "Project author(s)");
+nlohmann::json LoadConfig(const std::string &filePath) {
+  std::ifstream file(filePath);
+  nlohmann::json config;
+  if (file.is_open()) {
+    file >> config;
+  } else {
+    config = {{"vortex_dists", {"def"}}, {"VortexEditor_dist", "def"}};
+  }
+  return config;
+}
 
-        this->AddChild("General", "Project informations", [this]()
-                       { RenderProjectInformations(); });
+void SaveConfig(const std::string &filePath, const nlohmann::json &config) {
+  std::ofstream file(filePath);
+  if (file.is_open()) {
+    file << config.dump(4);
+  }
+}
 
-        this->AddChild("General", "Compatibility", [this]() {});
+void ProjectSettings::Refresh() {
+  std::string path = VortexMaker::GetCurrentContext()->projectPath.string();
+  path += "/vortex.config";
 
-        this->AddChild("General", "Migrate", [this]() {});
+  nlohmann::json projectData = VortexMaker::DumpJSON(path);
 
-        m_AppWindow->SetLeftMenubarCallback([this]()
-                                            { RenderRightMenubar(); });
+  std::shared_ptr<ProjectSettingsSave> newsave =
+      std::make_shared<ProjectSettingsSave>();
 
-        m_SelectedChildName = "Project informations";
-    }
+  VortexMaker::GetCurrentContext()->name =
+      projectData["project"]["name"].get<std::string>();
+  strncpy(newsave->name, VortexMaker::GetCurrentContext()->name.c_str(),
+          sizeof(newsave->name));
+  newsave->name[sizeof(newsave->name) - 1] = '\0';
 
-    void ProjectSettingsAppWindow::AddChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child)
-    {
-        m_Childs.push_back(ProjectSettingsChild(parent_name, child_name, child));
-    }
+  VortexMaker::GetCurrentContext()->author =
+      projectData["project"]["author"].get<std::string>();
+  strncpy(newsave->author, VortexMaker::GetCurrentContext()->author.c_str(),
+          sizeof(newsave->author));
+  newsave->author[sizeof(newsave->author) - 1] = '\0';
 
-    void ProjectSettingsAppWindow::RemoveChild(const std::string &child_name)
-    {
-    }
+  VortexMaker::GetCurrentContext()->description =
+      projectData["project"]["description"].get<std::string>();
+  strncpy(newsave->description,
+          VortexMaker::GetCurrentContext()->description.c_str(),
+          sizeof(newsave->description));
+  newsave->description[sizeof(newsave->description) - 1] = '\0';
 
-    std::function<void()> ProjectSettingsAppWindow::GetChild(const std::string &child_name)
-    {
-        for (auto &child : m_Childs)
-        {
-            if (child.m_ChildName == child_name)
-            {
-                return child.m_Callback;
-            }
-        }
-        return nullptr;
-    }
+  VortexMaker::GetCurrentContext()->type =
+      projectData["project"]["type"].get<std::string>();
+  strncpy(newsave->type, VortexMaker::GetCurrentContext()->type.c_str(),
+          sizeof(newsave->type));
+  newsave->type[sizeof(newsave->type) - 1] = '\0';
 
-    std::shared_ptr<Cherry::AppWindow> &ProjectSettingsAppWindow::GetAppWindow()
-    {
-        return m_AppWindow;
-    }
+  VortexMaker::GetCurrentContext()->project_version =
+      projectData["project"]["version"].get<std::string>();
+  strncpy(newsave->version, VortexMaker::GetCurrentContext()->version.c_str(),
+          sizeof(newsave->version));
+  newsave->version[sizeof(newsave->version) - 1] = '\0';
 
-    std::shared_ptr<ProjectSettingsAppWindow> ProjectSettingsAppWindow::Create(const std::string &name)
-    {
-        auto instance = std::shared_ptr<ProjectSettingsAppWindow>(new ProjectSettingsAppWindow(name));
-        instance->SetupRenderCallback();
-        return instance;
-    }
+  VortexMaker::GetCurrentContext()->include_system_templates =
+      projectData["project"]["include_system_templates"].get<bool>();
+  newsave->include_system_templates =
+      VortexMaker::GetCurrentContext()->include_system_templates;
 
-    void ProjectSettingsAppWindow::SetupRenderCallback()
-    {
-        auto self = shared_from_this();
-        m_AppWindow->SetRenderCallback([self]()
-                                       {
-            if (self) {
-                self->Render();
-            } });
-    }
+  current_save = newsave;
+}
 
-    void ProjectSettingsAppWindow::Render()
-    {
-        static float leftPaneWidth = 300.0f;
-        const float minPaneWidth = 50.0f;
-        const float splitterWidth = 1.5f;
-        static int selected;
+void ProjectSettings::RefreshProjectInformations() {
+  VortexMaker::RefreshProjectInformations();
 
-        std::map<std::string, std::vector<ProjectSettingsChild>> groupedByParent;
-        for (const auto &child : m_Childs)
-        {
-            groupedByParent[child.m_Parent].push_back(child);
-        }
+  v_ProjectNameInitial = VortexMaker::GetCurrentContext()->name;
+  v_ProjectAuthorInitial = VortexMaker::GetCurrentContext()->author;
+  v_ProjectVersionInitial = VortexMaker::GetCurrentContext()->project_version;
+  v_ProjectDescriptionInitial = VortexMaker::GetCurrentContext()->description;
 
-        ImGui::BeginChild("left_pane", ImVec2(leftPaneWidth, 0), true, ImGuiWindowFlags_NoBackground);
+  v_ProjectName = v_ProjectNameInitial;
+}
 
-        ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-        ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+void ProjectSettings::UpdateProjectInformations() {
+  VortexMaker::UpdateProjectName(v_ProjectName);
+  VortexMaker::UpdateProjectDescription(v_ProjectDescription);
+  VortexMaker::UpdateProjectVersion(v_ProjectVersion);
+  VortexMaker::UpdateProjectAuthor(v_ProjectAuthor);
 
-        TitleThree("Project settings");
-        for (const auto &[parent, children] : groupedByParent)
-        {
-            ImGui::GetFont()->Scale *= 0.8;
-            ImGui::PushFont(ImGui::GetFont());
+  v_ProjectNameInitial = v_ProjectName;
+  v_ProjectDescriptionInitial = v_ProjectDescription;
+  v_ProjectVersionInitial = v_ProjectVersion;
+  v_ProjectAuthorInitial = v_ProjectAuthor;
 
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+  RefreshProjectInformations();
+}
 
-            ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-            ImGui::Text(parent.c_str());
-            ImGui::PopStyleColor();
+void ProjectSettings::Update() {
+  std::string oldname = VortexMaker::GetCurrentContext()->name;
 
-            ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-            ImGui::Separator();
-            ImGui::PopStyleColor();
+  std::string vortex_version = VORTEX_VERSION;
 
-            ImGui::GetFont()->Scale = 0.84;
-            ImGui::PopFont();
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+  nlohmann::json toolchainData;
+  toolchainData["project"]["name"] = current_save->name;
+  toolchainData["project"]["author"] = current_save->author;
+  toolchainData["project"]["description"] = current_save->description;
+  toolchainData["project"]["compatibleWith"] = vortex_version;
+  toolchainData["project"]["type"] = current_save->type;
+  toolchainData["project"]["version"] = current_save->version;
+  toolchainData["project"]["include_system_templates"] =
+      current_save->include_system_templates;
 
-            for (const auto &child : children)
-            {
-                if (child.m_ChildName == m_SelectedChildName)
-                {
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-                }
-                else
-                {
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-                }
+  std::string path = VortexMaker::GetCurrentContext()->projectPath.string();
+  path += "/vortex.config";
 
-                if (TextButtonUnderline(child.m_ChildName.c_str()))
-                {
-                    m_SelectedChildName = child.m_ChildName;
-                }
+  std::ofstream file(path);
+  if (file.is_open()) {
+    file << std::setw(4) << toolchainData << std::endl;
+    VortexMaker::LogInfo("Core", "Object saved to " + path);
+    file.close();
+  } else {
+    VortexMaker::LogError("Core",
+                          "Unable to open file " + path + " for writing!");
+  }
 
-                ImGui::PopStyleColor();
-            }
-        }
+  Refresh();
 
-        ImGui::EndChild();
+  VortexMaker::UpdateEnvironmentProject(oldname);
+}
 
-        ImGui::SameLine();
+ProjectSettings::ProjectSettings(const std::string &name) {
+  m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
+  m_AppWindow->SetIcon(
+      Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
 
-        ImGui::PushStyleColor(ImGuiCol_Button, HexToRGBA("#44444466"));
-        ImGui::Button("splitter", ImVec2(splitterWidth, -1));
-        ImGui::PopStyleVar();
+  m_AppWindow->SetClosable(true);
+  m_AppWindow->m_CloseCallback = [=]() { m_AppWindow->SetVisibility(false); };
 
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+  m_AppWindow->SetInternalPaddingX(0.0f);
+  m_AppWindow->SetInternalPaddingY(0.0f);
+  RefreshProjectInformations();
+
+  m_SelectedChildName = "Project's modules";
+
+  this->AddChild(ProjectSettingsChild(
+      "Informations",
+      [this]() {
+        Cherry::PushFont("ClashBold");
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Project informations");
+        Cherry::PopFont();
+        CherryGUI::SameLine();
+        CherryKit::TooltipTextCustom("(?)", []() {
+          CherryKit::TitleFour("em : Editor Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+          CherryStyle::AddMarginY(10.0f);
+          CherryKit::TitleFour("esm : Editor Script Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+        });
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Refresh",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                .GetData("isClicked") == "true") {
+          RefreshProjectInformations();
         }
 
-        if (ImGui::IsItemActive())
-        {
-            float delta = ImGui::GetIO().MouseDelta.x;
-            leftPaneWidth += delta;
-            if (leftPaneWidth < minPaneWidth)
-                leftPaneWidth = minPaneWidth;
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Save",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                .GetData("isClicked") == "true") {
+          UpdateProjectInformations();
         }
 
-        ImGui::SameLine();
-        ImGui::BeginGroup();
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
 
-        if (!m_SelectedChildName.empty())
-        {
-            std::function<void()> pannel_render = GetChild(m_SelectedChildName);
-            if (pannel_render)
-            {
-                pannel_render();
-            }
+        CherryKit::TableSimple(
+            "Information table",
+            {CherryKit::KeyValString("Name", &v_ProjectName)});
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")));
+
+  this->AddChild(ProjectSettingsChild(
+      "Editor",
+      [this]() {
+
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")));
+
+  this->AddChild(ProjectSettingsChild(
+      "Help",
+      [this]() {
+        if (CherryKit::ButtonImageTextImage(
+                "Learn and Documentation",
+                Cherry::GetPath("resources/imgs/icons/launcher/docs.png"),
+                Cherry::GetPath("resources/imgs/weblink.png"))
+                .GetData("isClicked") == "true") {
+          // VortexMaker::OpenURL("https://vortex.infinite.si/learn");
         }
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_help.png")));
+  std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
+}
 
-        ImGui::EndGroup();
+std::vector<std::shared_ptr<EnvProject>> ProjectSettings::GetMostRecentProjects(
+    const std::vector<std::shared_ptr<EnvProject>> &projects, size_t maxCount) {
+  auto sortedProjects = projects;
+  std::sort(sortedProjects.begin(), sortedProjects.end(),
+            [](const std::shared_ptr<EnvProject> &a,
+               const std::shared_ptr<EnvProject> &b) {
+              return a->lastOpened > b->lastOpened;
+            });
 
-        /*float oldsize = ImGui::GetFont()->Scale;
-        ImGui::GetFont()->Scale *= 1.3;
-        ImGui::PushFont(ImGui::GetFont());
+  if (sortedProjects.size() > maxCount) {
+    sortedProjects.resize(maxCount);
+  }
+  return sortedProjects;
+}
 
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Project settings of");
-        ImGui::SameLine();
-        ImGui::Text(VortexMaker::GetCurrentContext()->name.c_str());
+void ProjectSettings::AddChild(const ProjectSettingsChild &child) {
+  m_Childs.push_back(child);
+}
 
-        ImGui::GetFont()->Scale = oldsize;
-        ImGui::PopFont();
+void ProjectSettings::RemoveChild(const std::string &child_name) {
+  auto it = std::find_if(
+      m_Childs.begin(), m_Childs.end(),
+      [&child_name](const auto &child) { return child.Name == child_name; });
+  if (it != m_Childs.end()) {
+    m_Childs.erase(it);
+  }
+}
 
-        oldsize = ImGui::GetFont()->Scale;
-        ImGui::GetFont()->Scale *= 0.9;
-        ImGui::PushFont(ImGui::GetFont());
+std::shared_ptr<Cherry::AppWindow> &ProjectSettings::GetAppWindow() {
+  return m_AppWindow;
+}
 
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Vortex version");
-        ImGui::SameLine();
-        ImGui::Text(VortexMaker::GetCurrentContext()->version.c_str());
+std::shared_ptr<ProjectSettings>
+ProjectSettings::Create(const std::string &name) {
+  auto instance = std::shared_ptr<ProjectSettings>(new ProjectSettings(name));
+  instance->SetupRenderCallback();
+  return instance;
+}
 
-        ImGui::GetFont()->Scale = oldsize;
-        ImGui::PopFont();
+void ProjectSettings::SetupRenderCallback() {
+  auto self = shared_from_this();
+  m_AppWindow->SetRenderCallback([self]() {
+    if (self) {
+      self->Render();
+    }
+  });
+}
 
-        ImGui::Separator();
+ProjectSettingsChild *ProjectSettings::GetChild(const std::string &child_name) {
+  auto it = std::find_if(m_Childs.begin(), m_Childs.end(),
+                         [&child_name](const ProjectSettingsChild &child) {
+                           return child.Name == child_name;
+                         });
+  if (it != m_Childs.end()) {
+    return &(*it);
+  }
+  return nullptr;
+}
 
-        {
-            ImGui::BeginChild("left pane", ImVec2(230, -1), true);
+void ProjectSettings::Render() {
+  const float minPaneWidth = 50.0f;
+  const float splitterWidth = 1.5f;
 
-            for (int i = 0; i < labels.size(); i++)
-            {
-                if (ImGui::Selectable(labels[i].c_str(), selected == i))
-                    selected = i;
-            }
-            ImGui::EndChild();
+  std::string label = "left_pane" + m_AppWindow->m_Name;
+  CherryGUI::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToRGBA("#35353535"));
+  CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#00000000"));
+  CherryGUI::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
+  CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0.0f, 0.0f));
+  CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+  CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+  CherryGUI::BeginChild(label.c_str(), ImVec2(leftPaneWidth, 0), true, NULL);
+
+  CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
+  CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 5.0f);
+  CherryGUI::Image(
+      Cherry::GetTexture(Cherry::GetPath("resources/imgs/settings_banner.png")),
+      ImVec2(280, 142));
+
+  // CherryStyle::SetPadding(7.0f);
+
+  for (const auto &child : m_Childs) {
+    if (child.Name == m_SelectedChildName) {
+      // opt.hex_text_idle = "#FFFFFFFF";
+    } else {
+      // opt.hex_text_idle = "#A9A9A9FF";
+    }
+    std::string child_name;
+
+    if (child.Name.rfind("?loc:", 0) == 0) {
+      std::string localeName = child.Name.substr(5);
+      child_name = Cherry::GetLocale(localeName) + "####" + localeName;
+    } else {
+      child_name = child.Name;
+    }
+
+    CherryNextComponent.SetProperty("color_bg", "#00000000");
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("padding_x", "2");
+    CherryNextComponent.SetProperty("padding_y", "2");
+    CherryNextComponent.SetProperty("size_x", "20");
+    CherryNextComponent.SetProperty("size_y", "20");
+    CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 7.5f);
+    if (CherryKit::ButtonImageText(CherryID(child_name), child_name.c_str(),
+                                   child.LogoPath)
+            .GetData("isClicked") == "true") {
+      m_SelectedChildName = child.Name;
+    }
+  }
+
+  CherryGUI::EndChild();
+  CherryGUI::PopStyleVar(4);
+  CherryGUI::PopStyleColor(2);
+
+  CherryGUI::SameLine();
+  CherryGUI::BeginGroup();
+
+  CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 20.0f);
+
+  if (!m_SelectedChildName.empty()) {
+    CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20.0f, 20.0f));
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20.0f, 20.0f));
+
+    if (CherryGUI::BeginChild("ChildPanel", ImVec2(0, 0), false,
+                              ImGuiWindowFlags_NoBackground |
+                                  ImGuiWindowFlags_AlwaysVerticalScrollbar)) {
+      auto child = GetChild(m_SelectedChildName);
+
+      if (child) {
+        std::function<void()> pannel_render = child->RenderCallback;
+        if (pannel_render) {
+          pannel_render();
         }
-        ImGui::SameLine();
-        ImGui::Separator();
-        ImGui::SameLine();
-
-        if (selected == 0)
-        {
-            ImGui::BeginGroup();
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(9.0f, 9.0f));
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
-            ImGui::InputText("Project name", current_save->name, 128);
-            ImGui::InputText("Project author", current_save->author, 128);
-            ImGui::InputText("Project version", current_save->version, 128);
-            ImGui::InputTextMultiline("Project description", current_save->description, 128);
-            ImGui::InputText("Project type", current_save->type, 128);
-            ImGui::Checkbox("Include system template", &current_save->include_system_templates);
-
-            ImGui::PopStyleVar(2);
-            ImGui::EndGroup();
-        }
-        else if (selected == 1)
-        {
-            ImGui::Text("1");
-        }
-        else if (selected == 2)
-        {
-            ImGui::Text("2");
-        }*/
+      }
     }
+    CherryGUI::EndChild();
 
-    // Helper functions for menu items
+    CherryGUI::PopStyleVar(2);
+  }
 
-    static void handleRefresh()
-    {
-        // Behavior
-    }
-
-    static void handleAddToProject(const std::string &name, const std::string &version)
-    {
-        // Behavior
-    }
-
-    static void handleFilterBuildRebuild()
-    {
-        // Behavior
-    }
-
-    static void handleGlobalBuild()
-    {
-        // Behavior
-    }
-
-    static void handleCreateModule()
-    {
-        // Behavior
-    }
-
-    static void handleSearch()
-    {
-        // Behavior
-    }
-
-    void ProjectSettingsAppWindow::addModuleModal()
-    {
-    }
-
-    void ProjectSettingsAppWindow::mainButtonsMenuItem()
-    {
-
-        /*if (ImGui::ImageButtonWithText(refreshIcon, "Save", ImVec2(m_RefreshIcon->GetWidth(), m_RefreshIcon->GetHeight())))
-        {
-            Update();
-        }
-        if (ImGui::ImageButtonWithText(refreshIcon, "Refresh", ImVec2(m_RefreshIcon->GetWidth(), m_RefreshIcon->GetHeight())))
-        {
-            Refresh();
-        }*/
-    }
-
-    void ProjectSettingsAppWindow::filterMenuItem()
-    {
-        ImGui::Separator();
-        if (ImGui::BeginMenu("Filters"))
-        {
-            if (ImGui::MenuItem("Build/Rebuild single parts"))
-            {
-                handleFilterBuildRebuild();
-            }
-            if (ImGui::MenuItem("Global build"))
-            {
-                handleGlobalBuild();
-            }
-            ImGui::EndMenu();
-        }
-    }
-
-    void ProjectSettingsAppWindow::createMenuItem()
-    {
-        if (ImGui::BeginMenu("Create a module"))
-        {
-            if (ImGui::MenuItem("Build/Rebuild single parts"))
-            {
-                handleCreateModule();
-            }
-            if (ImGui::MenuItem("Global build"))
-            {
-                handleGlobalBuild();
-            }
-            ImGui::EndMenu();
-        }
-    }
-
-    void ProjectSettingsAppWindow::searchMenuItem()
-    {
-        if (ImGui::BeginMenu("Search"))
-        {
-            if (ImGui::MenuItem("Build/Rebuild single parts"))
-            {
-                handleSearch();
-            }
-            if (ImGui::MenuItem("Global build"))
-            {
-                handleGlobalBuild();
-            }
-            ImGui::EndMenu();
-        }
-    }
-
-    void ProjectSettingsAppWindow::menubar()
-    {
-    }
-
-    void ProjectSettingsAppWindow::Refresh()
-    {
-        std::string path = VortexMaker::GetCurrentContext()->projectPath.string();
-        path += "/vortex.config";
-
-        nlohmann::json projectData = VortexMaker::DumpJSON(path);
-
-        std::shared_ptr<ProjectSettingsSave> newsave = std::make_shared<ProjectSettingsSave>();
-
-        VortexMaker::GetCurrentContext()->name = projectData["project"]["name"].get<std::string>();
-        strncpy(newsave->name, VortexMaker::GetCurrentContext()->name.c_str(), sizeof(newsave->name));
-        newsave->name[sizeof(newsave->name) - 1] = '\0';
-
-        VortexMaker::GetCurrentContext()->author = projectData["project"]["author"].get<std::string>();
-        strncpy(newsave->author, VortexMaker::GetCurrentContext()->author.c_str(), sizeof(newsave->author));
-        newsave->author[sizeof(newsave->author) - 1] = '\0';
-
-        VortexMaker::GetCurrentContext()->description = projectData["project"]["description"].get<std::string>();
-        strncpy(newsave->description, VortexMaker::GetCurrentContext()->description.c_str(), sizeof(newsave->description));
-        newsave->description[sizeof(newsave->description) - 1] = '\0';
-
-        VortexMaker::GetCurrentContext()->type = projectData["project"]["type"].get<std::string>();
-        strncpy(newsave->type, VortexMaker::GetCurrentContext()->type.c_str(), sizeof(newsave->type));
-        newsave->type[sizeof(newsave->type) - 1] = '\0';
-
-        VortexMaker::GetCurrentContext()->project_version = projectData["project"]["version"].get<std::string>();
-        strncpy(newsave->version, VortexMaker::GetCurrentContext()->version.c_str(), sizeof(newsave->version));
-        newsave->version[sizeof(newsave->version) - 1] = '\0';
-
-        VortexMaker::GetCurrentContext()->include_system_templates = projectData["project"]["include_system_templates"].get<bool>();
-        newsave->include_system_templates = VortexMaker::GetCurrentContext()->include_system_templates;
-
-        current_save = newsave;
-    }
-    
-
-    void ProjectSettingsAppWindow::RefreshProjectInformations()
-    {
-        VortexMaker::RefreshProjectInformations();
-
-        v_ProjectNameInitial = VortexMaker::GetCurrentContext()->name;
-        v_ProjectAuthorInitial = VortexMaker::GetCurrentContext()->author;
-        v_ProjectVersionInitial = VortexMaker::GetCurrentContext()->project_version;
-        v_ProjectDescriptionInitial = VortexMaker::GetCurrentContext()->description;
-
-        *v_ProjectName.get() = v_ProjectNameInitial;
-
-    }
-
-    void ProjectSettingsAppWindow::UpdateProjectInformations()
-    {
-        const std::string name = *v_ProjectName.get();
-        const std::string description = *v_ProjectDescription.get();
-        const std::string version = *v_ProjectVersion.get();
-        const std::string author = *v_ProjectAuthor.get();
-
-        VortexMaker::UpdateProjectName(name);
-        VortexMaker::UpdateProjectDescription(description);
-        VortexMaker::UpdateProjectVersion(version);
-        VortexMaker::UpdateProjectAuthor(author);
-
-        v_ProjectNameInitial = name;
-        v_ProjectDescriptionInitial = description;
-        v_ProjectVersionInitial = version;
-        v_ProjectAuthorInitial = author;
-
-        RefreshProjectInformations();
-    }
-
-    void ProjectSettingsAppWindow::Update()
-    {
-        std::string oldname = VortexMaker::GetCurrentContext()->name;
-
-        std::string vortex_version = VORTEX_VERSION;
-
-        nlohmann::json toolchainData;
-        toolchainData["project"]["name"] = current_save->name;
-        toolchainData["project"]["author"] = current_save->author;
-        toolchainData["project"]["description"] = current_save->description;
-        toolchainData["project"]["compatibleWith"] = vortex_version;
-        toolchainData["project"]["type"] = current_save->type;
-        toolchainData["project"]["version"] = current_save->version;
-        toolchainData["project"]["include_system_templates"] = current_save->include_system_templates;
-
-        std::string path = VortexMaker::GetCurrentContext()->projectPath.string();
-        path += "/vortex.config";
-
-        std::ofstream file(path);
-        if (file.is_open())
-        {
-            file << std::setw(4) << toolchainData << std::endl;
-            VortexMaker::LogInfo("Core", "Object saved to " + path);
-            file.close();
-        }
-        else
-        {
-            VortexMaker::LogError("Core", "Unable to open file " + path + " for writing!");
-        }
-
-        Refresh();
-
-        VortexMaker::UpdateEnvironmentProject(oldname);
-    }
-
+  CherryGUI::EndGroup();
+}
 } // namespace VortexEditor
