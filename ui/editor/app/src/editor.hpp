@@ -3,8 +3,9 @@
 #include "../../../../lib/cherry/cherry.hpp"
 
 // Static windows
-// #include "../core/welcome/welcome.hpp"
+#include "../core/about/about.hpp"
 #include "../core/modules_utility/modules_utility.hpp"
+#include "../core/welcome/welcome.hpp"
 // #include "../core/templates_utility/templates_utility.hpp"
 #include "../core/project_settings/project_settings.hpp"
 
@@ -82,9 +83,16 @@ private:
 class Editor {
 public:
   Editor() {
-    /*m_WelcomeAppWindow =
-            VortexEditor::WelcomeWindow::Create("?loc:loc.window_names.welcome");
-        Cherry::AddAppWindow(m_WelcomeAppWindow->GetAppWindow());*/
+
+    m_AboutWindow =
+        VortexEditor::AboutVortex::Create("?loc:loc.window_names.about");
+    m_AboutWindow->GetAppWindow()->SetVisibility(false);
+    Cherry::AddAppWindow(m_AboutWindow->GetAppWindow());
+
+    m_WelcomeAppWindow =
+        VortexEditor::Welcome::Create("?loc:loc.window_names.welcome");
+    m_WelcomeAppWindow->GetAppWindow()->SetVisibility(true);
+    Cherry::AddAppWindow(m_WelcomeAppWindow->GetAppWindow());
 
     m_ModulesUtility = VortexEditor::ModulesUtility::Create("Modules utily");
     m_ModulesUtility->GetAppWindow()->SetVisibility(false);
@@ -100,6 +108,46 @@ public:
      m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(false);
      Cherry::AddAppWindow(m_TemplatesUtilityAppWindow->GetAppWindow());*/
   };
+
+  bool GetAboutAppWindowVisibility() {
+    return m_AboutWindow->GetAppWindow()->m_Visible;
+  }
+
+  void SetAboutWindowVisibility(const bool &visibility) {
+    m_AboutWindow->GetAppWindow()->SetVisibility(visibility);
+    if (visibility) {
+      Cherry::ApplicationSpecification spec;
+
+      std::string name = "About Vortex";
+      spec.Name = name;
+      spec.MinHeight = 100;
+      spec.MinWidth = 200;
+      spec.Height = 450;
+      spec.DisableLogo = true;
+      spec.DisableResize = true;
+      spec.Width = 750;
+      spec.CustomTitlebar = true;
+      spec.DisableWindowManagerTitleBar = true;
+      spec.WindowOnlyClosable = true;
+      spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+      spec.UniqueAppWindowName = m_AboutWindow->GetAppWindow()->m_Name;
+
+      spec.UsingCloseCallback = true;
+      spec.CloseCallback = [this]() {
+        Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
+
+        // Recreate a new sleepy instance
+        m_AboutWindow =
+            VortexEditor::AboutVortex::Create("?loc:loc.window_names.about");
+        m_AboutWindow->GetAppWindow()->SetVisibility(false);
+        Cherry::AddAppWindow(m_AboutWindow->GetAppWindow());
+      };
+
+      spec.MenubarCallback = []() {};
+      spec.WindowSaves = false;
+      m_AboutWindow->GetAppWindow()->AttachOnNewWindow(spec);
+    }
+  }
 
   void SetTemplatesUtilityVisibility(const bool &visibility) {
     /*m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(visibility);*/
@@ -126,11 +174,11 @@ public:
     return m_ModulesUtility->GetAppWindow()->m_Visible;
   }
 
-  void SetWelcomeWindowVisibility(const bool &visibility) {
+  void SetWelcomeVisibility(const bool &visibility) {
     // m_WelcomeAppWindow->GetAppWindow()->SetVisibility(visibility);
   }
 
-  bool GetWelcomeWindowVisibility() {
+  bool GetWelcomeVisibility() {
     // return m_WelcomeAppWindow->GetAppWindow()->m_Visible;
     return false;
   }
@@ -162,9 +210,10 @@ public:
                Cherry::Application *app);
 
 private:
-  // std::shared_ptr<VortexEditor::WelcomeWindow> m_WelcomeAppWindow;
+  std::shared_ptr<VortexEditor::Welcome> m_WelcomeAppWindow;
   std::shared_ptr<VortexEditor::ModulesUtility> m_ModulesUtility;
   std::shared_ptr<VortexEditor::ProjectSettings> m_ProjectSettings;
+  std::shared_ptr<VortexEditor::AboutVortex> m_AboutWindow;
   // std::shared_ptr<VortexEditor::TemplatesUtilityAppWindow>
   //  m_TemplatesUtilityAppWindow;
 };
