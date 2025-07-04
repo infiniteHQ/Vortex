@@ -535,7 +535,10 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
   ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
 
   {
-    {
+    CherryKit::ButtonImageText(
+        "Search", "resources/imgs/icons/misc/icon_magnifying_glass.png");
+
+    /*{
       static std::shared_ptr<Cherry::ImageTextButtonSimple> btn =
           std::make_shared<Cherry::ImageTextButtonSimple>(
               "LogicContentManager.FindModules.Filter", "Search");
@@ -554,23 +557,12 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
           btn->SetLabel("Stop search");
         }
       }
-    }
+    }*/
 
     {
-      static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn =
-          std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>(
-              "option_buttons",
-              Application::Get().GetLocale(
-                  "loc.window.content.content_browser.options"));
-      btn->SetScale(0.85f);
-      btn->SetInternalMarginX(10.0f);
-      btn->SetLogoSize(15, 15);
-
-      btn->SetDropDownImage(
-          Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
-      btn->SetImagePath(
-          Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"));
-      if (btn->Render("LogicContentManager")) {
+      if (CherryKit::ButtonImageDropdown(
+              "resources/imgs/icons/misc/icon_settings.png")
+              .GetDataAs<bool>("isClicked")) {
         ImVec2 mousePos = ImGui::GetMousePos();
         ImVec2 displaySize = ImGui::GetIO().DisplaySize;
         ImVec2 popupSize(150, 100);
@@ -585,6 +577,39 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
         ImGui::SetNextWindowPos(mousePos);
         ImGui::OpenPopup("OptionMenu");
       }
+
+      /*
+        ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
+        ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);*/
+      /*
+          static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn =
+              std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>(
+                  "option_buttons",
+                  Application::Get().GetLocale(
+                      "loc.window.content.content_browser.options"));
+          btn->SetScale(0.85f);
+          btn->SetInternalMarginX(10.0f);
+          btn->SetLogoSize(15, 15);
+
+          btn->SetDropDownImage(
+              Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
+          btn->SetImagePath(
+              Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"));
+          if (btn->Render("LogicContentManager")) {
+            ImVec2 mousePos = ImGui::GetMousePos();
+            ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+            ImVec2 popupSize(150, 100);
+
+            if (mousePos.x + popupSize.x > displaySize.x) {
+              mousePos.x -= popupSize.x;
+            }
+            if (mousePos.y + popupSize.y > displaySize.y) {
+              mousePos.y -= popupSize.y;
+            }
+
+            ImGui::SetNextWindowPos(mousePos);
+            ImGui::OpenPopup("OptionMenu");
+          }*/
     }
 
     if (ImGui::BeginPopup("OptionMenu")) {
@@ -606,10 +631,8 @@ void ContentBrowserAppWindow::RenderMenubar() {
   ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.5f);
   ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
 
-  if (cp_AddButton->Render()) {
-    ImGui::InsertNotification({ImGuiToastType::Success, 3000,
-                               "That is a success! %s", "(Format here)"});
-  }
+  CherryKit::ButtonTextImage("loc.window.content.content_browser.add",
+                             "resources/imgs/icons/misc/icon_add.png");
 
   ImGui::PopStyleColor();
 
@@ -619,13 +642,12 @@ void ContentBrowserAppWindow::RenderMenubar() {
   ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(62, 62, 62, 0));
 
   ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.5f);
-  if (cp_SaveButton->Render()) {
-    //
-  }
 
-  if (cp_ImportButton->Render()) {
-    //
-  }
+  CherryKit::ButtonTextImage("loc.window.content.content_browser.save",
+                             "resources/imgs/icons/misc/icon_save.png");
+
+  CherryKit::ButtonTextImage("loc.window.content.content_browser.import",
+                             "resources/imgs/icons/misc/icon_import.png");
 
   ImGui::PopStyleColor(4);
   ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1.5f);
@@ -639,15 +661,16 @@ void ContentBrowserAppWindow::RenderMenubar() {
   static bool wasButtonX2Pressed = false;
 
   if (m_BackHistory.empty()) {
-    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath(
-        "resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
-    if (cp_DirectoryUndo->Render("GoBack")) {
+    if (CherryKit::ButtonImage(
+            "resources/imgs/icons/misc/icon_arrow_l_disabled.png")
+            .GetDataAs<bool>("isClicked")) {
       //
     }
   } else {
-    cp_DirectoryUndo->SetImagePath(Application::Get().CookPath(
-        "resources/imgs/icons/misc/icon_arrow_l_enabled.png"));
-    if (cp_DirectoryUndo->Render("GoBack")) {
+
+    if (CherryKit::ButtonImage(
+            "resources/imgs/icons/misc/icon_arrow_l_enabled.png")
+            .GetDataAs<bool>("isClicked")) {
       GoBack();
     }
 
@@ -661,15 +684,16 @@ void ContentBrowserAppWindow::RenderMenubar() {
   }
 
   if (m_ForwardHistory.empty()) {
-    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath(
-        "resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
-    if (cp_DirectoryRedo->Render("GoForward")) {
-      //
+
+    if (CherryKit::ButtonImage(
+            "resources/imgs/icons/misc/icon_arrow_r_disabled.png")
+            .GetDataAs<bool>("isClicked")) {
     }
+
   } else {
-    cp_DirectoryRedo->SetImagePath(Application::Get().CookPath(
-        "resources/imgs/icons/misc/icon_arrow_r_enabled.png"));
-    if (cp_DirectoryRedo->Render("GoForward")) {
+    if (CherryKit::ButtonImage(
+            "resources/imgs/icons/misc/icon_arrow_r_enabled.png")
+            .GetDataAs<bool>("isClicked")) {
       GoForward();
     }
 
@@ -700,63 +724,6 @@ ContentBrowserAppWindow::ContentBrowserAppWindow(
   RefreshCustomFolders();
   RefreshPools();
 
-  cp_SaveButton = Application::Get().CreateComponent<ImageTextButtonSimple>(
-      "save_button",
-      Application::Get().GetLocale("loc.window.content.content_browser.save") +
-          "####content_browser.save_all",
-      Application::CookPath("resources/imgs/icons/misc/icon_save.png"));
-  cp_SaveButton->SetScale(0.85f);
-  cp_SaveButton->SetLogoSize(15, 15);
-  cp_SaveButton->SetBackgroundColorIdle("#00000000");
-  cp_SaveButton->SetBorderColorIdle("#00000000");
-
-  cp_ImportButton = Application::Get().CreateComponent<ImageTextButtonSimple>(
-      "import_button",
-      Application::Get().GetLocale(
-          "loc.window.content.content_browser.import") +
-          "####content_browser.import",
-      Application::CookPath("resources/imgs/icons/misc/icon_import.png"));
-  cp_ImportButton->SetScale(0.85f);
-  cp_ImportButton->SetLogoSize(15, 15);
-  cp_ImportButton->SetBackgroundColorIdle("#00000000");
-  cp_ImportButton->SetBorderColorIdle("#00000000");
-
-  cp_AddButton = Application::Get().CreateComponent<ImageTextButtonSimple>(
-      "add_button",
-      Application::Get().GetLocale("loc.window.content.content_browser.add") +
-          "####content_browser.add",
-      Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
-  cp_AddButton->SetScale(0.85f);
-  cp_AddButton->SetInternalMarginX(10.0f);
-  cp_AddButton->SetLogoSize(15, 15);
-
-  cp_SettingsButton =
-      Application::Get().CreateComponent<CustomDrowpdownImageButtonSimple>(
-          "settings_button",
-          Application::Get().GetLocale(
-              "loc.window.content.content_browser.options") +
-              "####content_browser.settings",
-          Application::CookPath("resources/imgs/icons/misc/icon_add.png"));
-  cp_SettingsButton->SetScale(0.85f);
-  cp_SettingsButton->SetInternalMarginX(10.0f);
-  cp_SettingsButton->SetLogoSize(15, 15);
-
-  cp_DirectoryUndo = Application::Get().CreateComponent<ImageButtonSimple>(
-      "directory_undo",
-      Application::CookPath(
-          "resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
-  cp_DirectoryRedo = Application::Get().CreateComponent<ImageButtonSimple>(
-      "directory_redo",
-      Application::CookPath(
-          "resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
-
-  cp_DirectoryRedo->SetBackgroundColorIdle("#00000000");
-  cp_DirectoryRedo->SetBorderColorIdle("#00000000");
-  cp_DirectoryRedo->SetScale(0.85f);
-
-  cp_DirectoryUndo->SetBackgroundColorIdle("#00000000");
-  cp_DirectoryUndo->SetBorderColorIdle("#00000000");
-  cp_DirectoryUndo->SetScale(0.85f);
   m_AppWindow->SetLeftMenubarCallback([this]() { RenderMenubar(); });
   m_AppWindow->m_Closable = true;
   m_AppWindow->SetCloseCallback(
@@ -968,7 +935,7 @@ bool ContentBrowserAppWindow::ItemCard(
   }
 
   if (ImGui::BeginPopupContextItem("ContextPopup")) {
-    Cherry::MenuItemTextSeparator("Main");
+    CherryKit::SeparatorText("Main");
 
     if (ImGui::MenuItem("Rename", "Ctrl + R")) {
       pathToRename = path;
@@ -1024,7 +991,7 @@ bool ContentBrowserAppWindow::ItemCard(
       }
     }
 
-    Cherry::MenuItemTextSeparator("Customizations");
+    CherryKit::SeparatorText("Customizations");
 
     ImGui::EndPopup();
   }
@@ -1277,21 +1244,20 @@ void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path,
 void ContentBrowserAppWindow::RenderSideBar() {
   const float header_width = c_FilterBarWidth - 32.0f;
 
-  CustomCollapsingHeaderLogo(
+  CherryKit::HeaderImageText(
       "Favorite",
       Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
       [this]() {
         for (auto custom_dir : m_FavoriteFolders) {
           DrawHierarchy(custom_dir, true);
         }
-      },
-      header_width);
+      });
 
-  CustomCollapsingHeaderLogo(
+  CherryKit::HeaderImageText(
       "Main", Application::CookPath("resources/imgs/icons/misc/icon_home.png"),
-      [this]() { DrawHierarchy(m_BaseDirectory, true, "Main"); }, header_width);
+      [this]() { DrawHierarchy(m_BaseDirectory, true, "Main"); });
 
-  CustomCollapsingHeaderLogo(
+  CherryKit::HeaderImageText(
       "Pools & Collections",
       Application::CookPath("resources/imgs/icons/misc/icon_collection.png"),
       [this]() {
@@ -1342,12 +1308,11 @@ void ContentBrowserAppWindow::RenderSideBar() {
 
         ImGui::PopStyleVar();
         ImGui::PopStyleColor();
-      },
-      header_width);
+      });
 }
 
 void ContentBrowserAppWindow::RenderFiltersBar() {
-  CustomCollapsingHeaderLogo(
+  CherryKit::HeaderImageText(
       "Favorite",
       Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
       [this]() {
@@ -1376,29 +1341,11 @@ void ContentBrowserAppWindow::RenderContentBar() {
     columnCount = 1;
 
   if (m_SearchBar) {
-    {
-      static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn =
-          std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>(
-              "LogicContentManager.FindModules.Filter", "####filder");
-      btn->SetScale(0.85f);
-      btn->SetInternalMarginX(10.0f);
-      btn->SetLogoSize(15, 15);
 
-      btn->SetDropDownImage(
-          Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
-      btn->SetImagePath(
-          Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"));
-      if (btn->Render("LogicContentManager")) {
-        ImVec2 mousePos = ImGui::GetMousePos();
-        ImGui::SetNextWindowPos(mousePos);
-        ImGui::OpenPopup("ContextMenu");
-      }
+    CherryKit::ButtonImageDropdown(
+        Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"),
+        []() { ImGui::Text("SearchFilters"); });
 
-      if (ImGui::BeginPopup("ContextMenu")) {
-        ImGui::Text("SearchFilters");
-        ImGui::EndPopup();
-      }
-    }
     ImGui::SameLine();
     ImGui::SetNextItemWidth(500.0f);
     ImGui::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#222222FF"));
@@ -1474,7 +1421,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
       ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
 
-      Cherry::MenuItemTextSeparator("Add");
+      CherryKit::SeparatorText("Add");
       if (ImGui::MenuItem("Add", "Add a component",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_add.png")),
@@ -1486,7 +1433,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
                           NULL)) {
       }
 
-      Cherry::MenuItemTextSeparator("Create");
+      CherryKit::SeparatorText("Create");
       if (ImGui::MenuItem("Create new folder", "Create a folder here",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_wadd.png")),
@@ -1498,7 +1445,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
                           NULL)) {
       }
 
-      Cherry::MenuItemTextSeparator("Actions");
+      CherryKit::SeparatorText("Actions");
 
       if (ImGui::MenuItem("Paste selection", "Paste selection here",
                           Cherry::GetTexture(Cherry::GetPath(

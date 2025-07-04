@@ -355,8 +355,6 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     modules->RefreshMainWindow();
   }
 
-  std::cout << "Starting editor...2" << std::endl;
-  std::cout << "Starting editor...23" << std::endl;
   app->SetFramebarCallback([app, layer]() {
     float oldSize = CherryGUI::GetFont()->Scale;
     CherryGUI::PushFont(CherryGUI::GetFont());
@@ -468,7 +466,6 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     CherryGUI::PopFont();
   });
 
-  std::cout << "Starting editor...3" << std::endl;
   app->SetMenubarCallback([app, layer]() {
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
     ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
@@ -671,9 +668,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
   );
 
-  std::cout << "Starting editor...3" << std::endl;
   c_Editor = std::make_shared<Editor>();
-  std::cout << "Starting editor...3dd" << std::endl;
   return app;
 }
 

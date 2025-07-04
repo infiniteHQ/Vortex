@@ -19,12 +19,9 @@
 namespace VortexEditor {
 
 Welcome::Welcome(const std::string &name) {
-  std::cout << "sklaJFHGG" << std::endl;
   m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
-  std::cout << "Starting editor...sdfh" << std::endl;
   m_AppWindow->SetIcon(
       Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
-  std::cout << "Starting editor...3ggk" << std::endl;
 
   m_AppWindow->SetClosable(true);
   m_AppWindow->m_CloseCallback = [=]() { m_AppWindow->SetVisibility(false); };
@@ -34,7 +31,6 @@ Welcome::Welcome(const std::string &name) {
 
   m_SelectedChildName = "Project's modules";
 
-  std::cout << "Starting editor...3gg ook" << std::endl;
   this->AddChild(WelcomeChild(
       "Installed modules",
       [this]() {
@@ -74,8 +70,6 @@ Welcome::Welcome(const std::string &name) {
         }
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_help.png")));
-  std::cout << "Starting editor...3ggk" << std::endl;
-  std::cout << "Starting editor...EEE" << std::endl;
 }
 
 std::vector<std::shared_ptr<EnvProject>> Welcome::GetMostRecentProjects(
@@ -109,25 +103,18 @@ std::shared_ptr<Cherry::AppWindow> &Welcome::GetAppWindow() {
 }
 
 std::shared_ptr<Welcome> Welcome::Create(const std::string &name) {
-  std::cout << "Starting editor...3ggkh" << std::endl;
   auto instance = std::shared_ptr<Welcome>(new Welcome(name));
-  std::cout << "Starting editor...5439867S" << std::endl;
   instance->SetupRenderCallback();
-  std::cout << "Starting editor...3ggkj" << std::endl;
   return instance;
 }
 
 void Welcome::SetupRenderCallback() {
-  std::cout << "Starting editor...3ggkj" << std::endl;
   auto self = shared_from_this();
-  std::cout << "Starting editor...3ggkj" << std::endl;
-  std::cout << "Starting editor...wt" << m_AppWindow << std::endl;
   m_AppWindow->SetRenderCallback([self]() {
     if (self) {
       self->Render();
     }
   });
-  std::cout << "Starting editor...g" << std::endl;
 }
 
 WelcomeChild *Welcome::GetChild(const std::string &child_name) {
@@ -142,7 +129,6 @@ WelcomeChild *Welcome::GetChild(const std::string &child_name) {
 }
 
 void Welcome::Render() {
-  std::cout << "SAGj" << std::endl;
   const float minPaneWidth = 50.0f;
   const float splitterWidth = 1.5f;
 

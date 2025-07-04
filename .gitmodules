@@ -10,6 +10,3 @@
 [submodule "tests/project"]
 	path = tests/project
 	url = https://github.com/infiniteHQ/VortexProjectSample
-[submodule "lib/dilog"]
-	path = lib/dilog
-	url = https://github.com/diegomrno/dilog

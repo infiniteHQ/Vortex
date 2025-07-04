@@ -11,18 +11,18 @@
 
 // Instanciable windows
 // #include "../instances/instance.h"
-// #include "../instances/content_browser/content_browser.hpp"
-// #include "../instances/logs_utility/logs_utility.hpp"
+#include "../instances/content_browser/content_browser.hpp"
+#include "../instances/logs_utility/logs_utility.hpp"
 
 using namespace VortexMaker;
 
 #ifndef EDITOR_H
 #define EDITOR_H
 
-// static
-// std::vector<std::shared_ptr<VortexEditor::ContentBrowserAppWindow>>c_ContentBrowserInstances;
-// static
-// std::vector<std::shared_ptr<VortexEditor::LogsUtilityAppWindow>>c_LogsUtilityInstances;
+static std::vector<std::shared_ptr<VortexEditor::ContentBrowserAppWindow>>
+    c_ContentBrowserInstances;
+static std::vector<std::shared_ptr<VortexEditor::LogsUtilityAppWindow>>
+    c_LogsUtilityInstances;
 
 class EditorLayer : public Cherry::Layer {
 public:
@@ -184,7 +184,7 @@ public:
   }
 
   void SpawnContentBrowser() {
-    /*std::string label = "Content Browser ####Content Browser-" +
+    std::string label = "Content Browser ####Content Browser-" +
                         std::to_string(c_ContentBrowserInstances.size() + 1);
     std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser =
         VortexEditor::ContentBrowserAppWindow::Create(
@@ -194,16 +194,16 @@ public:
     ContentBrowser->m_PastePathsCallback = VortexMaker::PasteAllSelections;
     ContentBrowser->m_DeletePathCallback = VortexMaker::DeletePath;
     Cherry::AddAppWindow(ContentBrowser->GetAppWindow());
-    c_ContentBrowserInstances.push_back(ContentBrowser);*/
+    c_ContentBrowserInstances.push_back(ContentBrowser);
   }
 
   void SpawnLogsUtility() {
-    /*std::string label = "Logs utility ####Logs utility-" +
+    std::string label = "Logs utility ####Logs utility-" +
                         std::to_string(c_LogsUtilityInstances.size() + 1);
     std::shared_ptr<VortexEditor::LogsUtilityAppWindow> LogsUtility =
         VortexEditor::LogsUtilityAppWindow::Create(label.c_str());
     Cherry::AddAppWindow(LogsUtility->GetAppWindow());
-    c_LogsUtilityInstances.push_back(LogsUtility);*/
+    c_LogsUtilityInstances.push_back(LogsUtility);
   }
 
   void Menubar(const std::shared_ptr<EditorLayer> &exampleLayer,
