@@ -70,7 +70,6 @@ namespace fs = std::filesystem;
 
 #define CHERRY_V1
 #include "../../lib/cherry/cherry.hpp"
-#include "../../lib/dilog/dilog.h"
 #include "../../lib/json/single_include/nlohmann/json.hpp"
 #include "../../lib/spdlog/include/spdlog/sinks/basic_file_sink.h"
 #include "../../lib/spdlog/include/spdlog/sinks/daily_file_sink.h"
