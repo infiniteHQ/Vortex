@@ -28,8 +28,6 @@ VortexMaker::CreateLogPool(const std::string &pool_name) {
 VORTEX_API std::shared_ptr<spdlog::logger> VortexMaker::CreateGlobalLogger() {
   VxContext &ctx = *CVortexMaker;
 
-  dilog_init();
-
 #if defined(_WIN32) || defined(_WIN64)
   std::string file_path = VortexMaker::getHomeDirectory() +
                           "\\.vx\\sessions\\" + ctx.state.session_id +
@@ -61,7 +59,6 @@ VORTEX_API void VortexMaker::LogInfo(const std::string &pool_name,
       if (pool.first == pool_name) {
         finded = true;
 
-        dilog(message.c_str());
         // Ajout du nom du thread au message pour le logger global
         ctx.global_logger->info("[{}] {}", pool_name,
                                 "[" + scope + "] : " + message);
@@ -112,9 +109,9 @@ VORTEX_API void VortexMaker::LogInfo(const std::string &scope,
   VxContext &ctx = *CVortexMaker;
   if (ctx.logger) {
 
-    // ctx.global_logger->info("[{}] {}", "global", "[" + scope + "] : " +
-    // message); ctx.console_logger->info("[" + scope + "] : " + message);
-    dilog(message.c_str());
+    ctx.global_logger->info("[{}] {}", "global",
+                            "[" + scope + "] : " + message);
+    ctx.console_logger->info("[" + scope + "] : " + message);
 
     if (ctx.logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(
