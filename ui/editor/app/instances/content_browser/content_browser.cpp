@@ -533,6 +533,9 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
   ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
 
   {
+    CherryNextComponent.SetProperty("padding_y", "6.0f");
+    CherryNextComponent.SetProperty("padding_x", "10.0f");
+
     CherryKit::ButtonImageText(
         "Search",
         GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
@@ -559,7 +562,11 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
     }*/
 
     {
-      if (CherryKit::ButtonImageDropdown(
+      CherryNextComponent.SetProperty("padding_y", "6.0f");
+      CherryNextComponent.SetProperty("padding_x", "10.0f");
+
+      if (CherryKit::ButtonImageTextDropdown(
+              "Settings",
               GetPath("resources/imgs/icons/misc/icon_settings.png"))
               .GetDataAs<bool>("isClicked")) {
         ImVec2 mousePos = ImGui::GetMousePos();
@@ -577,6 +584,26 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
         ImGui::OpenPopup("OptionMenu");
       }
 
+      CherryNextComponent.SetProperty("padding_y", "6.0f");
+      CherryNextComponent.SetProperty("padding_x", "10.0f");
+
+      if (CherryKit::ButtonImageTextDropdown(
+              "View", GetPath("resources/imgs/icons/misc/icon_eye.png"))
+              .GetDataAs<bool>("isClicked")) {
+        ImVec2 mousePos = ImGui::GetMousePos();
+        ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+        ImVec2 popupSize(150, 100);
+
+        if (mousePos.x + popupSize.x > displaySize.x) {
+          mousePos.x -= popupSize.x;
+        }
+        if (mousePos.y + popupSize.y > displaySize.y) {
+          mousePos.y -= popupSize.y;
+        }
+
+        ImGui::SetNextWindowPos(mousePos);
+        ImGui::OpenPopup("OptionMenu");
+      }
       /*
         ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
         ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);*/
