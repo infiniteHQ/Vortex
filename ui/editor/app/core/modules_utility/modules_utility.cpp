@@ -468,7 +468,7 @@ void ModulesUtility::Render() {
   CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0.0f, 0.0f));
   CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
   CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
-  CherryGUI::BeginChild(label.c_str(), ImVec2(leftPaneWidth, 0), true, NULL);
+  CherryGUI::BeginChild(label.c_str(), ImVec2(leftPaneWidth, 0), true, 0);
 
   CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
   CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 5.0f);

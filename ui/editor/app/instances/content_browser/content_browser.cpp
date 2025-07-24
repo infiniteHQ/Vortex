@@ -441,7 +441,7 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
   std::string homePath = VortexMaker::GetCurrentContext()->projectPath;
   bool FirstPathPartIsHome = false;
   std::string displayPath = path;
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.25f);
+  ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
 
   // Check if the beginning of the path matches homePath
   if (path.rfind(homePath, 0) == 0) {
@@ -530,13 +530,12 @@ void ContentBrowserAppWindow::RefreshPools() {
 }
 
 void ContentBrowserAppWindow::RenderRightMenubar() {
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3.5f);
-
   ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
 
   {
     CherryKit::ButtonImageText(
-        "Search", "resources/imgs/icons/misc/icon_magnifying_glass.png");
+        "Search",
+        GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
 
     /*{
       static std::shared_ptr<Cherry::ImageTextButtonSimple> btn =
@@ -561,7 +560,7 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
 
     {
       if (CherryKit::ButtonImageDropdown(
-              "resources/imgs/icons/misc/icon_settings.png")
+              GetPath("resources/imgs/icons/misc/icon_settings.png"))
               .GetDataAs<bool>("isClicked")) {
         ImVec2 mousePos = ImGui::GetMousePos();
         ImVec2 displaySize = ImGui::GetIO().DisplaySize;
@@ -627,30 +626,30 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
 }
 
 void ContentBrowserAppWindow::RenderMenubar() {
+
   ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 3.0f);
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.5f);
-  ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
+  CherryNextComponent.SetProperty("padding_y", "6.0f");
+  CherryNextComponent.SetProperty("padding_x", "10.0f");
 
-  CherryKit::ButtonTextImage("loc.window.content.content_browser.add",
-                             "resources/imgs/icons/misc/icon_add.png");
+  CherryKit::ButtonImageText(
+      GetLocale("loc.window.content.content_browser.add"),
+      GetPath("resources/imgs/icons/misc/icon_add.png"));
 
-  ImGui::PopStyleColor();
+  CherryNextComponent.SetProperty("color_border", "#00000000");
+  CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+  CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+  CherryNextComponent.SetProperty("padding_y", "6.0f");
+  CherryKit::ButtonImageText(
+      GetLocale("loc.window.content.content_browser.save"),
+      GetPath("resources/imgs/icons/misc/icon_save.png"));
 
-  ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(62, 62, 62, 0));
-  ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(62, 62, 62, 0));
-  ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(62, 62, 62, 0));
-  ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(62, 62, 62, 0));
-
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.5f);
-
-  CherryKit::ButtonTextImage("loc.window.content.content_browser.save",
-                             "resources/imgs/icons/misc/icon_save.png");
-
-  CherryKit::ButtonTextImage("loc.window.content.content_browser.import",
-                             "resources/imgs/icons/misc/icon_import.png");
-
-  ImGui::PopStyleColor(4);
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1.5f);
+  CherryNextComponent.SetProperty("color_border", "#00000000");
+  CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+  CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+  CherryNextComponent.SetProperty("padding_y", "6.0f");
+  CherryKit::ButtonImageText(
+      GetLocale("loc.window.content.content_browser.import"),
+      GetPath("resources/imgs/icons/misc/icon_import.png"));
 
   ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
   ImGui::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444AA"));
@@ -660,39 +659,58 @@ void ContentBrowserAppWindow::RenderMenubar() {
   static bool wasButtonX1Pressed = false;
   static bool wasButtonX2Pressed = false;
 
+  ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
   if (m_BackHistory.empty()) {
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    CherryNextComponent.SetProperty("size_x", "15.0f");
+    CherryNextComponent.SetProperty("size_y", "15.0f");
     if (CherryKit::ButtonImage(
-            "resources/imgs/icons/misc/icon_arrow_l_disabled.png")
+            GetPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"))
             .GetDataAs<bool>("isClicked")) {
       //
     }
   } else {
 
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    CherryNextComponent.SetProperty("size_x", "15.0f");
+    CherryNextComponent.SetProperty("size_y", "15.0f");
     if (CherryKit::ButtonImage(
-            "resources/imgs/icons/misc/icon_arrow_l_enabled.png")
+            GetPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"))
             .GetDataAs<bool>("isClicked")) {
       GoBack();
     }
 
     Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
-
     bool isButtonX1Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X1);
     if (isButtonX1Pressed && !wasButtonX1Pressed) {
       GoBack();
     }
-    wasButtonX1Pressed = isButtonX1Pressed;
+    wasButtonX2Pressed = isButtonX1Pressed;
   }
 
   if (m_ForwardHistory.empty()) {
-
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    CherryNextComponent.SetProperty("size_x", "15.0f");
+    CherryNextComponent.SetProperty("size_y", "15.0f");
     if (CherryKit::ButtonImage(
-            "resources/imgs/icons/misc/icon_arrow_r_disabled.png")
+            GetPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"))
             .GetDataAs<bool>("isClicked")) {
     }
 
   } else {
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    CherryNextComponent.SetProperty("size_x", "15.0f");
+    CherryNextComponent.SetProperty("size_y", "15.0f");
     if (CherryKit::ButtonImage(
-            "resources/imgs/icons/misc/icon_arrow_r_enabled.png")
+            GetPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"))
             .GetDataAs<bool>("isClicked")) {
       GoForward();
     }
@@ -705,6 +723,7 @@ void ContentBrowserAppWindow::RenderMenubar() {
     wasButtonX2Pressed = isButtonX2Pressed;
   }
 
+  ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1.5f);
   ImGui::PopStyleVar();
 
   ImGui::Separator();
@@ -778,6 +797,15 @@ ContentBrowserAppWindow::ContentBrowserAppWindow(
 
 void ContentBrowserAppWindow::AddChild(const ContentBrowserChild &child) {
   m_Childs.push_back(child);
+}
+
+void ContentBrowserAppWindow::FolderButton(const char *id, ImVec2 size,
+                                           ImU32 color,
+                                           const std::string &path) {
+  if (CherryKit::WidgetFolder("#c2a24c", size.x, size.y - 2)
+          .GetData("isDoubleClicked") == "true") {
+    ChangeDirectory(path);
+  }
 }
 
 void ContentBrowserAppWindow::GoBack() {
@@ -884,7 +912,7 @@ bool ContentBrowserAppWindow::ItemCard(
     ImGui::SetNextWindowSize(ImVec2(300, 200));
 
     static ImGuiTableFlags window_flags = ImGuiWindowFlags_NoResize;
-    if (ImGui::BeginPopupModal("Delete file(s)", NULL, window_flags)) {
+    if (ImGui::BeginPopupModal("Delete file(s)", 0, window_flags)) {
       static char path_input_all[512];
 
       if (delete_single_file) {
@@ -1242,21 +1270,42 @@ void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path,
 }
 
 void ContentBrowserAppWindow::RenderSideBar() {
-  const float header_width = c_FilterBarWidth - 32.0f;
+  const float header_width = c_FilterBarWidth - 46.0f;
 
+  CherryStyle::RemoveMarginX(6.0f);
+  CherryNextComponent.SetProperty("size_x", header_width);
+  CherryNextComponent.SetProperty("size_y", 4.0f);
+  CherryNextComponent.SetProperty("color_border", "#343434");
+  CherryNextComponent.SetProperty("color_bg", "#232323");
+  CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
+  CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
   CherryKit::HeaderImageText(
       "Favorite",
-      Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
+      Cherry::Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
       [this]() {
         for (auto custom_dir : m_FavoriteFolders) {
           DrawHierarchy(custom_dir, true);
         }
       });
 
+  CherryStyle::RemoveMarginX(6.0f);
+  CherryNextComponent.SetProperty("size_x", header_width);
+  CherryNextComponent.SetProperty("size_y", 4.0f);
+  CherryNextComponent.SetProperty("color_border", "#343434");
+  CherryNextComponent.SetProperty("color_bg", "#232323");
+  CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
+  CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
   CherryKit::HeaderImageText(
       "Main", Application::CookPath("resources/imgs/icons/misc/icon_home.png"),
       [this]() { DrawHierarchy(m_BaseDirectory, true, "Main"); });
 
+  CherryStyle::RemoveMarginX(6.0f);
+  CherryNextComponent.SetProperty("size_x", header_width);
+  CherryNextComponent.SetProperty("size_y", 4.0f);
+  CherryNextComponent.SetProperty("color_border", "#343434");
+  CherryNextComponent.SetProperty("color_bg", "#232323");
+  CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
+  CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
   CherryKit::HeaderImageText(
       "Pools & Collections",
       Application::CookPath("resources/imgs/icons/misc/icon_collection.png"),
@@ -1312,7 +1361,7 @@ void ContentBrowserAppWindow::RenderSideBar() {
 }
 
 void ContentBrowserAppWindow::RenderFiltersBar() {
-  CherryKit::HeaderImageText(
+  CherryKit::HeaderImageTextButton(
       "Favorite",
       Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
       [this]() {
@@ -1504,13 +1553,12 @@ void ContentBrowserAppWindow::RenderContentBar() {
         ImVec2 folderSize(reducedThumbnailSize, reducedThumbnailSize);
 
         if (current_editing_folder.first == path.string()) {
-          MyFolderButton("folder_icon", folderSize,
-                         current_editing_folder.second, path.string());
+          FolderButton("folder_icon", folderSize, current_editing_folder.second,
+                       path.string());
         } else {
-          MyFolderButton(
-              "folder_icon", folderSize,
-              HexToImU32(GetContentBrowserFolderColor(path.string())),
-              path.string());
+          FolderButton("folder_icon", folderSize,
+                       HexToImU32(GetContentBrowserFolderColor(path.string())),
+                       path.string());
         }
 
         float oldsize = ImGui::GetFont()->Scale;
@@ -1908,8 +1956,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
           }
 
           if (m_Selected.size() > 0) {
-            std::string label =
-                "Copy in addition (" + m_Selected.size() + ' copies)';
+            std::string label = "Copy in addition (" +
+                                std::to_string(m_Selected.size()) + " copies)";
             if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
               if (m_CopyPathsCallback) {
                 m_CopyPathsCallback(m_Selected, true);
@@ -2291,8 +2339,9 @@ void ContentBrowserAppWindow::RenderContentBar() {
             }
 
             if (m_Selected.size() > 0) {
-              std::string label =
-                  "Copy in addition (" + m_Selected.size() + ' copies)';
+              std::string label = "Copy in addition (" +
+                                  std::to_string(m_Selected.size()) +
+                                  " copies)";
               if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
                 m_Selected.clear();
                 ImGui::CloseCurrentPopup();
@@ -2498,9 +2547,13 @@ void ContentBrowserAppWindow::Render() {
         std::string lab =
             child.m_Name + m_AppWindow->m_Name + "####" + child.m_Name;
 
+        CherryStyle::RemoveMarginX(5.0f);
+
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
         ImGui::Button(lab.c_str(), ImVec2(splitterWidth, -1));
         ImGui::PopStyleColor();
+
+        CherryStyle::RemoveMarginX(5.0f);
 
         if (ImGui::IsItemHovered()) {
           ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);

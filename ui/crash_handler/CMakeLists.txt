@@ -47,9 +47,16 @@ file(GLOB_RECURSE ASSET_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/assets/*"
 )
 
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/remove_resources_if_exists.cmake
+"if(EXISTS \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ch_resources\")\n"
+"    file(REMOVE_RECURSE \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ch_resources\")\n"
+"endif()\n"
+)
+
 add_custom_target(sync_assets ALL
     COMMAND ${CMAKE_COMMAND} -E echo "Synchronizing assets..."
-    COMMAND ${CMAKE_COMMAND} -E rm -r -f ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/remove_resources_if_exists.cmake
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/assets
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/
