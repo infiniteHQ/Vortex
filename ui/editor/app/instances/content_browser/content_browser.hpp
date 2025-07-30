@@ -246,6 +246,7 @@ private:
   bool m_ShowTypes = false;
   bool m_ShowSizes = false;
 
+  bool m_WillShowFilterPannel = false;
   bool m_ShowFilterPannel = false;
   bool m_ShowThumbnailVisualizer = false;
   bool m_PreviousFilterPannelState = false;

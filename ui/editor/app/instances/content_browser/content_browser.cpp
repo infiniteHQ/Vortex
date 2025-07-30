@@ -22,8 +22,10 @@ static bool pool_add_mode = false;
 static char pool_add_path[512];
 static char pool_add_name[512];
 
+static bool ShowViewModal = false;
+
 static std::string _parent;
-static char ProjectSearch[256];
+static std::string ProjectSearch;
 static float threshold = 0.4;
 
 static ImU32 folder_color = IM_COL32(150, 128, 50, 255);
@@ -128,7 +130,7 @@ static bool areStringsSimilar(const std::string &s1, const std::string &s2,
   int maxLength = std::max(lower_s1.size(), lower_s2.size());
   double similarity = 1.0 - (static_cast<double>(dist) / maxLength);
 
-  if (std::strlen(ProjectSearch) < 5) {
+  if (std::strlen(ProjectSearch.c_str()) < 5) {
     return similarity >= threshold || hasCommonLetters(lower_s1, lower_s2);
   }
 
@@ -435,15 +437,12 @@ FileTypes detect_file(const std::string &path) {
 
 static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>>
     recognized_modules_items;
+
 void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
-  // ImGui::Image(Cherry::GetTexture(Cherry::GetPath("resources/imgs/icon_vortex.png")),
-  // ImVec2(20, 20));
   std::string homePath = VortexMaker::GetCurrentContext()->projectPath;
   bool FirstPathPartIsHome = false;
   std::string displayPath = path;
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
 
-  // Check if the beginning of the path matches homePath
   if (path.rfind(homePath, 0) == 0) {
     FirstPathPartIsHome = true;
     displayPath = path.substr(homePath.length());
@@ -453,50 +452,82 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
     }
   }
 
-  ImVec2 contentSize(ImGui::CalcTextSize(displayPath.c_str()).x + 70.0f, 0);
-  ImGui::BeginChild("PathBar", ImVec2(contentSize.x, 0),
-                    ImGuiWindowFlags_NoScrollbar);
-
 #ifdef _WIN32
-  const char separator = '\\';
+  const std::string separator = "\\";
+  const char separator_c = '\\';
 #else
-  const char separator = '/';
+  const std::string separator = "/";
+  const char separator_c = '/';
 #endif
 
   std::vector<std::string> elements;
   std::stringstream ss(displayPath);
   std::string segment;
-
-  while (std::getline(ss, segment, separator)) {
-    elements.push_back(segment);
+  while (std::getline(ss, segment, separator_c)) {
+    if (!segment.empty())
+      elements.push_back(segment);
   }
 
+  float availableWidth = ImGui::GetContentRegionAvail().x;
+  float synthStart = 0.6f;
+  float maxWidth = std::max(availableWidth * synthStart, 100.0f);
+
+  float totalWidth = 0.0f;
+  const float sepWidth = ImGui::CalcTextSize("/").x;
+  const float ellipsisWidth = ImGui::CalcTextSize("...").x;
+
+  std::vector<float> widths;
+  for (const auto &el : elements)
+    widths.push_back(ImGui::CalcTextSize(el.c_str()).x);
+
+  for (float w : widths)
+    totalWidth += w + sepWidth;
+
+  std::vector<std::string> displayElements;
+
+  if (totalWidth > maxWidth && elements.size() > 4) {
+    displayElements.push_back(elements[0]);
+    displayElements.push_back("...");
+    for (int i = (int)elements.size() - 3; i < (int)elements.size(); ++i)
+      displayElements.push_back(elements[i]);
+  } else {
+    displayElements = elements;
+  }
+
+  CherryStyle::AddMarginX(5.0f);
   if (FirstPathPartIsHome) {
+    CherryStyle::AddMarginY(8.0f);
     ImGui::Image(Cherry::GetTexture(Cherry::GetPath(
                      "resources/imgs/icons/misc/icon_home.png")),
                  ImVec2(15.0f, 15.0f));
-    ImGui::SameLine();
+    CherryStyle::RemoveMarginY(11.0f);
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-    ImGui::TextUnformatted("/");
+    ImGui::TextUnformatted(separator.c_str());
     ImGui::PopStyleColor();
+    CherryStyle::AddMarginY(11.0f);
     if (!elements.empty()) {
-      ImGui::SameLine();
     }
+    CherryStyle::RemoveMarginY(8.0f);
   }
 
-  for (size_t i = 0; i < elements.size(); ++i) {
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s",
-                       elements[i].c_str());
-    if (i < elements.size() - 1) {
-      ImGui::SameLine();
-      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-      ImGui::TextUnformatted("/");
+  for (size_t i = 0; i < displayElements.size(); ++i) {
+    const std::string &el = displayElements[i];
+    CherryNextComponent.SetProperty("padding_y", "0.0f");
+    CherryNextComponent.SetProperty("padding_x", "0.0f");
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryStyle::AddMarginY(8.0f);
+    CherryKit::ButtonText(el);
+    CherryStyle::RemoveMarginY(8.0f);
+
+    CherryStyle::RemoveMarginY(3.0f);
+    if (i < displayElements.size() - 1) {
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1));
+      ImGui::TextUnformatted(separator.c_str());
       ImGui::PopStyleColor();
-      ImGui::SameLine();
     }
+    CherryStyle::AddMarginY(3.0f);
   }
-
-  ImGui::EndChild();
+  CherryStyle::AddMarginY(2.0f);
 }
 
 void ContentBrowserAppWindow::RefreshCustomFolders() {
@@ -536,9 +567,12 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     CherryNextComponent.SetProperty("padding_x", "10.0f");
 
-    CherryKit::ButtonImageText(
-        "Search",
-        GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
+    if (CherryKit::ButtonImageText(
+            "Search",
+            GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"))
+            .GetDataAs<bool>("isClicked")) {
+      m_SearchBar = !m_SearchBar;
+    }
 
     /*{
       static std::shared_ptr<Cherry::ImageTextButtonSimple> btn =
@@ -564,13 +598,13 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
     {
       CherryNextComponent.SetProperty("padding_y", "6.0f");
       CherryNextComponent.SetProperty("padding_x", "10.0f");
-
+      CherryNextComponent.SetProperty("disable_callback", "true");
       if (CherryKit::ButtonImageTextDropdown(
               "Settings",
               GetPath("resources/imgs/icons/misc/icon_settings.png"))
               .GetDataAs<bool>("isClicked")) {
-        ImVec2 mousePos = ImGui::GetMousePos();
-        ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+        ImVec2 mousePos = CherryGUI::GetMousePos();
+        ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
         ImVec2 popupSize(150, 100);
 
         if (mousePos.x + popupSize.x > displaySize.x) {
@@ -580,19 +614,24 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
           mousePos.y -= popupSize.y;
         }
 
-        ImGui::SetNextWindowPos(mousePos);
-        ImGui::OpenPopup("OptionMenu");
+        CherryGUI::SetNextWindowSize(ImVec2(150, 100), ImGuiCond_Appearing);
+        CherryGUI::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
+        CherryGUI::OpenPopup("SettingsMenuPopup");
+      }
+      if (CherryGUI::BeginPopup("SettingsMenuPopup")) {
+        CherryKit::CheckboxText("Show SSET pannel", &m_ShowFilterPannel);
+        CherryGUI::EndPopup();
       }
 
       CherryNextComponent.SetProperty("padding_y", "6.0f");
       CherryNextComponent.SetProperty("padding_x", "10.0f");
-
+      CherryNextComponent.SetProperty("disable_callback", "true");
       if (CherryKit::ButtonImageTextDropdown(
               "View", GetPath("resources/imgs/icons/misc/icon_eye.png"))
               .GetDataAs<bool>("isClicked")) {
-        ImVec2 mousePos = ImGui::GetMousePos();
-        ImVec2 displaySize = ImGui::GetIO().DisplaySize;
-        ImVec2 popupSize(150, 100);
+        ImVec2 mousePos = CherryGUI::GetMousePos();
+        ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
+        ImVec2 popupSize(200, 100);
 
         if (mousePos.x + popupSize.x > displaySize.x) {
           mousePos.x -= popupSize.x;
@@ -601,60 +640,75 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
           mousePos.y -= popupSize.y;
         }
 
-        ImGui::SetNextWindowPos(mousePos);
-        ImGui::OpenPopup("OptionMenu");
+        CherryGUI::SetNextWindowSize(ImVec2(200, 100), ImGuiCond_Appearing);
+        CherryGUI::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
+        CherryGUI::OpenPopup("ViewMenuPopup");
       }
-      /*
-        ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
-        ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);*/
-      /*
-          static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn =
-              std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>(
-                  "option_buttons",
-                  Application::Get().GetLocale(
-                      "loc.window.content.content_browser.options"));
-          btn->SetScale(0.85f);
-          btn->SetInternalMarginX(10.0f);
-          btn->SetLogoSize(15, 15);
+      ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // TODO : Props
+      ImVec4 graySeparatorColor =
+          ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // TODO : Props
+      ImVec4 darkBackgroundColor =
+          ImVec4(0.15f, 0.15f, 0.15f, 1.0f);                    // TODO : Props
+      ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // TODO : Props
 
-          btn->SetDropDownImage(
-              Application::CookPath("resources/imgs/icons/misc/icon_down.png"));
-          btn->SetImagePath(
-              Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"));
-          if (btn->Render("LogicContentManager")) {
-            ImVec2 mousePos = ImGui::GetMousePos();
-            ImVec2 displaySize = ImGui::GetIO().DisplaySize;
-            ImVec2 popupSize(150, 100);
+      CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+      CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+      CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 
-            if (mousePos.x + popupSize.x > displaySize.x) {
-              mousePos.x -= popupSize.x;
-            }
-            if (mousePos.y + popupSize.y > displaySize.y) {
-              mousePos.y -= popupSize.y;
-            }
+      if (m_WillShowFilterPannel != m_ShowFilterPannel) {
+        m_ShowFilterPannel = m_WillShowFilterPannel;
+      }
 
-            ImGui::SetNextWindowPos(mousePos);
-            ImGui::OpenPopup("OptionMenu");
-          }*/
-    }
+      if (CherryGUI::BeginPopup("ViewMenuPopup")) {
+        CherryKit::SeparatorText("Pannels");
+        CherryKit::CheckboxText("Show Filter pannel", &m_ShowFilterPannel);
+        CherryKit::CheckboxText("Show Thumbnail pannel",
+                                &m_ShowThumbnailVisualizer);
+        CherryKit::SeparatorText("Content bar view");
 
-    if (ImGui::BeginPopup("OptionMenu")) {
-      ImGui::Checkbox("Show Filter pannel", &m_ShowFilterPannel);
-      ImGui::Checkbox("Show Thumbnail pannel", &m_ShowThumbnailVisualizer);
+        switch (
+            CherryKit::ComboImageText(
+                "Display",
+                {{"Thumbnails",
+                  GetPath("resources/imgs/icons/misc/icon_eye.png")},
+                 {"List", GetPath("resources/imgs/icons/misc/icon_eye.png")}},
+                0)
+                .GetPropertyAs<int>("selected")) {
+        case 0: {
+          m_ShowMode = ContentShowMode::Thumbmails;
+          break;
+        }
+        case 1: {
+          m_ShowMode = ContentShowMode::Columns;
+          break;
+        }
+        default: {
+          m_ShowMode = ContentShowMode::Thumbmails;
+          break;
+        }
+        }
 
-      ImGui::EndPopup();
+        CherryGUI::EndPopup();
+      }
+
+      if (m_WillShowFilterPannel != m_ShowFilterPannel) {
+        m_WillShowFilterPannel = m_ShowFilterPannel;
+      }
+
+      CherryGUI::PopStyleVar();
+      CherryGUI::PopStyleColor(2);
     }
   }
 
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3.0f);
+  CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 3.0f);
 
-  ImGui::PopStyleColor();
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1.5f);
+  CherryGUI::PopStyleColor();
+  CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 1.5f);
 }
 
 void ContentBrowserAppWindow::RenderMenubar() {
 
-  ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 3.0f);
+  CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 3.0f);
   CherryNextComponent.SetProperty("padding_y", "6.0f");
   CherryNextComponent.SetProperty("padding_x", "10.0f");
 
@@ -761,7 +815,6 @@ void ContentBrowserAppWindow::RenderMenubar() {
 
 ContentBrowserAppWindow::ContentBrowserAppWindow(
     const std::string &name, const std::string &start_path) {
-  std::cout << "Create with" << start_path << std::endl;
   m_AppWindow = std::make_shared<AppWindow>(name, name);
   m_AppWindow->SetIcon(
       Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"));
@@ -1125,8 +1178,9 @@ bool ContentBrowserAppWindow::ItemCard(
     }
     ImGui::PopID();
   } else {
-    DrawHighlightedText(drawList, textPos, truncatedText.c_str(), ProjectSearch,
-                        highlightColor, textColor, highlightTextColor);
+    DrawHighlightedText(drawList, textPos, truncatedText.c_str(),
+                        ProjectSearch.c_str(), highlightColor, textColor,
+                        highlightTextColor);
   }
 
   ImGui::PopItemWidth();
@@ -1415,22 +1469,30 @@ void ContentBrowserAppWindow::RenderContentBar() {
   int columnCount = (int)(panelWidth / cellSize);
   if (columnCount < 1)
     columnCount = 1;
-
   if (m_SearchBar) {
 
-    CherryKit::ButtonImageDropdown(
-        Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"),
-        []() { ImGui::Text("SearchFilters"); });
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    CherryNextComponent.SetProperty("padding_y", "6.0f");
+    if (CherryKit::ButtonImageText(
+            "Filters", GetPath("resources/imgs/icons/misc/icon_filter.png"))
+            .GetDataAs<bool>("isClicked")) {
+      m_WillShowFilterPannel = !m_WillShowFilterPannel;
+    }
 
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(500.0f);
-    ImGui::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#222222FF"));
-    ImGui::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#232323FF"));
-    ImGui::InputText("####ContentBrowserSearch", ProjectSearch,
-                     sizeof(ProjectSearch));
-    ImGui::Separator();
+    CherryGUI::SameLine();
 
-    ImGui::PopStyleColor(2);
+    CherryNextComponent.SetProperty("size_x", "240");
+    CherryNextComponent.SetProperty("padding_y", "6.0f");
+    CherryNextComponent.SetProperty("description", "Search content...");
+    CherryNextComponent.SetProperty(
+        "description_logo",
+        GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
+    CherryNextComponent.SetProperty("description_logo_place", "r");
+    CherryKit::InputString("", &ProjectSearch);
+
+    CherryKit::Separator();
   }
   ImGui::Spacing();
 
@@ -1551,7 +1613,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
       std::string filenameString = path.filename().string();
 
       if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
-          isOnlySpacesOrEmpty(ProjectSearch)) {
+          isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
         ImGui::PushID(filenameString.c_str());
 
         float reducedThumbnailSize = thumbnailSize * 0.9f;
@@ -1751,7 +1813,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
       }
 
       if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
-          isOnlySpacesOrEmpty(ProjectSearch)) {
+          isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
         std::uintmax_t folderSize = getDirectorySize(path);
         std::string folderSizeString = formatFileSize(folderSize);
         ImGui::PushID(filenameString.c_str());
@@ -1796,7 +1858,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
       }
 
       if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
-          isOnlySpacesOrEmpty(ProjectSearch)) {
+          isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
         size_t fileSize = std::filesystem::file_size(path);
         std::string fileSizeString = formatFileSize(fileSize);
         ImGui::PushID(filenameString.c_str());
@@ -2051,14 +2113,12 @@ void ContentBrowserAppWindow::RenderContentBar() {
       ImGui::TableSetupColumn("Last Updated", ImGuiTableColumnFlags_WidthFixed);
       ImGui::TableHeadersRow();
 
-      ImGui::PopStyleVar(4);
-
       for (auto &directoryEntry : directories) {
         const auto &path = directoryEntry.path();
         std::string filenameString = path.filename().string();
 
         if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
-            isOnlySpacesOrEmpty(ProjectSearch)) {
+            isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
           bool selected = false;
           bool rename = false;
           if (path == pathToRename) {
@@ -2263,7 +2323,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
         }
 
         if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
-            isOnlySpacesOrEmpty(ProjectSearch)) {
+            isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
           size_t fileSize = std::filesystem::file_size(path);
           std::string fileSizeString = formatFileSize(fileSize);
           ImGui::PushID(filenameString.c_str());
@@ -2450,6 +2510,7 @@ void ContentBrowserAppWindow::SetupRenderCallback() {
 }
 
 void ContentBrowserAppWindow::Render() {
+
   const float splitterWidth = 1.5f;
   const float margin = 10.0f;
 
