@@ -469,7 +469,7 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
   }
 
   float availableWidth = ImGui::GetContentRegionAvail().x;
-  float synthStart = 0.6f;
+  float synthStart = 0.5f;
   float maxWidth = std::max(availableWidth * synthStart, 100.0f);
 
   float totalWidth = 0.0f;
@@ -484,14 +484,29 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
     totalWidth += w + sepWidth;
 
   std::vector<std::string> displayElements;
+  std::vector<size_t> elementIndices;
 
-  if (totalWidth > maxWidth && elements.size() > 4) {
-    displayElements.push_back(elements[0]);
+  bool useSynthView = totalWidth > maxWidth && elements.size() > 4;
+
+  if (useSynthView) {
+    // displayElements.push_back(elements[0]);
+    // elementIndices.push_back(0);
+
     displayElements.push_back("...");
-    for (int i = (int)elements.size() - 3; i < (int)elements.size(); ++i)
+    elementIndices.push_back(static_cast<size_t>(-1));
+
+    int start = (int)elements.size() - 3;
+    if (start < 1)
+      start = 1;
+
+    for (int i = start; i < (int)elements.size(); ++i) {
       displayElements.push_back(elements[i]);
+      elementIndices.push_back(i);
+    }
   } else {
     displayElements = elements;
+    for (size_t i = 0; i < elements.size(); ++i)
+      elementIndices.push_back(i);
   }
 
   CherryStyle::AddMarginX(5.0f);
@@ -505,8 +520,6 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
     ImGui::TextUnformatted(separator.c_str());
     ImGui::PopStyleColor();
     CherryStyle::AddMarginY(11.0f);
-    if (!elements.empty()) {
-    }
     CherryStyle::RemoveMarginY(8.0f);
   }
 
@@ -516,9 +529,41 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
     CherryNextComponent.SetProperty("padding_x", "0.0f");
     CherryNextComponent.SetProperty("color_border", "#00000000");
     CherryStyle::AddMarginY(8.0f);
-    CherryKit::ButtonText(el);
-    CherryStyle::RemoveMarginY(8.0f);
 
+    if (el == "...") {
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+      CherryStyle::RemoveMarginY(12.0f);
+      ImGui::TextUnformatted("...");
+      CherryStyle::AddMarginY(12.0f);
+      ImGui::PopStyleColor();
+
+      // Tooltip
+      if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+        std::string hidden;
+        for (size_t k = 1; k < elements.size() - 3; ++k) {
+          if (k != 1)
+            hidden += separator;
+          hidden += elements[k];
+        }
+        ImGui::SetTooltip("%s", hidden.c_str());
+      }
+    } else {
+      auto buttonId = this->GetAppWindow()->m_IdName + el + std::to_string(i);
+      if (CherryKit::ButtonText(CherryID(buttonId), el).GetData("isClicked") ==
+          "true") {
+        std::string return_path = FirstPathPartIsHome ? homePath : "";
+
+        size_t clickedElementIndex = elementIndices[i];
+        if (clickedElementIndex != static_cast<size_t>(-1)) {
+          for (size_t j = 0; j <= clickedElementIndex; ++j)
+            return_path += separator + elements[j];
+
+          ChangeDirectory(return_path);
+        }
+      }
+    }
+
+    CherryStyle::RemoveMarginY(8.0f);
     CherryStyle::RemoveMarginY(3.0f);
     if (i < displayElements.size() - 1) {
       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1));
@@ -527,6 +572,7 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
     }
     CherryStyle::AddMarginY(3.0f);
   }
+
   CherryStyle::AddMarginY(2.0f);
 }
 
@@ -631,7 +677,7 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
               .GetDataAs<bool>("isClicked")) {
         ImVec2 mousePos = CherryGUI::GetMousePos();
         ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
-        ImVec2 popupSize(200, 100);
+        ImVec2 popupSize(350, 100);
 
         if (mousePos.x + popupSize.x > displaySize.x) {
           mousePos.x -= popupSize.x;
@@ -640,7 +686,7 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
           mousePos.y -= popupSize.y;
         }
 
-        CherryGUI::SetNextWindowSize(ImVec2(200, 100), ImGuiCond_Appearing);
+        CherryGUI::SetNextWindowSize(popupSize, ImGuiCond_Appearing);
         CherryGUI::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
         CherryGUI::OpenPopup("ViewMenuPopup");
       }
@@ -770,7 +816,7 @@ void ContentBrowserAppWindow::RenderMenubar() {
     if (isButtonX1Pressed && !wasButtonX1Pressed) {
       GoBack();
     }
-    wasButtonX2Pressed = isButtonX1Pressed;
+    wasButtonX1Pressed = isButtonX1Pressed;
   }
 
   if (m_ForwardHistory.empty()) {
@@ -1617,7 +1663,6 @@ void ContentBrowserAppWindow::RenderContentBar() {
         ImGui::PushID(filenameString.c_str());
 
         float reducedThumbnailSize = thumbnailSize * 0.9f;
-
         float availableWidth = ImGui::GetContentRegionAvail().x;
         float imageOffsetX = (availableWidth - reducedThumbnailSize) * 0.5f;
 
@@ -1638,8 +1683,10 @@ void ContentBrowserAppWindow::RenderContentBar() {
         {
             ChangeDirectory(path);
         }*/
-
+        CherryStyle::RemoveMarginX(5.0f);
         ImVec2 folderSize(reducedThumbnailSize, reducedThumbnailSize);
+        float folderPosX = (availableWidth - folderSize.x) * 0.5f;
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + folderPosX);
 
         if (current_editing_folder.first == path.string()) {
           FolderButton("folder_icon", folderSize, current_editing_folder.second,
@@ -1657,142 +1704,14 @@ void ContentBrowserAppWindow::RenderContentBar() {
         ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
         ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
-        ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
-
-        ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
-
-        ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
-        if (ImGui::BeginPopupContextItem("ContextPopup")) {
-          ImGui::GetFont()->Scale = 0.9;
-          ImGui::PushFont(ImGui::GetFont());
-
-          ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
-
-          ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-          ImGui::Text("Main");
-          ImGui::PopStyleColor();
-
-          ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-          ImGui::Separator();
-          ImGui::PopStyleColor();
-
-          ImGui::GetFont()->Scale = oldfontsize;
-          ImGui::PopFont();
-
-          ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-          if (ImGui::MenuItem("Open", "Ctrl + O")) {
-            ChangeDirectory(path);
-            ImGui::CloseCurrentPopup();
-          }
-          if (ImGui::MenuItem("Copy folder", "Ctrl + C")) {
-            if (m_CopyPathsCallback) {
-              m_CopyPathsCallback(m_Selected, false);
-            }
-
-            m_Selected.clear();
-            ImGui::CloseCurrentPopup();
-          }
-          if (ImGui::MenuItem("Cut folder", "Ctrl + X")) {
-            ChangeDirectory(path);
-            ImGui::CloseCurrentPopup();
-          }
-
-          ImGui::GetFont()->Scale = 0.9;
-          ImGui::PushFont(ImGui::GetFont());
-
-          ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
-
-          ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-          ImGui::Text("Customization");
-          ImGui::PopStyleColor();
-
-          ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-          ImGui::Separator();
-          ImGui::PopStyleColor();
-
-          ImGui::GetFont()->Scale = oldfontsize;
-          ImGui::PopFont();
-
-          ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-          static bool EditingColor = false;
-          static bool ColorChanged = false;
-
-          current_editing_folder_is_favorite =
-              IsPathFavorite(directoryEntry.path().string());
-
-          if (ImGui::BeginMenu("Change color")) {
-            if (!EditingColor) {
-              current_editing_folder = {directoryEntry.path().string(),
-                                        folder_color};
-
-              current_editing_folder = {
-                  directoryEntry.path().string(),
-                  HexToImU32(GetContentBrowserFolderColor(path.string()))};
-
-              current_editing_folder_is_favorite =
-                  IsPathFavorite(directoryEntry.path().string());
-            }
-
-            EditingColor = true;
-
-            static bool alpha_preview = true;
-            static bool alpha_half_preview = false;
-            static bool drag_and_drop = true;
-            static bool options_menu = true;
-            static bool hdr = false;
-
-            ColorPicker3U32("MyColor", &current_editing_folder.second);
-
-            if (current_editing_folder.second != folder_color) {
-              ColorChanged = true;
-            }
-
-            ImGui::EndMenu();
-          } else {
-            EditingColor = false;
-          }
-
-          if (ImGui::MenuItem("Mark as favorite", "",
-                              current_editing_folder_is_favorite)) {
-            current_editing_folder = {directoryEntry.path().string(),
-                                      current_editing_folder.second};
-
-            current_editing_folder_is_favorite =
-                !current_editing_folder_is_favorite;
-            SetColoredFolder(current_editing_folder.first,
-                             ImU32ToHex(current_editing_folder.second));
-
-            VortexMaker::PublishContentBrowserCustomFolder(
-                current_editing_folder.first,
-                Cherry::ImU32ToHex(current_editing_folder.second),
-                current_editing_folder_is_favorite);
-
-            if (current_editing_folder_is_favorite) {
-              m_FavoriteFolders.push_back(current_editing_folder.first);
-            } else {
-              auto it =
-                  std::find(m_FavoriteFolders.begin(), m_FavoriteFolders.end(),
-                            current_editing_folder.first);
-              if (it != m_FavoriteFolders.end()) {
-                m_FavoriteFolders.erase(it);
-              }
-            }
-          }
-
-          ImGui::EndPopup();
-        }
-
-        ImGui::PopStyleVar();
-        ImGui::PopStyleColor(2);
         ImGui::PopStyleVar(2);
         ImGui::PopStyleColor(3);
 
+        ImVec2 cursorPos = ImGui::GetCursorPos();
         float textWidth = ImGui::CalcTextSize(filenameString.c_str()).x;
-        float textOffsetX = (availableWidth - textWidth) * 0.5f;
-
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + textOffsetX);
+        float textX = folderPosX + (folderSize.x - textWidth) * 0.5f;
+        ImGui::SetCursorPos(
+            ImVec2(textX + ImGui::GetCursorPosX(), cursorPos.y));
         ImGui::TextWrapped(filenameString.c_str());
 
         ImGui::PopID();
@@ -1800,6 +1719,137 @@ void ContentBrowserAppWindow::RenderContentBar() {
       }
     }
 
+    /*
+
+            ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+
+            ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+
+            ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+            if (ImGui::BeginPopupContextItem("ContextPopup")) {
+              ImGui::GetFont()->Scale = 0.9;
+              ImGui::PushFont(ImGui::GetFont());
+
+              ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+              ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+              ImGui::Text("Main");
+              ImGui::PopStyleColor();
+
+              ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+              ImGui::Separator();
+              ImGui::PopStyleColor();
+
+              ImGui::GetFont()->Scale = oldfontsize;
+              ImGui::PopFont();
+
+              ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+              if (ImGui::MenuItem("Open", "Ctrl + O")) {
+                ChangeDirectory(path);
+                ImGui::CloseCurrentPopup();
+              }
+              if (ImGui::MenuItem("Copy folder", "Ctrl + C")) {
+                if (m_CopyPathsCallback) {
+                  m_CopyPathsCallback(m_Selected, false);
+                }
+
+                m_Selected.clear();
+                ImGui::CloseCurrentPopup();
+              }
+              if (ImGui::MenuItem("Cut folder", "Ctrl + X")) {
+                ChangeDirectory(path);
+                ImGui::CloseCurrentPopup();
+              }
+
+              ImGui::GetFont()->Scale = 0.9;
+              ImGui::PushFont(ImGui::GetFont());
+
+              ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+              ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+              ImGui::Text("Customization");
+              ImGui::PopStyleColor();
+
+              ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+              ImGui::Separator();
+              ImGui::PopStyleColor();
+
+              ImGui::GetFont()->Scale = oldfontsize;
+              ImGui::PopFont();
+
+              ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+              static bool EditingColor = false;
+              static bool ColorChanged = false;
+
+              current_editing_folder_is_favorite =
+                  IsPathFavorite(directoryEntry.path().string());
+
+              if (ImGui::BeginMenu("Change color")) {
+                if (!EditingColor) {
+                  current_editing_folder = {directoryEntry.path().string(),
+                                            folder_color};
+
+                  current_editing_folder = {
+                      directoryEntry.path().string(),
+                      HexToImU32(GetContentBrowserFolderColor(path.string()))};
+
+                  current_editing_folder_is_favorite =
+                      IsPathFavorite(directoryEntry.path().string());
+                }
+
+                EditingColor = true;
+
+                static bool alpha_preview = true;
+                static bool alpha_half_preview = false;
+                static bool drag_and_drop = true;
+                static bool options_menu = true;
+                static bool hdr = false;
+
+                ColorPicker3U32("MyColor", &current_editing_folder.second);
+
+                if (current_editing_folder.second != folder_color) {
+                  ColorChanged = true;
+                }
+
+                ImGui::EndMenu();
+              } else {
+                EditingColor = false;
+              }
+
+              if (ImGui::MenuItem("Mark as favorite", "",
+                                  current_editing_folder_is_favorite)) {
+                current_editing_folder = {directoryEntry.path().string(),
+                                          current_editing_folder.second};
+
+                current_editing_folder_is_favorite =
+                    !current_editing_folder_is_favorite;
+                SetColoredFolder(current_editing_folder.first,
+                                 ImU32ToHex(current_editing_folder.second));
+
+                VortexMaker::PublishContentBrowserCustomFolder(
+                    current_editing_folder.first,
+                    Cherry::ImU32ToHex(current_editing_folder.second),
+                    current_editing_folder_is_favorite);
+
+                if (current_editing_folder_is_favorite) {
+                  m_FavoriteFolders.push_back(current_editing_folder.first);
+                } else {
+                  auto it =
+                      std::find(m_FavoriteFolders.begin(),
+       m_FavoriteFolders.end(), current_editing_folder.first); if (it !=
+       m_FavoriteFolders.end()) { m_FavoriteFolders.erase(it);
+                  }
+                }
+              }
+
+              ImGui::EndPopup();
+            }
+
+            ImGui::PopStyleVar();
+            ImGui::PopStyleColor(2);
+            */
     for (auto &itemEntry : recognized_modules_items) {
       const auto &path = itemEntry.second;
       std::filesystem::path fsPath(path);
@@ -2589,6 +2639,22 @@ void ContentBrowserAppWindow::Render() {
     for (auto &child : children) {
       if (!child.m_Disabled) {
         child.m_Size = std::max(child.m_Size * scaleFactor, 50.0f);
+      }
+    }
+  } else if (totalChildSize < availableSize.x) {
+    float extraSpace = availableSize.x - totalChildSize;
+
+    float totalResizable = 0.0f;
+    for (auto &child : children) {
+      if (!child.m_Disabled) {
+        totalResizable += child.m_Size;
+      }
+    }
+
+    for (auto &child : children) {
+      if (!child.m_Disabled) {
+        float ratio = child.m_Size / totalResizable;
+        child.m_Size += ratio * extraSpace;
       }
     }
   }
