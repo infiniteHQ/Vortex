@@ -190,6 +190,7 @@ public:
         VortexEditor::ContentBrowserAppWindow::Create(
             label.c_str(), VortexMaker::GetCurrentContext()->projectPath);
 
+    ContentBrowser->m_CutPathsCallback = VortexMaker::Cut;
     ContentBrowser->m_CopyPathsCallback = VortexMaker::Copy;
     ContentBrowser->m_PastePathsCallback = VortexMaker::PasteAllSelections;
     ContentBrowser->m_DeletePathCallback = VortexMaker::DeletePath;

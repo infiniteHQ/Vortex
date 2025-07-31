@@ -305,6 +305,9 @@ VORTEX_API void MoveAllContent();
 VORTEX_API void CopyAllContent();
 VORTEX_API void ExecuteCommand();
 
+VORTEX_API void SubmitRename(const std::string &oldPathStr,
+                             const std::string &newName);
+
 VORTEX_API void InitializePlatformVendor();
 VORTEX_API bool IsLinux();
 VORTEX_API bool IsNotLinux();

@@ -237,6 +237,8 @@ public:
   std::function<void(const std::string &)> m_DeletePathCallback;
   std::function<void(const std::vector<std::string> &, bool)>
       m_CopyPathsCallback;
+  std::function<void(const std::vector<std::string> &, bool)>
+      m_CutPathsCallback;
   std::function<void(const std::string &)> m_PastePathsCallback;
 
 private:
