@@ -2062,9 +2062,11 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
       if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
           isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
+        std::cout << "1" << std::endl;
         std::uintmax_t folderSize = getDirectorySize(path);
         std::string folderSizeString = formatFileSize(folderSize);
         ImGui::PushID(filenameString.c_str());
+        std::cout << "2" << std::endl;
 
         if (ItemCard(filenameString, path, itemEntry.first->m_Description,
                      folderSizeString, selected,
@@ -2107,7 +2109,13 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
       if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
           isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
-        size_t fileSize = std::filesystem::file_size(path);
+        std::error_code ec;
+        size_t fileSize = 0;
+
+        if (fileEntry.is_regular_file(ec)) {
+          fileSize += std::filesystem::file_size(fileEntry.path(), ec);
+        }
+
         std::string fileSizeString = formatFileSize(fileSize);
         ImGui::PushID(filenameString.c_str());
 
@@ -2572,7 +2580,13 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
         if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
             isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
-          size_t fileSize = std::filesystem::file_size(path);
+          std::error_code ec;
+          size_t fileSize = 0;
+
+          if (fileEntry.is_regular_file(ec)) {
+            fileSize += std::filesystem::file_size(fileEntry.path(), ec);
+          }
+
           std::string fileSizeString = formatFileSize(fileSize);
           ImGui::PushID(filenameString.c_str());
 
