@@ -30,7 +30,9 @@
 //_____________________________________________________________________________
 
 // Enable SSE intrinsics if available
-#if (defined __SSE__ || defined __x86_64__ || defined _M_X64 || (defined(_M_IX86_FP) && (_M_IX86_FP >= 1))) && !defined(IMGUI_DISABLE_SSE)
+#if (defined __SSE__ || defined __x86_64__ || defined _M_X64 ||                \
+     (defined(_M_IX86_FP) && (_M_IX86_FP >= 1))) &&                            \
+    !defined(IMGUI_DISABLE_SSE)
 #define IMGUI_ENABLE_SSE
 #include <immintrin.h>
 #endif
@@ -38,11 +40,18 @@
 // Visual Studio warnings
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4251)           // class 'xxx' needs to have dll-interface to be used by clients of struct 'xxx' // when IMGUI_API is set to__declspec(dllexport)
-#pragma warning(disable : 26812)          // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum' (Enum.3). [MSVC Static Analyzer)
-#pragma warning(disable : 26495)          // [Static Analyzer] Variable 'XXX' is uninitialized. Always initialize a member variable (type.6).
+#pragma warning(disable : 4251) // class 'xxx' needs to have dll-interface to be
+                                // used by clients of struct 'xxx' // when
+                                // IMGUI_API is set to__declspec(dllexport)
+#pragma warning(                                                               \
+    disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class'
+                     // over 'enum' (Enum.3). [MSVC Static Analyzer)
+#pragma warning(                                                               \
+    disable : 26495) // [Static Analyzer] Variable 'XXX' is uninitialized.
+                     // Always initialize a member variable (type.6).
 #if defined(_MSC_VER) && _MSC_VER >= 1922 // MSVC 2019 16.2 or later
-#pragma warning(disable : 5054)           // operator '|': deprecated between enumerations of different types
+#pragma warning(disable : 5054) // operator '|': deprecated between enumerations
+                                // of different types
 #endif
 #endif
 
@@ -50,21 +59,35 @@
 #if defined(__clang__)
 #pragma clang diagnostic push
 #if __has_warning("-Wunknown-warning-option")
-#pragma clang diagnostic ignored "-Wunknown-warning-option" // warning: unknown warning group 'xxx'
+#pragma clang diagnostic ignored                                               \
+    "-Wunknown-warning-option" // warning: unknown warning group 'xxx'
 #endif
-#pragma clang diagnostic ignored "-Wunknown-pragmas"    // warning: unknown warning group 'xxx'
-#pragma clang diagnostic ignored "-Wfloat-equal"        // warning: comparing floating point with == or != is unsafe // storing and comparing against same constants ok, for ImFloor()
+#pragma clang diagnostic ignored                                               \
+    "-Wunknown-pragmas" // warning: unknown warning group 'xxx'
+#pragma clang diagnostic ignored                                               \
+    "-Wfloat-equal" // warning: comparing floating point with == or != is unsafe
+                    // // storing and comparing against same constants ok, for
+                    // ImFloor()
 #pragma clang diagnostic ignored "-Wunused-function"    // for stb_textedit.h
 #pragma clang diagnostic ignored "-Wmissing-prototypes" // for stb_textedit.h
 #pragma clang diagnostic ignored "-Wold-style-cast"
 #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma clang diagnostic ignored "-Wdouble-promotion"
-#pragma clang diagnostic ignored "-Wimplicit-int-float-conversion" // warning: implicit conversion from 'xxx' to 'float' may lose precision
-#pragma clang diagnostic ignored "-Wmissing-noreturn"              // warning: function 'xxx' could be declared with attribute 'noreturn'
+#pragma clang diagnostic ignored                                               \
+    "-Wimplicit-int-float-conversion" // warning: implicit conversion from 'xxx'
+                                      // to 'float' may lose precision
+#pragma clang diagnostic ignored                                               \
+    "-Wmissing-noreturn" // warning: function 'xxx' could be declared with
+                         // attribute 'noreturn'
 #elif defined(__GNUC__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpragmas"         // warning: unknown option after '#pragma GCC diagnostic' kind
-#pragma GCC diagnostic ignored "-Wclass-memaccess" // [__GNUC__ >= 8] warning: 'memset/memcpy' clearing/writing an object of type 'xxxx' with no trivial copy-assignment; use assignment or value-initialization instead
+#pragma GCC diagnostic ignored                                                 \
+    "-Wpragmas" // warning: unknown option after '#pragma GCC diagnostic' kind
+#pragma GCC diagnostic ignored                                                 \
+    "-Wclass-memaccess" // [__GNUC__ >= 8] warning: 'memset/memcpy'
+                        // clearing/writing an object of type 'xxxx' with no
+                        // trivial copy-assignment; use assignment or
+                        // value-initialization instead
 #endif
 
 //_____________________________________________________________________________
@@ -99,8 +122,7 @@ extern VORTEX_API VxContext *CVortexMaker; // Current implicit context pointer
 
 //_____________________________________________________________________________
 
-struct VortexMakerDebugAllocInfo
-{
+struct VortexMakerDebugAllocInfo {
   int TotalAllocCount; // Number of call to MemAlloc().
   int TotalFreeCount;
   VortexMakerDebugAllocInfo() { memset(this, 0, sizeof(*this)); }
@@ -110,18 +132,18 @@ struct VortexMakerDebugAllocInfo
 // [SECTION]: Internal structures
 //_____________________________________________________________________________
 
-struct VxSystemLog
-{
+struct VxSystemLog {
   spdlog::level::level_enum m_level;
   std::string m_filter;
   std::string m_message;
   std::string m_timestamp;
 
-  VxSystemLog(spdlog::level::level_enum level, std::string filter, std::string message) : m_level(level), m_filter(filter), m_message(message){};
+  VxSystemLog(spdlog::level::level_enum level, std::string filter,
+              std::string message)
+      : m_level(level), m_filter(filter), m_message(message) {};
 };
 
-struct EnvProject
-{
+struct EnvProject {
   std::string name;
   std::string path;
   std::string version;
@@ -132,8 +154,7 @@ struct EnvProject
   std::string lastOpened;
 };
 
-class ContenBrowserItem
-{
+class ContenBrowserItem {
 public:
   bool (*f_Detect)(const std::string &path);
 
@@ -143,14 +164,14 @@ public:
   ImVec4 m_LineColor;
   std::string m_Description;
 
-  ContenBrowserItem(bool (*detect_function)(const std::string &path), const std::string& name, const std::string& description, const ImVec4& line_color):
-  m_Name(name), m_Description(description), f_Detect(detect_function), m_LineColor(line_color)
-  {};
-  
+  ContenBrowserItem(bool (*detect_function)(const std::string &path),
+                    const std::string &name, const std::string &description,
+                    const ImVec4 &line_color)
+      : m_Name(name), m_Description(description), f_Detect(detect_function),
+        m_LineColor(line_color) {};
 };
 
-class ContenBrowserHandler
-{
+class ContenBrowserHandler {
 public:
   void (*f_Execute)(const std::string &path);
 
@@ -162,8 +183,7 @@ public:
 };
 
 // All custom pinned folder.
-class ContenBrowserPinnedFolder
-{
+class ContenBrowserPinnedFolder {
 public:
   std::string m_Name;
   std::string m_Path;
@@ -172,8 +192,7 @@ public:
 };
 
 // On a custom folder, we can change the logo, the color, if it is favorite.
-class ContenBrowserCustomFolder
-{
+class ContenBrowserCustomFolder {
 public:
   std::string m_Name;
   ImTextureID m_Logo;
@@ -181,23 +200,16 @@ public:
   bool m_IsFavorite;
 };
 
-class ModuleInterfaceUtility
-{
+class ModuleInterfaceUtility {
   virtual void render() {};
 
   std::string m_Name;
   ImTextureID m_Logo;
 };
 
-enum class PlatformVendor
-{ 
-    Linux,
-    Windows,
-    Macos
-};
+enum class PlatformVendor { Linux, Windows, Macos };
 
-struct SessionState
-{
+struct SessionState {
   //
   std::string session_id;
 
@@ -217,15 +229,13 @@ struct SessionState
   bool last_used_module_output_event_modified = false;
 };
 
-struct ContentBrowserCustomFolder
-{
+struct ContentBrowserCustomFolder {
   std::string path;
   std::string m_Color;
   bool m_IsFav;
 };
 
-struct VxIO
-{
+struct VxIO {
   int MetricsActiveAllocations;
 
   // EM / Editor Modules
@@ -249,10 +259,11 @@ struct VxIO
 
   // Content browser items
   std::vector<std::shared_ptr<ContenBrowserItem>> contentbrowser_items;
-  std::vector<std::shared_ptr<ContentBrowserCustomFolder>> contentbrowser_customfolders;
+  std::vector<std::shared_ptr<ContentBrowserCustomFolder>>
+      contentbrowser_customfolders;
   std::string contentbrowser_mainpool;
   std::string contentbrowser_absolute_mainpool;
-  std::vector<std::pair<std::string,std::string>> contentbrowser_pools;
+  std::vector<std::pair<std::string, std::string>> contentbrowser_pools;
   std::vector<std::string> copy_selection;
   std::vector<std::string> cut_selection;
   float past_state; // from 0.0f (0%) to 1.0f (100%)
@@ -261,8 +272,7 @@ struct VxIO
   std::vector<std::shared_ptr<ModuleInterfaceUtility>> em_utilities;
 };
 
-struct VxPaths
-{
+struct VxPaths {
   std::string toolchainDistFolder;
   std::string hostDistFolder;
 };
@@ -273,8 +283,7 @@ struct VxPaths
 // This context contain all user data about VortexMaker functionnal interfaces &
 // all instances of custom contents.
 //-----------------------------------------------------------------------------
-struct VxContext
-{
+struct VxContext {
   // Master flags
   bool initialized;
 
@@ -283,7 +292,8 @@ struct VxContext
   bool logger_registering = true;
   std::shared_ptr<spdlog::logger> global_logger;
   std::shared_ptr<spdlog::logger> console_logger;
-  std::vector<std::pair<std::string, std::shared_ptr<spdlog::logger>>> pool_loggers;
+  std::vector<std::pair<std::string, std::shared_ptr<spdlog::logger>>>
+      pool_loggers;
 
   // Vendor
   PlatformVendor m_PlatformVendor;
@@ -294,6 +304,7 @@ struct VxContext
   VortexMakerDebugAllocInfo debugAllocInfo;
   std::vector<std::shared_ptr<VxSystemLog>> registered_logs;
   fs::path projectPath;
+  fs::path projectDataPath;
   fs::path logoPath;
   VxPaths paths;
   std::string configFilePath;
@@ -311,7 +322,7 @@ struct VxContext
   std::string scriptsPath;
   std::string hostsPath;
   bool include_system_templates;
-  
+
   std::string platform;
   std::string arch;
 };
@@ -327,45 +338,53 @@ struct VxContext
 // Basicly, you don't need to care about this. For all user interactions of
 // Hypernet & Vx, go on the main userapi on vortex.h
 //__________________________________________________________________________________________________________________
-namespace VortexMaker
-{
+namespace VortexMaker {
 
-  // Utils & Base
-  VORTEX_API void DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr, size_t size); // size >= 0 : alloc, size = -1 : free
-  VORTEX_API void AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility);
-  VORTEX_API void AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item);
+// Utils & Base
+VORTEX_API void
+DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
+               size_t size); // size >= 0 : alloc, size = -1 : free
+VORTEX_API void
+AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility);
+VORTEX_API void
+AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item);
 
-  // Publish to ROM
-  VORTEX_API void PublishContentBrowserCustomFolder(const std::string& path, const std::string &hex_color, const bool& isFav);
-  VORTEX_API void PublishPool(const std::string& absolute_pool_path, const std::string& name);
-  VORTEX_API void PostCustomFolderToJson();
-  VORTEX_API void PostPoolsToJson();
+// Publish to ROM
+VORTEX_API void PublishContentBrowserCustomFolder(const std::string &path,
+                                                  const std::string &hex_color,
+                                                  const bool &isFav);
+VORTEX_API void PublishPool(const std::string &absolute_pool_path,
+                            const std::string &name);
+VORTEX_API void PostCustomFolderToJson();
+VORTEX_API void PostPoolsToJson();
 
-  // Fetch from ROM
-  VORTEX_API void FetchCustomFolders();
-  VORTEX_API void FetchPools();
+// Fetch from ROM
+VORTEX_API void FetchCustomFolders();
+VORTEX_API void FetchPools();
 
-  // Cotnent browser IO manipulations
-  VORTEX_API bool ContentBrowserFolderIsFav(const std::string& path);
-  VORTEX_API bool GetContentBrowserFolderColor(const std::string& path, ImU32* color);
+// Cotnent browser IO manipulations
+VORTEX_API bool ContentBrowserFolderIsFav(const std::string &path);
+VORTEX_API bool GetContentBrowserFolderColor(const std::string &path,
+                                             ImU32 *color);
 
+VORTEX_API void Copy(std::vector<std::string> selection, bool in_addition);
+VORTEX_API void Cut(std::vector<std::string> selection, bool in_addition);
+VORTEX_API void ClearCopySelection();
+VORTEX_API void ClearCutSelection();
+VORTEX_API void PasteAllSelections(const std::string &target_path);
 
-  VORTEX_API void Copy(std::vector<std::string> selection, bool in_addition);
-  VORTEX_API void Cut(std::vector<std::string> selection, bool in_addition);
-  VORTEX_API void ClearCopySelection();
-  VORTEX_API void ClearCutSelection();
-  VORTEX_API void PasteAllSelections(const std::string& target_path);
+VORTEX_API void DeleteFolder(const std::string &target_path);
+VORTEX_API void DeleteFile(const std::string &target_path);
+VORTEX_API void DeletePath(const std::string &target_path);
 
-  VORTEX_API void DeleteFolder(const std::string& target_path);
-  VORTEX_API void DeleteFile(const std::string& target_path);
-  VORTEX_API void DeletePath(const std::string& target_path);
+VORTEX_API void RenameFolder(const std::string &target_path,
+                             const std::string &new_name);
+VORTEX_API void RenameFile(const std::string &target_path,
+                           const std::string &new_name);
 
-  VORTEX_API void RenameFolder(const std::string& target_path, const std::string& new_name);
-  VORTEX_API void RenameFile(const std::string& target_path, const std::string& new_name);
-
-  VORTEX_API ImU32 HexToImU32(const std::string& hex);
-  VORTEX_API std::string ImU32ToHex(ImU32 color);
-}
+VORTEX_API ImU32 HexToImU32(const std::string &hex);
+VORTEX_API std::string ImU32ToHex(ImU32 color);
+} // namespace VortexMaker
 //_____________________________________________________________________________
 
 #endif // VORTEX_DISABLE

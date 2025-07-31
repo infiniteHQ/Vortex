@@ -200,6 +200,8 @@ public:
 
   void SetDefaultFolderColor(const std::string &hex);
 
+  void FolderIcon(ImVec2 size, ImU32 color);
+
   std::string GetContentBrowserFolderColor(const std::string &path) {
     size_t lastSlashIndex = path.find_last_of('/');
     std::string folderName = path.substr(lastSlashIndex + 1);

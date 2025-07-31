@@ -2,16 +2,6 @@
 
 using namespace Cherry;
 
-/*
-TODO
-- centered folders
-- Home on Pathbar
-- cpy/paste
-- creation & add
-- custom item & callbacks
-*/
-
-// To move in class members
 static float padding = 30.0f;
 static float thumbnailSize = 94.0f;
 
@@ -934,6 +924,10 @@ void ContentBrowserAppWindow::FolderButton(const char *id, ImVec2 size,
   }
 }
 
+void ContentBrowserAppWindow::FolderIcon(ImVec2 size, ImU32 color) {
+  CherryKit::WidgetFolder("#c2a24c", size.x, size.y - 2);
+}
+
 void ContentBrowserAppWindow::GoBack() {
   if (!m_BackHistory.empty()) {
     m_ForwardHistory.push(m_CurrentDirectory);
@@ -1332,40 +1326,82 @@ void ContentBrowserAppWindow::MyFolderButton(const char *id, ImVec2 size,
   }
 }
 
+void WidgetFolderT(const std::string &colorHex, float width, float height,
+                   ImVec2 pos) {
+  ImDrawList *drawList = ImGui::GetWindowDrawList();
+  ImU32 color = HexToImU32(colorHex);
+
+  float flapHeight = height * 0.2f;
+  float flapWidth = width * 0.4f;
+  float borderRadius = height * 0.05f;
+
+  ImVec4 colVec = ImGui::ColorConvertU32ToFloat4(color);
+  ImU32 flapColor = ImGui::ColorConvertFloat4ToU32(
+      ImVec4(colVec.x * 0.8f, colVec.y * 0.8f, colVec.z * 0.8f, colVec.w));
+  ImU32 shadowColor = ImGui::ColorConvertFloat4ToU32(ImVec4(
+      colVec.x * 0.7f, colVec.y * 0.7f, colVec.z * 0.7f, colVec.w * 0.2f));
+
+  ImVec2 flapTopLeft = ImVec2(pos.x + width * 0.001f, pos.y - 1.0f);
+  ImVec2 flapBottomRight =
+      ImVec2(flapTopLeft.x + flapWidth, pos.y + flapHeight);
+
+  ImVec2 flapBarTopLeft = ImVec2(pos.x, pos.y + flapHeight - height * 0.14f);
+  ImVec2 flapBarBottomRight =
+      ImVec2(pos.x + width, pos.y + flapHeight + height * 0.07f);
+
+  ImVec2 bodyTopLeft = ImVec2(pos.x, pos.y + flapHeight);
+  ImVec2 bodyBottomRight = ImVec2(pos.x + width, pos.y + height);
+
+  drawList->AddRectFilled(flapTopLeft, flapBottomRight, flapColor, borderRadius,
+                          ImDrawFlags_RoundCornersTopLeft);
+  drawList->AddRectFilled(flapBarTopLeft, flapBarBottomRight, flapColor,
+                          borderRadius);
+  drawList->AddRectFilled(bodyTopLeft, bodyBottomRight, color, borderRadius);
+
+  float lineOffset = height * 0.05f;
+  for (int i = 1; i <= 3; ++i) {
+    float yPos = bodyBottomRight.y - (lineOffset * i);
+    drawList->AddLine(ImVec2(bodyTopLeft.x + width * 0.01f, yPos),
+                      ImVec2(bodyBottomRight.x - width * 0.01f, yPos),
+                      shadowColor, 2.0f);
+  }
+}
+
 void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path,
                                             bool isDir,
                                             const std::string &label = "") {
   if (!isDir)
     return;
 
-  ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 12.0f);
+  std::string tree_label = (label.empty() ? path.filename().string() : label);
+  std::string unique_id = path.string() + "##treenode";
 
-  std::string uniqueID = path.string() + "###treenode";
+  ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_AllowItemOverlap |
+                                     ImGuiTreeNodeFlags_SpanAvailWidth |
+                                     ImGuiTreeNodeFlags_FramePadding;
 
-  std::string tree_label =
-      label.empty()
-          ? path.filename().string() + "###" + uniqueID + label + path.string()
-          : label + "###" + uniqueID + label + path.string();
+  ImVec2 nodePos = ImGui::GetCursorScreenPos();
 
-  ImGuiTreeNodeFlags treeNodeFlags =
-      ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_Framed |
-      ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+  bool opened = ImGui::TreeNodeEx(unique_id.c_str(), treeNodeFlags, "%s",
+                                  tree_label.c_str());
 
-  ImVec2 cursorPos = ImGui::GetCursorPos();
-  ImGui::SetItemAllowOverlap();
-  ImVec2 pos = ImGui::GetCursorScreenPos();
+  ImVec2 itemSize = ImGui::GetItemRectSize();
+  ImVec2 iconSize = ImVec2(12, 12);
+  ImVec2 iconPos =
+      ImVec2(nodePos.x + 2.0f, nodePos.y + (itemSize.y - iconSize.y) * 0.5f);
 
-  DrawFolderIcon(pos, ImVec2(12, 12),
-                 HexToImU32(GetContentBrowserFolderColor(path.string())));
+  WidgetFolderT("#c2a24c", iconSize.x, iconSize.y, iconPos);
 
-  if (ImGui::TreeNode(tree_label.c_str())) {
+  if (ImGui::IsItemClicked()) {
     ChangeDirectory(path);
+  }
 
+  if (opened) {
     try {
       std::vector<std::filesystem::directory_entry> entries;
-      for (auto &dirEntry : std::filesystem::directory_iterator(path)) {
-        if (dirEntry.is_directory()) {
-          entries.push_back(dirEntry);
+      for (const auto &entry : std::filesystem::directory_iterator(path)) {
+        if (entry.is_directory()) {
+          entries.push_back(entry);
         }
       }
 
@@ -1374,26 +1410,21 @@ void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path,
                   return a.path().filename() < b.path().filename();
                 });
 
-      for (const auto &dirEntry : entries) {
+      for (const auto &entry : entries) {
         try {
-          const std::filesystem::path &otherPath = dirEntry.path();
-          DrawHierarchy(otherPath, dirEntry.is_directory());
+          DrawHierarchy(entry.path(), entry.is_directory());
         } catch (const std::exception &e) {
-          std::cerr << "Error while display the directory " << dirEntry.path()
-                    << " - " << e.what() << std::endl;
-          continue;
+          std::cerr << "Error displaying " << entry.path() << ": " << e.what()
+                    << std::endl;
         }
       }
     } catch (const std::exception &e) {
-      std::cerr << "Error while display the directory " << path << " - "
-                << e.what() << std::endl;
+      std::cerr << "Error reading directory " << path << ": " << e.what()
+                << std::endl;
     }
 
     ImGui::TreePop();
   }
-
-  ImVec2 finalCursorPos = ImGui::GetCursorPos();
-  ImVec2 size = ImGui::GetItemRectSize();
 }
 
 void ContentBrowserAppWindow::RenderSideBar() {
