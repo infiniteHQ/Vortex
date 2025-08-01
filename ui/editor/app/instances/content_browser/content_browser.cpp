@@ -23,6 +23,7 @@ static ImU32 folder_color = IM_COL32(150, 128, 50, 255);
 static std::pair<std::string, ImU32> current_editing_folder;
 static bool current_editing_folder_is_favorite;
 
+static float c_SideBarWidth = 250.0f;
 static float c_FilterBarWidth = 250.0f;
 
 static bool isOnlySpacesOrEmpty(const char *str) {
@@ -748,9 +749,12 @@ void ContentBrowserAppWindow::RenderMenubar() {
   CherryNextComponent.SetProperty("padding_y", "6.0f");
   CherryNextComponent.SetProperty("padding_x", "10.0f");
 
-  CherryKit::ButtonImageText(
-      GetLocale("loc.window.content.content_browser.add"),
-      GetPath("resources/imgs/icons/misc/icon_add.png"));
+  if (CherryKit::ButtonImageText(
+          GetLocale("loc.window.content.content_browser.add"),
+          GetPath("resources/imgs/icons/misc/icon_add.png"))
+          .GetDataAs<bool>("isClicked")) {
+    SpawnAddWindow();
+  }
 
   CherryNextComponent.SetProperty("color_border", "#00000000");
   CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
@@ -1568,7 +1572,7 @@ void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path,
 }
 
 void ContentBrowserAppWindow::RenderSideBar() {
-  const float header_width = c_FilterBarWidth - 46.0f;
+  const float header_width = c_SideBarWidth - 46.0f;
 
   CherryStyle::RemoveMarginX(6.0f);
   CherryNextComponent.SetProperty("size_x", header_width);
@@ -1612,8 +1616,8 @@ void ContentBrowserAppWindow::RenderSideBar() {
         ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
         if (!pool_add_mode) {
           if (ImGui::ImageButtonWithText(
-                  Application::Get().GetCurrentRenderedWindow()->get_texture(
-                      "/usr/local/include/Vortex/imgs/vortex.png"),
+                  Cherry::GetTexture(Cherry::GetPath(
+                      "resources/imgs/icons/misc/icon_add.png")),
                   "Add pool", ImVec2(0, 0), ImVec2(0, 0), ImVec2(1, 1), -1,
                   ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))) {
             pool_add_mode = true;
@@ -1631,8 +1635,8 @@ void ContentBrowserAppWindow::RenderSideBar() {
           ImGui::InputText("###AddPoolPath", pool_add_path,
                            sizeof(pool_add_path));
           if (ImGui::ImageButtonWithText(
-                  Application::Get().GetCurrentRenderedWindow()->get_texture(
-                      "/usr/local/include/Vortex/imgs/vortex.png"),
+                  Cherry::GetTexture(Cherry::GetPath(
+                      "resources/imgs/icons/misc/icon_add.png")),
                   "Add", ImVec2(0, 0), ImVec2(0, 0), ImVec2(1, 1), -1,
                   ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))) {
             VortexMaker::PublishPool(pool_add_path, pool_add_name);
@@ -1641,8 +1645,8 @@ void ContentBrowserAppWindow::RenderSideBar() {
           }
           ImGui::SameLine();
           if (ImGui::ImageButtonWithText(
-                  Application::Get().GetCurrentRenderedWindow()->get_texture(
-                      "/usr/local/include/Vortex/imgs/vortex.png"),
+                  Cherry::GetTexture(Cherry::GetPath(
+                      "resources/imgs/icons/misc/icon_return.png")),
                   "Cancel", ImVec2(0, 0), ImVec2(0, 0), ImVec2(1, 1), -1,
                   ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))) {
             pool_add_mode = false;
@@ -1659,13 +1663,47 @@ void ContentBrowserAppWindow::RenderSideBar() {
 }
 
 void ContentBrowserAppWindow::RenderFiltersBar() {
-  CherryKit::HeaderImageTextButton(
-      "Favorite",
-      Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
+  const float header_width = c_FilterBarWidth - 46.0f;
+
+  static bool test = false;
+
+  CherryStyle::RemoveMarginX(6.0f);
+  CherryNextComponent.SetProperty("size_x", header_width);
+  CherryNextComponent.SetProperty("size_y", 4.0f);
+  CherryNextComponent.SetProperty("color_border", "#343434");
+  CherryNextComponent.SetProperty("color_bg", "#232323");
+  CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
+  CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
+  CherryKit::HeaderImageText(
+      "Basic filters",
+      Cherry::Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
       [this]() {
-        for (auto custom_dir : m_FavoriteFolders) {
-          DrawHierarchy(custom_dir, true);
-        }
+        CherryKit::CheckboxText("All files", &test);
+        CherryKit::CheckboxText("All folders", &test);
+        CherryKit::CheckboxText("Hidden contents", &test);
+      });
+
+  CherryKit::SeparatorText("Advanced filters");
+
+  CherryStyle::RemoveMarginX(6.0f);
+  CherryNextComponent.SetProperty("size_x", header_width);
+  CherryNextComponent.SetProperty("size_y", 4.0f);
+  CherryNextComponent.SetProperty("color_border", "#343434");
+  CherryNextComponent.SetProperty("color_bg", "#232323");
+  CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
+  CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
+  CherryKit::HeaderImageText(
+      "Extensions filters",
+      Cherry::Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
+      [this]() {
+        CherryKit::SeparatorText("Configuration");
+        CherryKit::CheckboxText(".cfg", &test);
+        CherryKit::CheckboxText(".ini", &test);
+        CherryKit::CheckboxText(".config", &test);
+
+        CherryKit::SeparatorText("Text based formats");
+        CherryKit::CheckboxText(".txt", &test);
+        CherryKit::CheckboxText(".json", &test);
       });
 }
 
@@ -1799,6 +1837,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_add.png")),
                           NULL)) {
+        SpawnAddWindow();
       }
       if (ImGui::MenuItem("Import", "Import a component",
                           Cherry::GetTexture(Cherry::GetPath(
@@ -2879,6 +2918,9 @@ void ContentBrowserAppWindow::Render() {
     }
 
     if (child.m_Name == "RenderSideBar") {
+      c_SideBarWidth = child.m_Size;
+    }
+    if (child.m_Name == "RenderFiltersBar") {
       c_FilterBarWidth = child.m_Size;
     }
 

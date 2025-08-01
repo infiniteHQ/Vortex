@@ -2,6 +2,7 @@
 #include "../../../../../lib/cherry/cherry.hpp"
 #include "../../../../../main/include/vortex.h"
 #include "../../../../../main/include/vortex_internals.h"
+#include "./subwindows/add_window/add_window.hpp"
 
 #ifndef VORTEX_EDITOR_CONTENT_BROWSER_APPWINDOW_H
 #define VORTEX_EDITOR_CONTENT_BROWSER_APPWINDOW_H
@@ -201,6 +202,45 @@ public:
   void SetDefaultFolderColor(const std::string &hex);
 
   void FolderIcon(ImVec2 size, ImU32 color);
+
+  std::vector<std::shared_ptr<VortexEditor::ContentBrowserAddWindow>>
+      m_AddWindows;
+
+  int m_AddWindowCounter = 0;
+
+  void SpawnAddWindow() {
+    m_AddWindowCounter++;
+    Cherry::ApplicationSpecification spec;
+
+    std::string name = "?loc:loc.window_names.add_content" +
+                       std::to_string(m_AddWindowCounter);
+    auto new_win = VortexEditor::ContentBrowserAddWindow::Create(name);
+    new_win->GetAppWindow()->SetVisibility(true);
+
+    std::string label = "Add content";
+    spec.Name = label;
+    spec.MinHeight = 300;
+    spec.MinWidth = 175;
+    spec.Height = 600;
+    spec.DisableLogo = true;
+    spec.DisableResize = true;
+    spec.Width = 400;
+    spec.CustomTitlebar = true;
+    spec.DisableWindowManagerTitleBar = true;
+    spec.WindowOnlyClosable = true;
+    spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+    spec.UniqueAppWindowName = new_win->GetAppWindow()->m_Name;
+    spec.FramebarCallback = []() {};
+    spec.UsingCloseCallback = true;
+    spec.CloseCallback = [this, new_win]() {
+      Cherry::DeleteAppWindow(new_win->GetAppWindow());
+    };
+
+    spec.MenubarCallback = []() {};
+    spec.WindowSaves = false;
+    new_win->GetAppWindow()->AttachOnNewWindow(spec);
+    Cherry::AddAppWindow(new_win->GetAppWindow());
+  }
 
   std::string GetContentBrowserFolderColor(const std::string &path) {
     size_t lastSlashIndex = path.find_last_of('/');
