@@ -529,6 +529,15 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
         c_Editor->SetAboutWindowVisibility(
             !c_Editor->GetAboutAppWindowVisibility());
       }
+
+      if (CherryGUI::MenuItem("About the Project", "About the current project",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_info.png")),
+                              c_Editor->GetAboutAppWindowVisibility())) {
+        c_Editor->SetAboutWindowVisibility(
+            !c_Editor->GetAboutAppWindowVisibility());
+      }
+
       CherryGUI::EndMenu();
     }
 

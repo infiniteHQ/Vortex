@@ -170,6 +170,9 @@ void ProjectSettings::RefreshProjectInformations() {
   v_ProjectDescriptionInitial = VortexMaker::GetCurrentContext()->description;
 
   v_ProjectName = v_ProjectNameInitial;
+  v_ProjectAuthor = v_ProjectAuthorInitial;
+  v_ProjectVersion = v_ProjectVersionInitial;
+  v_ProjectDescription = v_ProjectDescriptionInitial;
 }
 
 void ProjectSettings::UpdateProjectInformations() {
@@ -276,14 +279,113 @@ ProjectSettings::ProjectSettings(const std::string &name) {
 
         CherryKit::TableSimple(
             "Information table",
-            {CherryKit::KeyValString("Name", &v_ProjectName)});
+            {
+                CherryKit::KeyValString("Name", &v_ProjectName),
+                CherryKit::KeyValString("Description", &v_ProjectDescription),
+                CherryKit::KeyValString("Version", &v_ProjectVersion),
+                CherryKit::KeyValString("Author", &v_ProjectAuthor),
+            });
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")));
 
   this->AddChild(ProjectSettingsChild(
       "Editor",
       [this]() {
+        Cherry::PushFont("ClashBold");
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Editor");
+        Cherry::PopFont();
+        CherryGUI::SameLine();
+        CherryKit::TooltipTextCustom("(?)", []() {
+          CherryKit::TitleFour("em : Editor Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+          CherryStyle::AddMarginY(10.0f);
+          CherryKit::TitleFour("esm : Editor Script Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+        });
 
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Refresh",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                .GetData("isClicked") == "true") {
+          RefreshProjectInformations();
+        }
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Save",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                .GetData("isClicked") == "true") {
+          // UpdateProjectEditorSettings
+        }
+
+        static std::string color = "#B1FF31";
+
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
+        CherryKit::TableSimple(
+            "Colors",
+            {
+                CherryKit::KeyValColorHex("Color test", &color),
+                CherryKit::KeyValString("Description", &v_ProjectDescription),
+            });
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_human.png")));
+  this->AddChild(ProjectSettingsChild(
+      "Accessibility",
+      [this]() {
+        Cherry::PushFont("ClashBold");
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Editor");
+        Cherry::PopFont();
+        CherryGUI::SameLine();
+        CherryKit::TooltipTextCustom("(?)", []() {
+          CherryKit::TitleFour("em : Editor Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+          CherryStyle::AddMarginY(10.0f);
+          CherryKit::TitleFour("esm : Editor Script Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+        });
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Refresh",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                .GetData("isClicked") == "true") {
+          RefreshProjectInformations();
+        }
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Save",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                .GetData("isClicked") == "true") {
+          // UpdateProjectEditorSettings
+        }
+
+        static std::string color = "#B1FF31";
+
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
+        CherryKit::TableSimple(
+            "Text & Informations",
+            {
+                CherryKit::KeyValString("Language", &v_ProjectDescription),
+                CherryKit::KeyValString("Text scale", &v_ProjectDescription),
+            });
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")));
 

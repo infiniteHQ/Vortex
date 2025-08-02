@@ -219,6 +219,9 @@ public:
                        std::to_string(m_AddWindowCounter);
     auto new_win = VortexEditor::ContentBrowserAddWindow::Create(name);
     new_win->GetAppWindow()->SetVisibility(true);
+    new_win->SetCreateFileCallback([this]() { this->CreateFile(); });
+    new_win->SetCreateFolderCallback([this]() { this->CreateFolder(); });
+    new_win->SetImportContentCallback([this]() { this->SpawnImportWindow(); });
 
     std::string label = "Add content";
     spec.Name = label;

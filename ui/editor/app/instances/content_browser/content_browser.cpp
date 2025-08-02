@@ -743,8 +743,16 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
   CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 1.5f);
 }
 
-void ContentBrowserAppWindow::CreateFile() {}
-void ContentBrowserAppWindow::CreateFolder() {}
+void ContentBrowserAppWindow::CreateFile() {
+  auto path = VortexMaker::CreateFile(m_CurrentDirectory);
+  pathToRename = path;
+}
+
+void ContentBrowserAppWindow::CreateFolder() {
+  auto path = VortexMaker::CreateFolder(m_CurrentDirectory);
+  pathToRename = path;
+}
+
 void ContentBrowserAppWindow::SpawnImportWindow() {}
 
 void ContentBrowserAppWindow::RenderMenubar() {
@@ -1873,13 +1881,15 @@ void ContentBrowserAppWindow::RenderContentBar() {
       CherryKit::SeparatorText("Create");
       if (ImGui::MenuItem("Create new folder", "Create a folder here",
                           Cherry::GetTexture(Cherry::GetPath(
-                              "resources/imgs/icons/misc/icon_wadd.png")),
+                              "resources/imgs/icons/misc/icon_add_folder.png")),
                           NULL)) {
+        CreateFolder();
       }
       if (ImGui::MenuItem("Create new file", "Create empty file here",
                           Cherry::GetTexture(Cherry::GetPath(
-                              "resources/imgs/icons/misc/icon_wadd.png")),
+                              "resources/imgs/icons/misc/icon_add_file.png")),
                           NULL)) {
+        CreateFile();
       }
 
       CherryKit::SeparatorText("Actions");
@@ -2177,11 +2187,9 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
       if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
           isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
-        std::cout << "1" << std::endl;
         std::uintmax_t folderSize = getDirectorySize(path);
         std::string folderSizeString = formatFileSize(folderSize);
         ImGui::PushID(filenameString.c_str());
-        std::cout << "2" << std::endl;
 
         if (ItemCard(filenameString, path, itemEntry.first->m_Description,
                      folderSizeString, selected,

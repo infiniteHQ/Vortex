@@ -8,7 +8,9 @@ ContentBrowserAddWindow::ContentBrowserAddWindow(const std::string &name) {
       Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
 
   m_AppWindow->SetClosable(true);
-  m_AppWindow->m_CloseCallback = [=]() { m_AppWindow->SetVisibility(false); };
+  m_AppWindow->m_CloseCallback = [this]() {
+    m_AppWindow->SetVisibility(false);
+  };
 
   m_AppWindow->SetInternalPaddingX(8.0f);
   m_AppWindow->SetInternalPaddingY(8.0f);
@@ -101,57 +103,84 @@ void ContentBrowserAddWindow::Render() {
   // Little creation block
   CherryStyle::AddMarginX(8.0f);
   CherryNextComponent.SetProperty("size_x", buttons_width);
-  CherryKit::BlockHorizontalCustom(
-      [buttons_width]() {}, buttons_width, 25.0f,
-      {
-          [buttons_width]() {
-            CherryNextComponent.SetProperty("size_x", "25.0f");
-            CherryStyle::RemoveMarginY(6.0f);
-            CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/favicon.png"),
-                                  25.0f, 25.0f);
-          },
-          []() {
-            CherryStyle::AddMarginY(6.0f);
-            CherryKit::TitleSix("New folder");
-          },
-      });
-  // Little creation block
-  CherryStyle::AddMarginX(8.0f);
-  CherryNextComponent.SetProperty("size_x", buttons_width);
-  CherryKit::BlockHorizontalCustom(
-      [buttons_width]() {}, buttons_width, 25.0f,
-      {
-          [buttons_width]() {
-            CherryNextComponent.SetProperty("size_x", "25.0f");
-            CherryStyle::RemoveMarginY(6.0f);
-            CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/favicon.png"),
-                                  25.0f, 25.0f);
-          },
-          []() {
-            CherryStyle::AddMarginY(6.0f);
-            CherryKit::TitleSix("New file");
-          },
-      },
-      2);
-  // Little creation block
-  CherryStyle::AddMarginX(8.0f);
-  CherryNextComponent.SetProperty("size_x", buttons_width);
-  CherryKit::BlockHorizontalCustom(
-      [buttons_width]() {}, buttons_width, 25.0f,
-      {
-          [buttons_width]() {
-            CherryNextComponent.SetProperty("size_x", "25.0f");
-            CherryStyle::RemoveMarginY(6.0f);
-            CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/favicon.png"),
-                                  25.0f, 25.0f);
-          },
-          []() {
-            CherryStyle::AddMarginY(6.0f);
-            CherryKit::TitleSix("Import content");
-          },
-      },
-      3);
+  if (CherryKit::BlockHorizontalCustom(
+          [buttons_width]() {}, buttons_width, 25.0f,
+          {
+              [buttons_width]() {
+                CherryNextComponent.SetProperty("size_x", "18.0f");
+                CherryStyle::RemoveMarginY(2.0f);
+                CherryStyle::AddMarginX(5.0f);
+                CherryKit::ImageLocal(
+                    Cherry::GetPath(
+                        "resources/imgs/icons/misc/icon_add_folder.png"),
+                    18.0f, 18.0f);
+              },
+              []() {
+                CherryStyle::AddMarginY(6.0f);
+                CherryNextComponent.SetProperty("color_text", "#CDCDCD");
+                CherryKit::TextSimple("New folder");
+              },
+          })
+          .GetDataAs<bool>("isClicked")) {
+    if (m_CreateFolderCallback) {
+      m_CreateFolderCallback();
+    }
+  }
 
+  // Little creation block
+  CherryStyle::AddMarginX(8.0f);
+  CherryNextComponent.SetProperty("size_x", buttons_width);
+  if (CherryKit::BlockHorizontalCustom(
+          [buttons_width]() {}, buttons_width, 25.0f,
+          {
+              [buttons_width]() {
+                CherryNextComponent.SetProperty("size_x", "18.0f");
+                CherryStyle::RemoveMarginY(2.0f);
+                CherryStyle::AddMarginX(5.0f);
+                CherryKit::ImageLocal(
+                    Cherry::GetPath(
+                        "resources/imgs/icons/misc/icon_add_file.png"),
+                    18.0f, 18.0f);
+              },
+              []() {
+                CherryStyle::AddMarginY(6.0f);
+                CherryNextComponent.SetProperty("color_text", "#CDCDCD");
+                CherryKit::TextSimple("New file");
+              },
+          },
+          2)
+          .GetDataAs<bool>("isClicked")) {
+    if (m_CreateFileCallback) {
+      m_CreateFileCallback();
+    }
+    Cherry::DeleteAppWindow(m_AppWindow);
+  }
+
+  // Little creation block
+  CherryStyle::AddMarginX(8.0f);
+  CherryNextComponent.SetProperty("size_x", buttons_width);
+  if (CherryKit::BlockHorizontalCustom(
+          [buttons_width]() {}, buttons_width, 25.0f,
+          {
+              [buttons_width]() {
+                CherryNextComponent.SetProperty("size_x", "25.0f");
+                CherryStyle::RemoveMarginY(6.0f);
+                CherryKit::ImageLocal(
+                    Cherry::GetPath("resources/imgs/favicon.png"), 25.0f,
+                    25.0f);
+              },
+              []() {
+                CherryStyle::AddMarginY(6.0f);
+                CherryNextComponent.SetProperty("color_text", "#CDCDCD");
+                CherryKit::TitleSix("Import content");
+              },
+          },
+          3)
+          .GetDataAs<bool>("isClicked")) {
+    if (m_ImportContentCallback) {
+      m_ImportContentCallback();
+    }
+  }
   CherryStyle::AddMarginX(8.0f);
   CherryKit::SeparatorText("Basics");
   CherryStyle::AddMarginX(8.0f);
@@ -173,8 +202,6 @@ void ContentBrowserAddWindow::Render() {
             [header_width]() {}, header_width, 25.0f,
             {
                 [header_width]() {
-                  std::cout << "header_width " << std::to_string(header_width)
-                            << std::endl;
                   CherryNextComponent.SetProperty("size_x", "25.0f");
                   CherryStyle::RemoveMarginY(6.0f);
                   CherryKit::ImageLocal(

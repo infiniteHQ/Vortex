@@ -301,6 +301,8 @@ VORTEX_API std::string SearchFilesRecursive(const fs::path &chemin,
                                             int recursions, int counter);
 bool DebugCheckVersionAndDataLayout(const char *version);
 
+VORTEX_API std::string CreateFile(const std::string &path);
+VORTEX_API std::string CreateFolder(const std::string &path);
 VORTEX_API void MoveAllContent();
 VORTEX_API void CopyAllContent();
 VORTEX_API void ExecuteCommand();

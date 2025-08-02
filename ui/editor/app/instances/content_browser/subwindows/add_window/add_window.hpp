@@ -22,6 +22,22 @@ public:
   void SetupRenderCallback();
   void Render();
 
+  void SetCreateFileCallback(const std::function<void()> &callback) {
+    m_CreateFileCallback = callback;
+  }
+
+  void SetCreateFolderCallback(const std::function<void()> &callback) {
+    m_CreateFolderCallback = callback;
+  }
+
+  void SetImportContentCallback(const std::function<void()> &callback) {
+    m_ImportContentCallback = callback;
+  }
+
+  std::function<void()> m_CreateFileCallback;
+  std::function<void()> m_CreateFolderCallback;
+  std::function<void()> m_ImportContentCallback;
+
   std::shared_ptr<Cherry::AppWindow> m_AppWindow;
 };
 } // namespace VortexEditor

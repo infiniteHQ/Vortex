@@ -905,42 +905,38 @@ VORTEX_API void VortexMaker::ClearCopySelection() {
 
 static bool isStrictSubPath(const fs::path &potentialSub,
                             const fs::path &base) {
-  fs::path baseAbs;
-  fs::path subAbs;
-
-  try {
-    baseAbs = fs::canonical(base);
-    subAbs = fs::canonical(potentialSub);
-  } catch (const fs::filesystem_error &) {
-    baseAbs = fs::weakly_canonical(base);
-    subAbs = fs::weakly_canonical(potentialSub);
-  }
-
-  if (baseAbs == subAbs) {
-    return false;
-  }
-
-  return subAbs.string().rfind(baseAbs.string(), 0) == 0;
+  auto rel = fs::weakly_canonical(potentialSub)
+                 .lexically_relative(fs::weakly_canonical(base));
+  return !rel.empty() && rel.native()[0] != '.';
 }
 
 void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest,
                               const fs::path &destRoot) {
   if (!fs::exists(src) || !fs::is_directory(src)) {
-
     // err
     return;
   }
-
   fs::create_directories(dest);
-
   for (const auto &entry : fs::directory_iterator(src)) {
     const fs::path &from = entry.path();
     fs::path to = dest / from.filename();
-
-    if (isStrictSubPath(from, destRoot) || from == destRoot) {
-      continue;
+    fs::path fromCanonical;
+    fs::path destRootCanonical;
+    try {
+      fromCanonical = fs::canonical(from);
+    } catch (...) {
+      fromCanonical = fs::weakly_canonical(from);
+    }
+    try {
+      destRootCanonical = fs::canonical(destRoot);
+    } catch (...) {
+      destRootCanonical = fs::weakly_canonical(destRoot);
     }
 
+    if (isStrictSubPath(fromCanonical, destRootCanonical) ||
+        fromCanonical == destRootCanonical) {
+      continue;
+    }
     try {
       if (fs::is_directory(from)) {
         CopyDirectoryRecursively(from, to, destRoot);
@@ -1057,6 +1053,41 @@ VORTEX_API void VortexMaker::RenameFolder(const std::string &target_path,
   } catch (const std::exception &e) {
     throw std::runtime_error(std::string("Error: ") + e.what());
   }
+}
+
+VORTEX_API std::string VortexMaker::CreateFile(const std::string &path) {
+  fs::path basePath(path);
+  std::string baseName = "New file";
+  std::string extension = ".txt";
+  fs::path fullPath = basePath / (baseName + extension);
+
+  int counter = 2;
+  while (fs::exists(fullPath)) {
+    fullPath =
+        basePath / (baseName + " " + std::to_string(counter) + extension);
+    ++counter;
+  }
+
+  std::ofstream ofs(fullPath);
+  ofs.close();
+
+  return fs::absolute(fullPath).string();
+}
+
+VORTEX_API std::string VortexMaker::CreateFolder(const std::string &path) {
+  fs::path basePath(path);
+  std::string baseName = "New folder";
+  fs::path fullPath = basePath / baseName;
+
+  int counter = 2;
+  while (fs::exists(fullPath)) {
+    fullPath = basePath / (baseName + " " + std::to_string(counter));
+    ++counter;
+  }
+
+  fs::create_directories(fullPath);
+
+  return fs::absolute(fullPath).string();
 }
 
 VORTEX_API void VortexMaker::RenameFile(const std::string &target_path,
