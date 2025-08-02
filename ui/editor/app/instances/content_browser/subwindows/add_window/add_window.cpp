@@ -67,6 +67,7 @@ void ContentBrowserAddWindow::SetupRenderCallback() {
 void ContentBrowserAddWindow::Render() {
   float window_width = CherryGUI::GetWindowSize().x;
   float header_width = window_width - 46.0f;
+  float buttons_width = window_width - 17.0f;
   float image_height = window_width / 4.720f;
 
   CherryGUI::Image(
@@ -97,7 +98,62 @@ void ContentBrowserAddWindow::Render() {
 
   CherryStyle::AddMarginX(8.0f);
   CherryKit::SeparatorText("Basics");
+  // Little creation block
+  CherryStyle::AddMarginX(8.0f);
+  CherryNextComponent.SetProperty("size_x", buttons_width);
+  CherryKit::BlockHorizontalCustom(
+      [buttons_width]() {}, buttons_width, 25.0f,
+      {
+          [buttons_width]() {
+            CherryNextComponent.SetProperty("size_x", "25.0f");
+            CherryStyle::RemoveMarginY(6.0f);
+            CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/favicon.png"),
+                                  25.0f, 25.0f);
+          },
+          []() {
+            CherryStyle::AddMarginY(6.0f);
+            CherryKit::TitleSix("New folder");
+          },
+      });
+  // Little creation block
+  CherryStyle::AddMarginX(8.0f);
+  CherryNextComponent.SetProperty("size_x", buttons_width);
+  CherryKit::BlockHorizontalCustom(
+      [buttons_width]() {}, buttons_width, 25.0f,
+      {
+          [buttons_width]() {
+            CherryNextComponent.SetProperty("size_x", "25.0f");
+            CherryStyle::RemoveMarginY(6.0f);
+            CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/favicon.png"),
+                                  25.0f, 25.0f);
+          },
+          []() {
+            CherryStyle::AddMarginY(6.0f);
+            CherryKit::TitleSix("New file");
+          },
+      },
+      2);
+  // Little creation block
+  CherryStyle::AddMarginX(8.0f);
+  CherryNextComponent.SetProperty("size_x", buttons_width);
+  CherryKit::BlockHorizontalCustom(
+      [buttons_width]() {}, buttons_width, 25.0f,
+      {
+          [buttons_width]() {
+            CherryNextComponent.SetProperty("size_x", "25.0f");
+            CherryStyle::RemoveMarginY(6.0f);
+            CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/favicon.png"),
+                                  25.0f, 25.0f);
+          },
+          []() {
+            CherryStyle::AddMarginY(6.0f);
+            CherryKit::TitleSix("Import content");
+          },
+      },
+      3);
 
+  CherryStyle::AddMarginX(8.0f);
+  CherryKit::SeparatorText("Basics");
   CherryStyle::AddMarginX(8.0f);
   CherryNextComponent.SetProperty("size_x", header_width);
   CherryNextComponent.SetProperty("color_border", "#343434");

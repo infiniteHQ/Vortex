@@ -903,6 +903,56 @@ VORTEX_API void VortexMaker::ClearCopySelection() {
   ctx.IO.copy_selection.clear();
 }
 
+static bool isStrictSubPath(const fs::path &potentialSub,
+                            const fs::path &base) {
+  fs::path baseAbs;
+  fs::path subAbs;
+
+  try {
+    baseAbs = fs::canonical(base);
+    subAbs = fs::canonical(potentialSub);
+  } catch (const fs::filesystem_error &) {
+    baseAbs = fs::weakly_canonical(base);
+    subAbs = fs::weakly_canonical(potentialSub);
+  }
+
+  if (baseAbs == subAbs) {
+    return false;
+  }
+
+  return subAbs.string().rfind(baseAbs.string(), 0) == 0;
+}
+
+void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest,
+                              const fs::path &destRoot) {
+  if (!fs::exists(src) || !fs::is_directory(src)) {
+
+    // err
+    return;
+  }
+
+  fs::create_directories(dest);
+
+  for (const auto &entry : fs::directory_iterator(src)) {
+    const fs::path &from = entry.path();
+    fs::path to = dest / from.filename();
+
+    if (isStrictSubPath(from, destRoot) || from == destRoot) {
+      continue;
+    }
+
+    try {
+      if (fs::is_directory(from)) {
+        CopyDirectoryRecursively(from, to, destRoot);
+      } else {
+        fs::copy_file(from, to, fs::copy_options::overwrite_existing);
+      }
+    } catch (const fs::filesystem_error &e) {
+      // err
+    }
+  }
+}
+
 VORTEX_API void
 VortexMaker::PasteAllSelections(const std::string &target_path_str) {
   VxContext &ctx = *CVortexMaker;
@@ -911,9 +961,8 @@ VortexMaker::PasteAllSelections(const std::string &target_path_str) {
   auto generateNonConflictingPath =
       [](const fs::path &targetDir, const fs::path &originalName) -> fs::path {
     fs::path newPath = targetDir / originalName;
-    if (!fs::exists(newPath)) {
+    if (!fs::exists(newPath))
       return newPath;
-    }
 
     std::string stem = originalName.stem().string();
     std::string extension =
@@ -922,13 +971,11 @@ VortexMaker::PasteAllSelections(const std::string &target_path_str) {
 
     while (true) {
       std::string candidateName = stem + " copy";
-      if (counter > 1) {
+      if (counter > 1)
         candidateName += std::to_string(counter);
-      }
       fs::path candidatePath = targetDir / (candidateName + extension);
-      if (!fs::exists(candidatePath)) {
+      if (!fs::exists(candidatePath))
         return candidatePath;
-      }
       ++counter;
     }
   };
@@ -942,15 +989,27 @@ VortexMaker::PasteAllSelections(const std::string &target_path_str) {
 
     fs::path destPath =
         generateNonConflictingPath(targetPath, srcPath.filename());
+
+    // ❌ NE PLUS BLOQUER LA COPIE — la prévention est faite proprement en
+    // récursif
+    /*
+    if (fs::is_directory(srcPath) && isStrictSubPath(destPath, srcPath)) {
+      std::cerr << "Copie récursive détectée, opération ignorée : " << srcPath
+                << " → " << destPath << "\n";
+      continue;
+    }
+    */
+
     try {
       if (fs::is_directory(srcPath)) {
-        fs::copy(srcPath, destPath, fs::copy_options::recursive);
+        CopyDirectoryRecursively(srcPath, destPath, destPath);
       } else {
         fs::copy_file(srcPath, destPath);
       }
+
     } catch (const std::exception &e) {
-      std::cerr << "Erreur copie de " << srcPath << " vers " << destPath
-                << " : " << e.what() << "\n";
+      std::cerr << "Erreur de copie : " << srcPath << " → " << destPath << " : "
+                << e.what() << "\n";
     }
   }
 
@@ -963,16 +1022,21 @@ VortexMaker::PasteAllSelections(const std::string &target_path_str) {
 
     fs::path destPath =
         generateNonConflictingPath(targetPath, srcPath.filename());
+
+    // 🚫 Prévention contre le déplacement récursif
+    if (fs::is_directory(srcPath) && isStrictSubPath(destPath, srcPath)) {
+      std::cerr << "Déplacement récursif détecté, opération ignorée : "
+                << srcPath << " → " << destPath << "\n";
+      continue;
+    }
+
     try {
       fs::rename(srcPath, destPath);
     } catch (const std::exception &e) {
-      std::cerr << "Erreur déplacement de " << srcPath << " vers " << destPath
+      std::cerr << "Erreur de déplacement : " << srcPath << " → " << destPath
                 << " : " << e.what() << "\n";
     }
   }
-
-  // ctx.IO.copy_selection.clear();
-  // ctx.IO.cut_selection.clear();
 }
 
 VORTEX_API void VortexMaker::RenameFolder(const std::string &target_path,

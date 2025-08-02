@@ -176,8 +176,11 @@ public:
   void RenderContentBar();
   void RenderDetailsBar();
   void RenderRightMenubar();
-
   void RenderMenubar();
+
+  void CreateFile();
+  void CreateFolder();
+  void SpawnImportWindow();
 
   void Select(const std::string &path) {
     for (auto already : m_Selected) {
@@ -194,8 +197,8 @@ public:
   void DrawFolderIcon(ImVec2 pos, ImVec2 size, ImU32 color);
   void MyFolderButton(const char *id, ImVec2 size, ImU32 color,
                       const std::string &path);
-  void FolderButton(const char *id, ImVec2 size, ImU32 color,
-                    const std::string &path);
+  void FolderButton(const char *id, ImVec2 size, const std::string &path,
+                    const std::string &color);
   void DrawHierarchy(std::filesystem::path path, bool isDir,
                      const std::string &label);
 
