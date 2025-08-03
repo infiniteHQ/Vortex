@@ -6,6 +6,7 @@ static bool ErrorFilter = true;
 static bool WarnFilter = true;
 static bool FatalFilter = true;
 static bool InfoFilter = true;
+static std::string ProjectSearch;
 
 static float c_FilterBarWidth = 250.0f;
 
@@ -24,9 +25,12 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 3.0f);
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     CherryNextComponent.SetProperty("padding_x", "10.0f");
-    CherryKit::ButtonImageText(
-        "Search",
-        GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
+    if (CherryKit::ButtonImageText(
+            "Search",
+            GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"))
+            .GetDataAs<bool>("isClicked")) {
+      m_SearchBar = !m_SearchBar;
+    }
 
     CherryNextComponent.SetProperty("color_border", "#00000000");
     CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
@@ -94,7 +98,9 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
     CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
     CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
     CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
-
+    if (m_WillShowFilterPannel != m_ShowFilterPannel) {
+      m_ShowFilterPannel = m_WillShowFilterPannel;
+    }
     if (CherryGUI::BeginPopup("ViewMenuPopup")) {
       CherryKit::SeparatorText("Pannels");
       CherryKit::CheckboxText("Show Filter pannel", &m_ShowFilterPannel);
@@ -127,6 +133,10 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
 
       CherryGUI::EndPopup();
     }
+    if (m_WillShowFilterPannel != m_ShowFilterPannel) {
+      m_WillShowFilterPannel = m_ShowFilterPannel;
+    }
+
     CherryGUI::PopStyleVar();
     CherryGUI::PopStyleColor(2);
     /*{
@@ -459,7 +469,31 @@ void LogsUtilityAppWindow::Render() {
 }
 
 void LogsUtilityAppWindow::RenderContentBar() {
+  if (m_SearchBar) {
 
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    CherryNextComponent.SetProperty("padding_y", "6.0f");
+    if (CherryKit::ButtonImageText(
+            "Filters", GetPath("resources/imgs/icons/misc/icon_filter.png"))
+            .GetDataAs<bool>("isClicked")) {
+      m_WillShowFilterPannel = !m_WillShowFilterPannel;
+    }
+
+    CherryGUI::SameLine();
+
+    CherryNextComponent.SetProperty("size_x", "240");
+    CherryNextComponent.SetProperty("padding_y", "6.0f");
+    CherryNextComponent.SetProperty("description", "Search content...");
+    CherryNextComponent.SetProperty(
+        "description_logo",
+        GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
+    CherryNextComponent.SetProperty("description_logo_place", "r");
+    CherryKit::InputString("", &ProjectSearch);
+
+    CherryKit::Separator();
+  }
   if (m_ShowMode == ShowMode::Advanced) {
     CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 0.0f));
 

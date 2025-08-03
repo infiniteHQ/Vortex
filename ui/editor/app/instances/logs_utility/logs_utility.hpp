@@ -66,10 +66,12 @@ private:
   bool m_ChildSizesInitialized = false;
 
   ShowMode m_ShowMode = ShowMode::Simple;
+  bool m_WillShowFilterPannel = false;
   bool m_UseWarningFilter = false;
   bool m_UseErrorFilter = false;
   bool m_UseFatalFilter = false;
   bool m_UseInfoFilter = false;
+  bool m_SearchBar = false;
 
   std::map<std::string, bool> m_TopicsFilterStates;
 
