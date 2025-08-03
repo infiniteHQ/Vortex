@@ -16,6 +16,8 @@ using namespace Cherry;
 
 namespace VortexEditor {
 
+enum class ShowMode { Advanced, Simple, Block };
+
 struct LogUtilityChild {
   std::function<void()> m_Child;
   std::string m_Name;
@@ -63,6 +65,7 @@ private:
   bool m_PreviousFilterPannelState = false;
   bool m_ChildSizesInitialized = false;
 
+  ShowMode m_ShowMode = ShowMode::Simple;
   bool m_UseWarningFilter = false;
   bool m_UseErrorFilter = false;
   bool m_UseFatalFilter = false;

@@ -175,6 +175,8 @@ void Editor::Menubar(const std::shared_ptr<EditorLayer> &exampleLayer,
 
   if (CherryGUI::BeginMenu("Edit")) {
 
+    // TODO : Save All, (like the content browser)
+
     CherryGUI::GetFont()->Scale *= 0.8;
     CherryGUI::PushFont(CherryGUI::GetFont());
 

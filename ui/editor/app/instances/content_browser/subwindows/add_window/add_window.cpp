@@ -125,6 +125,7 @@ void ContentBrowserAddWindow::Render() {
     if (m_CreateFolderCallback) {
       m_CreateFolderCallback();
     }
+    Cherry::DeleteAppWindow(m_AppWindow);
   }
 
   // Little creation block
@@ -180,6 +181,7 @@ void ContentBrowserAddWindow::Render() {
     if (m_ImportContentCallback) {
       m_ImportContentCallback();
     }
+    Cherry::DeleteAppWindow(m_AppWindow);
   }
   CherryStyle::AddMarginX(8.0f);
   CherryKit::SeparatorText("Basics");

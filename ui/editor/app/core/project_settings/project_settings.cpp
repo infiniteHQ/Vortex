@@ -258,7 +258,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         Cherry::SetNextComponentProperty("padding_y", "4");
         if (CherryKit::ButtonImageText(
                 "Refresh",
-                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
                 .GetData("isClicked") == "true") {
           RefreshProjectInformations();
         }
@@ -269,7 +269,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         Cherry::SetNextComponentProperty("padding_y", "4");
         if (CherryKit::ButtonImageText(
                 "Save",
-                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
                 .GetData("isClicked") == "true") {
           UpdateProjectInformations();
         }
@@ -279,21 +279,34 @@ ProjectSettings::ProjectSettings(const std::string &name) {
 
         CherryKit::TableSimple(
             "Information table",
-            {
-                CherryKit::KeyValString("Name", &v_ProjectName),
-                CherryKit::KeyValString("Description", &v_ProjectDescription),
-                CherryKit::KeyValString("Version", &v_ProjectVersion),
-                CherryKit::KeyValString("Author", &v_ProjectAuthor),
-            });
+            {{
+                CherryKit::KeyValParent(
+                    "Main informations", true,
+                    {
+
+                        CherryKit::KeyValString("Name", &v_ProjectName),
+                        CherryKit::KeyValString("Description",
+                                                &v_ProjectDescription),
+                        CherryKit::KeyValString("Version", &v_ProjectVersion),
+                        CherryKit::KeyValString("Author", &v_ProjectAuthor),
+                    }),
+                CherryKit::KeyValParent(
+                    "Shipping", false,
+                    {
+
+                        CherryKit::KeyValString("Projectg type",
+                                                &v_ProjectName),
+                    }),
+            }});
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")));
 
   this->AddChild(ProjectSettingsChild(
-      "Editor",
+      "Configurations",
       [this]() {
         Cherry::PushFont("ClashBold");
         CherryNextProp("color_text", "#797979");
-        CherryKit::TitleFive("Editor");
+        CherryKit::TitleFive("Project informations");
         Cherry::PopFont();
         CherryGUI::SameLine();
         CherryKit::TooltipTextCustom("(?)", []() {
@@ -310,7 +323,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         Cherry::SetNextComponentProperty("padding_y", "4");
         if (CherryKit::ButtonImageText(
                 "Refresh",
-                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
                 .GetData("isClicked") == "true") {
           RefreshProjectInformations();
         }
@@ -321,20 +334,124 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         Cherry::SetNextComponentProperty("padding_y", "4");
         if (CherryKit::ButtonImageText(
                 "Save",
-                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+                .GetData("isClicked") == "true") {
+          UpdateProjectInformations();
+        }
+
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
+
+        CherryKit::TableSimple(
+            "Information table",
+            {{
+                CherryKit::KeyValParent(
+                    "Main informations", true,
+                    {
+
+                        CherryKit::KeyValString("Name", &v_ProjectName),
+                        CherryKit::KeyValString("Description",
+                                                &v_ProjectDescription),
+                        CherryKit::KeyValString("Version", &v_ProjectVersion),
+                        CherryKit::KeyValString("Author", &v_ProjectAuthor),
+                    }),
+                CherryKit::KeyValParent(
+                    "Shipping", false,
+                    {
+
+                        CherryKit::KeyValString("Projectg type",
+                                                &v_ProjectName),
+                    }),
+            }});
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png")));
+  this->AddChild(ProjectSettingsChild(
+      "Theme & Customizations",
+      [this]() {
+        Cherry::PushFont("ClashBold");
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Theme & Customizations");
+        Cherry::PopFont();
+        CherryGUI::SameLine();
+        CherryKit::TooltipTextCustom("(?)", []() {
+          CherryKit::TitleFour("em : Editor Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+          CherryStyle::AddMarginY(10.0f);
+          CherryKit::TitleFour("esm : Editor Script Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+        });
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Refresh",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+                .GetData("isClicked") == "true") {
+          RefreshProjectInformations();
+        }
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Save",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
                 .GetData("isClicked") == "true") {
           // UpdateProjectEditorSettings
         }
 
         static std::string color = "#B1FF31";
-
+        static std::vector<std::string> theme_selector = {"Dark", "Light",
+                                                          "Custom"};
+        static int selected = 0;
         CherryNextProp("color", "#252525");
         CherryKit::Separator();
         CherryKit::TableSimple(
-            "Colors",
+            "General",
             {
-                CherryKit::KeyValColorHex("Color test", &color),
-                CherryKit::KeyValString("Description", &v_ProjectDescription),
+                CherryKit::KeyValCustom(
+                    "Create new theme",
+                    [this]() {
+                      Cherry::SetNextComponentProperty("size_x", "200");
+                      CherryKit::InputString("", &v_ProjectAuthor);
+                      CherryGUI::SameLine();
+                      Cherry::SetNextComponentProperty("size_x", "200");
+                      CherryKit::ComboText("", &theme_selector, selected);
+                      CherryGUI::SameLine();
+                      Cherry::SetNextComponentProperty("padding_x", "9");
+                      Cherry::SetNextComponentProperty("padding_y", "7");
+                      if (CherryKit::ButtonImageText(
+                              "Add",
+                              Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_add.png"))
+                              .GetData("isClicked") == "true") {
+                        // UpdateProjectEditorSettings
+                      }
+                    }),
+                CherryKit::KeyValComboString("Theme used", &theme_selector,
+                                             selected),
+            });
+        CherryKit::Separator();
+
+        CherryKit::TableSimple(
+            "Customize theme",
+            {
+                CherryKit::KeyValParent("Theme Settings", {}),
+                CherryKit::KeyValParent("Colors",
+                                        {
+                                            CherryKit::KeyValParent("Windows",
+                                                                    {
+
+                                                                    }),
+                                            CherryKit::KeyValParent("Elements",
+                                                                    {
+
+                                                                    }),
+                                        }),
+                CherryKit::KeyValParent("Sizes & Scales", {}),
             });
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_human.png")));
@@ -360,7 +477,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         Cherry::SetNextComponentProperty("padding_y", "4");
         if (CherryKit::ButtonImageText(
                 "Refresh",
-                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
                 .GetData("isClicked") == "true") {
           RefreshProjectInformations();
         }
@@ -371,12 +488,10 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         Cherry::SetNextComponentProperty("padding_y", "4");
         if (CherryKit::ButtonImageText(
                 "Save",
-                Cherry::GetPath("resources/imgs/icons/misc/icon_refresh.png"))
+                Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
                 .GetData("isClicked") == "true") {
           // UpdateProjectEditorSettings
         }
-
-        static std::string color = "#B1FF31";
 
         CherryNextProp("color", "#252525");
         CherryKit::Separator();

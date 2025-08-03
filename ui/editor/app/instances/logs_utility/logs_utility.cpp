@@ -65,13 +65,13 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
 
       CherryNextComponent.SetProperty("padding_y", "6.0f");
       CherryNextComponent.SetProperty("padding_x", "10.0f");
-
+      CherryNextComponent.SetProperty("disable_callback", "true");
       if (CherryKit::ButtonImageTextDropdown(
               "View", GetPath("resources/imgs/icons/misc/icon_eye.png"))
               .GetDataAs<bool>("isClicked")) {
-        ImVec2 mousePos = ImGui::GetMousePos();
-        ImVec2 displaySize = ImGui::GetIO().DisplaySize;
-        ImVec2 popupSize(150, 100);
+        ImVec2 mousePos = CherryGUI::GetMousePos();
+        ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
+        ImVec2 popupSize(350, 100);
 
         if (mousePos.x + popupSize.x > displaySize.x) {
           mousePos.x -= popupSize.x;
@@ -80,11 +80,55 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
           mousePos.y -= popupSize.y;
         }
 
-        ImGui::SetNextWindowPos(mousePos);
-        ImGui::OpenPopup("OptionMenu");
+        CherryGUI::SetNextWindowSize(popupSize, ImGuiCond_Appearing);
+        CherryGUI::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
+        CherryGUI::OpenPopup("ViewMenuPopup");
       }
     }
+    ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);          // TODO : Props
+    ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // TODO : Props
+    ImVec4 darkBackgroundColor =
+        ImVec4(0.15f, 0.15f, 0.15f, 1.0f);                    // TODO : Props
+    ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // TODO : Props
 
+    CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+    CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+    CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+
+    if (CherryGUI::BeginPopup("ViewMenuPopup")) {
+      CherryKit::SeparatorText("Pannels");
+      CherryKit::CheckboxText("Show Filter pannel", &m_ShowFilterPannel);
+
+      CherryKit::SeparatorText("View mode");
+      switch (
+          CherryKit::ComboImageText(
+              "Display",
+              {{"Simple", GetPath("resources/imgs/icons/misc/icon_eye.png")},
+               {"Block", GetPath("resources/imgs/icons/misc/icon_eye.png")},
+               {"Advanced", GetPath("resources/imgs/icons/misc/icon_eye.png")}},
+              0)
+              .GetPropertyAs<int>("selected")) {
+      case 0: {
+        m_ShowMode = ShowMode::Simple;
+        break;
+      }
+      case 1: {
+        m_ShowMode = ShowMode::Block;
+        break;
+      }
+      case 2: {
+        m_ShowMode = ShowMode::Advanced;
+        break;
+      }
+      default: {
+        break;
+      }
+      }
+
+      CherryGUI::EndPopup();
+    }
+    CherryGUI::PopStyleVar();
+    CherryGUI::PopStyleColor(2);
     /*{
       static std::shared_ptr<Cherry::CustomDrowpdownImageButtonSimple> btn =
           std::make_shared<Cherry::CustomDrowpdownImageButtonSimple>(
@@ -124,13 +168,14 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
   });
 
   m_AppWindow->SetLeftBottombarCallback([this]() {
+    CherryStyle::AddMarginX(8.0f);
     CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 6.5f);
 
-    CherryNextComponent.SetProperty("size_x", "240");
+    CherryNextComponent.SetProperty("size_x", "350");
     CherryNextComponent.SetProperty("description", "Enter commands here...");
     CherryNextComponent.SetProperty(
         "description_logo", GetPath("resources/imgs/icons/misc/icon_cmd.png"));
-    CherryNextComponent.SetProperty("description_logo_place", "r");
+    CherryNextComponent.SetProperty("description_logo_place", "l");
     CherryKit::InputString(CherryID("CommandPrompt"), "", &m_CmdInputValue);
   });
 
@@ -414,185 +459,349 @@ void LogsUtilityAppWindow::Render() {
 }
 
 void LogsUtilityAppWindow::RenderContentBar() {
-  std::cout << "Render" << std::endl;
-  CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 0.0f));
 
-  static ImGuiTableFlags flags =
-      ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable |
-      ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable |
-      ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders |
-      ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingStretchSame;
+  if (m_ShowMode == ShowMode::Advanced) {
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 0.0f));
 
-  const float TEXT_BASE_WIDTH = CherryGUI::CalcTextSize("A").x;
+    static ImGuiTableFlags flags =
+        ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable |
+        ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable |
+        ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders |
+        ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingStretchSame;
 
-  CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
-  CherryGUI::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+    const float TEXT_BASE_WIDTH = CherryGUI::CalcTextSize("A").x;
 
-  if (CherryGUI::BeginTable("LogsTable", 4, flags)) {
-    CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 6.0f));
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 
-    CherryGUI::TableSetupColumn("Level", ImGuiTableColumnFlags_WidthFixed,
-                                TEXT_BASE_WIDTH * 6.0f);
-    CherryGUI::TableSetupColumn("Origin", ImGuiTableColumnFlags_WidthFixed,
-                                TEXT_BASE_WIDTH * 9.0f);
-    CherryGUI::TableSetupColumn("Timestamp", ImGuiTableColumnFlags_WidthFixed,
-                                TEXT_BASE_WIDTH * 15.0f);
-    CherryGUI::TableSetupColumn("Message", ImGuiTableColumnFlags_WidthStretch);
+    if (CherryGUI::BeginTable("LogsTable", 4, flags)) {
+      CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 6.0f));
 
-    CherryGUI::TableHeadersRow();
+      CherryGUI::TableSetupColumn("Level", ImGuiTableColumnFlags_WidthFixed,
+                                  TEXT_BASE_WIDTH * 6.0f);
+      CherryGUI::TableSetupColumn("Origin", ImGuiTableColumnFlags_WidthFixed,
+                                  TEXT_BASE_WIDTH * 9.0f);
+      CherryGUI::TableSetupColumn("Timestamp", ImGuiTableColumnFlags_WidthFixed,
+                                  TEXT_BASE_WIDTH * 15.0f);
+      CherryGUI::TableSetupColumn("Message",
+                                  ImGuiTableColumnFlags_WidthStretch);
 
-    CherryGUI::PopStyleVar();
-    auto oldFilterStates = m_TopicsFilterStates;
-    m_TopicsFilterStates.clear();
+      CherryGUI::TableHeadersRow();
 
-    for (auto log : VortexMaker::GetCurrentContext()->registered_logs) {
-      const std::string &topic = log->m_filter;
+      CherryGUI::PopStyleVar();
+      auto oldFilterStates = m_TopicsFilterStates;
+      m_TopicsFilterStates.clear();
 
-      if (oldFilterStates.find(topic) != oldFilterStates.end()) {
-        m_TopicsFilterStates[topic] = oldFilterStates[topic];
-      } else {
-        m_TopicsFilterStates[topic] = false;
-      }
-    }
+      for (auto log : VortexMaker::GetCurrentContext()->registered_logs) {
+        const std::string &topic = log->m_filter;
 
-    bool hasActiveFilter =
-        std::any_of(m_TopicsFilterStates.begin(), m_TopicsFilterStates.end(),
-                    [](const auto &pair) { return pair.second; });
-
-    for (auto log : VortexMaker::GetCurrentContext()->registered_logs) {
-      if (oldFilterStates.find(log->m_filter) != oldFilterStates.end()) {
-        m_TopicsFilterStates[log->m_filter] = oldFilterStates[log->m_filter];
-      } else {
-        m_TopicsFilterStates[log->m_filter] = false;
+        if (oldFilterStates.find(topic) != oldFilterStates.end()) {
+          m_TopicsFilterStates[topic] = oldFilterStates[topic];
+        } else {
+          m_TopicsFilterStates[topic] = false;
+        }
       }
 
-      if (m_UseWarningFilter || m_UseErrorFilter || m_UseFatalFilter ||
-          m_UseInfoFilter) {
-        if ((log->m_level == spdlog::level::critical && !m_UseFatalFilter) ||
-            (log->m_level == spdlog::level::err && !m_UseErrorFilter) ||
-            (log->m_level == spdlog::level::warn && !m_UseWarningFilter) ||
-            (log->m_level == spdlog::level::info && !m_UseInfoFilter)) {
+      bool hasActiveFilter =
+          std::any_of(m_TopicsFilterStates.begin(), m_TopicsFilterStates.end(),
+                      [](const auto &pair) { return pair.second; });
+
+      for (auto log : VortexMaker::GetCurrentContext()->registered_logs) {
+        if (oldFilterStates.find(log->m_filter) != oldFilterStates.end()) {
+          m_TopicsFilterStates[log->m_filter] = oldFilterStates[log->m_filter];
+        } else {
+          m_TopicsFilterStates[log->m_filter] = false;
+        }
+
+        if (m_UseWarningFilter || m_UseErrorFilter || m_UseFatalFilter ||
+            m_UseInfoFilter) {
+          if ((log->m_level == spdlog::level::critical && !m_UseFatalFilter) ||
+              (log->m_level == spdlog::level::err && !m_UseErrorFilter) ||
+              (log->m_level == spdlog::level::warn && !m_UseWarningFilter) ||
+              (log->m_level == spdlog::level::info && !m_UseInfoFilter)) {
+            continue;
+          }
+        }
+
+        if (hasActiveFilter && !m_TopicsFilterStates[log->m_filter]) {
           continue;
         }
-      }
 
-      if (hasActiveFilter && !m_TopicsFilterStates[log->m_filter]) {
-        continue;
-      }
+        CherryGUI::TableNextRow();
 
-      CherryGUI::TableNextRow();
+        bool is_hovered = CherryGUI::IsItemHovered();
+        if (is_hovered) {
+          CherryGUI::PushStyleColor(ImGuiCol_Text,
+                                    ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+        }
 
-      bool is_hovered = CherryGUI::IsItemHovered();
-      if (is_hovered) {
-        CherryGUI::PushStyleColor(ImGuiCol_Text,
-                                  ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-      }
+        if (CherryGUI::IsMouseClicked(0) && is_hovered) {
+          std::string content_to_copy =
+              log->m_timestamp + " | " + log->m_filter + " | " + log->m_message;
+          ImGui::SetClipboardText(content_to_copy.c_str());
+        }
 
-      if (CherryGUI::IsMouseClicked(0) && is_hovered) {
-        std::string content_to_copy =
-            log->m_timestamp + " | " + log->m_filter + " | " + log->m_message;
-        ImGui::SetClipboardText(content_to_copy.c_str());
-      }
+        for (int i = 0; i <= 3; i++) {
+          CherryGUI::TableSetColumnIndex(i);
+          if (i == 0) {
+            ImVec4 color;
+            switch (log->m_level) // Add "User input" in blue
+            {
+            case spdlog::level::critical:
+              color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+              break;
+            case spdlog::level::err:
+              color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
+              break;
+            case spdlog::level::warn:
+              color = ImVec4(0.8f, 0.8f, 0.0f, 1.0f);
+              break;
+            case spdlog::level::info:
+              color = ImVec4(0.0f, 1.0f, 0.0f, 0.0f);
+              break;
+            default:
+              color = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+              break;
+            }
 
-      for (int i = 0; i <= 3; i++) {
-        CherryGUI::TableSetColumnIndex(i);
-        if (i == 0) {
-          ImVec4 color;
-          switch (log->m_level) // Add "User input" in blue
-          {
-          case spdlog::level::critical:
-            color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-            break;
-          case spdlog::level::err:
-            color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
-            break;
-          case spdlog::level::warn:
-            color = ImVec4(0.8f, 0.8f, 0.0f, 1.0f);
-            break;
-          case spdlog::level::info:
-            color = ImVec4(0.0f, 1.0f, 0.0f, 0.0f);
-            break;
-          default:
-            color = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
-            break;
+            ImVec2 pos = CherryGUI::GetCursorScreenPos();
+            float width = CherryGUI::GetFontSize() * 0.4f;
+            float height = CherryGUI::GetFontSize() * 1.2f;
+            float rounding = 3.0f;
+            ImVec2 rect_min = pos;
+            ImVec2 rect_max = ImVec2(pos.x + width, pos.y + height);
+
+            CherryGUI::GetWindowDrawList()->AddRectFilled(
+                rect_min, rect_max, CherryGUI::GetColorU32(color), rounding);
+
+            switch (log->m_level) {
+            case spdlog::level::critical:
+              CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 10.0f);
+              CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
+              CherryGUI::Text("FATAL");
+              break;
+            case spdlog::level::err:
+              CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 10.0f);
+              CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
+              CherryGUI::Text("Error");
+              break;
+            case spdlog::level::warn:
+              CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 10.0f);
+              CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
+              CherryGUI::Text("Warning");
+              break;
+            case spdlog::level::info:
+              CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 4.0f);
+              CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
+              CherryGUI::Text("Info");
+              break;
+            default:
+              CherryGUI::Text("");
+              break;
+            }
+          } else if (i == 1) {
+            float column_width = CherryGUI::GetColumnWidth();
+            float text_width = CherryGUI::CalcTextSize(log->m_filter.c_str()).x;
+            CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f),
+                                   log->m_filter.c_str());
+          } else if (i == 2) {
+            float column_width = CherryGUI::GetColumnWidth();
+            float text_width =
+                CherryGUI::CalcTextSize(log->m_timestamp.c_str()).x;
+            CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f),
+                                   log->m_timestamp.c_str());
+          } else if (i == 3) {
+            ImVec4 message_color;
+            if (log->m_level == spdlog::level::critical) {
+              message_color = ImVec4(0.5f, 0.0f, 0.0f, 1.0f);
+            } else if (log->m_level == spdlog::level::err) {
+              message_color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
+            } else if (log->m_level == spdlog::level::warn) {
+              message_color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+            } else {
+              message_color = ImVec4(1.0f, 1.0f, 1.0f, 0.8f);
+            }
+
+            CherryGUI::PushTextWrapPos(CherryGUI::GetCursorPosX() +
+                                       CherryGUI::GetColumnWidth());
+            CherryGUI::TextColored(message_color, log->m_message.c_str());
+            CherryGUI::PopTextWrapPos();
           }
+        }
 
-          ImVec2 pos = CherryGUI::GetCursorScreenPos();
-          float width = CherryGUI::GetFontSize() * 0.4f;
-          float height = CherryGUI::GetFontSize() * 1.2f;
-          float rounding = 3.0f;
-          ImVec2 rect_min = pos;
-          ImVec2 rect_max = ImVec2(pos.x + width, pos.y + height);
-
-          CherryGUI::GetWindowDrawList()->AddRectFilled(
-              rect_min, rect_max, CherryGUI::GetColorU32(color), rounding);
-
-          switch (log->m_level) {
-          case spdlog::level::critical:
-            CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 10.0f);
-            CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
-            CherryGUI::Text("FATAL");
-            break;
-          case spdlog::level::err:
-            CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 10.0f);
-            CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
-            CherryGUI::Text("Error");
-            break;
-          case spdlog::level::warn:
-            CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 10.0f);
-            CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
-            CherryGUI::Text("Warning");
-            break;
-          case spdlog::level::info:
-            CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 4.0f);
-            CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
-            CherryGUI::Text("Info");
-            break;
-          default:
-            CherryGUI::Text("");
-            break;
-          }
-        } else if (i == 1) {
-          float column_width = CherryGUI::GetColumnWidth();
-          float text_width = CherryGUI::CalcTextSize(log->m_filter.c_str()).x;
-          CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f),
-                                 log->m_filter.c_str());
-        } else if (i == 2) {
-          float column_width = CherryGUI::GetColumnWidth();
-          float text_width =
-              CherryGUI::CalcTextSize(log->m_timestamp.c_str()).x;
-          CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f),
-                                 log->m_timestamp.c_str());
-        } else if (i == 3) {
-          ImVec4 message_color;
-          if (log->m_level == spdlog::level::critical) {
-            message_color = ImVec4(0.5f, 0.0f, 0.0f, 1.0f);
-          } else if (log->m_level == spdlog::level::err) {
-            message_color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
-          } else if (log->m_level == spdlog::level::warn) {
-            message_color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
-          } else {
-            message_color = ImVec4(1.0f, 1.0f, 1.0f, 0.8f);
-          }
-
-          CherryGUI::PushTextWrapPos(CherryGUI::GetCursorPosX() +
-                                     CherryGUI::GetColumnWidth());
-          CherryGUI::TextColored(message_color, log->m_message.c_str());
-          CherryGUI::PopTextWrapPos();
+        if (is_hovered) {
+          CherryGUI::PopStyleColor();
         }
       }
 
-      if (is_hovered) {
-        CherryGUI::PopStyleColor();
-      }
+      CherryGUI::EndTable();
     }
 
-    CherryGUI::EndTable();
-  }
+    CherryGUI::PopStyleVar(2);
+    CherryGUI::PopStyleColor();
+  } else if (m_ShowMode == ShowMode::Simple) {
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 0.0f));
 
-  CherryGUI::PopStyleVar(2);
-  CherryGUI::PopStyleColor();
-  std::cout << "Render END" << std::endl;
+    static ImGuiTableFlags flags =
+        ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable |
+        ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable |
+        ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingStretchSame;
+
+    const float TEXT_BASE_WIDTH = CherryGUI::CalcTextSize("A").x;
+
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+
+    if (CherryGUI::BeginTable("LogsTableSimple", 2, flags)) {
+      CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 6.0f));
+
+      CherryGUI::TableSetupColumn("Message",
+                                  ImGuiTableColumnFlags_WidthStretch);
+      CherryGUI::TableSetupColumn("Timestamp", ImGuiTableColumnFlags_WidthFixed,
+                                  TEXT_BASE_WIDTH * 15.0f);
+
+      CherryGUI::PopStyleVar();
+      auto oldFilterStates = m_TopicsFilterStates;
+      m_TopicsFilterStates.clear();
+
+      for (auto log : VortexMaker::GetCurrentContext()->registered_logs) {
+        const std::string &topic = log->m_filter;
+
+        if (oldFilterStates.find(topic) != oldFilterStates.end()) {
+          m_TopicsFilterStates[topic] = oldFilterStates[topic];
+        } else {
+          m_TopicsFilterStates[topic] = false;
+        }
+      }
+
+      bool hasActiveFilter =
+          std::any_of(m_TopicsFilterStates.begin(), m_TopicsFilterStates.end(),
+                      [](const auto &pair) { return pair.second; });
+
+      for (auto log : VortexMaker::GetCurrentContext()->registered_logs) {
+        if (oldFilterStates.find(log->m_filter) != oldFilterStates.end()) {
+          m_TopicsFilterStates[log->m_filter] = oldFilterStates[log->m_filter];
+        } else {
+          m_TopicsFilterStates[log->m_filter] = false;
+        }
+
+        if (m_UseWarningFilter || m_UseErrorFilter || m_UseFatalFilter ||
+            m_UseInfoFilter) {
+          if ((log->m_level == spdlog::level::critical && !m_UseFatalFilter) ||
+              (log->m_level == spdlog::level::err && !m_UseErrorFilter) ||
+              (log->m_level == spdlog::level::warn && !m_UseWarningFilter) ||
+              (log->m_level == spdlog::level::info && !m_UseInfoFilter)) {
+            continue;
+          }
+        }
+
+        if (hasActiveFilter && !m_TopicsFilterStates[log->m_filter]) {
+          continue;
+        }
+
+        CherryGUI::TableNextRow();
+
+        bool is_hovered = CherryGUI::IsItemHovered();
+        if (is_hovered) {
+          CherryGUI::PushStyleColor(ImGuiCol_Text,
+                                    ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+        }
+
+        if (CherryGUI::IsMouseClicked(0) && is_hovered) {
+          std::string content_to_copy =
+              log->m_timestamp + " | " + log->m_filter + " | " + log->m_message;
+          ImGui::SetClipboardText(content_to_copy.c_str());
+        }
+
+        for (int i = 0; i <= 1; i++) {
+          CherryGUI::TableSetColumnIndex(i);
+          if (i == 0) {
+            ImVec4 message_color;
+            if (log->m_level == spdlog::level::critical) {
+              message_color = ImVec4(0.5f, 0.0f, 0.0f, 1.0f);
+            } else if (log->m_level == spdlog::level::err) {
+              message_color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
+            } else if (log->m_level == spdlog::level::warn) {
+              message_color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+            } else {
+              message_color = ImVec4(1.0f, 1.0f, 1.0f, 0.8f);
+            }
+
+            CherryGUI::PushTextWrapPos(CherryGUI::GetCursorPosX() +
+                                       CherryGUI::GetColumnWidth());
+            CherryGUI::TextColored(message_color, log->m_message.c_str());
+            CherryGUI::PopTextWrapPos();
+          }
+          if (i == 1) {
+            float column_width = CherryGUI::GetColumnWidth();
+            float text_width =
+                CherryGUI::CalcTextSize(log->m_timestamp.c_str()).x;
+            CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f),
+                                   log->m_timestamp.c_str());
+          }
+        }
+
+        if (is_hovered) {
+          CherryGUI::PopStyleColor();
+        }
+      }
+
+      CherryGUI::EndTable();
+    }
+
+    CherryGUI::PopStyleVar(2);
+    CherryGUI::PopStyleColor();
+  } else if (m_ShowMode == ShowMode::Block) {
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 0.0f));
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+
+    if (CherryGUI::BeginChild("LogTextBlock", ImVec2(0, 0), false,
+                              ImGuiWindowFlags_HorizontalScrollbar)) {
+
+      auto oldFilterStates = m_TopicsFilterStates;
+      m_TopicsFilterStates.clear();
+
+      for (auto log : VortexMaker::GetCurrentContext()->registered_logs) {
+        const std::string &topic = log->m_filter;
+
+        if (oldFilterStates.find(topic) != oldFilterStates.end()) {
+          m_TopicsFilterStates[topic] = oldFilterStates[topic];
+        } else {
+          m_TopicsFilterStates[topic] = false;
+        }
+      }
+
+      bool hasActiveFilter =
+          std::any_of(m_TopicsFilterStates.begin(), m_TopicsFilterStates.end(),
+                      [](const auto &pair) { return pair.second; });
+
+      std::string logText;
+      for (auto log : VortexMaker::GetCurrentContext()->registered_logs) {
+        std::string line = log->m_timestamp + " | " + log->m_filter + " | " +
+                           log->m_message + "\n";
+        logText += line;
+      }
+
+      static std::vector<char> buffer;
+      buffer.assign(logText.begin(), logText.end());
+      buffer.push_back('\0');
+
+      ImGuiInputTextFlags flags =
+          ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AllowTabInput;
+
+      CherryGUI::PushStyleColor(ImGuiCol_FrameBg,
+                                ImVec4(0.1f, 0.1f, 0.1f, 0.3f));
+      CherryGUI::InputTextMultiline("##FullLogText", buffer.data(),
+                                    buffer.size(), ImVec2(-FLT_MIN, -FLT_MIN),
+                                    flags);
+      CherryGUI::PopStyleColor();
+    }
+    CherryGUI::EndChild();
+
+    CherryGUI::PopStyleVar(2);
+    CherryGUI::PopStyleColor();
+  }
 }
 
 void LogsUtilityAppWindow::OnImGuiRender() {}
