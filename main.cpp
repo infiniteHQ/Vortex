@@ -148,9 +148,10 @@ void PrintHeader(const std::string &additions = "") {
   std::cout << "│ 💬 Discord : https://discord.gg/H2wptkecUg                   "
                "                                  │ "
             << std::endl;
-  std::cout << "│ 🧑‍💻 GitHub : https://github.com/infiniteHQ/Vortex        "
-               "                                       │ "
-            << std::endl;
+  std::cout
+      << "│ 🧑‍💻 GitHub : https://github.com/infiniteHQ/Vortex        "
+         "                                       │ "
+      << std::endl;
   std::cout << "└──────────────────────────────────────────────────────────────"
                "──────────────────────────────────┘ "
             << std::endl;
@@ -171,6 +172,9 @@ bool CheckDirectory() {
 
 VxContext *InitRuntime(bool logger) {
   VxContext *ctx = VortexMaker::CreateContext();
+
+  // TODO : start splash screen, with loading states
+
   VortexMaker::InitializePlatformVendor();
   std::cout << "Initializing runtime..." << std::endl;
 

@@ -321,6 +321,37 @@ void Editor::Menubar(const std::shared_ptr<EditorLayer> &exampleLayer,
   CherryGUI::PopFont();
 }
 
+// Frame task
+void RebuildCherryTheme() {
+  if (VortexMaker::IsThemeNeedsRebuild()) {
+    for (auto t : VortexMaker::GetCurrentContext()->IO.themes) {
+      if (!t) {
+        continue;
+      }
+
+      auto theme = Cherry::Theme();
+      theme.SetName(t->label);
+      for (auto theme_prop : t->theme) {
+        theme.SetProperty(theme_prop.first, theme_prop.second);
+      }
+
+      CherryApp.AddTheme(theme);
+    }
+
+    CherryApp.m_Themes.clear();
+
+    // set selected theme
+    auto selected_theme = VortexMaker::GetSelectedTheme();
+    if (selected_theme) {
+
+      CherryApp.SetTheme(selected_theme->label);
+    }
+
+    // set override themes
+    VortexMaker::ThemeRebuilded();
+  }
+}
+
 Cherry::Application *CreateEditor(int argc, char **argv) {
   Cherry::ApplicationSpecification spec;
   std::shared_ptr<EditorLayer> layer = std::make_shared<EditorLayer>();
@@ -469,6 +500,33 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   });
 
   app->SetMenubarCallback([app, layer]() {
+    if (VortexMaker::IsThemeNeedsRebuild()) {
+      CherryApp.m_Themes.clear();
+      for (auto t : VortexMaker::GetCurrentContext()->IO.themes) {
+        if (!t) {
+          continue;
+        }
+
+        auto theme = Cherry::Theme();
+        theme.SetName(t->label);
+        for (auto theme_prop : t->theme) {
+          theme.SetProperty(theme_prop.first, theme_prop.second);
+        }
+
+        CherryApp.AddTheme(theme);
+      }
+
+      // set selected theme
+      auto selected_theme = VortexMaker::GetSelectedTheme();
+      if (selected_theme) {
+
+        CherryApp.SetTheme(selected_theme->label);
+      }
+
+      // set override themes
+      VortexMaker::ThemeRebuilded();
+    }
+
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
     ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
     ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);

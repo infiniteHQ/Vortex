@@ -1055,6 +1055,218 @@ VORTEX_API void VortexMaker::RenameFolder(const std::string &target_path,
   }
 }
 
+VORTEX_API void VortexMaker::RefreshProjectThemes() {
+  VxContext &ctx = *CVortexMaker;
+
+  std::string home = ctx.projectPath.string();
+  std::string themes_path = home + "/.vx/configs/themes/data";
+  std::string config_path = home + "/.vx/configs/themes";
+  std::string json_file = config_path + "/themes.json";
+
+  VortexMaker::createFolderIfNotExists(themes_path);
+  VortexMaker::createFolderIfNotExists(config_path);
+
+  nlohmann::json defaultData = {{"used_theme", "dark"},
+                                {"override_themes", nlohmann::json::array()}};
+  VortexMaker::createJsonFileIfNotExists(json_file, defaultData);
+
+  ctx.IO.themes.clear();
+
+  for (const auto &entry : fs::directory_iterator(themes_path)) {
+    if (entry.path().extension() == ".json") {
+      try {
+        std::ifstream file(entry.path());
+        nlohmann::json j;
+        file >> j;
+
+        if (j.contains("label") && j.contains("name") && j.contains("theme")) {
+          auto themeObj = std::make_shared<Theme>();
+          themeObj->label = j.value("label", "");
+          themeObj->name = j.value("name", "");
+          themeObj->description = j.value("description", "");
+          themeObj->authors = j.value("authors", "");
+
+          for (auto &[key, value] : j["theme"].items()) {
+            themeObj->theme[key] = value;
+          }
+
+          ctx.IO.themes.push_back(themeObj);
+        }
+      } catch (const std::exception &e) {
+        VortexMaker::LogError("Core", "Failed to parse theme file: " +
+                                          entry.path().string());
+        VortexMaker::LogError("Core", e.what());
+      }
+    }
+  }
+
+  std::cout << ctx.IO.themes.size() << std::endl;
+
+  try {
+    std::ifstream configFile(json_file);
+    nlohmann::json configJson;
+    configFile >> configJson;
+
+    ctx.IO.used_theme = configJson.value("used_theme", "dark");
+    ctx.IO.override_themes =
+        configJson.value("override_themes", std::vector<std::string>());
+  } catch (const std::exception &e) {
+    VortexMaker::LogError("Core", "Failed to load theme config: " +
+                                      std::string(e.what()));
+  }
+}
+
+VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme,
+                                   const std::string &title) {
+  std::string themes_path =
+      VortexMaker::getHomeDirectory() + "/.vx/configs/themes/data";
+  VortexMaker::createFolderIfNotExists(themes_path);
+
+  nlohmann::json j;
+  j["label"] = theme->label;
+  j["name"] = theme->name;
+  j["description"] = theme->description;
+  j["authors"] = theme->authors;
+
+  nlohmann::json themeValues;
+
+  for (const auto &[key, value] : theme->theme) {
+    themeValues[key] = value;
+  }
+
+  j["theme"] = themeValues;
+
+  std::string filepath = themes_path + "/" + theme->label + ".json";
+
+  try {
+    std::ofstream out(filepath);
+    out << std::setw(4) << j << std::endl;
+    VortexMaker::LogInfo("Core", "Theme '" + theme->label + "' updated.");
+  } catch (const std::exception &e) {
+    VortexMaker::LogError("Core", "Failed to update theme file: " + filepath);
+    VortexMaker::LogError("Core", e.what());
+  }
+}
+
+VORTEX_API std::shared_ptr<Theme>
+VortexMaker::GetTheme(const std::string &label) {
+
+  VxContext &ctx = *CVortexMaker;
+  const auto &themes = ctx.IO.themes;
+
+  for (const auto &theme : themes) {
+    if (theme) {
+      if (theme->label == label) {
+        return theme;
+      }
+    }
+  }
+  return nullptr;
+}
+VORTEX_API std::shared_ptr<Theme> VortexMaker::GetSelectedTheme() {
+
+  VxContext &ctx = *CVortexMaker;
+  const std::string &used = ctx.IO.used_theme;
+  const auto &themes = ctx.IO.themes;
+
+  for (const auto &theme : themes) {
+    if (theme) {
+      if (theme->label == used) {
+        return theme;
+      }
+    }
+  }
+
+  VortexMaker::LogError("Core", "No theme matched used_theme: '" + used + "'");
+  return nullptr;
+}
+
+VORTEX_API void
+VortexMaker::CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
+                            const std::string &title) {
+  if (!base_theme) {
+    VortexMaker::LogError("Theme",
+                          "Base theme is null. Cannot create new theme.");
+    return;
+  }
+
+  std::string themes_path =
+      VortexMaker::GetCurrentContext()->projectPath.string() +
+      "/.vx/configs/themes/data";
+  VortexMaker::createFolderIfNotExists(themes_path);
+
+  std::string base_filename = title;
+  std::transform(
+      base_filename.begin(), base_filename.end(), base_filename.begin(),
+      [](unsigned char c) { return std::isspace(c) ? '_' : std::tolower(c); });
+
+  std::string final_filename = base_filename + ".json";
+  std::string final_path = themes_path + "/" + final_filename;
+  int counter = 1;
+  while (fs::exists(final_path)) {
+    final_filename = base_filename + "_" + std::to_string(counter) + ".json";
+    final_path = themes_path + "/" + final_filename;
+    ++counter;
+  }
+
+  nlohmann::json theme_json;
+  theme_json["label"] = base_filename;
+  theme_json["name"] = title;
+  theme_json["description"] = base_theme->description;
+  theme_json["authors"] = base_theme->authors;
+
+  nlohmann::json theme_data;
+  for (const auto &[key, value] : base_theme->theme) {
+    theme_data[key] = value;
+  }
+
+  theme_json["theme"] = theme_data;
+
+  try {
+    std::ofstream file(final_path);
+    file << std::setw(4) << theme_json << std::endl;
+    VortexMaker::LogInfo("Theme", "New theme created: " + final_filename);
+  } catch (const std::exception &e) {
+    VortexMaker::LogError("Theme", "Failed to write new theme file: " +
+                                       std::string(e.what()));
+  }
+}
+
+VORTEX_API void VortexMaker::UpdateProjectThemesComfig() {
+  VxContext &ctx = *CVortexMaker;
+  std::string config_path =
+      VortexMaker::getHomeDirectory() + "/.vx/configs/themes";
+  std::string json_file = config_path + "/themes.json";
+
+  nlohmann::json configJson;
+  configJson["used_theme"] = ctx.IO.used_theme;
+  configJson["override_themes"] = ctx.IO.override_themes;
+
+  try {
+    std::ofstream out(json_file);
+    out << std::setw(4) << configJson << std::endl;
+    VortexMaker::LogInfo("Core", "Theme configuration updated.");
+  } catch (const std::exception &e) {
+    VortexMaker::LogError("Core", "Failed to update theme config file: " +
+                                      std::string(e.what()));
+  }
+}
+
+VORTEX_API void VortexMaker::ThemeRebuilded() {
+  VxContext &ctx = *CVortexMaker;
+  ctx.IO.theme_changed = false;
+}
+
+VORTEX_API void VortexMaker::RebuildTheme() {
+  VxContext &ctx = *CVortexMaker;
+  ctx.IO.theme_changed = true;
+}
+
+VORTEX_API bool VortexMaker::IsThemeNeedsRebuild() {
+  VxContext &ctx = *CVortexMaker;
+  return ctx.IO.theme_changed;
+}
+
 VORTEX_API std::string VortexMaker::CreateFile(const std::string &path) {
   fs::path basePath(path);
   std::string baseName = "New file";

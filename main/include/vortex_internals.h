@@ -235,6 +235,14 @@ struct ContentBrowserCustomFolder {
   bool m_IsFav;
 };
 
+struct Theme {
+  std::string label;
+  std::string name;
+  std::string description;
+  std::string authors;
+  std::unordered_map<std::string, std::string> theme;
+};
+
 struct VxIO {
   int MetricsActiveAllocations;
 
@@ -256,6 +264,14 @@ struct VxIO {
   std::vector<std::string> sys_modules_pools;
   std::vector<std::string> sys_templates_pools;
   std::vector<std::string> sys_plugins_pools;
+
+  // Themes
+  std::vector<std::shared_ptr<Theme>> themes;
+  std::string used_theme;
+  std::vector<std::string> override_themes;
+  bool theme_changed = false; // Flag, when the user change the theme this flag
+                              // will be true and the UI will be rebuilded wich
+                              // changed values, whatever if refresh or test
 
   // Content browser items
   std::vector<std::shared_ptr<ContenBrowserItem>> contentbrowser_items;
@@ -315,7 +331,19 @@ struct VxContext {
   std::string name;
   std::string type;
   std::string version;
+  std::string tags;
+  std::string logo_path;
+  std::string website;
+  std::string support_contact;
+  std::string copyright_file;
+  std::string license_file;
+  std::string readme_file;
+  std::string requirements_file;
+  std::string code_of_conduct_file;
+  std::string security_file;
   std::string project_version;
+  std::string root_content_path;
+
   std::string toolchainsPath;
   std::string gposPath;
   std::string packagesPath;

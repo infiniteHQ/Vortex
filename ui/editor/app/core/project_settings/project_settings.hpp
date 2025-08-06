@@ -48,23 +48,54 @@ public:
   void Render();
   void ModulesRender();
 
+  void RefreshProjectInformations();
   void UpdateProjectInformations();
   void Refresh();
   void Update();
 
-  void RefreshProjectInformations();
+  void RefreshProjectThemes();
 
   std::vector<ProjectSettingsChild> m_Childs;
 
   std::shared_ptr<ProjectSettingsSave> current_save;
+
   std::string v_ProjectNameInitial;
   std::string v_ProjectDescriptionInitial;
-  std::string v_ProjectAuthorInitial;
   std::string v_ProjectVersionInitial;
+  std::string v_ProjectThumbnailPathInitial;
+  std::string v_ProjectTypeInitial;
+  std::string v_ProjectTagsInitial;
+  std::string v_ProjectAuthorInitial;
+  std::string v_ProjectWebsiteInitial;
+  std::string v_ProjectSupportContactInitial;
+  std::string v_ProjectCopyrightFileInitial;
+  std::string v_ProjectLicenseFileInitial;
+  std::string v_ProjectReadmeFileInitial;
+  std::string v_ProjectRequirementsFileInitial;
+  std::string v_ProjectCodeOfConductFileInitial;
+  std::string v_ProjectSecurityFileInitial;
+  std::string v_ProjectRootContentPathInitial;
+
   std::string v_ProjectName;
   std::string v_ProjectDescription;
-  std::string v_ProjectAuthor;
   std::string v_ProjectVersion;
+  std::string v_ProjectThumbnailPath;
+  std::string v_ProjectType;
+  std::string v_ProjectTags;
+  std::string v_ProjectAuthor;
+  std::string v_ProjectWebsite;
+  std::string v_ProjectSupportContact;
+  std::string v_ProjectCopyrightFile;
+  std::string v_ProjectLicenseFile;
+  std::string v_ProjectReadmeFile;
+  std::string v_ProjectRequirementsFile;
+  std::string v_ProjectCodeOfConductFile;
+  std::string v_ProjectSecurityFile;
+  std::string v_ProjectRootContentPath;
+
+  std::string v_NewThemeName;
+
+  std::vector<std::string> m_AvailableThemes;
 
   std::string m_NewProjectPath;
   std::string m_NewModulesPath;

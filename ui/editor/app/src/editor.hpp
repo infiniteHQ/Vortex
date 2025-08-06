@@ -188,7 +188,7 @@ public:
                         std::to_string(c_ContentBrowserInstances.size() + 1);
     std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser =
         VortexEditor::ContentBrowserAppWindow::Create(
-            label.c_str(), VortexMaker::GetCurrentContext()->projectPath);
+            label.c_str(), VortexMaker::GetCurrentContext()->projectDataPath);
 
     ContentBrowser->m_CutPathsCallback = VortexMaker::Cut;
     ContentBrowser->m_CopyPathsCallback = VortexMaker::Copy;

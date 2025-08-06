@@ -106,6 +106,40 @@ nlohmann::json LoadConfig(const std::string &filePath) {
   return config;
 }
 
+struct GroupNode {
+  std::unordered_map<std::string, GroupNode> children;
+  std::vector<Cherry::Component> components;
+};
+
+void insertIntoTree(GroupNode &node, const std::vector<std::string> &pathParts,
+                    size_t index,
+                    const std::vector<Cherry::Component> &components) {
+  if (index >= pathParts.size())
+    return;
+  auto &child = node.children[pathParts[index]];
+  if (index == pathParts.size() - 1) {
+    child.components = components;
+  } else {
+    insertIntoTree(child, pathParts, index + 1, components);
+  }
+}
+
+Cherry::Component buildComponentTree(const std::string &name,
+                                     const GroupNode &node) {
+  std::vector<Cherry::Component> children;
+
+  if (!node.components.empty()) {
+    children.insert(children.end(), node.components.begin(),
+                    node.components.end());
+  }
+
+  for (const auto &[childName, childNode] : node.children) {
+    children.push_back(buildComponentTree(childName, childNode));
+  }
+
+  return CherryKit::KeyValParent(name, true, children);
+}
+
 void SaveConfig(const std::string &filePath, const nlohmann::json &config) {
   std::ofstream file(filePath);
   if (file.is_open()) {
@@ -164,15 +198,40 @@ void ProjectSettings::Refresh() {
 void ProjectSettings::RefreshProjectInformations() {
   VortexMaker::RefreshProjectInformations();
 
-  v_ProjectNameInitial = VortexMaker::GetCurrentContext()->name;
-  v_ProjectAuthorInitial = VortexMaker::GetCurrentContext()->author;
-  v_ProjectVersionInitial = VortexMaker::GetCurrentContext()->project_version;
-  v_ProjectDescriptionInitial = VortexMaker::GetCurrentContext()->description;
+  auto *ctx = VortexMaker::GetCurrentContext();
+
+  v_ProjectNameInitial = ctx->name;
+  v_ProjectAuthorInitial = ctx->author;
+  v_ProjectVersionInitial = ctx->project_version;
+  v_ProjectDescriptionInitial = ctx->description;
+  v_ProjectTagsInitial = ctx->tags;
+  v_ProjectTypeInitial = ctx->type;
+  v_ProjectThumbnailPathInitial = ctx->logo_path;
+  v_ProjectWebsiteInitial = ctx->website;
+  v_ProjectSupportContactInitial = ctx->support_contact;
+  v_ProjectCopyrightFileInitial = ctx->copyright_file;
+  v_ProjectLicenseFileInitial = ctx->license_file;
+  v_ProjectReadmeFileInitial = ctx->readme_file;
+  v_ProjectRequirementsFileInitial = ctx->requirements_file;
+  v_ProjectCodeOfConductFileInitial = ctx->code_of_conduct_file;
+  v_ProjectSecurityFileInitial = ctx->security_file;
 
   v_ProjectName = v_ProjectNameInitial;
   v_ProjectAuthor = v_ProjectAuthorInitial;
   v_ProjectVersion = v_ProjectVersionInitial;
   v_ProjectDescription = v_ProjectDescriptionInitial;
+  v_ProjectTags = v_ProjectTagsInitial;
+  v_ProjectType = v_ProjectTypeInitial;
+  v_ProjectThumbnailPath = v_ProjectThumbnailPathInitial;
+  v_ProjectWebsite = v_ProjectWebsiteInitial;
+  v_ProjectSupportContact = v_ProjectSupportContactInitial;
+  v_ProjectCopyrightFile = v_ProjectCopyrightFileInitial;
+  v_ProjectLicenseFile = v_ProjectLicenseFileInitial;
+  v_ProjectReadmeFile = v_ProjectReadmeFileInitial;
+  v_ProjectRequirementsFile = v_ProjectRequirementsFileInitial;
+  v_ProjectCodeOfConductFile = v_ProjectCodeOfConductFileInitial;
+  v_ProjectSecurityFile = v_ProjectSecurityFileInitial;
+  v_ProjectRootContentPath = v_ProjectRootContentPathInitial;
 }
 
 void ProjectSettings::UpdateProjectInformations() {
@@ -180,11 +239,36 @@ void ProjectSettings::UpdateProjectInformations() {
   VortexMaker::UpdateProjectDescription(v_ProjectDescription);
   VortexMaker::UpdateProjectVersion(v_ProjectVersion);
   VortexMaker::UpdateProjectAuthor(v_ProjectAuthor);
+  VortexMaker::UpdateProjectTags(v_ProjectTags);
+  VortexMaker::UpdateProjectType(v_ProjectType);
+  VortexMaker::UpdateProjectLogoPath(v_ProjectThumbnailPath);
+  VortexMaker::UpdateProjectWebsite(v_ProjectWebsite);
+  VortexMaker::UpdateProjectSupportContact(v_ProjectSupportContact);
+  VortexMaker::UpdateProjectCopyrightFile(v_ProjectCopyrightFile);
+  VortexMaker::UpdateProjectLicenseFile(v_ProjectLicenseFile);
+  VortexMaker::UpdateProjectReadmeFile(v_ProjectReadmeFile);
+  VortexMaker::UpdateProjectRequirementsFile(v_ProjectRequirementsFile);
+  VortexMaker::UpdateProjectCodeOfConductFile(v_ProjectCodeOfConductFile);
+  VortexMaker::UpdateProjectSecurityFile(v_ProjectSecurityFile);
+  VortexMaker::UpdateProjectRootContentPath(v_ProjectRootContentPath);
 
+  // Sync initial values
   v_ProjectNameInitial = v_ProjectName;
   v_ProjectDescriptionInitial = v_ProjectDescription;
   v_ProjectVersionInitial = v_ProjectVersion;
   v_ProjectAuthorInitial = v_ProjectAuthor;
+  v_ProjectTagsInitial = v_ProjectTags;
+  v_ProjectTypeInitial = v_ProjectType;
+  v_ProjectThumbnailPathInitial = v_ProjectThumbnailPath;
+  v_ProjectWebsiteInitial = v_ProjectWebsite;
+  v_ProjectSupportContactInitial = v_ProjectSupportContact;
+  v_ProjectCopyrightFileInitial = v_ProjectCopyrightFile;
+  v_ProjectLicenseFileInitial = v_ProjectLicenseFile;
+  v_ProjectReadmeFileInitial = v_ProjectReadmeFile;
+  v_ProjectRequirementsFileInitial = v_ProjectRequirementsFile;
+  v_ProjectCodeOfConductFileInitial = v_ProjectCodeOfConductFile;
+  v_ProjectSecurityFileInitial = v_ProjectSecurityFile;
+  v_ProjectRootContentPathInitial = v_ProjectRootContentPath;
 
   RefreshProjectInformations();
 }
@@ -194,14 +278,14 @@ void ProjectSettings::Update() {
 
   std::string vortex_version = VORTEX_VERSION;
 
-  nlohmann::json toolchainData;
-  toolchainData["project"]["name"] = current_save->name;
-  toolchainData["project"]["author"] = current_save->author;
-  toolchainData["project"]["description"] = current_save->description;
-  toolchainData["project"]["compatibleWith"] = vortex_version;
-  toolchainData["project"]["type"] = current_save->type;
-  toolchainData["project"]["version"] = current_save->version;
-  toolchainData["project"]["include_system_templates"] =
+  nlohmann::json jsonData;
+  jsonData["project"]["name"] = current_save->name;
+  jsonData["project"]["author"] = current_save->author;
+  jsonData["project"]["description"] = current_save->description;
+  jsonData["project"]["compatibleWith"] = vortex_version;
+  jsonData["project"]["type"] = current_save->type;
+  jsonData["project"]["version"] = current_save->version;
+  jsonData["project"]["include_system_templates"] =
       current_save->include_system_templates;
 
   std::string path = VortexMaker::GetCurrentContext()->projectPath.string();
@@ -209,7 +293,7 @@ void ProjectSettings::Update() {
 
   std::ofstream file(path);
   if (file.is_open()) {
-    file << std::setw(4) << toolchainData << std::endl;
+    file << std::setw(4) << jsonData << std::endl;
     VortexMaker::LogInfo("Core", "Object saved to " + path);
     file.close();
   } else {
@@ -225,7 +309,7 @@ void ProjectSettings::Update() {
 ProjectSettings::ProjectSettings(const std::string &name) {
   m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
   m_AppWindow->SetIcon(
-      Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
+      Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"));
 
   m_AppWindow->SetClosable(true);
   m_AppWindow->m_CloseCallback = [=]() { m_AppWindow->SetVisibility(false); };
@@ -233,6 +317,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
   m_AppWindow->SetInternalPaddingX(0.0f);
   m_AppWindow->SetInternalPaddingY(0.0f);
   RefreshProjectInformations();
+  RefreshProjectThemes();
 
   m_SelectedChildName = "Project's modules";
 
@@ -277,6 +362,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         CherryNextProp("color", "#252525");
         CherryKit::Separator();
 
+        static std::vector<std::string> project_types = {"Project", "Tool"};
         CherryKit::TableSimple(
             "Information table",
             {{
@@ -288,16 +374,71 @@ ProjectSettings::ProjectSettings(const std::string &name) {
                         CherryKit::KeyValString("Description",
                                                 &v_ProjectDescription),
                         CherryKit::KeyValString("Version", &v_ProjectVersion),
-                        CherryKit::KeyValString("Author", &v_ProjectAuthor),
+                        CherryKit::KeyValString("Thumbnail", &v_ProjectName),
                     }),
                 CherryKit::KeyValParent(
-                    "Shipping", false,
+                    "Shipping & Distribution", true,
                     {
-
-                        CherryKit::KeyValString("Projectg type",
-                                                &v_ProjectName),
+                        CherryKit::KeyValComboString(
+                            CherryID("project_type_combo"), "Project type",
+                            &project_types),
+                        CherryKit::KeyValString("Tags (separe with commas)",
+                                                &v_ProjectTags),
+                    }),
+                CherryKit::KeyValParent(
+                    "Publisher", true,
+                    {
+                        CherryKit::KeyValString("Author", &v_ProjectAuthor),
+                        CherryKit::KeyValString("Website link",
+                                                &v_ProjectWebsite),
+                        CherryKit::KeyValString("Support or Contact",
+                                                &v_ProjectSupportContact),
+                    }),
+                CherryKit::KeyValParent(
+                    "Legal", true,
+                    {
+                        CherryKit::KeyValString("Copyright file",
+                                                &v_ProjectCopyrightFile),
+                        CherryKit::KeyValString(
+                            "License file",
+                            &v_ProjectLicenseFile), // Custom with upper texte
+                                                    // preview, input and button
+                                                    // path / default path if
+                                                    // .vx/data/LICENSE.md
+                    }),
+                CherryKit::KeyValParent(
+                    "Statements", true,
+                    {
+                        CherryKit::KeyValString("Readme file",
+                                                &v_ProjectReadmeFile),
+                        CherryKit::KeyValString(
+                            "Conventions & Requirements file",
+                            &v_ProjectRequirementsFile),
+                        CherryKit::KeyValString("Code of conduct file",
+                                                &v_ProjectCodeOfConductFile),
+                        CherryKit::KeyValString("Safety and security file",
+                                                &v_ProjectSecurityFile),
                     }),
             }});
+
+        int type_selected =
+            CherryApp.GetComponent(CherryID("project_type_combo"))
+                .GetPropertyAs<int>("selected_index");
+
+        switch (type_selected) {
+        case 0: {
+          v_ProjectType = "project";
+          break;
+        }
+        case 1: {
+          v_ProjectType = "tool";
+          break;
+        }
+        default: {
+          v_ProjectType = "project";
+          break;
+        }
+        }
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")));
 
@@ -365,12 +506,62 @@ ProjectSettings::ProjectSettings(const std::string &name) {
             }});
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png")));
+
+  this->AddChild(ProjectSettingsChild("Contents", [this]() {
+    Cherry::PushFont("ClashBold");
+    CherryNextProp("color_text", "#797979");
+    CherryKit::TitleFive("Project informations");
+    Cherry::PopFont();
+    CherryGUI::SameLine();
+    CherryKit::TooltipTextCustom("(?)", []() {
+      CherryKit::TitleFour("em : Editor Modules");
+      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+      CherryStyle::AddMarginY(10.0f);
+      CherryKit::TitleFour("esm : Editor Script Modules");
+      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+    });
+
+    CherryGUI::SameLine();
+    CherryStyle::AddMarginX(10.0f);
+    Cherry::SetNextComponentProperty("padding_x", "8");
+    Cherry::SetNextComponentProperty("padding_y", "4");
+    if (CherryKit::ButtonImageText(
+            "Refresh",
+            Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
+            .GetData("isClicked") == "true") {
+      RefreshProjectInformations();
+    }
+
+    CherryGUI::SameLine();
+    CherryStyle::AddMarginX(10.0f);
+    Cherry::SetNextComponentProperty("padding_x", "8");
+    Cherry::SetNextComponentProperty("padding_y", "4");
+    if (CherryKit::ButtonImageText(
+            "Save", Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+            .GetData("isClicked") == "true") {
+      UpdateProjectInformations();
+    }
+
+    CherryNextProp("color", "#252525");
+    CherryKit::Separator();
+
+    CherryKit::TableSimple(
+        "Content settings",
+        {
+            CherryKit::KeyValString("Root content path",
+                                    &v_ProjectRootContentPath),
+        });
+  }));
+
+  // TODO : Start a little the editor window, with dedicated save/refresh
+  // button. And display a list of themes to modify/delete. Remove Delete from
+  // project in the used
   this->AddChild(ProjectSettingsChild(
-      "Theme & Customizations",
+      "Themes",
       [this]() {
         Cherry::PushFont("ClashBold");
         CherryNextProp("color_text", "#797979");
-        CherryKit::TitleFive("Theme & Customizations");
+        CherryKit::TitleTwo("Themes");
         Cherry::PopFont();
         CherryGUI::SameLine();
         CherryKit::TooltipTextCustom("(?)", []() {
@@ -404,57 +595,425 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         }
 
         static std::string color = "#B1FF31";
-        static std::vector<std::string> theme_selector = {"Dark", "Light",
-                                                          "Custom"};
         static int selected = 0;
+        static bool theme_changed = false;
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
+        if (!theme_changed) {
+          CherryKit::Space(15.0f);
+          CherryNextProp("color_text", "#797979");
+          CherryKit::TitleFive("Project editor theme");
+          CherryNextProp("color", "#252525");
+          CherryKit::Separator();
+          CherryKit::TableSimple(
+              "General",
+              {
+
+                  CherryKit::KeyValCustom(
+                      "Active theme ",
+                      [this]() {
+                        auto theme_used = VortexMaker::GetSelectedTheme();
+                        CherryNextComponent.SetProperty("size_x", 200.0f);
+                        CherryKit::ComboText(CherryID("theme_selector"), "",
+                                             &m_AvailableThemes, selected);
+
+                        static bool modal = false;
+
+                        CherryKit::ModalSimple(
+                            "Are you sure ?", &modal, [this]() {
+                              if (CherryKit::ButtonImageText(
+                                      "Close", Cherry::GetPath(
+                                                   "resources/imgs/icons/misc/"
+                                                   "icon_trash.png"))
+                                      .GetData("isClicked") == "true") {
+                                modal = false;
+                              }
+                            });
+                        if (theme_used)
+                          if (theme_used->label != "dark" &&
+                              theme_used->label != "white") {
+                            CherryGUI::SameLine();
+                            if (CherryKit::ButtonImageText(
+                                    "Delete from project",
+                                    Cherry::GetPath("resources/imgs/icons/misc/"
+                                                    "icon_trash.png"))
+                                    .GetData("isClicked") == "true") {
+                              modal = true;
+                            }
+                          }
+
+                        selected =
+                            CherryApp.GetComponent(CherryID("theme_selector"))
+                                .GetPropertyAs<int>("selected");
+                      }),
+                  CherryKit::KeyValParent(
+                      "Theme overrides", true,
+                      {
+                          // List of themes with up/down buttons
+                      }),
+              });
+        }
+
+        CherryKit::Space(15.0f);
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Create themes");
         CherryNextProp("color", "#252525");
         CherryKit::Separator();
         CherryKit::TableSimple(
-            "General",
+            "Create themes",
             {
                 CherryKit::KeyValCustom(
                     "Create new theme",
                     [this]() {
-                      Cherry::SetNextComponentProperty("size_x", "200");
-                      CherryKit::InputString("", &v_ProjectAuthor);
+                      CherryNextComponent.SetProperty("size_x", "200");
+                      CherryNextComponent.SetProperty("padding_y", "6.0f");
+                      CherryNextComponent.SetProperty("description",
+                                                      "Enter theme name...");
+                      CherryNextComponent.SetProperty("description_logo_place",
+                                                      "r");
+                      CherryKit::InputString("based on", &v_NewThemeName);
+
                       CherryGUI::SameLine();
-                      Cherry::SetNextComponentProperty("size_x", "200");
-                      CherryKit::ComboText("", &theme_selector, selected);
+                      Cherry::SetNextComponentProperty("size_x", "150");
+                      CherryKit::ComboText("", &m_AvailableThemes, selected);
                       CherryGUI::SameLine();
                       Cherry::SetNextComponentProperty("padding_x", "9");
                       Cherry::SetNextComponentProperty("padding_y", "7");
                       if (CherryKit::ButtonImageText(
-                              "Add",
+                              "Create theme",
                               Cherry::GetPath(
                                   "resources/imgs/icons/misc/icon_add.png"))
                               .GetData("isClicked") == "true") {
-                        // UpdateProjectEditorSettings
+                        auto theme =
+                            VortexMaker::GetTheme(m_AvailableThemes[selected]);
+                        if (theme) {
+                          VortexMaker::CreateNewTheme(theme, v_NewThemeName);
+                          VortexMaker::RefreshProjectThemes();
+                          RefreshProjectThemes();
+                        }
                       }
                     }),
-                CherryKit::KeyValComboString("Theme used", &theme_selector,
-                                             selected),
             });
+
+        auto selected_theme = VortexMaker::GetSelectedTheme();
+        auto theme = VortexMaker::GetTheme(m_AvailableThemes[selected]);
+
+        if (theme && selected_theme) {
+          if (theme->label != selected_theme->label) {
+            theme_changed = true;
+            VortexMaker::GetCurrentContext()->IO.used_theme = theme->label;
+            VortexMaker::UpdateProjectThemesComfig();
+            VortexMaker::RebuildTheme();
+          }
+        }
+
+        CherryKit::Space(15.0f);
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Customize themes");
+        CherryNextProp("color", "#252525");
         CherryKit::Separator();
 
-        CherryKit::TableSimple(
-            "Customize theme",
-            {
-                CherryKit::KeyValParent("Theme Settings", {}),
-                CherryKit::KeyValParent("Colors",
-                                        {
-                                            CherryKit::KeyValParent("Windows",
-                                                                    {
+        if (selected_theme) {
 
-                                                                    }),
-                                            CherryKit::KeyValParent("Elements",
-                                                                    {
+          if (selected_theme->label != "dark" &&
+              selected_theme->label != "white") {
+          }
+        }
 
-                                                                    }),
-                                        }),
-                CherryKit::KeyValParent("Sizes & Scales", {}),
-            });
+        if (selected_theme->label != "dark" && selected_theme->label != "white")
+          if (!theme_changed) {
+            static std::unordered_map<std::string, std::string> themeLabels = {
+                {"button_color_border", "Button Border Color"},
+                {"button_color_border_hovered", "Button Border Hovered Color"},
+                {"button_color_border_clicked", "Button Border Clicked Color"},
+                {"button_color_border_pressed", "Button Border Pressed Color"},
+                {"button_color_bg", "Button Background Color"},
+                {"button_color_bg_hovered", "Button Background Hovered Color"},
+                {"button_color_bg_pressed", "Button Background Pressed Color"},
+                {"button_color_bg_clicked", "Button Background Clicked Color"},
+                {"button_color_text", "Button Text Color"},
+                {"button_color_text_hovered", "Button Text Hovered Color"},
+                {"button_color_text_pressed", "Button Text Pressed Color"},
+                {"button_color_underline", "Button Underline Color"},
+                {"button_color_underline_hovered",
+                 "Button Underline Hovered Color"},
+                {"button_color_underline_pressed",
+                 "Button Underline Pressed Color"},
+                {"button_size_x", "Button Default Width"},
+                {"button_size_y", "Button Default Height"},
+                {"button_padding_x", "Button Padding X"},
+                {"button_padding_y", "Button Padding Y"},
+                {"button_scale", "Button Scale"},
+            };
+
+            static std::unordered_map<std::string, std::vector<std::string>>
+                themeGroups = {
+                    {"Components/Buttons",
+                     {"button_color_border", "button_color_border_hovered",
+                      "button_color_border_clicked",
+                      "button_color_border_pressed", "button_color_bg",
+                      "button_color_bg_hovered", "button_color_bg_pressed",
+                      "button_color_bg_clicked", "button_color_text",
+                      "button_color_text_hovered", "button_color_text_pressed",
+                      "button_color_underline",
+                      "button_color_underline_hovered",
+                      "button_color_underline_pressed", "button_size_x",
+                      "button_size_y", "button_padding_x", "button_padding_y",
+                      "button_scale"}},
+                    {"Components/Checkboxes",
+                     {"checkbox_color_border", "checkbox_color_border_hovered",
+                      "checkbox_color_border_clicked",
+                      "checkbox_color_border_pressed", "checkbox_color_bg",
+                      "checkbox_color_bg_hovered", "checkbox_color_bg_pressed",
+                      "checkbox_color_bg_clicked", "checkbox_size_x",
+                      "checkbox_size_y"}},
+                    {"Components/Combos",
+                     {"combo_color_border", "combo_color_border_hovered",
+                      "combo_color_border_clicked",
+                      "combo_color_border_pressed", "combo_color_bg",
+                      "combo_color_bg_hovered", "combo_color_bg_pressed",
+                      "combo_color_bg_clicked", "combo_size_x",
+                      "combo_size_y"}},
+                    {"Components/Headers",
+                     {"header_color_border",
+                      "header_color_border_hovered",
+                      "header_color_border_clicked",
+                      "header_color_border_pressed",
+                      "header_color_bg",
+                      "header_color_bg_hovered",
+                      "header_color_bg_pressed",
+                      "header_color_bg_clicked",
+                      "header_size_x",
+                      "header_size_y",
+                      "header_button_color_border",
+                      "header_button_color_border_hovered",
+                      "header_button_color_border_clicked",
+                      "header_button_color_border_pressed",
+                      "header_button_color_bg",
+                      "header_button_color_bg_hovered",
+                      "header_button_color_bg_pressed",
+                      "header_button_color_bg_clicked",
+                      "header_button_color_text",
+                      "header_button_color_text_hovered",
+                      "header_button_color_text_pressed"}},
+                    {"Components/Images",
+                     {"image_color_border", "image_color_border_hovered",
+                      "image_color_border_clicked",
+                      "image_color_border_pressed", "image_color_bg",
+                      "image_color_bg_hovered", "image_color_bg_pressed",
+                      "image_color_bg_clicked", "image_size_x",
+                      "image_size_y"}},
+                    {"Components/Modals",
+                     {"modal_padding_x", "modal_padding_y"}},
+                    {"Components/Notifications",
+                     {"notification_color_border",
+                      "notification_color_border_hovered",
+                      "notification_color_bg",
+                      "notification_color_bg_hovered"}},
+                    {"Components/Separators",
+                     {"separator_color", "separator_color_text"}},
+                    {"Components/KeyVals", {"keyval_color_text"}},
+                    {"Components/Tables",
+                     {"table_color_border", "table_cell_padding_x_header",
+                      "table_cell_padding_y_header", "table_cell_padding_x_row",
+                      "table_cell_padding_y_row"}},
+                    {"Components/Text",
+                     {"text_color_text", "text_area_color_text"}},
+                    {"Components/Titles", {"title_color_text"}},
+                    {"Components/Tooltips",
+                     {"tooltip_color_border", "tooltip_color_border_hovered",
+                      "tooltip_color_border_clicked", "tooltip_color_bg",
+                      "tooltip_color_bg_hovered", "tooltip_color_bg_clicked"}},
+                    {"Components/Blocks",
+                     {"block_color", "block_color_hovered",
+                      "block_color_pressed", "block_border_color",
+                      "block_border_color_hovered",
+                      "block_border_color_pressed", "block_border_radius",
+                      "block_border_size"}},
+                };
+
+            if (selected_theme) {
+              std::unordered_set<std::string> displayedKeys;
+              GroupNode root;
+
+              for (const auto &[groupPath, keys] : themeGroups) {
+                std::vector<std::string> pathParts;
+                std::stringstream ss(groupPath);
+                std::string item;
+                while (std::getline(ss, item, '/')) {
+                  pathParts.push_back(item);
+                }
+
+                std::vector<Cherry::Component> groupComponents;
+                for (const auto &key : keys) {
+                  auto it = selected_theme->theme.find(key);
+                  if (it != selected_theme->theme.end()) {
+                    displayedKeys.insert(key);
+                    std::string label =
+                        themeLabels.count(key) ? themeLabels.at(key) : key;
+                    groupComponents.push_back(CherryKit::KeyValString(
+                        label, &selected_theme->theme[key]));
+                  }
+                }
+
+                if (!groupComponents.empty()) {
+                  insertIntoTree(root, pathParts, 0, groupComponents);
+                }
+              }
+
+              std::vector<Cherry::Component> mainComponents;
+              GroupNode *otherParamsNode = nullptr;
+
+              for (auto &[topName, topNode] : root.children) {
+                if (topName == "Other parameters") {
+                  otherParamsNode = &topNode;
+                } else {
+                  mainComponents.push_back(
+                      buildComponentTree(topName, topNode));
+                }
+              }
+
+              std::vector<Cherry::Component> otherComponents;
+              for (const auto &[key, value] : selected_theme->theme) {
+                if (!displayedKeys.count(key)) {
+                  std::string label =
+                      themeLabels.count(key) ? themeLabels.at(key) : key;
+                  otherComponents.push_back(CherryKit::KeyValString(
+                      label, &selected_theme->theme[key]));
+                }
+              }
+
+              if (!otherComponents.empty()) {
+                Cherry::Component otherGroup = CherryKit::KeyValParent(
+                    "Other parameters", true, otherComponents);
+                mainComponents.push_back(otherGroup);
+              }
+
+              std::string label = "table" + selected_theme->label;
+              CherryKit::TableSimple(CherryID(label), "Customize theme",
+                                     mainComponents);
+            }
+          } else {
+            theme_changed = false;
+          }
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_human.png")));
+
+  this->AddChild(ProjectSettingsChild("Interface", [this]() {
+    Cherry::PushFont("ClashBold");
+    CherryNextProp("color_text", "#797979");
+    CherryKit::TitleFive("Project informations");
+    Cherry::PopFont();
+    CherryGUI::SameLine();
+    CherryKit::TooltipTextCustom("(?)", []() {
+      CherryKit::TitleFour("em : Editor Modules");
+      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+      CherryStyle::AddMarginY(10.0f);
+      CherryKit::TitleFour("esm : Editor Script Modules");
+      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+    });
+
+    CherryGUI::SameLine();
+    CherryStyle::AddMarginX(10.0f);
+    Cherry::SetNextComponentProperty("padding_x", "8");
+    Cherry::SetNextComponentProperty("padding_y", "4");
+    if (CherryKit::ButtonImageText(
+            "Refresh",
+            Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
+            .GetData("isClicked") == "true") {
+      RefreshProjectInformations();
+    }
+
+    CherryGUI::SameLine();
+    CherryStyle::AddMarginX(10.0f);
+    Cherry::SetNextComponentProperty("padding_x", "8");
+    Cherry::SetNextComponentProperty("padding_y", "4");
+    if (CherryKit::ButtonImageText(
+            "Save", Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+            .GetData("isClicked") == "true") {
+      UpdateProjectInformations();
+    }
+
+    CherryNextProp("color", "#252525");
+    CherryKit::Separator();
+  }));
+
+  this->AddChild(ProjectSettingsChild("Modules", [this]() {
+    Cherry::PushFont("ClashBold");
+    CherryNextProp("color_text", "#797979");
+    CherryKit::TitleFive("Project informations");
+    Cherry::PopFont();
+    CherryGUI::SameLine();
+    CherryKit::TooltipTextCustom("(?)", []() {
+      CherryKit::TitleFour("em : Editor Modules");
+      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+      CherryStyle::AddMarginY(10.0f);
+      CherryKit::TitleFour("esm : Editor Script Modules");
+      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+    });
+
+    CherryGUI::SameLine();
+    CherryStyle::AddMarginX(10.0f);
+    Cherry::SetNextComponentProperty("padding_x", "8");
+    Cherry::SetNextComponentProperty("padding_y", "4");
+    if (CherryKit::ButtonImageText(
+            "Refresh",
+            Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
+            .GetData("isClicked") == "true") {
+      RefreshProjectInformations();
+    }
+
+    CherryGUI::SameLine();
+    CherryStyle::AddMarginX(10.0f);
+    Cherry::SetNextComponentProperty("padding_x", "8");
+    Cherry::SetNextComponentProperty("padding_y", "4");
+    if (CherryKit::ButtonImageText(
+            "Save", Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+            .GetData("isClicked") == "true") {
+      UpdateProjectInformations();
+    }
+
+    CherryNextProp("color", "#252525");
+    CherryKit::Separator();
+  }));
+  this->AddChild(ProjectSettingsChild("Startup", [this]() {
+    Cherry::PushFont("ClashBold");
+    CherryNextProp("color_text", "#797979");
+    CherryKit::TitleFive("Project informations");
+    Cherry::PopFont();
+    CherryGUI::SameLine();
+    CherryKit::TooltipTextCustom("(?)", []() {
+      CherryKit::TitleFour("em : Editor Modules");
+      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+      CherryStyle::AddMarginY(10.0f);
+      CherryKit::TitleFour("esm : Editor Script Modules");
+      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+    });
+
+    CherryGUI::SameLine();
+    CherryStyle::AddMarginX(10.0f);
+    Cherry::SetNextComponentProperty("padding_x", "8");
+    Cherry::SetNextComponentProperty("padding_y", "4");
+    if (CherryKit::ButtonImageText(
+            "Refresh",
+            Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
+            .GetData("isClicked") == "true") {
+      RefreshProjectInformations();
+    }
+
+    CherryGUI::SameLine();
+    CherryStyle::AddMarginX(10.0f);
+    Cherry::SetNextComponentProperty("padding_x", "8");
+    Cherry::SetNextComponentProperty("padding_y", "4");
+    if (CherryKit::ButtonImageText(
+            "Save", Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+            .GetData("isClicked") == "true") {
+      UpdateProjectInformations();
+    }
+
+    CherryNextProp("color", "#252525");
+    CherryKit::Separator();
+  }));
   this->AddChild(ProjectSettingsChild(
       "Accessibility",
       [this]() {
@@ -556,6 +1115,13 @@ ProjectSettings::Create(const std::string &name) {
   auto instance = std::shared_ptr<ProjectSettings>(new ProjectSettings(name));
   instance->SetupRenderCallback();
   return instance;
+}
+
+void ProjectSettings::RefreshProjectThemes() {
+  m_AvailableThemes.clear();
+  for (auto t : VortexMaker::GetCurrentContext()->IO.themes) {
+    m_AvailableThemes.push_back(t->label);
+  }
 }
 
 void ProjectSettings::SetupRenderCallback() {

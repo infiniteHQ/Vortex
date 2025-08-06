@@ -160,6 +160,7 @@ struct EnvProject;
 
 struct ArgumentValues;
 struct ReturnValues;
+struct Theme;
 
 struct CommandOutput;
 
@@ -228,6 +229,19 @@ VORTEX_API void CallInputEvent(const std::string &module_name,
                                const std::string &event_name,
                                ArgumentValues &args, ReturnValues &ret,
                                const std::string &origin = "unknow");
+
+VORTEX_API bool IsThemeNeedsRebuild();
+VORTEX_API void ThemeRebuilded();
+VORTEX_API void RebuildTheme();
+VORTEX_API void RefreshProjectThemes();
+VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme);
+VORTEX_API void UpdateProjectThemesComfig();
+
+VORTEX_API void CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
+                               const std::string &title);
+
+VORTEX_API std::shared_ptr<Theme> GetTheme(const std::string &label);
+VORTEX_API std::shared_ptr<Theme> GetSelectedTheme();
 
 VORTEX_API void InstallModuleToSystem(const std::string &path);
 
@@ -326,6 +340,16 @@ VORTEX_API void UpdateProjectAuthor(const std::string &author);
 VORTEX_API void UpdateProjectDescription(const std::string &description);
 VORTEX_API void UpdateProjectType(const std::string &type);
 VORTEX_API void UpdateProjectLogoPath(const std::string &path);
+VORTEX_API void UpdateProjectTags(const std::string &tags);
+VORTEX_API void UpdateProjectWebsite(const std::string &website);
+VORTEX_API void UpdateProjectSupportContact(const std::string &contact);
+VORTEX_API void UpdateProjectCopyrightFile(const std::string &path);
+VORTEX_API void UpdateProjectLicenseFile(const std::string &path);
+VORTEX_API void UpdateProjectReadmeFile(const std::string &path);
+VORTEX_API void UpdateProjectRequirementsFile(const std::string &path);
+VORTEX_API void UpdateProjectCodeOfConductFile(const std::string &path);
+VORTEX_API void UpdateProjectSecurityFile(const std::string &path);
+VORTEX_API void UpdateProjectRootContentPath(const std::string &root_path);
 
 VORTEX_API void RefreshProjectInformations();
 
@@ -347,10 +371,10 @@ VORTEX_API void createJsonFileIfNotExists(const std::string &filename,
 
 // Memory Allocators
 // - Those functions are not reliant on the current context.
-// - DLL users: heaps and globals are not shared across DLL boundaries! You will
-// need to call SetCurrentContext() + SetAllocatorFunctions()
-//   for each static/DLL boundary you are calling from. Read "Context and Memory
-//   Allocators" section of VortexMaker.cpp for more details.
+// - DLL users: heaps and globals are not shared across DLL boundaries! You
+// will need to call SetCurrentContext() + SetAllocatorFunctions()
+//   for each static/DLL boundary you are calling from. Read "Context and
+//   Memory Allocators" section of VortexMaker.cpp for more details.
 VORTEX_API void SetAllocatorFunctions(VortexMakerMemAllocFunc alloc_func,
                                       VortexMakerMemFreeFunc free_func,
                                       void *user_data = NULL);

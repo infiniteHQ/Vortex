@@ -59,13 +59,11 @@ VORTEX_API void VortexMaker::LogInfo(const std::string &pool_name,
       if (pool.first == pool_name) {
         finded = true;
 
-        // Ajout du nom du thread au message pour le logger global
         ctx.global_logger->info("[{}] {}", pool_name,
                                 "[" + scope + "] : " + message);
 
         pool.second->info("[{}] {}", pool_name, "[" + scope + "] : " + message);
 
-        // Également logguer dans le logger global (console)
         ctx.console_logger->info("[" + scope + "] : " + message);
 
         if (ctx.logger_registering) {
@@ -83,13 +81,11 @@ VORTEX_API void VortexMaker::LogInfo(const std::string &pool_name,
       std::shared_ptr<spdlog::logger> logger =
           VortexMaker::CreateLogPool(pool_name);
 
-      // Ajout du nom du thread au message pour le logger global
       ctx.global_logger->info("[{}] {}", pool_name,
                               "[" + scope + "] : " + message);
 
       logger->info("[{}] {}", pool_name, "[" + scope + "] : " + message);
 
-      // Également logguer dans le logger global (console)
       ctx.console_logger->info("[" + scope + "] : " + message);
     }
   }
