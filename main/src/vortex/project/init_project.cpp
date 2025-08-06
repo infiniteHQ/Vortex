@@ -88,14 +88,8 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
     fs::path rootContentPath = ctx.projectPath / ctx.root_content_path;
 
     if (fs::exists(rootContentPath)) {
-      if (fs::is_symlink(rootContentPath)) {
-        ctx.projectDataPath = rootContentPath;
-      } else {
-        ctx.projectDataPath = ctx.projectPath;
-        VortexMaker::LogError(
-            "Core", "root_content_path exists but is not a symlink: " +
-                        rootContentPath.string());
-      }
+      ctx.projectDataPath = rootContentPath;
+
     } else {
       ctx.projectDataPath = ctx.projectPath;
       VortexMaker::LogError("Core", "root_content_path does not exist: " +

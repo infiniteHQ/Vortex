@@ -215,6 +215,7 @@ void ProjectSettings::RefreshProjectInformations() {
   v_ProjectRequirementsFileInitial = ctx->requirements_file;
   v_ProjectCodeOfConductFileInitial = ctx->code_of_conduct_file;
   v_ProjectSecurityFileInitial = ctx->security_file;
+  v_ProjectRootContentPathInitial = ctx->root_content_path;
 
   v_ProjectName = v_ProjectNameInitial;
   v_ProjectAuthor = v_ProjectAuthorInitial;

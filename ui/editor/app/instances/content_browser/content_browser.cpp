@@ -430,7 +430,7 @@ static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>>
     recognized_modules_items;
 
 void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
-  std::string homePath = VortexMaker::GetCurrentContext()->projectPath;
+  std::string homePath = VortexMaker::GetCurrentContext()->projectDataPath;
   bool FirstPathPartIsHome = false;
   std::string displayPath = path;
 
