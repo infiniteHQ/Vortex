@@ -125,6 +125,7 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
   }
 
   // Refresh themes
+  VortexMaker::VerifyAndPouplateThemes();
   VortexMaker::RefreshProjectThemes();
   VortexMaker::RebuildTheme();
 

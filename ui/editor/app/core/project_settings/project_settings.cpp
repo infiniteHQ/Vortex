@@ -448,7 +448,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
       [this]() {
         Cherry::PushFont("ClashBold");
         CherryNextProp("color_text", "#797979");
-        CherryKit::TitleFive("Project informations");
+        CherryKit::TitleFive("Project configurations");
         Cherry::PopFont();
         CherryGUI::SameLine();
         CherryKit::TooltipTextCustom("(?)", []() {
@@ -488,81 +488,24 @@ ProjectSettings::ProjectSettings(const std::string &name) {
             "Information table",
             {{
                 CherryKit::KeyValParent(
-                    "Main informations", true,
+                    "Content Browser", true,
                     {
-
-                        CherryKit::KeyValString("Name", &v_ProjectName),
-                        CherryKit::KeyValString("Description",
-                                                &v_ProjectDescription),
-                        CherryKit::KeyValString("Version", &v_ProjectVersion),
-                        CherryKit::KeyValString("Author", &v_ProjectAuthor),
-                    }),
-                CherryKit::KeyValParent(
-                    "Shipping", false,
-                    {
-
-                        CherryKit::KeyValString("Projectg type",
-                                                &v_ProjectName),
+                        CherryKit::KeyValString("Root content path",
+                                                &v_ProjectRootContentPath),
                     }),
             }});
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png")));
 
-  this->AddChild(ProjectSettingsChild("Contents", [this]() {
-    Cherry::PushFont("ClashBold");
-    CherryNextProp("color_text", "#797979");
-    CherryKit::TitleFive("Project informations");
-    Cherry::PopFont();
-    CherryGUI::SameLine();
-    CherryKit::TooltipTextCustom("(?)", []() {
-      CherryKit::TitleFour("em : Editor Modules");
-      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
-      CherryStyle::AddMarginY(10.0f);
-      CherryKit::TitleFour("esm : Editor Script Modules");
-      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
-    });
-
-    CherryGUI::SameLine();
-    CherryStyle::AddMarginX(10.0f);
-    Cherry::SetNextComponentProperty("padding_x", "8");
-    Cherry::SetNextComponentProperty("padding_y", "4");
-    if (CherryKit::ButtonImageText(
-            "Refresh",
-            Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
-            .GetData("isClicked") == "true") {
-      RefreshProjectInformations();
-    }
-
-    CherryGUI::SameLine();
-    CherryStyle::AddMarginX(10.0f);
-    Cherry::SetNextComponentProperty("padding_x", "8");
-    Cherry::SetNextComponentProperty("padding_y", "4");
-    if (CherryKit::ButtonImageText(
-            "Save", Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
-            .GetData("isClicked") == "true") {
-      UpdateProjectInformations();
-    }
-
-    CherryNextProp("color", "#252525");
-    CherryKit::Separator();
-
-    CherryKit::TableSimple(
-        "Content settings",
-        {
-            CherryKit::KeyValString("Root content path",
-                                    &v_ProjectRootContentPath),
-        });
-  }));
-
   // TODO : Start a little the editor window, with dedicated save/refresh
   // button. And display a list of themes to modify/delete. Remove Delete from
   // project in the used
   this->AddChild(ProjectSettingsChild(
-      "Themes",
+      "Appearance",
       [this]() {
         Cherry::PushFont("ClashBold");
         CherryNextProp("color_text", "#797979");
-        CherryKit::TitleTwo("Themes");
+        CherryKit::TitleTwo("Appearance of project and editor");
         Cherry::PopFont();
         CherryGUI::SameLine();
         CherryKit::TooltipTextCustom("(?)", []() {
@@ -632,7 +575,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
                             });
                         if (theme_used)
                           if (theme_used->label != "dark" &&
-                              theme_used->label != "white") {
+                              theme_used->label != "clear") {
                             CherryGUI::SameLine();
                             if (CherryKit::ButtonImageText(
                                     "Delete from project",
@@ -717,11 +660,12 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         if (selected_theme) {
 
           if (selected_theme->label != "dark" &&
-              selected_theme->label != "white") {
+              selected_theme->label != "clear") {
           }
         }
 
-        if (selected_theme->label != "dark" && selected_theme->label != "white")
+        if (selected_theme->label != "dark" &&
+            selected_theme->label != "clear") {
           if (!theme_changed) {
             static std::unordered_map<std::string, std::string> themeLabels = {
                 {"button_color_border", "Button Border Color"},
@@ -897,130 +841,238 @@ ProjectSettings::ProjectSettings(const std::string &name) {
           } else {
             theme_changed = false;
           }
+        } else {
+
+          CherryNextProp("color_text", "#797979");
+          CherryKit::TitleFive("Cannot customize a default theme, please "
+                               "select a custom theme or create a new one.");
+        }
       },
-      Cherry::GetPath("resources/imgs/icons/misc/icon_human.png")));
+      Cherry::GetPath("resources/imgs/icons/misc/icon_white_paint.png")));
 
-  this->AddChild(ProjectSettingsChild("Interface", [this]() {
-    Cherry::PushFont("ClashBold");
-    CherryNextProp("color_text", "#797979");
-    CherryKit::TitleFive("Project informations");
-    Cherry::PopFont();
-    CherryGUI::SameLine();
-    CherryKit::TooltipTextCustom("(?)", []() {
-      CherryKit::TitleFour("em : Editor Modules");
-      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
-      CherryStyle::AddMarginY(10.0f);
-      CherryKit::TitleFour("esm : Editor Script Modules");
-      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
-    });
+  this->AddChild(ProjectSettingsChild(
+      "Interface",
+      [this]() {
+        Cherry::PushFont("ClashBold");
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Interface configurations");
+        Cherry::PopFont();
+        CherryGUI::SameLine();
+        CherryKit::TooltipTextCustom("(?)", []() {
+          CherryKit::TitleFour("em : Editor Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+          CherryStyle::AddMarginY(10.0f);
+          CherryKit::TitleFour("esm : Editor Script Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+        });
 
-    CherryGUI::SameLine();
-    CherryStyle::AddMarginX(10.0f);
-    Cherry::SetNextComponentProperty("padding_x", "8");
-    Cherry::SetNextComponentProperty("padding_y", "4");
-    if (CherryKit::ButtonImageText(
-            "Refresh",
-            Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
-            .GetData("isClicked") == "true") {
-      RefreshProjectInformations();
-    }
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Refresh",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
+                .GetData("isClicked") == "true") {
+          RefreshProjectInformations();
+        }
 
-    CherryGUI::SameLine();
-    CherryStyle::AddMarginX(10.0f);
-    Cherry::SetNextComponentProperty("padding_x", "8");
-    Cherry::SetNextComponentProperty("padding_y", "4");
-    if (CherryKit::ButtonImageText(
-            "Save", Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
-            .GetData("isClicked") == "true") {
-      UpdateProjectInformations();
-    }
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Save",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+                .GetData("isClicked") == "true") {
+          UpdateProjectInformations();
+        }
 
-    CherryNextProp("color", "#252525");
-    CherryKit::Separator();
-  }));
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_white_screen.png")));
 
-  this->AddChild(ProjectSettingsChild("Modules", [this]() {
-    Cherry::PushFont("ClashBold");
-    CherryNextProp("color_text", "#797979");
-    CherryKit::TitleFive("Project informations");
-    Cherry::PopFont();
-    CherryGUI::SameLine();
-    CherryKit::TooltipTextCustom("(?)", []() {
-      CherryKit::TitleFour("em : Editor Modules");
-      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
-      CherryStyle::AddMarginY(10.0f);
-      CherryKit::TitleFour("esm : Editor Script Modules");
-      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
-    });
+  this->AddChild(ProjectSettingsChild(
+      "Contents & Templates",
+      [this]() {
+        Cherry::PushFont("ClashBold");
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Contents & Templates configurations");
+        Cherry::PopFont();
+        CherryGUI::SameLine();
+        CherryKit::TooltipTextCustom("(?)", []() {
+          CherryKit::TitleFour("em : Editor Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+          CherryStyle::AddMarginY(10.0f);
+          CherryKit::TitleFour("esm : Editor Script Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+        });
 
-    CherryGUI::SameLine();
-    CherryStyle::AddMarginX(10.0f);
-    Cherry::SetNextComponentProperty("padding_x", "8");
-    Cherry::SetNextComponentProperty("padding_y", "4");
-    if (CherryKit::ButtonImageText(
-            "Refresh",
-            Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
-            .GetData("isClicked") == "true") {
-      RefreshProjectInformations();
-    }
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Refresh",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
+                .GetData("isClicked") == "true") {
+          RefreshProjectInformations();
+        }
 
-    CherryGUI::SameLine();
-    CherryStyle::AddMarginX(10.0f);
-    Cherry::SetNextComponentProperty("padding_x", "8");
-    Cherry::SetNextComponentProperty("padding_y", "4");
-    if (CherryKit::ButtonImageText(
-            "Save", Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
-            .GetData("isClicked") == "true") {
-      UpdateProjectInformations();
-    }
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Save",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+                .GetData("isClicked") == "true") {
+          UpdateProjectInformations();
+        }
 
-    CherryNextProp("color", "#252525");
-    CherryKit::Separator();
-  }));
-  this->AddChild(ProjectSettingsChild("Startup", [this]() {
-    Cherry::PushFont("ClashBold");
-    CherryNextProp("color_text", "#797979");
-    CherryKit::TitleFive("Project informations");
-    Cherry::PopFont();
-    CherryGUI::SameLine();
-    CherryKit::TooltipTextCustom("(?)", []() {
-      CherryKit::TitleFour("em : Editor Modules");
-      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
-      CherryStyle::AddMarginY(10.0f);
-      CherryKit::TitleFour("esm : Editor Script Modules");
-      CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
-    });
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
 
-    CherryGUI::SameLine();
-    CherryStyle::AddMarginX(10.0f);
-    Cherry::SetNextComponentProperty("padding_x", "8");
-    Cherry::SetNextComponentProperty("padding_y", "4");
-    if (CherryKit::ButtonImageText(
-            "Refresh",
-            Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
-            .GetData("isClicked") == "true") {
-      RefreshProjectInformations();
-    }
+        CherryKit::TableSimple("Content settings", {});
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_white_box.png")));
 
-    CherryGUI::SameLine();
-    CherryStyle::AddMarginX(10.0f);
-    Cherry::SetNextComponentProperty("padding_x", "8");
-    Cherry::SetNextComponentProperty("padding_y", "4");
-    if (CherryKit::ButtonImageText(
-            "Save", Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
-            .GetData("isClicked") == "true") {
-      UpdateProjectInformations();
-    }
+  this->AddChild(ProjectSettingsChild(
+      "Modules",
+      [this]() {
+        Cherry::PushFont("ClashBold");
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Modules settings");
+        Cherry::PopFont();
+        CherryGUI::SameLine();
+        CherryKit::TooltipTextCustom("(?)", []() {
+          CherryKit::TitleFour("em : Editor Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+          CherryStyle::AddMarginY(10.0f);
+          CherryKit::TitleFour("esm : Editor Script Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+        });
 
-    CherryNextProp("color", "#252525");
-    CherryKit::Separator();
-  }));
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Refresh",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
+                .GetData("isClicked") == "true") {
+          RefreshProjectInformations();
+        }
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Save",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+                .GetData("isClicked") == "true") {
+          UpdateProjectInformations();
+        }
+
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_white_brick.png")));
+
+  this->AddChild(ProjectSettingsChild(
+      "Plugins",
+      [this]() {
+        Cherry::PushFont("ClashBold");
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Plugins settings");
+        Cherry::PopFont();
+        CherryGUI::SameLine();
+        CherryKit::TooltipTextCustom("(?)", []() {
+          CherryKit::TitleFour("em : Editor Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+          CherryStyle::AddMarginY(10.0f);
+          CherryKit::TitleFour("esm : Editor Script Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+        });
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Refresh",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
+                .GetData("isClicked") == "true") {
+          RefreshProjectInformations();
+        }
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Save",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+                .GetData("isClicked") == "true") {
+          UpdateProjectInformations();
+        }
+
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_white_plug.png")));
+
+  this->AddChild(ProjectSettingsChild(
+      "Startup",
+      [this]() {
+        Cherry::PushFont("ClashBold");
+        CherryNextProp("color_text", "#797979");
+        CherryKit::TitleFive("Project startup settings");
+        Cherry::PopFont();
+        CherryGUI::SameLine();
+        CherryKit::TooltipTextCustom("(?)", []() {
+          CherryKit::TitleFour("em : Editor Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+          CherryStyle::AddMarginY(10.0f);
+          CherryKit::TitleFour("esm : Editor Script Modules");
+          CherryKit::TextWrapped("Lorem ipsum Lorem ipsumLorem ipsum");
+        });
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Refresh",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
+                .GetData("isClicked") == "true") {
+          RefreshProjectInformations();
+        }
+
+        CherryGUI::SameLine();
+        CherryStyle::AddMarginX(10.0f);
+        Cherry::SetNextComponentProperty("padding_x", "8");
+        Cherry::SetNextComponentProperty("padding_y", "4");
+        if (CherryKit::ButtonImageText(
+                "Save",
+                Cherry::GetPath("resources/imgs/icons/misc/icon_save.png"))
+                .GetData("isClicked") == "true") {
+          UpdateProjectInformations();
+        }
+
+        CherryNextProp("color", "#252525");
+        CherryKit::Separator();
+      },
+      Cherry::GetPath("resources/imgs/icons/misc/icon_white_rocket.png")));
+
   this->AddChild(ProjectSettingsChild(
       "Accessibility",
       [this]() {
         Cherry::PushFont("ClashBold");
         CherryNextProp("color_text", "#797979");
-        CherryKit::TitleFive("Editor");
+        CherryKit::TitleFive("Accessibility configurations");
         Cherry::PopFont();
         CherryGUI::SameLine();
         CherryKit::TooltipTextCustom("(?)", []() {

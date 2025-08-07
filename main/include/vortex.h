@@ -236,6 +236,7 @@ VORTEX_API void RebuildTheme();
 VORTEX_API void RefreshProjectThemes();
 VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme);
 VORTEX_API void UpdateProjectThemesComfig();
+VORTEX_API void VerifyAndPouplateThemes();
 
 VORTEX_API void CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
                                const std::string &title);

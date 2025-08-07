@@ -31,7 +31,7 @@ void ModulesUtility::ModulesRender() {
 ModulesUtility::ModulesUtility(const std::string &name) {
   m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
   m_AppWindow->SetIcon(
-      Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
+      Cherry::GetPath("resources/imgs/icons/misc/icon_bricksearch.png"));
 
   m_AppWindow->SetClosable(true);
   m_AppWindow->m_CloseCallback = [=]() { m_AppWindow->SetVisibility(false); };
@@ -50,14 +50,14 @@ ModulesUtility::ModulesUtility(const std::string &name) {
     }
   });
 
-  m_SelectedChildName = "Project's modules";
+  m_SelectedChildName = "main";
 
   this->AddChild(ModulesUtilityChild(
-      "Installed modules",
+      "main",
       [this]() {
         Cherry::PushFont("ClashBold");
         CherryNextProp("color_text", "#797979");
-        CherryKit::TitleThree("Project informations");
+        CherryKit::TitleThree("Project installed modules");
         Cherry::PopFont();
         CherryGUI::SameLine();
         CherryKit::TooltipTextCustom("(?)", []() {
@@ -69,19 +69,45 @@ ModulesUtility::ModulesUtility(const std::string &name) {
         });
         CherryNextProp("color", "#252525");
         CherryKit::Separator();
+        static std::string ModulesSearch;
 
+        if (true) {
+          CherryNextComponent.SetProperty("size_x", "240");
+          CherryNextComponent.SetProperty("padding_y", "6.0f");
+          CherryNextComponent.SetProperty("description", "Search content...");
+          CherryNextComponent.SetProperty(
+              "description_logo",
+              Cherry::GetPath(
+                  "resources/imgs/icons/misc/icon_magnifying_glass.png"));
+          CherryNextComponent.SetProperty("description_logo_place", "r");
+          CherryKit::InputString("", &ModulesSearch);
+
+          CherryKit::Separator();
+        }
+        ImGui::Spacing();
+
+        if (VortexMaker::GetCurrentContext()->IO.em.empty()) {
+          CherryKit::TitleFour("No modules founded.");
+        }
+
+        std::vector<Cherry::Component> modules_blocks;
         for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.em.size();
              i++) {
-          ModuleCard(VortexMaker::GetCurrentContext()->IO.em[i],
-                     VortexMaker::GetCurrentContext()->IO.em[i]->m_proper_name,
-                     VortexMaker::GetCurrentContext()->IO.em[i]->m_path,
-                     VortexMaker::GetCurrentContext()->IO.em[i]->m_name,
-                     VortexMaker::GetCurrentContext()->IO.em[i]->m_version,
-                     false,
-                     VortexMaker::GetCurrentContext()->IO.em[i]->m_logo_path,
-                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                     Cherry::HexToImU32("#B1FF31FF"), 100.0f, 5.0f);
+          CherryNextComponent.SetRenderMode(Cherry::RenderMode::CreateOnly);
+          auto item = ModuleCard(
+              VortexMaker::GetCurrentContext()->IO.em[i],
+              VortexMaker::GetCurrentContext()->IO.em[i]->m_proper_name,
+              VortexMaker::GetCurrentContext()->IO.em[i]->m_path,
+              VortexMaker::GetCurrentContext()->IO.em[i]->m_name,
+              VortexMaker::GetCurrentContext()->IO.em[i]->m_version, false,
+              VortexMaker::GetCurrentContext()->IO.em[i]->m_logo_path,
+              IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
+              Cherry::HexToImU32("#B1FF31FF"), 100.0f, 5.0f);
+
+          modules_blocks.push_back(item);
         }
+
+        CherryKit::GridSimple(250.0f, 250.0f, modules_blocks);
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")));
 
@@ -107,14 +133,14 @@ ModulesUtility::ModulesUtility(const std::string &name) {
   std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
 }
 
-bool ModulesUtility::ModuleCard(const std::shared_ptr<ModuleInterface> &module,
-                                const std::string &name,
-                                const std::string &path,
-                                const std::string &description,
-                                const std::string &size, bool selected,
-                                const std::string &logo, ImU32 bgColor,
-                                ImU32 borderColor, ImU32 lineColor,
-                                float maxTextWidth, float borderRadius) {
+bool ModulesUtility::ModuleCardO(const std::shared_ptr<ModuleInterface> &module,
+                                 const std::string &name,
+                                 const std::string &path,
+                                 const std::string &description,
+                                 const std::string &size, bool selected,
+                                 const std::string &logo, ImU32 bgColor,
+                                 ImU32 borderColor, ImU32 lineColor,
+                                 float maxTextWidth, float borderRadius) {
   bool pressed = false;
 
   float logoSize = 60.0f;
@@ -489,7 +515,96 @@ void ModulesUtility::Render() {
 
   // CherryStyle::SetPadding(7.0f);
 
-  for (const auto &child : m_Childs) {
+  const float input_width = leftPaneWidth - 17.0f;
+  const float header_width = leftPaneWidth - 27.0f;
+
+  CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(7, 7));
+
+  CherryKit::Space(3.0f);
+  CherryStyle::AddMarginX(6.0f);
+  CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#343434"));
+  CherryGUI::PushStyleColor(ImGuiCol_Button, Cherry::HexToRGBA("#232323"));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered,
+                            Cherry::HexToRGBA("#343434"));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonActive,
+                            Cherry::HexToRGBA("#454545"));
+
+  std::string header_label =
+      "All Modules (" +
+      std::to_string(VortexMaker::GetCurrentContext()->IO.em.size()) + ")";
+  if (CherryGUI::ImageSizeButtonWithText(
+          Cherry::GetTexture(
+              Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
+          header_width, header_label.c_str(), ImVec2(-FLT_MIN, 0.0f),
+          ImVec2(0, 0), ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0),
+          ImVec4(1, 1, 1, 1))) {
+  }
+
+  CherryGUI::PopStyleColor(4);
+
+  CherryKit::Space(5.0f);
+
+  CherryStyle::AddMarginX(6.0f);
+  CherryKit::SeparatorText("All types");
+
+  static std::string SearchModulesString;
+  CherryStyle::AddMarginX(6.0f);
+  CherryNextComponent.SetProperty("size_x", input_width);
+  CherryNextComponent.SetProperty("padding_y", "6.0f");
+  CherryNextComponent.SetProperty("description", "Search types...");
+  CherryNextComponent.SetProperty(
+      "description_logo",
+      Cherry::GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
+  CherryNextComponent.SetProperty("description_logo_place", "r");
+  CherryKit::InputString("", &SearchModulesString);
+
+  CherryStyle::AddMarginX(6.0f);
+  CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#343434"));
+  CherryGUI::PushStyleColor(ImGuiCol_Button, Cherry::HexToRGBA("#232323"));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered,
+                            Cherry::HexToRGBA("#343434"));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonActive,
+                            Cherry::HexToRGBA("#454545"));
+  if (CherryGUI::ImageSizeButtonWithText(
+          Cherry::GetTexture(Cherry::GetPath(
+              "resources/imgs/icons/misc/icon_white_brick.png")),
+          header_width, "Tools (32)", ImVec2(-FLT_MIN, 0.0f), ImVec2(0, 0),
+          ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))) {
+  }
+  CherryGUI::PopStyleColor(4);
+
+  CherryStyle::AddMarginX(6.0f);
+  CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#343434"));
+  CherryGUI::PushStyleColor(ImGuiCol_Button, Cherry::HexToRGBA("#232323"));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered,
+                            Cherry::HexToRGBA("#343434"));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonActive,
+                            Cherry::HexToRGBA("#454545"));
+  if (CherryGUI::ImageSizeButtonWithText(
+          Cherry::GetTexture(Cherry::GetPath(
+              "resources/imgs/icons/misc/icon_white_brick.png")),
+          header_width, "Miscelanous (3)", ImVec2(-FLT_MIN, 0.0f), ImVec2(0, 0),
+          ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))) {
+  }
+  CherryGUI::PopStyleColor(4);
+
+  CherryStyle::AddMarginX(6.0f);
+  CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#343434"));
+  CherryGUI::PushStyleColor(ImGuiCol_Button, Cherry::HexToRGBA("#232323"));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered,
+                            Cherry::HexToRGBA("#343434"));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonActive,
+                            Cherry::HexToRGBA("#454545"));
+  if (CherryGUI::ImageSizeButtonWithText(
+          Cherry::GetTexture(Cherry::GetPath(
+              "resources/imgs/icons/misc/icon_white_brick.png")),
+          header_width, "Systems (5)", ImVec2(-FLT_MIN, 0.0f), ImVec2(0, 0),
+          ImVec2(1, 1), -1, ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))) {
+  }
+  CherryGUI::PopStyleColor(4);
+  CherryGUI::PopStyleVar();
+
+  /*for (const auto &child : m_Childs) {
     if (child.Name == m_SelectedChildName) {
       // opt.hex_text_idle = "#FFFFFFFF";
     } else {
@@ -517,7 +632,7 @@ void ModulesUtility::Render() {
       m_SelectedChildName = child.Name;
     }
   }
-
+*/
   CherryGUI::EndChild();
   CherryGUI::PopStyleVar(4);
   CherryGUI::PopStyleColor(2);

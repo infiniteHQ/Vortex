@@ -1231,6 +1231,345 @@ VortexMaker::CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
                                        std::string(e.what()));
   }
 }
+VORTEX_API void VortexMaker::VerifyAndPouplateThemes() {
+  std::string themes_path =
+      VortexMaker::GetCurrentContext()->projectPath.string() +
+      "/.vx/configs/themes/data";
+
+  VortexMaker::createFolderIfNotExists(themes_path);
+
+  const std::vector<std::string> required_themes = {"dark.json", "clear.json"};
+
+  for (const auto &theme_file : required_themes) {
+    std::string path = themes_path + "/" + theme_file;
+    bool needs_creation = false;
+
+    if (!fs::exists(path)) {
+      VortexMaker::LogInfo("Theme", theme_file + " is missing. Recreating.");
+      needs_creation = true;
+    } else {
+      try {
+        std::ifstream in(path);
+        nlohmann::json theme_json;
+        in >> theme_json;
+
+        if (!theme_json.contains("label") || !theme_json.contains("name") ||
+            !theme_json.contains("description") ||
+            !theme_json.contains("authors") || !theme_json.contains("theme")) {
+          VortexMaker::LogError("Theme",
+                                theme_file + " is invalid. Recreating.");
+          needs_creation = true;
+        }
+      } catch (...) {
+        VortexMaker::LogError("Theme",
+                              theme_file + " is corrupted. Recreating.");
+        needs_creation = true;
+      }
+    }
+
+    if (needs_creation && theme_file == "dark.json") {
+      std::shared_ptr<Theme> dark_theme = std::make_shared<Theme>();
+      dark_theme->description = "Default dark theme";
+      dark_theme->authors = {"Vortex DevTeam"};
+
+      // clang-format off
+      std::map<std::string, std::string> properties = {
+          {"color_header", "#2F2F2FFF"},
+          {"color_header_hovered", "#2F2F2FFF"},
+          {"color_header_active", "#2F2F2FFF"},
+          {"color", "#383838C8"},
+          {"color_hovered", "#464646FF"},
+          {"color_active", "#38383896"},
+          {"color_framebg", "#0F0F0FFF"},
+          {"color_framebg_hovered", "#0F0F0FFF"},
+          {"color_framebg_active", "#0F0F0FFF"},
+          {"color_tab", "#151515FF"},
+          {"color_tab_hovered", "#24242464"},
+          {"color_tab_active", "#242424FF"},
+          {"color_tab_unfocused", "#151515FF"},
+          {"color_tab_unfocused_active", "#24242464"},
+          {"color_text", "#898989FF"},
+          {"color_titlebg", "#151515FF"},
+          {"color_titlebg_active", "#151515FF"},
+          {"color_titlebg_collapsed", "#262626FF"},
+          {"color_resizegrip", "#E8E8E840"},
+          {"color_resizegrip_hovered", "#CFCFCFAA"},
+          {"color_resizegrip_active", "#757575F2"},
+          {"color_scrollbar_bg", "#05050587"},
+          {"color_scrollbar_grab", "#4F4F4FFF"},
+          {"color_scrollbar_grab_hovered", "#696969FF"},
+          {"color_scrollbar_grab_active", "#828282FF"},
+          {"color_checkmark", "#C8C8C8FF"},
+          {"color_slidergrab", "#828282B3"},
+          {"color_slidergrab_active", "#A8A8A8FF"},
+          {"color_separator", "#151515FF"},
+          {"color_separator_active", "#27B9F2FF"},
+          {"color_separator_hovered", "#151515FF"},
+          {"color_window_bg", "#151515FF"},
+          {"color_child_bg", "#242424FF"},
+          {"color_popup_bg", "#383838FF"},
+          {"color_border", "#242424FF"},
+          {"color_table_header_bg", "#2F2F2FFF"},
+          {"color_table_border_light", "#1A1A1AFF"},
+          {"color_menubar_bg", "#242424FF"},
+
+          // Buttons
+          {"button_color_border", "#454545FF"},
+          {"button_color_border_hovered", "#555555FF"},
+          {"button_color_border_clicked", "#444444FF"},
+          {"button_color_border_pressed", "#757575FF"},
+          {"button_color_bg", "#242424FF"},
+          {"button_color_bg_hovered", "#343434FF"},
+          {"button_color_bg_pressed", "#444444FF"},
+          {"button_color_bg_clicked", "#444444FF"},
+          {"button_color_text", "#BCBCBCFF"},
+          {"button_color_text_hovered", "#FFFFFFFF"},
+          {"button_color_text_pressed", "#FFFFFFFF"},
+          {"button_color_underline", "#242424FF"},
+          {"button_color_underline_hovered", "#343434FF"},
+          {"button_color_underline_pressed", "#444444FF"},
+          {"button_size_x", "0"},
+          {"button_size_y", "0"},
+          {"button_padding_x", "6"},
+          {"button_padding_y", "6"},
+          {"button_scale", "0"},
+
+          // Checkbox
+          {"checkbox_color_border", "#454545B2"},
+          {"checkbox_color_border_hovered", "#454545B2"},
+          {"checkbox_color_border_clicked", "#454545B2"},
+          {"checkbox_color_border_pressed", "#454545B2"},
+          {"checkbox_color_bg", "#242424FF"},
+          {"checkbox_color_bg_hovered", "#343434FF"},
+          {"checkbox_color_bg_pressed", "#444444FF"},
+          {"checkbox_color_bg_clicked", "#444444FF"},
+          {"checkbox_size_x", "6"},
+          {"checkbox_size_y", "6"},
+
+          // Combo
+          {"combo_color_border", "#454545B2"},
+          {"combo_color_border_hovered", "#454545B2"},
+          {"combo_color_border_clicked", "#454545B2"},
+          {"combo_color_border_pressed", "#454545B2"},
+          {"combo_color_bg", "#242424FF"},
+          {"combo_color_bg_hovered", "#343434FF"},
+          {"combo_color_bg_pressed", "#444444FF"},
+          {"combo_color_bg_clicked", "#444444FF"},
+          {"combo_size_x", "6"},
+          {"combo_size_y", "6"},
+
+          // Header
+          {"header_color_border", "#454545B2"},
+          {"header_color_border_hovered", "#454545B2"},
+          {"header_color_border_clicked", "#454545B2"},
+          {"header_color_border_pressed", "#454545B2"},
+          {"header_color_bg", "#242424FF"},
+          {"header_color_bg_hovered", "#343434FF"},
+          {"header_color_bg_pressed", "#444444FF"},
+          {"header_color_bg_clicked", "#444444FF"},
+          {"header_size_x", "6"},
+          {"header_size_y", "6"},
+          {"header_button_color_border", "#454545FF"},
+          {"header_button_color_border_hovered", "#555555FF"},
+          {"header_button_color_border_clicked", "#444444FF"},
+          {"header_button_color_border_pressed", "#757575FF"},
+          {"header_button_color_bg", "#242424FF"},
+          {"header_button_color_bg_hovered", "#343434FF"},
+          {"header_button_color_bg_pressed", "#444444FF"},
+          {"header_button_color_bg_clicked", "#444444FF"},
+          {"header_button_color_text", "#BCBCBCFF"},
+          {"header_button_color_text_hovered", "#FFFFFFFF"},
+          {"header_button_color_text_pressed", "#FFFFFFFF"},
+
+          // Image
+          {"image_color_border", "#454545B2"},
+          {"image_color_border_hovered", "#454545B2"},
+          {"image_color_border_clicked", "#454545B2"},
+          {"image_color_border_pressed", "#454545B2"},
+          {"image_color_bg", "#242424FF"},
+          {"image_color_bg_hovered", "#343434FF"},
+          {"image_color_bg_pressed", "#444444FF"},
+          {"image_color_bg_clicked", "#444444FF"},
+          {"image_size_x", "6"},
+          {"image_size_y", "6"},
+
+          // Modal
+          {"modal_padding_x", "6"},
+          {"modal_padding_y", "6"},
+
+          // Notification
+          {"notification_color_border", "#454545FF"},
+          {"notification_color_border_hovered", "#555555FF"},
+          {"notification_color_bg", "#242424FF"},
+          {"notification_color_bg_hovered", "#343434FF"},
+
+          // Separator
+          {"separator_color", "#424242"},
+          {"separator_color_text", "#454545B2"},
+
+          // Keyval
+          {"keyval_color_text", "#454545B2"},
+
+          // Table
+          {"table_color_border", "#232323"},
+          {"table_cell_padding_x_header", "6.0"},
+          {"table_cell_padding_y_header", "6.0"},
+          {"table_cell_padding_x_row", "6.0"},
+          {"table_cell_padding_y_row", "6.0"},
+
+          // Text Area
+          {"text_area_color_text", "#FFFFFFFF"},
+
+          // Text
+          {"text_color_text", "#454545B2"},
+
+          // Titles
+          {"title_color_text", "#FFFFFFFF"},
+
+          // Tooltip
+          {"tooltip_color_border", "#454545B2"},
+          {"tooltip_color_border_hovered", "#454545B2"},
+          {"tooltip_color_border_clicked", "#454545B2"},
+          {"tooltip_color_bg", "#242424FF"},
+          {"tooltip_color_bg_hovered", "#343434FF"},
+          {"tooltip_color_bg_clicked", "#444444FF"},
+
+          // Blocks
+          {"block_color", "#252525"},
+          {"block_color_hovered", "#454545"},
+          {"block_color_pressed", "#555555"},
+          {"block_border_color", "#353535"},
+          {"block_border_color_hovered", "#353535"},
+          {"block_border_color_pressed", "#555555"},
+          {"block_border_radius", "0.0"},
+          {"block_border_size", "1.0"},
+      };
+      // clang-format on
+
+      for (const auto &[k, v] : properties) {
+        dark_theme->theme[k] = v;
+      }
+
+      CreateNewTheme(dark_theme, "Dark");
+    } else if (needs_creation && theme_file == "clear.json") {
+      std::shared_ptr<Theme> light_theme = std::make_shared<Theme>();
+      light_theme->description = "Default light theme";
+      light_theme->authors = {"Vortex DevTeam"};
+
+      std::map<std::string, std::string> properties = {
+          {"color_header", "#EAEAEA"},
+          {"color_header_hovered", "#DCDCDC"},
+          {"color_header_active", "#D0D0D0"},
+          {"color", "#F5F5F5"},
+          {"color_hovered", "#EBEBEB"},
+          {"color_active", "#DADADA"},
+          {"color_framebg", "#FFFFFF"},
+          {"color_framebg_hovered", "#F0F0F0"},
+          {"color_framebg_active", "#E0E0E0"},
+          {"color_text", "#252525FF"},
+          {"color_tab", "#F2F2F2"},
+          {"color_tab_hovered", "#E6E6E6"},
+          {"color_tab_active", "#DDDDDD"},
+          {"color_tab_unfocused", "#F2F2F2"},
+          {"color_tab_unfocused_active", "#E6E6E6"},
+          {"color_titlebg", "#F0F0F0"},
+          {"color_titlebg_active", "#E0E0E0"},
+          {"color_titlebg_collapsed", "#FAFAFA"},
+          {"color_resizegrip", "#AAAAAA40"},
+          {"color_resizegrip_hovered", "#888888AA"},
+          {"color_resizegrip_active", "#3D7EFF"},
+          {"color_scrollbar_bg", "#EEEEEE"},
+          {"color_scrollbar_grab", "#C2C2C2"},
+          {"color_scrollbar_grab_hovered", "#A8A8A8"},
+          {"color_scrollbar_grab_active", "#8F8F8F"},
+          {"color_checkmark", "#3D7EFF"},
+          {"color_slidergrab", "#BBBBBB"},
+          {"color_slidergrab_active", "#3D7EFF"},
+          {"color_separator", "#DDDDDD"},
+          {"color_separator_active", "#3D7EFF"},
+          {"color_separator_hovered", "#CCCCCC"},
+          {"color_window_bg", "#FFFFFF"},
+          {"color_child_bg", "#F9F9F9"},
+          {"color_popup_bg", "#FFFFFF"},
+          {"color_border", "#DDDDDD"},
+          {"color_table_header_bg", "#EDEDED"},
+          {"color_table_border_light", "#F3F3F3"},
+          {"color_menubar_bg", "#FAFAFA"},
+
+          // Buttons
+          {"button_color_border", "#CCCCCC"},
+          {"button_color_border_hovered", "#BBBBBB"},
+          {"button_color_border_clicked", "#AAAAAA"},
+          {"button_color_border_pressed", "#3D7EFF"},
+          {"button_color_bg", "#F0F0F0"},
+          {"button_color_bg_hovered", "#E6E6E6"},
+          {"button_color_bg_pressed", "#DADADA"},
+          {"button_color_bg_clicked", "#DADADA"},
+          {"button_color_text", "#333333"},
+          {"button_color_text_hovered", "#000000"},
+          {"button_color_text_pressed", "#000000"},
+          {"button_color_underline", "#CCCCCC"},
+          {"button_color_underline_hovered", "#AAAAAA"},
+          {"button_color_underline_pressed", "#3D7EFF"},
+          {"button_size_x", "0"},
+          {"button_size_y", "0"},
+          {"button_padding_x", "6"},
+          {"button_padding_y", "6"},
+          {"button_scale", "0"},
+
+          // Checkbox
+          {"checkbox_color_border", "#CCCCCC"},
+          {"checkbox_color_border_hovered", "#AAAAAA"},
+          {"checkbox_color_border_clicked", "#888888"},
+          {"checkbox_color_border_pressed", "#3D7EFF"},
+          {"checkbox_color_bg", "#FFFFFF"},
+          {"checkbox_color_bg_hovered", "#F5F5F5"},
+          {"checkbox_color_bg_pressed", "#E5E5E5"},
+          {"checkbox_color_bg_clicked", "#E5E5E5"},
+          {"checkbox_size_x", "6"},
+          {"checkbox_size_y", "6"},
+
+          // Tooltip
+          {"tooltip_color_border", "#CCCCCC"},
+          {"tooltip_color_border_hovered", "#AAAAAA"},
+          {"tooltip_color_border_clicked", "#888888"},
+          {"tooltip_color_bg", "#FAFAFA"},
+          {"tooltip_color_bg_hovered", "#F0F0F0"},
+          {"tooltip_color_bg_clicked", "#E0E0E0"},
+
+          // Text Area
+          {"text_area_color_text", "#222222"},
+
+          // Text
+          {"text_color_text", "#222222"},
+
+          // Titles
+          {"title_color_text", "#000000"},
+
+          // Notification
+          {"notification_color_border", "#AAAAAA"},
+          {"notification_color_border_hovered", "#3D7EFF"},
+          {"notification_color_bg", "#FFFFFF"},
+          {"notification_color_bg_hovered", "#F7F7F7"},
+
+          // Blocks
+          {"block_color", "#F5F5F5"},
+          {"block_color_hovered", "#E5E5E5"},
+          {"block_color_pressed", "#D5D5D5"},
+          {"block_border_color", "#CCCCCC"},
+          {"block_border_color_hovered", "#BBBBBB"},
+          {"block_border_color_pressed", "#3D7EFF"},
+          {"block_border_radius", "0.0"},
+          {"block_border_size", "1.0"}};
+
+      for (const auto &[k, v] : properties) {
+        light_theme->theme[k] = v;
+      }
+
+      CreateNewTheme(light_theme, "Clear");
+    }
+  }
+}
 
 VORTEX_API void VortexMaker::UpdateProjectThemesComfig() {
   VxContext &ctx = *CVortexMaker;
