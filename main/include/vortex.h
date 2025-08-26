@@ -50,15 +50,15 @@
 #include <string>
 #include <sys/stat.h>
 #include <thread>
-#include <unistd.h>
 #include <unordered_map>
 #include <vector>
 #if !defined(_WIN32) || !defined(_WIN64)
 #include <dlfcn.h>
-#endif
-#include <deque>
+#include <unistd.h>
 #include <dirent.h>
+#endif
 
+#include <deque>
 namespace fs = std::filesystem;
 
 #ifndef VORTEX_API
@@ -826,7 +826,7 @@ struct hString {
     if (Buf.Data == nullptr || substr == nullptr) {
       return npos;
     }
-    size_t searchStart = (start == npos) ? Size - 1 : std::min(start, Size - 1);
+    size_t searchStart = (start == npos) ? Size - 1 : (std::min)(start, Size - 1);
     for (size_t i = searchStart; i < Size; --i) {
       const char *result = std::strstr(Buf.Data + i, substr);
       if (result != nullptr) {

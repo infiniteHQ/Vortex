@@ -13,6 +13,10 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_VERSION
 set(VORTEX_DIST "beta")
 set(VORTEX_BUILD "dev")
 
+if (MSVC)
+    add_compile_options(/utf-8)
+endif()
+
 if(VORTEX_BUILD STREQUAL "prod")
     string(TIMESTAMP BUILD_DATE "%b %d, %Y - %H:%M" UTC)
     add_compile_definitions(BUILD_DATE_STR="${BUILD_DATE}")

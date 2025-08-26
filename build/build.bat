@@ -8,15 +8,22 @@ rmdir /S /Q .\build\bin
 mkdir build_spdlog
 mkdir build
 
-cd build_spdlog
-cmake ..\..\lib\spdlog -G "MinGW Makefiles"
-mingw32-make.exe -j%NUMBER_OF_PROCESSORS%
+cd build
 
-cd ..\build
-cmake ..\.. -G "MinGW Makefiles"
-mingw32-make.exe install -j%NUMBER_OF_PROCESSORS%
+cmake -G "Visual Studio 17" -A x64 ..\..
 
+for /f %%i in ('powershell -command "(Get-WmiObject -Class Win32_Processor).NumberOfLogicalProcessors"') do set THREADS=%%i
+
+cmake --build . --config Release -- /m:%THREADS%
+
+xcopy /Y /E /I .\bin\Release\* .\bin
+
+
+
+echo %cd%
 cd ..
+echo %cd%
+
 
 xcopy /E /Y .\build\bin\ dist\%VERSION%\bin
 

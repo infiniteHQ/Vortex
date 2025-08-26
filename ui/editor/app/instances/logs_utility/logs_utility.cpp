@@ -387,7 +387,7 @@ void LogsUtilityAppWindow::Render() {
 
     for (auto &child : children) {
       if (!child.m_Disabled) {
-        child.m_Size = std::max(child.m_Size * scaleFactor, 50.0f);
+        child.m_Size = (std::max)(child.m_Size * scaleFactor, 50.0f);
       }
     }
   }
@@ -456,8 +456,8 @@ void LogsUtilityAppWindow::Render() {
             }
           }
 
-          child.m_Size = std::max(child.m_Size, 50.0f);
-          next_child.m_Size = std::max(next_child.m_Size, 50.0f);
+          child.m_Size = (std::max)(child.m_Size, 50.0f);
+          next_child.m_Size = (std::max)(next_child.m_Size, 50.0f);
         }
 
         ImGui::SameLine();

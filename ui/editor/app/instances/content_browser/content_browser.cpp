@@ -94,7 +94,7 @@ static int levenshteinDistance(const std::string &s1, const std::string &s2) {
         dp[i][j] = i;
       } else {
         int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
-        dp[i][j] = std::min(
+        dp[i][j] = (std::min)(
             {dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost});
       }
     }
@@ -118,7 +118,7 @@ static bool areStringsSimilar(const std::string &s1, const std::string &s2,
   std::string lower_s2 = toLowerCase(s2);
 
   int dist = levenshteinDistance(lower_s1, lower_s2);
-  int maxLength = std::max(lower_s1.size(), lower_s2.size());
+  int maxLength = (std::max)(lower_s1.size(), lower_s2.size());
   double similarity = 1.0 - (static_cast<double>(dist) / maxLength);
 
   if (std::strlen(ProjectSearch.c_str()) < 5) {
@@ -430,7 +430,7 @@ static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>>
     recognized_modules_items;
 
 void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
-  std::string homePath = VortexMaker::GetCurrentContext()->projectDataPath;
+  std::string homePath = VortexMaker::GetCurrentContext()->projectDataPath.string();
   bool FirstPathPartIsHome = false;
   std::string displayPath = path;
 
@@ -461,7 +461,7 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
 
   float availableWidth = ImGui::GetContentRegionAvail().x;
   float synthStart = 0.5f;
-  float maxWidth = std::max(availableWidth * synthStart, 100.0f);
+  float maxWidth = (std::max)(availableWidth * synthStart, 100.0f);
 
   float totalWidth = 0.0f;
   const float sepWidth = ImGui::CalcTextSize("/").x;
@@ -744,12 +744,12 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
 }
 
 void ContentBrowserAppWindow::CreateFile() {
-  auto path = VortexMaker::CreateFile(m_CurrentDirectory);
+  auto path = VortexMaker::CreateFile(m_CurrentDirectory.string());
   pathToRename = path;
 }
 
 void ContentBrowserAppWindow::CreateFolder() {
-  auto path = VortexMaker::CreateFolder(m_CurrentDirectory);
+  auto path = VortexMaker::CreateFolder(m_CurrentDirectory.string());
   pathToRename = path;
 }
 
@@ -955,7 +955,7 @@ void ContentBrowserAppWindow::FolderIcon(ImVec2 size, ImU32 color) {
 
 void ContentBrowserAppWindow::GoBack() {
   if (!m_BackHistory.empty()) {
-    m_ForwardHistory.push(m_CurrentDirectory);
+    m_ForwardHistory.push(m_CurrentDirectory.string());
     m_CurrentDirectory = m_BackHistory.top();
     m_BackHistory.pop();
   }
@@ -963,7 +963,7 @@ void ContentBrowserAppWindow::GoBack() {
 
 void ContentBrowserAppWindow::GoForward() {
   if (!m_ForwardHistory.empty()) {
-    m_BackHistory.push(m_CurrentDirectory);
+    m_BackHistory.push(m_CurrentDirectory.string());
     m_CurrentDirectory = m_ForwardHistory.top();
     m_ForwardHistory.pop();
   }
@@ -971,9 +971,9 @@ void ContentBrowserAppWindow::GoForward() {
 
 void ContentBrowserAppWindow::ChangeDirectory(
     const std::filesystem::path &newDirectory) {
-  if (newDirectory != m_CurrentDirectory) {
+  if (newDirectory != m_CurrentDirectory.string()) {
     if (!m_CurrentDirectory.empty()) {
-      m_BackHistory.push(m_CurrentDirectory);
+      m_BackHistory.push(m_CurrentDirectory.string());
 
       while (!m_ForwardHistory.empty()) {
         m_ForwardHistory.pop();
@@ -1116,8 +1116,8 @@ bool ContentBrowserAppWindow::ItemCard(
   bool shortcutCutAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
   bool shortcutCopy = ctrl && CherryApp.IsKeyPressed(CherryKey::C);
   bool shortcutCopyAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
-  bool shortcutDelete = CherryApp.IsKeyPressed(CherryKey::DELETE);
-  bool shortcutDeleteMulti = alt && CherryApp.IsKeyPressed(CherryKey::DELETE);
+  bool shortcutDelete = CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+  bool shortcutDeleteMulti = alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
 
   if (shortcutRename && !pathToRename.empty()) {
     pathToRename = path;
@@ -1790,7 +1790,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
   recognized_modules_items.clear();
 
   for (auto &directoryEntry :
-       std::filesystem::directory_iterator(m_CurrentDirectory)) {
+       std::filesystem::directory_iterator(m_CurrentDirectory.string())) {
     bool isItem = false;
     for (auto item : m_ItemToReconize) {
       std::string path = directoryEntry.path().string();
@@ -2016,7 +2016,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           ImGui::SetItemAllowOverlap();
           ImGui::PushID(path.c_str());
 
-          auto &buffer = renameBuffers[path];
+          auto &buffer = renameBuffers[path.string()];
           if (buffer[0] == '\0') {
             std::string filename =
                 path.string().substr(path.string().find_last_of("/\\") + 1);
@@ -2067,7 +2067,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           CherryKit::SeparatorText("Main");
 
           if (ImGui::MenuItem("Rename", "Ctrl + R")) {
-            pathToRename = path;
+            pathToRename = path.string();
           }
 
           {
@@ -2142,7 +2142,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
           if (ImGui::MenuItem("Delete", "Suppr")) {
             if (m_DeletePathCallback) {
-              m_DeletePathCallback(path);
+              m_DeletePathCallback(path.string());
             }
             m_Selected.clear();
             ImGui::CloseCurrentPopup();
@@ -2973,7 +2973,7 @@ void ContentBrowserAppWindow::Render() {
 
     for (auto &child : children) {
       if (!child.m_Disabled) {
-        child.m_Size = std::max(child.m_Size * scaleFactor, 50.0f);
+        child.m_Size = (std::max)(child.m_Size * scaleFactor, 50.0f);
       }
     }
   } else if (totalChildSize < availableSize.x) {
@@ -3061,8 +3061,8 @@ void ContentBrowserAppWindow::Render() {
             }
           }
 
-          child.m_Size = std::max(child.m_Size, 50.0f);
-          next_child.m_Size = std::max(next_child.m_Size, 50.0f);
+          child.m_Size = (std::max)(child.m_Size, 50.0f);
+          next_child.m_Size = (std::max)(next_child.m_Size, 50.0f);
         }
 
         ImGui::SameLine();

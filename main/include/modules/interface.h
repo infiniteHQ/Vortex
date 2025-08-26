@@ -8,7 +8,16 @@
 #include <string>
 #include <variant>
 #include <stdexcept>
+
+#if defined(__linux__)
 #include <cxxabi.h> 
+#elif defined(_WIN32) || defined(_WIN64)
+//
+#elif defined(__APPLE__)
+//
+#else
+//
+#endif
 
 #include "function.h"
 #include "event.h"

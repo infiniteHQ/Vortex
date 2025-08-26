@@ -177,7 +177,7 @@ static int levenshteinDistance(const std::string &s1, const std::string &s2)
             else
             {
                 int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
-                dp[i][j] = std::min({dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost});
+                dp[i][j] = (std::min)({dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost});
             }
         }
     }
@@ -203,7 +203,7 @@ static bool areStringsSimilar(const std::string &s1, const std::string &s2, doub
     std::string lower_s2 = toLowerCase(s2);
 
     int dist = levenshteinDistance(lower_s1, lower_s2);
-    int maxLength = std::max(lower_s1.size(), lower_s2.size());
+    int maxLength = (std::max)(lower_s1.size(), lower_s2.size());
     double similarity = 1.0 - (static_cast<double>(dist) / maxLength);
 
     if (std::strlen(ProjectSearch) < 5)
@@ -409,25 +409,37 @@ static std::vector<std::shared_ptr<VortexVersion>> m_VortexRegisteredVersions;
 
 static std::vector<std::string> available_versions;
 
+
 static bool TestVortexExecutable(const std::string &path)
 {
-    std::array<char, 128> buffer;
+    std::array<char, 128> buffer{};
     std::string result;
     std::string command = path + " -test";
 
+#ifdef _WIN32
+    using PipeHandle = FILE*;
+    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(command.c_str(), "r"), _pclose);
+#else
+    using PipeHandle = FILE*;
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
+#endif
+
     if (!pipe)
     {
         std::cerr << "popen() failed!" << std::endl;
         return false;
     }
 
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr)
     {
         result += buffer.data();
     }
 
+#ifdef _WIN32
+    int return_code = _pclose(pipe.release());
+#else
     int return_code = pclose(pipe.release());
+#endif
 
     return (result.find("ok") != std::string::npos) && (return_code == 0);
 }
