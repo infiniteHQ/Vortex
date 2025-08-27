@@ -322,6 +322,8 @@ VORTEX_API void MoveAllContent();
 VORTEX_API void CopyAllContent();
 VORTEX_API void ExecuteCommand();
 
+
+VORTEX_API std::string ConvertPathToWindowsStyle(const std::string &path);
 VORTEX_API void SubmitRename(const std::string &oldPathStr,
                              const std::string &newName);
 

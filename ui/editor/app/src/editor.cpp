@@ -356,7 +356,6 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   Cherry::ApplicationSpecification spec;
   std::shared_ptr<EditorLayer> layer = std::make_shared<EditorLayer>();
 
-  std::cout << "Starting editor..." << std::endl;
 
   std::string name = "Vortex Editor";
   spec.Name = name;

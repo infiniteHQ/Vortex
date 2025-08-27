@@ -880,7 +880,9 @@ ContentBrowserAppWindow::ContentBrowserAppWindow(
   m_AppWindow->SetCloseCallback(
       [this]() { Cherry::DeleteAppWindow(m_AppWindow); });
 
-  m_AppWindow->SetRightMenubarCallback([this]() { RenderRightMenubar(); });
+  m_AppWindow->SetRightMenubarCallback([this]() { 
+    RenderRightMenubar();
+   });
   m_AppWindow->SetLeftBottombarCallback([this]() {
     if (m_Selected.size() > 0) {
       std::string terminaison = m_Selected.size() >= 0 ? "s" : "";
@@ -908,14 +910,17 @@ ContentBrowserAppWindow::ContentBrowserAppWindow(
   AddChild(sidebar);
 
   ContentBrowserChild filterbar("RenderFiltersBar",
-                                [this]() { RenderFiltersBar(); });
+                                [this]() {
+ RenderFiltersBar();
+ });
   filterbar.Disable();
   filterbar.m_DefaultSize = 250.0f;
   filterbar.m_BackgroundColor = Cherry::HexToRGBA("#35353535");
   AddChild(filterbar);
 
   ContentBrowserChild contentbar("RenderContentBar",
-                                 [this]() { RenderContentBar(); });
+                                 [this]() {
+     RenderContentBar(); });
   contentbar.Enable();
   contentbar.m_DefaultSize = 0.0;
   AddChild(ContentBrowserChild(contentbar));
@@ -1782,6 +1787,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
     CherryKit::Separator();
   }
+  
   ImGui::Spacing();
 
   std::vector<std::filesystem::directory_entry> directories;
@@ -1790,7 +1796,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
   recognized_modules_items.clear();
 
   for (auto &directoryEntry :
-       std::filesystem::directory_iterator(m_CurrentDirectory.string())) {
+       std::filesystem::directory_iterator(m_CurrentDirectory)) {
     bool isItem = false;
     for (auto item : m_ItemToReconize) {
       std::string path = directoryEntry.path().string();
@@ -2895,7 +2901,6 @@ void ContentBrowserAppWindow::SetupRenderCallback() {
 }
 
 void ContentBrowserAppWindow::Render() {
-
   const float splitterWidth = 1.5f;
   const float margin = 10.0f;
 

@@ -40,7 +40,7 @@ include_directories(${Vulkan_INCLUDE_DIRS})
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include")
 
 file(GLOB_RECURSE VORTEX_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
-add_library(vortex_shared SHARED ${VORTEX_SHARED_SOURCES})
+add_library(vortex_shared STATIC ${VORTEX_SHARED_SOURCES})
 
 target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include

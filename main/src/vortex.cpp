@@ -1591,6 +1591,13 @@ VORTEX_API void VortexMaker::UpdateProjectThemesComfig() {
   }
 }
 
+
+VORTEX_API std::string VortexMaker::ConvertPathToWindowsStyle(const std::string &path) {
+  std::string windowsPath = path;
+  std::replace(windowsPath.begin(), windowsPath.end(), '/', '\\');
+  return windowsPath;
+}
+
 VORTEX_API void VortexMaker::ThemeRebuilded() {
   VxContext &ctx = *CVortexMaker;
   ctx.IO.theme_changed = false;

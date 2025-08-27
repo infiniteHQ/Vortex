@@ -247,7 +247,6 @@ int main(int argc, char *argv[]) {
     if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help") {
       PrintHeader();
     } else if (std::string(argv[1]) == "-test") {
-      std::cout << "ok" << std::endl;
       return 0;
     } else if (std::string(argv[1]) == "-crash" ||
                std::string(argv[1]) == "--get-last-crash") {
@@ -314,12 +313,9 @@ int main(int argc, char *argv[]) {
 
       std::thread receiveThread;
       try {
-        if (std::string(argv[2]) == "-v" || std::string(argv[3]) == "-v") {
-          VortexMaker::LogWarn("Bootstrapp",
-                               "Opening the graphical interface...");
           std::thread Thread([&]() { VortexMaker::VortexEditor(argc, argv); });
           receiveThread.swap(Thread);
-        }
+        
       } catch (std::exception e) {
         std::thread Thread([&]() { VortexMaker::VortexEditor(argc, argv); });
         receiveThread.swap(Thread);

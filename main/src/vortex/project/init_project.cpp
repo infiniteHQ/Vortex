@@ -85,6 +85,7 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
 
   if (project.contains("root_content_path")) {
     ctx.root_content_path = project["root_content_path"].get<std::string>();
+
     fs::path rootContentPath = ctx.projectPath / ctx.root_content_path;
 
     if (fs::exists(rootContentPath)) {

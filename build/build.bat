@@ -17,6 +17,7 @@ for /f %%i in ('powershell -command "(Get-WmiObject -Class Win32_Processor).Numb
 cmake --build . --config Release -- /m:%THREADS%
 
 xcopy /Y /E /I .\bin\Release\* .\bin
+cp ..\handle_crash.bat .\bin
 
 
 
