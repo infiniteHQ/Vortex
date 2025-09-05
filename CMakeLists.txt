@@ -40,7 +40,7 @@ include_directories(${Vulkan_INCLUDE_DIRS})
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include")
 
 file(GLOB_RECURSE VORTEX_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
-add_library(vortex_shared STATIC ${VORTEX_SHARED_SOURCES})
+add_library(vortex_shared SHARED ${VORTEX_SHARED_SOURCES})
 
 target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include
@@ -90,21 +90,6 @@ set_target_properties(vortex PROPERTIES
 
 install(TARGETS vortex DESTINATION ${INSTALL_BIN_DIR})
 install(TARGETS vortex_shared LIBRARY DESTINATION ${INSTALL_LIB_DIR})
-
-#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/main/include/
-#    DESTINATION ${INSTALL_INCLUDE_DIR}/main/include/
-#    PATTERN "*.h"
-####    PATTERN "*.hpp"
-#    PATTERN "*.inl"
-#)
-
-#install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/
-#    DESTINATION ${INSTALL_INCLUDE_DIR}/
-#    FILES_MATCHING 
-#    PATTERN "*.h"
-#    PATTERN "*.hpp"
-#    PATTERN "*.inl"
-#)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/vortex_banner.png
     DESTINATION ${INSTALL_MAIN_DIR}/)
