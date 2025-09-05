@@ -1,12 +1,12 @@
 #pragma once
-#include "../../../../../main/include/vortex.h"
-#include "../../../../../main/include/vortex_internals.h"
+#include "../../../../../../../main/include/vortex.h"
+#include "../../../../../../../main/include/vortex_internals.h"
 
 #ifndef CONTENT_BROWSER_ADD_WINDOW_H
 #define CONTENT_BROWSER_ADD_WINDOW_H
 
 #define CHERRY_V1
-#include "../../../../../lib/cherry/cherry.hpp"
+#include "../../../../../../../lib/cherry/cherry.hpp"
 
 namespace VortexEditor {
 // This window can be a "subappwindow" of a parent if you use the constructor
