@@ -48,32 +48,52 @@ public:
       m_bgColor = IM_COL32(80, 80, 240, 255);
       m_borderColor = IM_COL32(150, 150, 255, 255);
     }
-
     ImVec2 squareSize(logoSize, logoSize);
 
     const char *originalText = m_name.c_str();
     std::string truncatedText = m_name;
 
     if (ImGui::CalcTextSize(originalText).x > m_maxTextWidth) {
-      truncatedText = m_name.substr(0, 20);
+      size_t len = m_name.size();
+
+      size_t firstPart = std::min<size_t>(20, len);
+      truncatedText = m_name.substr(0, firstPart);
+
       if (ImGui::CalcTextSize(truncatedText.c_str()).x > m_maxTextWidth) {
-        truncatedText = m_name.substr(0, 10) + "\n" + m_name.substr(10, 10);
+        size_t firstLine = std::min<size_t>(10, len);
+        size_t secondLine = (len > 10) ? std::min<size_t>(10, len - 10) : 0;
+
+        truncatedText = m_name.substr(0, firstLine);
+        if (secondLine > 0) {
+          truncatedText += "\n" + m_name.substr(10, secondLine);
+        }
       }
     } else {
       truncatedText = m_name + "\n";
     }
 
     std::string truncatedDesc = m_module->m_description;
+
     if (truncatedDesc.length() > 100) {
       truncatedDesc = truncatedDesc.substr(0, 97) + "...";
     }
     const char *originalDesc = truncatedDesc.c_str();
 
     if (ImGui::CalcTextSize(originalDesc).x > m_maxTextWidth) {
-      truncatedDesc = m_module->m_description.substr(0, 90);
+      size_t len = m_module->m_description.size();
+
+      size_t firstPart = std::min<size_t>(90, len);
+      truncatedDesc = m_module->m_description.substr(0, firstPart);
+
       if (ImGui::CalcTextSize(truncatedDesc.c_str()).x > m_maxTextWidth) {
-        truncatedDesc = m_module->m_description.substr(0, 55) + "\n" +
-                        m_module->m_description.substr(55, 55);
+        size_t firstLine = std::min<size_t>(55, len);
+        size_t secondLine = (len > 55) ? len - 55 : 0;
+
+        truncatedDesc = m_module->m_description.substr(0, firstLine);
+        if (secondLine > 0) {
+          truncatedDesc +=
+              "\n" + m_module->m_description.substr(55, secondLine);
+        }
       }
     } else {
       truncatedDesc = m_module->m_description + "\n";

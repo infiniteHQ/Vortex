@@ -356,7 +356,6 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   Cherry::ApplicationSpecification spec;
   std::shared_ptr<EditorLayer> layer = std::make_shared<EditorLayer>();
 
-
   std::string name = "Vortex Editor";
   spec.Name = name;
   spec.MinHeight = 500;
@@ -372,22 +371,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   spec.IconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
   spec.FavIconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
 
-  Cherry::Application *app = new Cherry::Application(spec);
-  app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/icon.png"));
-  app->AddFont("Consola",
-               Cherry::Application::CookPath("resources/fonts/consola.ttf"),
-               17.0f);
-
-  app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));
-  app->AddLocale("en", Cherry::GetPath("resources/locales/en.json"));
-  app->SetDefaultLocale("en");
-  app->SetLocale("en");
-
-  for (auto &modules : VortexMaker::GetCurrentContext()->IO.em) {
-    modules->RefreshMainWindow();
-  }
-
-  app->SetFramebarCallback([app, layer]() {
+  spec.SetFramebarCallback([layer]() {
     float oldSize = CherryGUI::GetFont()->Scale;
     CherryGUI::PushFont(CherryGUI::GetFont());
 
@@ -497,6 +481,20 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
     CherryGUI::PopFont();
   });
+  Cherry::Application *app = new Cherry::Application(spec);
+  app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/icon.png"));
+  app->AddFont("Consola",
+               Cherry::Application::CookPath("resources/fonts/consola.ttf"),
+               17.0f);
+
+  app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));
+  app->AddLocale("en", Cherry::GetPath("resources/locales/en.json"));
+  app->SetDefaultLocale("en");
+  app->SetLocale("en");
+
+  for (auto &modules : VortexMaker::GetCurrentContext()->IO.em) {
+    modules->RefreshMainWindow();
+  }
 
   app->SetMenubarCallback([app, layer]() {
     if (VortexMaker::IsThemeNeedsRebuild()) {

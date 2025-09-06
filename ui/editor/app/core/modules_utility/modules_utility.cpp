@@ -179,12 +179,16 @@ bool ModulesUtility::ModuleCardO(const std::shared_ptr<ModuleInterface> &module,
     truncatedDesc = truncatedDesc.substr(0, 97) + "...";
   }
   const char *originalDesc = truncatedDesc.c_str();
+  size_t len = module->m_description.size();
 
-  if (ImGui::CalcTextSize(originalDesc).x > maxTextWidth) {
+  if (len > 90) {
     truncatedDesc = module->m_description.substr(0, 90);
     if (ImGui::CalcTextSize(truncatedDesc.c_str()).x > maxTextWidth) {
-      truncatedDesc = module->m_description.substr(0, 55) + "\n" +
-                      module->m_description.substr(55, 55);
+      size_t firstPart = std::min(size_t(55), len);
+      size_t secondPart = (len > 55) ? len - 55 : 0;
+      truncatedDesc = module->m_description.substr(0, firstPart);
+      if (secondPart > 0)
+        truncatedDesc += "\n" + module->m_description.substr(55, secondPart);
     }
   } else {
     truncatedDesc = module->m_description + "\n";
