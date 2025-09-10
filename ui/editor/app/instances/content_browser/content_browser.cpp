@@ -94,8 +94,8 @@ static int levenshteinDistance(const std::string &s1, const std::string &s2) {
         dp[i][j] = i;
       } else {
         int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
-        dp[i][j] = (std::min)(
-            {dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost});
+        dp[i][j] = (std::min)({dp[i - 1][j] + 1, dp[i][j - 1] + 1,
+                               dp[i - 1][j - 1] + cost});
       }
     }
   }
@@ -430,7 +430,8 @@ static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>>
     recognized_modules_items;
 
 void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
-  std::string homePath = VortexMaker::GetCurrentContext()->projectDataPath.string();
+  std::string homePath =
+      VortexMaker::GetCurrentContext()->projectDataPath.string();
   bool FirstPathPartIsHome = false;
   std::string displayPath = path;
 
@@ -880,9 +881,7 @@ ContentBrowserAppWindow::ContentBrowserAppWindow(
   m_AppWindow->SetCloseCallback(
       [this]() { Cherry::DeleteAppWindow(m_AppWindow); });
 
-  m_AppWindow->SetRightMenubarCallback([this]() { 
-    RenderRightMenubar();
-   });
+  m_AppWindow->SetRightMenubarCallback([this]() { RenderRightMenubar(); });
   m_AppWindow->SetLeftBottombarCallback([this]() {
     if (m_Selected.size() > 0) {
       std::string terminaison = m_Selected.size() >= 0 ? "s" : "";
@@ -910,17 +909,14 @@ ContentBrowserAppWindow::ContentBrowserAppWindow(
   AddChild(sidebar);
 
   ContentBrowserChild filterbar("RenderFiltersBar",
-                                [this]() {
- RenderFiltersBar();
- });
+                                [this]() { RenderFiltersBar(); });
   filterbar.Disable();
   filterbar.m_DefaultSize = 250.0f;
   filterbar.m_BackgroundColor = Cherry::HexToRGBA("#35353535");
   AddChild(filterbar);
 
   ContentBrowserChild contentbar("RenderContentBar",
-                                 [this]() {
-     RenderContentBar(); });
+                                 [this]() { RenderContentBar(); });
   contentbar.Enable();
   contentbar.m_DefaultSize = 0.0;
   AddChild(ContentBrowserChild(contentbar));
@@ -934,6 +930,152 @@ ContentBrowserAppWindow::ContentBrowserAppWindow(
 
 void ContentBrowserAppWindow::AddChild(const ContentBrowserChild &child) {
   m_Childs.push_back(child);
+}
+
+std::string ContentBrowserAppWindow::GetFileTypeStr(FileTypes type) {
+  switch (type) {
+  // Very low level
+  case FileTypes::File_ASM:
+    return "file_asm";
+  case FileTypes::File_BIN:
+    return "file_bin";
+
+  // Programming languages
+  case FileTypes::File_C:
+    return "file_c";
+  case FileTypes::File_H:
+    return "file_h";
+  case FileTypes::File_CPP:
+    return "file_cpp";
+  case FileTypes::File_HPP:
+    return "file_hpp";
+  case FileTypes::File_INL:
+    return "file_inl";
+  case FileTypes::File_RUST:
+    return "file_rust";
+  case FileTypes::File_ZIG:
+    return "file_zig";
+  case FileTypes::File_GO:
+    return "file_go";
+  case FileTypes::File_JAVA:
+    return "file_java";
+  case FileTypes::File_JAVASCRIPT:
+    return "file_javascript";
+  case FileTypes::File_COBOL:
+    return "file_cobol";
+  case FileTypes::File_PASCAL:
+    return "file_pascal";
+  case FileTypes::File_CARBON:
+    return "file_carbon";
+  case FileTypes::File_PYTHON:
+    return "file_python";
+  case FileTypes::File_RUBY:
+    return "file_ruby";
+  case FileTypes::File_PHP:
+    return "file_php";
+  case FileTypes::File_SWIFT:
+    return "file_swift";
+  case FileTypes::File_CSHARP:
+    return "file_csharp";
+  case FileTypes::File_VB:
+    return "file_vb";
+  case FileTypes::File_DART:
+    return "file_dart";
+  case FileTypes::File_KOTLIN:
+    return "file_kotlin";
+  case FileTypes::File_SCALA:
+    return "file_scala";
+  case FileTypes::File_PERL:
+    return "file_perl";
+  case FileTypes::File_SHELL:
+    return "file_shell";
+  case FileTypes::File_BATCH:
+    return "file_batch";
+  case FileTypes::File_LUA:
+    return "file_lua";
+  case FileTypes::File_R:
+    return "file_r";
+  case FileTypes::File_MATLAB:
+    return "file_matlab";
+  case FileTypes::File_JULIA:
+    return "file_julia";
+  case FileTypes::File_SQL:
+    return "file_sql";
+  case FileTypes::File_GROOVY:
+    return "file_groovy";
+  case FileTypes::File_FORTRAN:
+    return "file_fortran";
+  case FileTypes::File_ERLANG:
+    return "file_erlang";
+  case FileTypes::File_ELIXIR:
+    return "file_elixir";
+  case FileTypes::File_OCAML:
+    return "file_ocaml";
+
+  // Web and Markup
+  case FileTypes::File_HTML:
+    return "file_html";
+  case FileTypes::File_CSS:
+    return "file_css";
+  case FileTypes::File_XML:
+    return "file_xml";
+
+  // Config
+  case FileTypes::File_CFG:
+    return "file_cfg";
+  case FileTypes::File_JSON:
+    return "file_json";
+  case FileTypes::File_YAML:
+    return "file_yaml";
+  case FileTypes::File_INI:
+    return "file_ini";
+
+  // Git
+  case FileTypes::File_GIT:
+    return "file_git";
+
+  // Documents
+  case FileTypes::File_TXT:
+    return "file_txt";
+  case FileTypes::File_MD:
+    return "file_md";
+  case FileTypes::File_DOC:
+    return "file_doc";
+  case FileTypes::File_PDF:
+    return "file_pdf";
+
+  // Pictures
+  case FileTypes::File_PICTURE:
+    return "file_picture";
+
+  // Videos
+  case FileTypes::File_VIDEO:
+    return "file_video";
+
+  // Audio
+  case FileTypes::File_AUDIO:
+    return "file_audio";
+
+  // Archives
+  case FileTypes::File_ARCHIVE:
+    return "file_archive";
+
+  // Miscellaneous
+  case FileTypes::File_LOG:
+    return "file_log";
+  case FileTypes::File_BACKUP:
+    return "file_backup";
+  case FileTypes::File_TEMP:
+    return "file_temp";
+  case FileTypes::File_DATA:
+    return "file_data";
+
+  // Other
+  case FileTypes::File_UNKNOWN:
+    return "file_unknown";
+  }
+
+  return "file_unknown"; // fallback
 }
 
 void ContentBrowserAppWindow::FolderButton(
@@ -1122,7 +1264,8 @@ bool ContentBrowserAppWindow::ItemCard(
   bool shortcutCopy = ctrl && CherryApp.IsKeyPressed(CherryKey::C);
   bool shortcutCopyAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
   bool shortcutDelete = CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
-  bool shortcutDeleteMulti = alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+  bool shortcutDeleteMulti =
+      alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
 
   if (shortcutRename && !pathToRename.empty()) {
     pathToRename = path;
@@ -1184,7 +1327,96 @@ bool ContentBrowserAppWindow::ItemCard(
     m_Selected.clear();
   }
 
-  if (ImGui::BeginPopupContextItem("ContextPopup")) {
+  if (ImGui::BeginPopupContextItem("ThumbmailsItemContextPopup")) {
+    ImGui::GetFont()->Scale = 0.9;
+    ImGui::PushFont(ImGui::GetFont());
+
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+    ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+    ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+
+    CherryKit::SeparatorText("Actions");
+
+    static std::vector<std::shared_ptr<ItemHandlerInterface>> item_handles;
+
+    FileTypes fileType = detect_file(path);
+
+    if (item_handles.empty()) {
+      item_handles =
+          VortexMaker::GetAllItemHandlersFor(GetFileTypeStr(fileType));
+    }
+
+    for (auto ih : item_handles) {
+      if (ImGui::MenuItem(ih->title.c_str(), ih->description.c_str())) {
+        ih->handler(path);
+      }
+    }
+
+    CherryKit::SeparatorText("Main");
+
+    ImGui::GetFont()->Scale = oldfontsize;
+    ImGui::PopFont();
+
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+    if (ImGui::MenuItem("Copy folder", "Ctrl + C")) {
+      if (m_CopyPathsCallback) {
+        m_CopyPathsCallback(m_Selected, false);
+      }
+
+      m_Selected.clear();
+      ImGui::CloseCurrentPopup();
+    }
+
+    if (m_Selected.size() > 0) {
+      std::string label =
+          "Copy in addition (" + std::to_string(m_Selected.size()) + " copies)";
+      if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
+        if (m_CopyPathsCallback) {
+          m_CopyPathsCallback(m_Selected, true);
+        }
+
+        m_Selected.clear();
+        ImGui::CloseCurrentPopup();
+      }
+    }
+    if (ImGui::MenuItem("Cut folder", "Ctrl + X")) {
+      ChangeDirectory(path);
+      ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::GetFont()->Scale = 0.9;
+    ImGui::PushFont(ImGui::GetFont());
+
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
+
+    ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
+
+    ImGui::Text("Main");
+
+    ImGui::PopStyleColor();
+
+    ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+    ImGui::Separator();
+    ImGui::PopStyleColor();
+
+    ImGui::GetFont()->Scale = oldfontsize;
+    ImGui::PopFont();
+
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+    if (ImGui::MenuItem("Change color")) {
+      //
+    }
+    if (ImGui::MenuItem("Mark as favorite")) {
+      //
+    }
+
+    ImGui::EndPopup();
+  }
+
+  /*if (ImGui::BeginPopupContextItem("ContextPopup")) {
     CherryKit::SeparatorText("Main");
 
     if (ImGui::MenuItem("Rename", "Ctrl + R")) {
@@ -1292,6 +1524,7 @@ bool ContentBrowserAppWindow::ItemCard(
 
     ImGui::EndPopup();
   }
+*/
 
   ImGui::PopStyleVar();
   ImGui::PopStyleColor(2);
@@ -1745,6 +1978,10 @@ void ContentBrowserAppWindow::RenderFiltersBar() {
       });
 }
 
+void ContentBrowserAppWindow::PathChanged() {
+  // Fetch Modules item hamdlers
+}
+
 void ContentBrowserAppWindow::RenderContentBar() {
   ImGuiStyle &style = ImGui::GetStyle();
   ImVec4 originalChildBgColor = style.Colors[ImGuiCol_ChildBg];
@@ -1787,7 +2024,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
     CherryKit::Separator();
   }
-  
+
   ImGui::Spacing();
 
   std::vector<std::filesystem::directory_entry> directories;
@@ -2070,6 +2307,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
         }
 
         if (ImGui::BeginPopupContextItem("ContextPopup")) {
+
           CherryKit::SeparatorText("Main");
 
           if (ImGui::MenuItem("Rename", "Ctrl + R")) {
@@ -2392,89 +2630,6 @@ void ContentBrowserAppWindow::RenderContentBar() {
           ImGui::PopStyleColor(3);
         }
         float oldsize = ImGui::GetFont()->Scale;
-
-        if (ImGui::BeginPopupContextItem("ItemContextPopup")) {
-          ImGui::GetFont()->Scale = 0.9;
-          ImGui::PushFont(ImGui::GetFont());
-
-          ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
-
-          ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-          ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
-          ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-
-          ImGui::Text("Main");
-
-          ImGui::PopStyleColor();
-
-          ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-          ImGui::Separator();
-          ImGui::PopStyleColor();
-
-          ImGui::GetFont()->Scale = oldfontsize;
-          ImGui::PopFont();
-
-          ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-          if (ImGui::MenuItem("Open", "Ctrl + O")) {
-            ChangeDirectory(path);
-            ImGui::CloseCurrentPopup();
-          }
-          if (ImGui::MenuItem("Copy folder", "Ctrl + C")) {
-            if (m_CopyPathsCallback) {
-              m_CopyPathsCallback(m_Selected, false);
-            }
-
-            m_Selected.clear();
-            ImGui::CloseCurrentPopup();
-          }
-
-          if (m_Selected.size() > 0) {
-            std::string label = "Copy in addition (" +
-                                std::to_string(m_Selected.size()) + " copies)";
-            if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
-              if (m_CopyPathsCallback) {
-                m_CopyPathsCallback(m_Selected, true);
-              }
-
-              m_Selected.clear();
-              ImGui::CloseCurrentPopup();
-            }
-          }
-          if (ImGui::MenuItem("Cut folder", "Ctrl + X")) {
-            ChangeDirectory(path);
-            ImGui::CloseCurrentPopup();
-          }
-
-          ImGui::GetFont()->Scale = 0.9;
-          ImGui::PushFont(ImGui::GetFont());
-
-          ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
-
-          ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-
-          ImGui::Text("Main");
-
-          ImGui::PopStyleColor();
-
-          ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-          ImGui::Separator();
-          ImGui::PopStyleColor();
-
-          ImGui::GetFont()->Scale = oldfontsize;
-          ImGui::PopFont();
-
-          ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-          if (ImGui::MenuItem("Change color")) {
-            //
-          }
-          if (ImGui::MenuItem("Mark as favorite")) {
-            //
-          }
-
-          ImGui::EndPopup();
-        }
 
         ImGui::PopID();
         ImGui::NextColumn();

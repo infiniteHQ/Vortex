@@ -2,6 +2,7 @@
 
 #include "../../../../../main/include/vortex.h"
 #include "../../../../../main/include/vortex_internals.h"
+#include "../../instances/modules_details/modules_details.hpp"
 
 #include "../utils.hpp"
 
@@ -239,7 +240,7 @@ public:
 
       if (CherryKit::ButtonImage(
               Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"))
-              .GetPropertyAs<bool>("isClicked")) {
+              .GetDataAs<bool>("isClicked")) {
         m_module->Start();
       }
 
@@ -248,14 +249,14 @@ public:
 
       if (CherryKit::ButtonImage(
               Cherry::GetPath("resources/imgs/icons/misc/icon_start.png"))
-              .GetPropertyAs<bool>("isClicked")) {
+              .GetDataAs<bool>("isClicked")) {
         m_module->Start();
       }
 
     } else {
       if (CherryKit::ButtonImage(
               Cherry::GetPath("resources/imgs/icons/misc/icon_stop.png"))
-              .GetPropertyAs<bool>("isClicked")) {
+              .GetDataAs<bool>("isClicked")) {
         m_module->Stop();
       }
     }
@@ -266,7 +267,7 @@ public:
 
     if (CherryKit::ButtonImage(
             Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png"))
-            .GetPropertyAs<bool>("isClicked")) {
+            .GetDataAs<bool>("isClicked")) {
       m_module->Stop();
       // TODO VortexMaker::DeleteProjectModule
     }
@@ -276,12 +277,12 @@ public:
     ImGui::SetCursorScreenPos(thirdButtonPos);
     if (CherryKit::ButtonImage(
             Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"))
-            .GetPropertyAs<bool>("isClicked")) {
+            .GetDataAs<bool>("isClicked")) {
       std::string label =
           "Details of " + m_module->m_proper_name + "####" + m_path;
-      /*std::shared_ptr<ModuleDetails> window =
-          ModuleDetails::Create(label, module);
-      Cherry::AddAppWindow(window->GetAppWindow());*/
+      std::shared_ptr<ModuleDetails> window =
+          ModuleDetails::Create(label, m_module);
+      Cherry::AddAppWindow(window->GetAppWindow());
     }
 
     /*
@@ -424,15 +425,6 @@ public:
   void ModulesRender();
 
   std::vector<ModulesUtilityChild> m_Childs;
-
-  bool ModuleCardO(const std::shared_ptr<ModuleInterface> &module,
-                   const std::string &name, const std::string &path,
-                   const std::string &description, const std::string &size,
-                   bool selected, const std::string &logo,
-                   ImU32 bgColor = IM_COL32(100, 100, 100, 255),
-                   ImU32 borderColor = IM_COL32(150, 150, 150, 255),
-                   ImU32 lineColor = IM_COL32(255, 255, 0, 255),
-                   float maxTextWidth = 100.0f, float borderRadius = 5.0f);
 
   std::function<void()> m_CreateProjectCallback;
   std::function<void()> m_OpenProjectCallback;

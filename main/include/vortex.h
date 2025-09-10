@@ -9,6 +9,7 @@
 //_____________________________________________________________________________
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if
 // VORTEX_VERSION_NUM >= 12345')
+#define VORTEX_MAIN_VERSION "1.0"
 #define VORTEX_VERSION "1.0.1"
 #define VORTEX_VERSION_NUM 10001
 
@@ -53,9 +54,9 @@
 #include <unordered_map>
 #include <vector>
 #if !defined(_WIN32) || !defined(_WIN64)
+#include <dirent.h>
 #include <dlfcn.h>
 #include <unistd.h>
-#include <dirent.h>
 #endif
 
 #include <deque>
@@ -163,6 +164,7 @@ struct ReturnValues;
 struct Theme;
 
 struct CommandOutput;
+struct ItemHandlerInterface;
 
 // Internals (from vortex_internals.h)
 struct VxContext;
@@ -244,6 +246,9 @@ VORTEX_API void CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
 VORTEX_API std::shared_ptr<Theme> GetTheme(const std::string &label);
 VORTEX_API std::shared_ptr<Theme> GetSelectedTheme();
 
+VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>>
+GetAllItemHandlersFor(const std::string &type);
+
 VORTEX_API void InstallModuleToSystem(const std::string &path);
 
 VORTEX_API void InstallModule(const std::string &module_name,
@@ -321,7 +326,6 @@ VORTEX_API std::string CreateFolder(const std::string &path);
 VORTEX_API void MoveAllContent();
 VORTEX_API void CopyAllContent();
 VORTEX_API void ExecuteCommand();
-
 
 VORTEX_API std::string ConvertPathToWindowsStyle(const std::string &path);
 VORTEX_API void SubmitRename(const std::string &oldPathStr,
@@ -828,7 +832,8 @@ struct hString {
     if (Buf.Data == nullptr || substr == nullptr) {
       return npos;
     }
-    size_t searchStart = (start == npos) ? Size - 1 : (std::min)(start, Size - 1);
+    size_t searchStart =
+        (start == npos) ? Size - 1 : (std::min)(start, Size - 1);
     for (size_t i = searchStart; i < Size; --i) {
       const char *result = std::strstr(Buf.Data + i, substr);
       if (result != nullptr) {

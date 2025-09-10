@@ -45,6 +45,16 @@ void ModuleInterface::AddInputEvent(const ModuleInputEvent &event) {
   this->m_input_events.push_back(p_event);
 }
 
+void ModuleInterface::AddContentBrowserItemHandler(
+    const ItemHandlerInterface &handler) {
+  m_item_handlers.push_back(std::make_shared<ItemHandlerInterface>(handler));
+}
+
+std::vector<std::shared_ptr<ItemHandlerInterface>>
+ModuleInterface::GetContentBrowserItemHandler() {
+  return m_item_handlers;
+}
+
 void ModuleInterface::RefreshMainWindow() {
   if (!&Cherry::Application::Get()) {
     return;

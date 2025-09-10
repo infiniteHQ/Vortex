@@ -1,5 +1,7 @@
 #include "./editor.hpp"
 
+std::string GetVortexBuildType() { return VORTEX_BUILD; }
+
 static void handleExit(Cherry::Application *app) { app->Close(); }
 
 static void handleProjectSettings() {}
@@ -401,6 +403,13 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
     ImDrawList *drawList = CherryGUI::GetWindowDrawList();
     drawList->AddRectFilled(rectMin, rectMax, IM_COL32(15, 15, 15, 255));
+
+    if (GetVortexBuildType() == "dev") {
+      CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
+                               CherryGUI::CalcTextSize("DEV").x);
+
+      CherryGUI::TextColored(ImVec4(1.0f, 0.6f, 0.6f, 1.0f), "DEV");
+    }
 
     CherryGUI::SetCursorScreenPos(circlePos);
     CherryGUI::InvisibleButton("circleButton",

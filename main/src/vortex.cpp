@@ -1231,6 +1231,23 @@ VortexMaker::CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
                                        std::string(e.what()));
   }
 }
+
+VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>>
+VortexMaker::GetAllItemHandlersFor(const std::string &type) {
+  std::vector<std::shared_ptr<ItemHandlerInterface>> list;
+
+  for (auto mod : VortexMaker::GetCurrentContext()->IO.em) {
+    if (mod->m_state == "running") {
+      for (auto handlers : mod->GetContentBrowserItemHandler()) {
+        if (handlers->type == type)
+          list.push_back(handlers);
+      }
+    }
+  }
+
+  return list;
+}
+
 VORTEX_API void VortexMaker::VerifyAndPouplateThemes() {
   std::string themes_path =
       VortexMaker::GetCurrentContext()->projectPath.string() +
@@ -1591,8 +1608,8 @@ VORTEX_API void VortexMaker::UpdateProjectThemesComfig() {
   }
 }
 
-
-VORTEX_API std::string VortexMaker::ConvertPathToWindowsStyle(const std::string &path) {
+VORTEX_API std::string
+VortexMaker::ConvertPathToWindowsStyle(const std::string &path) {
   std::string windowsPath = path;
   std::replace(windowsPath.begin(), windowsPath.end(), '/', '\\');
   return windowsPath;

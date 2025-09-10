@@ -12,12 +12,12 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_VERSION
 
 set(VORTEX_DIST "beta")
 set(VORTEX_BUILD "dev")
-
 if (MSVC)
     add_compile_options(/utf-8)
 endif()
 
 if(VORTEX_BUILD STREQUAL "prod")
+    add_compile_definitions(BUILD_STR="01")
     string(TIMESTAMP BUILD_DATE "%b %d, %Y - %H:%M" UTC)
     add_compile_definitions(BUILD_DATE_STR="${BUILD_DATE}")
     add_compile_definitions(BUILD_DIST="${BUILD_DATE}")
@@ -29,10 +29,12 @@ if(VORTEX_BUILD STREQUAL "prod")
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     add_compile_definitions(GIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
+    add_compile_definitions(VORTEX_BUILD="prod")
 else()
     add_compile_definitions(BUILD_DATE_STR="DEV_BUILD")
     add_compile_definitions(BUILD_DIST="DEV_BUILD")
     add_compile_definitions(GIT_COMMIT_HASH="0000000")
+    add_compile_definitions(VORTEX_BUILD="dev")
 endif()
 
 find_package(Vulkan REQUIRED)

@@ -202,9 +202,13 @@ public:
   void DrawHierarchy(std::filesystem::path path, bool isDir,
                      const std::string &label);
 
+  std::string GetFileTypeStr(FileTypes type);
+
   void SetDefaultFolderColor(const std::string &hex);
 
   void FolderIcon(ImVec2 size, ImU32 color);
+
+  void PathChanged();
 
   std::vector<std::shared_ptr<VortexEditor::ContentBrowserAddWindow>>
       m_AddWindows;
@@ -310,6 +314,7 @@ private:
 
   std::filesystem::path m_BaseDirectory;
 
+  std::filesystem::path m_PreviousDirectory;
   std::filesystem::path m_CurrentDirectory;
   std::stack<std::filesystem::path> m_BackHistory;
   std::stack<std::filesystem::path> m_ForwardHistory;
