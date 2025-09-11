@@ -406,9 +406,9 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
     if (GetVortexBuildType() == "dev") {
       CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
-                               CherryGUI::CalcTextSize("DEV").x);
+                               CherryGUI::CalcTextSize("DEV").x - 20.0f);
 
-      CherryGUI::TextColored(ImVec4(1.0f, 0.6f, 0.6f, 1.0f), "DEV");
+      CherryGUI::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "DEV");
     }
 
     CherryGUI::SetCursorScreenPos(circlePos);
