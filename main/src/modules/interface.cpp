@@ -55,6 +55,8 @@ ModuleInterface::GetContentBrowserItemHandler() {
   return m_item_handlers;
 }
 
+std::string ModuleInterface::GetPath() { return m_path; }
+
 void ModuleInterface::RefreshMainWindow() {
   if (!&Cherry::Application::Get()) {
     return;

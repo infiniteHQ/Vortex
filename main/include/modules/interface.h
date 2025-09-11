@@ -85,6 +85,8 @@ public:
   void ExecuteFunction(const std::string &name, ArgumentValues &args,
                        ReturnValues &ret);
 
+  std::string GetPath();
+
   // Output Events
   // A output event is triggered via VortexMaker::ExecuteOutputEvent() by the
   // current component to all concerned extern components with the output event
