@@ -70,6 +70,7 @@ public:
   // Misc
   void AddLogo(const uint8_t *hexa, size_t size);
   void AddLogo(const std::string &relative_path);
+  void ResetModule();
 
   // Functions of the modules (gives the Vortex abstraction/features)
   void AddFunction(std::function<void()> foo, const std::string &name);

@@ -248,14 +248,18 @@ int main(int argc, char *argv[]) {
       PrintHeader();
     } else if (std::string(argv[1]) == "-test") {
       return 0;
-    } else if (std::string(argv[1]) == "-crash" ||
+    } else if (std::string(argv[1]) == "--crash" ||
                std::string(argv[1]) == "--get-last-crash") {
       PrintHeader("(Crash handler)");
 
       if (argc > 2) {
         std::string arg2 = argv[2];
-        if (arg2.rfind("--session_id=\"", 0) == 0 && arg2.back() == '\"') {
-          session_id = arg2.substr(13, arg2.length() - 14);
+        if (arg2.rfind("--session_id=", 0) == 0) {
+          session_id = arg2.substr(13);
+          if (!session_id.empty() && session_id.front() == '"' &&
+              session_id.back() == '"') {
+            session_id = session_id.substr(1, session_id.size() - 2);
+          }
         }
       }
 
@@ -313,9 +317,9 @@ int main(int argc, char *argv[]) {
 
       std::thread receiveThread;
       try {
-          std::thread Thread([&]() { VortexMaker::VortexEditor(argc, argv); });
-          receiveThread.swap(Thread);
-        
+        std::thread Thread([&]() { VortexMaker::VortexEditor(argc, argv); });
+        receiveThread.swap(Thread);
+
       } catch (std::exception e) {
         std::thread Thread([&]() { VortexMaker::VortexEditor(argc, argv); });
         receiveThread.swap(Thread);

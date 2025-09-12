@@ -656,6 +656,8 @@ void ModuleInterface::Stop() {
   }
 }
 
+void ModuleInterface::ResetModule() { m_item_handlers.clear(); }
+
 void ModuleInterface::CallOutputEvent(const std::string &event_name,
                                       ArgumentValues &args, ReturnValues &ret) {
   VortexMaker::CallOutputEvent(event_name, args, ret, this->m_name);

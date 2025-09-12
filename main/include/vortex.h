@@ -9,9 +9,8 @@
 //_____________________________________________________________________________
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if
 // VORTEX_VERSION_NUM >= 12345')
-#define VORTEX_MAIN_VERSION "1.0"
-#define VORTEX_VERSION "1.0.1"
-#define VORTEX_VERSION_NUM 10001
+#define VORTEX_VERSION "1.0"
+#define VORTEX_VERSION_NUM 1000
 
 //_____________________________________________________________________________
 

@@ -13,6 +13,8 @@ static char pool_add_path[512];
 static char pool_add_name[512];
 
 static bool ShowViewModal = false;
+static std::vector<std::shared_ptr<ItemHandlerInterface>> item_handles;
+static bool item_context_menu_opened = false;
 
 static std::string _parent;
 static std::string ProjectSearch;
@@ -1326,7 +1328,7 @@ bool ContentBrowserAppWindow::ItemCard(
     }
     m_Selected.clear();
   }
-
+  item_context_menu_opened = false;
   if (ImGui::BeginPopupContextItem("ThumbmailsItemContextPopup")) {
     ImGui::GetFont()->Scale = 0.9;
     ImGui::PushFont(ImGui::GetFont());
@@ -1336,9 +1338,7 @@ bool ContentBrowserAppWindow::ItemCard(
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
     ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
 
-    CherryKit::SeparatorText("Actions");
-
-    static std::vector<std::shared_ptr<ItemHandlerInterface>> item_handles;
+    item_context_menu_opened = true;
 
     FileTypes fileType = detect_file(path);
 
@@ -1347,8 +1347,13 @@ bool ContentBrowserAppWindow::ItemCard(
           VortexMaker::GetAllItemHandlersFor(GetFileTypeStr(fileType));
     }
 
+    if (!item_handles.empty()) {
+      CherryKit::SeparatorText("Actions");
+    }
+
     for (auto ih : item_handles) {
-      if (ImGui::MenuItem(ih->title.c_str(), ih->description.c_str())) {
+      if (ImGui::MenuItem(ih->title.c_str(), ih->description.c_str(),
+                          Cherry::GetTexture(ih->logo), false)) {
         ih->handler(path);
       }
     }
@@ -1360,7 +1365,10 @@ bool ContentBrowserAppWindow::ItemCard(
 
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
-    if (ImGui::MenuItem("Copy folder", "Ctrl + C")) {
+    if (ImGui::MenuItem("Copy", "Ctrl + C",
+                        Cherry::GetTexture(Cherry::GetPath(
+                            "resources/imgs/icons/misc/icon_copy.png")),
+                        NULL)) {
       if (m_CopyPathsCallback) {
         m_CopyPathsCallback(m_Selected, false);
       }
@@ -1372,7 +1380,10 @@ bool ContentBrowserAppWindow::ItemCard(
     if (m_Selected.size() > 0) {
       std::string label =
           "Copy in addition (" + std::to_string(m_Selected.size()) + " copies)";
-      if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
+      if (ImGui::MenuItem(label.c_str(), "Ctrl + C",
+                          Cherry::GetTexture(Cherry::GetPath(
+                              "resources/imgs/icons/misc/icon_copy.png")),
+                          NULL)) {
         if (m_CopyPathsCallback) {
           m_CopyPathsCallback(m_Selected, true);
         }
@@ -1381,41 +1392,36 @@ bool ContentBrowserAppWindow::ItemCard(
         ImGui::CloseCurrentPopup();
       }
     }
-    if (ImGui::MenuItem("Cut folder", "Ctrl + X")) {
+    if (ImGui::MenuItem("Cut", "Ctrl + X",
+                        Cherry::GetTexture(Cherry::GetPath(
+                            "resources/imgs/icons/misc/icon_cut.png")),
+                        NULL)) {
       ChangeDirectory(path);
       ImGui::CloseCurrentPopup();
     }
 
-    ImGui::GetFont()->Scale = 0.9;
-    ImGui::PushFont(ImGui::GetFont());
-
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
-
-    ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-
-    ImGui::Text("Main");
-
-    ImGui::PopStyleColor();
-
-    ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-    ImGui::Separator();
-    ImGui::PopStyleColor();
-
-    ImGui::GetFont()->Scale = oldfontsize;
-    ImGui::PopFont();
+    CherryKit::SeparatorText("Customize");
 
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
-    if (ImGui::MenuItem("Change color")) {
+    if (ImGui::MenuItem("Change color", "Ctrl + X",
+                        Cherry::GetTexture(Cherry::GetPath(
+                            "resources/imgs/icons/misc/icon_palette.png")),
+                        NULL)) {
       //
     }
-    if (ImGui::MenuItem("Mark as favorite")) {
+    if (ImGui::MenuItem("Mark as favorite", "Ctrl + X",
+                        Cherry::GetTexture(Cherry::GetPath(
+                            "resources/imgs/icons/misc/icon_heart.png")),
+                        NULL)) {
       //
     }
 
     ImGui::EndPopup();
   }
-
+  if (!item_context_menu_opened) {
+    item_handles.clear();
+  }
   /*if (ImGui::BeginPopupContextItem("ContextPopup")) {
     CherryKit::SeparatorText("Main");
 
