@@ -11,6 +11,10 @@ std::string getGitCommit() { return GIT_COMMIT_HASH; }
 
 std::string getVortexEditorDist() { return BUILD_DIST; }
 
+std::string getVortexBuildID() { return VORTEX_BUILDID; }
+
+std::string getVortexBuildName() { return VORTEX_BUILDNAME; }
+
 #ifdef _WIN32
 #define VORTEX_EXECUTABLE "vortex_launcher.exe"
 #else
@@ -279,13 +283,17 @@ void AboutVortex::Render() {
   Cherry::SetNextComponentProperty("color_text", "#878787");
   CherryKit::TextSimple("Version: " + vortex_launcher_version);
 
+  CherryGUI::SameLine();
+  Cherry::SetNextComponentProperty("color_text", "#565656");
+  CherryKit::TextSimple(getVortexBuildName());
+
   CherryKit::Space(12.0f);
 
   Cherry::SetNextComponentProperty("color_text", "#878787");
   CherryKit::TextSimple("Cherry version: " + cherry_version);
   Cherry::SetNextComponentProperty("color_text", "#878787");
-  CherryKit::TextSimple("Build: " + getBuildDate() + " (" +
-                        getVortexEditorDist() + ")");
+  CherryKit::TextSimple("Build: " + getVortexBuildID() + " ; " +
+                        getBuildDate() + " (" + getVortexEditorDist() + ")");
   Cherry::SetNextComponentProperty("color_text", "#878787");
   CherryKit::TextSimple("Hash: "
                         " exe(" +
