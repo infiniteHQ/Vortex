@@ -15,10 +15,13 @@ cmake -G "Visual Studio 17" -A x64 ..\..
 for /f %%i in ('powershell -command "(Get-WmiObject -Class Win32_Processor).NumberOfLogicalProcessors"') do set THREADS=%%i
 
 cmake --build . --config Release -- /m:%THREADS%
+cmake --install . --config Release
 
 xcopy /Y /E /I .\bin\Release\* .\bin
-cp ..\handle_crash.bat .\bin
-
+xcopy /Y /E /I .\Release\vortex_shared.dll .\bin
+xcopy /Y /E /I .\Release\vortex.exe .\bin
+xcopy /Y /E /I .\Release\vortex_utils.exe .\bin
+xcopy /Y ..\handle_crash.bat .\bin
 
 
 echo %cd%
