@@ -1398,10 +1398,11 @@ bool ContentBrowserAppWindow::ItemCard(
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 
     if (item_ident) {
-      if (ImGui::MenuItem("Open item", "",
-                          Cherry::GetTexture(Cherry::GetPath(
-                              "resources/imgs/icons/misc/icon_open.png")),
-                          NULL)) {
+      if (ImGui::MenuItem(
+              "Open item", "",
+              Cherry::GetTexture(Cherry::GetPath(
+                  "resources/imgs/icons/misc/icon_foldersearch.png")),
+              NULL)) {
         ChangeDirectory(path);
         item_paths.push_back({path, item_ident->m_LineColor});
         ImGui::CloseCurrentPopup();
