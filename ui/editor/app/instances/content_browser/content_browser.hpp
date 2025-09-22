@@ -32,7 +32,7 @@ public:
       : m_Name(name), m_Description(description), f_Detect(detect_function),
         m_LineColor(line_color) {};
 };
-enum class ContentShowMode { Thumbmails, List, Columns };
+enum class ContentShowMode { Thumbmails, List, Objects };
 
 enum class FileTypes {
   // Very low level
@@ -166,6 +166,14 @@ public:
                 ImU32 borderColor, ImU32 lineColor, float maxTextWidth,
                 float borderRadius,
                 const std::shared_ptr<ItemIdentifierInterface> &item_ident);
+
+  bool HorizontalItemCard(
+      const std::string &name, const std::string &path,
+      const std::string &description, const std::string &size, bool selected,
+      const std::string &logo, ImU32 bgColor, ImU32 borderColor,
+      ImU32 lineColor, float maxTextWidth, float borderRadius,
+      const std::shared_ptr<ItemIdentifierInterface> &item_ident);
+
   void AddChild(const ContentBrowserChild &child);
   void ChangeDirectory(const std::filesystem::path &newDirectory);
   void GoBack();
