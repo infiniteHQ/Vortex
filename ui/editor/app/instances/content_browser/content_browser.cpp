@@ -428,7 +428,8 @@ FileTypes detect_file(const std::string &path) {
   }
 }
 
-static std::vector<std::pair<std::shared_ptr<ContenBrowserItem>, std::string>>
+static std::vector<
+    std::pair<std::shared_ptr<ItemIdentifierInterface>, std::string>>
     recognized_modules_items;
 
 void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
@@ -707,6 +708,7 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
         CherryKit::SeparatorText("Content bar view");
 
         switch (
+            CherryNextComponent.SetProperty("size_x", 100.0f);
             CherryKit::ComboImageText(
                 "Display",
                 {{"Thumbnails",
@@ -1138,7 +1140,8 @@ bool ContentBrowserAppWindow::ItemCard(
     const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255),
     ImU32 borderColor = IM_COL32(150, 150, 150, 255),
     ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 100.0f,
-    float borderRadius = 5.0f) {
+    float borderRadius = 5.0f,
+    const std::shared_ptr<ItemIdentifierInterface> &item_ident = nullptr) {
   bool pressed = false;
 
   float logoSize = 60.0f;
@@ -1343,8 +1346,12 @@ bool ContentBrowserAppWindow::ItemCard(
     FileTypes fileType = detect_file(path);
 
     if (item_handles.empty()) {
-      item_handles =
-          VortexMaker::GetAllItemHandlersFor(GetFileTypeStr(fileType));
+      if (item_ident) {
+        item_handles = VortexMaker::GetAllItemHandlersFor(item_ident->m_Name);
+      } else {
+        item_handles =
+            VortexMaker::GetAllItemHandlersFor(GetFileTypeStr(fileType));
+      }
     }
 
     if (!item_handles.empty()) {
@@ -2041,11 +2048,13 @@ void ContentBrowserAppWindow::RenderContentBar() {
   for (auto &directoryEntry :
        std::filesystem::directory_iterator(m_CurrentDirectory)) {
     bool isItem = false;
-    for (auto item : m_ItemToReconize) {
-      std::string path = directoryEntry.path().string();
-      if (item->f_Detect(path)) {
-        recognized_modules_items.push_back({item, path});
-        isItem = true;
+    for (auto em : VortexMaker::GetCurrentContext()->IO.em) {
+      for (auto item : em->GetContentBrowserItemIdentifiers()) {
+        std::string path = directoryEntry.path().string();
+        if (item->f_Detect(path)) {
+          recognized_modules_items.push_back({item, path});
+          isItem = true;
+        }
       }
     }
 
@@ -2446,10 +2455,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
                      Application::CookPath(
                          "resources/imgs/icons/files/icon_picture_file.png"),
                      IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                     IM_COL32(itemEntry.first->m_LineColor.x,
-                              itemEntry.first->m_LineColor.y,
-                              itemEntry.first->m_LineColor.z,
-                              itemEntry.first->m_LineColor.w))) {
+                     Cherry::HexToImU32(itemEntry.first->m_LineColor), 100.0f,
+                     5.0f, itemEntry.first)) {
           if (ImGui::IsMouseDoubleClicked(0)) {
             // itemEntry.first->f_Execute(path);
             // VXERROR("te", "tyr");

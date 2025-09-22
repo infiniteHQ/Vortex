@@ -164,7 +164,8 @@ public:
                 const std::string &description, const std::string &size,
                 bool selected, const std::string &logo, ImU32 bgColor,
                 ImU32 borderColor, ImU32 lineColor, float maxTextWidth,
-                float borderRadius);
+                float borderRadius,
+                const std::shared_ptr<ItemIdentifierInterface> &item_ident);
   void AddChild(const ContentBrowserChild &child);
   void ChangeDirectory(const std::filesystem::path &newDirectory);
   void GoBack();

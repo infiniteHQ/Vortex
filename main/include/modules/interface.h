@@ -29,6 +29,24 @@
 
 enum class HandlerItemType { File, Item, Folder };
 
+struct ItemIdentifierInterface {
+public:
+  bool (*f_Detect)(const std::string &path);
+
+  std::string m_Name;
+
+  ImTextureID m_Logo;
+  std::string m_LineColor;
+  std::string m_Description;
+
+  ItemIdentifierInterface(bool (*detect_function)(const std::string &path),
+                          const std::string &name,
+                          const std::string &description,
+                          const std::string &line_color)
+      : m_Name(name), m_Description(description), f_Detect(detect_function),
+        m_LineColor(line_color) {};
+};
+
 struct ItemHandlerInterface {
   std::function<void(const std::string &)> handler;
   std::string title;
@@ -123,7 +141,10 @@ public:
   std::vector<std::shared_ptr<ItemHandlerInterface>>
   GetContentBrowserItemHandler();
 
-  void AddContentBrowserItemIdentifier();
+  void AddContentBrowserItemIdentifier(const ItemIdentifierInterface &item);
+
+  std::vector<std::shared_ptr<ItemIdentifierInterface>> &
+  GetContentBrowserItemIdentifiers();
 
   // Logs & Metrics
   void LogInfo(const std::string &message);
@@ -201,6 +222,7 @@ public:
   std::vector<std::shared_ptr<ModuleOutputEvent>> m_output_events;
   std::vector<std::shared_ptr<ModuleInputEvent>> m_input_events;
   std::vector<std::shared_ptr<ItemHandlerInterface>> m_item_handlers;
+  std::vector<std::shared_ptr<ItemIdentifierInterface>> m_item_identifiers;
 
 private:
   std::vector<std::shared_ptr<ModuleDummyFunction>> m_dummy_functions;

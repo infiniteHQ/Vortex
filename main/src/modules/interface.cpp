@@ -675,3 +675,13 @@ std::vector<std::shared_ptr<ModuleRenderInstance>>
 ModuleInterface::GetModuleRenderInstances() {
   return this->m_render_instances;
 };
+
+void ModuleInterface::AddContentBrowserItemIdentifier(
+    const ItemIdentifierInterface &item) {
+  m_item_identifiers.push_back(std::make_shared<ItemIdentifierInterface>(item));
+}
+
+std::vector<std::shared_ptr<ItemIdentifierInterface>> &
+ModuleInterface::GetContentBrowserItemIdentifiers() {
+  return m_item_identifiers;
+}
