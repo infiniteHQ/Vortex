@@ -14,6 +14,7 @@ static char pool_add_name[512];
 
 static bool ShowViewModal = false;
 static std::vector<std::shared_ptr<ItemHandlerInterface>> item_handles;
+static std::vector<std::pair<std::string, std::string>> item_paths;
 static bool item_context_menu_opened = false;
 
 static std::string _parent;
@@ -554,6 +555,30 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
             return_path += separator + elements[j];
 
           ChangeDirectory(return_path);
+        }
+      }
+
+      {
+        std::string test_path = FirstPathPartIsHome ? homePath : "";
+        size_t clickedElementIndex = elementIndices[i];
+        if (clickedElementIndex != static_cast<size_t>(-1)) {
+          for (size_t j = 0; j <= clickedElementIndex; ++j)
+            test_path += separator + elements[j];
+        }
+
+        for (auto &item : item_paths) {
+          if (test_path == item.first) {
+            ImVec2 min = ImGui::GetItemRectMin();
+            ImVec2 max = ImGui::GetItemRectMax();
+
+            ImVec2 p1(min.x, max.y + 1.0f);
+            ImVec2 p2(max.x, max.y + 1.0f);
+
+            ImU32 color = Cherry::HexToImU32(item.second);
+
+            ImGui::GetWindowDrawList()->AddLine(p1, p2, color, 2.0f);
+            break;
+          }
         }
       }
     }
@@ -1371,6 +1396,17 @@ bool ContentBrowserAppWindow::ItemCard(
     ImGui::PopFont();
 
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+    if (item_ident) {
+      if (ImGui::MenuItem("Open item", "",
+                          Cherry::GetTexture(Cherry::GetPath(
+                              "resources/imgs/icons/misc/icon_open.png")),
+                          NULL)) {
+        ChangeDirectory(path);
+        item_paths.push_back({path, item_ident->m_LineColor});
+        ImGui::CloseCurrentPopup();
+      }
+    }
 
     if (ImGui::MenuItem("Copy", "Ctrl + C",
                         Cherry::GetTexture(Cherry::GetPath(
