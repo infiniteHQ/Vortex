@@ -1301,7 +1301,6 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
     }
     m_Selected.clear();
   }
-  float oldfontsize = ImGui::GetFont()->Scale;
   if (ImGui::BeginPopupContextItem(("context_" + path).c_str())) {
     ImGui::GetFont()->Scale = 0.9;
     ImGui::PushFont(ImGui::GetFont());
@@ -1337,7 +1336,7 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
 
     CherryKit::SeparatorText("Main");
 
-    ImGui::GetFont()->Scale = oldfontsize;
+    ImGui::GetFont()->Scale = oldFontScale;
     ImGui::PopFont();
 
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
@@ -1428,8 +1427,9 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
   float textWidth = contentWidth - logoSize - padding * 3 - versionBoxWidth;
 
   ImGui::SetCursorScreenPos(textPos);
-  ImGui::PushFont(oldFont);
-  ImGui::GetFont()->Scale = 0.9f;
+  ImGui::GetFont()->Scale = 0.9;
+  ImGui::PushFont(ImGui::GetFont());
+
   ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
   ImGui::PushItemWidth(textWidth);
 
@@ -1458,8 +1458,9 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
 
   ImVec2 descPos(textPos.x, textPos.y + 20);
   ImGui::SetCursorScreenPos(descPos);
-  ImGui::PushFont(oldFont);
-  ImGui::GetFont()->Scale = 0.7f;
+  ImGui::GetFont()->Scale = 0.7;
+  ImGui::PushFont(ImGui::GetFont());
+
   ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 180, 180, 255));
   ImGui::PushItemWidth(textWidth);
   ImGui::TextWrapped("%s", description.c_str());
@@ -1507,7 +1508,6 @@ bool ContentBrowserAppWindow::ItemCard(
   float thumbnailIconOffsetY = 30.0f;
 
   float oldfontsize = ImGui::GetFont()->Scale;
-  ImFont *oldFont = ImGui::GetFont();
 
   if (selected) {
     bgColor = IM_COL32(80, 80, 240, 255);
@@ -3999,7 +3999,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
                                 textColor, highlightTextColor);
           }
 
-          ImGui::GetFont()->Scale = 1.0f;
+          ImGui::GetFont()->Scale = oldfontsize;
           ImGui::PopFont();
 
           std::string folderSizeStr = "[dir]";
