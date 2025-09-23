@@ -300,6 +300,23 @@ public:
       m_CutPathsCallback;
   std::function<void(const std::string &)> m_PastePathsCallback;
 
+  bool HasExtension(const std::string &ext) {
+    return std::find(ExtentionsFilters.begin(), ExtentionsFilters.end(), ext) !=
+           ExtentionsFilters.end();
+  }
+
+  void ToggleExtension(const std::string &ext, bool *state) {
+    if (*state) {
+      if (!HasExtension(ext)) {
+        ExtentionsFilters.push_back(ext);
+      }
+    } else {
+      ExtentionsFilters.erase(
+          std::remove(ExtentionsFilters.begin(), ExtentionsFilters.end(), ext),
+          ExtentionsFilters.end());
+    }
+  }
+
 private:
   bool opened;
 
@@ -346,6 +363,13 @@ private:
   std::shared_ptr<Image> m_ProjectIcon;
   std::shared_ptr<Image> m_FileIcon;
   std::shared_ptr<Image> m_DirectoryIcon;
+
+  // Filters
+  bool ShowHidden = false;
+  bool ShowFolders = true;
+  bool ShowFiles = true;
+  bool ShowItems = true;
+  std::vector<std::string> ExtentionsFilters;
 
   std::shared_ptr<AppWindow> m_AppWindow;
 
