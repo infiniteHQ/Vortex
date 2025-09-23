@@ -742,14 +742,14 @@ void ContentBrowserAppWindow::RenderRightMenubar() {
         }
 
         switch (
-            CherryNextComponent.SetProperty("size_x", 100.0f);
+            CherryNextComponent.SetProperty("size_x", 150.0f);
             CherryKit::ComboImageText(
-                "Display",
+                "",
                 {{"Thumbnails",
-                  GetPath("resources/imgs/icons/misc/icon_eye.png")},
-                 {"List", GetPath("resources/imgs/icons/misc/icon_eye.png")},
+                  GetPath("resources/imgs/icons/misc/icon_thumbnails.png")},
+                 {"List", GetPath("resources/imgs/icons/misc/icon_lines.png")},
                  {"Objects",
-                  GetPath("resources/imgs/icons/misc/icon_eye.png")}},
+                  GetPath("resources/imgs/icons/misc/icon_objects.png")}},
                 default_index)
                 .GetPropertyAs<int>("selected")) {
         case 0: {
@@ -975,6 +975,16 @@ ContentBrowserAppWindow::ContentBrowserAppWindow(
 void ContentBrowserAppWindow::AddChild(const ContentBrowserChild &child) {
   m_Childs.push_back(child);
 }
+
+static const std::unordered_map<FileTypes, const char *> kFileIconMap = {
+    {FileTypes::File_PICTURE,
+     "resources/imgs/icons/files/icon_picture_file.png"},
+    {FileTypes::File_GIT, "resources/imgs/icons/files/icon_git_file.png"},
+    {FileTypes::File_H, "resources/imgs/icons/files/icon_c_h_file.png"},
+    {FileTypes::File_C, "resources/imgs/icons/files/icon_c_file.png"},
+    {FileTypes::File_HPP, "resources/imgs/icons/files/icon_cpp_h_file.png"},
+    {FileTypes::File_CPP, "resources/imgs/icons/files/icon_cpp_file.png"},
+    {FileTypes::File_INI, "resources/imgs/icons/files/icon_ini_file.png"}};
 
 std::string ContentBrowserAppWindow::GetFileTypeStr(FileTypes type) {
   switch (type) {
@@ -1592,6 +1602,7 @@ bool ContentBrowserAppWindow::ItemCard(
 
     ImGui::EndPopup();
   }
+
   if (!item_context_menu_opened) {
     item_handles.clear();
   }
@@ -2831,54 +2842,449 @@ void ContentBrowserAppWindow::RenderContentBar() {
       ImGui::TableSetupColumn("Last Updated", ImGuiTableColumnFlags_WidthFixed,
                               120.0f);
       ImGui::TableHeadersRow();
-      auto drawRow = [&](const std::string &filename,
-                         const std::string &pathStr, bool isFolder,
-                         size_t size = 0, std::time_t cftime = 0,
-                         ImTextureID tex = nullptr) {
+      auto drawRow = [&](const std::string &filename, const fs::path &path,
+                         bool isFolder, size_t size = 0, std::time_t cftime = 0,
+                         ImTextureID tex = nullptr,
+                         const std::shared_ptr<ItemIdentifierInterface>
+                             &item_ident = nullptr) {
+        std::string filenameString = path.filename().string();
         float rowHeight = 20.0f;
         ImGui::TableNextRow(ImGuiTableRowFlags_None, rowHeight);
 
         ImGui::TableSetColumnIndex(0);
 
         bool selected = std::find(m_Selected.begin(), m_Selected.end(),
-                                  pathStr) != m_Selected.end();
+                                  path.c_str()) != m_Selected.end();
 
-        if (ImGui::Selectable(("##row_" + pathStr).c_str(), selected,
+        if (ImGui::Selectable(("##row_" + path.string()).c_str(), selected,
                               ImGuiSelectableFlags_SpanAllColumns |
                                   ImGuiSelectableFlags_AllowDoubleClick,
                               ImVec2(0, rowHeight))) {
           if (ImGui::GetIO().KeyCtrl) {
             if (!selected)
-              m_Selected.push_back(pathStr);
+              m_Selected.push_back(path.string());
           } else {
             m_Selected.clear();
-            m_Selected.push_back(pathStr);
+            m_Selected.push_back(path.string());
           }
 
           if (ImGui::IsMouseClicked(0)) {
-            //
+            if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              m_Selected.push_back(path);
+            } else {
+              m_Selected.clear();
+              m_Selected.push_back(path);
+            }
           }
 
           if (ImGui::IsMouseDoubleClicked(0)) {
+            if (!isFolder) {
+              // Default action
+            } else {
+              ChangeDirectory(path);
+            }
             //
           }
         }
 
-        if (ImGui::BeginPopupContextItem(("context_" + pathStr).c_str())) {
-          //
-          ImGui::EndPopup();
+        item_context_menu_opened = false;
+        if (!isFolder) {
+
+          bool ctrl = CherryApp.IsKeyPressed(CherryKey::CTRL);
+          bool alt = CherryApp.IsKeyPressed(CherryKey::ALT);
+          bool shift = CherryApp.IsKeyPressed(CherryKey::SHIFT);
+
+          bool shortcutRename = ctrl && ImGui::IsKeyPressed(ImGuiKey_R);
+          bool shortcutCut = ctrl && ImGui::IsKeyPressed(ImGuiKey_X);
+          bool shortcutCutAdd =
+              ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
+          bool shortcutCopy = ctrl && CherryApp.IsKeyPressed(CherryKey::C);
+          bool shortcutCopyAdd =
+              ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
+          bool shortcutDelete = CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+          bool shortcutDeleteMulti =
+              alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+
+          if (shortcutRename && !pathToRename.empty()) {
+            pathToRename = path;
+          }
+
+          if (shortcutCut && !m_Selected.empty()) {
+            if (m_CutPathsCallback) {
+              m_CopySelection.clear();
+              m_CutSelection.clear();
+              m_CutPathsCallback(m_Selected, true);
+              for (const auto &path : m_Selected)
+                m_CutSelection.push_back(path);
+            }
+            m_Selected.clear();
+          }
+
+          if (shortcutCutAdd && !m_Selected.empty()) {
+            if (m_CutPathsCallback) {
+              m_CopySelection.clear();
+              m_CutPathsCallback(m_Selected, true);
+              for (const auto &path : m_Selected)
+                m_CutSelection.push_back(path);
+            }
+            m_Selected.clear();
+          }
+
+          if (shortcutCopy && !m_Selected.empty()) {
+            if (m_CopyPathsCallback) {
+              m_CopySelection.clear();
+              m_CutSelection.clear();
+              m_CopyPathsCallback(m_Selected, true);
+              for (const auto &path : m_Selected)
+                m_CopySelection.push_back(path);
+            }
+            m_Selected.clear();
+          }
+
+          if (shortcutCopyAdd && !m_Selected.empty()) {
+            if (m_CopyPathsCallback) {
+              m_CutSelection.clear();
+              m_CopyPathsCallback(m_Selected, true);
+              for (const auto &path : m_Selected)
+                m_CopySelection.push_back(path);
+            }
+            m_Selected.clear();
+          }
+
+          if (shortcutDelete && m_Selected.size() == 1) {
+            if (m_DeletePathCallback)
+              m_DeletePathCallback(m_Selected[0]);
+            m_Selected.clear();
+          }
+
+          if (shortcutDeleteMulti && m_Selected.size() > 1) {
+            if (m_DeletePathCallback) {
+              for (const auto &path : m_Selected)
+                m_DeletePathCallback(path);
+            }
+            m_Selected.clear();
+          }
+          if (ImGui::BeginPopupContextItem(
+                  ("context_" + path.string()).c_str())) {
+            ImGui::GetFont()->Scale = 0.9;
+            ImGui::PushFont(ImGui::GetFont());
+
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+            ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+            ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+
+            item_context_menu_opened = true;
+
+            FileTypes fileType = detect_file(path);
+
+            if (item_handles.empty()) {
+              if (item_ident) {
+                item_handles =
+                    VortexMaker::GetAllItemHandlersFor(item_ident->m_Name);
+              } else {
+                item_handles = VortexMaker::GetAllItemHandlersFor(
+                    GetFileTypeStr(fileType));
+              }
+            }
+
+            if (!item_handles.empty()) {
+              CherryKit::SeparatorText("Actions");
+            }
+
+            for (auto ih : item_handles) {
+              if (ImGui::MenuItem(ih->title.c_str(), ih->description.c_str(),
+                                  Cherry::GetTexture(ih->logo), false)) {
+                ih->handler(path);
+              }
+            }
+
+            CherryKit::SeparatorText("Main");
+
+            ImGui::GetFont()->Scale = oldfontsize;
+            ImGui::PopFont();
+
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+            if (item_ident) {
+              if (ImGui::MenuItem(
+                      "Open item", "",
+                      Cherry::GetTexture(Cherry::GetPath(
+                          "resources/imgs/icons/misc/icon_foldersearch.png")),
+                      NULL)) {
+                ChangeDirectory(path);
+                item_paths.push_back({path, item_ident->m_LineColor});
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            if (ImGui::MenuItem("Copy", "Ctrl + C",
+                                Cherry::GetTexture(Cherry::GetPath(
+                                    "resources/imgs/icons/misc/icon_copy.png")),
+                                NULL)) {
+              if (m_CopyPathsCallback) {
+                m_CopyPathsCallback(m_Selected, false);
+              }
+
+              m_Selected.clear();
+              ImGui::CloseCurrentPopup();
+            }
+
+            if (m_Selected.size() > 0) {
+              std::string label = "Copy in addition (" +
+                                  std::to_string(m_Selected.size()) +
+                                  " copies)";
+              if (ImGui::MenuItem(
+                      label.c_str(), "Ctrl + C",
+                      Cherry::GetTexture(Cherry::GetPath(
+                          "resources/imgs/icons/misc/icon_copy.png")),
+                      NULL)) {
+                if (m_CopyPathsCallback) {
+                  m_CopyPathsCallback(m_Selected, true);
+                }
+
+                m_Selected.clear();
+                ImGui::CloseCurrentPopup();
+              }
+            }
+            if (ImGui::MenuItem("Cut", "Ctrl + X",
+                                Cherry::GetTexture(Cherry::GetPath(
+                                    "resources/imgs/icons/misc/icon_cut.png")),
+                                NULL)) {
+              ChangeDirectory(path);
+              ImGui::CloseCurrentPopup();
+            }
+
+            CherryKit::SeparatorText("Customize");
+
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+            if (ImGui::MenuItem(
+                    "Change color", "Ctrl + X",
+                    Cherry::GetTexture(Cherry::GetPath(
+                        "resources/imgs/icons/misc/icon_palette.png")),
+                    NULL)) {
+              //
+            }
+            if (ImGui::MenuItem(
+                    "Mark as favorite", "Ctrl + X",
+                    Cherry::GetTexture(Cherry::GetPath(
+                        "resources/imgs/icons/misc/icon_heart.png")),
+                    NULL)) {
+              //
+            }
+
+            ImGui::EndPopup();
+          }
+
+        } else {
+          if (ImGui::BeginPopupContextItem(
+                  ("context_" + path.string()).c_str())) {
+
+            CherryKit::SeparatorText("Main");
+
+            if (ImGui::MenuItem("Rename", "Ctrl + R")) {
+              pathToRename = path.string();
+            }
+
+            {
+              std::string label =
+                  "Cut (" + std::to_string(m_Selected.size()) + ") selected";
+
+              if (ImGui::MenuItem(label.c_str(), "Ctrl + X")) {
+                if (m_CutPathsCallback) {
+                  m_CutPathsCallback(m_Selected, true);
+                  for (auto &path : m_Selected) {
+                    m_CutSelection.push_back(path);
+                  }
+                }
+
+                m_Selected.clear();
+
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            if (m_CutSelection.size() > 0) {
+              std::string label = "Cut in addition (" +
+                                  std::to_string(m_CutSelection.size()) +
+                                  " copies)";
+              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
+                if (m_CutPathsCallback) {
+                  m_CutPathsCallback(m_Selected, true);
+
+                  for (auto &path : m_Selected) {
+                    m_CutSelection.push_back(path);
+                  }
+                }
+                m_Selected.clear();
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            {
+              std::string label =
+                  "Copy (" + std::to_string(m_Selected.size()) + ") selected";
+
+              if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
+                if (m_CopyPathsCallback) {
+                  m_CopyPathsCallback(m_Selected, true);
+                  for (auto &path : m_Selected) {
+                    m_CopySelection.push_back(path);
+                  }
+                }
+
+                m_Selected.clear();
+
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            if (m_CopySelection.size() > 0) {
+              std::string label = "Copy in addition (" +
+                                  std::to_string(m_CopySelection.size()) +
+                                  " copies)";
+              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+                if (m_CopyPathsCallback) {
+                  m_CopyPathsCallback(m_Selected, true);
+
+                  for (auto &path : m_Selected) {
+                    m_CopySelection.push_back(path);
+                  }
+                }
+                m_Selected.clear();
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            if (ImGui::MenuItem("Delete", "Suppr")) {
+              if (m_DeletePathCallback) {
+                m_DeletePathCallback(path.string());
+              }
+              m_Selected.clear();
+              ImGui::CloseCurrentPopup();
+            }
+
+            if (m_Selected.size() > 1) {
+              std::string label =
+                  "Delete (" + std::to_string(m_Selected.size()) + " selected)";
+              if (ImGui::MenuItem(label.c_str(), "Alt + Suppr")) {
+                if (m_DeletePathCallback) {
+                  for (auto &path : m_Selected) {
+                    m_DeletePathCallback(path);
+                  }
+                }
+                m_Selected.clear();
+
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            CherryKit::SeparatorText("Customizations");
+
+            ImGui::EndPopup();
+          }
+        }
+
+        if (!item_context_menu_opened) {
+          item_handles.clear();
         }
 
         ImGui::SameLine();
-        if (tex) {
-          ImGui::Image(tex, ImVec2(16, 16));
+        FileTypes fileType = detect_file(path.string());
+
+        if (!isFolder) {
+          auto it = kFileIconMap.find(fileType);
+          if (it != kFileIconMap.end()) {
+            tex = Cherry::GetTexture(Application::CookPath(it->second));
+          } else {
+            tex = Cherry::GetTexture(Application::CookPath(
+                "resources/imgs/icons/files/icon_unknow_file.png"));
+          }
+
+          if (tex) {
+            ImGui::Image(tex, ImVec2(24, 24));
+            ImGui::SameLine();
+          }
+        } else {
+          if (current_editing_folder.first == path.string()) {
+            FolderButton("folder_icon", ImVec2(16, 16), path.string());
+          } else {
+            FolderButton("folder_icon", ImVec2(16, 16), path.string());
+          }
           ImGui::SameLine();
         }
-        ImGui::TextUnformatted(filename.c_str());
+        // ImGui::TextUnformatted(filename.c_str());
+
+        ImU32 textColor = IM_COL32(255, 255, 255, 255);
+        ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
+        ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
+        static std::unordered_map<std::string, char[256]> renameBuffers;
+
+        if (pathToRename == path.string()) {
+          ImGui::SetItemAllowOverlap();
+          ImGui::PushID(path.string().c_str());
+
+          auto &buffer = renameBuffers[path.string()];
+          if (buffer[0] == '\0') {
+            std::string filename =
+                path.string().substr(path.string().find_last_of("/\\") + 1);
+            std::strncpy(buffer, filename.c_str(), sizeof(buffer));
+            buffer[sizeof(buffer) - 1] = '\0';
+            ImGui::SetKeyboardFocusHere();
+          }
+
+          ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
+          bool renamed =
+              ImGui::InputText("##rename_input", buffer, sizeof(buffer), flags);
+
+          bool renameConfirmed = false;
+          bool renameCancelled = false;
+
+          if (renamed) {
+            renameConfirmed = true;
+          }
+
+          if (!ImGui::IsItemActive() && ImGui::IsItemDeactivatedAfterEdit()) {
+            renameConfirmed = true;
+          }
+
+          if (ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+            renameCancelled = true;
+          }
+
+          if (renameConfirmed) {
+            VortexMaker::SubmitRename(pathToRename, buffer);
+            renameBuffers.erase(pathToRename);
+            pathToRename.clear();
+          }
+
+          if (renameCancelled) {
+            renameBuffers.erase(pathToRename);
+            pathToRename.clear();
+          }
+
+          ImGui::PopID();
+        } else {
+          if (filename == "...") {
+            filenameString = "...";
+          }
+
+          ImDrawList *drawList = ImGui::GetWindowDrawList();
+          DrawHighlightedText(drawList, ImGui::GetCursorScreenPos(),
+                              filenameString.c_str(), ProjectSearch.c_str(),
+                              highlightColor, textColor, highlightTextColor);
+        }
 
         ImGui::TableSetColumnIndex(1);
-        ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f),
-                           isFolder ? "Folder" : "File");
+        if (item_ident) {
+          ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f),
+                             item_ident->m_Description.c_str());
+        } else {
+          ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f),
+                             isFolder ? "Folder" : "File");
+        }
 
         ImGui::TableSetColumnIndex(2);
         ImGui::TextUnformatted(isFolder ? "---" : formatFileSize(size).c_str());
@@ -2893,6 +3299,18 @@ void ContentBrowserAppWindow::RenderContentBar() {
           ImGui::TextUnformatted("---");
         }
       };
+
+      fs::path projectRoot = VortexMaker::GetCurrentContext()->projectDataPath;
+
+      if (!m_CurrentDirectory.empty()) {
+        auto rel = fs::relative(m_CurrentDirectory, projectRoot);
+
+        bool insideProject = !rel.empty() && rel.native().rfind("..", 0) != 0;
+
+        if (insideProject && m_CurrentDirectory != projectRoot) {
+          drawRow("...", m_CurrentDirectory.parent_path(), true);
+        }
+      }
 
       for (auto &directoryEntry : directories) {
         const auto &path = directoryEntry.path();
@@ -2927,7 +3345,44 @@ void ContentBrowserAppWindow::RenderContentBar() {
           cftime = std::chrono::system_clock::to_time_t(sctp);
         }
 
-        drawRow(filename, path.string(), true, 0, cftime, tex);
+        drawRow(filename, path, true, 0, cftime, tex);
+      }
+
+      for (auto &itemEntry : recognized_modules_items) {
+
+        const auto &path = itemEntry.second;
+        std::filesystem::path fsPath(path);
+        std::filesystem::directory_entry fsDirectoryEntry(path);
+        std::string filenameString = fsPath.filename().string();
+
+        if (!areStringsSimilar(filenameString, ProjectSearch, threshold) &&
+            !isOnlySpacesOrEmpty(ProjectSearch.c_str()))
+          continue;
+
+        std::uintmax_t folderSize = getDirectorySize(path);
+        std::string folderSizeString = formatFileSize(folderSize);
+        ImGui::PushID(filenameString.c_str());
+
+        ImTextureID tex = Application::GetCurrentRenderedWindow()->get_texture(
+            Application::CookPath(
+                "resources/imgs/icons/files/icon_default_file.png"));
+
+        std::error_code ec;
+        size_t fsize = fsDirectoryEntry.is_regular_file(ec)
+                           ? std::filesystem::file_size(path, ec)
+                           : 0;
+        auto ftime = std::filesystem::last_write_time(path, ec);
+        std::time_t cftime = 0;
+        if (!ec) {
+          auto sctp =
+              std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+                  ftime - std::filesystem::file_time_type::clock::now() +
+                  std::chrono::system_clock::now());
+          cftime = std::chrono::system_clock::to_time_t(sctp);
+        }
+
+        drawRow(filenameString, path, false, fsize, cftime, tex,
+                itemEntry.first);
       }
 
       for (auto &fileEntry : files) {
@@ -2938,21 +3393,10 @@ void ContentBrowserAppWindow::RenderContentBar() {
             !isOnlySpacesOrEmpty(ProjectSearch.c_str()))
           continue;
 
-        ImTextureID tex = nullptr;
+        ImTextureID tex = Application::GetCurrentRenderedWindow()->get_texture(
+            Application::CookPath(
+                "resources/imgs/icons/files/icon_default_file.png"));
         FileTypes type = detect_file(path.string());
-        switch (type) {
-        case FileTypes::File_PICTURE:
-          tex = Application::GetCurrentRenderedWindow()->get_texture(
-              Application::CookPath(
-                  "resources/imgs/icons/files/icon_picture_file.png"));
-          break;
-        default:
-          tex = Application::GetCurrentRenderedWindow()->get_texture(
-              Application::CookPath(
-                  "resources/imgs/icons/files/icon_default_file.png"));
-          break;
-        }
-
         std::error_code ec;
         size_t fsize = fileEntry.is_regular_file(ec)
                            ? std::filesystem::file_size(path, ec)
