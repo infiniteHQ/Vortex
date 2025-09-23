@@ -171,7 +171,7 @@ public:
       const std::string &name, const std::string &path,
       const std::string &description, const std::string &size, bool selected,
       const std::string &logo, ImU32 bgColor, ImU32 borderColor,
-      ImU32 lineColor, float maxTextWidth, float borderRadius,
+      ImU32 lineColor, float maxTextWidth, float borderRadius, bool isFolder,
       const std::shared_ptr<ItemIdentifierInterface> &item_ident);
 
   void AddChild(const ContentBrowserChild &child);

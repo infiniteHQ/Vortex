@@ -1190,7 +1190,7 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
     const std::string &logo, ImU32 bgColor = IM_COL32(100, 100, 100, 255),
     ImU32 borderColor = IM_COL32(150, 150, 150, 255),
     ImU32 lineColor = IM_COL32(255, 255, 0, 255), float maxTextWidth = 300.0f,
-    float borderRadius = 5.0f,
+    float borderRadius = 5.0f, bool isFolder = false,
     const std::shared_ptr<ItemIdentifierInterface> &item_ident = nullptr) {
   bool pressed = false;
 
@@ -1217,8 +1217,197 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
     pressed = true;
   }
 
-  if (ImGui::IsItemHovered())
+  if (ImGui::IsItemHovered()) {
     ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+    if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+      if (isFolder) {
+        ChangeDirectory(path);
+      } else {
+        // default file action
+      }
+    }
+  }
+
+  bool ctrl = CherryApp.IsKeyPressed(CherryKey::CTRL);
+  bool alt = CherryApp.IsKeyPressed(CherryKey::ALT);
+  bool shift = CherryApp.IsKeyPressed(CherryKey::SHIFT);
+
+  bool shortcutRename = ctrl && ImGui::IsKeyPressed(ImGuiKey_R);
+  bool shortcutCut = ctrl && ImGui::IsKeyPressed(ImGuiKey_X);
+  bool shortcutCutAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
+  bool shortcutCopy = ctrl && CherryApp.IsKeyPressed(CherryKey::C);
+  bool shortcutCopyAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
+  bool shortcutDelete = CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+  bool shortcutDeleteMulti =
+      alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+
+  if (shortcutRename && !pathToRename.empty()) {
+    pathToRename = path;
+  }
+
+  if (shortcutCut && !m_Selected.empty()) {
+    if (m_CutPathsCallback) {
+      m_CopySelection.clear();
+      m_CutSelection.clear();
+      m_CutPathsCallback(m_Selected, true);
+      for (const auto &path : m_Selected)
+        m_CutSelection.push_back(path);
+    }
+    m_Selected.clear();
+  }
+
+  if (shortcutCutAdd && !m_Selected.empty()) {
+    if (m_CutPathsCallback) {
+      m_CopySelection.clear();
+      m_CutPathsCallback(m_Selected, true);
+      for (const auto &path : m_Selected)
+        m_CutSelection.push_back(path);
+    }
+    m_Selected.clear();
+  }
+
+  if (shortcutCopy && !m_Selected.empty()) {
+    if (m_CopyPathsCallback) {
+      m_CopySelection.clear();
+      m_CutSelection.clear();
+      m_CopyPathsCallback(m_Selected, true);
+      for (const auto &path : m_Selected)
+        m_CopySelection.push_back(path);
+    }
+    m_Selected.clear();
+  }
+
+  if (shortcutCopyAdd && !m_Selected.empty()) {
+    if (m_CopyPathsCallback) {
+      m_CutSelection.clear();
+      m_CopyPathsCallback(m_Selected, true);
+      for (const auto &path : m_Selected)
+        m_CopySelection.push_back(path);
+    }
+    m_Selected.clear();
+  }
+
+  if (shortcutDelete && m_Selected.size() == 1) {
+    if (m_DeletePathCallback)
+      m_DeletePathCallback(m_Selected[0]);
+    m_Selected.clear();
+  }
+
+  if (shortcutDeleteMulti && m_Selected.size() > 1) {
+    if (m_DeletePathCallback) {
+      for (const auto &path : m_Selected)
+        m_DeletePathCallback(path);
+    }
+    m_Selected.clear();
+  }
+  float oldfontsize = ImGui::GetFont()->Scale;
+  if (ImGui::BeginPopupContextItem(("context_" + path).c_str())) {
+    ImGui::GetFont()->Scale = 0.9;
+    ImGui::PushFont(ImGui::GetFont());
+
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+
+    ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+    ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+
+    item_context_menu_opened = true;
+
+    FileTypes fileType = detect_file(path);
+
+    if (item_handles.empty()) {
+      if (item_ident) {
+        item_handles = VortexMaker::GetAllItemHandlersFor(item_ident->m_Name);
+      } else {
+        item_handles =
+            VortexMaker::GetAllItemHandlersFor(GetFileTypeStr(fileType));
+      }
+    }
+
+    if (!item_handles.empty()) {
+      CherryKit::SeparatorText("Actions");
+    }
+
+    for (auto ih : item_handles) {
+      if (ImGui::MenuItem(ih->title.c_str(), ih->description.c_str(),
+                          Cherry::GetTexture(ih->logo), false)) {
+        ih->handler(path);
+      }
+    }
+
+    CherryKit::SeparatorText("Main");
+
+    ImGui::GetFont()->Scale = oldfontsize;
+    ImGui::PopFont();
+
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+    if (item_ident) {
+      if (ImGui::MenuItem(
+              "Open item", "",
+              Cherry::GetTexture(Cherry::GetPath(
+                  "resources/imgs/icons/misc/icon_foldersearch.png")),
+              NULL)) {
+        ChangeDirectory(path);
+        item_paths.push_back({path, item_ident->m_LineColor});
+        ImGui::CloseCurrentPopup();
+      }
+    }
+
+    if (ImGui::MenuItem("Copy", "Ctrl + C",
+                        Cherry::GetTexture(Cherry::GetPath(
+                            "resources/imgs/icons/misc/icon_copy.png")),
+                        NULL)) {
+      if (m_CopyPathsCallback) {
+        m_CopyPathsCallback(m_Selected, false);
+      }
+
+      m_Selected.clear();
+      ImGui::CloseCurrentPopup();
+    }
+
+    if (m_Selected.size() > 0) {
+      std::string label =
+          "Copy in addition (" + std::to_string(m_Selected.size()) + " copies)";
+      if (ImGui::MenuItem(label.c_str(), "Ctrl + C",
+                          Cherry::GetTexture(Cherry::GetPath(
+                              "resources/imgs/icons/misc/icon_copy.png")),
+                          NULL)) {
+        if (m_CopyPathsCallback) {
+          m_CopyPathsCallback(m_Selected, true);
+        }
+
+        m_Selected.clear();
+        ImGui::CloseCurrentPopup();
+      }
+    }
+    if (ImGui::MenuItem("Cut", "Ctrl + X",
+                        Cherry::GetTexture(Cherry::GetPath(
+                            "resources/imgs/icons/misc/icon_cut.png")),
+                        NULL)) {
+      ChangeDirectory(path);
+      ImGui::CloseCurrentPopup();
+    }
+
+    CherryKit::SeparatorText("Customize");
+
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+    if (ImGui::MenuItem("Change color", "Ctrl + X",
+                        Cherry::GetTexture(Cherry::GetPath(
+                            "resources/imgs/icons/misc/icon_palette.png")),
+                        NULL)) {
+      //
+    }
+    if (ImGui::MenuItem("Mark as favorite", "Ctrl + X",
+                        Cherry::GetTexture(Cherry::GetPath(
+                            "resources/imgs/icons/misc/icon_heart.png")),
+                        NULL)) {
+      //
+    }
+
+    ImGui::EndPopup();
+  }
 
   ImDrawList *drawList = ImGui::GetWindowDrawList();
 
@@ -3640,8 +3829,119 @@ void ContentBrowserAppWindow::RenderContentBar() {
             }
           }
 
-          if (ImGui::IsItemHovered())
+          if (ImGui::IsItemHovered()) {
             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+            if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+              ChangeDirectory(path);
+            }
+          }
+
+          if (ImGui::BeginPopupContextItem("ContextPopup")) {
+
+            CherryKit::SeparatorText("Main");
+
+            if (ImGui::MenuItem("Rename", "Ctrl + R")) {
+              pathToRename = path.string();
+            }
+
+            {
+              std::string label =
+                  "Cut (" + std::to_string(m_Selected.size()) + ") selected";
+
+              if (ImGui::MenuItem(label.c_str(), "Ctrl + X")) {
+                if (m_CutPathsCallback) {
+                  m_CutPathsCallback(m_Selected, true);
+                  for (auto &path : m_Selected) {
+                    m_CutSelection.push_back(path);
+                  }
+                }
+
+                m_Selected.clear();
+
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            if (m_CutSelection.size() > 0) {
+              std::string label = "Cut in addition (" +
+                                  std::to_string(m_CutSelection.size()) +
+                                  " copies)";
+              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
+                if (m_CutPathsCallback) {
+                  m_CutPathsCallback(m_Selected, true);
+
+                  for (auto &path : m_Selected) {
+                    m_CutSelection.push_back(path);
+                  }
+                }
+                m_Selected.clear();
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            {
+              std::string label =
+                  "Copy (" + std::to_string(m_Selected.size()) + ") selected";
+
+              if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
+                if (m_CopyPathsCallback) {
+                  m_CopyPathsCallback(m_Selected, true);
+                  for (auto &path : m_Selected) {
+                    m_CopySelection.push_back(path);
+                  }
+                }
+
+                m_Selected.clear();
+
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            if (m_CopySelection.size() > 0) {
+              std::string label = "Copy in addition (" +
+                                  std::to_string(m_CopySelection.size()) +
+                                  " copies)";
+              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+                if (m_CopyPathsCallback) {
+                  m_CopyPathsCallback(m_Selected, true);
+
+                  for (auto &path : m_Selected) {
+                    m_CopySelection.push_back(path);
+                  }
+                }
+                m_Selected.clear();
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            if (ImGui::MenuItem("Delete", "Suppr")) {
+              if (m_DeletePathCallback) {
+                m_DeletePathCallback(path.string());
+              }
+              m_Selected.clear();
+              ImGui::CloseCurrentPopup();
+            }
+
+            if (m_Selected.size() > 1) {
+              std::string label =
+                  "Delete (" + std::to_string(m_Selected.size()) + " selected)";
+              if (ImGui::MenuItem(label.c_str(), "Alt + Suppr")) {
+                if (m_DeletePathCallback) {
+                  for (auto &path : m_Selected) {
+                    m_DeletePathCallback(path);
+                  }
+                }
+                m_Selected.clear();
+
+                ImGui::CloseCurrentPopup();
+              }
+            }
+
+            CherryKit::SeparatorText("Customizations");
+
+            ImGui::EndPopup();
+          }
 
           ImU32 bgColor =
               selected ? IM_COL32(80, 80, 240, 255) : IM_COL32(40, 40, 40, 255);
@@ -3785,7 +4085,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
                       "resources/imgs/icons/files/icon_picture_file.png"),
                   IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                   Cherry::HexToImU32(itemEntry.first->m_LineColor), 100.0f,
-                  5.0f, itemEntry.first)) {
+                  5.0f, false, itemEntry.first)) {
             if (ImGui::IsMouseDoubleClicked(0)) {
               // itemEntry.first->f_Execute(path);
               // VXERROR("te", "tyr");
