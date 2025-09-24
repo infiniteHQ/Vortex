@@ -29,6 +29,22 @@
 
 enum class HandlerItemType { File, Item, Folder };
 
+// Todo : Creation configurations (names, variantes, etc)
+struct ItemCreatorInterface {
+  std::function<void(const std::string &path)> f_CreateFunction;
+  std::string m_Name;
+
+  std::string m_Logo;
+  std::string m_LineColor;
+  std::string m_Description;
+
+  ItemCreatorInterface(std::function<void(const std::string &path)> function,
+                       const std::string &name, const std::string &description,
+                       const std::string &line_color = "#343434")
+      : m_Name(name), m_Description(description), f_CreateFunction(function),
+        m_LineColor(line_color) {};
+};
+
 struct ItemIdentifierInterface {
 public:
   bool (*f_Detect)(const std::string &path);
@@ -69,7 +85,6 @@ struct ModuleInterfaceDep {
 };
 
 class ModuleInterface {
-  // Module API (declarations needs to be here)
 public:
   virtual ~ModuleInterface() {}
 
@@ -136,15 +151,20 @@ public:
   void SetMainWindow(const std::shared_ptr<Cherry::AppWindow> &win);
   void AddWindow(const std::shared_ptr<Cherry::AppWindow> &win);
 
-  // Content Browser stuffs
+  // Content Browser item handler
   void AddContentBrowserItemHandler(const ItemHandlerInterface &handler);
   std::vector<std::shared_ptr<ItemHandlerInterface>>
   GetContentBrowserItemHandler();
 
+  // Content Browser item identifier
   void AddContentBrowserItemIdentifier(const ItemIdentifierInterface &item);
-
   std::vector<std::shared_ptr<ItemIdentifierInterface>> &
   GetContentBrowserItemIdentifiers();
+
+  // Content Browser item creators
+  void AddContentBrowserItemCreator(const ItemCreatorInterface &item);
+  std::vector<std::shared_ptr<ItemCreatorInterface>> &
+  GetContentBrowserItemCreators();
 
   // Logs & Metrics
   void LogInfo(const std::string &message);
@@ -223,6 +243,7 @@ public:
   std::vector<std::shared_ptr<ModuleInputEvent>> m_input_events;
   std::vector<std::shared_ptr<ItemHandlerInterface>> m_item_handlers;
   std::vector<std::shared_ptr<ItemIdentifierInterface>> m_item_identifiers;
+  std::vector<std::shared_ptr<ItemCreatorInterface>> m_item_creators;
 
 private:
   std::vector<std::shared_ptr<ModuleDummyFunction>> m_dummy_functions;

@@ -2184,7 +2184,8 @@ void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path,
   ImVec2 iconPos =
       ImVec2(nodePos.x + 2.0f, nodePos.y + (itemSize.y - iconSize.y) * 0.5f);
 
-  WidgetFolderT("#c2a24c", iconSize.x, iconSize.y, iconPos);
+  WidgetFolderT(GetContentBrowserFolderColor(path.string()), iconSize.x,
+                iconSize.y, iconPos);
 
   if (ImGui::IsItemClicked()) {
     ChangeDirectory(path);
@@ -2614,9 +2615,11 @@ void ContentBrowserAppWindow::RenderContentBar() {
           }
 
           if (current_editing_folder.first == path.string()) {
-            FolderButton("folder_icon", folderSize, path.string());
+            FolderButton("folder_icon", folderSize, path.string(),
+                         Cherry::ImU32ToHex(current_editing_folder.second));
           } else {
-            FolderButton("folder_icon", folderSize, path.string());
+            FolderButton("folder_icon", folderSize, path.string(),
+                         GetContentBrowserFolderColor(path.string()));
           }
 
           float oldsize = ImGui::GetFont()->Scale;
@@ -2797,6 +2800,75 @@ void ContentBrowserAppWindow::RenderContentBar() {
             }
 
             CherryKit::SeparatorText("Customizations");
+
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+
+            static bool EditingColor = false;
+            static bool ColorChanged = false;
+
+            current_editing_folder_is_favorite =
+                IsPathFavorite(directoryEntry.path().string());
+
+            if (ImGui::BeginMenu("Change color")) {
+              if (!EditingColor) {
+                current_editing_folder = {directoryEntry.path().string(),
+                                          Cherry::HexToImU32(folder_color)};
+
+                current_editing_folder = {
+                    directoryEntry.path().string(),
+                    HexToImU32(GetContentBrowserFolderColor(path.string()))};
+
+                current_editing_folder_is_favorite =
+                    IsPathFavorite(directoryEntry.path().string());
+              }
+
+              EditingColor = true;
+
+              static bool alpha_preview = true;
+              static bool alpha_half_preview = false;
+              static bool drag_and_drop = true;
+              static bool options_menu = true;
+              static bool hdr = false;
+
+              ColorPicker3U32("MyColor", &current_editing_folder.second);
+
+              if (current_editing_folder.second !=
+                  Cherry::HexToImU32(folder_color)) {
+                ColorChanged = true;
+              }
+
+              ImGui::EndMenu();
+            } else {
+              EditingColor = false;
+              current_editing_folder = {"", ImU32()};
+            }
+
+            if (ImGui::MenuItem("Mark as favorite", "",
+                                current_editing_folder_is_favorite)) {
+              current_editing_folder = {directoryEntry.path().string(),
+                                        current_editing_folder.second};
+
+              current_editing_folder_is_favorite =
+                  !current_editing_folder_is_favorite;
+              SetColoredFolder(current_editing_folder.first,
+                               ImU32ToHex(current_editing_folder.second));
+
+              VortexMaker::PublishContentBrowserCustomFolder(
+                  current_editing_folder.first,
+                  Cherry::ImU32ToHex(current_editing_folder.second),
+                  current_editing_folder_is_favorite);
+
+              if (current_editing_folder_is_favorite) {
+                m_FavoriteFolders.push_back(current_editing_folder.first);
+              } else {
+                auto it = std::find(m_FavoriteFolders.begin(),
+                                    m_FavoriteFolders.end(),
+                                    current_editing_folder.first);
+                if (it != m_FavoriteFolders.end()) {
+                  m_FavoriteFolders.erase(it);
+                }
+              }
+            }
 
             ImGui::EndPopup();
           }
@@ -3453,9 +3525,11 @@ void ContentBrowserAppWindow::RenderContentBar() {
           }
         } else {
           if (current_editing_folder.first == path.string()) {
-            FolderButton("folder_icon", ImVec2(16, 16), path.string());
+            FolderButton("folder_icon", ImVec2(16, 16), path.string(),
+                         GetContentBrowserFolderColor(path.string()));
           } else {
-            FolderButton("folder_icon", ImVec2(16, 16), path.string());
+            FolderButton("folder_icon", ImVec2(16, 16), path.string(),
+                         GetContentBrowserFolderColor(path.string()));
           }
           ImGui::SameLine();
         }
@@ -3962,8 +4036,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
           ImVec2 logoPos(cursorPos.x + padding,
                          cursorPos.y + (cardHeight - logoSize) * 0.5f);
           ImGui::SetCursorScreenPos(logoPos);
-          FolderButton("folder_icon", ImVec2(logoSize, logoSize),
-                       path.string());
+          FolderButton("folder_icon", ImVec2(logoSize, logoSize), path.string(),
+                       GetContentBrowserFolderColor(path.string()));
 
           ImVec2 logoEnd(logoPos.x + logoSize, logoPos.y + logoSize);
 

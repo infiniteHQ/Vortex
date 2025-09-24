@@ -14,11 +14,11 @@ namespace VortexEditor {
 class ContentBrowserAddWindow
     : public std::enable_shared_from_this<ContentBrowserAddWindow> {
 public:
-  ContentBrowserAddWindow(const std::string &name);
+  ContentBrowserAddWindow(const std::string &name, const std::string &path);
 
   std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
   static std::shared_ptr<ContentBrowserAddWindow>
-  Create(const std::string &name);
+  Create(const std::string &name, const std::string &path);
   void SetupRenderCallback();
   void Render();
 
@@ -37,6 +37,7 @@ public:
   std::function<void()> m_CreateFileCallback;
   std::function<void()> m_CreateFolderCallback;
   std::function<void()> m_ImportContentCallback;
+  std::string m_CreationPath;
 
   std::shared_ptr<Cherry::AppWindow> m_AppWindow;
 };

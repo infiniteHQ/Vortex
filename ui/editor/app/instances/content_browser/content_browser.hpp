@@ -230,7 +230,8 @@ public:
 
     std::string name = "?loc:loc.window_names.add_content" +
                        std::to_string(m_AddWindowCounter);
-    auto new_win = VortexEditor::ContentBrowserAddWindow::Create(name);
+    auto new_win = VortexEditor::ContentBrowserAddWindow::Create(
+        name, m_CurrentDirectory.string());
     new_win->GetAppWindow()->SetVisibility(true);
     new_win->SetCreateFileCallback([this]() { this->CreateFile(); });
     new_win->SetCreateFolderCallback([this]() { this->CreateFolder(); });
@@ -275,7 +276,7 @@ public:
       return "#544F46FF";
     }
 
-    return "#997D44FF";
+    return "#c2a24c";
   }
 
   void AddReconizedItem(const std::shared_ptr<ContenBrowserItem> &item) {};

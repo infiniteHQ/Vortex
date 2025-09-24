@@ -685,3 +685,13 @@ std::vector<std::shared_ptr<ItemIdentifierInterface>> &
 ModuleInterface::GetContentBrowserItemIdentifiers() {
   return m_item_identifiers;
 }
+
+void ModuleInterface::AddContentBrowserItemCreator(
+    const ItemCreatorInterface &item) {
+  m_item_creators.push_back(std::make_shared<ItemCreatorInterface>(item));
+}
+
+std::vector<std::shared_ptr<ItemCreatorInterface>> &
+ModuleInterface::GetContentBrowserItemCreators() {
+  return m_item_creators;
+}
