@@ -4,39 +4,40 @@ project(vortex)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC")
 
+# Options
+if (MSVC)
+    add_compile_options(/utf-8)
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC")
+endif()
+
+# ---------------------------------------------------------------------------
+# Version / Build infos
+# ---------------------------------------------------------------------------
 set(VORTEX_VERSION "1.0")
 set(VORTEX_FULL_VERSION "1.0.build1")
 set(VORTEX_BUILDID "1")
 set(VORTEX_BUILDNAME "1.0 [Build 1]")
-
-set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_FULL_VERSION} CACHE PATH "Installation directory" FORCE)
-
 set(VORTEX_DIST "beta")
 set(VORTEX_BUILD "dev")
-
-if (MSVC)
-    add_compile_options(/utf-8)
-endif()
 
 if(VORTEX_BUILD STREQUAL "prod")
     add_compile_definitions(BUILD_STR="01")
     string(TIMESTAMP BUILD_DATE "%b %d, %Y - %H:%M" UTC)
     add_compile_definitions(BUILD_DATE_STR="${BUILD_DATE}")
     add_compile_definitions(BUILD_DIST="${BUILD_DATE}")
-
+    add_compile_definitions(VORTEX_BUILD="prod")
     add_compile_definitions(VORTEX_BUILDID="${VORTEX_BUILDID}")
     add_compile_definitions(VORTEX_BUILDNAME="${VORTEX_BUILDNAME}")
 
     execute_process(
-        COMMAND git rev-parse --short HEAD  
+        COMMAND git rev-parse --short HEAD
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         OUTPUT_VARIABLE GIT_COMMIT_HASH
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     add_compile_definitions(GIT_COMMIT_HASH="${GIT_COMMIT_HASH}")
-    add_compile_definitions(VORTEX_BUILD="prod")
 else()
     add_compile_definitions(BUILD_DATE_STR="DEV_BUILD")
     add_compile_definitions(BUILD_DIST="DEV_BUILD")
@@ -46,54 +47,65 @@ else()
     add_compile_definitions(VORTEX_BUILDNAME="${VORTEX_BUILDNAME}")
 endif()
 
+# ---------------------------------------------------------------------------
+# Dependancies
+# ---------------------------------------------------------------------------
 find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include")
 
+# ---------------------------------------------------------------------------
+# Library
+# ---------------------------------------------------------------------------
 file(GLOB_RECURSE VORTEX_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
-add_library(vortex_shared SHARED ${VORTEX_SHARED_SOURCES})
 
-set_target_properties(vortex_shared PROPERTIES
-    WINDOWS_EXPORT_ALL_SYMBOLS ON
-)
+add_library(vortex_shared SHARED ${VORTEX_SHARED_SOURCES})
+target_compile_definitions(vortex_shared PRIVATE VORTEX_EXPORTS)
+
 target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/src
 )
 
+# UI
 if(VORTEX_DISABLE_UI)
-message("UI Disabled")
+    message("UI Disabled")
 else()
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler ui_crash_handler_build)
-target_link_libraries(vortex_shared PUBLIC crash_handler)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler ui_crash_handler_build)
+    target_link_libraries(vortex_shared PUBLIC crash_handler)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/editor ui_editor_build)
-target_link_libraries(vortex_shared PUBLIC editor)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/editor ui_editor_build)
+    target_link_libraries(vortex_shared PUBLIC editor)
 endif()
 
-file(GLOB_RECURSE VORTEX_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
-add_executable(vortex ${VORTEX_SOURCES} main.cpp)
-add_executable(vortex_utils utils.cpp)
-
+# ---------------------------------------------------------------------------
+# Executables
+# ---------------------------------------------------------------------------
+add_executable(vortex main.cpp)
 target_link_libraries(vortex PUBLIC vortex_shared)
+
+add_executable(vortex_utils utils.cpp)
+target_link_libraries(vortex_utils PUBLIC vortex_shared)
 
 if(UNIX AND NOT APPLE)
     find_package(CURL REQUIRED)
     target_link_libraries(vortex PRIVATE CURL::libcurl)
 endif()
 
+# ---------------------------------------------------------------------------
+# Installation
+# ---------------------------------------------------------------------------
 if(UNIX AND NOT APPLE)
     set(INSTALL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_FULL_VERSION})
-    set(INSTALL_MAIN_DIR ${INSTALL_BASE_DIR}/)
     set(INSTALL_BIN_DIR ${INSTALL_BASE_DIR}/bin)
     set(INSTALL_LIB_DIR ${INSTALL_BASE_DIR}/bin)
     set(INSTALL_INCLUDE_DIR ${INSTALL_BASE_DIR}/include)
+    set(INSTALL_MAIN_DIR ${INSTALL_BASE_DIR}/)
 elseif(WIN32)
     set(INSTALL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_FULL_VERSION})
     set(INSTALL_BIN_DIR ${INSTALL_BASE_DIR}/bin)
     set(INSTALL_LIB_DIR ${INSTALL_BASE_DIR}/bin)
-    set(INSTALL_MAIN_DIR ${INSTALL_BASE_DIR}/)
     set(INSTALL_INCLUDE_DIR ${INSTALL_BASE_DIR}/include)
+    set(INSTALL_MAIN_DIR ${INSTALL_BASE_DIR}/)
 endif()
 
 set_target_properties(vortex PROPERTIES

@@ -2565,7 +2565,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           ImGui::PushID(filenameString.c_str());
 
           bool rename = false;
-          if (path == pathToRename) {
+          if (path.string() == pathToRename) {
             rename = true;
           }
 
@@ -2646,7 +2646,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
           static std::unordered_map<std::string, char[256]> renameBuffers;
 
-          if (pathToRename == path) {
+          if (pathToRename == path.string()) {
             ImGui::SetItemAllowOverlap();
             ImGui::PushID(path.c_str());
 
@@ -3170,7 +3170,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
         ImGui::TableSetColumnIndex(0);
 
         bool selected = std::find(m_Selected.begin(), m_Selected.end(),
-                                  path.c_str()) != m_Selected.end();
+                                  path.string()) != m_Selected.end();
 
         if (ImGui::Selectable(("##row_" + path.string()).c_str(), selected,
                               ImGuiSelectableFlags_SpanAllColumns |
@@ -3187,10 +3187,10 @@ void ContentBrowserAppWindow::RenderContentBar() {
           if (ImGui::IsMouseClicked(0)) {
             if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
                 ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
-              m_Selected.push_back(path);
+              m_Selected.push_back(path.string());
             } else {
               m_Selected.clear();
-              m_Selected.push_back(path);
+              m_Selected.push_back(path.string());
             }
           }
 
@@ -3223,7 +3223,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
               alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
 
           if (shortcutRename && !pathToRename.empty()) {
-            pathToRename = path;
+            pathToRename = path.string();
           }
 
           if (shortcutCut && !m_Selected.empty()) {
@@ -3293,7 +3293,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
             item_context_menu_opened = true;
 
-            FileTypes fileType = detect_file(path);
+            FileTypes fileType = detect_file(path.string());
 
             if (item_handles.empty()) {
               if (item_ident) {
@@ -3312,7 +3312,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             for (auto ih : item_handles) {
               if (ImGui::MenuItem(ih->title.c_str(), ih->description.c_str(),
                                   Cherry::GetTexture(ih->logo), false)) {
-                ih->handler(path);
+                ih->handler(path.string());
               }
             }
 
@@ -3330,7 +3330,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
                           "resources/imgs/icons/misc/icon_foldersearch.png")),
                       NULL)) {
                 ChangeDirectory(path);
-                item_paths.push_back({path, item_ident->m_LineColor});
+                item_paths.push_back({path.string(), item_ident->m_LineColor});
                 ImGui::CloseCurrentPopup();
               }
             }
@@ -3620,15 +3620,16 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
       fs::path projectRoot = VortexMaker::GetCurrentContext()->projectDataPath;
 
-      if (!m_CurrentDirectory.empty()) {
-        auto rel = fs::relative(m_CurrentDirectory, projectRoot);
+if (!m_CurrentDirectory.empty()) {
+    auto rel = fs::relative(m_CurrentDirectory, projectRoot);
 
-        bool insideProject = !rel.empty() && rel.native().rfind("..", 0) != 0;
-
-        if (insideProject && m_CurrentDirectory != projectRoot) {
-          drawRow("...", m_CurrentDirectory.parent_path(), true);
-        }
-      }
+    if (!rel.empty() &&
+        *rel.begin() != std::filesystem::path("..") &&
+        m_CurrentDirectory != projectRoot) 
+    {
+        drawRow("...", m_CurrentDirectory.parent_path(), true);
+    }
+}
 
       if (ShowFolders) {
         for (auto &directoryEntry : directories) {
@@ -3895,10 +3896,10 @@ void ContentBrowserAppWindow::RenderContentBar() {
             } else {
               if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
                   ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path);
+                m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
-                m_Selected.push_back(path);
+                m_Selected.push_back(path.string());
               }
             }
           }
@@ -4052,7 +4053,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
           static std::unordered_map<std::string, char[256]> renameBuffers;
 
-          if (pathToRename == path) {
+          if (pathToRename == path.string()) {
             ImGui::PushID(path.c_str());
             auto &buffer = renameBuffers[path.string()];
             if (buffer[0] == '\0') {

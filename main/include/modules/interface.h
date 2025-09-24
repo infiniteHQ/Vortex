@@ -30,7 +30,7 @@
 enum class HandlerItemType { File, Item, Folder };
 
 // Todo : Creation configurations (names, variantes, etc)
-struct ItemCreatorInterface {
+VORTEX_API struct ItemCreatorInterface {
   std::function<void(const std::string &path)> f_CreateFunction;
   std::string m_Name;
 
@@ -45,7 +45,7 @@ struct ItemCreatorInterface {
         m_LineColor(line_color) {};
 };
 
-struct ItemIdentifierInterface {
+VORTEX_API struct ItemIdentifierInterface {
 public:
   bool (*f_Detect)(const std::string &path);
 
@@ -63,7 +63,7 @@ public:
         m_LineColor(line_color) {};
 };
 
-struct ItemHandlerInterface {
+VORTEX_API struct ItemHandlerInterface {
   std::function<void(const std::string &)> handler;
   std::string title;
   std::string type;
@@ -77,14 +77,14 @@ struct ItemHandlerInterface {
       : handler(std::move(h)), type(ty), title(ti), description(d), logo(l) {}
 };
 
-struct ModuleInterfaceDep {
+VORTEX_API struct ModuleInterfaceDep {
   std::string type; // em, plugin, etc..
   std::string name;
   std::vector<std::string> supported_versions;
   bool satisfied;
 };
 
-class ModuleInterface {
+VORTEX_API class ModuleInterface {
 public:
   virtual ~ModuleInterface() {}
 
@@ -93,84 +93,84 @@ public:
   virtual void destroy() {};
   virtual void render() {};
 
-  void Start();
-  void Stop();
+  VORTEX_API void Start();
+  VORTEX_API void Stop();
 
   // Hooks
-  void OnInputEvent();
-  void OnOutputEvent();
+  VORTEX_API void OnInputEvent();
+  VORTEX_API void OnOutputEvent();
 
   // Misc
-  void AddLogo(const uint8_t *hexa, size_t size);
-  void AddLogo(const std::string &relative_path);
-  void ResetModule();
+  VORTEX_API void AddLogo(const uint8_t *hexa, size_t size);
+  VORTEX_API void AddLogo(const std::string &relative_path);
+  VORTEX_API void ResetModule();
 
   // Functions of the modules (gives the Vortex abstraction/features)
-  void AddFunction(std::function<void()> foo, const std::string &name);
-  void AddFunction(std::function<void(ArgumentValues &)> foo,
+  VORTEX_API void AddFunction(std::function<void()> foo, const std::string &name);
+  VORTEX_API void AddFunction(std::function<void(ArgumentValues &)> foo,
                    const std::string &name);
-  void AddFunction(std::function<void(ReturnValues &)> foo,
+  VORTEX_API void AddFunction(std::function<void(ReturnValues &)> foo,
                    const std::string &name);
-  void AddFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo,
+  VORTEX_API void AddFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo,
                    const std::string &name);
-  void ExecuteFunction(const std::string &name);
-  void ExecuteFunction(const std::string &name, ArgumentValues &args);
-  void ExecuteFunction(const std::string &name, ReturnValues &ret);
-  void ExecuteFunction(const std::string &name, ArgumentValues &args,
+  VORTEX_API void ExecuteFunction(const std::string &name);
+  VORTEX_API void ExecuteFunction(const std::string &name, ArgumentValues &args);
+  VORTEX_API void ExecuteFunction(const std::string &name, ReturnValues &ret);
+  VORTEX_API void ExecuteFunction(const std::string &name, ArgumentValues &args,
                        ReturnValues &ret);
 
-  std::string GetPath();
+  VORTEX_API std::string GetPath();
 
   // Output Events
   // A output event is triggered via VortexMaker::ExecuteOutputEvent() by the
   // current component to all concerned extern components with the output event
   // added.
-  void AddOutputEvent(std::function<void()> foo, const std::string &name);
-  void AddOutputEvent(std::function<void(ArgumentValues &)> foo,
+  VORTEX_API void AddOutputEvent(std::function<void()> foo, const std::string &name);
+  VORTEX_API void AddOutputEvent(std::function<void(ArgumentValues &)> foo,
                       const std::string &name);
-  void AddOutputEvent(std::function<void(ReturnValues &)> foo,
+  VORTEX_API void AddOutputEvent(std::function<void(ReturnValues &)> foo,
                       const std::string &name);
-  void AddOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo,
+  VORTEX_API void AddOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo,
                       const std::string &name);
-  void AddOutputEvent(const ModuleOutputEvent &event);
+  VORTEX_API void AddOutputEvent(const ModuleOutputEvent &event);
 
   // Input Events
   // A input event is triggered via VortexMaker::ExecuteInputEvent() by a extern
   // component to the current component with the input component added.
-  void AddInputEvent(std::function<void()> foo, const std::string &name);
-  void AddInputEvent(std::function<void(ArgumentValues &)> foo,
+  VORTEX_API void AddInputEvent(std::function<void()> foo, const std::string &name);
+  VORTEX_API void AddInputEvent(std::function<void(ArgumentValues &)> foo,
                      const std::string &name);
-  void AddInputEvent(std::function<void(ReturnValues &)> foo,
+  VORTEX_API void AddInputEvent(std::function<void(ReturnValues &)> foo,
                      const std::string &name);
-  void AddInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo,
+  VORTEX_API void AddInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo,
                      const std::string &name);
-  void AddInputEvent(const ModuleInputEvent &event);
+  VORTEX_API void AddInputEvent(const ModuleInputEvent &event);
 
   // GUI stuffs
-  void RefreshMainWindow();
-  void SetMainWindow(const std::shared_ptr<Cherry::AppWindow> &win);
-  void AddWindow(const std::shared_ptr<Cherry::AppWindow> &win);
+  VORTEX_API void RefreshMainWindow();
+  VORTEX_API void SetMainWindow(const std::shared_ptr<Cherry::AppWindow> &win);
+  VORTEX_API void AddWindow(const std::shared_ptr<Cherry::AppWindow> &win);
 
   // Content Browser item handler
-  void AddContentBrowserItemHandler(const ItemHandlerInterface &handler);
-  std::vector<std::shared_ptr<ItemHandlerInterface>>
+  VORTEX_API void AddContentBrowserItemHandler(const ItemHandlerInterface &handler);
+  VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>>
   GetContentBrowserItemHandler();
 
   // Content Browser item identifier
-  void AddContentBrowserItemIdentifier(const ItemIdentifierInterface &item);
-  std::vector<std::shared_ptr<ItemIdentifierInterface>> &
+  VORTEX_API void AddContentBrowserItemIdentifier(const ItemIdentifierInterface &item);
+  VORTEX_API std::vector<std::shared_ptr<ItemIdentifierInterface>> &
   GetContentBrowserItemIdentifiers();
 
   // Content Browser item creators
-  void AddContentBrowserItemCreator(const ItemCreatorInterface &item);
-  std::vector<std::shared_ptr<ItemCreatorInterface>> &
+  VORTEX_API void AddContentBrowserItemCreator(const ItemCreatorInterface &item);
+  VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &
   GetContentBrowserItemCreators();
 
   // Logs & Metrics
-  void LogInfo(const std::string &message);
-  void LogWarning(const std::string &message);
-  void LogError(const std::string &message);
-  void LogFatal(const std::string &message);
+  VORTEX_API void LogInfo(const std::string &message);
+  VORTEX_API void LogWarning(const std::string &message);
+  VORTEX_API void LogError(const std::string &message);
+  VORTEX_API void LogFatal(const std::string &message);
 
   // TODO : AddParameterToFunction
   // TODO : AddParameterToInputEvent
@@ -182,37 +182,37 @@ public:
 
   // void AddFunction(void (*item)(), const std::string& name, Parameters
   // params);
-  std::shared_ptr<ModuleInterface> GetInterface();
+  VORTEX_API std::shared_ptr<ModuleInterface> GetInterface();
 
-  void ExecuteOutputEvent(const std::string &name, ArgumentValues &args,
+  VORTEX_API void ExecuteOutputEvent(const std::string &name, ArgumentValues &args,
                           ReturnValues &ret);
-  void ExecuteInputEvent(const std::string &name, ArgumentValues &args,
+  VORTEX_API void ExecuteInputEvent(const std::string &name, ArgumentValues &args,
                          ReturnValues &ret);
 
   // Trigger all output events for every modules/plugins
-  void DeployOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
-  void ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
+  VORTEX_API void DeployOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
+  VORTEX_API void ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
 
   template <typename T>
-  void AddModuleItemParam(const void *item,
+  VORTEX_API void AddModuleItemParam(const void *item,
                           std::pair<std::string, T> parameter);
 
-  void
+  VORTEX_API void
   AddModuleRenderInstance(const std::shared_ptr<ModuleRenderInstance> &event);
-  void AddModuleFunction(const ModuleFunction &event);
+  VORTEX_API void AddModuleFunction(const ModuleFunction &event);
   std::vector<std::shared_ptr<ModuleRenderInstance>> GetModuleRenderInstances();
 
-  void CallOutputEvent(const std::string &event_name, ArgumentValues &args,
+  VORTEX_API void CallOutputEvent(const std::string &event_name, ArgumentValues &args,
                        ReturnValues &ret);
-  void CallInputEvent(const std::string &module_name,
+  VORTEX_API void CallInputEvent(const std::string &module_name,
                       const std::string &event_name, ArgumentValues &args,
                       ReturnValues &ret);
 
-  static std::shared_ptr<ModuleInterface>
+  VORTEX_API static std::shared_ptr<ModuleInterface>
   GetEditorModuleByName(const std::string &name);
 
-  void CheckDependencies();
-  void CheckVersion();
+  VORTEX_API void CheckDependencies();
+  VORTEX_API void CheckVersion();
 
   std::shared_ptr<hArgs> m_args;
   std::string m_datapath;

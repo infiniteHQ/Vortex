@@ -17,7 +17,8 @@ for /f %%i in ('powershell -command "(Get-WmiObject -Class Win32_Processor).Numb
 cmake --build . --config Release -- /m:%THREADS%
 cmake --install . --config Release
 
-xcopy /Y /E /I .\bin\Release\* .\bin
+xcopy /Y /E /I .\bin\Release\* .\
+xcopy /Y /E /I .\build\Release\* .\build
 xcopy /Y /E /I .\Release\vortex_shared.dll .\bin
 xcopy /Y /E /I .\Release\vortex.exe .\bin
 xcopy /Y /E /I .\Release\vortex_utils.exe .\bin
