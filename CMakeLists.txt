@@ -66,6 +66,12 @@ target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include
 )
 
+set_target_properties(vortex_shared PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release
+    ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release
+    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release
+)
+
 # UI
 if(VORTEX_DISABLE_UI)
     message("UI Disabled")
@@ -114,17 +120,10 @@ set_target_properties(vortex PROPERTIES
     INSTALL_RPATH_USE_LINK_PATH TRUE
 )
 
-install(TARGETS vortex DESTINATION ${INSTALL_BIN_DIR})
-install(TARGETS vortex_shared LIBRARY DESTINATION ${INSTALL_LIB_DIR})
+install(TARGETS vortex DESTINATION ${INSTALL_BIN_DIR})# Installation de la DLL (.dll), de l'import lib (.lib) et du .so/.a éventuel
+install(TARGETS vortex_shared
+    RUNTIME DESTINATION ${INSTALL_BIN_DIR}   # .dll (Windows) ou binaire équivalent
+    LIBRARY DESTINATION ${INSTALL_LIB_DIR}   # .so (Linux)
+    ARCHIVE DESTINATION ${INSTALL_LIB_DIR}   # .lib (Windows) ou .a (Linux)
+)
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/vortex_banner.png
-    DESTINATION ${INSTALL_MAIN_DIR}/)
-
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/build/handle_crash.sh
-    DESTINATION ${INSTALL_BIN_DIR}/)
-
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/build/handle_crash.bat
-    DESTINATION ${INSTALL_BIN_DIR}/)
-
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manifest.json
-    DESTINATION ${INSTALL_MAIN_DIR}/)
