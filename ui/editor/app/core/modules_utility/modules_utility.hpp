@@ -42,8 +42,8 @@ public:
     float versionBoxHeight = 20.0f;
     float thumbnailIconOffsetY = 30.0f;
 
-    float oldfontsize = ImGui::GetFont()->Scale;
-    ImFont *oldFont = ImGui::GetFont();
+    float oldfontsize = CherryGUI::GetFont()->Scale;
+    ImFont *oldFont = CherryGUI::GetFont();
 
     if (selected) {
       m_bgColor = IM_COL32(80, 80, 240, 255);
@@ -54,13 +54,13 @@ public:
     const char *originalText = m_name.c_str();
     std::string truncatedText = m_name;
 
-    if (ImGui::CalcTextSize(originalText).x > m_maxTextWidth) {
+    if (CherryGUI::CalcTextSize(originalText).x > m_maxTextWidth) {
       size_t len = m_name.size();
 
       size_t firstPart = std::min<size_t>(20, len);
       truncatedText = m_name.substr(0, firstPart);
 
-      if (ImGui::CalcTextSize(truncatedText.c_str()).x > m_maxTextWidth) {
+      if (CherryGUI::CalcTextSize(truncatedText.c_str()).x > m_maxTextWidth) {
         size_t firstLine = std::min<size_t>(10, len);
         size_t secondLine = (len > 10) ? std::min<size_t>(10, len - 10) : 0;
 
@@ -80,13 +80,13 @@ public:
     }
     const char *originalDesc = truncatedDesc.c_str();
 
-    if (ImGui::CalcTextSize(originalDesc).x > m_maxTextWidth) {
+    if (CherryGUI::CalcTextSize(originalDesc).x > m_maxTextWidth) {
       size_t len = m_module->m_description.size();
 
       size_t firstPart = std::min<size_t>(90, len);
       truncatedDesc = m_module->m_description.substr(0, firstPart);
 
-      if (ImGui::CalcTextSize(truncatedDesc.c_str()).x > m_maxTextWidth) {
+      if (CherryGUI::CalcTextSize(truncatedDesc.c_str()).x > m_maxTextWidth) {
         size_t firstLine = std::min<size_t>(55, len);
         size_t secondLine = (len > 55) ? len - 55 : 0;
 
@@ -103,10 +103,10 @@ public:
     ImVec2 fixedSize(m_maxTextWidth + padding * 2 + 150.0f,
                      logoSize + extraHeight + padding * 2);
 
-    ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+    ImVec2 cursorPos = CherryGUI::GetCursorScreenPos();
 
-    if (ImGui::IsItemHovered()) {
-      ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    if (CherryGUI::IsItemHovered()) {
+      CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
     }
 
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
@@ -114,20 +114,20 @@ public:
     ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
     ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
-    ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
-    ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+    CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+    CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
 
-    ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+    CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 
     static bool open_deletion_modal = false;
 
     static bool delete_single_file = false;
     static std::string delete_single_file_path = "";
 
-    ImGui::PopStyleVar();
-    ImGui::PopStyleColor(2);
+    CherryGUI::PopStyleVar();
+    CherryGUI::PopStyleColor(2);
 
-    ImDrawList *drawList = ImGui::GetWindowDrawList();
+    ImDrawList *drawList = CherryGUI::GetWindowDrawList();
 
     drawList->AddRectFilled(
         cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y),
@@ -147,7 +147,7 @@ public:
     ImVec2 sizePos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y +
                                                        thumbnailIconOffsetY -
                                                        25 + textOffsetY);
-    ImGui::SetCursorScreenPos(sizePos);
+    CherryGUI::SetCursorScreenPos(sizePos);
 
     ImTextureID logotexture =
         Cherry::Application::GetCurrentRenderedWindow()->get_texture(m_logo);
@@ -155,17 +155,17 @@ public:
         logotexture, logoPos,
         ImVec2(logoPos.x + squareSize.x, logoPos.y + squareSize.y));
 
-    ImGui::GetFont()->Scale = 0.7f;
-    ImGui::PushFont(ImGui::GetFont());
+    CherryGUI::GetFont()->Scale = 0.7f;
+    CherryGUI::PushFont(CherryGUI::GetFont());
 
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-    ImGui::PushItemWidth(m_maxTextWidth);
-    ImGui::TextWrapped(m_size.c_str());
-    ImGui::PopItemWidth();
-    ImGui::PopStyleColor();
+    CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+    CherryGUI::PushItemWidth(m_maxTextWidth);
+    CherryGUI::TextWrapped(m_size.c_str());
+    CherryGUI::PopItemWidth();
+    CherryGUI::PopStyleColor();
 
-    ImGui::GetFont()->Scale = oldfontsize;
-    ImGui::PopFont();
+    CherryGUI::GetFont()->Scale = oldfontsize;
+    CherryGUI::PopFont();
 
     ImVec2 lineStart =
         ImVec2(cursorPos.x, cursorPos.y + squareSize.y + thumbnailIconOffsetY +
@@ -175,14 +175,14 @@ public:
                                 separatorHeight);
     drawList->AddLine(lineStart, lineEnd, m_lineColor, separatorHeight);
 
-    ImGui::GetFont()->Scale = 0.9f;
-    ImGui::PushFont(ImGui::GetFont());
+    CherryGUI::GetFont()->Scale = 0.9f;
+    CherryGUI::PushFont(CherryGUI::GetFont());
 
     ImVec2 textPos =
         ImVec2(cursorPos.x + padding,
                cursorPos.y + squareSize.y + thumbnailIconOffsetY + textOffsetY);
-    ImGui::SetCursorScreenPos(textPos);
-    ImGui::PushItemWidth(m_maxTextWidth);
+    CherryGUI::SetCursorScreenPos(textPos);
+    CherryGUI::PushItemWidth(m_maxTextWidth);
     ImU32 textColor = IM_COL32(255, 255, 255, 255);
     ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
     ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
@@ -190,42 +190,42 @@ public:
                         m_ModulesSearch.c_str(), highlightColor, textColor,
                         highlightTextColor);
 
-    ImGui::PopItemWidth();
+    CherryGUI::PopItemWidth();
 
-    ImGui::GetFont()->Scale = oldfontsize;
-    ImGui::PopFont();
+    CherryGUI::GetFont()->Scale = oldfontsize;
+    CherryGUI::PopFont();
 
     ImVec2 labelPos = ImVec2(cursorPos.x + padding,
                              cursorPos.y + squareSize.y - 20 +
                                  thumbnailIconOffsetY + 35 + textOffsetY);
-    ImGui::SetCursorScreenPos(labelPos);
+    CherryGUI::SetCursorScreenPos(labelPos);
 
-    ImGui::GetFont()->Scale = 0.7f;
-    ImGui::PushFont(ImGui::GetFont());
+    CherryGUI::GetFont()->Scale = 0.7f;
+    CherryGUI::PushFont(CherryGUI::GetFont());
 
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-    ImGui::PushItemWidth(m_maxTextWidth);
-    ImGui::TextWrapped(m_description.c_str());
-    ImGui::PopItemWidth();
-    ImGui::PopStyleColor();
+    CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+    CherryGUI::PushItemWidth(m_maxTextWidth);
+    CherryGUI::TextWrapped(m_description.c_str());
+    CherryGUI::PopItemWidth();
+    CherryGUI::PopStyleColor();
 
     ImVec2 descriptionPos = ImVec2(cursorPos.x + padding,
                                    cursorPos.y + squareSize.y +
                                        thumbnailIconOffsetY + 35 + textOffsetY);
-    ImGui::SetCursorScreenPos(descriptionPos);
+    CherryGUI::SetCursorScreenPos(descriptionPos);
 
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-    ImGui::PushItemWidth(fixedSize.x);
+    CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+    CherryGUI::PushItemWidth(fixedSize.x);
 
     DrawDescription(drawList, descriptionPos, truncatedDesc.c_str(),
                     m_ModulesSearch.c_str(), highlightColor,
                     Cherry::HexToImU32("#8A8A8AFF"), highlightTextColor,
                     oldfontsize);
-    ImGui::PopItemWidth();
-    ImGui::PopStyleColor();
+    CherryGUI::PopItemWidth();
+    CherryGUI::PopStyleColor();
 
-    ImGui::GetFont()->Scale = oldfontsize;
-    ImGui::PopFont();
+    CherryGUI::GetFont()->Scale = oldfontsize;
+    CherryGUI::PopFont();
 
     float buttonWidth = 20.0f;
     float buttonHeight = 20.0f;
@@ -234,7 +234,7 @@ public:
     ImVec2 firstButtonPos =
         ImVec2(cursorPos.x + fixedSize.x - padding - buttonWidth - 10,
                cursorPos.y + padding);
-    ImGui::SetCursorScreenPos(firstButtonPos);
+    CherryGUI::SetCursorScreenPos(firstButtonPos);
 
     if (m_module->m_state == "failed") {
 
@@ -263,7 +263,7 @@ public:
 
     ImVec2 secondButtonPos = ImVec2(
         firstButtonPos.x - buttonWidth - buttonSpacing, firstButtonPos.y);
-    ImGui::SetCursorScreenPos(secondButtonPos);
+    CherryGUI::SetCursorScreenPos(secondButtonPos);
 
     if (CherryKit::ButtonImage(
             Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png"))
@@ -274,7 +274,7 @@ public:
 
     ImVec2 thirdButtonPos = ImVec2(
         secondButtonPos.x - buttonWidth - buttonSpacing, secondButtonPos.y);
-    ImGui::SetCursorScreenPos(thirdButtonPos);
+    CherryGUI::SetCursorScreenPos(thirdButtonPos);
     if (CherryKit::ButtonImage(
             Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"))
             .GetDataAs<bool>("isClicked")) {
@@ -289,21 +289,21 @@ public:
 
        if (ctx->IO.em[i]->m_state == "failed")
         {
-            if (ImGui::ImageButtonWithText(listIcon, "Retry to launch",
+            if (CherryGUI::ImageButtonWithText(listIcon, "Retry to launch",
        ImVec2(this->m_RefreshIcon->GetWidth(),
        this->m_RefreshIcon->GetHeight())))
             {
                 ctx->IO.em[i]->Start();
             }
-            ImGui::SameLine();
-            if (ImGui::ImageButtonWithText(trashIcon, "Delete",
+            CherryGUI::SameLine();
+            if (CherryGUI::ImageButtonWithText(trashIcon, "Delete",
        ImVec2(this->m_RefreshIcon->GetWidth(),
        this->m_RefreshIcon->GetHeight())))
             {
                 // Behavior
             }
-            ImGui::SameLine();
-            if (ImGui::ImageButtonWithText(logIcon, "Details",
+            CherryGUI::SameLine();
+            if (CherryGUI::ImageButtonWithText(logIcon, "Details",
        ImVec2(this->m_RefreshIcon->GetWidth(),
        this->m_RefreshIcon->GetHeight())))
             {
@@ -316,21 +316,21 @@ public:
         if (ctx->IO.em[i]->m_state == "unknow" || ctx->IO.em[i]->m_state ==
        "stopped")
         {
-            if (ImGui::ImageButtonWithText(startIcon, "Launch",
+            if (CherryGUI::ImageButtonWithText(startIcon, "Launch",
        ImVec2(this->m_RefreshIcon->GetWidth(),
        this->m_RefreshIcon->GetHeight())))
             {
                 ctx->IO.em[i]->Start();
             }
-            ImGui::SameLine();
-            if (ImGui::ImageButtonWithText(trashIcon, "Delete",
+            CherryGUI::SameLine();
+            if (CherryGUI::ImageButtonWithText(trashIcon, "Delete",
        ImVec2(this->m_RefreshIcon->GetWidth(),
        this->m_RefreshIcon->GetHeight())))
             {
                 // Behavior
             }
-            ImGui::SameLine();
-            if (ImGui::ImageButtonWithText(logIcon, "Details",
+            CherryGUI::SameLine();
+            if (CherryGUI::ImageButtonWithText(logIcon, "Details",
        ImVec2(this->m_RefreshIcon->GetWidth(),
        this->m_RefreshIcon->GetHeight())))
             {
@@ -343,14 +343,14 @@ public:
   */
 
     float windowVisibleX2 =
-        ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+        CherryGUI::GetWindowPos().x + CherryGUI::GetWindowContentRegionMax().x;
     if (cursorPos.x + fixedSize.x < windowVisibleX2)
-      ImGui::SameLine();
+      CherryGUI::SameLine();
 
-    ImGui::SetCursorScreenPos(
+    CherryGUI::SetCursorScreenPos(
         ImVec2(cursorPos.x, cursorPos.y + fixedSize.y + padding));
 
-    ImGui::GetFont()->Scale = oldfontsize;
+    CherryGUI::GetFont()->Scale = oldfontsize;
 
     // return pressed;
   }

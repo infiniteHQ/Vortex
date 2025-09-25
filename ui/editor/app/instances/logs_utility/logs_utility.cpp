@@ -22,7 +22,7 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
       [this]() { Cherry::DeleteAppWindow(m_AppWindow); });
 
   m_AppWindow->SetLeftMenubarCallback([this]() {
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 3.0f);
+    CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 3.0f);
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     CherryNextComponent.SetProperty("padding_x", "10.0f");
     if (CherryKit::ButtonImageText(
@@ -52,8 +52,8 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
               "Settings",
               GetPath("resources/imgs/icons/misc/icon_settings.png"))
               .GetDataAs<bool>("isClicked")) {
-        ImVec2 mousePos = ImGui::GetMousePos();
-        ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+        ImVec2 mousePos = CherryGUI::GetMousePos();
+        ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
         ImVec2 popupSize(150, 100);
 
         if (mousePos.x + popupSize.x > displaySize.x) {
@@ -63,8 +63,8 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
           mousePos.y -= popupSize.y;
         }
 
-        ImGui::SetNextWindowPos(mousePos);
-        ImGui::OpenPopup("OptionMenu");
+        CherryGUI::SetNextWindowPos(mousePos);
+        CherryGUI::OpenPopup("OptionMenu");
       }
 
       CherryNextComponent.SetProperty("padding_y", "6.0f");
@@ -319,7 +319,7 @@ void LogsUtilityAppWindow::Render() {
   const float margin = 10.0f;
 
   auto &children = m_Childs;
-  ImVec2 availableSize = ImGui::GetContentRegionAvail();
+  ImVec2 availableSize = CherryGUI::GetContentRegionAvail();
 
   for (size_t i = 0; i < children.size(); ++i) {
     auto &child = children[i];
@@ -403,18 +403,18 @@ void LogsUtilityAppWindow::Render() {
       c_FilterBarWidth = child.m_Size;
     }
 
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, child.m_BackgroundColor);
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, child.m_BackgroundColor);
+    CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 
     std::string childname =
         child.m_Name + "##cbchildnh" + m_AppWindow->m_Name + child.m_Name;
-    ImGui::BeginChild(childname.c_str(), ImVec2(child.m_Size, availableSize.y),
+    CherryGUI::BeginChild(childname.c_str(), ImVec2(child.m_Size, availableSize.y),
                       true);
 
     child.m_Child();
 
-    ImGui::EndChild();
-    ImGui::PopStyleColor(2);
+    CherryGUI::EndChild();
+    CherryGUI::PopStyleColor(2);
 
     int nextChildIndex = -1;
     for (size_t j = i + 1; j < children.size(); ++j) {
@@ -429,25 +429,25 @@ void LogsUtilityAppWindow::Render() {
 
       if (i + 1 < children.size() && !children[i].m_Disabled &&
           !next_child.m_Disabled) {
-        ImGui::SameLine();
+        CherryGUI::SameLine();
 
         std::string lab =
             child.m_Name + m_AppWindow->m_Name + "####" + child.m_Name;
 
         CherryStyle::RemoveMarginX(5.0f);
 
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-        ImGui::Button(lab.c_str(), ImVec2(splitterWidth, -1));
-        ImGui::PopStyleColor();
+        CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+        CherryGUI::Button(lab.c_str(), ImVec2(splitterWidth, -1));
+        CherryGUI::PopStyleColor();
 
         CherryStyle::RemoveMarginX(5.0f);
 
-        if (ImGui::IsItemHovered()) {
-          ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        if (CherryGUI::IsItemHovered()) {
+          CherryGUI::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
         }
 
-        if (ImGui::IsItemActive()) {
-          float delta = ImGui::GetIO().MouseDelta.x;
+        if (CherryGUI::IsItemActive()) {
+          float delta = CherryGUI::GetIO().MouseDelta.x;
 
           if (child.m_Size >= 50.0f || child.m_Size == 0.0f) {
             if (next_child.m_Size >= 50.0f || next_child.m_Size == 0.0f) {
@@ -460,7 +460,7 @@ void LogsUtilityAppWindow::Render() {
           next_child.m_Size = (std::max)(next_child.m_Size, 50.0f);
         }
 
-        ImGui::SameLine();
+        CherryGUI::SameLine();
       }
     }
   }
@@ -572,7 +572,7 @@ void LogsUtilityAppWindow::RenderContentBar() {
         if (CherryGUI::IsMouseClicked(0) && is_hovered) {
           std::string content_to_copy =
               log->m_timestamp + " | " + log->m_filter + " | " + log->m_message;
-          ImGui::SetClipboardText(content_to_copy.c_str());
+          CherryGUI::SetClipboardText(content_to_copy.c_str());
         }
 
         for (int i = 0; i <= 3; i++) {
@@ -744,7 +744,7 @@ void LogsUtilityAppWindow::RenderContentBar() {
         if (CherryGUI::IsMouseClicked(0) && is_hovered) {
           std::string content_to_copy =
               log->m_timestamp + " | " + log->m_filter + " | " + log->m_message;
-          ImGui::SetClipboardText(content_to_copy.c_str());
+          CherryGUI::SetClipboardText(content_to_copy.c_str());
         }
 
         for (int i = 0; i <= 1; i++) {

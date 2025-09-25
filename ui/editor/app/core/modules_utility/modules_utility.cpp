@@ -84,7 +84,7 @@ ModulesUtility::ModulesUtility(const std::string &name) {
 
           CherryKit::Separator();
         }
-        ImGui::Spacing();
+        CherryGUI::Spacing();
 
         if (VortexMaker::GetCurrentContext()->IO.em.empty()) {
           CherryKit::TitleFour("No modules founded.");

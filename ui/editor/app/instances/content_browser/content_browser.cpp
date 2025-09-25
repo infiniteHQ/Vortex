@@ -63,11 +63,11 @@ static void DrawHighlightedText(ImDrawList *drawList, ImVec2 textPos,
     if (found > start) {
       std::string preText(start, found);
       drawList->AddText(textPos, textColor, preText.c_str());
-      textPos.x += ImGui::CalcTextSize(preText.c_str()).x;
+      textPos.x += CherryGUI::CalcTextSize(preText.c_str()).x;
     }
 
     ImVec2 highlightPos = textPos;
-    ImVec2 highlightSize = ImGui::CalcTextSize(search);
+    ImVec2 highlightSize = CherryGUI::CalcTextSize(search);
     drawList->AddRectFilled(highlightPos,
                             ImVec2(highlightPos.x + highlightSize.x,
                                    highlightPos.y + highlightSize.y),
@@ -194,7 +194,7 @@ bool ColorPicker3U32(const char *label, ImU32 *color,
   col[1] = (float)((*color >> 8) & 0xFF) / 255.0f;
   col[2] = (float)((*color >> 16) & 0xFF) / 255.0f;
 
-  bool result = ImGui::ColorPicker3(label, col, flags);
+  bool result = CherryGUI::ColorPicker3(label, col, flags);
 
   if (result) {
     *color = ((ImU32)(col[0] * 255.0f)) | ((ImU32)(col[1] * 255.0f) << 8) |
@@ -206,51 +206,51 @@ bool ColorPicker3U32(const char *label, ImU32 *color,
   ImVec4 buttonActiveColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
   ImVec4 cancelButtonColor = ImVec4(0.4f, 0.2f, 0.2f, 1.0f);
 
-  ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
-  ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
-  ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonActiveColor);
+  CherryGUI::PushStyleColor(ImGuiCol_Button, buttonColor);
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, buttonActiveColor);
 
-  if (ImGui::Button("Cancel", ImVec2(75.0f, 0.0f))) {
+  if (CherryGUI::Button("Cancel", ImVec2(75.0f, 0.0f))) {
     //
   }
 
-  ImGui::PopStyleColor(3);
+  CherryGUI::PopStyleColor(3);
 
-  ImGui::SameLine();
+  CherryGUI::SameLine();
 
-  ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.4f, 0.8f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.5f, 0.9f, 1.0f));
-  ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.3f, 0.7f, 1.0f));
+  CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.4f, 0.8f, 1.0f));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.5f, 0.9f, 1.0f));
+  CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.3f, 0.7f, 1.0f));
 
-  if (ImGui::Button("Done", ImVec2(75.0f, 0.0f))) {
+  if (CherryGUI::Button("Done", ImVec2(75.0f, 0.0f))) {
     *color = ImColor(col[0], col[1], col[2]);
     VortexMaker::PublishContentBrowserCustomFolder(
         current_editing_folder.first, VortexMaker::ImU32ToHex(*color),
         current_editing_folder_is_favorite);
   }
 
-  ImGui::PopStyleColor(3);
+  CherryGUI::PopStyleColor(3);
 
   return result;
 }
 
 bool CollapsingHeaderWithIcon(const char *label, ImTextureID icon) {
-  ImGui::PushID(label);
+  CherryGUI::PushID(label);
 
   bool open =
-      ImGui::CollapsingHeader("##hidden", ImGuiTreeNodeFlags_AllowItemOverlap);
+      CherryGUI::CollapsingHeader("##hidden", ImGuiTreeNodeFlags_AllowItemOverlap);
 
-  ImVec2 textPos = ImGui::GetCursorPos();
-  ImGui::SameLine();
-  ImGui::SetCursorPosX(textPos.x + ImGui::GetStyle().FramePadding.x);
+  ImVec2 textPos = CherryGUI::GetCursorPos();
+  CherryGUI::SameLine();
+  CherryGUI::SetCursorPosX(textPos.x + CherryGUI::GetStyle().FramePadding.x);
 
-  ImGui::Image(icon, ImVec2(16, 16));
-  ImGui::SameLine();
+  CherryGUI::Image(icon, ImVec2(16, 16));
+  CherryGUI::SameLine();
 
-  ImGui::SetCursorPosY(textPos.y);
-  ImGui::TextUnformatted(label);
+  CherryGUI::SetCursorPosY(textPos.y);
+  CherryGUI::TextUnformatted(label);
 
-  ImGui::PopID();
+  CherryGUI::PopID();
 
   return open;
 }
@@ -464,17 +464,17 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
       elements.push_back(segment);
   }
 
-  float availableWidth = ImGui::GetContentRegionAvail().x;
+  float availableWidth = CherryGUI::GetContentRegionAvail().x;
   float synthStart = 0.5f;
   float maxWidth = (std::max)(availableWidth * synthStart, 100.0f);
 
   float totalWidth = 0.0f;
-  const float sepWidth = ImGui::CalcTextSize("/").x;
-  const float ellipsisWidth = ImGui::CalcTextSize("...").x;
+  const float sepWidth = CherryGUI::CalcTextSize("/").x;
+  const float ellipsisWidth = CherryGUI::CalcTextSize("...").x;
 
   std::vector<float> widths;
   for (const auto &el : elements)
-    widths.push_back(ImGui::CalcTextSize(el.c_str()).x);
+    widths.push_back(CherryGUI::CalcTextSize(el.c_str()).x);
 
   for (float w : widths)
     totalWidth += w + sepWidth;
@@ -508,13 +508,13 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
   CherryStyle::AddMarginX(5.0f);
   if (FirstPathPartIsHome) {
     CherryStyle::AddMarginY(8.0f);
-    ImGui::Image(Cherry::GetTexture(Cherry::GetPath(
+    CherryGUI::Image(Cherry::GetTexture(Cherry::GetPath(
                      "resources/imgs/icons/misc/icon_home.png")),
                  ImVec2(15.0f, 15.0f));
     CherryStyle::RemoveMarginY(11.0f);
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-    ImGui::TextUnformatted(separator.c_str());
-    ImGui::PopStyleColor();
+    CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+    CherryGUI::TextUnformatted(separator.c_str());
+    CherryGUI::PopStyleColor();
     CherryStyle::AddMarginY(11.0f);
     CherryStyle::RemoveMarginY(8.0f);
   }
@@ -527,20 +527,20 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
     CherryStyle::AddMarginY(8.0f);
 
     if (el == "...") {
-      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
       CherryStyle::RemoveMarginY(12.0f);
-      ImGui::TextUnformatted("...");
+      CherryGUI::TextUnformatted("...");
       CherryStyle::AddMarginY(12.0f);
-      ImGui::PopStyleColor();
+      CherryGUI::PopStyleColor();
 
-      if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+      if (CherryGUI::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
         std::string hidden;
         for (size_t k = 1; k < elements.size() - 3; ++k) {
           if (k != 1)
             hidden += separator;
           hidden += elements[k];
         }
-        ImGui::SetTooltip("%s", hidden.c_str());
+        CherryGUI::SetTooltip("%s", hidden.c_str());
       }
     } else {
       auto buttonId = this->GetAppWindow()->m_IdName + el + std::to_string(i);
@@ -567,15 +567,15 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
 
         for (auto &item : item_paths) {
           if (test_path == item.first) {
-            ImVec2 min = ImGui::GetItemRectMin();
-            ImVec2 max = ImGui::GetItemRectMax();
+            ImVec2 min = CherryGUI::GetItemRectMin();
+            ImVec2 max = CherryGUI::GetItemRectMax();
 
             ImVec2 p1(min.x, max.y + 1.0f);
             ImVec2 p2(max.x, max.y + 1.0f);
 
             ImU32 color = Cherry::HexToImU32(item.second);
 
-            ImGui::GetWindowDrawList()->AddLine(p1, p2, color, 2.0f);
+            CherryGUI::GetWindowDrawList()->AddLine(p1, p2, color, 2.0f);
             break;
           }
         }
@@ -585,9 +585,9 @@ void ContentBrowserAppWindow::DrawPathBar(const std::string &path) {
     CherryStyle::RemoveMarginY(8.0f);
     CherryStyle::RemoveMarginY(3.0f);
     if (i < displayElements.size() - 1) {
-      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1));
-      ImGui::TextUnformatted(separator.c_str());
-      ImGui::PopStyleColor();
+      CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1));
+      CherryGUI::TextUnformatted(separator.c_str());
+      CherryGUI::PopStyleColor();
     }
     CherryStyle::AddMarginY(3.0f);
   }
@@ -626,7 +626,7 @@ void ContentBrowserAppWindow::RefreshPools() {
 }
 
 void ContentBrowserAppWindow::RenderRightMenubar() {
-  ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
+  CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
 
   {
     CherryNextComponent.SetProperty("padding_y", "6.0f");
@@ -829,15 +829,15 @@ void ContentBrowserAppWindow::RenderMenubar() {
       GetLocale("loc.window.content.content_browser.import"),
       GetPath("resources/imgs/icons/misc/icon_import.png"));
 
-  ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-  ImGui::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444AA"));
-  ImGui::Separator();
-  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
+  CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+  CherryGUI::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444AA"));
+  CherryGUI::Separator();
+  CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
 
   static bool wasButtonX1Pressed = false;
   static bool wasButtonX2Pressed = false;
 
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
+  CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 1.0f);
   if (m_BackHistory.empty()) {
     CherryNextComponent.SetProperty("color_border", "#00000000");
     CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
@@ -901,11 +901,11 @@ void ContentBrowserAppWindow::RenderMenubar() {
     wasButtonX2Pressed = isButtonX2Pressed;
   }
 
-  ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1.5f);
-  ImGui::PopStyleVar();
+  CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 1.5f);
+  CherryGUI::PopStyleVar();
 
-  ImGui::Separator();
-  ImGui::PopStyleColor(2);
+  CherryGUI::Separator();
+  CherryGUI::PopStyleColor(2);
 
   this->DrawPathBar(m_CurrentDirectory.string());
 }
@@ -931,14 +931,14 @@ ContentBrowserAppWindow::ContentBrowserAppWindow(
       std::string terminaison = m_Selected.size() >= 0 ? "s" : "";
       std::string label = std::to_string(m_Selected.size()) + " element" +
                           terminaison + " selected.";
-      ImGui::Text(label.c_str());
+      CherryGUI::Text(label.c_str());
     }
 
     if (m_CopySelection.size() > 0) {
       std::string terminaison = m_CopySelection.size() > 0 ? "s" : "";
       std::string label = std::to_string(m_CopySelection.size()) + " element" +
                           terminaison + " copied.";
-      ImGui::Text(label.c_str());
+      CherryGUI::Text(label.c_str());
     }
   });
 
@@ -1137,8 +1137,8 @@ void ContentBrowserAppWindow::FolderButton(
     const std::string &color = "#c2a24c") {
   auto cmp = CherryKit::WidgetFolder(color, size.x, size.y - 2);
   if (cmp.GetData("isClicked") == "true") {
-    if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-        ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+    if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+        CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
       m_Selected.push_back(path);
     } else {
       m_Selected.clear();
@@ -1200,27 +1200,27 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
   float versionBoxWidth = 10.0f;
   float versionBoxHeight = 20.0f;
 
-  float oldFontScale = ImGui::GetFont()->Scale;
-  ImFont *oldFont = ImGui::GetFont();
+  float oldFontScale = CherryGUI::GetFont()->Scale;
+  ImFont *oldFont = CherryGUI::GetFont();
 
   if (selected) {
     bgColor = IM_COL32(80, 80, 240, 255);
     borderColor = IM_COL32(150, 150, 255, 255);
   }
 
-  ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-  float contentWidth = ImGui::GetContentRegionAvail().x;
+  ImVec2 cursorPos = CherryGUI::GetCursorScreenPos();
+  float contentWidth = CherryGUI::GetContentRegionAvail().x;
   ImVec2 cardSize(contentWidth, logoSize + padding * 2 + 10);
 
   std::string button_id = "HorizontalCard_" + path;
-  if (ImGui::InvisibleButton(button_id.c_str(), cardSize)) {
+  if (CherryGUI::InvisibleButton(button_id.c_str(), cardSize)) {
     pressed = true;
   }
 
-  if (ImGui::IsItemHovered()) {
-    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+  if (CherryGUI::IsItemHovered()) {
+    CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-    if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+    if (CherryGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
       if (isFolder) {
         ChangeDirectory(path);
       } else {
@@ -1233,8 +1233,8 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
   bool alt = CherryApp.IsKeyPressed(CherryKey::ALT);
   bool shift = CherryApp.IsKeyPressed(CherryKey::SHIFT);
 
-  bool shortcutRename = ctrl && ImGui::IsKeyPressed(ImGuiKey_R);
-  bool shortcutCut = ctrl && ImGui::IsKeyPressed(ImGuiKey_X);
+  bool shortcutRename = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_R);
+  bool shortcutCut = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_X);
   bool shortcutCutAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
   bool shortcutCopy = ctrl && CherryApp.IsKeyPressed(CherryKey::C);
   bool shortcutCopyAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
@@ -1301,11 +1301,11 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
     }
     m_Selected.clear();
   }
-  if (ImGui::BeginPopupContextItem(("context_" + path).c_str())) {
-    ImGui::GetFont()->Scale = 0.9;
-    ImGui::PushFont(ImGui::GetFont());
+  if (CherryGUI::BeginPopupContextItem(("context_" + path).c_str())) {
+    CherryGUI::GetFont()->Scale = 0.9;
+    CherryGUI::PushFont(CherryGUI::GetFont());
 
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
 
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
     ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
@@ -1328,7 +1328,7 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
     }
 
     for (auto ih : item_handles) {
-      if (ImGui::MenuItem(ih->title.c_str(), ih->description.c_str(),
+      if (CherryGUI::MenuItem(ih->title.c_str(), ih->description.c_str(),
                           Cherry::GetTexture(ih->logo), false)) {
         ih->handler(path);
       }
@@ -1336,24 +1336,24 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
 
     CherryKit::SeparatorText("Main");
 
-    ImGui::GetFont()->Scale = oldFontScale;
-    ImGui::PopFont();
+    CherryGUI::GetFont()->Scale = oldFontScale;
+    CherryGUI::PopFont();
 
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
 
     if (item_ident) {
-      if (ImGui::MenuItem(
+      if (CherryGUI::MenuItem(
               "Open item", "",
               Cherry::GetTexture(Cherry::GetPath(
                   "resources/imgs/icons/misc/icon_foldersearch.png")),
               NULL)) {
         ChangeDirectory(path);
         item_paths.push_back({path, item_ident->m_LineColor});
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
     }
 
-    if (ImGui::MenuItem("Copy", "Ctrl + C",
+    if (CherryGUI::MenuItem("Copy", "Ctrl + C",
                         Cherry::GetTexture(Cherry::GetPath(
                             "resources/imgs/icons/misc/icon_copy.png")),
                         NULL)) {
@@ -1362,13 +1362,13 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
       }
 
       m_Selected.clear();
-      ImGui::CloseCurrentPopup();
+      CherryGUI::CloseCurrentPopup();
     }
 
     if (m_Selected.size() > 0) {
       std::string label =
           "Copy in addition (" + std::to_string(m_Selected.size()) + " copies)";
-      if (ImGui::MenuItem(label.c_str(), "Ctrl + C",
+      if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_copy.png")),
                           NULL)) {
@@ -1377,38 +1377,38 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
         }
 
         m_Selected.clear();
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
     }
-    if (ImGui::MenuItem("Cut", "Ctrl + X",
+    if (CherryGUI::MenuItem("Cut", "Ctrl + X",
                         Cherry::GetTexture(Cherry::GetPath(
                             "resources/imgs/icons/misc/icon_cut.png")),
                         NULL)) {
       ChangeDirectory(path);
-      ImGui::CloseCurrentPopup();
+      CherryGUI::CloseCurrentPopup();
     }
 
     CherryKit::SeparatorText("Customize");
 
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
 
-    if (ImGui::MenuItem("Change color", "Ctrl + X",
+    if (CherryGUI::MenuItem("Change color", "Ctrl + X",
                         Cherry::GetTexture(Cherry::GetPath(
                             "resources/imgs/icons/misc/icon_palette.png")),
                         NULL)) {
       //
     }
-    if (ImGui::MenuItem("Mark as favorite", "Ctrl + X",
+    if (CherryGUI::MenuItem("Mark as favorite", "Ctrl + X",
                         Cherry::GetTexture(Cherry::GetPath(
                             "resources/imgs/icons/misc/icon_heart.png")),
                         NULL)) {
       //
     }
 
-    ImGui::EndPopup();
+    CherryGUI::EndPopup();
   }
 
-  ImDrawList *drawList = ImGui::GetWindowDrawList();
+  ImDrawList *drawList = CherryGUI::GetWindowDrawList();
 
   drawList->AddRectFilled(
       cursorPos, ImVec2(cursorPos.x + cardSize.x, cursorPos.y + cardSize.y),
@@ -1426,48 +1426,48 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
   ImVec2 textPos(logoEnd.x + padding, cursorPos.y + padding);
   float textWidth = contentWidth - logoSize - padding * 3 - versionBoxWidth;
 
-  ImGui::SetCursorScreenPos(textPos);
-  ImGui::GetFont()->Scale = 0.9;
-  ImGui::PushFont(ImGui::GetFont());
+  CherryGUI::SetCursorScreenPos(textPos);
+  CherryGUI::GetFont()->Scale = 0.9;
+  CherryGUI::PushFont(CherryGUI::GetFont());
 
-  ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
-  ImGui::PushItemWidth(textWidth);
+  CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
+  CherryGUI::PushItemWidth(textWidth);
 
   static std::unordered_map<std::string, char[256]> renameBuffers;
   if (pathToRename == path) {
-    ImGui::PushID(path.c_str());
+    CherryGUI::PushID(path.c_str());
     auto &buffer = renameBuffers[path];
     if (buffer[0] == '\0') {
       std::strncpy(buffer, name.c_str(), sizeof(buffer));
     }
-    if (ImGui::InputText("##rename_input", buffer, sizeof(buffer),
+    if (CherryGUI::InputText("##rename_input", buffer, sizeof(buffer),
                          ImGuiInputTextFlags_EnterReturnsTrue)) {
       VortexMaker::SubmitRename(pathToRename, buffer);
       renameBuffers.erase(pathToRename);
       pathToRename.clear();
     }
-    ImGui::PopID();
+    CherryGUI::PopID();
   } else {
-    ImGui::TextWrapped("%s", name.c_str());
+    CherryGUI::TextWrapped("%s", name.c_str());
   }
 
-  ImGui::PopItemWidth();
-  ImGui::PopStyleColor();
-  ImGui::GetFont()->Scale = oldFontScale;
-  ImGui::PopFont();
+  CherryGUI::PopItemWidth();
+  CherryGUI::PopStyleColor();
+  CherryGUI::GetFont()->Scale = oldFontScale;
+  CherryGUI::PopFont();
 
   ImVec2 descPos(textPos.x, textPos.y + 20);
-  ImGui::SetCursorScreenPos(descPos);
-  ImGui::GetFont()->Scale = 0.7;
-  ImGui::PushFont(ImGui::GetFont());
+  CherryGUI::SetCursorScreenPos(descPos);
+  CherryGUI::GetFont()->Scale = 0.7;
+  CherryGUI::PushFont(CherryGUI::GetFont());
 
-  ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 180, 180, 255));
-  ImGui::PushItemWidth(textWidth);
-  ImGui::TextWrapped("%s", description.c_str());
-  ImGui::PopItemWidth();
-  ImGui::PopStyleColor();
-  ImGui::GetFont()->Scale = oldFontScale;
-  ImGui::PopFont();
+  CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 180, 180, 255));
+  CherryGUI::PushItemWidth(textWidth);
+  CherryGUI::TextWrapped("%s", description.c_str());
+  CherryGUI::PopItemWidth();
+  CherryGUI::PopStyleColor();
+  CherryGUI::GetFont()->Scale = oldFontScale;
+  CherryGUI::PopFont();
 
   float lineOffset = versionBoxWidth + padding * 1.5f;
   ImVec2 lineStart(cursorPos.x + cardSize.x - lineOffset,
@@ -1483,7 +1483,7 @@ bool ContentBrowserAppWindow::HorizontalItemCard(
       ImVec2(versionPos.x + versionBoxWidth, versionPos.y + versionBoxHeight),
       IM_COL32(0, 0, 0, 255), borderRadius);
 
-  ImGui::SetCursorScreenPos(
+  CherryGUI::SetCursorScreenPos(
       ImVec2(cursorPos.x, cursorPos.y + cardSize.y + padding));
   return pressed;
 }
@@ -1507,7 +1507,7 @@ bool ContentBrowserAppWindow::ItemCard(
   float versionBoxHeight = 20.0f;
   float thumbnailIconOffsetY = 30.0f;
 
-  float oldfontsize = ImGui::GetFont()->Scale;
+  float oldfontsize = CherryGUI::GetFont()->Scale;
 
   if (selected) {
     bgColor = IM_COL32(80, 80, 240, 255);
@@ -1519,9 +1519,9 @@ bool ContentBrowserAppWindow::ItemCard(
   const char *originalText = name.c_str();
   std::string truncatedText = name;
 
-  if (ImGui::CalcTextSize(originalText).x > maxTextWidth) {
+  if (CherryGUI::CalcTextSize(originalText).x > maxTextWidth) {
     truncatedText = name.substr(0, 20);
-    if (ImGui::CalcTextSize(truncatedText.c_str()).x > maxTextWidth) {
+    if (CherryGUI::CalcTextSize(truncatedText.c_str()).x > maxTextWidth) {
       truncatedText = name.substr(0, 10) + "\n" + name.substr(10, 10);
     }
   } else {
@@ -1531,15 +1531,15 @@ bool ContentBrowserAppWindow::ItemCard(
   ImVec2 fixedSize(maxTextWidth + padding * 2,
                    logoSize + extraHeight + padding * 2);
 
-  ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+  ImVec2 cursorPos = CherryGUI::GetCursorScreenPos();
 
   std::string button_id = name + "squareButtonWithText" + name;
-  if (ImGui::InvisibleButton(button_id.c_str(), fixedSize)) {
+  if (CherryGUI::InvisibleButton(button_id.c_str(), fixedSize)) {
     pressed = true;
   }
 
-  if (ImGui::IsItemHovered()) {
-    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+  if (CherryGUI::IsItemHovered()) {
+    CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
   }
 
   ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
@@ -1547,11 +1547,11 @@ bool ContentBrowserAppWindow::ItemCard(
   ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
   ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
-  ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+  CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
 
-  ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+  CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
 
-  ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+  CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 
   static bool open_deletion_modal = false;
 
@@ -1559,32 +1559,32 @@ bool ContentBrowserAppWindow::ItemCard(
   static std::string delete_single_file_path = "";
 
   if (open_deletion_modal) {
-    ImGui::SetNextWindowSize(ImVec2(300, 200));
+    CherryGUI::SetNextWindowSize(ImVec2(300, 200));
 
     static ImGuiTableFlags window_flags = ImGuiWindowFlags_NoResize;
-    if (ImGui::BeginPopupModal("Delete file(s)", 0, window_flags)) {
+    if (CherryGUI::BeginPopupModal("Delete file(s)", 0, window_flags)) {
       static char path_input_all[512];
 
       if (delete_single_file) {
-        ImGui::TextWrapped("WARNING, one file");
+        CherryGUI::TextWrapped("WARNING, one file");
       } else {
-        ImGui::TextWrapped("WARNING, if you click on the Delete button, the "
+        CherryGUI::TextWrapped("WARNING, if you click on the Delete button, the "
                            "project will be erase forever.");
       }
 
-      ImGui::SetItemDefaultFocus();
+      CherryGUI::SetItemDefaultFocus();
 
-      if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+      if (CherryGUI::Button("Cancel", ImVec2(120, 0))) {
         open_deletion_modal = false;
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
-      ImGui::SameLine();
-      ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.2f, 0.2f, 0.9f));
-      ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+      CherryGUI::SameLine();
+      CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.2f, 0.2f, 0.9f));
+      CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered,
                             ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
-      ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+      CherryGUI::PushStyleColor(ImGuiCol_ButtonActive,
                             ImVec4(1.0f, 0.2f, 0.2f, 1.8f));
-      if (ImGui::Button("Delete", ImVec2(120, 0))) {
+      if (CherryGUI::Button("Delete", ImVec2(120, 0))) {
         if (delete_single_file) {
           if (m_DeletePathCallback) {
             m_DeletePathCallback(delete_single_file_path);
@@ -1598,17 +1598,17 @@ bool ContentBrowserAppWindow::ItemCard(
         }
 
         open_deletion_modal = false;
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
-      ImGui::PopStyleColor(3);
-      ImGui::EndPopup();
+      CherryGUI::PopStyleColor(3);
+      CherryGUI::EndPopup();
     }
   }
   if (open_deletion_modal)
-    ImGui::OpenPopup("Delete file(s)");
+    CherryGUI::OpenPopup("Delete file(s)");
 
-  if (ImGui::IsItemHovered() &&
-      ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+  if (CherryGUI::IsItemHovered() &&
+      CherryGUI::IsMouseReleased(ImGuiMouseButton_Right)) {
     m_Selected.push_back(path);
   }
 
@@ -1616,8 +1616,8 @@ bool ContentBrowserAppWindow::ItemCard(
   bool alt = CherryApp.IsKeyPressed(CherryKey::ALT);
   bool shift = CherryApp.IsKeyPressed(CherryKey::SHIFT);
 
-  bool shortcutRename = ctrl && ImGui::IsKeyPressed(ImGuiKey_R);
-  bool shortcutCut = ctrl && ImGui::IsKeyPressed(ImGuiKey_X);
+  bool shortcutRename = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_R);
+  bool shortcutCut = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_X);
   bool shortcutCutAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
   bool shortcutCopy = ctrl && CherryApp.IsKeyPressed(CherryKey::C);
   bool shortcutCopyAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
@@ -1685,11 +1685,11 @@ bool ContentBrowserAppWindow::ItemCard(
     m_Selected.clear();
   }
   item_context_menu_opened = false;
-  if (ImGui::BeginPopupContextItem("ThumbmailsItemContextPopup")) {
-    ImGui::GetFont()->Scale = 0.9;
-    ImGui::PushFont(ImGui::GetFont());
+  if (CherryGUI::BeginPopupContextItem("ThumbmailsItemContextPopup")) {
+    CherryGUI::GetFont()->Scale = 0.9;
+    CherryGUI::PushFont(CherryGUI::GetFont());
 
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
 
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
     ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
@@ -1712,7 +1712,7 @@ bool ContentBrowserAppWindow::ItemCard(
     }
 
     for (auto ih : item_handles) {
-      if (ImGui::MenuItem(ih->title.c_str(), ih->description.c_str(),
+      if (CherryGUI::MenuItem(ih->title.c_str(), ih->description.c_str(),
                           Cherry::GetTexture(ih->logo), false)) {
         ih->handler(path);
       }
@@ -1720,24 +1720,24 @@ bool ContentBrowserAppWindow::ItemCard(
 
     CherryKit::SeparatorText("Main");
 
-    ImGui::GetFont()->Scale = oldfontsize;
-    ImGui::PopFont();
+    CherryGUI::GetFont()->Scale = oldfontsize;
+    CherryGUI::PopFont();
 
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
 
     if (item_ident) {
-      if (ImGui::MenuItem(
+      if (CherryGUI::MenuItem(
               "Open item", "",
               Cherry::GetTexture(Cherry::GetPath(
                   "resources/imgs/icons/misc/icon_foldersearch.png")),
               NULL)) {
         ChangeDirectory(path);
         item_paths.push_back({path, item_ident->m_LineColor});
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
     }
 
-    if (ImGui::MenuItem("Copy", "Ctrl + C",
+    if (CherryGUI::MenuItem("Copy", "Ctrl + C",
                         Cherry::GetTexture(Cherry::GetPath(
                             "resources/imgs/icons/misc/icon_copy.png")),
                         NULL)) {
@@ -1746,13 +1746,13 @@ bool ContentBrowserAppWindow::ItemCard(
       }
 
       m_Selected.clear();
-      ImGui::CloseCurrentPopup();
+      CherryGUI::CloseCurrentPopup();
     }
 
     if (m_Selected.size() > 0) {
       std::string label =
           "Copy in addition (" + std::to_string(m_Selected.size()) + " copies)";
-      if (ImGui::MenuItem(label.c_str(), "Ctrl + C",
+      if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_copy.png")),
                           NULL)) {
@@ -1761,44 +1761,44 @@ bool ContentBrowserAppWindow::ItemCard(
         }
 
         m_Selected.clear();
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
     }
-    if (ImGui::MenuItem("Cut", "Ctrl + X",
+    if (CherryGUI::MenuItem("Cut", "Ctrl + X",
                         Cherry::GetTexture(Cherry::GetPath(
                             "resources/imgs/icons/misc/icon_cut.png")),
                         NULL)) {
       ChangeDirectory(path);
-      ImGui::CloseCurrentPopup();
+      CherryGUI::CloseCurrentPopup();
     }
 
     CherryKit::SeparatorText("Customize");
 
-    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
 
-    if (ImGui::MenuItem("Change color", "Ctrl + X",
+    if (CherryGUI::MenuItem("Change color", "Ctrl + X",
                         Cherry::GetTexture(Cherry::GetPath(
                             "resources/imgs/icons/misc/icon_palette.png")),
                         NULL)) {
       //
     }
-    if (ImGui::MenuItem("Mark as favorite", "Ctrl + X",
+    if (CherryGUI::MenuItem("Mark as favorite", "Ctrl + X",
                         Cherry::GetTexture(Cherry::GetPath(
                             "resources/imgs/icons/misc/icon_heart.png")),
                         NULL)) {
       //
     }
 
-    ImGui::EndPopup();
+    CherryGUI::EndPopup();
   }
 
   if (!item_context_menu_opened) {
     item_handles.clear();
   }
-  /*if (ImGui::BeginPopupContextItem("ContextPopup")) {
+  /*if (CherryGUI::BeginPopupContextItem("ContextPopup")) {
     CherryKit::SeparatorText("Main");
 
-    if (ImGui::MenuItem("Rename", "Ctrl + R")) {
+    if (CherryGUI::MenuItem("Rename", "Ctrl + R")) {
       pathToRename = path;
     }
 
@@ -1806,7 +1806,7 @@ bool ContentBrowserAppWindow::ItemCard(
       std::string label =
           "Cut (" + std::to_string(m_Selected.size()) + ") selected";
 
-      if (ImGui::MenuItem(label.c_str(), "Ctrl + X")) {
+      if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
         if (m_CutPathsCallback) {
           m_CopySelection.clear();
           m_CutSelection.clear();
@@ -1818,14 +1818,14 @@ bool ContentBrowserAppWindow::ItemCard(
 
         m_Selected.clear();
 
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
     }
 
     if (m_CutSelection.size() > 0) {
       std::string label = "Cut in addition (" +
                           std::to_string(m_CutSelection.size()) + " copies)";
-      if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
+      if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
         if (m_CutPathsCallback) {
           m_CopySelection.clear();
           m_CutPathsCallback(m_Selected, true);
@@ -1835,7 +1835,7 @@ bool ContentBrowserAppWindow::ItemCard(
           }
         }
         m_Selected.clear();
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
     }
 
@@ -1843,7 +1843,7 @@ bool ContentBrowserAppWindow::ItemCard(
       std::string label =
           "Copy (" + std::to_string(m_Selected.size()) + ") selected";
 
-      if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
+      if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
         if (m_CopyPathsCallback) {
           m_CopySelection.clear();
           m_CutSelection.clear();
@@ -1855,14 +1855,14 @@ bool ContentBrowserAppWindow::ItemCard(
 
         m_Selected.clear();
 
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
     }
 
     if (m_CopySelection.size() > 0) {
       std::string label = "Copy in addition (" +
                           std::to_string(m_CopySelection.size()) + " copies)";
-      if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+      if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
         if (m_CopyPathsCallback) {
           m_CutSelection.clear();
           m_CopyPathsCallback(m_Selected, true);
@@ -1872,22 +1872,22 @@ bool ContentBrowserAppWindow::ItemCard(
           }
         }
         m_Selected.clear();
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
     }
 
-    if (ImGui::MenuItem("Delete", "Suppr")) {
+    if (CherryGUI::MenuItem("Delete", "Suppr")) {
       if (m_DeletePathCallback) {
         m_DeletePathCallback(path);
       }
       m_Selected.clear();
-      ImGui::CloseCurrentPopup();
+      CherryGUI::CloseCurrentPopup();
     }
 
     if (m_Selected.size() > 1) {
       std::string label =
           "Delete (" + std::to_string(m_Selected.size()) + " selected)";
-      if (ImGui::MenuItem(label.c_str(), "Alt + Suppr")) {
+      if (CherryGUI::MenuItem(label.c_str(), "Alt + Suppr")) {
         if (m_DeletePathCallback) {
           for (auto &path : m_Selected) {
             m_DeletePathCallback(path);
@@ -1895,20 +1895,20 @@ bool ContentBrowserAppWindow::ItemCard(
         }
         m_Selected.clear();
 
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
     }
 
     CherryKit::SeparatorText("Customizations");
 
-    ImGui::EndPopup();
+    CherryGUI::EndPopup();
   }
 */
 
-  ImGui::PopStyleVar();
-  ImGui::PopStyleColor(2);
+  CherryGUI::PopStyleVar();
+  CherryGUI::PopStyleColor(2);
 
-  ImDrawList *drawList = ImGui::GetWindowDrawList();
+  ImDrawList *drawList = CherryGUI::GetWindowDrawList();
 
   drawList->AddRectFilled(
       cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y),
@@ -1928,7 +1928,7 @@ bool ContentBrowserAppWindow::ItemCard(
   ImVec2 sizePos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y +
                                                      thumbnailIconOffsetY - 20 +
                                                      textOffsetY);
-  ImGui::SetCursorScreenPos(sizePos);
+  CherryGUI::SetCursorScreenPos(sizePos);
 
   static ImTextureID logotexture =
       Application::GetCurrentRenderedWindow()->get_texture(logo);
@@ -1936,16 +1936,16 @@ bool ContentBrowserAppWindow::ItemCard(
       logotexture, logoPos,
       ImVec2(logoPos.x + squareSize.x, logoPos.y + squareSize.y));
 
-  ImGui::GetFont()->Scale = 0.7;
-  ImGui::PushFont(ImGui::GetFont());
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-  ImGui::PushItemWidth(maxTextWidth);
-  ImGui::TextWrapped(size.c_str());
-  ImGui::PopItemWidth();
-  ImGui::PopStyleColor();
+  CherryGUI::GetFont()->Scale = 0.7;
+  CherryGUI::PushFont(CherryGUI::GetFont());
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+  CherryGUI::PushItemWidth(maxTextWidth);
+  CherryGUI::TextWrapped(size.c_str());
+  CherryGUI::PopItemWidth();
+  CherryGUI::PopStyleColor();
 
-  ImGui::GetFont()->Scale = oldfontsize;
-  ImGui::PopFont();
+  CherryGUI::GetFont()->Scale = oldfontsize;
+  CherryGUI::PopFont();
 
   ImVec2 lineStart =
       ImVec2(cursorPos.x, cursorPos.y + squareSize.y + thumbnailIconOffsetY +
@@ -1955,34 +1955,34 @@ bool ContentBrowserAppWindow::ItemCard(
                               separatorHeight);
   drawList->AddLine(lineStart, lineEnd, lineColor, separatorHeight);
 
-  ImGui::GetFont()->Scale = 0.9;
-  ImGui::PushFont(ImGui::GetFont());
+  CherryGUI::GetFont()->Scale = 0.9;
+  CherryGUI::PushFont(CherryGUI::GetFont());
 
   ImVec2 textPos =
       ImVec2(cursorPos.x + padding,
              cursorPos.y + squareSize.y + thumbnailIconOffsetY + textOffsetY);
-  ImGui::SetCursorScreenPos(textPos);
-  ImGui::PushItemWidth(maxTextWidth);
+  CherryGUI::SetCursorScreenPos(textPos);
+  CherryGUI::PushItemWidth(maxTextWidth);
   ImU32 textColor = IM_COL32(255, 255, 255, 255);
   ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
   ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
   static std::unordered_map<std::string, char[256]> renameBuffers;
 
   if (pathToRename == path) {
-    ImGui::SetItemAllowOverlap();
-    ImGui::PushID(path.c_str());
+    CherryGUI::SetItemAllowOverlap();
+    CherryGUI::PushID(path.c_str());
 
     auto &buffer = renameBuffers[path];
     if (buffer[0] == '\0') {
       std::string filename = path.substr(path.find_last_of("/\\") + 1);
       std::strncpy(buffer, filename.c_str(), sizeof(buffer));
       buffer[sizeof(buffer) - 1] = '\0';
-      ImGui::SetKeyboardFocusHere();
+      CherryGUI::SetKeyboardFocusHere();
     }
 
     ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
     bool renamed =
-        ImGui::InputText("##rename_input", buffer, sizeof(buffer), flags);
+        CherryGUI::InputText("##rename_input", buffer, sizeof(buffer), flags);
 
     bool renameConfirmed = false;
     bool renameCancelled = false;
@@ -1991,11 +1991,11 @@ bool ContentBrowserAppWindow::ItemCard(
       renameConfirmed = true;
     }
 
-    if (!ImGui::IsItemActive() && ImGui::IsItemDeactivatedAfterEdit()) {
+    if (!CherryGUI::IsItemActive() && CherryGUI::IsItemDeactivatedAfterEdit()) {
       renameConfirmed = true;
     }
 
-    if (ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+    if (CherryGUI::IsItemFocused() && CherryGUI::IsKeyPressed(ImGuiKey_Escape)) {
       renameCancelled = true;
     }
 
@@ -2010,33 +2010,33 @@ bool ContentBrowserAppWindow::ItemCard(
       pathToRename.clear();
     }
 
-    ImGui::PopID();
+    CherryGUI::PopID();
   } else {
     DrawHighlightedText(drawList, textPos, truncatedText.c_str(),
                         ProjectSearch.c_str(), highlightColor, textColor,
                         highlightTextColor);
   }
 
-  ImGui::PopItemWidth();
+  CherryGUI::PopItemWidth();
 
-  ImGui::GetFont()->Scale = oldfontsize;
-  ImGui::PopFont();
+  CherryGUI::GetFont()->Scale = oldfontsize;
+  CherryGUI::PopFont();
 
   ImVec2 descriptionPos = ImVec2(cursorPos.x + padding,
                                  cursorPos.y + squareSize.y +
                                      thumbnailIconOffsetY + 35 + textOffsetY);
-  ImGui::SetCursorScreenPos(descriptionPos);
+  CherryGUI::SetCursorScreenPos(descriptionPos);
 
-  ImGui::GetFont()->Scale = 0.7;
-  ImGui::PushFont(ImGui::GetFont());
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-  ImGui::PushItemWidth(maxTextWidth);
-  ImGui::TextWrapped(description.c_str());
-  ImGui::PopItemWidth();
-  ImGui::PopStyleColor();
+  CherryGUI::GetFont()->Scale = 0.7;
+  CherryGUI::PushFont(CherryGUI::GetFont());
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+  CherryGUI::PushItemWidth(maxTextWidth);
+  CherryGUI::TextWrapped(description.c_str());
+  CherryGUI::PopItemWidth();
+  CherryGUI::PopStyleColor();
 
-  ImGui::GetFont()->Scale = oldfontsize;
-  ImGui::PopFont();
+  CherryGUI::GetFont()->Scale = oldfontsize;
+  CherryGUI::PopFont();
 
   ImVec2 smallRectPos =
       ImVec2(cursorPos.x + fixedSize.x - versionBoxWidth - padding,
@@ -2047,11 +2047,11 @@ bool ContentBrowserAppWindow::ItemCard(
                           IM_COL32(0, 0, 0, 255), borderRadius);
 
   float windowVisibleX2 =
-      ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+      CherryGUI::GetWindowPos().x + CherryGUI::GetWindowContentRegionMax().x;
   if (cursorPos.x + fixedSize.x < windowVisibleX2)
-    ImGui::SameLine();
+    CherryGUI::SameLine();
 
-  ImGui::SetCursorScreenPos(
+  CherryGUI::SetCursorScreenPos(
       ImVec2(cursorPos.x, cursorPos.y + fixedSize.y + padding));
 
   return pressed;
@@ -2059,7 +2059,7 @@ bool ContentBrowserAppWindow::ItemCard(
 
 void ContentBrowserAppWindow::DrawFolderIcon(ImVec2 pos, ImVec2 size,
                                              ImU32 color) {
-  ImDrawList *drawList = ImGui::GetWindowDrawList();
+  ImDrawList *drawList = CherryGUI::GetWindowDrawList();
 
   float folderFlapHeight = size.y * 0.2f;
   float flapSlopeWidth = size.x * 0.15f;
@@ -2099,11 +2099,11 @@ void ContentBrowserAppWindow::DrawFolderIcon(ImVec2 pos, ImVec2 size,
 void ContentBrowserAppWindow::MyFolderButton(const char *id, ImVec2 size,
                                              ImU32 color,
                                              const std::string &path) {
-  ImVec2 pos = ImGui::GetCursorScreenPos();
+  ImVec2 pos = CherryGUI::GetCursorScreenPos();
 
-  ImGui::InvisibleButton(id, size);
-  if (ImGui::IsItemHovered() &&
-      ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+  CherryGUI::InvisibleButton(id, size);
+  if (CherryGUI::IsItemHovered() &&
+      CherryGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
     ChangeDirectory(path);
   }
 
@@ -2115,24 +2115,24 @@ void ContentBrowserAppWindow::MyFolderButton(const char *id, ImVec2 size,
 
   DrawFolderIcon(iconPos, size, color);
 
-  if (ImGui::IsItemHovered()) {
-    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+  if (CherryGUI::IsItemHovered()) {
+    CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
   }
 }
 
 void WidgetFolderT(const std::string &colorHex, float width, float height,
                    ImVec2 pos) {
-  ImDrawList *drawList = ImGui::GetWindowDrawList();
+  ImDrawList *drawList = CherryGUI::GetWindowDrawList();
   ImU32 color = HexToImU32(colorHex);
 
   float flapHeight = height * 0.2f;
   float flapWidth = width * 0.4f;
   float borderRadius = height * 0.05f;
 
-  ImVec4 colVec = ImGui::ColorConvertU32ToFloat4(color);
-  ImU32 flapColor = ImGui::ColorConvertFloat4ToU32(
+  ImVec4 colVec = CherryGUI::ColorConvertU32ToFloat4(color);
+  ImU32 flapColor = CherryGUI::ColorConvertFloat4ToU32(
       ImVec4(colVec.x * 0.8f, colVec.y * 0.8f, colVec.z * 0.8f, colVec.w));
-  ImU32 shadowColor = ImGui::ColorConvertFloat4ToU32(ImVec4(
+  ImU32 shadowColor = CherryGUI::ColorConvertFloat4ToU32(ImVec4(
       colVec.x * 0.7f, colVec.y * 0.7f, colVec.z * 0.7f, colVec.w * 0.2f));
 
   ImVec2 flapTopLeft = ImVec2(pos.x + width * 0.001f, pos.y - 1.0f);
@@ -2174,12 +2174,12 @@ void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path,
                                      ImGuiTreeNodeFlags_SpanAvailWidth |
                                      ImGuiTreeNodeFlags_FramePadding;
 
-  ImVec2 nodePos = ImGui::GetCursorScreenPos();
+  ImVec2 nodePos = CherryGUI::GetCursorScreenPos();
 
-  bool opened = ImGui::TreeNodeEx(unique_id.c_str(), treeNodeFlags, "%s",
+  bool opened = CherryGUI::TreeNodeEx(unique_id.c_str(), treeNodeFlags, "%s",
                                   tree_label.c_str());
 
-  ImVec2 itemSize = ImGui::GetItemRectSize();
+  ImVec2 itemSize = CherryGUI::GetItemRectSize();
   ImVec2 iconSize = ImVec2(12, 12);
   ImVec2 iconPos =
       ImVec2(nodePos.x + 2.0f, nodePos.y + (itemSize.y - iconSize.y) * 0.5f);
@@ -2187,7 +2187,7 @@ void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path,
   WidgetFolderT(GetContentBrowserFolderColor(path.string()), iconSize.x,
                 iconSize.y, iconPos);
 
-  if (ImGui::IsItemClicked()) {
+  if (CherryGUI::IsItemClicked()) {
     ChangeDirectory(path);
   }
 
@@ -2218,7 +2218,7 @@ void ContentBrowserAppWindow::DrawHierarchy(std::filesystem::path path,
                 << std::endl;
     }
 
-    ImGui::TreePop();
+    CherryGUI::TreePop();
   }
 }
 
@@ -2263,10 +2263,10 @@ void ContentBrowserAppWindow::RenderSideBar() {
       "Pools & Collections",
       Application::CookPath("resources/imgs/icons/misc/icon_collection.png"),
       [this]() {
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 2.0f));
-        ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
+        CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 2.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
         if (!pool_add_mode) {
-          if (ImGui::ImageButtonWithText(
+          if (CherryGUI::ImageButtonWithText(
                   Cherry::GetTexture(Cherry::GetPath(
                       "resources/imgs/icons/misc/icon_add.png")),
                   "Add pool", ImVec2(0, 0), ImVec2(0, 0), ImVec2(1, 1), -1,
@@ -2274,18 +2274,18 @@ void ContentBrowserAppWindow::RenderSideBar() {
             pool_add_mode = true;
           }
         } else {
-          ImGui::Text("Please enter a path");
-          ImGui::SetNextItemWidth(-FLT_MIN);
-          ImGui::Text("Name ");
-          ImGui::SameLine();
-          ImGui::InputText("###AddPoolName", pool_add_name,
+          CherryGUI::Text("Please enter a path");
+          CherryGUI::SetNextItemWidth(-FLT_MIN);
+          CherryGUI::Text("Name ");
+          CherryGUI::SameLine();
+          CherryGUI::InputText("###AddPoolName", pool_add_name,
                            sizeof(pool_add_name));
 
-          ImGui::Text("Path ");
-          ImGui::SameLine();
-          ImGui::InputText("###AddPoolPath", pool_add_path,
+          CherryGUI::Text("Path ");
+          CherryGUI::SameLine();
+          CherryGUI::InputText("###AddPoolPath", pool_add_path,
                            sizeof(pool_add_path));
-          if (ImGui::ImageButtonWithText(
+          if (CherryGUI::ImageButtonWithText(
                   Cherry::GetTexture(Cherry::GetPath(
                       "resources/imgs/icons/misc/icon_add.png")),
                   "Add", ImVec2(0, 0), ImVec2(0, 0), ImVec2(1, 1), -1,
@@ -2294,8 +2294,8 @@ void ContentBrowserAppWindow::RenderSideBar() {
             RefreshPools();
             pool_add_mode = false;
           }
-          ImGui::SameLine();
-          if (ImGui::ImageButtonWithText(
+          CherryGUI::SameLine();
+          if (CherryGUI::ImageButtonWithText(
                   Cherry::GetTexture(Cherry::GetPath(
                       "resources/imgs/icons/misc/icon_return.png")),
                   "Cancel", ImVec2(0, 0), ImVec2(0, 0), ImVec2(1, 1), -1,
@@ -2308,8 +2308,8 @@ void ContentBrowserAppWindow::RenderSideBar() {
           DrawHierarchy(pool.first, true, pool.second);
         }
 
-        ImGui::PopStyleVar();
-        ImGui::PopStyleColor();
+        CherryGUI::PopStyleVar();
+        CherryGUI::PopStyleColor();
       });
 }
 
@@ -2368,11 +2368,11 @@ void ContentBrowserAppWindow::PathChanged() {
 }
 
 void ContentBrowserAppWindow::RenderContentBar() {
-  ImGuiStyle &style = ImGui::GetStyle();
+  ImGuiStyle &style = CherryGUI::GetStyle();
   ImVec4 originalChildBgColor = style.Colors[ImGuiCol_ChildBg];
   ImVec4 originalBorderColor = style.Colors[ImGuiCol_Border];
   ImVec4 originalBorderShadowColor = style.Colors[ImGuiCol_BorderShadow];
-  float oldfontsize = ImGui::GetFont()->Scale;
+  float oldfontsize = CherryGUI::GetFont()->Scale;
 
   style.Colors[ImGuiCol_ChildBg] = ImVec4(0, 0, 0, 0);
   style.Colors[ImGuiCol_Border] = ImVec4(0, 0, 0, 0);
@@ -2380,7 +2380,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
   float cellSize = thumbnailSize + padding;
 
-  float panelWidth = ImGui::GetContentRegionAvail().x;
+  float panelWidth = CherryGUI::GetContentRegionAvail().x;
   int columnCount = (int)(panelWidth / cellSize);
   if (columnCount < 1)
     columnCount = 1;
@@ -2410,7 +2410,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
     CherryKit::Separator();
   }
 
-  ImGui::Spacing();
+  CherryGUI::Spacing();
 
   std::vector<std::filesystem::directory_entry> directories;
   std::vector<std::filesystem::directory_entry> files;
@@ -2465,57 +2465,57 @@ void ContentBrowserAppWindow::RenderContentBar() {
   }
 
   if (m_ShowMode == ContentShowMode::Thumbmails) {
-    ImGui::Columns(columnCount, 0, false);
+    CherryGUI::Columns(columnCount, 0, false);
 
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
     ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
     ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
     ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
-    ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+    CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
 
-    ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+    CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
 
-    ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+    CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 
-    if (ImGui::IsWindowHovered() &&
-        ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+    if (CherryGUI::IsWindowHovered() &&
+        CherryGUI::IsMouseReleased(ImGuiMouseButton_Right)) {
       m_Selected.clear();
-      ImGui::OpenPopup("EmptySpacePopup");
+      CherryGUI::OpenPopup("EmptySpacePopup");
     }
 
-    if (ImGui::IsWindowHovered() &&
-        ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+    if (CherryGUI::IsWindowHovered() &&
+        CherryGUI::IsMouseReleased(ImGuiMouseButton_Left)) {
       m_Selected.clear();
     }
 
-    if (ImGui::BeginPopup("EmptySpacePopup")) {
-      ImGui::GetFont()->Scale = 0.9;
-      ImGui::PushFont(ImGui::GetFont());
+    if (CherryGUI::BeginPopup("EmptySpacePopup")) {
+      CherryGUI::GetFont()->Scale = 0.9;
+      CherryGUI::PushFont(CherryGUI::GetFont());
 
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
 
       CherryKit::SeparatorText("Add");
-      if (ImGui::MenuItem("Add", "Add a component",
+      if (CherryGUI::MenuItem("Add", "Add a component",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_add.png")),
                           NULL)) {
         SpawnAddWindow();
       }
-      if (ImGui::MenuItem("Import", "Import a component",
+      if (CherryGUI::MenuItem("Import", "Import a component",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_import.png")),
                           NULL)) {
       }
 
       CherryKit::SeparatorText("Create");
-      if (ImGui::MenuItem("Create new folder", "Create a folder here",
+      if (CherryGUI::MenuItem("Create new folder", "Create a folder here",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_add_folder.png")),
                           NULL)) {
         CreateFolder();
       }
-      if (ImGui::MenuItem("Create new file", "Create empty file here",
+      if (CherryGUI::MenuItem("Create new file", "Create empty file here",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_add_file.png")),
                           NULL)) {
@@ -2524,7 +2524,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
       CherryKit::SeparatorText("Actions");
 
-      if (ImGui::MenuItem("Paste selection", "Paste selection here",
+      if (CherryGUI::MenuItem("Paste selection", "Paste selection here",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_down.png")),
                           NULL)) {
@@ -2533,20 +2533,20 @@ void ContentBrowserAppWindow::RenderContentBar() {
         }
       }
 
-      if (ImGui::MenuItem("Select All", "Select eveything on this directory",
+      if (CherryGUI::MenuItem("Select All", "Select eveything on this directory",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_stack.png")),
                           NULL)) {
       }
 
-      ImGui::GetFont()->Scale = oldfontsize;
-      ImGui::PopFont();
+      CherryGUI::GetFont()->Scale = oldfontsize;
+      CherryGUI::PopFont();
 
-      ImGui::EndPopup();
+      CherryGUI::EndPopup();
     }
 
-    ImGui::PopStyleVar();
-    ImGui::PopStyleColor(2);
+    CherryGUI::PopStyleVar();
+    CherryGUI::PopStyleColor(2);
 
     if (ShowFolders) {
       for (auto &directoryEntry : directories) {
@@ -2562,7 +2562,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
         if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
             isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
-          ImGui::PushID(filenameString.c_str());
+          CherryGUI::PushID(filenameString.c_str());
 
           bool rename = false;
           if (path.string() == pathToRename) {
@@ -2570,42 +2570,42 @@ void ContentBrowserAppWindow::RenderContentBar() {
           }
 
           if (selected) {
-            ImGui::PushStyleColor(ImGuiCol_Header,
+            CherryGUI::PushStyleColor(ImGuiCol_Header,
                                   ImVec4(0.0f, 0.0f, 1.0f, 0.5f));
-            ImGui::PushStyleColor(ImGuiCol_HeaderHovered,
+            CherryGUI::PushStyleColor(ImGuiCol_HeaderHovered,
                                   ImVec4(0.0f, 0.0f, 1.0f, 0.5f));
-            ImGui::PushStyleColor(ImGuiCol_HeaderActive,
+            CherryGUI::PushStyleColor(ImGuiCol_HeaderActive,
                                   ImVec4(0.0f, 0.0f, 1.0f, 0.5f));
           }
 
           if (selected) {
-            ImGui::PopStyleColor(3);
+            CherryGUI::PopStyleColor(3);
           }
           float reducedThumbnailSize = thumbnailSize * 0.9f;
-          float availableWidth = ImGui::GetContentRegionAvail().x;
+          float availableWidth = CherryGUI::GetContentRegionAvail().x;
           float imageOffsetX = (availableWidth - reducedThumbnailSize) * 0.5f;
 
-          ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-          ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
-          ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
-          ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-          ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+          CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+          CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+          CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+          CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+          CherryGUI::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 
           // Old folder logo
-          /*ImGui::SetCursorPosX(ImGui::GetCursorPosX() + imageOffsetX);
+          /*CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + imageOffsetX);
           addTexture(Folder_Logo, Folder_Logo);
-          ImGui::ImageButton(getTexture(Folder_Logo), {reducedThumbnailSize,
+          CherryGUI::ImageButton(getTexture(Folder_Logo), {reducedThumbnailSize,
           reducedThumbnailSize}, {-1, 0}, {0, 1});
 
-          if (ImGui::IsItemHovered() &&
-          ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+          if (CherryGUI::IsItemHovered() &&
+          CherryGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left))
           {
               ChangeDirectory(path);.string()
           }*/
           CherryStyle::RemoveMarginX(5.0f);
           ImVec2 folderSize(reducedThumbnailSize, reducedThumbnailSize);
           float folderPosX = (availableWidth - folderSize.x) * 0.5f;
-          ImGui::SetCursorPosX(ImGui::GetCursorPosX() + folderPosX);
+          CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + folderPosX);
 
           // GetContentBrowserFolderColor(path.string();
           std::string folder_color = "#c2a24c";
@@ -2622,24 +2622,24 @@ void ContentBrowserAppWindow::RenderContentBar() {
                          GetContentBrowserFolderColor(path.string()));
           }
 
-          float oldsize = ImGui::GetFont()->Scale;
+          float oldsize = CherryGUI::GetFont()->Scale;
 
           ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
           ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
           ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
           ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
-          ImGui::PopStyleVar(2);
-          ImGui::PopStyleColor(3);
+          CherryGUI::PopStyleVar(2);
+          CherryGUI::PopStyleColor(3);
 
-          ImVec2 cursorPos = ImGui::GetCursorPos();
-          float textWidth = ImGui::CalcTextSize(filenameString.c_str()).x;
+          ImVec2 cursorPos = CherryGUI::GetCursorPos();
+          float textWidth = CherryGUI::CalcTextSize(filenameString.c_str()).x;
           float textX = folderPosX + (folderSize.x - textWidth) * 0.5f;
-          ImGui::SetCursorPos(
-              ImVec2(textX + ImGui::GetCursorPosX(), cursorPos.y));
-          // ImGui::TextWrapped(filenameString.c_str());
+          CherryGUI::SetCursorPos(
+              ImVec2(textX + CherryGUI::GetCursorPosX(), cursorPos.y));
+          // CherryGUI::TextWrapped(filenameString.c_str());
 
-          ImDrawList *drawList = ImGui::GetWindowDrawList();
+          ImDrawList *drawList = CherryGUI::GetWindowDrawList();
 
           ImU32 textColor = IM_COL32(255, 255, 255, 255);
           ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
@@ -2647,8 +2647,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
           static std::unordered_map<std::string, char[256]> renameBuffers;
 
           if (pathToRename == path.string()) {
-            ImGui::SetItemAllowOverlap();
-            ImGui::PushID(path.c_str());
+            CherryGUI::SetItemAllowOverlap();
+            CherryGUI::PushID(path.c_str());
 
             auto &buffer = renameBuffers[path.string()];
             if (buffer[0] == '\0') {
@@ -2656,11 +2656,11 @@ void ContentBrowserAppWindow::RenderContentBar() {
                   path.string().substr(path.string().find_last_of("/\\") + 1);
               std::strncpy(buffer, filename.c_str(), sizeof(buffer));
               buffer[sizeof(buffer) - 1] = '\0';
-              ImGui::SetKeyboardFocusHere();
+              CherryGUI::SetKeyboardFocusHere();
             }
 
             ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
-            bool renamed = ImGui::InputText("##rename_input", buffer,
+            bool renamed = CherryGUI::InputText("##rename_input", buffer,
                                             sizeof(buffer), flags);
 
             bool renameConfirmed = false;
@@ -2670,12 +2670,12 @@ void ContentBrowserAppWindow::RenderContentBar() {
               renameConfirmed = true;
             }
 
-            if (!ImGui::IsItemActive() && ImGui::IsItemDeactivatedAfterEdit()) {
+            if (!CherryGUI::IsItemActive() && CherryGUI::IsItemDeactivatedAfterEdit()) {
               renameConfirmed = true;
             }
 
-            if (ImGui::IsItemFocused() &&
-                ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+            if (CherryGUI::IsItemFocused() &&
+                CherryGUI::IsKeyPressed(ImGuiKey_Escape)) {
               renameCancelled = true;
             }
 
@@ -2690,19 +2690,19 @@ void ContentBrowserAppWindow::RenderContentBar() {
               pathToRename.clear();
             }
 
-            ImGui::PopID();
+            CherryGUI::PopID();
           } else {
 
-            DrawHighlightedText(drawList, ImGui::GetCursorScreenPos(),
+            DrawHighlightedText(drawList, CherryGUI::GetCursorScreenPos(),
                                 filenameString.c_str(), ProjectSearch.c_str(),
                                 highlightColor, textColor, highlightTextColor);
           }
 
-          if (ImGui::BeginPopupContextItem("ContextPopup")) {
+          if (CherryGUI::BeginPopupContextItem("ContextPopup")) {
 
             CherryKit::SeparatorText("Main");
 
-            if (ImGui::MenuItem("Rename", "Ctrl + R")) {
+            if (CherryGUI::MenuItem("Rename", "Ctrl + R")) {
               pathToRename = path.string();
             }
 
@@ -2710,7 +2710,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
               std::string label =
                   "Cut (" + std::to_string(m_Selected.size()) + ") selected";
 
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + X")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
                 if (m_CutPathsCallback) {
                   m_CutPathsCallback(m_Selected, true);
                   for (auto &path : m_Selected) {
@@ -2720,7 +2720,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
                 m_Selected.clear();
 
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
@@ -2728,7 +2728,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
               std::string label = "Cut in addition (" +
                                   std::to_string(m_CutSelection.size()) +
                                   " copies)";
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
                 if (m_CutPathsCallback) {
                   m_CutPathsCallback(m_Selected, true);
 
@@ -2737,7 +2737,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
                   }
                 }
                 m_Selected.clear();
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
@@ -2745,7 +2745,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
               std::string label =
                   "Copy (" + std::to_string(m_Selected.size()) + ") selected";
 
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
                 if (m_CopyPathsCallback) {
                   m_CopyPathsCallback(m_Selected, true);
                   for (auto &path : m_Selected) {
@@ -2755,7 +2755,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
                 m_Selected.clear();
 
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
@@ -2763,7 +2763,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
               std::string label = "Copy in addition (" +
                                   std::to_string(m_CopySelection.size()) +
                                   " copies)";
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
                 if (m_CopyPathsCallback) {
                   m_CopyPathsCallback(m_Selected, true);
 
@@ -2772,22 +2772,22 @@ void ContentBrowserAppWindow::RenderContentBar() {
                   }
                 }
                 m_Selected.clear();
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
-            if (ImGui::MenuItem("Delete", "Suppr")) {
+            if (CherryGUI::MenuItem("Delete", "Suppr")) {
               if (m_DeletePathCallback) {
                 m_DeletePathCallback(path.string());
               }
               m_Selected.clear();
-              ImGui::CloseCurrentPopup();
+              CherryGUI::CloseCurrentPopup();
             }
 
             if (m_Selected.size() > 1) {
               std::string label =
                   "Delete (" + std::to_string(m_Selected.size()) + " selected)";
-              if (ImGui::MenuItem(label.c_str(), "Alt + Suppr")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Alt + Suppr")) {
                 if (m_DeletePathCallback) {
                   for (auto &path : m_Selected) {
                     m_DeletePathCallback(path);
@@ -2795,13 +2795,13 @@ void ContentBrowserAppWindow::RenderContentBar() {
                 }
                 m_Selected.clear();
 
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
             CherryKit::SeparatorText("Customizations");
 
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+            CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
 
             static bool EditingColor = false;
             static bool ColorChanged = false;
@@ -2809,7 +2809,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             current_editing_folder_is_favorite =
                 IsPathFavorite(directoryEntry.path().string());
 
-            if (ImGui::BeginMenu("Change color")) {
+            if (CherryGUI::BeginMenu("Change color")) {
               if (!EditingColor) {
                 current_editing_folder = {directoryEntry.path().string(),
                                           Cherry::HexToImU32(folder_color)};
@@ -2837,13 +2837,13 @@ void ContentBrowserAppWindow::RenderContentBar() {
                 ColorChanged = true;
               }
 
-              ImGui::EndMenu();
+              CherryGUI::EndMenu();
             } else {
               EditingColor = false;
               current_editing_folder = {"", ImU32()};
             }
 
-            if (ImGui::MenuItem("Mark as favorite", "",
+            if (CherryGUI::MenuItem("Mark as favorite", "",
                                 current_editing_folder_is_favorite)) {
               current_editing_folder = {directoryEntry.path().string(),
                                         current_editing_folder.second};
@@ -2870,11 +2870,11 @@ void ContentBrowserAppWindow::RenderContentBar() {
               }
             }
 
-            ImGui::EndPopup();
+            CherryGUI::EndPopup();
           }
 
-          ImGui::PopID();
-          ImGui::NextColumn();
+          CherryGUI::PopID();
+          CherryGUI::NextColumn();
         }
       }
     }
@@ -2917,7 +2917,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
           std::uintmax_t folderSize = getDirectorySize(path);
           std::string folderSizeString = formatFileSize(folderSize);
-          ImGui::PushID(filenameString.c_str());
+          CherryGUI::PushID(filenameString.c_str());
 
           if (ItemCard(filenameString, path, itemEntry.first->m_Description,
                        folderSizeString, selected,
@@ -2926,13 +2926,13 @@ void ContentBrowserAppWindow::RenderContentBar() {
                        IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                        Cherry::HexToImU32(itemEntry.first->m_LineColor), 100.0f,
                        5.0f, itemEntry.first)) {
-            if (ImGui::IsMouseDoubleClicked(0)) {
+            if (CherryGUI::IsMouseDoubleClicked(0)) {
               // itemEntry.first->f_Execute(path);
               // VXERROR("te", "tyr");
             }
 
-            if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+            if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
               m_Selected.push_back(path);
             } else {
               m_Selected.clear();
@@ -2940,8 +2940,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
             }
           }
 
-          ImGui::PopID();
-          ImGui::NextColumn();
+          CherryGUI::PopID();
+          CherryGUI::NextColumn();
         }
       }
     }
@@ -2989,7 +2989,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           }
 
           std::string fileSizeString = formatFileSize(fileSize);
-          ImGui::PushID(filenameString.c_str());
+          CherryGUI::PushID(filenameString.c_str());
 
           FileTypes fileType = detect_file(path.string());
 
@@ -3002,8 +3002,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
                         "resources/imgs/icons/files/icon_picture_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(255, 100, 150, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -3019,8 +3019,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
                              "resources/imgs/icons/files/icon_git_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(100, 100, 255, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -3036,8 +3036,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
                              "resources/imgs/icons/files/icon_c_h_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(220, 100, 220, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -3053,8 +3053,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
                              "resources/imgs/icons/files/icon_c_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(100, 100, 255, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -3070,8 +3070,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
                              "resources/imgs/icons/files/icon_cpp_h_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(100, 100, 255, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -3087,8 +3087,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
                              "resources/imgs/icons/files/icon_cpp_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(100, 100, 255, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -3104,8 +3104,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
                              "resources/imgs/icons/files/icon_ini_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(150, 150, 150, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -3121,8 +3121,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
                              "resources/imgs/icons/files/icon_unknow_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(150, 150, 150, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -3132,17 +3132,17 @@ void ContentBrowserAppWindow::RenderContentBar() {
             break;
           }
 
-            ImGui::PopStyleVar(2);
-            ImGui::PopStyleColor(3);
+            CherryGUI::PopStyleVar(2);
+            CherryGUI::PopStyleColor(3);
           }
-          float oldsize = ImGui::GetFont()->Scale;
+          float oldsize = CherryGUI::GetFont()->Scale;
 
-          ImGui::PopID();
-          ImGui::NextColumn();
+          CherryGUI::PopID();
+          CherryGUI::NextColumn();
         }
       }
     }
-    ImGui::Columns(1);
+    CherryGUI::Columns(1);
   }
 
   if (m_ShowMode == ContentShowMode::List) {
@@ -3151,13 +3151,13 @@ void ContentBrowserAppWindow::RenderContentBar() {
         ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable |
         ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-    if (ImGui::BeginTable("ContentBrowserTable", 5, flags)) {
-      ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
-      ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-      ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-      ImGui::TableSetupColumn("Last Updated", ImGuiTableColumnFlags_WidthFixed,
+    if (CherryGUI::BeginTable("ContentBrowserTable", 5, flags)) {
+      CherryGUI::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+      CherryGUI::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+      CherryGUI::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+      CherryGUI::TableSetupColumn("Last Updated", ImGuiTableColumnFlags_WidthFixed,
                               120.0f);
-      ImGui::TableHeadersRow();
+      CherryGUI::TableHeadersRow();
       auto drawRow = [&](const std::string &filename, const fs::path &path,
                          bool isFolder, size_t size = 0, std::time_t cftime = 0,
                          ImTextureID tex = nullptr,
@@ -3165,18 +3165,18 @@ void ContentBrowserAppWindow::RenderContentBar() {
                              &item_ident = nullptr) {
         std::string filenameString = path.filename().string();
         float rowHeight = 20.0f;
-        ImGui::TableNextRow(ImGuiTableRowFlags_None, rowHeight);
+        CherryGUI::TableNextRow(ImGuiTableRowFlags_None, rowHeight);
 
-        ImGui::TableSetColumnIndex(0);
+        CherryGUI::TableSetColumnIndex(0);
 
         bool selected = std::find(m_Selected.begin(), m_Selected.end(),
                                   path.string()) != m_Selected.end();
 
-        if (ImGui::Selectable(("##row_" + path.string()).c_str(), selected,
+        if (CherryGUI::Selectable(("##row_" + path.string()).c_str(), selected,
                               ImGuiSelectableFlags_SpanAllColumns |
                                   ImGuiSelectableFlags_AllowDoubleClick,
                               ImVec2(0, rowHeight))) {
-          if (ImGui::GetIO().KeyCtrl) {
+          if (CherryGUI::GetIO().KeyCtrl) {
             if (!selected)
               m_Selected.push_back(path.string());
           } else {
@@ -3184,9 +3184,9 @@ void ContentBrowserAppWindow::RenderContentBar() {
             m_Selected.push_back(path.string());
           }
 
-          if (ImGui::IsMouseClicked(0)) {
-            if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+          if (CherryGUI::IsMouseClicked(0)) {
+            if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
               m_Selected.push_back(path.string());
             } else {
               m_Selected.clear();
@@ -3194,7 +3194,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             }
           }
 
-          if (ImGui::IsMouseDoubleClicked(0)) {
+          if (CherryGUI::IsMouseDoubleClicked(0)) {
             if (!isFolder) {
               // Default action
             } else {
@@ -3211,8 +3211,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
           bool alt = CherryApp.IsKeyPressed(CherryKey::ALT);
           bool shift = CherryApp.IsKeyPressed(CherryKey::SHIFT);
 
-          bool shortcutRename = ctrl && ImGui::IsKeyPressed(ImGuiKey_R);
-          bool shortcutCut = ctrl && ImGui::IsKeyPressed(ImGuiKey_X);
+          bool shortcutRename = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_R);
+          bool shortcutCut = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_X);
           bool shortcutCutAdd =
               ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
           bool shortcutCopy = ctrl && CherryApp.IsKeyPressed(CherryKey::C);
@@ -3281,12 +3281,12 @@ void ContentBrowserAppWindow::RenderContentBar() {
             }
             m_Selected.clear();
           }
-          if (ImGui::BeginPopupContextItem(
+          if (CherryGUI::BeginPopupContextItem(
                   ("context_" + path.string()).c_str())) {
-            ImGui::GetFont()->Scale = 0.9;
-            ImGui::PushFont(ImGui::GetFont());
+            CherryGUI::GetFont()->Scale = 0.9;
+            CherryGUI::PushFont(CherryGUI::GetFont());
 
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+            CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
 
             ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
             ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
@@ -3310,7 +3310,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             }
 
             for (auto ih : item_handles) {
-              if (ImGui::MenuItem(ih->title.c_str(), ih->description.c_str(),
+              if (CherryGUI::MenuItem(ih->title.c_str(), ih->description.c_str(),
                                   Cherry::GetTexture(ih->logo), false)) {
                 ih->handler(path.string());
               }
@@ -3318,24 +3318,24 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
             CherryKit::SeparatorText("Main");
 
-            ImGui::GetFont()->Scale = oldfontsize;
-            ImGui::PopFont();
+            CherryGUI::GetFont()->Scale = oldfontsize;
+            CherryGUI::PopFont();
 
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+            CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
 
             if (item_ident) {
-              if (ImGui::MenuItem(
+              if (CherryGUI::MenuItem(
                       "Open item", "",
                       Cherry::GetTexture(Cherry::GetPath(
                           "resources/imgs/icons/misc/icon_foldersearch.png")),
                       NULL)) {
                 ChangeDirectory(path);
                 item_paths.push_back({path.string(), item_ident->m_LineColor});
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
-            if (ImGui::MenuItem("Copy", "Ctrl + C",
+            if (CherryGUI::MenuItem("Copy", "Ctrl + C",
                                 Cherry::GetTexture(Cherry::GetPath(
                                     "resources/imgs/icons/misc/icon_copy.png")),
                                 NULL)) {
@@ -3344,14 +3344,14 @@ void ContentBrowserAppWindow::RenderContentBar() {
               }
 
               m_Selected.clear();
-              ImGui::CloseCurrentPopup();
+              CherryGUI::CloseCurrentPopup();
             }
 
             if (m_Selected.size() > 0) {
               std::string label = "Copy in addition (" +
                                   std::to_string(m_Selected.size()) +
                                   " copies)";
-              if (ImGui::MenuItem(
+              if (CherryGUI::MenuItem(
                       label.c_str(), "Ctrl + C",
                       Cherry::GetTexture(Cherry::GetPath(
                           "resources/imgs/icons/misc/icon_copy.png")),
@@ -3361,29 +3361,29 @@ void ContentBrowserAppWindow::RenderContentBar() {
                 }
 
                 m_Selected.clear();
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
-            if (ImGui::MenuItem("Cut", "Ctrl + X",
+            if (CherryGUI::MenuItem("Cut", "Ctrl + X",
                                 Cherry::GetTexture(Cherry::GetPath(
                                     "resources/imgs/icons/misc/icon_cut.png")),
                                 NULL)) {
               ChangeDirectory(path);
-              ImGui::CloseCurrentPopup();
+              CherryGUI::CloseCurrentPopup();
             }
 
             CherryKit::SeparatorText("Customize");
 
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
+            CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
 
-            if (ImGui::MenuItem(
+            if (CherryGUI::MenuItem(
                     "Change color", "Ctrl + X",
                     Cherry::GetTexture(Cherry::GetPath(
                         "resources/imgs/icons/misc/icon_palette.png")),
                     NULL)) {
               //
             }
-            if (ImGui::MenuItem(
+            if (CherryGUI::MenuItem(
                     "Mark as favorite", "Ctrl + X",
                     Cherry::GetTexture(Cherry::GetPath(
                         "resources/imgs/icons/misc/icon_heart.png")),
@@ -3391,16 +3391,16 @@ void ContentBrowserAppWindow::RenderContentBar() {
               //
             }
 
-            ImGui::EndPopup();
+            CherryGUI::EndPopup();
           }
 
         } else {
-          if (ImGui::BeginPopupContextItem(
+          if (CherryGUI::BeginPopupContextItem(
                   ("context_" + path.string()).c_str())) {
 
             CherryKit::SeparatorText("Main");
 
-            if (ImGui::MenuItem("Rename", "Ctrl + R")) {
+            if (CherryGUI::MenuItem("Rename", "Ctrl + R")) {
               pathToRename = path.string();
             }
 
@@ -3408,7 +3408,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
               std::string label =
                   "Cut (" + std::to_string(m_Selected.size()) + ") selected";
 
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + X")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
                 if (m_CutPathsCallback) {
                   m_CutPathsCallback(m_Selected, true);
                   for (auto &path : m_Selected) {
@@ -3418,7 +3418,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
                 m_Selected.clear();
 
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
@@ -3426,7 +3426,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
               std::string label = "Cut in addition (" +
                                   std::to_string(m_CutSelection.size()) +
                                   " copies)";
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
                 if (m_CutPathsCallback) {
                   m_CutPathsCallback(m_Selected, true);
 
@@ -3435,7 +3435,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
                   }
                 }
                 m_Selected.clear();
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
@@ -3443,7 +3443,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
               std::string label =
                   "Copy (" + std::to_string(m_Selected.size()) + ") selected";
 
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
                 if (m_CopyPathsCallback) {
                   m_CopyPathsCallback(m_Selected, true);
                   for (auto &path : m_Selected) {
@@ -3453,7 +3453,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
                 m_Selected.clear();
 
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
@@ -3461,7 +3461,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
               std::string label = "Copy in addition (" +
                                   std::to_string(m_CopySelection.size()) +
                                   " copies)";
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
                 if (m_CopyPathsCallback) {
                   m_CopyPathsCallback(m_Selected, true);
 
@@ -3470,22 +3470,22 @@ void ContentBrowserAppWindow::RenderContentBar() {
                   }
                 }
                 m_Selected.clear();
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
-            if (ImGui::MenuItem("Delete", "Suppr")) {
+            if (CherryGUI::MenuItem("Delete", "Suppr")) {
               if (m_DeletePathCallback) {
                 m_DeletePathCallback(path.string());
               }
               m_Selected.clear();
-              ImGui::CloseCurrentPopup();
+              CherryGUI::CloseCurrentPopup();
             }
 
             if (m_Selected.size() > 1) {
               std::string label =
                   "Delete (" + std::to_string(m_Selected.size()) + " selected)";
-              if (ImGui::MenuItem(label.c_str(), "Alt + Suppr")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Alt + Suppr")) {
                 if (m_DeletePathCallback) {
                   for (auto &path : m_Selected) {
                     m_DeletePathCallback(path);
@@ -3493,13 +3493,13 @@ void ContentBrowserAppWindow::RenderContentBar() {
                 }
                 m_Selected.clear();
 
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
             CherryKit::SeparatorText("Customizations");
 
-            ImGui::EndPopup();
+            CherryGUI::EndPopup();
           }
         }
 
@@ -3507,7 +3507,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           item_handles.clear();
         }
 
-        ImGui::SameLine();
+        CherryGUI::SameLine();
         FileTypes fileType = detect_file(path.string());
 
         if (!isFolder) {
@@ -3520,8 +3520,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
           }
 
           if (tex) {
-            ImGui::Image(tex, ImVec2(24, 24));
-            ImGui::SameLine();
+            CherryGUI::Image(tex, ImVec2(24, 24));
+            CherryGUI::SameLine();
           }
         } else {
           if (current_editing_folder.first == path.string()) {
@@ -3531,9 +3531,9 @@ void ContentBrowserAppWindow::RenderContentBar() {
             FolderButton("folder_icon", ImVec2(16, 16), path.string(),
                          GetContentBrowserFolderColor(path.string()));
           }
-          ImGui::SameLine();
+          CherryGUI::SameLine();
         }
-        // ImGui::TextUnformatted(filename.c_str());
+        // CherryGUI::TextUnformatted(filename.c_str());
 
         ImU32 textColor = IM_COL32(255, 255, 255, 255);
         ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
@@ -3541,8 +3541,8 @@ void ContentBrowserAppWindow::RenderContentBar() {
         static std::unordered_map<std::string, char[256]> renameBuffers;
 
         if (pathToRename == path.string()) {
-          ImGui::SetItemAllowOverlap();
-          ImGui::PushID(path.string().c_str());
+          CherryGUI::SetItemAllowOverlap();
+          CherryGUI::PushID(path.string().c_str());
 
           auto &buffer = renameBuffers[path.string()];
           if (buffer[0] == '\0') {
@@ -3550,12 +3550,12 @@ void ContentBrowserAppWindow::RenderContentBar() {
                 path.string().substr(path.string().find_last_of("/\\") + 1);
             std::strncpy(buffer, filename.c_str(), sizeof(buffer));
             buffer[sizeof(buffer) - 1] = '\0';
-            ImGui::SetKeyboardFocusHere();
+            CherryGUI::SetKeyboardFocusHere();
           }
 
           ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
           bool renamed =
-              ImGui::InputText("##rename_input", buffer, sizeof(buffer), flags);
+              CherryGUI::InputText("##rename_input", buffer, sizeof(buffer), flags);
 
           bool renameConfirmed = false;
           bool renameCancelled = false;
@@ -3564,11 +3564,11 @@ void ContentBrowserAppWindow::RenderContentBar() {
             renameConfirmed = true;
           }
 
-          if (!ImGui::IsItemActive() && ImGui::IsItemDeactivatedAfterEdit()) {
+          if (!CherryGUI::IsItemActive() && CherryGUI::IsItemDeactivatedAfterEdit()) {
             renameConfirmed = true;
           }
 
-          if (ImGui::IsItemFocused() && ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+          if (CherryGUI::IsItemFocused() && CherryGUI::IsKeyPressed(ImGuiKey_Escape)) {
             renameCancelled = true;
           }
 
@@ -3583,38 +3583,38 @@ void ContentBrowserAppWindow::RenderContentBar() {
             pathToRename.clear();
           }
 
-          ImGui::PopID();
+          CherryGUI::PopID();
         } else {
           if (filename == "...") {
             filenameString = "...";
           }
 
-          ImDrawList *drawList = ImGui::GetWindowDrawList();
-          DrawHighlightedText(drawList, ImGui::GetCursorScreenPos(),
+          ImDrawList *drawList = CherryGUI::GetWindowDrawList();
+          DrawHighlightedText(drawList, CherryGUI::GetCursorScreenPos(),
                               filenameString.c_str(), ProjectSearch.c_str(),
                               highlightColor, textColor, highlightTextColor);
         }
 
-        ImGui::TableSetColumnIndex(1);
+        CherryGUI::TableSetColumnIndex(1);
         if (item_ident) {
-          ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f),
+          CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f),
                              item_ident->m_Description.c_str());
         } else {
-          ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f),
+          CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f),
                              isFolder ? "Folder" : "File");
         }
 
-        ImGui::TableSetColumnIndex(2);
-        ImGui::TextUnformatted(isFolder ? "---" : formatFileSize(size).c_str());
+        CherryGUI::TableSetColumnIndex(2);
+        CherryGUI::TextUnformatted(isFolder ? "---" : formatFileSize(size).c_str());
 
-        ImGui::TableSetColumnIndex(3);
+        CherryGUI::TableSetColumnIndex(3);
         if (cftime != 0) {
           char buffer[64];
           std::strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M",
                         std::localtime(&cftime));
-          ImGui::TextUnformatted(buffer);
+          CherryGUI::TextUnformatted(buffer);
         } else {
-          ImGui::TextUnformatted("---");
+          CherryGUI::TextUnformatted("---");
         }
       };
 
@@ -3703,7 +3703,7 @@ if (!m_CurrentDirectory.empty()) {
 
           std::uintmax_t folderSize = getDirectorySize(path);
           std::string folderSizeString = formatFileSize(folderSize);
-          ImGui::PushID(filenameString.c_str());
+          CherryGUI::PushID(filenameString.c_str());
 
           ImTextureID tex =
               Application::GetCurrentRenderedWindow()->get_texture(
@@ -3780,7 +3780,7 @@ if (!m_CurrentDirectory.empty()) {
           drawRow(filename, path.string(), false, fsize, cftime, tex);
         }
       }
-      ImGui::EndTable();
+      CherryGUI::EndTable();
     }
   }
 
@@ -3790,50 +3790,50 @@ if (!m_CurrentDirectory.empty()) {
     ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
     ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
-    ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+    CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
 
-    ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+    CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
 
-    ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+    CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 
-    if (ImGui::IsWindowHovered() &&
-        ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+    if (CherryGUI::IsWindowHovered() &&
+        CherryGUI::IsMouseReleased(ImGuiMouseButton_Right)) {
       m_Selected.clear();
-      ImGui::OpenPopup("EmptySpacePopup");
+      CherryGUI::OpenPopup("EmptySpacePopup");
     }
 
-    if (ImGui::IsWindowHovered() &&
-        ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+    if (CherryGUI::IsWindowHovered() &&
+        CherryGUI::IsMouseReleased(ImGuiMouseButton_Left)) {
       m_Selected.clear();
     }
 
-    if (ImGui::BeginPopup("EmptySpacePopup")) {
-      ImGui::GetFont()->Scale = 0.9;
-      ImGui::PushFont(ImGui::GetFont());
+    if (CherryGUI::BeginPopup("EmptySpacePopup")) {
+      CherryGUI::GetFont()->Scale = 0.9;
+      CherryGUI::PushFont(CherryGUI::GetFont());
 
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
+      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
 
       CherryKit::SeparatorText("Add");
-      if (ImGui::MenuItem("Add", "Add a component",
+      if (CherryGUI::MenuItem("Add", "Add a component",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_add.png")),
                           NULL)) {
         SpawnAddWindow();
       }
-      if (ImGui::MenuItem("Import", "Import a component",
+      if (CherryGUI::MenuItem("Import", "Import a component",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_import.png")),
                           NULL)) {
       }
 
       CherryKit::SeparatorText("Create");
-      if (ImGui::MenuItem("Create new folder", "Create a folder here",
+      if (CherryGUI::MenuItem("Create new folder", "Create a folder here",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_add_folder.png")),
                           NULL)) {
         CreateFolder();
       }
-      if (ImGui::MenuItem("Create new file", "Create empty file here",
+      if (CherryGUI::MenuItem("Create new file", "Create empty file here",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_add_file.png")),
                           NULL)) {
@@ -3842,7 +3842,7 @@ if (!m_CurrentDirectory.empty()) {
 
       CherryKit::SeparatorText("Actions");
 
-      if (ImGui::MenuItem("Paste selection", "Paste selection here",
+      if (CherryGUI::MenuItem("Paste selection", "Paste selection here",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_down.png")),
                           NULL)) {
@@ -3851,20 +3851,20 @@ if (!m_CurrentDirectory.empty()) {
         }
       }
 
-      if (ImGui::MenuItem("Select All", "Select eveything on this directory",
+      if (CherryGUI::MenuItem("Select All", "Select eveything on this directory",
                           Cherry::GetTexture(Cherry::GetPath(
                               "resources/imgs/icons/misc/icon_stack.png")),
                           NULL)) {
       }
 
-      ImGui::GetFont()->Scale = oldfontsize;
-      ImGui::PopFont();
+      CherryGUI::GetFont()->Scale = oldfontsize;
+      CherryGUI::PopFont();
 
-      ImGui::EndPopup();
+      CherryGUI::EndPopup();
     }
 
-    ImGui::PopStyleVar();
-    ImGui::PopStyleColor(2);
+    CherryGUI::PopStyleVar();
+    CherryGUI::PopStyleColor(2);
 
     if (ShowFolders) {
       for (auto &directoryEntry : directories) {
@@ -3876,26 +3876,26 @@ if (!m_CurrentDirectory.empty()) {
 
         if (areStringsSimilar(filenameString, ProjectSearch, threshold) ||
             isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
-          ImGui::PushID(filenameString.c_str());
+          CherryGUI::PushID(filenameString.c_str());
 
           float padding = 10.0f;
           float logoSize = 40.0f;
           float borderRadius = 5.0f;
 
-          float availableWidth = ImGui::GetContentRegionAvail().x;
+          float availableWidth = CherryGUI::GetContentRegionAvail().x;
           float cardHeight = logoSize + padding * 2;
-          ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+          ImVec2 cursorPos = CherryGUI::GetCursorScreenPos();
           ImVec2 cardSize(availableWidth, cardHeight);
 
-          if (ImGui::InvisibleButton(("folder_card_" + filenameString).c_str(),
+          if (CherryGUI::InvisibleButton(("folder_card_" + filenameString).c_str(),
                                      cardSize)) {
-            if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+            if (CherryGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
               std::cout << "[LOG] Double click on: " << path.string()
                         << std::endl;
               ChangeDirectory(path);
             } else {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -3904,19 +3904,19 @@ if (!m_CurrentDirectory.empty()) {
             }
           }
 
-          if (ImGui::IsItemHovered()) {
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+          if (CherryGUI::IsItemHovered()) {
+            CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-            if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+            if (CherryGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
               ChangeDirectory(path);
             }
           }
 
-          if (ImGui::BeginPopupContextItem("ContextPopup")) {
+          if (CherryGUI::BeginPopupContextItem("ContextPopup")) {
 
             CherryKit::SeparatorText("Main");
 
-            if (ImGui::MenuItem("Rename", "Ctrl + R")) {
+            if (CherryGUI::MenuItem("Rename", "Ctrl + R")) {
               pathToRename = path.string();
             }
 
@@ -3924,7 +3924,7 @@ if (!m_CurrentDirectory.empty()) {
               std::string label =
                   "Cut (" + std::to_string(m_Selected.size()) + ") selected";
 
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + X")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
                 if (m_CutPathsCallback) {
                   m_CutPathsCallback(m_Selected, true);
                   for (auto &path : m_Selected) {
@@ -3934,7 +3934,7 @@ if (!m_CurrentDirectory.empty()) {
 
                 m_Selected.clear();
 
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
@@ -3942,7 +3942,7 @@ if (!m_CurrentDirectory.empty()) {
               std::string label = "Cut in addition (" +
                                   std::to_string(m_CutSelection.size()) +
                                   " copies)";
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
                 if (m_CutPathsCallback) {
                   m_CutPathsCallback(m_Selected, true);
 
@@ -3951,7 +3951,7 @@ if (!m_CurrentDirectory.empty()) {
                   }
                 }
                 m_Selected.clear();
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
@@ -3959,7 +3959,7 @@ if (!m_CurrentDirectory.empty()) {
               std::string label =
                   "Copy (" + std::to_string(m_Selected.size()) + ") selected";
 
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + C")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
                 if (m_CopyPathsCallback) {
                   m_CopyPathsCallback(m_Selected, true);
                   for (auto &path : m_Selected) {
@@ -3969,7 +3969,7 @@ if (!m_CurrentDirectory.empty()) {
 
                 m_Selected.clear();
 
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
@@ -3977,7 +3977,7 @@ if (!m_CurrentDirectory.empty()) {
               std::string label = "Copy in addition (" +
                                   std::to_string(m_CopySelection.size()) +
                                   " copies)";
-              if (ImGui::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
                 if (m_CopyPathsCallback) {
                   m_CopyPathsCallback(m_Selected, true);
 
@@ -3986,22 +3986,22 @@ if (!m_CurrentDirectory.empty()) {
                   }
                 }
                 m_Selected.clear();
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
-            if (ImGui::MenuItem("Delete", "Suppr")) {
+            if (CherryGUI::MenuItem("Delete", "Suppr")) {
               if (m_DeletePathCallback) {
                 m_DeletePathCallback(path.string());
               }
               m_Selected.clear();
-              ImGui::CloseCurrentPopup();
+              CherryGUI::CloseCurrentPopup();
             }
 
             if (m_Selected.size() > 1) {
               std::string label =
                   "Delete (" + std::to_string(m_Selected.size()) + " selected)";
-              if (ImGui::MenuItem(label.c_str(), "Alt + Suppr")) {
+              if (CherryGUI::MenuItem(label.c_str(), "Alt + Suppr")) {
                 if (m_DeletePathCallback) {
                   for (auto &path : m_Selected) {
                     m_DeletePathCallback(path);
@@ -4009,13 +4009,13 @@ if (!m_CurrentDirectory.empty()) {
                 }
                 m_Selected.clear();
 
-                ImGui::CloseCurrentPopup();
+                CherryGUI::CloseCurrentPopup();
               }
             }
 
             CherryKit::SeparatorText("Customizations");
 
-            ImGui::EndPopup();
+            CherryGUI::EndPopup();
           }
 
           ImU32 bgColor =
@@ -4023,7 +4023,7 @@ if (!m_CurrentDirectory.empty()) {
           ImU32 borderColor = selected ? IM_COL32(150, 150, 255, 255)
                                        : IM_COL32(90, 90, 90, 255);
 
-          ImDrawList *drawList = ImGui::GetWindowDrawList();
+          ImDrawList *drawList = CherryGUI::GetWindowDrawList();
 
           drawList->AddRectFilled(
               cursorPos,
@@ -4036,17 +4036,17 @@ if (!m_CurrentDirectory.empty()) {
 
           ImVec2 logoPos(cursorPos.x + padding,
                          cursorPos.y + (cardHeight - logoSize) * 0.5f);
-          ImGui::SetCursorScreenPos(logoPos);
+          CherryGUI::SetCursorScreenPos(logoPos);
           FolderButton("folder_icon", ImVec2(logoSize, logoSize), path.string(),
                        GetContentBrowserFolderColor(path.string()));
 
           ImVec2 logoEnd(logoPos.x + logoSize, logoPos.y + logoSize);
 
-          ImGui::PushFont(ImGui::GetFont());
-          ImGui::GetFont()->Scale = 0.9f;
+          CherryGUI::PushFont(CherryGUI::GetFont());
+          CherryGUI::GetFont()->Scale = 0.9f;
 
           ImVec2 textPos(logoEnd.x + padding, cursorPos.y + padding);
-          ImGui::SetCursorScreenPos(textPos);
+          CherryGUI::SetCursorScreenPos(textPos);
 
           ImU32 textColor = IM_COL32(255, 255, 255, 255);
           ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
@@ -4054,39 +4054,39 @@ if (!m_CurrentDirectory.empty()) {
           static std::unordered_map<std::string, char[256]> renameBuffers;
 
           if (pathToRename == path.string()) {
-            ImGui::PushID(path.c_str());
+            CherryGUI::PushID(path.c_str());
             auto &buffer = renameBuffers[path.string()];
             if (buffer[0] == '\0') {
               std::strncpy(buffer, filenameString.c_str(), sizeof(buffer));
               buffer[sizeof(buffer) - 1] = '\0';
-              ImGui::SetKeyboardFocusHere();
+              CherryGUI::SetKeyboardFocusHere();
             }
-            if (ImGui::InputText("##rename_input", buffer, sizeof(buffer),
+            if (CherryGUI::InputText("##rename_input", buffer, sizeof(buffer),
                                  ImGuiInputTextFlags_EnterReturnsTrue)) {
               VortexMaker::SubmitRename(pathToRename, buffer);
               renameBuffers.erase(pathToRename);
               pathToRename.clear();
             }
-            ImGui::PopID();
+            CherryGUI::PopID();
           } else {
             DrawHighlightedText(drawList, textPos, filenameString.c_str(),
                                 ProjectSearch.c_str(), highlightColor,
                                 textColor, highlightTextColor);
           }
 
-          ImGui::GetFont()->Scale = oldfontsize;
-          ImGui::PopFont();
+          CherryGUI::GetFont()->Scale = oldfontsize;
+          CherryGUI::PopFont();
 
           std::string folderSizeStr = "[dir]";
           std::string lastModifiedStr = "???";
 
           ImVec2 rightTextPos(cursorPos.x + cardSize.x - padding - 200,
                               cursorPos.y + padding);
-          ImGui::SetCursorScreenPos(rightTextPos);
-          ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 200, 200, 255));
-          ImGui::Text("%s | %s", folderSizeStr.c_str(),
+          CherryGUI::SetCursorScreenPos(rightTextPos);
+          CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 200, 200, 255));
+          CherryGUI::Text("%s | %s", folderSizeStr.c_str(),
                       lastModifiedStr.c_str());
-          ImGui::PopStyleColor();
+          CherryGUI::PopStyleColor();
 
           float lineOffset = 15.0f;
           ImVec2 lineStart(cursorPos.x + cardSize.x - lineOffset,
@@ -4105,10 +4105,10 @@ if (!m_CurrentDirectory.empty()) {
                                          versionPos.y + versionBoxHeight),
                                   IM_COL32(0, 0, 0, 255), borderRadius);
 
-          ImGui::SetCursorScreenPos(
+          CherryGUI::SetCursorScreenPos(
               ImVec2(cursorPos.x, cursorPos.y + cardSize.y + padding));
 
-          ImGui::PopID();
+          CherryGUI::PopID();
         }
       }
     }
@@ -4151,7 +4151,7 @@ if (!m_CurrentDirectory.empty()) {
             isOnlySpacesOrEmpty(ProjectSearch.c_str())) {
           std::uintmax_t folderSize = getDirectorySize(path);
           std::string folderSizeString = formatFileSize(folderSize);
-          ImGui::PushID(filenameString.c_str());
+          CherryGUI::PushID(filenameString.c_str());
 
           if (HorizontalItemCard(
                   filenameString, path, itemEntry.first->m_Description,
@@ -4161,13 +4161,13 @@ if (!m_CurrentDirectory.empty()) {
                   IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                   Cherry::HexToImU32(itemEntry.first->m_LineColor), 100.0f,
                   5.0f, false, itemEntry.first)) {
-            if (ImGui::IsMouseDoubleClicked(0)) {
+            if (CherryGUI::IsMouseDoubleClicked(0)) {
               // itemEntry.first->f_Execute(path);
               // VXERROR("te", "tyr");
             }
 
-            if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+            if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
               m_Selected.push_back(path);
             } else {
               m_Selected.clear();
@@ -4175,8 +4175,8 @@ if (!m_CurrentDirectory.empty()) {
             }
           }
 
-          ImGui::PopID();
-          ImGui::NextColumn();
+          CherryGUI::PopID();
+          CherryGUI::NextColumn();
         }
       }
     }
@@ -4223,7 +4223,7 @@ if (!m_CurrentDirectory.empty()) {
           }
 
           std::string fileSizeString = formatFileSize(fileSize);
-          ImGui::PushID(filenameString.c_str());
+          CherryGUI::PushID(filenameString.c_str());
 
           FileTypes fileType = detect_file(path.string());
 
@@ -4236,8 +4236,8 @@ if (!m_CurrentDirectory.empty()) {
                         "resources/imgs/icons/files/icon_picture_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(255, 100, 150, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -4254,8 +4254,8 @@ if (!m_CurrentDirectory.empty()) {
                         "resources/imgs/icons/files/icon_git_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(100, 100, 255, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -4272,8 +4272,8 @@ if (!m_CurrentDirectory.empty()) {
                         "resources/imgs/icons/files/icon_c_h_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(220, 100, 220, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -4290,8 +4290,8 @@ if (!m_CurrentDirectory.empty()) {
                         "resources/imgs/icons/files/icon_c_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(100, 100, 255, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -4308,8 +4308,8 @@ if (!m_CurrentDirectory.empty()) {
                         "resources/imgs/icons/files/icon_cpp_h_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(100, 100, 255, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -4326,8 +4326,8 @@ if (!m_CurrentDirectory.empty()) {
                         "resources/imgs/icons/files/icon_cpp_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(100, 100, 255, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -4344,8 +4344,8 @@ if (!m_CurrentDirectory.empty()) {
                         "resources/imgs/icons/files/icon_ini_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(150, 150, 150, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -4362,8 +4362,8 @@ if (!m_CurrentDirectory.empty()) {
                         "resources/imgs/icons/files/icon_unknow_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(150, 150, 150, 255))) {
-              if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  ImGui::IsKeyDown(ImGuiKey_RightCtrl)) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
                 m_Selected.push_back(path.string());
               } else {
                 m_Selected.clear();
@@ -4373,12 +4373,12 @@ if (!m_CurrentDirectory.empty()) {
             break;
           }
 
-            ImGui::PopStyleVar(2);
-            ImGui::PopStyleColor(3);
+            CherryGUI::PopStyleVar(2);
+            CherryGUI::PopStyleColor(3);
           }
-          float oldsize = ImGui::GetFont()->Scale;
+          float oldsize = CherryGUI::GetFont()->Scale;
 
-          ImGui::PopID();
+          CherryGUI::PopID();
         }
       }
     }
@@ -4414,7 +4414,7 @@ void ContentBrowserAppWindow::Render() {
   const float margin = 10.0f;
 
   auto &children = m_Childs;
-  ImVec2 availableSize = ImGui::GetContentRegionAvail();
+  ImVec2 availableSize = CherryGUI::GetContentRegionAvail();
 
   for (size_t i = 0; i < children.size(); ++i) {
     auto &child = children[i];
@@ -4522,18 +4522,18 @@ void ContentBrowserAppWindow::Render() {
       c_FilterBarWidth = child.m_Size;
     }
 
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, child.m_BackgroundColor);
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, child.m_BackgroundColor);
+    CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 
     std::string childname =
         child.m_Name + "##cbchildnh" + m_AppWindow->m_Name + child.m_Name;
-    ImGui::BeginChild(childname.c_str(), ImVec2(child.m_Size, availableSize.y),
+    CherryGUI::BeginChild(childname.c_str(), ImVec2(child.m_Size, availableSize.y),
                       true);
 
     child.m_Child();
 
-    ImGui::EndChild();
-    ImGui::PopStyleColor(2);
+    CherryGUI::EndChild();
+    CherryGUI::PopStyleColor(2);
 
     int nextChildIndex = -1;
     for (size_t j = i + 1; j < children.size(); ++j) {
@@ -4548,25 +4548,25 @@ void ContentBrowserAppWindow::Render() {
 
       if (i + 1 < children.size() && !children[i].m_Disabled &&
           !next_child.m_Disabled) {
-        ImGui::SameLine();
+        CherryGUI::SameLine();
 
         std::string lab =
             child.m_Name + m_AppWindow->m_Name + "####" + child.m_Name;
 
         CherryStyle::RemoveMarginX(5.0f);
 
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-        ImGui::Button(lab.c_str(), ImVec2(splitterWidth, -1));
-        ImGui::PopStyleColor();
+        CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+        CherryGUI::Button(lab.c_str(), ImVec2(splitterWidth, -1));
+        CherryGUI::PopStyleColor();
 
         CherryStyle::RemoveMarginX(5.0f);
 
-        if (ImGui::IsItemHovered()) {
-          ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
+        if (CherryGUI::IsItemHovered()) {
+          CherryGUI::SetMouseCursor(ImGuiMouseCursor_ResizeEW);
         }
 
-        if (ImGui::IsItemActive()) {
-          float delta = ImGui::GetIO().MouseDelta.x;
+        if (CherryGUI::IsItemActive()) {
+          float delta = CherryGUI::GetIO().MouseDelta.x;
 
           if (child.m_Size >= 50.0f || child.m_Size == 0.0f) {
             if (next_child.m_Size >= 50.0f || next_child.m_Size == 0.0f) {
@@ -4579,7 +4579,7 @@ void ContentBrowserAppWindow::Render() {
           next_child.m_Size = (std::max)(next_child.m_Size, 50.0f);
         }
 
-        ImGui::SameLine();
+        CherryGUI::SameLine();
       }
     }
   }
