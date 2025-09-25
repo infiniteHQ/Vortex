@@ -137,10 +137,14 @@ set_target_properties(vortex PROPERTIES
     INSTALL_RPATH_USE_LINK_PATH TRUE
 )
 
-install(TARGETS vortex DESTINATION ${INSTALL_BIN_DIR})# Installation de la DLL (.dll), de l'import lib (.lib) et du .so/.a éventuel
+install(TARGETS vortex DESTINATION ${INSTALL_BIN_DIR})
 install(TARGETS vortex_shared
-    RUNTIME DESTINATION ${INSTALL_BIN_DIR}   # .dll (Windows) ou binaire équivalent
-    LIBRARY DESTINATION ${INSTALL_LIB_DIR}   # .so (Linux)
-    ARCHIVE DESTINATION ${INSTALL_LIB_DIR}   # .lib (Windows) ou .a (Linux)
+    RUNTIME DESTINATION ${INSTALL_BIN_DIR}
+    LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+    ARCHIVE DESTINATION ${INSTALL_LIB_DIR} 
 )
-
+install(TARGETS cherry
+    RUNTIME DESTINATION ${INSTALL_BIN_DIR}
+    LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+    ARCHIVE DESTINATION ${INSTALL_LIB_DIR} 
+)

@@ -42,18 +42,30 @@ LoadEditorModules(const std::string &directory,
 
   modules.clear();
   modules_handlers.clear();
+  
   auto module_files = VortexMaker::SearchFiles(directory, "module.json");
+std::cout << "SearchFiles(" << directory << ", module.json) -> " << module_files.size() << " found\n";
+for (auto &f : module_files)
+    std::cout << "  " << f << "\n";
+
 
   for (const auto &file : module_files) {
     try {
-      auto json_data = VortexMaker::DumpJSON(file);
-      std::string path = file.substr(0, file.find_last_of("/"));
+auto json_data = VortexMaker::DumpJSON(file);
+
+fs::path module_path(file);
+fs::path path = module_path.parent_path();
 
 #ifdef _WIN32
-      auto so_files = VortexMaker::SearchFiles(path, "module.dll");
+auto so_files = VortexMaker::SearchFiles(path.string(), "module.dll");
 #else
-      auto so_files = VortexMaker::SearchFiles(path, "libmodule.so");
+auto so_files = VortexMaker::SearchFiles(path.string(), "libmodule.so");
 #endif
+
+std::cout << "Looking for binaries in: " << path << "\n";
+std::cout << "Found " << so_files.size() << " binaries\n";
+for (auto &s : so_files)
+    std::cout << "  " << s << "\n";
 
       for (const auto &so_file : so_files) {
         void *handle = nullptr;
@@ -134,7 +146,8 @@ LoadEditorModules(const std::string &directory,
           new_module->m_description =
               json_data["description"].get<std::string>();
           new_module->m_picture = json_data["picture"].get<std::string>();
-          new_module->m_logo_path = path + "/" + new_module->m_picture;
+          new_module->m_logo_path = (fs::path(path) / new_module->m_picture).string();
+
           new_module->m_author = json_data["author"].get<std::string>();
           new_module->m_group = json_data["group"].get<std::string>();
           new_module->m_contributors =

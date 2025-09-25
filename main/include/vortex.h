@@ -311,10 +311,11 @@ VORTEX_API std::vector<std::string> SearchFiles(const std::string &path,
                                                 int recursions);
 VORTEX_API std::vector<std::string>
 SearchSystemFiles(const std::string &path, const std::string &filename);
-VORTEX_API std::string SearchFilesRecursive(const fs::path &chemin,
-                                            const std::string &filename,
-                                            std::vector<std::string> &file);
-VORTEX_API std::string SearchFilesRecursive(const fs::path &chemin,
+VORTEX_API void SearchFilesRecursive(
+    const fs::path &path,
+    const std::string &filename,
+    std::vector<std::string> &file);
+VORTEX_API std::string SearchFilesRecursive(const fs::path &path,
                                             const std::string &filename,
                                             std::vector<std::string> &file,
                                             int recursions, int counter);

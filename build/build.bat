@@ -32,7 +32,7 @@ echo %cd%
 
 xcopy /E /Y .\build\bin\ dist\%VERSION%\bin
 xcopy /E /Y .\build\Release\ prod
-xcopy /E /Y .\build\build\cherry_build\Release\ prod
+xcopy /E /Y .\build\cherry_build\Release\ prod
 
 rmdir /S /Q shipping
 mkdir shipping\vortex\windows
