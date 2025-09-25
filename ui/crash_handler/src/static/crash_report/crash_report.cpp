@@ -3,9 +3,30 @@
 static bool consent_data_inspection;
 static bool consent_response;
 
+std::string CrashAppWindow::GetHomeDirectory() {
+#if defined(__linux__) || defined(__APPLE__) 
+    const char *homePath = std::getenv("HOME");
+    if (homePath == nullptr) {
+      throw std::runtime_error("HOME environment variable not set");
+    }
+    return std::string(homePath);
+#elif defined(_WIN32) || defined(_WIN64)
+    const char *homePath = std::getenv("USERPROFILE");
+    if (homePath == nullptr) {
+      const char *homeDrive = std::getenv("HOMEDRIVE");
+      const char *homePathEnv = std::getenv("HOMEPATH");
+      if (homeDrive == nullptr || homePathEnv == nullptr) {
+        throw std::runtime_error("HOMEPATH environment variables not set");
+      }
+      return std::string(homeDrive) + std::string(homePathEnv);
+    }
+    return std::string(homePath);
+#endif
+  throw std::runtime_error(
+      "Unknown platform: Unable to determine home directory");
+}
 CrashAppWindow::CrashAppWindow(const std::string &name)
 {
-    this->ctx = VortexMaker::GetCurrentContext();
     m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
     m_AppWindow->SetIcon("/usr/local/include/Vortex/imgs/vortex.png");
     m_AppWindow->SetClosable(false);
@@ -280,7 +301,7 @@ void CrashAppWindow::Render()
             static char text[bufferSize];
 
             // Load content from file into text variable
-            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + ctx->state.session_id + "/logs/global.log";
+            static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" + ctx->state.session_id + "/logs/global.log";
             if (!loadFileToString(log_file, text, bufferSize))
             {
                 // Handle error opening or reading the file
@@ -300,7 +321,7 @@ void CrashAppWindow::Render()
             static char text[bufferSize];
 
             // Load content from file into text variable
-            static std::string log_file = VortexMaker::getHomeDirectory() + "/.vx/sessions/" + ctx->state.session_id + "/crash/core_dumped.txt";
+            static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" + ctx->state.session_id + "/crash/core_dumped.txt";
             if (!loadFileToString(log_file, text, bufferSize))
             {
                 // Handle error opening or reading the file

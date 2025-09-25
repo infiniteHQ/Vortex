@@ -20,8 +20,8 @@ public:
     static std::shared_ptr<CrashAppWindow> Create(const std::string &name);
     void SetupRenderCallback();
     void Render();
-
-
+	std::string GetHomeDirectory();
+	
 	/**
 	 * @brief Menu items
 	*/

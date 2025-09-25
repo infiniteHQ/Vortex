@@ -1,6 +1,7 @@
 build
 build_spdlog
 dist
+prod
 shipping
 .cmake
 bin
