@@ -28,6 +28,10 @@ cp -r ./build/bin/* dist/${VERSION}/bin
 cp -r ./build/bin/* dist/${VERSION}/bin
 cp -r ./handle_crash.sh dist/${VERSION}/bin
 
+rm -rf prod/
+mkdir prod
+cp -r ./dist/${VERSION}/bin/* prod/
+
 # Prepare shipping folders
 rm -rf shipping/*
 mkdir -p shipping/vortex/linux
