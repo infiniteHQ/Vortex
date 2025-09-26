@@ -107,7 +107,6 @@ add_executable(vortex_utils utils.cpp)
 target_link_libraries(vortex_utils PUBLIC vortex_shared)
 
 target_compile_definitions(vortex_shared PUBLIC CHERRY_IMPORT_DLL)
-target_link_libraries(vortex_shared PUBLIC editor cherry)
 
 if(UNIX AND NOT APPLE)
     find_package(CURL REQUIRED)
