@@ -18,16 +18,13 @@ if (UI_CRASH_HANDLER)
 else()
     message(FATAL_ERROR "No source files found for the crash_handler target.")
 endif()
-
-target_link_libraries(crash_handler PUBLIC cherry)
-target_include_directories(crash_handler PUBLIC "${PROJECT_SOURCE_DIR}/lib/spdlog/include/spdlog")
-
 target_compile_definitions(crash_handler PUBLIC CHERRY_IMPORT_DLL)
-file(GLOB_RECURSE ASSET_FILES
-    CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/assets/*"
-)
+target_link_libraries(crash_handler PUBLIC cherry)
 
+target_include_directories(crash_handler PUBLIC "${PROJECT_SOURCE_DIR}/lib/spdlog/include/spdlog")
+if(UNIX AND NOT APPLE)
+    target_link_libraries(crash_handler PRIVATE crypto)
+endif()
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/remove_resources_if_exists.cmake
 "if(EXISTS \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ch_resources\")\n"

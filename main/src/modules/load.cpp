@@ -3,10 +3,9 @@
 #include "../../include/vortex_internals.h"
 
 #ifdef _WIN32
-#include <stringapiset.h> // Pour WideCharToMultiByte et MultiByteToWideChar
+#include <stringapiset.h>
 #include <windows.h>
 
-// Convertir std::string en std::wstring
 std::wstring ConvertToWideString(const std::string &str) {
   int size_needed =
       MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
@@ -19,7 +18,6 @@ std::wstring ConvertToWideString(const std::string &str) {
   return wide_string;
 }
 
-// Convertir std::wstring en std::string
 std::string ConvertToString(const std::wstring &wstr) {
   int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr,
                                         0, nullptr, nullptr);
@@ -39,33 +37,26 @@ VORTEX_API void
 LoadEditorModules(const std::string &directory,
                   std::vector<void *> &modules_handlers,
                   std::vector<std::shared_ptr<ModuleInterface>> &modules) {
-
   modules.clear();
   modules_handlers.clear();
-  
-  auto module_files = VortexMaker::SearchFiles(directory, "module.json");
-std::cout << "SearchFiles(" << directory << ", module.json) -> " << module_files.size() << " found\n";
-for (auto &f : module_files)
-    std::cout << "  " << f << "\n";
 
+  auto module_files = VortexMaker::SearchFiles(directory, "module.json");
 
   for (const auto &file : module_files) {
     try {
-auto json_data = VortexMaker::DumpJSON(file);
+      auto json_data = VortexMaker::DumpJSON(file);
 
-fs::path module_path(file);
-fs::path path = module_path.parent_path();
+      fs::path module_path(file);
+      fs::path path = module_path.parent_path();
 
 #ifdef _WIN32
-auto so_files = VortexMaker::SearchFiles(path.string(), "module.dll");
+      auto so_files = VortexMaker::SearchFiles(path.string(), "module.dll");
 #else
-auto so_files = VortexMaker::SearchFiles(path.string(), "libmodule.so");
+      auto so_files = VortexMaker::SearchFiles(path.string(), "libmodule.so");
 #endif
 
-std::cout << "Looking for binaries in: " << path << "\n";
-std::cout << "Found " << so_files.size() << " binaries\n";
-for (auto &s : so_files)
-    std::cout << "  " << s << "\n";
+      for (auto &s : so_files)
+        std::cout << "  " << s << "\n";
 
       for (const auto &so_file : so_files) {
         void *handle = nullptr;
@@ -146,7 +137,11 @@ for (auto &s : so_files)
           new_module->m_description =
               json_data["description"].get<std::string>();
           new_module->m_picture = json_data["picture"].get<std::string>();
-          new_module->m_logo_path = (fs::path(path) / new_module->m_picture).string();
+          new_module->m_logo_path =
+              (fs::path(path) / new_module->m_picture).string();
+          new_module->m_path = (fs::path(path)).string();
+          new_module->m_binary_path =
+              (fs::path(so_file).parent_path()).string();
 
           new_module->m_author = json_data["author"].get<std::string>();
           new_module->m_group = json_data["group"].get<std::string>();

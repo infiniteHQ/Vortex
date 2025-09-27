@@ -280,7 +280,8 @@ void ContentBrowserAddWindow::Render() {
                               CherryNextComponent.SetProperty("size_x",
                                                               "60.0f");
                               CherryStyle::RemoveMarginY(6.0f);
-                              CherryKit::ImageLocal(ic->m_Logo, 60.0f, 60.0f);
+                              CherryKit::ImageLocal(ic->m_LogoPath, 60.0f,
+                                                    60.0f);
                             },
                             [&]() {
                               CherryStyle::AddMarginY(6.0f);

@@ -266,8 +266,6 @@ int main(int argc, char *argv[]) {
       InitBlankRuntime(true);
       VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
 
-      VxContext *ctx = VortexMaker::GetCurrentContext();
-
       std::thread receiveThread;
       std::thread Thread([&]() { VortexMaker::VortexCrash(argc, argv); });
       receiveThread.swap(Thread);
