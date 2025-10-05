@@ -25,7 +25,8 @@ std::string CrashAppWindow::GetHomeDirectory() {
   throw std::runtime_error(
       "Unknown platform: Unable to determine home directory");
 }
-CrashAppWindow::CrashAppWindow(const std::string &name) {
+CrashAppWindow::CrashAppWindow(const std::string &name,
+                               const std::string &session_id) {
   m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
   m_AppWindow->SetIcon("/usr/local/include/Vortex/imgs/vortex.png");
   m_AppWindow->SetClosable(false);
@@ -56,6 +57,8 @@ CrashAppWindow::CrashAppWindow(const std::string &name) {
 
   m_AppWindow->SetInternalPaddingX(10.0f);
   m_AppWindow->SetInternalPaddingY(10.0f);
+
+  m_SessionID = session_id;
 
   std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
 }
@@ -93,9 +96,9 @@ std::shared_ptr<Cherry::AppWindow> &CrashAppWindow::GetAppWindow() {
   return m_AppWindow;
 }
 
-std::shared_ptr<CrashAppWindow>
-CrashAppWindow::Create(const std::string &name) {
-  auto instance = std::shared_ptr<CrashAppWindow>(new CrashAppWindow(name));
+std::shared_ptr<CrashAppWindow> CrashAppWindow::Create(const std::string &name,
+                                                       const std::string &id) {
+  auto instance = std::shared_ptr<CrashAppWindow>(new CrashAppWindow(name, id));
   instance->SetupRenderCallback();
   return instance;
 }
@@ -134,7 +137,7 @@ void CrashAppWindow::Render() {
   ImGui::SameLine();
 
   ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
-  ImGui::TextWrapped(ctx->state.session_id.c_str());
+  ImGui::TextWrapped(m_SessionID.c_str());
   ImGui::PopStyleColor(1);
 
   ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
@@ -249,7 +252,7 @@ void CrashAppWindow::Render() {
 
       // Load content from file into text variable
       static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" +
-                                    ctx->state.session_id + "/logs/global.log";
+                                    m_SessionID + "/logs/global.log";
       if (!loadFileToString(log_file, text, bufferSize)) {
         // Handle error opening or reading the file
         ImGui::Text("Failed to open or read file: %s", log_file.c_str());
@@ -263,6 +266,7 @@ void CrashAppWindow::Render() {
 
       ImGui::EndTabItem();
     }
+
     if (ImGui::BeginTabItem("Processus report")) {
 
       static const int bufferSize = 1024 * 16;
@@ -271,8 +275,7 @@ void CrashAppWindow::Render() {
 
       // Load content from file into text variable
       static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" +
-                                    ctx->state.session_id +
-                                    "/crash/core_dumped.txt";
+                                    m_SessionID + "/crash/core_dumped.txt";
       if (!loadFileToString(log_file, text, bufferSize)) {
         // Handle error opening or reading the file
         ImGui::Text("Failed to open or read file: %s", log_file.c_str());
@@ -285,10 +288,12 @@ void CrashAppWindow::Render() {
           ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags);
       ImGui::EndTabItem();
     }
+
     if (ImGui::BeginTabItem("Send details")) {
       ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah");
       ImGui::EndTabItem();
     }
+
     ImGui::EndTabBar();
   }
 

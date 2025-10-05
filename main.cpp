@@ -259,6 +259,7 @@ int main(int argc, char *argv[]) {
           if (!session_id.empty() && session_id.front() == '"' &&
               session_id.back() == '"') {
             session_id = session_id.substr(1, session_id.size() - 2);
+            g_SessionID = session_id;
           }
         }
       }
