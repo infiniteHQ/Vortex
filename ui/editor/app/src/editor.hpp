@@ -172,7 +172,7 @@ private:
 static std::shared_ptr<Editor> c_Editor;
 
 namespace VortexMaker {
-int VortexEditor(int argc, char **argv);
+VORTEX_API int VortexEditor(int argc, char **argv);
 }
 
 #endif

@@ -5,7 +5,7 @@
 #ifndef CRASH_H
 #define CRASH_H
 
-class CrashAppWindow : public std::enable_shared_from_this<CrashAppWindow> {
+class VORTEX_API CrashAppWindow : public std::enable_shared_from_this<CrashAppWindow> {
 public:
   CrashAppWindow(const std::string &name, const std::string &session_id);
 

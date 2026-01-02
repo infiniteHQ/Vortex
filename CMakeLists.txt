@@ -81,6 +81,7 @@ file(GLOB_RECURSE VORTEX_ALL_SOURCES
 # Core lib
 # ---------------------------------------------------------------------------
 add_library(vortex_shared SHARED ${VORTEX_ALL_SOURCES})
+target_compile_definitions(vortex_shared PRIVATE VORTEX_EXPORTS)
 
 target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include
