@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(vortex)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Options
 if (MSVC)
     add_compile_options(/utf-8)
 else()
@@ -48,53 +47,52 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------
-# Dependancies
+# Deps
 # ---------------------------------------------------------------------------
 find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include")
 
 # ---------------------------------------------------------------------------
-# Library
+# Cherry UI Library
 # ---------------------------------------------------------------------------
-file(GLOB_RECURSE VORTEX_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp")
+option(CHERRY_STATIC "Link Cherry statically"                            OFF)
+option(CHERRY_DEBUG "Enable Cherry debug tools"                         OFF)
 
-add_library(vortex_shared SHARED ${VORTEX_SHARED_SOURCES})
-target_compile_definitions(vortex_shared PRIVATE VORTEX_EXPORTS)
+option(CHERRY_IMGUI_EXPORT "Disable workspace saves"                    ON)
+option(CHERRY_PACKAGE "Enable packaging features with pyinstaller"      OFF)
+option(CHERRY_MULTIAPP "Use multiple apps in one executable"            ON)
+
+option(CHERRY_ENABLE_NET "Enable net features"                          OFF)
+option(CHERRY_ENABLE_AUDIO "Enable audio features"                      OFF)
+option(CHERRY_ENABLE_KIT "Enable base component kit"                    OFF)
+option(CHERRY_ENABLE_LINUXDRM "Enable Linux Direct Rendering Manager"   OFF)
+option(CHERRY_ENABLE_NODES "Disable nodal systems"                      OFF)
+option(CHERRY_ENABLE_WORKSPACESAVES "Disable workspace saves"           OFF)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/cherry cherry_build)
+
+file(GLOB_RECURSE VORTEX_ALL_SOURCES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/editor/app/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/src/*.cpp"
+)
+
+# ---------------------------------------------------------------------------
+# Core lib
+# ---------------------------------------------------------------------------
+add_library(vortex_shared SHARED ${VORTEX_ALL_SOURCES})
 
 target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/main/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/editor/app/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include
 )
 
-set_target_properties(vortex_shared PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release
-    ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release
-    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release
-)
+target_link_libraries(vortex_shared PUBLIC cherry)
 
-# ---------------------------------------------------------------------------
-# Cherry UI Library
-# ---------------------------------------------------------------------------
-option(CHERRY_STATIC "Link Cherry statically" OFF)
-option(CHERRY_DEBUG "Enable Cherry debug tools" OFF)
-option(CHERRY_PACKAGE "Enable packaging features with pyinstaller" OFF)
-option(CHERRY_ENABLE_NET "Enable net features" OFF)
-option(CHERRY_ENABLE_CEF "Enable chrome embedded framwork (CEF)" OFF)
-option(CHERRY_ENABLE_AUDIO "Enable audio features" OFF)
-option(CHERRY_ENABLE_LINUXDRM "Enable Linux Direct Rendering Manager" OFF)
-option(CHERRY_DISABLE_NODES "Disable nodal systems" OFF)
-option(CHERRY_DISABLE_WORKSPACESAVES "Disable workspace saves" OFF)
-option(CHERRY_IMGUI_EXPORT "Disable workspace saves" ON)
-
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/cherry cherry_build)
-if(VORTEX_DISABLE_UI)
-    message("UI Disabled")
-else()
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler ui_crash_handler_build)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui/editor ui_editor_build)
-target_compile_definitions(editor PUBLIC CHERRY_IMPORT_DLL)
-target_compile_definitions(vortex_shared PUBLIC CHERRY_IMPORT_DLL)
-    target_link_libraries(vortex_shared PUBLIC editor crash_handler cherry)
+if(UNIX AND NOT APPLE)
+    target_link_libraries(vortex_shared PRIVATE crypto)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -106,29 +104,40 @@ target_link_libraries(vortex PUBLIC vortex_shared)
 add_executable(vortex_utils utils.cpp)
 target_link_libraries(vortex_utils PUBLIC vortex_shared)
 
-target_compile_definitions(vortex_shared PUBLIC CHERRY_IMPORT_DLL)
 
 if(UNIX AND NOT APPLE)
     find_package(CURL REQUIRED)
     target_link_libraries(vortex PRIVATE CURL::libcurl)
 endif()
 
+target_compile_definitions(vortex_shared
+    PUBLIC CHERRY_MULTIAPP
+)
+
+target_compile_definitions(vortex
+    PRIVATE CHERRY_MULTIAPP
+)
+
+target_compile_definitions(vortex_utils
+    PRIVATE CHERRY_MULTIAPP
+)
+
+# ---------------------------------------------------------------------------
+# Assets
+# ---------------------------------------------------------------------------
+add_custom_target(sync_vortex_assets ALL
+    COMMAND ${CMAKE_COMMAND} -E echo "Synchronizing All UI Assets..."
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/ui/editor/assets" "${CMAKE_BINARY_DIR}/bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/assets" "${CMAKE_BINARY_DIR}/bin"
+)
+add_dependencies(vortex_shared sync_vortex_assets)
+
 # ---------------------------------------------------------------------------
 # Installation
 # ---------------------------------------------------------------------------
-if(UNIX AND NOT APPLE)
-    set(INSTALL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_FULL_VERSION})
-    set(INSTALL_BIN_DIR ${INSTALL_BASE_DIR}/bin)
-    set(INSTALL_LIB_DIR ${INSTALL_BASE_DIR}/bin)
-    set(INSTALL_INCLUDE_DIR ${INSTALL_BASE_DIR}/include)
-    set(INSTALL_MAIN_DIR ${INSTALL_BASE_DIR}/)
-elseif(WIN32)
-    set(INSTALL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_FULL_VERSION})
-    set(INSTALL_BIN_DIR ${INSTALL_BASE_DIR}/bin)
-    set(INSTALL_LIB_DIR ${INSTALL_BASE_DIR}/bin)
-    set(INSTALL_INCLUDE_DIR ${INSTALL_BASE_DIR}/include)
-    set(INSTALL_MAIN_DIR ${INSTALL_BASE_DIR}/)
-endif()
+set(INSTALL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_FULL_VERSION})
+set(INSTALL_BIN_DIR ${INSTALL_BASE_DIR}/bin)
+set(INSTALL_LIB_DIR ${INSTALL_BASE_DIR}/bin)
 
 set_target_properties(vortex PROPERTIES
     INSTALL_RPATH "${INSTALL_LIB_DIR}"

@@ -35,7 +35,7 @@ static void handleCommunity() {}
 static void handleTutorials() {}
 
 static void handleDocumentation() {}
-
+/*
 void EditorLayer::framebar(const std::shared_ptr<EditorLayer> &applayer,
                            Cherry::Application *app) {
   float oldSize = CherryGUI::GetFont()->Scale;
@@ -146,9 +146,8 @@ void EditorLayer::framebar(const std::shared_ptr<EditorLayer> &applayer,
 
   CherryGUI::PopFont();
 }
-
-void Editor::Menubar(const std::shared_ptr<EditorLayer> &exampleLayer,
-                     Cherry::Application *app) {
+*/
+void Editor::Menubar(Cherry::Application *app) {
   float oldsize = CherryGUI::GetFont()->Scale;
   CherryGUI::GetFont()->Scale *= 0.84;
   CherryGUI::PushFont(CherryGUI::GetFont());
@@ -198,7 +197,7 @@ void Editor::Menubar(const std::shared_ptr<EditorLayer> &exampleLayer,
 
     if (CherryGUI::MenuItem("Project Settings",
                             "Main configurations of this project",
-                            &exampleLayer->ShowProjectSettings))
+                            &ShowProjectSettings))
       handleProjectSettings();
     CherryGUI::GetFont()->Scale *= 0.8;
     CherryGUI::PushFont(CherryGUI::GetFont());
@@ -218,7 +217,7 @@ void Editor::Menubar(const std::shared_ptr<EditorLayer> &exampleLayer,
     CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
 
     if (CherryGUI::MenuItem("Logs Utility", "Overview of all logs",
-                            &exampleLayer->ShowLogUtility))
+                            &ShowLogUtility))
       handleLogUtility();
     CherryGUI::GetFont()->Scale *= 0.8;
     CherryGUI::PushFont(CherryGUI::GetFont());
@@ -242,12 +241,12 @@ void Editor::Menubar(const std::shared_ptr<EditorLayer> &exampleLayer,
       handleManagePlugins();
     if (CherryGUI::MenuItem("Manage modules",
                             "Manage modules loaded/registered",
-                            &exampleLayer->ShowModulesManager))
-      handleManageModules(exampleLayer->ShowModulesManager);
+                            &ShowModulesManager))
+      handleManageModules(ShowModulesManager);
     if (CherryGUI::MenuItem("Templates modules",
                             "Create, add template in your project",
-                            &exampleLayer->ShowTemplateManager))
-      handleManageModules(exampleLayer->ShowTemplateManager);
+                            &ShowTemplateManager))
+      handleManageModules(ShowTemplateManager);
     CherryGUI::EndMenu();
   }
 
@@ -269,12 +268,12 @@ void Editor::Menubar(const std::shared_ptr<EditorLayer> &exampleLayer,
   if (CherryGUI::BeginMenu("Tools")) {
     if (CherryGUI::MenuItem("Content Browser",
                             "Open a new project content browser",
-                            &exampleLayer->ShowContentBrowser)) {
+                            &ShowContentBrowser)) {
       this->SpawnContentBrowser();
     }
     if (CherryGUI::MenuItem("Project Viewer", "Project component manager",
-                            &exampleLayer->ShowProjectViewer))
-      handleProjectViewer(exampleLayer->ShowProjectViewer);
+                            &ShowProjectViewer))
+      handleProjectViewer(ShowProjectViewer);
     CherryGUI::EndMenu();
   }
 
@@ -356,7 +355,6 @@ void RebuildCherryTheme() {
 
 Cherry::Application *CreateEditor(int argc, char **argv) {
   Cherry::ApplicationSpecification spec;
-  std::shared_ptr<EditorLayer> layer = std::make_shared<EditorLayer>();
 
   std::string name = "Vortex Editor";
   spec.Name = name;
@@ -373,7 +371,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   spec.IconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
   spec.FavIconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
 
-  spec.SetFramebarCallback([layer]() {
+  spec.SetFramebarCallback([]() {
     float oldSize = CherryGUI::GetFont()->Scale;
     CherryGUI::PushFont(CherryGUI::GetFont());
 
@@ -505,7 +503,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     modules->RefreshMainWindow();
   }
 
-  app->SetMenubarCallback([app, layer]() {
+  app->SetMenubarCallback([app]() {
     if (VortexMaker::IsThemeNeedsRebuild()) {
       CherryApp.m_Themes.clear();
       for (auto t : VortexMaker::GetCurrentContext()->IO.themes) {

@@ -1,5 +1,4 @@
 #pragma once
-#define CHERRY_V1
 #include "../../../../lib/cherry/cherry.hpp"
 
 // Static windows
@@ -23,62 +22,6 @@ static std::vector<std::shared_ptr<VortexEditor::ContentBrowserAppWindow>>
     c_ContentBrowserInstances;
 static std::vector<std::shared_ptr<VortexEditor::LogsUtilityAppWindow>>
     c_LogsUtilityInstances;
-
-class EditorLayer : public Cherry::Layer {
-public:
-  EditorLayer() {};
-
-  void menubar(const std::shared_ptr<EditorLayer> &applayer,
-               Cherry::Application *app);
-  void framebar(const std::shared_ptr<EditorLayer> &applayer,
-                Cherry::Application *app);
-
-  void OnFinish() override {}
-
-  void OnUIRender() override {
-    PushStyle();
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
-    ImGui::PushStyleColor(ImGuiCol_WindowBg,
-                          ImVec4(0.10f, 0.10f, 0.10f, 1.00f));
-    ImGui::RenderNotifications();
-    ImGui::PopStyleVar(2);
-    ImGui::PopStyleColor(1);
-
-    PopStyle();
-  }
-  void PushStyle() {
-    ImGuiStyle &style = ImGui::GetStyle();
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 11.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 11.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15.0f, 10.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(9.0f, 3.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 7.0f);
-  }
-
-  void PopStyle() { ImGui::PopStyleVar(8); }
-  VxContext *m_ctx;
-
-  // Global TaskProcessor instance
-  // TaskProcessor taskProcessor;
-
-  std::thread receiveThread;
-  bool ShowContentBrowser = true;
-  bool ShowProjectViewer = false;
-  bool ShowModulesManager = false;
-  bool ShowTemplateManager = false;
-  bool ShowProjectSettings = false;
-  bool ShowLogUtility = false;
-
-  // Instance factory;
-
-private:
-  std::vector<std::string> instanciedWindowsNames;
-};
 
 class Editor {
 public:
@@ -117,9 +60,9 @@ public:
     m_AboutWindow->GetAppWindow()->SetVisibility(visibility);
     if (visibility) {
       Cherry::ApplicationSpecification spec;
+      spec.SetName("About Vortex");
+      spec.SetUniqueAppWindowName("About Vortex");
 
-      std::string name = "About Vortex";
-      spec.Name = name;
       spec.MinHeight = 100;
       spec.MinWidth = 200;
       spec.Height = 450;
@@ -208,8 +151,14 @@ public:
     c_LogsUtilityInstances.push_back(LogsUtility);
   }
 
-  void Menubar(const std::shared_ptr<EditorLayer> &exampleLayer,
-               Cherry::Application *app);
+  void Menubar(Cherry::Application *app);
+
+  bool ShowContentBrowser = true;
+  bool ShowProjectViewer = false;
+  bool ShowModulesManager = false;
+  bool ShowTemplateManager = false;
+  bool ShowProjectSettings = false;
+  bool ShowLogUtility = false;
 
 private:
   std::shared_ptr<VortexEditor::Welcome> m_WelcomeAppWindow;

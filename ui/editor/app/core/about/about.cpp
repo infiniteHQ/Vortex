@@ -21,8 +21,8 @@ std::string getVortexBuildName() { return VORTEX_BUILDNAME; }
 #define VORTEX_EXECUTABLE "vortex_launcher"
 #endif
 
-static std::string vxl_exehash = "";
-static std::string system_desktop = "";
+static std::string vxl_exehash = "undefined";
+static std::string system_desktop = "undefined";
 
 #ifdef _WIN32
 #include <fstream>
@@ -39,7 +39,7 @@ std::string computeSHA256Short(const std::string &filepath,
                                size_t length = 10) {
   std::ifstream file(filepath, std::ios::binary);
   if (!file)
-    return "";
+    return "undefined";
 
   std::vector<char> buffer(8192);
   HCRYPTPROV hProv = 0;
@@ -49,12 +49,12 @@ std::string computeSHA256Short(const std::string &filepath,
 
   if (!CryptAcquireContext(&hProv, nullptr, nullptr, PROV_RSA_AES,
                            CRYPT_VERIFYCONTEXT)) {
-    return "";
+    return "undefined";
   }
 
   if (!CryptCreateHash(hProv, CALG_SHA_256, 0, 0, &hHash)) {
     CryptReleaseContext(hProv, 0);
-    return "";
+    return "undefined";
   }
 
   while (file.read(buffer.data(), buffer.size()) || file.gcount()) {
@@ -62,14 +62,14 @@ std::string computeSHA256Short(const std::string &filepath,
                        static_cast<DWORD>(file.gcount()), 0)) {
       CryptDestroyHash(hHash);
       CryptReleaseContext(hProv, 0);
-      return "";
+      return "undefined";
     }
   }
 
   if (!CryptGetHashParam(hHash, HP_HASHVAL, hash, &hashLen, 0)) {
     CryptDestroyHash(hHash);
     CryptReleaseContext(hProv, 0);
-    return "";
+    return "undefined";
   }
 
   CryptDestroyHash(hHash);
@@ -89,7 +89,7 @@ std::string computeSHA256Short(const std::string &filepath,
                                size_t length = 10) {
   std::ifstream file(filepath, std::ios::binary);
   if (!file)
-    return "";
+    return "undefined";
 
   SHA256_CTX sha256;
   SHA256_Init(&sha256);

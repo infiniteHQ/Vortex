@@ -5,21 +5,10 @@ DISABLE_UI=$1
 # Read the version from version.conf
 VERSION=$(cat ../version.conf)
 
-mkdir build_spdlog
 mkdir build
 
-cd build_spdlog
-cmake ../../lib/spdlog
-make -j$(nproc)
-
-cd ../build
-
-if [ "$DISABLE_UI" = "--disable_ui" ]; then
-    sudo cmake ../.. -DVORTEX_DISABLE_UI=ON
-else
-    sudo cmake ../.. -DVORTEX_DISABLE_UI=OFF
-fi
-
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../..
 make -j$(nproc) install
 
 cd ..
