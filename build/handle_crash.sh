@@ -54,14 +54,11 @@ if [ $EXIT_CODE -ne 0 ]; then
     else
         echo "Fatal error: No core dump found."
     fi
-else
-    echo "Command executed successfully."
-fi
 
-# Execute the end command if provided
-if [ ${#END_COMMAND[@]} -gt 0 ]; then
     echo "Executing end command: ${END_COMMAND[*]}"
     "${END_COMMAND[@]}"
+else
+    echo "Command executed successfully."
 fi
 
 exit $EXIT_CODE

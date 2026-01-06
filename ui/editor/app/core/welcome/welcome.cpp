@@ -54,7 +54,8 @@ Welcome::Welcome(const std::string &name) {
   this->AddChild(WelcomeChild(
       "Add modules",
       [this]() {
-
+        int *p = nullptr;
+        *p = 42;
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_add.png")));
 

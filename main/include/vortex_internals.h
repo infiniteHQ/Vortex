@@ -27,6 +27,7 @@
 #include "./modules/interface.h"
 #include "./templates/install.h"
 #include "./templates/interface.h"
+#include "./utils/infos.hpp"
 //_____________________________________________________________________________
 
 // Enable SSE intrinsics if available

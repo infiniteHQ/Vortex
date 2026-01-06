@@ -1,34 +1,9 @@
 #include "crash_report.hpp"
 
-static bool consent_data_inspection;
-static bool consent_response;
-
-std::string CrashAppWindow::GetHomeDirectory() {
-#if defined(__linux__) || defined(__APPLE__)
-  const char *homePath = std::getenv("HOME");
-  if (homePath == nullptr) {
-    throw std::runtime_error("HOME environment variable not set");
-  }
-  return std::string(homePath);
-#elif defined(_WIN32) || defined(_WIN64)
-  const char *homePath = std::getenv("USERPROFILE");
-  if (homePath == nullptr) {
-    const char *homeDrive = std::getenv("HOMEDRIVE");
-    const char *homePathEnv = std::getenv("HOMEPATH");
-    if (homeDrive == nullptr || homePathEnv == nullptr) {
-      throw std::runtime_error("HOMEPATH environment variables not set");
-    }
-    return std::string(homeDrive) + std::string(homePathEnv);
-  }
-  return std::string(homePath);
-#endif
-  throw std::runtime_error(
-      "Unknown platform: Unable to determine home directory");
-}
 CrashAppWindow::CrashAppWindow(const std::string &name,
                                const std::string &session_id) {
   m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
-  m_AppWindow->SetIcon("/usr/local/include/Vortex/imgs/vortex.png");
+  m_AppWindow->SetIcon(Cherry::GetPath("ch_resources/imgs/icon_crash.png"));
   m_AppWindow->SetClosable(false);
 
   m_AppWindow->m_TabMenuCallback = []() {
@@ -61,6 +36,29 @@ CrashAppWindow::CrashAppWindow(const std::string &name,
   m_SessionID = session_id;
 
   std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
+}
+
+std::string CrashAppWindow::GetHomeDirectory() {
+#if defined(__linux__) || defined(__APPLE__)
+  const char *homePath = std::getenv("HOME");
+  if (homePath == nullptr) {
+    throw std::runtime_error("HOME environment variable not set");
+  }
+  return std::string(homePath);
+#elif defined(_WIN32) || defined(_WIN64)
+  const char *homePath = std::getenv("USERPROFILE");
+  if (homePath == nullptr) {
+    const char *homeDrive = std::getenv("HOMEDRIVE");
+    const char *homePathEnv = std::getenv("HOMEPATH");
+    if (homeDrive == nullptr || homePathEnv == nullptr) {
+      throw std::runtime_error("HOMEPATH environment variables not set");
+    }
+    return std::string(homeDrive) + std::string(homePathEnv);
+  }
+  return std::string(homePath);
+#endif
+  throw std::runtime_error(
+      "Unknown platform: Unable to determine home directory");
 }
 
 // Updated loadFileToString function
@@ -208,6 +206,12 @@ void CrashAppWindow::Render() {
         ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
         ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
         ImGui::TableHeadersRow();
+
+        std::string vortex_launcher_version = VORTEX_VERSION;
+        std::string cherry_version = CHERRY_VERSION;
+        std::string os_name = OS_NAME;
+        std::string os_arch = ARCH_NAME;
+
         for (int i = 0; i < 8; i++) {
           ImGui::TableNextRow();
           for (int column = 0; column < 2; column++) {
@@ -217,25 +221,35 @@ void CrashAppWindow::Render() {
               if (column == 0) {
                 ImGui::Text("Vortex Version");
               } else if (column == 1) {
-                ImGui::Text("1.1");
+                const std::string version = VORTEX_VERSION;
+                ImGui::Text(vortex_launcher_version.c_str());
               }
             } else if (i == 1) {
               if (column == 0) {
-                ImGui::Text("Project name");
+                ImGui::Text("Build");
               } else if (column == 1) {
-                ImGui::Text("My big project");
+                const std::string build =
+                    "Build: " + VortexMaker::GetVortexBuildID() + " ; " +
+                    VortexMaker::GetBuildDate() + " (" +
+                    VortexMaker::GetVortexEditorDist() + ")";
+                ImGui::Text(build.c_str());
               }
             } else if (i == 2) {
               if (column == 0) {
-                ImGui::Text("Number of modules loaded");
+                ImGui::Text("Hash");
               } else if (column == 1) {
-                ImGui::Text("4");
+                const std::string hash =
+                    " exe(" + VortexMaker::GetVortexEditorHash() + ") git(" +
+                    VortexMaker::GetGitCommit() + ")";
+                ImGui::Text(hash.c_str());
               }
             } else if (i == 3) {
               if (column == 0) {
-                ImGui::Text("Number of plugins loaded");
+                ImGui::Text("System");
               } else if (column == 1) {
-                ImGui::Text("4");
+                const std::string system =
+                    os_name + " " + os_arch + system_desktop;
+                ImGui::Text(system.c_str());
               }
             }
           }
@@ -297,38 +311,35 @@ void CrashAppWindow::Render() {
     ImGui::EndTabBar();
   }
 
-  ImGui::Checkbox("I consent send to Infinite data about my hardware & OS "
-                  "technical infos. ",
-                  &consent_data_inspection);
-  ImGui::Checkbox(
-      "I consent Infinite can contact me to get more informations. ",
-      &consent_response);
+  std::string text =
+      CherryApp.GetLocale("loc.continue") + CherryApp.GetLocale("loc.close");
+  ImVec2 to_remove = CherryGUI::CalcTextSize(text.c_str());
+  CherryGUI::SetCursorPosX(CherryGUI::GetContentRegionMax().x - to_remove.x -
+                           50);
+  CherryGUI::SetCursorPosY(CherryGUI::GetContentRegionMax().y - 35.0f);
+  CherryNextProp("color", "#222222");
+  CherryKit::Separator();
 
-  ImVec2 windowSize = ImGui::GetWindowSize();
-  ImVec2 contentSize = ImGui::GetContentRegionAvail();
-  ImVec2 buttonSize = ImVec2(170, 30);
-  ImVec2 bitButtonSize = ImVec2(300, 30);
-
-  float ysection = windowSize.y - 280;
-  float buttonPosY = windowSize.y - buttonSize.y -
-                     ImGui::GetStyle().ItemSpacing.y * 2 - bitButtonSize.y;
-
-  ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX(), buttonPosY));
-
-  if (ImGui::Button("Don't send and close", buttonSize)) {
+  CherryNextProp("color_text", "#B1FF31");
+  if (CherryKit::ButtonText("Close").GetData("isClicked") == "true") {
+    Cherry::Application().Get().Close();
   }
 
-  float firstButtonPosX = windowSize.x - buttonSize.x - bitButtonSize.y -
-                          80 * 2 - ImGui::GetStyle().ItemSpacing.x * 3;
+  CherryGUI::SetCursorPosY(CherryGUI::GetContentRegionMax().y - 28.0f);
+  CherryGUI::SetCursorPosX(CherryGUI::GetContentRegionMax().x - to_remove.x -
+                           20);
 
-  ImGui::SetCursorPos(ImVec2(firstButtonPosX, buttonPosY));
-
-  if (ImGui::Button("Send and close", buttonSize)) {
+  CherryNextProp("color_text", "#B1FF31");
+  if (CherryKit::ButtonText("Restart project").GetData("isClicked") == "true") {
+    Cherry::Application().Get().Close();
   }
 
-  ImGui::SameLine();
+  CherryGUI::SameLine();
 
-  if (ImGui::Button("Send and restart", buttonSize)) {
+  Cherry::SetNextComponentProperty("color_bg", "#B1FF31FF");
+  Cherry::SetNextComponentProperty("color_bg_hovered", "#C3FF53FF");
+  Cherry::SetNextComponentProperty("color_text", "#121212FF");
+  if (CherryKit::ButtonText("Start Launcher").GetData("isClicked") == "true") {
   }
 }
 

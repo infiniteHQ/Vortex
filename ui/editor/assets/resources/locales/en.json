@@ -19,6 +19,7 @@
         {"loc.window.title.content_browser": "Content Browser"},
         {"loc.window.title.console_logs": "Console and Logs"},
         {"loc.window_names.about": "About Vortex"},
+        {"loc.window_names.welcome": "Welcome here !"},
         {"loc.window.content.content_browser.add": "Add"},
         {"loc.window.content.content_browser.import": "Import"},
         {"loc.window.content.content_browser.save": "Save"},
