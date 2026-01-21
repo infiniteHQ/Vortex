@@ -15,9 +15,9 @@ endif()
 # Version / Build infos
 # ---------------------------------------------------------------------------
 set(VORTEX_VERSION "1.0")
-set(VORTEX_FULL_VERSION "1.0.build1")
+set(VORTEX_FULL_VERSION "1.0.build2")
 set(VORTEX_BUILDID "1")
-set(VORTEX_BUILDNAME "1.0 [Build 1]")
+set(VORTEX_BUILDNAME "1.0 [Build 2]")
 set(VORTEX_DIST "beta")
 set(VORTEX_BUILD "dev")
 

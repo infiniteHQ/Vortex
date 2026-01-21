@@ -76,7 +76,7 @@ And of course, you can also help support the project financially to cover its co
 > This repository represents the Vortex Editor. The Vortex Editor can open Vortex projects or tools, start modules and plugins. It helps hackers or creators manage content and create or hack many things. The goal of the editor is to create a convenient, interoperable, and simple stack to help every part of a project work together with the others.
 
 ### About the versioning
-Vortex Editor uses a compatibility based versioning system rather than semantic versioning. Versions follow the format `MAJOR.MINOR+BUILD`, where the `MAJOR.MINOR` defines the compatibility branch (e.g. `1.0`, `1.1`, `2.0`) and `+BUILD` identifies each build within that branch (e.g. `1.0+build1`, `1.0+build2`). All projects created in the same branch remain compatible across its builds, while multiple branches (like `1.0` and `1.1`) can be installed and supported in parallel. This ensures long-term project/contents stability while allowing asynchronous development.
+Vortex Editor uses a compatibility based versioning system rather than semantic versioning. Versions follow the format `MAJOR.MINOR+BUILD`, where the `MAJOR.MINOR` defines the compatibility branch (e.g. `1.0`, `1.1`, `2.0`) and `+BUILD` identifies each build within that branch (e.g. `1.0+build2`, `1.0+build2`). All projects created in the same branch remain compatible across its builds, while multiple branches (like `1.0` and `1.1`) can be installed and supported in parallel. This ensures long-term project/contents stability while allowing asynchronous development.
 
 
 ### How to install the Editor?  
