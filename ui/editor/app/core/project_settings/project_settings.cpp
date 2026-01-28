@@ -539,7 +539,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         }
 
         static std::string color = "#B1FF31";
-        static int selected = 0;
+        static int selected = 1;
         static bool theme_changed = false;
         CherryNextProp("color", "#252525");
         CherryKit::Separator();
@@ -658,194 +658,203 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         CherryKit::Separator();
 
         if (selected_theme) {
-
           if (selected_theme->label != "dark" &&
               selected_theme->label != "clear") {
-          }
-        }
+            if (!theme_changed) {
+              static std::unordered_map<std::string, std::string> themeLabels =
+                  {
+                      {"button_color_border", "Button Border Color"},
+                      {"button_color_border_hovered",
+                       "Button Border Hovered Color"},
+                      {"button_color_border_clicked",
+                       "Button Border Clicked Color"},
+                      {"button_color_border_pressed",
+                       "Button Border Pressed Color"},
+                      {"button_color_bg", "Button Background Color"},
+                      {"button_color_bg_hovered",
+                       "Button Background Hovered Color"},
+                      {"button_color_bg_pressed",
+                       "Button Background Pressed Color"},
+                      {"button_color_bg_clicked",
+                       "Button Background Clicked Color"},
+                      {"button_color_text", "Button Text Color"},
+                      {"button_color_text_hovered",
+                       "Button Text Hovered Color"},
+                      {"button_color_text_pressed",
+                       "Button Text Pressed Color"},
+                      {"button_color_underline", "Button Underline Color"},
+                      {"button_color_underline_hovered",
+                       "Button Underline Hovered Color"},
+                      {"button_color_underline_pressed",
+                       "Button Underline Pressed Color"},
+                      {"button_size_x", "Button Default Width"},
+                      {"button_size_y", "Button Default Height"},
+                      {"button_padding_x", "Button Padding X"},
+                      {"button_padding_y", "Button Padding Y"},
+                      {"button_scale", "Button Scale"},
+                  };
 
-        if (selected_theme->label != "dark" &&
-            selected_theme->label != "clear") {
-          if (!theme_changed) {
-            static std::unordered_map<std::string, std::string> themeLabels = {
-                {"button_color_border", "Button Border Color"},
-                {"button_color_border_hovered", "Button Border Hovered Color"},
-                {"button_color_border_clicked", "Button Border Clicked Color"},
-                {"button_color_border_pressed", "Button Border Pressed Color"},
-                {"button_color_bg", "Button Background Color"},
-                {"button_color_bg_hovered", "Button Background Hovered Color"},
-                {"button_color_bg_pressed", "Button Background Pressed Color"},
-                {"button_color_bg_clicked", "Button Background Clicked Color"},
-                {"button_color_text", "Button Text Color"},
-                {"button_color_text_hovered", "Button Text Hovered Color"},
-                {"button_color_text_pressed", "Button Text Pressed Color"},
-                {"button_color_underline", "Button Underline Color"},
-                {"button_color_underline_hovered",
-                 "Button Underline Hovered Color"},
-                {"button_color_underline_pressed",
-                 "Button Underline Pressed Color"},
-                {"button_size_x", "Button Default Width"},
-                {"button_size_y", "Button Default Height"},
-                {"button_padding_x", "Button Padding X"},
-                {"button_padding_y", "Button Padding Y"},
-                {"button_scale", "Button Scale"},
-            };
+              static std::unordered_map<std::string, std::vector<std::string>>
+                  themeGroups = {
+                      {"Components/Buttons",
+                       {"button_color_border", "button_color_border_hovered",
+                        "button_color_border_clicked",
+                        "button_color_border_pressed", "button_color_bg",
+                        "button_color_bg_hovered", "button_color_bg_pressed",
+                        "button_color_bg_clicked", "button_color_text",
+                        "button_color_text_hovered",
+                        "button_color_text_pressed", "button_color_underline",
+                        "button_color_underline_hovered",
+                        "button_color_underline_pressed", "button_size_x",
+                        "button_size_y", "button_padding_x", "button_padding_y",
+                        "button_scale"}},
+                      {"Components/Checkboxes",
+                       {"checkbox_color_border",
+                        "checkbox_color_border_hovered",
+                        "checkbox_color_border_clicked",
+                        "checkbox_color_border_pressed", "checkbox_color_bg",
+                        "checkbox_color_bg_hovered",
+                        "checkbox_color_bg_pressed",
+                        "checkbox_color_bg_clicked", "checkbox_size_x",
+                        "checkbox_size_y"}},
+                      {"Components/Combos",
+                       {"combo_color_border", "combo_color_border_hovered",
+                        "combo_color_border_clicked",
+                        "combo_color_border_pressed", "combo_color_bg",
+                        "combo_color_bg_hovered", "combo_color_bg_pressed",
+                        "combo_color_bg_clicked", "combo_size_x",
+                        "combo_size_y"}},
+                      {"Components/Headers",
+                       {"header_color_border",
+                        "header_color_border_hovered",
+                        "header_color_border_clicked",
+                        "header_color_border_pressed",
+                        "header_color_bg",
+                        "header_color_bg_hovered",
+                        "header_color_bg_pressed",
+                        "header_color_bg_clicked",
+                        "header_size_x",
+                        "header_size_y",
+                        "header_button_color_border",
+                        "header_button_color_border_hovered",
+                        "header_button_color_border_clicked",
+                        "header_button_color_border_pressed",
+                        "header_button_color_bg",
+                        "header_button_color_bg_hovered",
+                        "header_button_color_bg_pressed",
+                        "header_button_color_bg_clicked",
+                        "header_button_color_text",
+                        "header_button_color_text_hovered",
+                        "header_button_color_text_pressed"}},
+                      {"Components/Images",
+                       {"image_color_border", "image_color_border_hovered",
+                        "image_color_border_clicked",
+                        "image_color_border_pressed", "image_color_bg",
+                        "image_color_bg_hovered", "image_color_bg_pressed",
+                        "image_color_bg_clicked", "image_size_x",
+                        "image_size_y"}},
+                      {"Components/Modals",
+                       {"modal_padding_x", "modal_padding_y"}},
+                      {"Components/Notifications",
+                       {"notification_color_border",
+                        "notification_color_border_hovered",
+                        "notification_color_bg",
+                        "notification_color_bg_hovered"}},
+                      {"Components/Separators",
+                       {"separator_color", "separator_color_text"}},
+                      {"Components/KeyVals", {"keyval_color_text"}},
+                      {"Components/Tables",
+                       {"table_color_border", "table_cell_padding_x_header",
+                        "table_cell_padding_y_header",
+                        "table_cell_padding_x_row",
+                        "table_cell_padding_y_row"}},
+                      {"Components/Text",
+                       {"text_color_text", "text_area_color_text"}},
+                      {"Components/Titles", {"title_color_text"}},
+                      {"Components/Tooltips",
+                       {"tooltip_color_border", "tooltip_color_border_hovered",
+                        "tooltip_color_border_clicked", "tooltip_color_bg",
+                        "tooltip_color_bg_hovered",
+                        "tooltip_color_bg_clicked"}},
+                      {"Components/Blocks",
+                       {"block_color", "block_color_hovered",
+                        "block_color_pressed", "block_border_color",
+                        "block_border_color_hovered",
+                        "block_border_color_pressed", "block_border_radius",
+                        "block_border_size"}},
+                  };
 
-            static std::unordered_map<std::string, std::vector<std::string>>
-                themeGroups = {
-                    {"Components/Buttons",
-                     {"button_color_border", "button_color_border_hovered",
-                      "button_color_border_clicked",
-                      "button_color_border_pressed", "button_color_bg",
-                      "button_color_bg_hovered", "button_color_bg_pressed",
-                      "button_color_bg_clicked", "button_color_text",
-                      "button_color_text_hovered", "button_color_text_pressed",
-                      "button_color_underline",
-                      "button_color_underline_hovered",
-                      "button_color_underline_pressed", "button_size_x",
-                      "button_size_y", "button_padding_x", "button_padding_y",
-                      "button_scale"}},
-                    {"Components/Checkboxes",
-                     {"checkbox_color_border", "checkbox_color_border_hovered",
-                      "checkbox_color_border_clicked",
-                      "checkbox_color_border_pressed", "checkbox_color_bg",
-                      "checkbox_color_bg_hovered", "checkbox_color_bg_pressed",
-                      "checkbox_color_bg_clicked", "checkbox_size_x",
-                      "checkbox_size_y"}},
-                    {"Components/Combos",
-                     {"combo_color_border", "combo_color_border_hovered",
-                      "combo_color_border_clicked",
-                      "combo_color_border_pressed", "combo_color_bg",
-                      "combo_color_bg_hovered", "combo_color_bg_pressed",
-                      "combo_color_bg_clicked", "combo_size_x",
-                      "combo_size_y"}},
-                    {"Components/Headers",
-                     {"header_color_border",
-                      "header_color_border_hovered",
-                      "header_color_border_clicked",
-                      "header_color_border_pressed",
-                      "header_color_bg",
-                      "header_color_bg_hovered",
-                      "header_color_bg_pressed",
-                      "header_color_bg_clicked",
-                      "header_size_x",
-                      "header_size_y",
-                      "header_button_color_border",
-                      "header_button_color_border_hovered",
-                      "header_button_color_border_clicked",
-                      "header_button_color_border_pressed",
-                      "header_button_color_bg",
-                      "header_button_color_bg_hovered",
-                      "header_button_color_bg_pressed",
-                      "header_button_color_bg_clicked",
-                      "header_button_color_text",
-                      "header_button_color_text_hovered",
-                      "header_button_color_text_pressed"}},
-                    {"Components/Images",
-                     {"image_color_border", "image_color_border_hovered",
-                      "image_color_border_clicked",
-                      "image_color_border_pressed", "image_color_bg",
-                      "image_color_bg_hovered", "image_color_bg_pressed",
-                      "image_color_bg_clicked", "image_size_x",
-                      "image_size_y"}},
-                    {"Components/Modals",
-                     {"modal_padding_x", "modal_padding_y"}},
-                    {"Components/Notifications",
-                     {"notification_color_border",
-                      "notification_color_border_hovered",
-                      "notification_color_bg",
-                      "notification_color_bg_hovered"}},
-                    {"Components/Separators",
-                     {"separator_color", "separator_color_text"}},
-                    {"Components/KeyVals", {"keyval_color_text"}},
-                    {"Components/Tables",
-                     {"table_color_border", "table_cell_padding_x_header",
-                      "table_cell_padding_y_header", "table_cell_padding_x_row",
-                      "table_cell_padding_y_row"}},
-                    {"Components/Text",
-                     {"text_color_text", "text_area_color_text"}},
-                    {"Components/Titles", {"title_color_text"}},
-                    {"Components/Tooltips",
-                     {"tooltip_color_border", "tooltip_color_border_hovered",
-                      "tooltip_color_border_clicked", "tooltip_color_bg",
-                      "tooltip_color_bg_hovered", "tooltip_color_bg_clicked"}},
-                    {"Components/Blocks",
-                     {"block_color", "block_color_hovered",
-                      "block_color_pressed", "block_border_color",
-                      "block_border_color_hovered",
-                      "block_border_color_pressed", "block_border_radius",
-                      "block_border_size"}},
-                };
+              if (selected_theme) {
+                std::unordered_set<std::string> displayedKeys;
+                GroupNode root;
 
-            if (selected_theme) {
-              std::unordered_set<std::string> displayedKeys;
-              GroupNode root;
+                for (const auto &[groupPath, keys] : themeGroups) {
+                  std::vector<std::string> pathParts;
+                  std::stringstream ss(groupPath);
+                  std::string item;
+                  while (std::getline(ss, item, '/')) {
+                    pathParts.push_back(item);
+                  }
 
-              for (const auto &[groupPath, keys] : themeGroups) {
-                std::vector<std::string> pathParts;
-                std::stringstream ss(groupPath);
-                std::string item;
-                while (std::getline(ss, item, '/')) {
-                  pathParts.push_back(item);
+                  std::vector<Cherry::Component> groupComponents;
+                  for (const auto &key : keys) {
+                    auto it = selected_theme->theme.find(key);
+                    if (it != selected_theme->theme.end()) {
+                      displayedKeys.insert(key);
+                      std::string label =
+                          themeLabels.count(key) ? themeLabels.at(key) : key;
+                      groupComponents.push_back(CherryKit::KeyValString(
+                          label, &selected_theme->theme[key]));
+                    }
+                  }
+
+                  if (!groupComponents.empty()) {
+                    insertIntoTree(root, pathParts, 0, groupComponents);
+                  }
                 }
 
-                std::vector<Cherry::Component> groupComponents;
-                for (const auto &key : keys) {
-                  auto it = selected_theme->theme.find(key);
-                  if (it != selected_theme->theme.end()) {
-                    displayedKeys.insert(key);
+                std::vector<Cherry::Component> mainComponents;
+                GroupNode *otherParamsNode = nullptr;
+
+                for (auto &[topName, topNode] : root.children) {
+                  if (topName == "Other parameters") {
+                    otherParamsNode = &topNode;
+                  } else {
+                    mainComponents.push_back(
+                        buildComponentTree(topName, topNode));
+                  }
+                }
+
+                std::vector<Cherry::Component> otherComponents;
+                for (const auto &[key, value] : selected_theme->theme) {
+                  if (!displayedKeys.count(key)) {
                     std::string label =
                         themeLabels.count(key) ? themeLabels.at(key) : key;
-                    groupComponents.push_back(CherryKit::KeyValString(
+                    otherComponents.push_back(CherryKit::KeyValString(
                         label, &selected_theme->theme[key]));
                   }
                 }
 
-                if (!groupComponents.empty()) {
-                  insertIntoTree(root, pathParts, 0, groupComponents);
+                if (!otherComponents.empty()) {
+                  Cherry::Component otherGroup = CherryKit::KeyValParent(
+                      "Other parameters", true, otherComponents);
+                  mainComponents.push_back(otherGroup);
                 }
+
+                std::string label = "table" + selected_theme->label;
+                CherryKit::TableSimple(CherryID(label), "Customize theme",
+                                       mainComponents);
               }
-
-              std::vector<Cherry::Component> mainComponents;
-              GroupNode *otherParamsNode = nullptr;
-
-              for (auto &[topName, topNode] : root.children) {
-                if (topName == "Other parameters") {
-                  otherParamsNode = &topNode;
-                } else {
-                  mainComponents.push_back(
-                      buildComponentTree(topName, topNode));
-                }
-              }
-
-              std::vector<Cherry::Component> otherComponents;
-              for (const auto &[key, value] : selected_theme->theme) {
-                if (!displayedKeys.count(key)) {
-                  std::string label =
-                      themeLabels.count(key) ? themeLabels.at(key) : key;
-                  otherComponents.push_back(CherryKit::KeyValString(
-                      label, &selected_theme->theme[key]));
-                }
-              }
-
-              if (!otherComponents.empty()) {
-                Cherry::Component otherGroup = CherryKit::KeyValParent(
-                    "Other parameters", true, otherComponents);
-                mainComponents.push_back(otherGroup);
-              }
-
-              std::string label = "table" + selected_theme->label;
-              CherryKit::TableSimple(CherryID(label), "Customize theme",
-                                     mainComponents);
             }
           } else {
-            theme_changed = false;
+            CherryNextProp("color_text", "#797979");
+            CherryKit::TitleFive("Cannot customize a default theme, please "
+                                 "select a custom theme or create a new one.");
           }
-        } else {
+        }
 
-          CherryNextProp("color_text", "#797979");
-          CherryKit::TitleFive("Cannot customize a default theme, please "
-                               "select a custom theme or create a new one.");
+        if (theme_changed) {
+          theme_changed = false;
         }
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_white_paint.png")));
