@@ -27,11 +27,6 @@ class Editor {
 public:
   Editor() {
 
-    m_AboutWindow =
-        VortexEditor::AboutVortex::Create("?loc:loc.window_names.about");
-    m_AboutWindow->GetAppWindow()->SetVisibility(false);
-    Cherry::AddAppWindow(m_AboutWindow->GetAppWindow());
-
     m_WelcomeAppWindow =
         VortexEditor::Welcome::Create("?loc:loc.window_names.welcome");
     m_WelcomeAppWindow->GetAppWindow()->SetVisibility(true);
@@ -45,7 +40,6 @@ public:
         VortexEditor::ProjectSettings::Create("Project settings");
     m_ProjectSettings->GetAppWindow()->SetVisibility(false);
     Cherry::AddAppWindow(m_ProjectSettings->GetAppWindow());
-
     /* m_TemplatesUtilityAppWindow =
          VortexEditor::TemplatesUtilityAppWindow::Create("Templates utility");
      m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(false);
@@ -53,42 +47,49 @@ public:
   };
 
   bool GetAboutAppWindowVisibility() {
+    if (!m_AboutWindow)
+      return false;
     return m_AboutWindow->GetAppWindow()->m_Visible;
   }
 
-  void SetAboutWindowVisibility(const bool &visibility) {
-    m_AboutWindow->GetAppWindow()->SetVisibility(visibility);
+  void SetAboutWindowVisibility(const bool visibility) {
     if (visibility) {
-      Cherry::ApplicationSpecification spec;
-      spec.SetName("About Vortex");
-      spec.SetUniqueAppWindowName("About Vortex");
+      if (!m_AboutWindow) {
+        m_AboutWindow = VortexEditor::AboutVortex::Create("About Vortex");
 
-      spec.MinHeight = 100;
-      spec.MinWidth = 200;
-      spec.Height = 450;
-      spec.DisableLogo = true;
-      spec.DisableResize = true;
-      spec.Width = 750;
-      spec.CustomTitlebar = true;
-      spec.DisableWindowManagerTitleBar = true;
-      spec.WindowOnlyClosable = true;
-      spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
-      spec.UniqueAppWindowName = m_AboutWindow->GetAppWindow()->m_Name;
+        Cherry::ApplicationSpecification spec;
+        spec.SetName("About Vortex");
+        spec.SetUniqueAppWindowName(m_AboutWindow->GetAppWindow()->m_Name);
+        spec.MinHeight = 100;
+        spec.MinWidth = 200;
+        spec.Height = 450;
+        spec.Width = 750;
+        spec.DisableLogo = true;
+        spec.DisableResize = true;
+        spec.CustomTitlebar = true;
+        spec.DisableWindowManagerTitleBar = true;
+        spec.WindowOnlyClosable = true;
+        spec.WindowSaves = false;
+        spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
 
-      spec.UsingCloseCallback = true;
-      spec.CloseCallback = [this]() {
-        Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
+        spec.UsingCloseCallback = true;
+        spec.CloseCallback = [this]() {
+          Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
+          m_AboutWindow = nullptr;
+        };
 
-        // Recreate a new sleepy instance
-        m_AboutWindow =
-            VortexEditor::AboutVortex::Create("?loc:loc.window_names.about");
-        m_AboutWindow->GetAppWindow()->SetVisibility(false);
+        spec.MenubarCallback = []() {};
+
+        m_AboutWindow->GetAppWindow()->AttachOnNewWindow(spec);
         Cherry::AddAppWindow(m_AboutWindow->GetAppWindow());
-      };
+      }
 
-      spec.MenubarCallback = []() {};
-      spec.WindowSaves = false;
-      m_AboutWindow->GetAppWindow()->AttachOnNewWindow(spec);
+      m_AboutWindow->GetAppWindow()->SetVisibility(true);
+    } else {
+      if (m_AboutWindow) {
+        Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
+        m_AboutWindow = nullptr;
+      }
     }
   }
 

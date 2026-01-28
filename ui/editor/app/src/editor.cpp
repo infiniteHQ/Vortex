@@ -158,26 +158,18 @@ void Editor::Menubar(Cherry::Application *app) {
     CherryGUI::EndMenu();
   }
 
-  ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // Gris (50% blanc)
-  ImVec4 graySeparatorColor =
-      ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // Gris (50% blanc)
-  ImVec4 darkBackgroundColor =
-      ImVec4(0.15f, 0.15f, 0.15f, 1.0f); // Fond plus foncé
-  ImVec4 lightBorderColor =
-      ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // Bordure plus claire
+  ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+  ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+  ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
+  ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
-  // Pousser le style pour le fond plus foncé
   CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
-
-  // Pousser le style pour la bordure plus claire
   CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
 
   CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 
   if (CherryGUI::BeginMenu("Edit")) {
-
     // TODO : Save All, (like the content browser)
-
     CherryGUI::GetFont()->Scale *= 0.8;
     CherryGUI::PushFont(CherryGUI::GetFont());
 
@@ -250,8 +242,8 @@ void Editor::Menubar(Cherry::Application *app) {
     CherryGUI::EndMenu();
   }
 
-  CherryGUI::PopStyleVar();    // Pour les bords arrondis
-  CherryGUI::PopStyleColor(2); // Pour le fond et la bordure
+  CherryGUI::PopStyleVar();
+  CherryGUI::PopStyleColor(2);
 
   if (CherryGUI::BeginMenu("Window")) {
     if (CherryGUI::MenuItem("Show bottom toolbar",
