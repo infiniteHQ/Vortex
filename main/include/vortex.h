@@ -2,7 +2,7 @@
 // [main header]
 
 // See licence in LICENSE
-// (c) 2022-2025, Diego E. Moreno
+// (c) 2022-2026, Diego E. Moreno
 
 //_____________________________________________________________________________
 // Versions & Build identification
@@ -44,6 +44,7 @@
 #include <iostream>
 #include <mutex>
 #include <random>
+#include <regex>
 #include <stddef.h>  // NULL
 #include <stdexcept> // NULL
 #include <stdio.h>   // NULL

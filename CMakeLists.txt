@@ -65,7 +65,7 @@ option(CHERRY_MULTIAPP "Use multiple apps in one executable"            ON)
 
 option(CHERRY_ENABLE_NET "Enable net features"                          OFF)
 option(CHERRY_ENABLE_AUDIO "Enable audio features"                      OFF)
-option(CHERRY_ENABLE_KIT "Enable base component kit"                    OFF)
+option(CHERRY_ENABLE_KIT "Enable base component kit"                    ON)
 option(CHERRY_ENABLE_LINUXDRM "Enable Linux Direct Rendering Manager"   OFF)
 option(CHERRY_ENABLE_NODES "Disable nodal systems"                      OFF)
 option(CHERRY_ENABLE_WORKSPACESAVES "Disable workspace saves"           OFF)
