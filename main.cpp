@@ -6,12 +6,12 @@
 #include <thread>
 
 // UI instances
-#include "./ui/crash_handler/crash_handler.hpp"
-#include "./ui/editor/app/src/editor.hpp"
+#include "./vxgui/crash_handler/crash_handler.hpp"
+#include "./vxgui/editor/app/src/editor.hpp"
 
 #include "./lib/cherry/cherry.hpp"
-#include "./main/include/templates/load.h"
-#include "./main/include/vortex.h"
+#include "./vxcore/include/templates/load.h"
+#include "./vxcore/include/vortex.h"
 
 static std::string session_id = "unknow";
 

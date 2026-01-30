@@ -28,49 +28,18 @@ Vortex is a playground built by the Infinite community. It includes an editor, a
 ### Allow everyone to make everythings
 Transform your environment into a playground, a sandbox with Vortex. Master this environment to manipulate data, services, apps, etc. Turn the real world into a sandbox and shape it to your liking, regardless of the project.
 
-## 🌐 The Website  
-Explore the official Vortex website, download it and discover everything it offers.  
-      <a href="https://vortex.infinite.si/">
-        <img src="https://img.shields.io/badge/Visit-Website-blueviolet?style=for-the-badge&logo=firefox-browser&logoColor=white">
-      </a>
+## Repository guide
 
-## 📚 The Documentation  
-Get started quickly or dive deep with full API and usage docs.  
-    <a href="https://vortex.infinite.si/docpage?version=1.0&content_name=get_started&section=get_started&page_name=introduction">
-      <img src="https://img.shields.io/badge/Read-Docs-2563eb?style=for-the-badge&logo=bookstack&logoColor=white">
-    </a>
+- `vxcore/` *: core of all Vortex editor features and backends*
+- `vxgui/` *: all the frontends, intefaces and ui components*
+  -  `vxgui/editor` *: editor grapgical user inteface*
+  -  `vxgui/crash_handle` *: interface of the crash handler*
+- `tests/`
+  -  `tests/project` *: Sample project for user features testing*
+- `docs/` *: Documentation*
+- `lib/` *: Dependancies*
+- `build/` *: Build flder*
 
-
-## 🧪 The Lab  
-Try out experimental features and preview what's coming next.  
-    <a href="https://lab.infinite.si/">
-      <img src="https://img.shields.io/badge/Explore-Lab(Soon)-10b981?style=for-the-badge&logo=flask&logoColor=white">
-    </a>
-
-
-## ⭐ Awesome Vortex  
-A curated list of the best tools, plugins, and resources for Vortex.  
-      <a href="https://github.com/infiniteHQ/awesome-vortex">
-        <img src="https://img.shields.io/badge/Browse-Awesome-f59e0b?style=for-the-badge&logo=github&logoColor=white">
-      </a>
-
-
-## 🛠️ Contribute to Vortex
-
-Vortex is an free an open source project that keeps growing and **you can be part of it!** ✨  
-There are **many ways** to contribute, whether you're a developer, designer, translator, or just a passionate supporter:
-
-- 📚 Write or improve documentation  
-- 🌍 Translate the project into other languages  
-- 🐛 Report or fix bugs  
-- 🎨 Create content or improve UX/UI  
-- 💡 Suggest new features and ideas  
-
-And of course, you can also help support the project financially to cover its costs:
-
-<a title="Sponsor" href="https://fund.infinite.si/"><img alt="Sponsor" src="https://img.shields.io/badge/Sponsor-Infinite%20Fund-FF5999?style=for-the-badge&logo=githubsponsors&logoColor=white"></a>
-
-👉 **Join the contributor community** on our portal: [Contributor Portal](https://vortex.infinite.si/contribute)
 
 ## About this repository  
 > This repository represents the Vortex Editor. The Vortex Editor can open Vortex projects or tools, start modules and plugins. It helps hackers or creators manage content and create or hack many things. The goal of the editor is to create a convenient, interoperable, and simple stack to help every part of a project work together with the others.
@@ -95,5 +64,3 @@ The Vortex Editor is licensed under the **Apache License 2.0** see [LICENSE](htt
 
 ### Thanks
 
-**The desktop application is made thanks to the** [**Vortex**](https://github.com/infiniteHQ/Vortex) **framework.**  
-- Vortex uses the incredible library [ImGui from Ocornut and the community](https://github.com/ocornut/imgui). It uses [SDL](https://github.com/libsdl-org/SDL), Vulkan, [Spdlog](https://github.com/gabime/spdlog), [miniaudio](https://github.com/mackron/miniaudio), and [json from nlohmann](https://github.com/nlohmann/json)! A lot of thanks to these amazing works :)

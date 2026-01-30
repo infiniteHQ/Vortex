@@ -73,9 +73,9 @@ option(CHERRY_ENABLE_WORKSPACESAVES "Disable workspace saves"           OFF)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/cherry cherry_build)
 
 file(GLOB_RECURSE VORTEX_ALL_SOURCES 
-    "${CMAKE_CURRENT_SOURCE_DIR}/main/src/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/editor/app/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/vxcore/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/vxgui/editor/app/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/vxgui/crash_handler/src/*.cpp"
 )
 
 # ---------------------------------------------------------------------------
@@ -85,9 +85,9 @@ add_library(vortex_shared SHARED ${VORTEX_ALL_SOURCES})
 target_compile_definitions(vortex_shared PRIVATE VORTEX_EXPORTS)
 
 target_include_directories(vortex_shared PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/main/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/editor/app/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/vxcore/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/vxgui/editor/app/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/vxgui/crash_handler/src
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include
 )
 
@@ -129,8 +129,8 @@ target_compile_definitions(vortex_utils
 # ---------------------------------------------------------------------------
 add_custom_target(sync_vortex_assets ALL
     COMMAND ${CMAKE_COMMAND} -E echo "Synchronizing All UI Assets..."
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/ui/editor/assets" "${CMAKE_BINARY_DIR}/bin"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/ui/crash_handler/assets" "${CMAKE_BINARY_DIR}/bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/vxgui/editor/assets" "${CMAKE_BINARY_DIR}/bin"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/vxgui/crash_handler/assets" "${CMAKE_BINARY_DIR}/bin"
 )
 add_dependencies(vortex_shared sync_vortex_assets)
 
