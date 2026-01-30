@@ -12,31 +12,14 @@
 
 namespace VortexEditor {
 
-struct WelcomeChild {
-  std::function<void()> RenderCallback;
-  std::string LogoPath;
-  std::string Name;
-  WelcomeChild(
-      const std::string &name,
-      const std::function<void()> &rendercallback = []() {},
-      const std::string &logopath = "undefined")
-      : Name(name), RenderCallback(rendercallback), LogoPath(logopath) {};
-};
-
 class Welcome : public std::enable_shared_from_this<Welcome> {
 public:
   Welcome(const std::string &name);
-
-  void AddChild(const WelcomeChild &child);
-  void RemoveChild(const std::string &child_name);
-  WelcomeChild *GetChild(const std::string &child_name);
 
   std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
   static std::shared_ptr<Welcome> Create(const std::string &name);
   void SetupRenderCallback();
   void Render();
-
-  std::vector<WelcomeChild> m_Childs;
 
   std::function<void()> m_CreateProjectCallback;
   std::function<void()> m_OpenProjectCallback;
