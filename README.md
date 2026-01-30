@@ -31,15 +31,14 @@ Transform your environment into a playground, a sandbox with Vortex. Master this
 ## Repository guide
 
 - `vxcore/` *: core of all Vortex editor features and backends*
-- `vxgui/` *: all the frontends, intefaces and ui components*
-  -  `vxgui/editor` *: editor grapgical user inteface*
-  -  `vxgui/crash_handle` *: interface of the crash handler*
+- `vxgui/` *: all frontends, interfaces, and UI components*
+  - `vxgui/editor/` *: editor graphical user interface*
+  - `vxgui/crash_handler/` *: crash handler interface*
 - `tests/`
-  -  `tests/project` *: Sample project for user features testing*
-- `docs/` *: Documentation*
-- `lib/` *: Dependancies*
-- `build/` *: Build flder*
-
+  - `tests/project/` *: sample project for user feature testing*
+- `docs/` *: documentation*
+- `lib/` *: dependencies*
+- `build/` *: build folder*
 
 ## About this repository  
 > This repository represents the Vortex Editor. The Vortex Editor can open Vortex projects or tools, start modules and plugins. It helps hackers or creators manage content and create or hack many things. The goal of the editor is to create a convenient, interoperable, and simple stack to help every part of a project work together with the others.
@@ -63,4 +62,11 @@ Vortex Editor uses a compatibility based versioning system rather than semantic 
 The Vortex Editor is licensed under the **Apache License 2.0** see [LICENSE](https://github.com/infiniteHQ/VortexLauncher/blob/main/LICENSE) for more information.
 
 ### Thanks
-
+- For all authors of Lua programming language
+- For all contributors of SDL2
+- For all contributors of Vulkan/VulkanSDK
+- For all contributors of STB
+- For the log library of gabime and contributors (https://github.com/gabime/spdlog)
+- For the json library of nlohmann and contributors (https://github.com/nlohmann/json)
+- For the amazing immediate mode interface ImGui from Ocornut and contributors (https://github.com/ocornut/imgui)
+- For the work of from "Studio Cherno" on Walnut (https://github.com/StudioCherno/Walnut)
