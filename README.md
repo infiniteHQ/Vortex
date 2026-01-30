@@ -12,7 +12,6 @@
 <div align="center">
   <a title="Discord Server" href="https://discord.gg/H2wptkecUg"><img alt="Discord Server" src="https://img.shields.io/discord/1095333825762046194?label=Discord&logo=Discord&logoColor=fff&style=for-the-badge"></a>
   <a title="'Build' workflow Status" href="https://img.shields.io/github/actions/workflow/status/infiniteHQ/Vortex/build.yml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/infiniteHQ/Vortex/build.yml?longCache=true&style=for-the-badge&label=Build&logoColor=fff&logo=GitHub%20Actions&branch=main"></a>
-  <a title="Modules & Plugins" href="#"><img alt="Modules & Plugins" src="https://img.shields.io/badge/Modules-Supported-brightgreen?logo=stackedit&logoColor=%23FFFFFF&style=for-the-badge"></a>
   <a title="Latest Release" href="https://github.com/infiniteHQ/Vortex/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/infiniteHQ/Vortex?style=for-the-badge&label=Release&logo=github"></a>
   <a title="Changelog" href="https://github.com/infiniteHQ/Vortex/blob/main/CHANGELOG.md"><img alt="Changelog" src="https://img.shields.io/badge/Changelog-View-blue?style=for-the-badge&logo=readme&logoColor=white"></a>
   <a title="Website" href="https://vortex.infinite.si/"><img alt="Website" src="https://img.shields.io/badge/Website-Visit-blueviolet?style=for-the-badge&logo=firefox-browser&logoColor=white"></a>
@@ -46,6 +45,8 @@ Transform your environment into a playground, a sandbox with Vortex. Master this
 ### About the versioning
 Vortex Editor uses a compatibility based versioning system rather than semantic versioning. Versions follow the format `MAJOR.MINOR+BUILD`, where the `MAJOR.MINOR` defines the compatibility branch (e.g. `1.0`, `1.1`, `2.0`) and `+BUILD` identifies each build within that branch (e.g. `1.0+build2`, `1.0+build2`). All projects created in the same branch remain compatible across its builds, while multiple branches (like `1.0` and `1.1`) can be installed and supported in parallel. This ensures long-term project/contents stability while allowing asynchronous development.
 
+### About the Vortex workflow
+Vortex is designed to be extremely modular, which means you can easily extend features with others and even create your very own ones. Vortex allows the use of Projects (which are productions and creations) or tools (utilities, debug, and hacking). Inside these projects or tools, you can add modules (big advanced parts, giving the main features of your project/tool) or plugins (lighter mods).
 
 ### How to install the Editor?  
 > To properly install a version of the Editor on your system, it is recommended to use the [Vortex Launcher](https://github.com/infiniteHQ/VortexLauncher). The launcher helps you manage different versions of Vortex and allows you to work with many types of projects. It also helps you share content with the community and get templates, content, modules, and plugins from others. It definitely increases your productivity in this hacker space!
