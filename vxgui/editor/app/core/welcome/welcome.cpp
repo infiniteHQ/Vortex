@@ -1,5 +1,6 @@
 #include "./welcome.hpp"
 #include "../../../../../lib/cherry/cherry.hpp"
+#include "../../src/editor.hpp"
 
 #include <cstdlib> // std::system
 #include <cstring>
@@ -67,5 +68,14 @@ void Welcome::SetupRenderCallback() {
 void Welcome::Render() {
   Cherry::Script::RenderLuaFreshScript(
       Cherry::GetPath("ui/windows/welcome/main.lua"));
+
+  // If Browser Clicked
+  if (CherryApp.GetComponentData(CherryID("welcome_browser"), "isClicked") ==
+      "true") {
+    c_Editor->SpawnContentBrowserBottom();
+  }
+
+  // If Terminal Clicked
+  // If Scripts Clicked
 }
 } // namespace VortexEditor

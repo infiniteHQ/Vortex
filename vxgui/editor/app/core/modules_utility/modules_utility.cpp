@@ -38,17 +38,6 @@ ModulesUtility::ModulesUtility(const std::string &name) {
 
   m_AppWindow->SetInternalPaddingX(0.0f);
   m_AppWindow->SetInternalPaddingY(0.0f);
-  m_AppWindow->SetLeftMenubarCallback([this]() {
-    CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 3.0f);
-    CherryNextComponent.SetProperty("padding_y", "6.0f");
-    CherryNextComponent.SetProperty("padding_x", "10.0f");
-
-    if (CherryKit::ButtonImageText(
-            Cherry::GetLocale("loc.window.content.content_browser.add"),
-            Cherry::GetPath("resources/imgs/icons/misc/icon_add.png"))
-            .GetDataAs<bool>("isClicked")) {
-    }
-  });
 
   m_SelectedChildName = "main";
 

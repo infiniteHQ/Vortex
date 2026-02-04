@@ -166,6 +166,7 @@ void Editor::Menubar(Cherry::Application *app) {
   CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
   CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
 
+  CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 8.0f));
   CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 
   if (CherryGUI::BeginMenu("Edit")) {
@@ -242,7 +243,7 @@ void Editor::Menubar(Cherry::Application *app) {
     CherryGUI::EndMenu();
   }
 
-  CherryGUI::PopStyleVar();
+  CherryGUI::PopStyleVar(2);
   CherryGUI::PopStyleColor(2);
 
   if (CherryGUI::BeginMenu("Window")) {
@@ -362,7 +363,6 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   spec.WindowSaves = false;
   spec.IconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
   spec.FavIconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
-
   spec.SetFramebarCallback([]() {
     float oldSize = CherryGUI::GetFont()->Scale;
     CherryGUI::PushFont(CherryGUI::GetFont());
@@ -484,7 +484,10 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/icon.png"));
   app->AddFont("Consola",
                Cherry::Application::CookPath("resources/fonts/consola.ttf"),
-               17.0f);
+               50.0f);
+  app->AddFont("Clash",
+               Cherry::Application::CookPath("resources/fonts/clash.ttf"),
+               70.0f);
 
   app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));
   app->AddLocale("en", Cherry::GetPath("resources/locales/en.json"));
@@ -533,6 +536,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
 
     CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+    CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 8.0f));
 
     static bool t;
 
@@ -727,7 +731,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       CherryGUI::EndMenu();
     }*/
 
-    CherryGUI::PopStyleVar();
+    CherryGUI::PopStyleVar(2);
     CherryGUI::PopStyleColor(2);
   }
 

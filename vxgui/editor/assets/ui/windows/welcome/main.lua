@@ -12,8 +12,9 @@ function DrawWelcomeScreen()
     local marginX = 60
     local currentY = 70
     local colWidth = (winW - (marginX * 3)) / 2
-
+Cherry.PushFont("Clash")
     Cherry.DrawText(marginX, currentY, 36.0, "#FFFFFFFF", "Welcome to Vortex")
+    Cherry.PopFont()
     currentY = currentY + 45
     Cherry.DrawText(marginX, currentY, 18.0, "#777777FF", "An open playground for creators & hackers.")
     
@@ -29,13 +30,18 @@ function DrawWelcomeScreen()
     local iconSize = 80
     local spacing = 30
     
-    if DrawAppIcon(marginX, leftY, iconSize, "Browser", "icons/folder.png") then 
-        Cherry.Log("Open: Browser")
+    Cherry.BeginComponent("welcome_browser")
+    if DrawAppIcon(marginX, leftY, iconSize, "Browser", Cherry.GetPath("resources/imgs/folder.png")) then 
+        Cherry.SetComponentData("welcome_browser", "isClicked","true")
+    else
+        Cherry.SetComponentData("welcome_browser", "isClicked","false")
     end
-    if DrawAppIcon(marginX + (iconSize + spacing), leftY, iconSize, "Terminal", "icons/term.png") then 
+    Cherry.EndComponent()
+    
+    if DrawAppIcon(marginX + (iconSize + spacing), leftY, iconSize, "Terminal", Cherry.GetPath("resources/imgs/terminal.png")) then 
         Cherry.Log("Open: Terminal")
     end
-    if DrawAppIcon(marginX + (iconSize + spacing) * 2, leftY, iconSize, "Scripts", "icons/lua.png") then 
+    if DrawAppIcon(marginX + (iconSize + spacing) * 2, leftY, iconSize, "Settings", Cherry.GetPath("resources/imgs/wheel.png")) then 
         Cherry.Log("Open: Scripts")
     end
     
@@ -76,7 +82,7 @@ function DrawAppIcon(x, y, size, label, iconPath)
         Cherry.DrawRectRounded(x - 10, y - 10, size + 20, size + 45, 8.0, HOVER_COLOR)
     end
     
-    Cherry.DrawImage(x, y, size, size, iconPath)
+    Cherry.DrawImage(x, y, size, size - 5, iconPath)
     
     Cherry.DrawText(x + (size/2) - 25, y + size + 10, 14.0, isHover and "#FFFFFFFF" or "#AAAAAAFF", label)
     

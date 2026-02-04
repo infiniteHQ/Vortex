@@ -127,7 +127,7 @@ public:
     return false;
   }
 
-  void SpawnContentBrowser() {
+  std::string SpawnContentBrowser() {
     std::string label = "Content Browser ####Content Browser-" +
                         std::to_string(c_ContentBrowserInstances.size() + 1);
     std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser =
@@ -141,6 +141,25 @@ public:
     ContentBrowser->m_DeletePathCallback = VortexMaker::DeletePath;
     Cherry::AddAppWindow(ContentBrowser->GetAppWindow());
     c_ContentBrowserInstances.push_back(ContentBrowser);
+    return label;
+  }
+
+  void SpawnContentBrowserBottom() {
+    const std::string new_browser = SpawnContentBrowser();
+
+    auto dragdropstate = std::make_shared<WindowDragDropState>();
+
+    dragdropstate->LastDraggingPlace = Cherry::DockEmplacement::DockDown;
+
+    dragdropstate->LastDraggingWindow = CherryApp.m_Windows[0]->GetName();
+    dragdropstate->DragOwner = CherryApp.m_Windows[0]->GetName();
+    dragdropstate->LastDraggingAppWindow = new_browser;
+    dragdropstate->LastDraggingAppWindowHost = "?loc:loc.window_names.welcome";
+
+    CherryApp.SetCurrentDragDropState(dragdropstate);
+    Application::PushRedockEvent(CherryApp.GetCurrentDragDropState());
+
+    CherryApp.SetCurrentDragDropState(nullptr);
   }
 
   void SpawnLogsUtility() {
