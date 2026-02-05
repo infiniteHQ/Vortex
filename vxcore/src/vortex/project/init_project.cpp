@@ -1,5 +1,7 @@
 #include "../../../include/modules/load.h"
 #include "../../../include/modules/runtime.h"
+#include "../../../include/plugins/load.h"
+#include "../../../include/plugins/runtime.h"
 #include "../../../include/templates/load.h"
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
