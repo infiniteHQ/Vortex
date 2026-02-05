@@ -1,5 +1,8 @@
 #include "./editor.hpp"
 
+#include "../../../../vxcore/include/vortex.h"
+#include "../../../../vxcore/include/vortex_internals.h"
+
 std::string GetVortexBuildType() { return VORTEX_BUILD; }
 
 static void handleExit(Cherry::Application *app) { app->Close(); }
@@ -394,11 +397,23 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     ImDrawList *drawList = CherryGUI::GetWindowDrawList();
     drawList->AddRectFilled(rectMin, rectMax, IM_COL32(15, 15, 15, 255));
 
-    if (GetVortexBuildType() == "dev") {
+    if (GetVortexBuildType() != "dev") {
       CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
                                CherryGUI::CalcTextSize("DEV").x - 20.0f);
 
       CherryGUI::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "DEV");
+    } else {
+      if (VortexMaker::GetCurrentContext()->type == "tool") {
+        CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
+                                 CherryGUI::CalcTextSize("DEV").x - 20.0f);
+
+        CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Tool");
+      } else if (VortexMaker::GetCurrentContext()->type == "project") {
+        CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
+                                 CherryGUI::CalcTextSize("DEV").x - 20.0f);
+
+        CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Project");
+      }
     }
 
     CherryGUI::SetCursorScreenPos(circlePos);
@@ -554,7 +569,9 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       if (CherryGUI::MenuItem("Plugins utility", "Open the plugins utility",
                               Cherry::GetTexture(Cherry::GetPath(
                                   "resources/imgs/icons/misc/icon_plugin.png")),
-                              c_Editor->GetModulesUtilityVisibility())) {
+                              c_Editor->GetPluginsUtilityVisibility())) {
+        c_Editor->SetPluginsUtilityVisibility(
+            !c_Editor->GetPluginsUtilityVisibility());
       }
 
       CherryKit::SeparatorText("Static contents");

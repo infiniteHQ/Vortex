@@ -4,6 +4,7 @@
 // Static windows
 #include "../core/about/about.hpp"
 #include "../core/modules_utility/modules_utility.hpp"
+#include "../core/plugins_utility/plugins_utility.hpp"
 #include "../core/welcome/welcome.hpp"
 // #include "../core/templates_utility/templates_utility.hpp"
 #include "../core/project_settings/project_settings.hpp"
@@ -35,6 +36,10 @@ public:
     m_ModulesUtility = VortexEditor::ModulesUtility::Create("Modules utily");
     m_ModulesUtility->GetAppWindow()->SetVisibility(false);
     Cherry::AddAppWindow(m_ModulesUtility->GetAppWindow());
+
+    m_PluginsUtility = VortexEditor::PluginsUtility::Create("Plugins utily");
+    m_PluginsUtility->GetAppWindow()->SetVisibility(false);
+    Cherry::AddAppWindow(m_PluginsUtility->GetAppWindow());
 
     m_ProjectSettings =
         VortexEditor::ProjectSettings::Create("Project settings");
@@ -118,6 +123,14 @@ public:
     return m_ModulesUtility->GetAppWindow()->m_Visible;
   }
 
+  void SetPluginsUtilityVisibility(const bool &visibility) {
+    m_PluginsUtility->GetAppWindow()->SetVisibility(visibility);
+  }
+
+  bool GetPluginsUtilityVisibility() {
+    return m_PluginsUtility->GetAppWindow()->m_Visible;
+  }
+
   void SetWelcomeVisibility(const bool &visibility) {
     // m_WelcomeAppWindow->GetAppWindow()->SetVisibility(visibility);
   }
@@ -183,6 +196,7 @@ public:
 private:
   std::shared_ptr<VortexEditor::Welcome> m_WelcomeAppWindow;
   std::shared_ptr<VortexEditor::ModulesUtility> m_ModulesUtility;
+  std::shared_ptr<VortexEditor::PluginsUtility> m_PluginsUtility;
   std::shared_ptr<VortexEditor::ProjectSettings> m_ProjectSettings;
   std::shared_ptr<VortexEditor::AboutVortex> m_AboutWindow;
   // std::shared_ptr<VortexEditor::TemplatesUtilityAppWindow>
