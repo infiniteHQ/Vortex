@@ -10,3 +10,6 @@
 [submodule "tests/project"]
 	path = tests/project
 	url = https://github.com/infiniteHQ/VortexProjectSample
+[submodule "lib/lua"]
+	path = lib/lua
+	url = https://github.com/infiniteHQ/lua
