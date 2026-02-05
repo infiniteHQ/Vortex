@@ -113,10 +113,19 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
   VortexMaker::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles,
                                  ctx.IO.em);
 
+  // Load plugins installed in the current project
+  VortexMaker::LoadEditorPlugins(ctx.projectPath.string(), ctx.IO.ep_handles,
+                                 ctx.IO.ep);
+
   // Load modules installed in the system
   // Note: These modules are simply initialized in the project, not loaded, but
   // we can add these in CLI/GUI
   VortexMaker::LoadSystemModules(ctx.IO.sys_em);
+
+  // Load plugins installed in the system
+  // Note: These modules are simply initialized in the project, not loaded, but
+  // we can add these in CLI/GUI
+  VortexMaker::LoadSystemPlugins(ctx.IO.sys_ep);
 
   // Load templates installed in the system if the configuration allow it
   // Note: These templates are simply initialized in the project, not included,

@@ -2,7 +2,7 @@
 // [internal structures]
 
 // See licence in LICSENCE.md
-// (c) 2022-2025, Diego E. Moreno
+// (c) 2022-2026, Diego E. Moreno
 
 //_____________________________________________________________________________
 // Informations about this file
@@ -25,6 +25,7 @@
 #endif
 
 #include "./modules/interface.h"
+#include "./plugins/interface.h"
 #include "./templates/install.h"
 #include "./templates/interface.h"
 #include "./utils/infos.hpp"
@@ -230,6 +231,73 @@ struct SessionState {
   bool last_used_module_output_event_modified = false;
 };
 
+struct ItemIdentifierInterface {
+public:
+  bool (*f_Detect)(const std::string &path);
+
+  std::string m_Name;
+
+  std::string m_LogoPath;
+  std::string m_BackgroundImagePath;
+  std::string m_LineColor;
+  std::string m_Description;
+
+  ItemIdentifierInterface(bool (*detect_function)(const std::string &path),
+                          const std::string &name,
+                          const std::string &description,
+                          const std::string &line_color,
+                          const std::string &logo_path = "",
+                          const std::string &bg_image_path = "")
+      : m_Name(name), m_Description(description), f_Detect(detect_function),
+        m_LineColor(line_color), m_LogoPath(logo_path),
+        m_BackgroundImagePath(bg_image_path) {};
+};
+
+struct ItemHandlerInterface {
+  std::function<void(const std::string &)> handler;
+  std::string title;
+  std::string type;
+  std::string description;
+  std::string logo;
+
+  ItemHandlerInterface(const std::string &ty,
+                       std::function<void(const std::string &)> h,
+                       const std::string &ti, const std::string &d = "",
+                       const std::string &l = "")
+      : handler(std::move(h)), type(ty), title(ti), description(d), logo(l) {}
+};
+
+// Todo : Creation configurations (names, variantes, etc)
+struct ItemCreatorInterface {
+  std::function<void(const std::string &path)> f_CreateFunction;
+  std::string m_Name;
+
+  std::string m_LogoPath;
+  std::string m_LineColor;
+  std::string m_Description;
+
+  ItemCreatorInterface(std::function<void(const std::string &path)> function,
+                       const std::string &name, const std::string &description,
+                       const std::string &line_color = "#343434",
+                       const std::string &logo_path = "")
+      : m_Name(name), m_Description(description), f_CreateFunction(function),
+        m_LineColor(line_color), m_LogoPath(logo_path) {};
+};
+
+enum class DevFlag {
+  DEPRECIATED,
+  READY,
+};
+
+enum class HappeningState {
+  INFO,
+  WARNING,
+  ERR,
+  FATAL,
+};
+
+enum class HandlerItemType { File, Item, Folder };
+
 struct ContentBrowserCustomFolder {
   std::string path;
   std::string m_Color;
@@ -251,6 +319,11 @@ struct VxIO {
   std::vector<void *> em_handles;
   std::vector<std::shared_ptr<ModuleInterface>> em;
   std::vector<std::shared_ptr<ModuleInterface>> sys_em;
+
+  // EP / Editor Plugins
+  std::vector<void *> ep_handles;
+  std::vector<std::shared_ptr<PluginInterface>> ep;
+  std::vector<std::shared_ptr<PluginInterface>> sys_ep;
 
   // Know projects in system
   std::vector<std::shared_ptr<EnvProject>> sys_projects;

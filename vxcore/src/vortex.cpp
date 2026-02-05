@@ -514,6 +514,41 @@ VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path) {
 VORTEX_API void
 VortexMaker::AddModuleToProject(const std::string &module_name) {}
 
+VORTEX_API void VortexMaker::InstallPluginToSystem(const std::string &path) {
+  std::string plugins_path = "~/.vx/plugins";
+  std::string json_file = path + "/plugin.json";
+
+  try {
+    auto json_data = VortexMaker::DumpJSON(json_file);
+    std::string name = json_data["name"].get<std::string>();
+    std::string proper_name = json_data["proper_name"].get<std::string>();
+    std::string type = json_data["type"].get<std::string>();
+    std::string version = json_data["version"].get<std::string>();
+    std::string description = json_data["description"].get<std::string>();
+    std::string author = json_data["author"].get<std::string>();
+
+    // std::string origin_path = path.substr(0, path.find_last_of("/"));
+    plugins_path += "/" + name + "." + version;
+
+    VortexMaker::LogInfo("Core", "Installing the plugin " + name + "...");
+
+    {
+      std::string cmd = "mkdir " + plugins_path;
+      system(cmd.c_str());
+    }
+
+    {
+      std::string cmd = "cp -r " + path + "/* " + plugins_path;
+      system(cmd.c_str());
+    }
+  } catch (const std::exception &e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+  }
+}
+
+VORTEX_API void
+VortexMaker::AddPluginToProject(const std::string &plugin_name) {}
+
 VORTEX_API std::string VortexMaker::replacePlaceholders(
     const std::string &command,
     const std::unordered_map<std::string, std::string> &replacements) {

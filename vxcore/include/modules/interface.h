@@ -1,4 +1,5 @@
-#include "../vortex.h"
+#include <vortex_internals.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -8,7 +9,6 @@
 #include <string>
 #include <variant>
 #include <vector>
-
 #if defined(__linux__)
 #include <cxxabi.h>
 #elif defined(_WIN32) || defined(_WIN64)
@@ -27,60 +27,10 @@
 #ifndef MODULE_INTERFACE_H
 #define MODULE_INTERFACE_H
 
-enum class HandlerItemType { File, Item, Folder };
-
-// Todo : Creation configurations (names, variantes, etc)
-VORTEX_API struct ItemCreatorInterface {
-  std::function<void(const std::string &path)> f_CreateFunction;
-  std::string m_Name;
-
-  std::string m_LogoPath;
-  std::string m_LineColor;
-  std::string m_Description;
-
-  ItemCreatorInterface(std::function<void(const std::string &path)> function,
-                       const std::string &name, const std::string &description,
-                       const std::string &line_color = "#343434",
-                       const std::string &logo_path = "")
-      : m_Name(name), m_Description(description), f_CreateFunction(function),
-        m_LineColor(line_color), m_LogoPath(logo_path) {};
-};
-
-VORTEX_API struct ItemIdentifierInterface {
-public:
-  bool (*f_Detect)(const std::string &path);
-
-  std::string m_Name;
-
-  std::string m_LogoPath;
-  std::string m_BackgroundImagePath;
-  std::string m_LineColor;
-  std::string m_Description;
-
-  ItemIdentifierInterface(bool (*detect_function)(const std::string &path),
-                          const std::string &name,
-                          const std::string &description,
-                          const std::string &line_color,
-                          const std::string &logo_path = "",
-                          const std::string &bg_image_path = "")
-      : m_Name(name), m_Description(description), f_Detect(detect_function),
-        m_LineColor(line_color), m_LogoPath(logo_path),
-        m_BackgroundImagePath(bg_image_path) {};
-};
-
-VORTEX_API struct ItemHandlerInterface {
-  std::function<void(const std::string &)> handler;
-  std::string title;
-  std::string type;
-  std::string description;
-  std::string logo;
-
-  ItemHandlerInterface(const std::string &ty,
-                       std::function<void(const std::string &)> h,
-                       const std::string &ti, const std::string &d = "",
-                       const std::string &l = "")
-      : handler(std::move(h)), type(ty), title(ti), description(d), logo(l) {}
-};
+// Forward declarations
+struct ItemHandlerInterface;
+struct ItemIdentifierInterface;
+struct ItemCreatorInterface;
 
 VORTEX_API struct ModuleInterfaceDep {
   std::string type; // em, plugin, etc..

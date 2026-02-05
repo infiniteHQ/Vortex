@@ -1,4 +1,4 @@
-#include "../../include/templates/install.h"
+#include <templates/install.h>
 
 VORTEX_API void
 VortexMaker::InstallTemplateOnSystem(const std::string &directory) {

@@ -256,6 +256,13 @@ VORTEX_API void InstallModule(const std::string &module_name,
                               bool &restart_modules);
 VORTEX_API void AddModuleToProject(const std::string &module_name);
 
+VORTEX_API void InstallPluginToSystem(const std::string &path);
+
+VORTEX_API void InstallPlugin(const std::string &plugin_name,
+                              const std::string &version,
+                              bool &restart_plugins);
+VORTEX_API void AddPluginToProject(const std::string &plugin_name);
+
 VORTEX_API void CreateProject(const std::string &name, const std::string &path);
 VORTEX_API void
 CreateProject(const std::string &name, const std::string &author,
