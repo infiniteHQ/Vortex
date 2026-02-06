@@ -39,7 +39,7 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
     if (CherryKit::ButtonImageText(
             "Filters", GetPath("resources/imgs/icons/misc/icon_filter.png"))
             .GetDataAs<bool>("isClicked")) {
-      m_ShowFilterPannel = !m_ShowFilterPannel;
+      m_WillShowFilterPannel = !m_WillShowFilterPannel;
     }
   });
 
@@ -182,11 +182,22 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
     CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 6.5f);
 
     CherryNextComponent.SetProperty("size_x", "350");
+    CherryNextComponent.SetProperty("enter_return", "true");
     CherryNextComponent.SetProperty("description", "Enter commands here...");
     CherryNextComponent.SetProperty(
         "description_logo", GetPath("resources/imgs/icons/misc/icon_cmd.png"));
     CherryNextComponent.SetProperty("description_logo_place", "l");
-    CherryKit::InputString(CherryID("CommandPrompt"), "", &m_CmdInputValue);
+    auto prompt =
+        CherryKit::InputString(CherryID("CommandPrompt"), "", &m_CmdInputValue);
+
+    if (prompt.GetDataAs<bool>("submitted")) {
+      VortexMaker::Script::GetScriptingEngine().Execute(m_CmdInputValue);
+      s_CommandHistory.push_back(m_CmdInputValue);
+      s_HistoryPos = -1;
+      s_SelectionIdx = -1;
+      s_ScrollToBottom = true;
+      m_CmdInputValue.clear();
+    }
   });
 
   this->ctx = VortexMaker::GetCurrentContext();
@@ -408,8 +419,8 @@ void LogsUtilityAppWindow::Render() {
 
     std::string childname =
         child.m_Name + "##cbchildnh" + m_AppWindow->m_Name + child.m_Name;
-    CherryGUI::BeginChild(childname.c_str(), ImVec2(child.m_Size, availableSize.y),
-                      true);
+    CherryGUI::BeginChild(childname.c_str(),
+                          ImVec2(child.m_Size, availableSize.y), true);
 
     child.m_Child();
 
@@ -436,7 +447,8 @@ void LogsUtilityAppWindow::Render() {
 
         CherryStyle::RemoveMarginX(5.0f);
 
-        CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_Button,
+                                  ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
         CherryGUI::Button(lab.c_str(), ImVec2(splitterWidth, -1));
         CherryGUI::PopStyleColor();
 

@@ -18,6 +18,35 @@ namespace VortexEditor {
 
 enum class ShowMode { Advanced, Simple, Block };
 
+struct ConsoleEntry {
+  Cherry::Log::Level level;
+  std::string message;
+  int count;
+};
+
+static std::vector<ConsoleEntry> s_Entries;
+static bool s_ScrollToBottom = false;
+static std::vector<std::string> s_CommandHistory;
+static int s_HistoryPos = -1;
+
+static int s_SelectionIdx = -1;
+struct CommandDef {
+  std::string name;
+  std::string params;
+  std::string description;
+};
+
+static std::vector<CommandDef> s_CommandDefs = {
+    {"Cherry.IsMouseClickedOnPos", "x, y, w, h, button, [repeat]",
+     "Checks if a mouse button is clicked within a specific "
+     "window-relative "
+     "area."},
+
+    {"Cherry.IsMouseDoubleClickedOnPos", "x, y, w, h, button",
+     "Checks if a mouse button is double-clicked within a specific "
+     "window-relative area."},
+};
+
 struct LogUtilityChild {
   std::function<void()> m_Child;
   std::string m_Name;
