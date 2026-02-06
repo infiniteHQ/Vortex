@@ -79,7 +79,7 @@ public:
                                   ReturnValues &ret);
 
   VORTEX_API std::string GetPath();
-  VORTEX_API std::string GetBinaryPath();
+  VORTEX_API std::string GetMainScriptPath();
 
   // Output Events
   // A output event is triggered via VortexMaker::ExecuteOutputEvent() by the
@@ -192,7 +192,7 @@ public:
   std::string m_name;
   std::string m_version;
   std::string m_path;
-  std::string m_binary_path;
+  std::string m_mainscript_path;
   std::string m_author;
   std::string m_group;
   std::string m_picture;

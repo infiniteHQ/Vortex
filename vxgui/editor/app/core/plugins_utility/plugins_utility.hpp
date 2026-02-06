@@ -18,7 +18,7 @@ static std::string m_PluginsSearch;
 class PluginCardItem : public Cherry::Component {
 public:
   PluginCardItem(const Cherry::Identifier &identifier,
-                 const std::shared_ptr<ModuleInterface> &module,
+                 const std::shared_ptr<PluginInterface> &module,
                  const std::string &name, const std::string &path,
                  const std::string &description, const std::string &size,
                  bool selected, const std::string &logo, ImU32 bgColor,
@@ -280,9 +280,9 @@ public:
             .GetDataAs<bool>("isClicked")) {
       std::string label =
           "Details of " + m_module->m_proper_name + "####" + m_path;
-      std::shared_ptr<ModuleDetails> window =
-          ModuleDetails::Create(label, m_module);
-      Cherry::AddAppWindow(window->GetAppWindow());
+      /*std::shared_ptr<PluginDetails> window =
+          PluginDetails::Create(label, m_module);
+      Cherry::AddAppWindow(window->GetAppWindow());*/
     }
 
     /*
@@ -308,8 +308,8 @@ public:
        this->m_RefreshIcon->GetHeight())))
             {
                 // Behavior
-                std::shared_ptr<ModuleDetails> instance =
-       std::make_shared<ModuleDetails>(this->ctx, ctx->IO.em[i]);
+                std::shared_ptr<PluginDetails> instance =
+       std::make_shared<PluginDetails>(this->ctx, ctx->IO.em[i]);
                 this->factory->SpawnInstance(instance);
             }
         }
@@ -335,8 +335,8 @@ public:
        this->m_RefreshIcon->GetHeight())))
             {
                 // Behavior
-                std::shared_ptr<ModuleDetails> instance =
-       std::make_shared<ModuleDetails>(this->ctx, ctx->IO.em[i]);
+                std::shared_ptr<PluginDetails> instance =
+       std::make_shared<PluginDetails>(this->ctx, ctx->IO.em[i]);
                 this->factory->SpawnInstance(instance);
             }
         }
@@ -356,7 +356,7 @@ public:
   }
 
 private:
-  std::shared_ptr<ModuleInterface> m_module;
+  std::shared_ptr<PluginInterface> m_module;
   std::string m_name;
   std::string m_path;
   std::string m_description;
@@ -372,7 +372,7 @@ private:
 
 inline Cherry::Component &
 PluginCardComponent(const Cherry::Identifier &identifier,
-                    const std::shared_ptr<ModuleInterface> &module,
+                    const std::shared_ptr<PluginInterface> &module,
                     const std::string &name, const std::string &path,
                     const std::string &description, const std::string &size,
                     bool selected, const std::string &logo, ImU32 bgColor,
@@ -384,7 +384,7 @@ PluginCardComponent(const Cherry::Identifier &identifier,
 }
 
 inline Cherry::Component &
-PluginCard(const std::shared_ptr<ModuleInterface> &module,
+PluginCard(const std::shared_ptr<PluginInterface> &plugin,
            const std::string &name, const std::string &path,
            const std::string &description, const std::string &size,
            bool selected, const std::string &logo, ImU32 bgColor,
@@ -392,10 +392,10 @@ PluginCard(const std::shared_ptr<ModuleInterface> &module,
            float borderRadius) {
   return PluginCardComponent(
       Cherry::Application::GenerateUniqueID(
-          module, name, path, description, size, selected, logo, bgColor,
+          plugin, name, path, description, size, selected, logo, bgColor,
           borderColor, lineColor, maxTextWidth, borderRadius,
           "PluginCardComponent"),
-      module, name, path, description, size, selected, logo, bgColor,
+      plugin, name, path, description, size, selected, logo, bgColor,
       borderColor, lineColor, maxTextWidth, borderRadius);
 }
 

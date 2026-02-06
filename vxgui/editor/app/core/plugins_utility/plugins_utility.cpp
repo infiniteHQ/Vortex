@@ -75,28 +75,29 @@ PluginsUtility::PluginsUtility(const std::string &name) {
         }
         CherryGUI::Spacing();
 
-        if (VortexMaker::GetCurrentContext()->IO.em.empty()) {
-          CherryKit::TitleFour("No modules founded.");
+        if (VortexMaker::GetCurrentContext()->IO.ep.empty()) {
+          CherryKit::TitleFour("No plugins founded.");
         }
 
-        std::vector<Cherry::Component> modules_blocks;
-        for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.em.size();
+        std::vector<Cherry::Component> plugins_blocks;
+        for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.ep.size();
              i++) {
           CherryNextComponent.SetRenderMode(Cherry::RenderMode::CreateOnly);
           auto item = PluginCard(
-              VortexMaker::GetCurrentContext()->IO.em[i],
-              VortexMaker::GetCurrentContext()->IO.em[i]->m_proper_name,
-              VortexMaker::GetCurrentContext()->IO.em[i]->m_path,
-              VortexMaker::GetCurrentContext()->IO.em[i]->m_name,
-              VortexMaker::GetCurrentContext()->IO.em[i]->m_version, false,
-              VortexMaker::GetCurrentContext()->IO.em[i]->m_logo_path,
+              VortexMaker::GetCurrentContext()->IO.ep[i],
+              VortexMaker::GetCurrentContext()->IO.ep[i]->m_proper_name,
+              VortexMaker::GetCurrentContext()->IO.ep[i]->m_path,
+              VortexMaker::GetCurrentContext()->IO.ep[i]->m_name,
+              VortexMaker::GetCurrentContext()->IO.ep[i]->m_version, false,
+              VortexMaker::GetCurrentContext()->IO.ep[i]->m_logo_path,
               IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
               Cherry::HexToImU32("#B1FF31FF"), 100.0f, 5.0f);
 
-          modules_blocks.push_back(item);
+          plugins_blocks.push_back(item);
         }
 
-        CherryKit::GridSimple(250.0f, 250.0f, modules_blocks);
+        CherryKit::GridSimple(CherryID("plugins_grid"), 250.0f, 250.0f,
+                              plugins_blocks);
       },
       Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")));
 
@@ -218,7 +219,7 @@ void PluginsUtility::Render() {
 
   std::string header_label =
       "All Modules (" +
-      std::to_string(VortexMaker::GetCurrentContext()->IO.em.size()) + ")";
+      std::to_string(VortexMaker::GetCurrentContext()->IO.ep.size()) + ")";
   if (CherryGUI::ImageSizeButtonWithText(
           Cherry::GetTexture(
               Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),

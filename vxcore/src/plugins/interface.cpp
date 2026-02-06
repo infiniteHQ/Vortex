@@ -58,8 +58,8 @@ PluginInterface::GetContentBrowserItemHandler() {
 }
 
 VORTEX_API std::string PluginInterface::GetPath() { return m_path; }
-VORTEX_API std::string PluginInterface::GetBinaryPath() {
-  return m_binary_path;
+VORTEX_API std::string PluginInterface::GetMainScriptPath() {
+  return m_mainscript_path;
 }
 
 VORTEX_API void PluginInterface::RefreshMainWindow() {
@@ -618,8 +618,10 @@ VORTEX_API void PluginInterface::Start() {
     return;
   }
 
-  // Execute the plugin's main function and set state to "running"
-  this->execute();
+  // Execute the plugin's main script here
+  const std::string script = this->m_mainscript_path;
+  VortexMaker::Script::RenderLuaFreshScript(script);
+
   this->m_state = "running";
 }
 

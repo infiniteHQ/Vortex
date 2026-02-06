@@ -349,6 +349,12 @@ void RebuildCherryTheme() {
   }
 }
 
+static bool ShowDebugNumbers = false;
+static bool ShowProjectType = true;
+static bool ShowAccountMenu = true;
+static bool ShowProjectName = true;
+static bool ShowFPS = true;
+
 Cherry::Application *CreateEditor(int argc, char **argv) {
   Cherry::ApplicationSpecification spec;
 
@@ -395,7 +401,9 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
                cursorPos.y + textSize.y + 2 * rectanglePaddingY - 45);
 
     ImDrawList *drawList = CherryGUI::GetWindowDrawList();
-    drawList->AddRectFilled(rectMin, rectMax, IM_COL32(15, 15, 15, 255));
+    if (ShowProjectName) {
+      drawList->AddRectFilled(rectMin, rectMax, IM_COL32(15, 15, 15, 255));
+    }
 
     if (GetVortexBuildType() != "dev") {
       CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
@@ -466,7 +474,10 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       CherryGUI::OpenPopup("projectMenu");
     }
 
-    CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), text);
+    if (ShowProjectName) {
+      CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), text);
+    }
+
     if (CherryGUI::BeginPopup("projectMenu")) {
       CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), text);
       if (CherryGUI::MenuItem("Project settings")) {
@@ -623,6 +634,14 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     }
 
     if (CherryGUI::BeginMenu("Window")) {
+      CherryKit::SeparatorText("Upper bar");
+
+      if (CherryGUI::MenuItem("Show project name", "",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_info.png")),
+                              ShowProjectName)) {
+        ShowProjectName = !ShowProjectName;
+      }
       CherryGUI::EndMenu();
     }
 

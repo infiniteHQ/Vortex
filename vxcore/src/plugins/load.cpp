@@ -64,7 +64,8 @@ LoadEditorPlugins(const std::string &directory,
       new_plugin->m_logo_path =
           (fs::path(path) / new_plugin->m_picture).string();
       new_plugin->m_path = (fs::path(path)).string();
-      // new_plugin->m_binary_path = (fs::path(so_file).parent_path()).string();
+      new_plugin->m_mainscript_path =
+          new_plugin->m_path + "/" + json_data["path"].get<std::string>();
 
       new_plugin->m_author = json_data["author"].get<std::string>();
       new_plugin->m_group = json_data["group"].get<std::string>();
@@ -128,6 +129,8 @@ LoadSystemPlugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins) {
         new_plugin->m_picture = json_data["picture"].get<std::string>();
         new_plugin->m_logo_path = plugin_path + "/" + new_plugin->m_picture;
         new_plugin->m_path = plugin_path + "/";
+        new_plugin->m_mainscript_path =
+            new_plugin->m_path + "/" + json_data["path"].get<std::string>();
         new_plugin->m_author = json_data["author"].get<std::string>();
         new_plugin->m_group = json_data["group"].get<std::string>();
         new_plugin->m_contributors =

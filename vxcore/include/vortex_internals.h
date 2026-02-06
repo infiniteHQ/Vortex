@@ -29,6 +29,7 @@
 #include "./templates/install.h"
 #include "./templates/interface.h"
 #include "./utils/infos.hpp"
+#include "./vortex/scripting/scripting.hpp"
 //_____________________________________________________________________________
 
 // Enable SSE intrinsics if available
