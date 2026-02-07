@@ -182,19 +182,85 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
     CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 6.5f);
 
     CherryNextComponent.SetProperty("size_x", "350");
-    CherryNextComponent.SetProperty("enter_return", "true");
+    CherryNextComponent.SetProperty("maintain_focus", "true");
+    CherryNextComponent.SetProperty("maintain_focus_with_arrows", "true");
     CherryNextComponent.SetProperty("description", "Enter commands here...");
     CherryNextComponent.SetProperty(
         "description_logo", GetPath("resources/imgs/icons/misc/icon_cmd.png"));
     CherryNextComponent.SetProperty("description_logo_place", "l");
+
+    static float s_KeyRepeatTimer = 0.0f;
+    static bool s_KeyWasDown = false;
+
+    static std::string s_DraftCommand;
+
+    constexpr float KEY_REPEAT_DELAY = 0.35f;
+    constexpr float KEY_REPEAT_RATE = 0.08f;
+
     auto prompt =
         CherryKit::InputString(CherryID("CommandPrompt"), "", &m_CmdInputValue);
 
+    auto isUp = CherryApp.IsKeyPressed(Cherry::CherryKey::UP);
+    auto isDown = CherryApp.IsKeyPressed(Cherry::CherryKey::DOWN);
+
+    float dt = ImGui::GetCurrentContext()->IO.DeltaTime;
+
+    bool trigger = false;
+    int direction = 0;
+
+    if (isUp || isDown) {
+      direction = isUp ? +1 : -1;
+
+      if (!s_KeyWasDown) {
+        trigger = true;
+        s_KeyRepeatTimer = KEY_REPEAT_DELAY;
+        s_KeyWasDown = true;
+      } else {
+        s_KeyRepeatTimer -= dt;
+        if (s_KeyRepeatTimer <= 0.0f) {
+          trigger = true;
+          s_KeyRepeatTimer = KEY_REPEAT_RATE;
+        }
+      }
+    } else {
+      s_KeyWasDown = false;
+    }
+
+    if (prompt.GetDataAs<bool>("focused") && trigger) {
+
+      if (s_HistoryPos == -1)
+        s_DraftCommand = m_CmdInputValue;
+
+      s_HistoryPos += direction;
+
+      int historySize = (int)s_CommandHistory.size();
+
+      if (s_HistoryPos < -1) {
+        s_HistoryPos = -1;
+        m_CmdInputValue = s_DraftCommand;
+      } else if (s_HistoryPos >= historySize) {
+        s_HistoryPos = historySize;
+        m_CmdInputValue.clear();
+      } else if (s_HistoryPos == -1) {
+        m_CmdInputValue = s_DraftCommand;
+      }
+
+      else {
+        m_CmdInputValue = s_CommandHistory[s_HistoryPos];
+      }
+    }
+
     if (prompt.GetDataAs<bool>("submitted")) {
+
       VortexMaker::Script::GetScriptingEngine().Execute(m_CmdInputValue);
-      s_CommandHistory.push_back(m_CmdInputValue);
+
+      if (s_CommandHistory.empty() ||
+          s_CommandHistory.front() != m_CmdInputValue) {
+        s_CommandHistory.insert(s_CommandHistory.begin(), m_CmdInputValue);
+      }
+
       s_HistoryPos = -1;
-      s_SelectionIdx = -1;
+      s_DraftCommand.clear();
       s_ScrollToBottom = true;
       m_CmdInputValue.clear();
     }
