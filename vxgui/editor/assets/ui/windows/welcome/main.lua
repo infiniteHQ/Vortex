@@ -86,7 +86,7 @@ function DrawAppIcon(x, y, size, label, iconPath)
     
     Cherry.DrawText(x + (size/2) - 25, y + size + 10, 14.0, isHover and "#FFFFFFFF" or "#AAAAAAFF", label)
     
-    return Cherry.IsMouseClickedOnPos(x - 10, y - 10, size + 20, size + 45, 0)
+    return Cherry.IsMouseClickedOnCurrentPos(x - 10, y - 10, size + 20, size + 45, 0)
 end
 
 function DrawMenuButton(x, y, w, label, shortcut)
@@ -103,7 +103,7 @@ function DrawMenuButton(x, y, w, label, shortcut)
         Cherry.DrawText(x + w - 65, y + 7, 13.0, "#555555FF", shortcut)
     end
     
-    return Cherry.IsMouseClickedOnPos(x, y, w, h, 0)
+    return Cherry.IsMouseClickedOnCurrentPos(x, y, w, h, 0)
 end
 
 function DrawWalkthroughCard(x, y, w, h, title, desc)
@@ -116,12 +116,11 @@ function DrawWalkthroughCard(x, y, w, h, title, desc)
     Cherry.DrawText(x + 15, y + 15, 17.0, "#FFFFFFFF", title)
     Cherry.DrawText(x + 15, y + 40, 14.0, "#888888FF", desc)
     
-    return Cherry.IsMouseClickedOnPos(x, y, w, h, 0)
+    return Cherry.IsMouseClickedOnCurrentPos(x, y, w, h, 0)
 end
 
 function IsMouseOver(x, y, w, h)
-    local mx, my = Cherry.GetMousePos()
-    return mx >= x and mx <= x + w and my >= y and my <= y + h
+    return Cherry.IsMouseOverRect(x, y, w, h)
 end
 
 DrawWelcomeScreen()
