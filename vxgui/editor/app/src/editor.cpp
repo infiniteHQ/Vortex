@@ -5,317 +5,167 @@
 
 std::string GetVortexBuildType() { return VORTEX_BUILD; }
 
-static void handleExit(Cherry::Application *app) { app->Close(); }
+Editor::Editor() {
+  m_WelcomeAppWindow =
+      VortexEditor::Welcome::Create("?loc:loc.window_names.welcome");
+  m_WelcomeAppWindow->GetAppWindow()->SetVisibility(true);
+  Cherry::AddAppWindow(m_WelcomeAppWindow->GetAppWindow());
 
-static void handleProjectSettings() {}
+  m_ModulesUtility = VortexEditor::ModulesUtility::Create("Modules utily");
+  m_ModulesUtility->GetAppWindow()->SetVisibility(false);
+  Cherry::AddAppWindow(m_ModulesUtility->GetAppWindow());
 
-static void handleManagePlugins() {}
+  m_PluginsUtility = VortexEditor::PluginsUtility::Create("Plugins utily");
+  m_PluginsUtility->GetAppWindow()->SetVisibility(false);
+  Cherry::AddAppWindow(m_PluginsUtility->GetAppWindow());
 
-static void handleManageModules(bool &showModulesManager) {}
+  m_ProjectSettings = VortexEditor::ProjectSettings::Create("Project settings");
+  m_ProjectSettings->GetAppWindow()->SetVisibility(false);
+  Cherry::AddAppWindow(m_ProjectSettings->GetAppWindow());
+};
 
-static void handleShowBottomToolbar() {}
-
-static void handleLogUtility() {}
-
-static void handleShowSimplifiedHeader(Cherry::Application *app) {
-  app->m_DefaultSpecification.CustomTitlebar =
-      !app->m_DefaultSpecification.CustomTitlebar;
+bool Editor::GetAboutAppWindowVisibility() {
+  if (!m_AboutWindow)
+    return false;
+  return m_AboutWindow->GetAppWindow()->m_Visible;
 }
 
-static void handleSpawnWindow(Cherry::Application *app) {
-  std::string dfqsf = "QSDff";
-  app->SpawnWindow(dfqsf);
+void Editor::SetAboutWindowVisibility(const bool visibility) {
+  if (visibility) {
+    if (!m_AboutWindow) {
+      m_AboutWindow = VortexEditor::AboutVortex::Create("About Vortex");
+
+      Cherry::ApplicationSpecification spec;
+      spec.SetName("About Vortex");
+      spec.SetUniqueAppWindowName(m_AboutWindow->GetAppWindow()->m_Name);
+      spec.MinHeight = 100;
+      spec.MinWidth = 200;
+      spec.Height = 450;
+      spec.Width = 750;
+      spec.DisableLogo = true;
+      spec.DisableResize = true;
+      spec.CustomTitlebar = true;
+      spec.DisableWindowManagerTitleBar = true;
+      spec.WindowOnlyClosable = true;
+      spec.WindowSaves = false;
+      spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+
+      spec.UsingCloseCallback = true;
+      spec.CloseCallback = [this]() {
+        Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
+        m_AboutWindow = nullptr;
+      };
+
+      spec.MenubarCallback = []() {};
+
+      m_AboutWindow->GetAppWindow()->AttachOnNewWindow(spec);
+      Cherry::AddAppWindow(m_AboutWindow->GetAppWindow());
+    }
+
+    m_AboutWindow->GetAppWindow()->SetVisibility(true);
+  } else {
+    if (m_AboutWindow) {
+      Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
+      m_AboutWindow = nullptr;
+    }
+  }
 }
 
-static void handleContentBrowser(bool &showContentBrowser) {}
-
-static void handleProjectViewer(bool &showProjectViewer) {}
-
-static void handleNews() {}
-
-static void handleCommunity() {}
-
-static void handleTutorials() {}
-
-static void handleDocumentation() {}
-/*
-void EditorLayer::framebar(const std::shared_ptr<EditorLayer> &applayer,
-                           Cherry::Application *app) {
-  float oldSize = CherryGUI::GetFont()->Scale;
-  CherryGUI::PushFont(CherryGUI::GetFont());
-
-  const char *text = VortexMaker::GetCurrentContext()->name.c_str();
-  CherryGUI::GetFont()->Scale *= 0.84;
-  CherryGUI::PushFont(CherryGUI::GetFont());
-
-  ImVec2 textSize = CherryGUI::CalcTextSize(text);
-
-  float circleRadius = 10.0f;
-  float circlePadding = 12.0f;
-  float rectanglePaddingX = 15.0f;
-  float rectanglePaddingY = 25.0f;
-
-  ImVec2 cursorPos = CherryGUI::GetCursorScreenPos();
-
-  float yOffset = 5.0f;
-
-  ImVec2 circlePos = ImVec2(cursorPos.x - 12 + circleRadius,
-                            cursorPos.y + textSize.y * 0.1f + 6);
-
-  ImVec2 rectMin = ImVec2(cursorPos.x + circleRadius + circlePadding,
-                          cursorPos.y - 38 + yOffset);
-  ImVec2 rectMax =
-      ImVec2(rectMin.x + textSize.x + 2 * rectanglePaddingX,
-             cursorPos.y + textSize.y + 2 * rectanglePaddingY - 45);
-
-  ImDrawList *drawList = CherryGUI::GetWindowDrawList();
-  drawList->AddRectFilled(rectMin, rectMax, IM_COL32(15, 15, 15, 255));
-
-  CherryGUI::SetCursorScreenPos(circlePos);
-  CherryGUI::InvisibleButton("circleButton",
-                             ImVec2(circleRadius * 2, circleRadius * 2));
-
-  if (CherryGUI::IsItemHovered()) {
-    drawList->AddCircle(circlePos, circleRadius + 1.0f,
-                        IM_COL32(200, 200, 200, 255), 32, 2.0f);
-  }
-
-  drawList->AddCircleFilled(circlePos, circleRadius, IM_COL32(40, 40, 40, 255));
-
-  if (CherryGUI::IsItemClicked(ImGuiMouseButton_Left)) {
-    CherryGUI::OpenPopup("circleMenu");
-  }
-
-  if (CherryGUI::BeginPopup("circleMenu")) {
-    CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), "Disconnected");
-    if (CherryGUI::MenuItem("Logout")) {
-    }
-
-    CherryGUI::Separator();
-    if (CherryGUI::MenuItem("Connect to Vortex community")) {
-    }
-    CherryGUI::Separator();
-    if (CherryGUI::MenuItem("See my marketplace contents")) {
-    }
-    if (CherryGUI::MenuItem("See my marketplace plugins/modules")) {
-    }
-    if (CherryGUI::MenuItem("See my marketplace templates")) {
-    }
-    if (CherryGUI::MenuItem("See my VortexHub projects")) {
-    }
-    CherryGUI::Separator();
-    if (CherryGUI::MenuItem("Upload content(s)")) {
-    }
-    CherryGUI::EndPopup();
-  }
-
-  ImVec2 textPos =
-      ImVec2(rectMin.x + rectanglePaddingX,
-             rectMin.y + (rectMax.y - rectMin.y - textSize.y) * 0.5f +
-                 rectanglePaddingY - 10);
-
-  CherryGUI::SetCursorScreenPos(textPos);
-
-  if (CherryGUI::IsItemClicked(ImGuiMouseButton_Left)) {
-    CherryGUI::OpenPopup("projectMenu");
-  }
-
-  CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), text);
-  if (CherryGUI::BeginPopup("projectMenu")) {
-    CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), text);
-    if (CherryGUI::MenuItem("Project settings")) {
-    }
-
-    CherryGUI::Separator();
-    if (CherryGUI::MenuItem("Connect to Vortex community")) {
-    }
-    CherryGUI::Separator();
-    if (CherryGUI::MenuItem("See my marketplace contents")) {
-    }
-    if (CherryGUI::MenuItem("See my marketplace plugins/modules")) {
-    }
-    if (CherryGUI::MenuItem("See my marketplace templates")) {
-    }
-    if (CherryGUI::MenuItem("See my VortexHub projects")) {
-    }
-    CherryGUI::Separator();
-    if (CherryGUI::MenuItem("Upload content(s)")) {
-    }
-    CherryGUI::EndPopup();
-  }
-
-  CherryGUI::GetFont()->Scale = oldSize;
-  CherryGUI::PopFont();
-
-  CherryGUI::PopFont();
+void Editor::SetTemplatesUtilityVisibility(const bool &visibility) {
+  /*m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(visibility);*/
 }
-*/
-void Editor::Menubar(Cherry::Application *app) {
-  float oldsize = CherryGUI::GetFont()->Scale;
-  CherryGUI::GetFont()->Scale *= 0.84;
-  CherryGUI::PushFont(CherryGUI::GetFont());
 
-  if (CherryGUI::BeginMenu("File")) {
-    if (CherryGUI::MenuItem("Exit"))
-      handleExit(app);
-    CherryGUI::EndMenu();
-  }
+bool Editor::GetTemplatesUtilityVisibility() {
+  /*return m_TemplatesUtilityAppWindow->GetAppWindow()->m_Visible;*/
+  return false;
+}
 
-  ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-  ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
-  ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
-  ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+void Editor::SetProjectSettingsVisibility(const bool &visibility) {
+  m_ProjectSettings->GetAppWindow()->SetVisibility(visibility);
+}
 
-  CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
-  CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+bool Editor::GetProjectSettingsVisibility() {
+  return m_ProjectSettings->GetAppWindow()->m_Visible;
+}
 
-  CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 8.0f));
-  CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+void Editor::SetModulesUtilityVisibility(const bool &visibility) {
+  m_ModulesUtility->GetAppWindow()->SetVisibility(visibility);
+}
 
-  if (CherryGUI::BeginMenu("Edit")) {
-    // TODO : Save All, (like the content browser)
-    CherryGUI::GetFont()->Scale *= 0.8;
-    CherryGUI::PushFont(CherryGUI::GetFont());
+bool Editor::GetModulesUtilityVisibility() {
+  return m_ModulesUtility->GetAppWindow()->m_Visible;
+}
 
-    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
+void Editor::SetPluginsUtilityVisibility(const bool &visibility) {
+  m_PluginsUtility->GetAppWindow()->SetVisibility(visibility);
+}
 
-    CherryGUI::PushStyleColor(ImGuiCol_Text, grayColor);
-    CherryGUI::Text("Main stuff");
-    CherryGUI::PopStyleColor();
+bool Editor::GetPluginsUtilityVisibility() {
+  return m_PluginsUtility->GetAppWindow()->m_Visible;
+}
 
-    CherryGUI::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-    CherryGUI::Separator();
-    CherryGUI::PopStyleColor();
+void Editor::SetWelcomeVisibility(const bool &visibility) {
+  // m_WelcomeAppWindow->GetAppWindow()->SetVisibility(visibility);
+}
 
-    CherryGUI::GetFont()->Scale = 0.84;
-    CherryGUI::PopFont();
-    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
+bool Editor::GetWelcomeVisibility() {
+  // return m_WelcomeAppWindow->GetAppWindow()->m_Visible;
+  return false;
+}
 
-    if (CherryGUI::MenuItem("Project Settings",
-                            "Main configurations of this project",
-                            &ShowProjectSettings))
-      handleProjectSettings();
-    CherryGUI::GetFont()->Scale *= 0.8;
-    CherryGUI::PushFont(CherryGUI::GetFont());
+std::string Editor::SpawnContentBrowser() {
+  std::string label = "Content Browser ####Content Browser-" +
+                      std::to_string(c_ContentBrowserInstances.size() + 1);
+  std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser =
+      VortexEditor::ContentBrowserAppWindow::Create(
+          label.c_str(),
+          VortexMaker::GetCurrentContext()->projectDataPath.string());
 
-    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
+  ContentBrowser->m_CutPathsCallback = VortexMaker::Cut;
+  ContentBrowser->m_CopyPathsCallback = VortexMaker::Copy;
+  ContentBrowser->m_PastePathsCallback = VortexMaker::PasteAllSelections;
+  ContentBrowser->m_DeletePathCallback = VortexMaker::DeletePath;
+  Cherry::AddAppWindow(ContentBrowser->GetAppWindow());
+  c_ContentBrowserInstances.push_back(ContentBrowser);
+  return label;
+}
 
-    CherryGUI::PushStyleColor(ImGuiCol_Text, grayColor);
-    CherryGUI::Text("Main stuff");
-    CherryGUI::PopStyleColor();
+std::string Editor::SpawnDocViewer() {
+  std::string label = "Doc viewer ####Doc viewer -" +
+                      std::to_string(c_DocViewerInstances.size() + 1);
+  std::shared_ptr<VortexEditor::DocViewerAppWindow> DocViewer =
+      VortexEditor::DocViewerAppWindow::Create(label.c_str());
 
-    CherryGUI::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-    CherryGUI::Separator();
-    CherryGUI::PopStyleColor();
+  Cherry::AddAppWindow(DocViewer->GetAppWindow());
+  c_DocViewerInstances.push_back(DocViewer);
+  return label;
+}
 
-    CherryGUI::GetFont()->Scale = 0.84;
-    CherryGUI::PopFont();
-    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
+void Editor::SpawnContentBrowserBottom() {
+  const std::string new_browser = SpawnContentBrowser();
 
-    if (CherryGUI::MenuItem("Logs Utility", "Overview of all logs",
-                            &ShowLogUtility))
-      handleLogUtility();
-    CherryGUI::GetFont()->Scale *= 0.8;
-    CherryGUI::PushFont(CherryGUI::GetFont());
+  auto dragdropstate = std::make_shared<WindowDragDropState>();
 
-    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
+  dragdropstate->LastDraggingPlace = Cherry::DockEmplacement::DockDown;
 
-    CherryGUI::PushStyleColor(ImGuiCol_Text, grayColor);
-    CherryGUI::Text("Main stuff");
-    CherryGUI::PopStyleColor();
+  dragdropstate->LastDraggingWindow = CherryApp.m_Windows[0]->GetName();
+  dragdropstate->DragOwner = CherryApp.m_Windows[0]->GetName();
+  dragdropstate->LastDraggingAppWindow = new_browser;
+  dragdropstate->LastDraggingAppWindowHost = "?loc:loc.window_names.welcome";
 
-    CherryGUI::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-    CherryGUI::Separator();
-    CherryGUI::PopStyleColor();
+  CherryApp.SetCurrentDragDropState(dragdropstate);
+  Application::PushRedockEvent(CherryApp.GetCurrentDragDropState());
 
-    CherryGUI::GetFont()->Scale = 0.84;
-    CherryGUI::PopFont();
-    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
+  CherryApp.SetCurrentDragDropState(nullptr);
+}
 
-    if (CherryGUI::MenuItem("Manage plugins",
-                            "Add, remove, edit plugins of this project"))
-      handleManagePlugins();
-    if (CherryGUI::MenuItem("Manage modules",
-                            "Manage modules loaded/registered",
-                            &ShowModulesManager))
-      handleManageModules(ShowModulesManager);
-    if (CherryGUI::MenuItem("Templates modules",
-                            "Create, add template in your project",
-                            &ShowTemplateManager))
-      handleManageModules(ShowTemplateManager);
-    CherryGUI::EndMenu();
-  }
-
-  CherryGUI::PopStyleVar(2);
-  CherryGUI::PopStyleColor(2);
-
-  if (CherryGUI::BeginMenu("Window")) {
-    if (CherryGUI::MenuItem("Show bottom toolbar",
-                            "Get some useful tools in a bottom bar."))
-      handleShowBottomToolbar();
-    if (CherryGUI::MenuItem("Show simplified header",
-                            "Reduce the size of header"))
-      handleShowSimplifiedHeader(app);
-    if (CherryGUI::MenuItem("SpawnNewWindow", "Reduce the size of header"))
-      handleSpawnWindow(app);
-    CherryGUI::EndMenu();
-  }
-
-  if (CherryGUI::BeginMenu("Tools")) {
-    if (CherryGUI::MenuItem("Content Browser",
-                            "Open a new project content browser",
-                            &ShowContentBrowser)) {
-      this->SpawnContentBrowser();
-    }
-    if (CherryGUI::MenuItem("Project Viewer", "Project component manager",
-                            &ShowProjectViewer))
-      handleProjectViewer(ShowProjectViewer);
-    CherryGUI::EndMenu();
-  }
-
-  if (CherryGUI::BeginMenu("Help")) {
-
-    if (CherryGUI::Button("About Vortex.."))
-      CherryGUI::OpenPopup("About Vortex");
-    if (CherryGUI::BeginPopupModal("About Vortex", NULL,
-                                   ImGuiWindowFlags_MenuBar)) {
-
-      if (CherryGUI::BeginMenuBar()) {
-        if (CherryGUI::BeginMenu("File")) {
-          if (CherryGUI::MenuItem("Close")) {
-          }
-          CherryGUI::EndMenu();
-        }
-        CherryGUI::EndMenuBar();
-      }
-      CherryGUI::Text(
-          "Vortex is complete open creation platform that contain a "
-          "bunch of tools for creators and makers. ");
-
-      if (CherryGUI::Button("Close"))
-        CherryGUI::CloseCurrentPopup();
-      CherryGUI::EndPopup();
-    }
-    CherryGUI::Separator();
-    if (CherryGUI::MenuItem("News", "Get latest Vortex news"))
-      handleNews();
-    if (CherryGUI::MenuItem("Community", "Join a community of creators"))
-      handleCommunity();
-    if (CherryGUI::MenuItem("Tutorials", "Get bunch of tutorials"))
-      handleTutorials();
-    if (CherryGUI::MenuItem("Documentation",
-                            "See official documentation of Vortex Maker"))
-      handleDocumentation();
-    CherryGUI::Separator();
-    if (CherryGUI::MenuItem("Exit"))
-      handleExit(app);
-    CherryGUI::EndMenu();
-  }
-
-  // Custom component menubar callback...
-
-  CherryGUI::GetFont()->Scale = oldsize;
-  CherryGUI::PopFont();
+void Editor::SpawnLogsUtility() {
+  std::string label = "Logs utility ####Logs utility-" +
+                      std::to_string(c_LogsUtilityInstances.size() + 1);
+  std::shared_ptr<VortexEditor::LogsUtilityAppWindow> LogsUtility =
+      VortexEditor::LogsUtilityAppWindow::Create(label.c_str());
+  Cherry::AddAppWindow(LogsUtility->GetAppWindow());
+  c_LogsUtilityInstances.push_back(LogsUtility);
 }
 
 // Frame task
@@ -751,21 +601,35 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     }
 
     if (CherryGUI::BeginMenu("Help")) {
+      CherryKit::SeparatorText("Learning, documentation");
+
+      if (CherryGUI::MenuItem("Documentation", "Open embedded documentations",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_doc.png")),
+                              false)) {
+        c_Editor->SpawnDocViewer();
+      }
+
+      CherryKit::SeparatorText("About");
+
+      if (CherryGUI::MenuItem("About Vortex", "About the Vortex Editor",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_info.png")),
+                              c_Editor->GetAboutAppWindowVisibility())) {
+        c_Editor->SetAboutWindowVisibility(
+            !c_Editor->GetAboutAppWindowVisibility());
+      }
+
+      if (CherryGUI::MenuItem("About the Project", "About the current project",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_info.png")),
+                              c_Editor->GetAboutAppWindowVisibility())) {
+        c_Editor->SetAboutWindowVisibility(
+            !c_Editor->GetAboutAppWindowVisibility());
+      }
+
       CherryGUI::EndMenu();
     }
-
-    // Callback
-    /*CherryGUI::Separator();
-
-    if (CherryGUI::BeginMenu("File"))
-    {
-      CherryGUI::EndMenu();
-    }
-
-    if (CherryGUI::BeginMenu("Select"))
-    {
-      CherryGUI::EndMenu();
-    }*/
 
     CherryGUI::PopStyleVar(2);
     CherryGUI::PopStyleColor(2);

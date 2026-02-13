@@ -5,13 +5,12 @@
 #include "../core/about/about.hpp"
 #include "../core/modules_utility/modules_utility.hpp"
 #include "../core/plugins_utility/plugins_utility.hpp"
-#include "../core/welcome/welcome.hpp"
-// #include "../core/templates_utility/templates_utility.hpp"
 #include "../core/project_settings/project_settings.hpp"
+#include "../core/welcome/welcome.hpp"
 
 // Instanciable windows
-// #include "../instances/instance.h"
 #include "../instances/content_browser/content_browser.hpp"
+#include "../instances/doc_viewer/doc_viewer.hpp"
 #include "../instances/logs_utility/logs_utility.hpp"
 
 using namespace VortexMaker;
@@ -23,166 +22,35 @@ static std::vector<std::shared_ptr<VortexEditor::ContentBrowserAppWindow>>
     c_ContentBrowserInstances;
 static std::vector<std::shared_ptr<VortexEditor::LogsUtilityAppWindow>>
     c_LogsUtilityInstances;
+static std::vector<std::shared_ptr<VortexEditor::DocViewerAppWindow>>
+    c_DocViewerInstances;
 
 class Editor {
 public:
-  Editor() {
+  Editor();
 
-    m_WelcomeAppWindow =
-        VortexEditor::Welcome::Create("?loc:loc.window_names.welcome");
-    m_WelcomeAppWindow->GetAppWindow()->SetVisibility(true);
-    Cherry::AddAppWindow(m_WelcomeAppWindow->GetAppWindow());
+  bool GetAboutAppWindowVisibility();
+  void SetAboutWindowVisibility(const bool visibility);
 
-    m_ModulesUtility = VortexEditor::ModulesUtility::Create("Modules utily");
-    m_ModulesUtility->GetAppWindow()->SetVisibility(false);
-    Cherry::AddAppWindow(m_ModulesUtility->GetAppWindow());
+  void SetTemplatesUtilityVisibility(const bool &visibility);
+  bool GetTemplatesUtilityVisibility();
 
-    m_PluginsUtility = VortexEditor::PluginsUtility::Create("Plugins utily");
-    m_PluginsUtility->GetAppWindow()->SetVisibility(false);
-    Cherry::AddAppWindow(m_PluginsUtility->GetAppWindow());
+  void SetProjectSettingsVisibility(const bool &visibility);
+  bool GetProjectSettingsVisibility();
 
-    m_ProjectSettings =
-        VortexEditor::ProjectSettings::Create("Project settings");
-    m_ProjectSettings->GetAppWindow()->SetVisibility(false);
-    Cherry::AddAppWindow(m_ProjectSettings->GetAppWindow());
-    /* m_TemplatesUtilityAppWindow =
-         VortexEditor::TemplatesUtilityAppWindow::Create("Templates utility");
-     m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(false);
-     Cherry::AddAppWindow(m_TemplatesUtilityAppWindow->GetAppWindow());*/
-  };
+  void SetModulesUtilityVisibility(const bool &visibility);
+  bool GetModulesUtilityVisibility();
 
-  bool GetAboutAppWindowVisibility() {
-    if (!m_AboutWindow)
-      return false;
-    return m_AboutWindow->GetAppWindow()->m_Visible;
-  }
+  void SetPluginsUtilityVisibility(const bool &visibility);
+  bool GetPluginsUtilityVisibility();
 
-  void SetAboutWindowVisibility(const bool visibility) {
-    if (visibility) {
-      if (!m_AboutWindow) {
-        m_AboutWindow = VortexEditor::AboutVortex::Create("About Vortex");
+  void SetWelcomeVisibility(const bool &visibility);
+  bool GetWelcomeVisibility();
 
-        Cherry::ApplicationSpecification spec;
-        spec.SetName("About Vortex");
-        spec.SetUniqueAppWindowName(m_AboutWindow->GetAppWindow()->m_Name);
-        spec.MinHeight = 100;
-        spec.MinWidth = 200;
-        spec.Height = 450;
-        spec.Width = 750;
-        spec.DisableLogo = true;
-        spec.DisableResize = true;
-        spec.CustomTitlebar = true;
-        spec.DisableWindowManagerTitleBar = true;
-        spec.WindowOnlyClosable = true;
-        spec.WindowSaves = false;
-        spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
-
-        spec.UsingCloseCallback = true;
-        spec.CloseCallback = [this]() {
-          Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
-          m_AboutWindow = nullptr;
-        };
-
-        spec.MenubarCallback = []() {};
-
-        m_AboutWindow->GetAppWindow()->AttachOnNewWindow(spec);
-        Cherry::AddAppWindow(m_AboutWindow->GetAppWindow());
-      }
-
-      m_AboutWindow->GetAppWindow()->SetVisibility(true);
-    } else {
-      if (m_AboutWindow) {
-        Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
-        m_AboutWindow = nullptr;
-      }
-    }
-  }
-
-  void SetTemplatesUtilityVisibility(const bool &visibility) {
-    /*m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(visibility);*/
-  }
-
-  bool GetTemplatesUtilityVisibility() {
-    /*return m_TemplatesUtilityAppWindow->GetAppWindow()->m_Visible;*/
-    return false;
-  }
-
-  void SetProjectSettingsVisibility(const bool &visibility) {
-    m_ProjectSettings->GetAppWindow()->SetVisibility(visibility);
-  }
-
-  bool GetProjectSettingsVisibility() {
-    return m_ProjectSettings->GetAppWindow()->m_Visible;
-  }
-
-  void SetModulesUtilityVisibility(const bool &visibility) {
-    m_ModulesUtility->GetAppWindow()->SetVisibility(visibility);
-  }
-
-  bool GetModulesUtilityVisibility() {
-    return m_ModulesUtility->GetAppWindow()->m_Visible;
-  }
-
-  void SetPluginsUtilityVisibility(const bool &visibility) {
-    m_PluginsUtility->GetAppWindow()->SetVisibility(visibility);
-  }
-
-  bool GetPluginsUtilityVisibility() {
-    return m_PluginsUtility->GetAppWindow()->m_Visible;
-  }
-
-  void SetWelcomeVisibility(const bool &visibility) {
-    // m_WelcomeAppWindow->GetAppWindow()->SetVisibility(visibility);
-  }
-
-  bool GetWelcomeVisibility() {
-    // return m_WelcomeAppWindow->GetAppWindow()->m_Visible;
-    return false;
-  }
-
-  std::string SpawnContentBrowser() {
-    std::string label = "Content Browser ####Content Browser-" +
-                        std::to_string(c_ContentBrowserInstances.size() + 1);
-    std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser =
-        VortexEditor::ContentBrowserAppWindow::Create(
-            label.c_str(),
-            VortexMaker::GetCurrentContext()->projectDataPath.string());
-
-    ContentBrowser->m_CutPathsCallback = VortexMaker::Cut;
-    ContentBrowser->m_CopyPathsCallback = VortexMaker::Copy;
-    ContentBrowser->m_PastePathsCallback = VortexMaker::PasteAllSelections;
-    ContentBrowser->m_DeletePathCallback = VortexMaker::DeletePath;
-    Cherry::AddAppWindow(ContentBrowser->GetAppWindow());
-    c_ContentBrowserInstances.push_back(ContentBrowser);
-    return label;
-  }
-
-  void SpawnContentBrowserBottom() {
-    const std::string new_browser = SpawnContentBrowser();
-
-    auto dragdropstate = std::make_shared<WindowDragDropState>();
-
-    dragdropstate->LastDraggingPlace = Cherry::DockEmplacement::DockDown;
-
-    dragdropstate->LastDraggingWindow = CherryApp.m_Windows[0]->GetName();
-    dragdropstate->DragOwner = CherryApp.m_Windows[0]->GetName();
-    dragdropstate->LastDraggingAppWindow = new_browser;
-    dragdropstate->LastDraggingAppWindowHost = "?loc:loc.window_names.welcome";
-
-    CherryApp.SetCurrentDragDropState(dragdropstate);
-    Application::PushRedockEvent(CherryApp.GetCurrentDragDropState());
-
-    CherryApp.SetCurrentDragDropState(nullptr);
-  }
-
-  void SpawnLogsUtility() {
-    std::string label = "Logs utility ####Logs utility-" +
-                        std::to_string(c_LogsUtilityInstances.size() + 1);
-    std::shared_ptr<VortexEditor::LogsUtilityAppWindow> LogsUtility =
-        VortexEditor::LogsUtilityAppWindow::Create(label.c_str());
-    Cherry::AddAppWindow(LogsUtility->GetAppWindow());
-    c_LogsUtilityInstances.push_back(LogsUtility);
-  }
+  std::string SpawnContentBrowser();
+  std::string SpawnDocViewer();
+  void SpawnContentBrowserBottom();
+  void SpawnLogsUtility();
 
   void Menubar(Cherry::Application *app);
 
@@ -199,8 +67,6 @@ private:
   std::shared_ptr<VortexEditor::PluginsUtility> m_PluginsUtility;
   std::shared_ptr<VortexEditor::ProjectSettings> m_ProjectSettings;
   std::shared_ptr<VortexEditor::AboutVortex> m_AboutWindow;
-  // std::shared_ptr<VortexEditor::TemplatesUtilityAppWindow>
-  //  m_TemplatesUtilityAppWindow;
 };
 
 static std::shared_ptr<Editor> c_Editor;
