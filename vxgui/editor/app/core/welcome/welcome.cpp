@@ -76,6 +76,15 @@ void Welcome::Render() {
   }
 
   // If Terminal Clicked
+  if (CherryApp.GetComponentData(CherryID("welcome_terminal"), "isClicked") ==
+      "true") {
+    c_Editor->SpawnLogsUtility();
+  }
+
   // If Scripts Clicked
+  if (CherryApp.GetComponentData(CherryID("welcome_settings"), "isClicked") ==
+      "true") {
+    c_Editor->ToggleProjectSettings();
+  }
 }
 } // namespace VortexEditor

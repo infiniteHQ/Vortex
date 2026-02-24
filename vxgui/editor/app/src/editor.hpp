@@ -51,7 +51,7 @@ public:
   std::string SpawnDocViewer();
   void SpawnContentBrowserBottom();
   void SpawnLogsUtility();
-
+  void ToggleProjectSettings();
   void Menubar(Cherry::Application *app);
 
   bool ShowContentBrowser = true;

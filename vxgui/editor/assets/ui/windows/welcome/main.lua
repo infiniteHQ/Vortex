@@ -38,12 +38,21 @@ Cherry.PushFont("Clash")
     end
     Cherry.EndComponent()
     
+    Cherry.BeginComponent("welcome_terminal")
     if DrawAppIcon(marginX + (iconSize + spacing), leftY, iconSize, "Terminal", Cherry.GetPath("resources/imgs/terminal.png")) then 
-        Cherry.Log("Open: Terminal")
+        Cherry.SetComponentData("welcome_terminal", "isClicked","true")
+    else
+        Cherry.SetComponentData("welcome_terminal", "isClicked","false")
     end
+    Cherry.EndComponent()
+
+    Cherry.BeginComponent("welcome_settings")
     if DrawAppIcon(marginX + (iconSize + spacing) * 2, leftY, iconSize, "Settings", Cherry.GetPath("resources/imgs/wheel.png")) then 
-        Cherry.Log("Open: Scripts")
+        Cherry.SetComponentData("welcome_settings", "isClicked","true")
+    else
+        Cherry.SetComponentData("welcome_settings", "isClicked","false")
     end
+    Cherry.EndComponent()
     
     leftY = leftY + iconSize + 85
 

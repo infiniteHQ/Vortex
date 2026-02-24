@@ -168,6 +168,11 @@ void Editor::SpawnLogsUtility() {
   c_LogsUtilityInstances.push_back(LogsUtility);
 }
 
+void Editor::ToggleProjectSettings() {
+  c_Editor->SetProjectSettingsVisibility(
+      !c_Editor->GetProjectSettingsVisibility());
+}
+
 // Frame task
 void RebuildCherryTheme() {
   if (VortexMaker::IsThemeNeedsRebuild()) {
@@ -259,58 +264,65 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
                                CherryGUI::CalcTextSize("DEV").x - 20.0f);
 
-      CherryGUI::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "DEV");
+      if (ShowProjectType) {
+        CherryGUI::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "DEV");
+      }
     } else {
       if (VortexMaker::GetCurrentContext()->type == "tool") {
         CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
-                                 CherryGUI::CalcTextSize("DEV").x - 20.0f);
+                                 CherryGUI::CalcTextSize("Tool").x - 20.0f);
 
-        CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Tool");
+        if (ShowProjectType) {
+          CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Tool");
+        }
       } else if (VortexMaker::GetCurrentContext()->type == "project") {
         CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
-                                 CherryGUI::CalcTextSize("DEV").x - 20.0f);
+                                 CherryGUI::CalcTextSize("Project").x - 20.0f);
 
-        CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Project");
+        if (ShowProjectType) {
+          CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Project");
+        }
       }
     }
 
     CherryGUI::SetCursorScreenPos(circlePos);
     CherryGUI::InvisibleButton("circleButton",
                                ImVec2(circleRadius * 2, circleRadius * 2));
+    if (ShowAccountMenu) {
 
-    if (CherryGUI::IsItemHovered()) {
-      drawList->AddCircle(circlePos, circleRadius + 1.0f,
-                          IM_COL32(200, 200, 200, 255), 32, 2.0f);
-    }
-
-    drawList->AddCircleFilled(circlePos, circleRadius,
-                              IM_COL32(40, 40, 40, 255));
-
-    if (CherryGUI::IsItemClicked(ImGuiMouseButton_Left)) {
-      CherryGUI::OpenPopup("circleMenu");
-    }
-
-    if (CherryGUI::BeginPopup("circleMenu")) {
-      CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), "Disconnected");
-      if (CherryGUI::MenuItem("Logout")) {
+      if (CherryGUI::IsItemHovered()) {
+        drawList->AddCircle(circlePos, circleRadius + 1.0f,
+                            IM_COL32(200, 200, 200, 255), 32, 2.0f);
       }
 
-      CherryGUI::Separator();
-      if (CherryGUI::MenuItem("Connect to Vortex community")) {
+      drawList->AddCircleFilled(circlePos, circleRadius,
+                                IM_COL32(40, 40, 40, 255));
+
+      if (CherryGUI::IsItemClicked(ImGuiMouseButton_Left)) {
+        CherryGUI::OpenPopup("circleMenu");
       }
-      CherryGUI::Separator();
-      if (CherryGUI::MenuItem("See my marketplace contents")) {
+      if (CherryGUI::BeginPopup("circleMenu")) {
+        CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), "Disconnected");
+        if (CherryGUI::MenuItem("Logout")) {
+        }
+
+        CherryGUI::Separator();
+        if (CherryGUI::MenuItem("Connect to Vortex community")) {
+        }
+        CherryGUI::Separator();
+        if (CherryGUI::MenuItem("See my marketplace contents")) {
+        }
+        if (CherryGUI::MenuItem("See my marketplace plugins/modules")) {
+        }
+        if (CherryGUI::MenuItem("See my marketplace templates")) {
+        }
+        if (CherryGUI::MenuItem("See my VortexHub projects")) {
+        }
+        CherryGUI::Separator();
+        if (CherryGUI::MenuItem("Upload content(s)")) {
+        }
+        CherryGUI::EndPopup();
       }
-      if (CherryGUI::MenuItem("See my marketplace plugins/modules")) {
-      }
-      if (CherryGUI::MenuItem("See my marketplace templates")) {
-      }
-      if (CherryGUI::MenuItem("See my VortexHub projects")) {
-      }
-      CherryGUI::Separator();
-      if (CherryGUI::MenuItem("Upload content(s)")) {
-      }
-      CherryGUI::EndPopup();
     }
 
     ImVec2 textPos =
@@ -326,29 +338,6 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
     if (ShowProjectName) {
       CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), text);
-    }
-
-    if (CherryGUI::BeginPopup("projectMenu")) {
-      CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), text);
-      if (CherryGUI::MenuItem("Project settings")) {
-      }
-
-      CherryGUI::Separator();
-      if (CherryGUI::MenuItem("Connect to Vortex community")) {
-      }
-      CherryGUI::Separator();
-      if (CherryGUI::MenuItem("See my marketplace contents")) {
-      }
-      if (CherryGUI::MenuItem("See my marketplace plugins/modules")) {
-      }
-      if (CherryGUI::MenuItem("See my marketplace templates")) {
-      }
-      if (CherryGUI::MenuItem("See my VortexHub projects")) {
-      }
-      CherryGUI::Separator();
-      if (CherryGUI::MenuItem("Upload content(s)")) {
-      }
-      CherryGUI::EndPopup();
     }
 
     CherryGUI::GetFont()->Scale = oldSize;
@@ -417,6 +406,14 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     static bool t;
 
     if (CherryGUI::BeginMenu("Project")) {
+
+      if (CherryGUI::MenuItem("Welcome", "",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_doc.png")),
+                              false)) {
+        c_Editor->SetWelcomeVisibility(!c_Editor->GetWelcomeVisibility());
+      }
+
       CherryKit::SeparatorText("Logical contents");
 
       if (CherryGUI::MenuItem(
@@ -455,7 +452,8 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
               Cherry::GetTexture(Cherry::GetPath(
                   "resources/imgs/icons/misc/icon_settings.png")),
               c_Editor->GetProjectSettingsVisibility())) {
-        c_Editor->SetProjectSettingsVisibility(true);
+        c_Editor->SetProjectSettingsVisibility(
+            !c_Editor->GetProjectSettingsVisibility());
       }
 
       CherryKit::SeparatorText("Other");
@@ -480,6 +478,18 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     }
 
     if (CherryGUI::BeginMenu("Edit")) {
+      if (CherryGUI::MenuItem("Undo", "Change selected language",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_doc.png")),
+                              false)) {
+        // undo main callback
+      }
+      if (CherryGUI::MenuItem("Redo", "Change selected theme",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_doc.png")),
+                              false)) {
+        // redo main callback
+      }
       CherryGUI::EndMenu();
     }
 
@@ -491,6 +501,24 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
                                   "resources/imgs/icons/misc/icon_info.png")),
                               ShowProjectName)) {
         ShowProjectName = !ShowProjectName;
+      }
+      if (CherryGUI::MenuItem("Show project nature", "",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_info.png")),
+                              ShowProjectType)) {
+        ShowProjectType = !ShowProjectType;
+      }
+      if (CherryGUI::MenuItem("Show my profile ", "",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_info.png")),
+                              ShowAccountMenu)) {
+        ShowAccountMenu = !ShowAccountMenu;
+      }
+      if (CherryGUI::MenuItem("Show errors and warnings ", "",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_info.png")),
+                              ShowDebugNumbers)) {
+        ShowDebugNumbers = !ShowDebugNumbers;
       }
       CherryGUI::EndMenu();
     }
@@ -520,87 +548,31 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     }
 
     if (CherryGUI::BeginMenu("Options")) {
-      CherryGUI::GetFont()->Scale *= 0.8;
-      CherryGUI::PushFont(CherryGUI::GetFont());
+      CherryKit::SeparatorText("Quick settings");
 
-      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
-
-      CherryGUI::PushStyleColor(ImGuiCol_Text, grayColor);
-      CherryGUI::Text("Main stuff");
-      CherryGUI::PopStyleColor();
-
-      CherryGUI::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-      CherryGUI::Separator();
-      CherryGUI::PopStyleColor();
-
-      CherryGUI::GetFont()->Scale = 0.84;
-      CherryGUI::PopFont();
-      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
-
-      if (CherryGUI::Button("Set en")) {
-        app->SetLocale("en");
+      if (CherryGUI::MenuItem("Switch language", "Change selected language",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_doc.png")),
+                              false)) {
+        //
       }
-
-      if (CherryGUI::Button("Set fr")) {
-        app->SetLocale("fr");
-      }
-
-      if (CherryGUI::Button("Set es")) {
-        app->SetLocale("es");
-      }
-      CherryGUI::GetFont()->Scale *= 0.8;
-      CherryGUI::PushFont(CherryGUI::GetFont());
-
-      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
-
-      CherryGUI::PushStyleColor(ImGuiCol_Text, grayColor);
-      CherryGUI::Text("Main stuff");
-      CherryGUI::PopStyleColor();
-
-      CherryGUI::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-      CherryGUI::Separator();
-      CherryGUI::PopStyleColor();
-
-      CherryGUI::GetFont()->Scale = 0.84;
-      CherryGUI::PopFont();
-      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
-
-      if (CherryGUI::MenuItem("Logs Utility", "Overview of all logs", &t)) {
-      }
-
-      CherryGUI::GetFont()->Scale *= 0.8;
-      CherryGUI::PushFont(CherryGUI::GetFont());
-
-      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
-
-      CherryGUI::PushStyleColor(ImGuiCol_Text, grayColor);
-      CherryGUI::Text("Main stuff");
-      CherryGUI::PopStyleColor();
-
-      CherryGUI::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-      CherryGUI::Separator();
-      CherryGUI::PopStyleColor();
-
-      CherryGUI::GetFont()->Scale = 0.84;
-      CherryGUI::PopFont();
-      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
-
-      if (CherryGUI::MenuItem("Manage plugins",
-                              "Add, remove, edit plugins of this project")) {
-      }
-
-      if (CherryGUI::MenuItem("Manage modules",
-                              "Manage modules loaded/registered", &t)) {
-      }
-
-      if (CherryGUI::MenuItem("Templates modules",
-                              "Create, add template in your project", &t)) {
+      if (CherryGUI::MenuItem("Switch theme", "Change selected theme",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_doc.png")),
+                              false)) {
+        //
       }
 
       CherryGUI::EndMenu();
     }
 
     if (CherryGUI::BeginMenu("Help")) {
+      if (CherryGUI::MenuItem("Welcome", "",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_doc.png")),
+                              false)) {
+        c_Editor->SetWelcomeVisibility(!c_Editor->GetWelcomeVisibility());
+      }
       CherryKit::SeparatorText("Learning, documentation");
 
       if (CherryGUI::MenuItem("Documentation", "Open embedded documentations",
