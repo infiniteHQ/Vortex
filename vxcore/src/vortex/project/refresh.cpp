@@ -18,7 +18,7 @@ VORTEX_API void VortexMaker::RefreshProjectInformations() {
           std::string("Failed to parse vortex.config JSON: ") + e.what());
       return;
     }
-    VortexMaker::InitProject(jsonContent);
+    // VortexMaker::InitProject(jsonContent);
   } else {
     VortexMaker::LogError("Core", "Failed to open vortex.config file");
     return;
