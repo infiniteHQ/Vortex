@@ -233,6 +233,7 @@ void ProjectSettings::RefreshProjectInformations() {
   v_ProjectCodeOfConductFile = v_ProjectCodeOfConductFileInitial;
   v_ProjectSecurityFile = v_ProjectSecurityFileInitial;
   v_ProjectRootContentPath = v_ProjectRootContentPathInitial;
+  v_ProjectStartupScript = v_ProjectStartupScriptInitial;
 }
 
 void ProjectSettings::UpdateProjectInformations() {
@@ -252,6 +253,7 @@ void ProjectSettings::UpdateProjectInformations() {
   VortexMaker::UpdateProjectCodeOfConductFile(v_ProjectCodeOfConductFile);
   VortexMaker::UpdateProjectSecurityFile(v_ProjectSecurityFile);
   VortexMaker::UpdateProjectRootContentPath(v_ProjectRootContentPath);
+  VortexMaker::UpdateProjectStartupScript(v_ProjectStartupScript);
 
   // Sync initial values
   v_ProjectNameInitial = v_ProjectName;
@@ -270,6 +272,7 @@ void ProjectSettings::UpdateProjectInformations() {
   v_ProjectCodeOfConductFileInitial = v_ProjectCodeOfConductFile;
   v_ProjectSecurityFileInitial = v_ProjectSecurityFile;
   v_ProjectRootContentPathInitial = v_ProjectRootContentPath;
+  v_ProjectStartupScriptInitial = v_ProjectStartupScript;
 
   RefreshProjectInformations();
 }
@@ -492,6 +495,12 @@ ProjectSettings::ProjectSettings(const std::string &name) {
                     {
                         CherryKit::KeyValString("Root content path",
                                                 &v_ProjectRootContentPath),
+                    }),
+                CherryKit::KeyValParent(
+                    "Startup", true,
+                    {
+                        CherryKit::KeyValString("Startup script (lua)",
+                                                &v_ProjectStartupScript),
                     }),
             }});
       },

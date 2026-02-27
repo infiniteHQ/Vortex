@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <thread>
 
 // UI instances
 #include "./vxgui/crash_handler/crash_handler.hpp"
@@ -15,28 +14,6 @@
 
 static std::string session_id = "unknow";
 
-/*
-    TODO : Parent process for vortex executables regitered in
-   /usr/local/bin/Vortex/VERSION/vortex This command can detect the version of a
-   project and execute the correspondant project.
-
-    Usage :
-
-    vortex -e --version=1.1 -> Execute a project editor 1.1 in the directory of
-   a project vortex -e --version=1.1 --contained=docker -> Execute a project
-   editor 1.1 in the directory of a project in a docker container vortex -e
-   --version=1.1 --templates_path=PATH -> With a template path preset vortex -e
-   --version=1.1 --projects_path=PATH -> With a project path preset
-
-    vortex -l --version=1.1 -> Execute a launcher with vortex 1.1
-
-
-    Before lauching everything, this process can detect all version registered
-   in the system by checking /usr/local/bin and run healthy command
-
-
-
-*/
 void PrintInfinite() {
   std::cout << R"(
                   ███  ███   ███  ███████▓▒███ ███░  ░███ ███▓█████████ ████████                   
@@ -173,8 +150,6 @@ bool CheckDirectory() {
 VxContext *InitRuntime(bool logger) {
   VxContext *ctx = VortexMaker::CreateContext();
 
-  // TODO : start splash screen, with loading states
-
   VortexMaker::InitializePlatformVendor();
   std::cout << "Initializing runtime..." << std::endl;
 
@@ -244,9 +219,7 @@ int main(int argc, char *argv[]) {
   if (argc < 2) {
     PrintHeader();
   } else {
-    if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help") {
-      PrintHeader();
-    } else if (std::string(argv[1]) == "-test") {
+    if (std::string(argv[1]) == "-test") {
       return 0;
     } else if (std::string(argv[1]) == "--crash" ||
                std::string(argv[1]) == "--get-last-crash") {
@@ -266,41 +239,7 @@ int main(int argc, char *argv[]) {
 
       InitBlankRuntime(true);
       VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
-
-      std::thread receiveThread;
-      std::thread Thread([&]() { VortexMaker::VortexCrash(argc, argv); });
-      receiveThread.swap(Thread);
-
-      receiveThread.join();
-    } else if (std::string(argv[1]) == "-i" ||
-               std::string(argv[1]) == "--install") {
-      InitBlankRuntime(true);
-      PrintHeader();
-      VortexMaker::LogInfo("Bootstrapp", "Find and install component...");
-      std::string current_path = std::filesystem::current_path().string();
-      InitBlankRuntime(true);
-      VortexMaker::InstallContentOnSystem(current_path);
-    } else if (std::string(argv[1]) == "-bi" ||
-               std::string(argv[1]) == "--build-install") {
-      InitBlankRuntime(true);
-      PrintHeader();
-      VortexMaker::LogInfo("Bootstrapp", "Find and build/install component...");
-      std::string current_path = std::filesystem::current_path().string();
-      InitBlankRuntime(true);
-      VortexMaker::InstallContentOnSystem(current_path);
-    } else if (std::string(argv[1]) == "-cp" ||
-               std::string(argv[1]) == "--create-project") {
-      if (argc < 3) {
-        std::cout << "Usage : vortex -cp <project_name>" << std::endl;
-        std::cout << "Or : vortex --create-project <project_name>" << std::endl;
-      } else {
-        PrintHeader();
-        VxContext *ctx = VortexMaker::CreateContext();
-        VortexMaker::LogInfo("Bootstrapp", "Creating a new project...");
-        std::string project_name = std::string(argv[2]);
-        std::string current_path = std::filesystem::current_path().string();
-        VortexMaker::CreateProject(project_name, current_path);
-      }
+      VortexMaker::VortexCrash(argc, argv);
     } else if (std::string(argv[1]) == "-e" ||
                std::string(argv[1]) == "--editor") {
       PrintHeader("(Editor)");
@@ -314,17 +253,7 @@ int main(int argc, char *argv[]) {
       InitRuntime(true);
       VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
 
-      std::thread receiveThread;
-      try {
-        std::thread Thread([&]() { VortexMaker::VortexEditor(argc, argv); });
-        receiveThread.swap(Thread);
-
-      } catch (std::exception e) {
-        std::thread Thread([&]() { VortexMaker::VortexEditor(argc, argv); });
-        receiveThread.swap(Thread);
-      }
-
-      receiveThread.join();
+      VortexMaker::VortexEditor(argc, argv);
     }
   }
 

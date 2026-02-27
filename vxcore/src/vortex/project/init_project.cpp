@@ -47,6 +47,9 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
   if (project.contains("tags"))
     ctx.tags = project["tags"].get<std::string>();
 
+  if (project.contains("startup_script"))
+    ctx.startup_script = project["startup_script"].get<std::string>();
+
   if (project.contains("logo_path"))
     ctx.logo_path = project["logo_path"].get<std::string>();
 
@@ -140,6 +143,9 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
   VortexMaker::VerifyAndPouplateThemes();
   VortexMaker::RefreshProjectThemes();
   VortexMaker::RebuildTheme();
+
+  // Startup features
+  VortexMaker::ExecuteStartScript();
 
   // Finally, start all loaded modules.
   VortexMaker::BootstrappAllModules();

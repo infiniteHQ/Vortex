@@ -285,6 +285,8 @@ VORTEX_API void UpdateProjectData(const std::string &old_name,
                                   const std::string &path);
 VORTEX_API void InitEnvironment();
 
+VORTEX_API void ExecuteStartScript();
+
 VORTEX_API void CreateSessionTopic(const std::string &post_topic);
 VORTEX_API void DeleteSessionTopic(const std::string &post_topic);
 VORTEX_API void PostSessionState(const std::string &post_topic);
@@ -364,6 +366,7 @@ VORTEX_API void UpdateProjectRequirementsFile(const std::string &path);
 VORTEX_API void UpdateProjectCodeOfConductFile(const std::string &path);
 VORTEX_API void UpdateProjectSecurityFile(const std::string &path);
 VORTEX_API void UpdateProjectRootContentPath(const std::string &root_path);
+VORTEX_API void UpdateProjectStartupScript(const std::string &startup_script);
 
 VORTEX_API void RefreshProjectInformations();
 

@@ -174,3 +174,27 @@ void ScriptingEngine::RegisterVortexAPI() {
 }
 } // namespace Script
 } // namespace VortexMaker
+
+#include "../../../include/vortex.h"
+#include "../../../include/vortex_internals.h"
+
+void VortexMaker::ExecuteStartScript() {
+  auto ctx = VortexMaker::GetCurrentContext();
+  const auto &startup_file = ctx->startup_script;
+
+  if (startup_file.empty())
+    return;
+
+  lua_State *L = VortexMaker::Script::GetScriptingEngine().GetState();
+
+  if (luaL_loadfile(L, startup_file.c_str()) != LUA_OK) {
+    const char *error = lua_tostring(L, -1);
+    VXWARN("Invalid startup script : {}", error);
+    lua_pop(L, 1);
+    return;
+  }
+
+  lua_pop(L, 1);
+  VortexMaker::Script::GetScriptingEngine().InternalRenderScript(startup_file,
+                                                                 true, 0);
+}

@@ -285,11 +285,16 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       }
     }
 
+    if (ShowDebugNumbers) {
+      CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() - 150.0f);
+      CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "1 Bug 1 Warn");
+      CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 150.0f);
+    }
+
     CherryGUI::SetCursorScreenPos(circlePos);
     CherryGUI::InvisibleButton("circleButton",
                                ImVec2(circleRadius * 2, circleRadius * 2));
     if (ShowAccountMenu) {
-
       if (CherryGUI::IsItemHovered()) {
         drawList->AddCircle(circlePos, circleRadius + 1.0f,
                             IM_COL32(200, 200, 200, 255), 32, 2.0f);

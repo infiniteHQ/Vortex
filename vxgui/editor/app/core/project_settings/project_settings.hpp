@@ -70,6 +70,7 @@ public:
   std::string v_ProjectSupportContactInitial;
   std::string v_ProjectCopyrightFileInitial;
   std::string v_ProjectLicenseFileInitial;
+  std::string v_ProjectStartupScriptInitial;
   std::string v_ProjectReadmeFileInitial;
   std::string v_ProjectRequirementsFileInitial;
   std::string v_ProjectCodeOfConductFileInitial;
@@ -87,6 +88,7 @@ public:
   std::string v_ProjectSupportContact;
   std::string v_ProjectCopyrightFile;
   std::string v_ProjectLicenseFile;
+  std::string v_ProjectStartupScript;
   std::string v_ProjectReadmeFile;
   std::string v_ProjectRequirementsFile;
   std::string v_ProjectCodeOfConductFile;

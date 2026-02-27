@@ -419,6 +419,8 @@ struct VxContext {
   std::string project_version;
   std::string root_content_path;
 
+  std::string startup_script;
+
   std::string toolchainsPath;
   std::string gposPath;
   std::string packagesPath;
