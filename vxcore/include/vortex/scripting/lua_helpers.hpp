@@ -2,6 +2,7 @@
 #include <string>
 
 #include "../../../../lib/cherry/lib/lua/src/lua.hpp"
+#include "../../../../lib/json/single_include/nlohmann/json.hpp"
 
 #define VXLUA_FUNC(name) static int l_##name(lua_State *L)
 
@@ -56,4 +57,43 @@ inline void vxlua_push(lua_State *L, const std::string &val) {
 }
 inline void vxlua_push(lua_State *L, bool val) { lua_pushboolean(L, val); }
 
+static nlohmann::json LuaTableToJson(lua_State *L, int index) {
+  nlohmann::json j = nlohmann::json::object();
+
+  lua_pushnil(L);
+  while (lua_next(L, index)) {
+    std::string key = luaL_checkstring(L, -2);
+
+    if (lua_isstring(L, -1))
+      j[key] = std::string(lua_tostring(L, -1));
+    else if (lua_isnumber(L, -1))
+      j[key] = lua_tonumber(L, -1);
+    else if (lua_isboolean(L, -1))
+      j[key] = lua_toboolean(L, -1);
+    else
+      j[key] = nullptr;
+
+    lua_pop(L, 1);
+  }
+
+  return j;
+}
+static void JsonToLuaTable(lua_State *L, const nlohmann::json &j) {
+  lua_newtable(L);
+
+  for (auto &[key, value] : j.items()) {
+    lua_pushstring(L, key.c_str());
+
+    if (value.is_string())
+      lua_pushstring(L, value.get<std::string>().c_str());
+    else if (value.is_number())
+      lua_pushnumber(L, value.get<double>());
+    else if (value.is_boolean())
+      lua_pushboolean(L, value.get<bool>());
+    else
+      lua_pushnil(L);
+
+    lua_settable(L, -3);
+  }
+}
 } // namespace VortexMaker
