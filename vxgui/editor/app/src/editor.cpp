@@ -206,7 +206,7 @@ void RebuildCherryTheme() {
 
 static bool ShowDebugNumbers = false;
 static bool ShowProjectType = true;
-static bool ShowAccountMenu = true;
+static bool ShowAccountMenu = false;
 static bool ShowProjectName = true;
 static bool ShowFPS = true;
 
