@@ -986,7 +986,8 @@ static const std::unordered_map<FileTypes, const char *> kFileIconMap = {
     {FileTypes::File_C, "resources/imgs/icons/files/icon_c_file.png"},
     {FileTypes::File_HPP, "resources/imgs/icons/files/icon_cpp_h_file.png"},
     {FileTypes::File_CPP, "resources/imgs/icons/files/icon_cpp_file.png"},
-    {FileTypes::File_INI, "resources/imgs/icons/files/icon_ini_file.png"}};
+    {FileTypes::File_INI, "resources/imgs/icons/files/icon_ini_file.png"},
+    {FileTypes::File_TXT, "resources/imgs/icons/files/icon_text_file.png"}};
 
 std::string ContentBrowserAppWindow::GetFileTypeStr(FileTypes type) {
   switch (type) {
@@ -3123,6 +3124,23 @@ void ContentBrowserAppWindow::RenderContentBar() {
             }
             break;
           }
+          case FileTypes::File_TXT: {
+            if (ItemCard(filenameString, path.string(), "Text File",
+                         fileSizeString, selected,
+                         Application::CookPath(
+                             "resources/imgs/icons/files/icon_text_file.png"),
+                         IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
+                         IM_COL32(150, 150, 150, 255))) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
+                m_Selected.push_back(path.string());
+              } else {
+                m_Selected.clear();
+                m_Selected.push_back(path.string());
+              }
+            }
+            break;
+          }
           default: {
             if (ItemCard(filenameString, path.string(), "File", fileSizeString,
                          selected,
@@ -4363,6 +4381,24 @@ void ContentBrowserAppWindow::RenderContentBar() {
                     selected,
                     Application::CookPath(
                         "resources/imgs/icons/files/icon_ini_file.png"),
+                    IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
+                    IM_COL32(150, 150, 150, 255))) {
+              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
+                m_Selected.push_back(path.string());
+              } else {
+                m_Selected.clear();
+                m_Selected.push_back(path.string());
+              }
+            }
+            break;
+          }
+          case FileTypes::File_TXT: {
+            if (HorizontalItemCard(
+                    filenameString, path.string(), "Text File", fileSizeString,
+                    selected,
+                    Application::CookPath(
+                        "resources/imgs/icons/files/icon_text_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(150, 150, 150, 255))) {
               if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
