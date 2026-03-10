@@ -260,7 +260,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       drawList->AddRectFilled(rectMin, rectMax, IM_COL32(15, 15, 15, 255));
     }
 
-    if (GetVortexBuildType() != "dev") {
+    if (GetVortexBuildType() == "dev") {
       CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
                                CherryGUI::CalcTextSize("DEV").x - 20.0f);
 
