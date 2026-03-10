@@ -45,6 +45,8 @@ public:
 
   // Main functions
   virtual void execute() {};
+  virtual void init_ui() {};
+  virtual void init_runtime() {};
   virtual void destroy() {};
   virtual void render() {};
 

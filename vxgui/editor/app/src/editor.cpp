@@ -364,6 +364,13 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   app->SetDefaultLocale("en");
   app->SetLocale("en");
 
+  // Cherry INIT from mopdules
+  for (auto mod : VortexMaker::GetCurrentContext()->IO.em) {
+    if (mod) {
+      mod->init_ui();
+    }
+  }
+
   for (auto &modules : VortexMaker::GetCurrentContext()->IO.em) {
     modules->RefreshMainWindow();
   }
