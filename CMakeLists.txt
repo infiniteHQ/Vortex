@@ -56,17 +56,18 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include")
 # ---------------------------------------------------------------------------
 # Cherry UI Library
 # ---------------------------------------------------------------------------
-option(CHERRY_STATIC "Link Cherry statically"                            OFF)
-option(CHERRY_DEBUG "Enable Cherry debug tools"                         ON)
+option(CHERRY_STATIC "Link Cherry statically"                           OFF)
+option(CHERRY_DEBUG "Enable Cherry debug tools"                          ON)
 
-option(CHERRY_IMGUI_EXPORT "Disable workspace saves"                    ON)
+option(CHERRY_IMGUI_EXPORT "Disable workspace saves"                     ON)
 option(CHERRY_PACKAGE "Enable packaging features with pyinstaller"      OFF)
-option(CHERRY_MULTIAPP "Use multiple apps in one executable"            ON)
+option(CHERRY_MULTIAPP "Use multiple apps in one executable"             ON)
 
 option(CHERRY_ENABLE_NET "Enable net features"                          OFF)
 option(CHERRY_ENABLE_AUDIO "Enable audio features"                      OFF)
-option(CHERRY_ENABLE_SCRIPTING "Enable script engine"                      ON)
-option(CHERRY_ENABLE_KIT "Enable base component kit"                    ON)
+option(CHERRY_ENABLE_MARKDOWN "Enable markdown parsing and render"       ON)
+option(CHERRY_ENABLE_SCRIPTING "Enable script engine"                    ON)
+option(CHERRY_ENABLE_KIT "Enable base component kit"                     ON)
 option(CHERRY_ENABLE_LINUXDRM "Enable Linux Direct Rendering Manager"   OFF)
 option(CHERRY_ENABLE_NODES "Disable nodal systems"                      OFF)
 option(CHERRY_ENABLE_WORKSPACESAVES "Disable workspace saves"           OFF)
