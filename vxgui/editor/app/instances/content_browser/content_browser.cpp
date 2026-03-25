@@ -2454,22 +2454,15 @@ void ContentBrowserAppWindow::RenderContentBar() {
         return a.path().filename().string() < b.path().filename().string();
       });
 
-  static bool pasteKeyDown = false;
+  bool isWindowFocused =
+      ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+  bool ctrl = ImGui::GetIO().KeyCtrl;
+  bool vPressed = ImGui::IsKeyPressed(ImGuiKey_V);
 
-  bool ctrl = CherryApp.IsKeyPressed(CherryKey::CTRL);
-  bool vKey = CherryApp.IsKeyPressed(CherryKey::V);
-  bool shortcutPaste = ctrl && vKey;
-
-  if (shortcutPaste && !pasteKeyDown) {
-    pasteKeyDown = true;
-
+  if (isWindowFocused && ctrl && vPressed) {
     if (m_PastePathsCallback) {
       m_PastePathsCallback({m_CurrentDirectory.string()});
     }
-  }
-
-  if (!ctrl || !vKey) {
-    pasteKeyDown = false;
   }
 
   if (m_ShowMode == ContentShowMode::Thumbmails) {

@@ -323,7 +323,7 @@ ProjectSettings::ProjectSettings(const std::string &name) {
   RefreshProjectInformations();
   RefreshProjectThemes();
 
-  m_SelectedChildName = "Project's modules";
+  m_SelectedChildName = "Informations";
 
   this->AddChild(ProjectSettingsChild(
       "Informations",
