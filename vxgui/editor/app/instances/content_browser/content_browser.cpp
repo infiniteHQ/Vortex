@@ -2455,9 +2455,9 @@ void ContentBrowserAppWindow::RenderContentBar() {
       });
 
   bool isWindowFocused =
-      ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-  bool ctrl = ImGui::GetIO().KeyCtrl;
-  bool vPressed = ImGui::IsKeyPressed(ImGuiKey_V);
+      CherryGUI::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+  bool ctrl = CherryGUI::GetIO().KeyCtrl;
+  bool vPressed = CherryGUI::IsKeyPressed(ImGuiKey_V);
 
   if (isWindowFocused && ctrl && vPressed) {
     if (m_PastePathsCallback) {

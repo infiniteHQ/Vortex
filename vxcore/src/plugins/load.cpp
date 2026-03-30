@@ -2,35 +2,6 @@
 #include <vortex.h>
 #include <vortex_internals.h>
 
-#ifdef _WIN32
-#include <stringapiset.h>
-#include <windows.h>
-
-std::wstring ConvertToWideString(const std::string &str) {
-  int size_needed =
-      MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
-  if (size_needed == 0) {
-    throw std::runtime_error("Error converting string to wide string");
-  }
-  std::wstring wide_string(size_needed, 0);
-  MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wide_string[0],
-                      size_needed);
-  return wide_string;
-}
-
-std::string ConvertToString(const std::wstring &wstr) {
-  int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr,
-                                        0, nullptr, nullptr);
-  if (size_needed == 0) {
-    throw std::runtime_error("Error converting wide string to string");
-  }
-  std::string str(size_needed, 0);
-  WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], size_needed,
-                      nullptr, nullptr);
-  return str;
-}
-#endif
-
 namespace VortexMaker {
 
 VORTEX_API void

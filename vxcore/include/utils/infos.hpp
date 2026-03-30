@@ -57,7 +57,7 @@ namespace VortexMaker {
 std::string GetWindowsVersion();
 } // namespace VortexMaker
 
-#define OS_NAME GetWindowsVersion().c_str()
+#define OS_NAME VortexMaker::GetWindowsVersion().c_str()
 #elif defined(__APPLE__) && defined(__MACH__)
 #define OS_NAME "macOS"
 #elif defined(__linux__)
