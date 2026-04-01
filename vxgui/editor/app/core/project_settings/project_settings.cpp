@@ -1164,6 +1164,14 @@ std::vector<std::shared_ptr<EnvProject>> ProjectSettings::GetMostRecentProjects(
   return sortedProjects;
 }
 
+void ProjectSettings::LoadTabUserWant(const std::string &tab) {
+  if (tab == "theme") {
+    m_SelectedChildName = "Appearance";
+  } else if ("language") {
+    m_SelectedChildName = "Accessibility";
+  }
+}
+
 void ProjectSettings::AddChild(const ProjectSettingsChild &child) {
   m_Childs.push_back(child);
 }

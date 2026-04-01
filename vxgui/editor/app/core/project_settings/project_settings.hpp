@@ -55,6 +55,8 @@ public:
 
   void RefreshProjectThemes();
 
+  void LoadTabUserWant(const std::string &tab);
+
   std::vector<ProjectSettingsChild> m_Childs;
 
   std::shared_ptr<ProjectSettingsSave> current_save;

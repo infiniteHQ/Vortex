@@ -80,7 +80,11 @@ bool Editor::GetTemplatesUtilityVisibility() {
   return false;
 }
 
-void Editor::SetProjectSettingsVisibility(const bool &visibility) {
+void Editor::SetProjectSettingsVisibility(const bool &visibility,
+                                          const std::string &tab = "") {
+  if (!tab.empty()) {
+    m_ProjectSettings->LoadTabUserWant(tab);
+  }
   m_ProjectSettings->GetAppWindow()->SetVisibility(visibility);
 }
 
@@ -562,17 +566,19 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     if (CherryGUI::BeginMenu("Options")) {
       CherryKit::SeparatorText("Quick settings");
 
-      if (CherryGUI::MenuItem("Switch language", "Change selected language",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_doc.png")),
-                              false)) {
-        //
+      if (CherryGUI::MenuItem(
+              "Switch language", "Change selected language",
+              Cherry::GetTexture(Cherry::GetPath(
+                  "resources/imgs/icons/misc/icon_language.png")),
+              false)) {
+        c_Editor->SetProjectSettingsVisibility(true, "language");
       }
-      if (CherryGUI::MenuItem("Switch theme", "Change selected theme",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_doc.png")),
-                              false)) {
-        //
+      if (CherryGUI::MenuItem(
+              "Switch theme", "Change selected theme",
+              Cherry::GetTexture(Cherry::GetPath(
+                  "resources/imgs/icons/misc/icon_palette.png")),
+              false)) {
+        c_Editor->SetProjectSettingsVisibility(true, "theme");
       }
 
       CherryGUI::EndMenu();

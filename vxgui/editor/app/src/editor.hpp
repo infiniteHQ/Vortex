@@ -35,7 +35,8 @@ public:
   void SetTemplatesUtilityVisibility(const bool &visibility);
   bool GetTemplatesUtilityVisibility();
 
-  void SetProjectSettingsVisibility(const bool &visibility);
+  void SetProjectSettingsVisibility(const bool &visibility,
+                                    const std::string &tab);
   bool GetProjectSettingsVisibility();
 
   void SetModulesUtilityVisibility(const bool &visibility);
