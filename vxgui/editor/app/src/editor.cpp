@@ -109,12 +109,11 @@ bool Editor::GetPluginsUtilityVisibility() {
 }
 
 void Editor::SetWelcomeVisibility(const bool &visibility) {
-  // m_WelcomeAppWindow->GetAppWindow()->SetVisibility(visibility);
+  m_WelcomeAppWindow->GetAppWindow()->SetVisibility(visibility);
 }
 
 bool Editor::GetWelcomeVisibility() {
-  // return m_WelcomeAppWindow->GetAppWindow()->m_Visible;
-  return false;
+  return m_WelcomeAppWindow->GetAppWindow()->m_Visible;
 }
 
 std::string Editor::SpawnContentBrowser() {
@@ -425,8 +424,8 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
       if (CherryGUI::MenuItem("Welcome", "",
                               Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_doc.png")),
-                              false)) {
+                                  "resources/imgs/icons/misc/icon_hand.png")),
+                              c_Editor->GetWelcomeVisibility())) {
         c_Editor->SetWelcomeVisibility(!c_Editor->GetWelcomeVisibility());
       }
 
@@ -543,20 +542,18 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
       CherryKit::SeparatorText("Contents, managment");
 
-      if (CherryGUI::MenuItem(
-              "Content Browser", "Open a content browser",
-              Cherry::GetTexture(Cherry::GetPath(
-                  "resources/imgs/icons/misc/icon_collection.png")),
-              false)) {
+      if (CherryGUI::MenuItem("Content Browser", "Open a content browser",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/frame_files.png")),
+                              false)) {
         c_Editor->SpawnContentBrowser();
       }
 
       CherryKit::SeparatorText("Console, logs, debugging");
-      if (CherryGUI::MenuItem(
-              "Console logs", "Open a console with logs",
-              Cherry::GetTexture(Cherry::GetPath(
-                  "resources/imgs/icons/misc/icon_journal.png")),
-              false)) {
+      if (CherryGUI::MenuItem("Console logs", "Open a console with logs",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/frame_cli.png")),
+                              false)) {
         c_Editor->SpawnLogsUtility();
       }
 
@@ -587,16 +584,17 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     if (CherryGUI::BeginMenu("Help")) {
       if (CherryGUI::MenuItem("Welcome", "",
                               Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_doc.png")),
+                                  "resources/imgs/icons/misc/icon_hand.png")),
                               false)) {
         c_Editor->SetWelcomeVisibility(!c_Editor->GetWelcomeVisibility());
       }
       CherryKit::SeparatorText("Learning, documentation");
 
-      if (CherryGUI::MenuItem("Documentation", "Open embedded documentations",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_doc.png")),
-                              false)) {
+      if (CherryGUI::MenuItem(
+              "Documentation", "Open embedded documentations",
+              Cherry::GetTexture(Cherry::GetPath(
+                  "resources/imgs/icons/misc/icon_journal.png")),
+              false)) {
         c_Editor->SpawnDocViewer();
       }
 
