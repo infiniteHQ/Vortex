@@ -71,6 +71,53 @@ void Editor::SetAboutWindowVisibility(const bool visibility) {
   }
 }
 
+bool Editor::GetAboutProjectAppWindowVisibility() {
+  if (!m_AboutProjectWindow)
+    return false;
+  return m_AboutProjectWindow->GetAppWindow()->m_Visible;
+}
+
+void Editor::SetAboutProjectWindowVisibility(const bool visibility) {
+  if (visibility) {
+    if (!m_AboutProjectWindow) {
+      m_AboutProjectWindow =
+          VortexEditor::AboutProject::Create("About this project");
+
+      Cherry::ApplicationSpecification spec;
+      spec.SetName("About this project");
+      spec.SetUniqueAppWindowName(m_AboutProjectWindow->GetAppWindow()->m_Name);
+      spec.MinHeight = 100;
+      spec.MinWidth = 200;
+      spec.Height = 450;
+      spec.Width = 750;
+      spec.DisableLogo = true;
+      spec.DisableResize = true;
+      spec.CustomTitlebar = true;
+      spec.DisableWindowManagerTitleBar = true;
+      spec.WindowOnlyClosable = true;
+      spec.WindowSaves = false;
+      spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+
+      spec.UsingCloseCallback = true;
+      spec.CloseCallback = [this]() {
+        Cherry::DeleteAppWindow(m_AboutProjectWindow->GetAppWindow());
+        m_AboutProjectWindow = nullptr;
+      };
+
+      spec.MenubarCallback = []() {};
+
+      m_AboutProjectWindow->GetAppWindow()->AttachOnNewWindow(spec);
+      Cherry::AddAppWindow(m_AboutProjectWindow->GetAppWindow());
+    }
+
+    m_AboutProjectWindow->GetAppWindow()->SetVisibility(true);
+  } else {
+    if (m_AboutProjectWindow) {
+      Cherry::DeleteAppWindow(m_AboutProjectWindow->GetAppWindow());
+      m_AboutProjectWindow = nullptr;
+    }
+  }
+}
 void Editor::SetTemplatesUtilityVisibility(const bool &visibility) {
   /*m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(visibility);*/
 }
@@ -481,12 +528,12 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
             !c_Editor->GetAboutAppWindowVisibility());
       }
 
-      if (CherryGUI::MenuItem("About the Project", "About the current project",
+      if (CherryGUI::MenuItem("About this project", "About the current project",
                               Cherry::GetTexture(Cherry::GetPath(
                                   "resources/imgs/icons/misc/icon_info.png")),
-                              c_Editor->GetAboutAppWindowVisibility())) {
-        c_Editor->SetAboutWindowVisibility(
-            !c_Editor->GetAboutAppWindowVisibility());
+                              c_Editor->GetAboutProjectAppWindowVisibility())) {
+        c_Editor->SetAboutProjectWindowVisibility(
+            !c_Editor->GetAboutProjectAppWindowVisibility());
       }
 
       CherryGUI::EndMenu();
@@ -608,12 +655,12 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
             !c_Editor->GetAboutAppWindowVisibility());
       }
 
-      if (CherryGUI::MenuItem("About the Project", "About the current project",
+      if (CherryGUI::MenuItem("About this project", "About the current project",
                               Cherry::GetTexture(Cherry::GetPath(
                                   "resources/imgs/icons/misc/icon_info.png")),
-                              c_Editor->GetAboutAppWindowVisibility())) {
-        c_Editor->SetAboutWindowVisibility(
-            !c_Editor->GetAboutAppWindowVisibility());
+                              c_Editor->GetAboutProjectAppWindowVisibility())) {
+        c_Editor->SetAboutProjectWindowVisibility(
+            !c_Editor->GetAboutProjectAppWindowVisibility());
       }
 
       CherryGUI::EndMenu();

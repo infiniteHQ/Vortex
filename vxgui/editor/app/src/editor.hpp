@@ -3,6 +3,7 @@
 
 // Static windows
 #include "../core/about/about.hpp"
+#include "../core/about_project/about_project.hpp"
 #include "../core/modules_utility/modules_utility.hpp"
 #include "../core/plugins_utility/plugins_utility.hpp"
 #include "../core/project_settings/project_settings.hpp"
@@ -31,6 +32,9 @@ public:
 
   bool GetAboutAppWindowVisibility();
   void SetAboutWindowVisibility(const bool visibility);
+
+  bool GetAboutProjectAppWindowVisibility();
+  void SetAboutProjectWindowVisibility(const bool visibility);
 
   void SetTemplatesUtilityVisibility(const bool &visibility);
   bool GetTemplatesUtilityVisibility();
@@ -68,6 +72,7 @@ private:
   std::shared_ptr<VortexEditor::PluginsUtility> m_PluginsUtility;
   std::shared_ptr<VortexEditor::ProjectSettings> m_ProjectSettings;
   std::shared_ptr<VortexEditor::AboutVortex> m_AboutWindow;
+  std::shared_ptr<VortexEditor::AboutProject> m_AboutProjectWindow;
 };
 
 static std::shared_ptr<Editor> c_Editor;
