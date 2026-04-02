@@ -12,7 +12,6 @@ static float c_FilterBarWidth = 250.0f;
 
 namespace VortexEditor {
 LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
-  std::cout << "LogsUtilityAppWindow" << std::endl;
   m_AppWindow = std::make_shared<AppWindow>(name, name);
   m_AppWindow->SetIcon(
       Cherry::GetPath("resources/imgs/icons/misc/icon_journal.png"));

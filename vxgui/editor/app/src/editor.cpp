@@ -133,6 +133,10 @@ void Editor::SetProjectSettingsVisibility(const bool &visibility,
     m_ProjectSettings->LoadTabUserWant(tab);
   }
   m_ProjectSettings->GetAppWindow()->SetVisibility(visibility);
+  if (visibility) {
+    CherryGUI::SetWindowFocus(
+        m_ProjectSettings->GetAppWindow()->m_IdName.c_str());
+  }
 }
 
 bool Editor::GetProjectSettingsVisibility() {
