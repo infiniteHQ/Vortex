@@ -5,7 +5,8 @@
 #define MODULE_DELETE_H
 
 namespace VortexMaker {
-    VORTEX_API void DeleteSystemModule(const std::string& name, const std::string& version);
+VORTEX_API void DeleteProjectModule(const std::string &name,
+                                    const std::string &version);
 }
 
 #endif

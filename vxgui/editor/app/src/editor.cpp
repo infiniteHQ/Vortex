@@ -24,6 +24,53 @@ Editor::Editor() {
   Cherry::AddAppWindow(m_ProjectSettings->GetAppWindow());
 };
 
+bool Editor::GetCreditsVisibility() {
+  if (!m_CreditsWindow)
+    return false;
+  return m_CreditsWindow->GetAppWindow()->m_Visible;
+}
+
+void Editor::SetCreditsVisibility(const bool visibility) {
+  if (visibility) {
+    if (!m_CreditsWindow) {
+      m_CreditsWindow = VortexEditor::Credits::Create("Credits");
+
+      Cherry::ApplicationSpecification spec;
+      spec.SetName("Credits");
+      spec.SetUniqueAppWindowName(m_CreditsWindow->GetAppWindow()->m_Name);
+      spec.MinHeight = 100;
+      spec.MinWidth = 200;
+      spec.Height = 450;
+      spec.Width = 750;
+      spec.DisableLogo = true;
+      spec.DisableResize = true;
+      spec.CustomTitlebar = true;
+      spec.DisableWindowManagerTitleBar = true;
+      spec.WindowOnlyClosable = true;
+      spec.WindowSaves = false;
+      spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+
+      spec.UsingCloseCallback = true;
+      spec.CloseCallback = [this]() {
+        Cherry::DeleteAppWindow(m_CreditsWindow->GetAppWindow());
+        m_CreditsWindow = nullptr;
+      };
+
+      spec.MenubarCallback = []() {};
+
+      m_CreditsWindow->GetAppWindow()->AttachOnNewWindow(spec);
+      Cherry::AddAppWindow(m_CreditsWindow->GetAppWindow());
+    }
+
+    m_CreditsWindow->GetAppWindow()->SetVisibility(true);
+  } else {
+    if (m_CreditsWindow) {
+      Cherry::DeleteAppWindow(m_CreditsWindow->GetAppWindow());
+      m_CreditsWindow = nullptr;
+    }
+  }
+}
+
 bool Editor::GetAboutAppWindowVisibility() {
   if (!m_AboutWindow)
     return false;
@@ -539,6 +586,13 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
         c_Editor->SetAboutProjectWindowVisibility(
             !c_Editor->GetAboutProjectAppWindowVisibility());
       }
+      if (CherryGUI::MenuItem("Credits",
+                              "Vortex team, developers and contributors",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_book.png")),
+                              c_Editor->GetCreditsVisibility())) {
+        c_Editor->SetCreditsVisibility(!c_Editor->GetCreditsVisibility());
+      }
 
       CherryGUI::EndMenu();
     }
@@ -665,6 +719,13 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
                               c_Editor->GetAboutProjectAppWindowVisibility())) {
         c_Editor->SetAboutProjectWindowVisibility(
             !c_Editor->GetAboutProjectAppWindowVisibility());
+      }
+      if (CherryGUI::MenuItem("Credits",
+                              "Vortex team, developers and contributors",
+                              Cherry::GetTexture(Cherry::GetPath(
+                                  "resources/imgs/icons/misc/icon_book.png")),
+                              c_Editor->GetCreditsVisibility())) {
+        c_Editor->SetCreditsVisibility(!c_Editor->GetCreditsVisibility());
       }
 
       CherryGUI::EndMenu();

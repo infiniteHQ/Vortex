@@ -4,6 +4,7 @@
 // Static windows
 #include "../core/about/about.hpp"
 #include "../core/about_project/about_project.hpp"
+#include "../core/credits/credits.hpp"
 #include "../core/modules_utility/modules_utility.hpp"
 #include "../core/plugins_utility/plugins_utility.hpp"
 #include "../core/project_settings/project_settings.hpp"
@@ -29,6 +30,9 @@ static std::vector<std::shared_ptr<VortexEditor::DocViewerAppWindow>>
 class Editor {
 public:
   Editor();
+
+  bool GetCreditsVisibility();
+  void SetCreditsVisibility(const bool visibility);
 
   bool GetAboutAppWindowVisibility();
   void SetAboutWindowVisibility(const bool visibility);
@@ -73,6 +77,7 @@ private:
   std::shared_ptr<VortexEditor::ProjectSettings> m_ProjectSettings;
   std::shared_ptr<VortexEditor::AboutVortex> m_AboutWindow;
   std::shared_ptr<VortexEditor::AboutProject> m_AboutProjectWindow;
+  std::shared_ptr<VortexEditor::Credits> m_CreditsWindow;
 };
 
 static std::shared_ptr<Editor> c_Editor;

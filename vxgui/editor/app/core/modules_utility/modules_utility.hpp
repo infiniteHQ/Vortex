@@ -1,11 +1,14 @@
 #pragma once
 
+#include "../../../../../vxcore/include/modules/delete.h"
+#include "../../../../../vxcore/include/modules/load.h"
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
 #include "../../instances/modules_details/modules_details.hpp"
 
 #include "../utils.hpp"
 
+#include <unordered_set>
 #ifndef MODULES_UTILITY_WINDOW_H
 #define MODULES_UTILITY_WINDOW_H
 
@@ -14,6 +17,13 @@
 namespace VortexEditor {
 
 static std::string m_ModulesSearch;
+
+static bool g_TriggerModuleDeletionModal;
+static std::string g_ModuleToDeleteName;
+static std::string g_ModuleToDeleteProperName;
+static std::string g_ModuleToDeleteDescription;
+static std::string g_ModuleToDeleteVersion;
+static std::string g_ModuleToDeleteLogoPath;
 
 class ModuleCardItem : public Cherry::Component {
 public:
@@ -269,7 +279,12 @@ public:
             Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png"))
             .GetDataAs<bool>("isClicked")) {
       m_module->Stop();
-      // TODO VortexMaker::DeleteProjectModule
+      g_ModuleToDeleteName = m_module->m_name;
+      g_ModuleToDeleteProperName = m_module->m_proper_name;
+      g_ModuleToDeleteDescription = m_module->m_description;
+      g_ModuleToDeleteVersion = m_module->m_version;
+      g_ModuleToDeleteLogoPath = m_module->m_logo_path;
+      g_TriggerModuleDeletionModal = true;
     }
 
     ImVec2 thirdButtonPos = ImVec2(
@@ -422,7 +437,14 @@ public:
   static std::shared_ptr<ModulesUtility> Create(const std::string &name);
   void SetupRenderCallback();
   void Render();
+
+  void RenderInstalled();
+
   void ModulesRender();
+  void RenderImport();
+  void RenderDownload();
+
+  void RenderModuleDeletionModal();
 
   std::vector<ModulesUtilityChild> m_Childs;
 
@@ -431,12 +453,46 @@ public:
   std::function<void()> m_SettingsCallback;
   std::function<void(const std::shared_ptr<EnvProject> &)> m_ProjectCallback;
 
+  enum class ShowModes { Thumbmails, List };
+  enum class Pannels { Installed, Downloads, Import };
+  ShowModes m_SelectedShowMode = ShowModes::Thumbmails;
+
+  Pannels m_SelectedPannel = Pannels::Installed;
+
   char ModulesSearch[512];
   std::vector<std::shared_ptr<EnvProject>> GetMostRecentProjects(
       const std::vector<std::shared_ptr<EnvProject>> &projects,
       size_t maxCount);
   std::vector<std::shared_ptr<EnvProject>> m_RecentProjects;
   std::string m_SelectedChildName;
+
+  std::string m_SelectedCategory;
+  bool m_SelectedCategoryChanged = false;
+  void SetSelectedCategory(const std::string &c) {
+    m_SelectedCategory = c;
+    m_SelectedCategoryChanged = true;
+  }
+  std::string GetSelectedCategory() { return m_SelectedCategory; }
+  std::unordered_map<std::string, int> m_AllCategories;
+
+  void RefreshCategories() {
+    m_AllCategories.clear();
+    for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.em.size(); i++) {
+      if (!VortexMaker::GetCurrentContext()->IO.em[i]) {
+        continue;
+      }
+      m_AllCategories[VortexMaker::GetCurrentContext()->IO.em[i]->m_group]++;
+    }
+  }
+
+  bool HasCommonSubsequence(const std::string &a, const std::string &b) {
+    int j = 0;
+    for (int i = 0; i < a.size() && j < b.size(); i++) {
+      if (a[i] == b[j])
+        j++;
+    }
+    return j == b.size();
+  }
 
   std::vector<std::string> vortexDists;
   std::string VortexEditorDist;
