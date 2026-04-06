@@ -38,10 +38,10 @@ void Editor::SetCreditsVisibility(const bool visibility) {
       Cherry::ApplicationSpecification spec;
       spec.SetName("Credits");
       spec.SetUniqueAppWindowName(m_CreditsWindow->GetAppWindow()->m_Name);
-      spec.MinHeight = 100;
-      spec.MinWidth = 200;
-      spec.Height = 450;
-      spec.Width = 750;
+      spec.MinHeight = 200;
+      spec.MinWidth = 100;
+      spec.Height = 750;
+      spec.Width = 450;
       spec.DisableLogo = true;
       spec.DisableResize = true;
       spec.CustomTitlebar = true;

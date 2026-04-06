@@ -8,6 +8,83 @@ Credits::Credits(const std::string &name) {
 
   m_AppWindow->SetClosable(true);
   m_AppWindow->m_CloseCallback = [=]() { m_AppWindow->SetVisibility(false); };
+  m_AppWindow->SetLeftMenubarCallback(
+      CherryNextComponent.SetProperty("padding_y", "6.0f");
+      CherryNextComponent.SetProperty("padding_x", "10.0f");
+      CherryNextComponent.SetProperty("disable_callback", "true");
+      if (CherryKit::ButtonImageTextDropdown(
+              "View", GetPath("resources/imgs/icons/misc/icon_eye.png"))
+              .GetDataAs<bool>("isClicked")) {
+        ImVec2 mousePos = CherryGUI::GetMousePos();
+        ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
+        ImVec2 popupSize(350, 100);
+
+        if (mousePos.x + popupSize.x > displaySize.x) {
+          mousePos.x -= popupSize.x;
+        }
+        if (mousePos.y + popupSize.y > displaySize.y) {
+          mousePos.y -= popupSize.y;
+        }
+
+        CherryGUI::SetNextWindowSize(popupSize, ImGuiCond_Appearing);
+        CherryGUI::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
+        CherryGUI::OpenPopup("ViewMenuPopup");
+      } ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // TODO : Props
+      ImVec4 graySeparatorColor =
+          ImVec4(0.4f, 0.4f, 0.4f, 0.5f); // TODO : Props
+      ImVec4 darkBackgroundColor =
+          ImVec4(0.15f, 0.15f, 0.15f, 1.0f);                    // TODO : Props
+      ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // TODO : Props
+
+      CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
+      CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
+      CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
+
+      if (CherryGUI::BeginPopup("ViewMenuPopup")) {
+        CherryKit::SeparatorText("Pannels");
+        CherryKit::CheckboxText("Auto scroll", &m_AutoScroll);
+
+        int default_index = 0;
+
+        if (m_ShowMode == ContentShowMode::Thumbmails) {
+          default_index = 0;
+        } else if (m_ShowMode == ContentShowMode::List) {
+          default_index = 1;
+        } else if (m_ShowMode == ContentShowMode::Objects) {
+          default_index = 2;
+        }
+
+        switch (
+            CherryNextComponent.SetProperty("size_x", 150.0f);
+            CherryKit::ComboImageText(
+                "",
+                {{"Thumbnails",
+                  GetPath("resources/imgs/icons/misc/icon_thumbnails.png")},
+                 {"List", GetPath("resources/imgs/icons/misc/icon_lines.png")},
+                 {"Objects",
+                  GetPath("resources/imgs/icons/misc/icon_objects.png")}},
+                default_index)
+                .GetPropertyAs<int>("selected")) {
+        case 0: {
+          m_ShowMode = ContentShowMode::Thumbmails;
+          break;
+        }
+        case 1: {
+          m_ShowMode = ContentShowMode::List;
+          break;
+        }
+        case 2: {
+          m_ShowMode = ContentShowMode::Objects;
+          break;
+        }
+        default: {
+          m_ShowMode = ContentShowMode::Thumbmails;
+          break;
+        }
+        }
+
+        CherryGUI::EndPopup();
+      });
 
   m_AppWindow->SetInternalPaddingX(8.0f);
   m_AppWindow->SetInternalPaddingY(8.0f);
