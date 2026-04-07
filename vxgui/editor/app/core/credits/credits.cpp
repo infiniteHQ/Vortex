@@ -112,7 +112,7 @@ void Credits::Render() {
   float image_height = window_width / 3.435f;
 
   CherryGUI::Image(
-      Cherry::GetTexture(Cherry::GetPath("resources/imgs/vortex_banner.png")),
+      Cherry::GetTexture(Cherry::GetPath("resources/imgs/credits_banner.png")),
       ImVec2(window_width, image_height));
 
   CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding,

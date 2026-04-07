@@ -46,15 +46,26 @@ void AboutProject::Render() {
   std::string project_description =
       VortexMaker::GetCurrentContext()->description;
   std::string project_author = VortexMaker::GetCurrentContext()->author;
-  std::string logo_path =
+  std::string logo_path_str =
       VortexMaker::GetCurrentContext()->projectPath.string() + "" +
       VortexMaker::GetCurrentContext()->logo_path;
-
-  std::string banner_path =
+  std::string banner_path_str =
       VortexMaker::GetCurrentContext()->projectPath.string() + "" +
       VortexMaker::GetCurrentContext()->banner_path;
 
-  CherryGUI::Image(Cherry::GetTexture(logo_path),
+  std::string logo_path =
+      std::filesystem::exists(logo_path_str) &&
+              std::filesystem::is_regular_file(logo_path_str)
+          ? logo_path_str
+          : Cherry::GetPath("resources/imgs/default_logo.png");
+
+  std::string banner_path =
+      std::filesystem::exists(banner_path_str) &&
+              std::filesystem::is_regular_file(banner_path_str)
+          ? banner_path_str
+          : Cherry::GetPath("resources/imgs/default_banner.png");
+
+  CherryGUI::Image(Cherry::GetTexture(banner_path),
                    ImVec2(window_width, image_height));
 
   CherryStyle::AddMarginX(25.0f);
