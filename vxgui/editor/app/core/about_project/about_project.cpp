@@ -86,14 +86,14 @@ void AboutProject::Render() {
   CherryKit::TextSimple(project_name);
 
   if (VortexMaker::GetCurrentContext()->type == "tool") {
+    CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/tools.png"), 13, 13);
     CherryGUI::SameLine();
-    // TODO logo
     Cherry::SetNextComponentProperty("color_text", "#565656");
     CherryKit::TextSimple("Tool");
 
   } else if (VortexMaker::GetCurrentContext()->type == "project") {
+    CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/light.png"), 13, 13);
     CherryGUI::SameLine();
-    // TODO logo
     Cherry::SetNextComponentProperty("color_text", "#565656");
     CherryKit::TextSimple("Project");
   }

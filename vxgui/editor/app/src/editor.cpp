@@ -374,6 +374,8 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
                                  CherryGUI::CalcTextSize("Tool").x - 20.0f);
 
         if (ShowProjectType) {
+          CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/tools.png"), 13,
+                                13);
           CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Tool");
         }
       } else if (VortexMaker::GetCurrentContext()->type == "project") {
@@ -381,6 +383,8 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
                                  CherryGUI::CalcTextSize("Project").x - 20.0f);
 
         if (ShowProjectType) {
+          CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/light.png"), 13,
+                                13);
           CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Project");
         }
       }
