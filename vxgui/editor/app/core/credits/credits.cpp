@@ -129,7 +129,6 @@ void Credits::Render() {
   float dt = ImGui::GetIO().DeltaTime;
 
   if (m_AutoScroll) {
-    // Détection scroll utilisateur
     if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseWheel != 0.0f) {
       m_UserScrolled = true;
       m_UserScrollCooldown = USER_SCROLL_PAUSE;
@@ -139,14 +138,13 @@ void Credits::Render() {
       m_UserScrollCooldown -= dt;
       if (m_UserScrollCooldown <= 0.0f) {
         m_UserScrolled = false;
-        // Resync position pour éviter un saut
         m_ScrollY = ImGui::GetScrollY();
       }
     } else {
       m_ScrollY += m_ScrollSpeed * dt;
 
       if (m_ScrollY >= maxScroll)
-        m_ScrollY = 0.0f; // Retour au début
+        m_ScrollY = 0.0f;
 
       ImGui::SetScrollY(m_ScrollY);
     }
