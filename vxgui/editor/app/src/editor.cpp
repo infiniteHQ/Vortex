@@ -135,8 +135,8 @@ void Editor::SetAboutProjectWindowVisibility(const bool visibility) {
       spec.SetUniqueAppWindowName(m_AboutProjectWindow->GetAppWindow()->m_Name);
       spec.MinHeight = 100;
       spec.MinWidth = 200;
-      spec.Height = 450;
-      spec.Width = 750;
+      spec.Height = 350;
+      spec.Width = 550;
       spec.DisableLogo = true;
       spec.DisableResize = true;
       spec.CustomTitlebar = true;
@@ -729,6 +729,25 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       }
 
       CherryGUI::EndMenu();
+    }
+
+    // TODO modules can "add" menu items
+    static bool ModuleMenu = false;
+    if (ModuleMenu) {
+      {
+        ImVec2 pos = CherryGUI::GetCursorScreenPos();
+        float height = CherryGUI::GetFrameHeight();
+        float thickness = 1.5f;
+
+        CherryGUI::GetWindowDrawList()->AddRectFilled(
+            ImVec2(pos.x, pos.y), ImVec2(pos.x + thickness, pos.y + height),
+            IM_COL32(89, 89, 89, 155));
+        CherryGUI::Dummy(ImVec2(thickness + 4.0f, 0));
+      }
+
+      if (CherryGUI::BeginMenu("example")) {
+        CherryGUI::EndMenu();
+      }
     }
 
     CherryGUI::PopStyleVar(2);

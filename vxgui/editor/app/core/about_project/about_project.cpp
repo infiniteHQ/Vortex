@@ -46,10 +46,20 @@ void AboutProject::Render() {
   std::string project_description =
       VortexMaker::GetCurrentContext()->description;
   std::string project_author = VortexMaker::GetCurrentContext()->author;
+  std::string logo_path =
+      VortexMaker::GetCurrentContext()->projectPath.string() + "" +
+      VortexMaker::GetCurrentContext()->logo_path;
 
-  CherryGUI::Image(
-      Cherry::GetTexture(Cherry::GetPath("resources/imgs/vortex_banner.png")),
-      ImVec2(window_width, image_height));
+  std::string banner_path =
+      VortexMaker::GetCurrentContext()->projectPath.string() + "" +
+      VortexMaker::GetCurrentContext()->banner_path;
+
+  CherryGUI::Image(Cherry::GetTexture(logo_path),
+                   ImVec2(window_width, image_height));
+
+  CherryStyle::AddMarginX(25.0f);
+  CherryStyle::RemoveMarginY(25.0f);
+  CherryGUI::Image(Cherry::GetTexture(logo_path), ImVec2(65, 65));
 
   CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding,
                           ImVec2(2, 2)); // CherryStyle::Padding
@@ -63,6 +73,19 @@ void AboutProject::Render() {
 
   Cherry::SetNextComponentProperty("color_text", "#FFFFFF");
   CherryKit::TextSimple(project_name);
+
+  if (VortexMaker::GetCurrentContext()->type == "tool") {
+    CherryGUI::SameLine();
+    // TODO logo
+    Cherry::SetNextComponentProperty("color_text", "#565656");
+    CherryKit::TextSimple("Tool");
+
+  } else if (VortexMaker::GetCurrentContext()->type == "project") {
+    CherryGUI::SameLine();
+    // TODO logo
+    Cherry::SetNextComponentProperty("color_text", "#565656");
+    CherryKit::TextSimple("Project");
+  }
 
   Cherry::SetNextComponentProperty("color_text", "#878787");
   CherryKit::TextWrapped(project_description);

@@ -50,8 +50,11 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
   if (project.contains("startup_script"))
     ctx.startup_script = project["startup_script"].get<std::string>();
 
-  if (project.contains("logo_path"))
-    ctx.logo_path = project["logo_path"].get<std::string>();
+  if (project.contains("logoPath"))
+    ctx.logo_path = project["logoPath"].get<std::string>();
+
+  if (project.contains("bannerPath"))
+    ctx.banner_path = project["bannerPath"].get<std::string>();
 
   if (project.contains("website"))
     ctx.website = project["website"].get<std::string>();

@@ -61,8 +61,11 @@ VORTEX_API void VortexMaker::RefreshProjectInformations() {
   if (project.contains("tags") && project["tags"].is_string())
     ctx.tags = project["tags"].get<std::string>();
 
-  if (project.contains("logo_path") && project["logo_path"].is_string())
-    ctx.logo_path = project["logo_path"].get<std::string>();
+  if (project.contains("logoPath") && project["logoPath"].is_string())
+    ctx.logo_path = project["logoPath"].get<std::string>();
+
+  if (project.contains("bannerPath") && project["bannerPath"].is_string())
+    ctx.banner_path = project["bannerPath"].get<std::string>();
 
   if (project.contains("website") && project["website"].is_string())
     ctx.website = project["website"].get<std::string>();

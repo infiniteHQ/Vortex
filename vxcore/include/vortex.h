@@ -356,6 +356,7 @@ VORTEX_API void UpdateProjectAuthor(const std::string &author);
 VORTEX_API void UpdateProjectDescription(const std::string &description);
 VORTEX_API void UpdateProjectType(const std::string &type);
 VORTEX_API void UpdateProjectLogoPath(const std::string &path);
+VORTEX_API void UpdateProjectBannerPath(const std::string &path);
 VORTEX_API void UpdateProjectTags(const std::string &tags);
 VORTEX_API void UpdateProjectWebsite(const std::string &website);
 VORTEX_API void UpdateProjectSupportContact(const std::string &contact);

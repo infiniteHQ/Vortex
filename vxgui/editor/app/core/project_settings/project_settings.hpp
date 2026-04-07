@@ -65,6 +65,7 @@ public:
   std::string v_ProjectDescriptionInitial;
   std::string v_ProjectVersionInitial;
   std::string v_ProjectThumbnailPathInitial;
+  std::string v_ProjectBannerPathInitial;
   std::string v_ProjectTypeInitial;
   std::string v_ProjectTagsInitial;
   std::string v_ProjectAuthorInitial;
@@ -83,6 +84,7 @@ public:
   std::string v_ProjectDescription;
   std::string v_ProjectVersion;
   std::string v_ProjectThumbnailPath;
+  std::string v_ProjectBannerPath;
   std::string v_ProjectType;
   std::string v_ProjectTags;
   std::string v_ProjectAuthor;

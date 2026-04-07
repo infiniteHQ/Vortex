@@ -408,6 +408,7 @@ struct VxContext {
   std::string version;
   std::string tags;
   std::string logo_path;
+  std::string banner_path;
   std::string website;
   std::string support_contact;
   std::string copyright_file;

@@ -207,6 +207,7 @@ void ProjectSettings::RefreshProjectInformations() {
   v_ProjectTagsInitial = ctx->tags;
   v_ProjectTypeInitial = ctx->type;
   v_ProjectThumbnailPathInitial = ctx->logo_path;
+  v_ProjectBannerPathInitial = ctx->banner_path;
   v_ProjectWebsiteInitial = ctx->website;
   v_ProjectSupportContactInitial = ctx->support_contact;
   v_ProjectCopyrightFileInitial = ctx->copyright_file;
@@ -224,6 +225,7 @@ void ProjectSettings::RefreshProjectInformations() {
   v_ProjectTags = v_ProjectTagsInitial;
   v_ProjectType = v_ProjectTypeInitial;
   v_ProjectThumbnailPath = v_ProjectThumbnailPathInitial;
+  v_ProjectBannerPath = v_ProjectBannerPathInitial;
   v_ProjectWebsite = v_ProjectWebsiteInitial;
   v_ProjectSupportContact = v_ProjectSupportContactInitial;
   v_ProjectCopyrightFile = v_ProjectCopyrightFileInitial;
@@ -367,6 +369,15 @@ ProjectSettings::ProjectSettings(const std::string &name) {
         CherryKit::Separator();
 
         static std::vector<std::string> project_types = {"Project", "Tool"};
+
+        if (v_ProjectType == "tool") {
+          CherryApp.GetComponent(CherryID("project_type_combo"))
+              .SetProperty("selected_index", "1");
+        } else if (v_ProjectType == "project") {
+          CherryApp.GetComponent(CherryID("project_type_combo"))
+              .SetProperty("selected_index", "0");
+        }
+
         CherryKit::TableSimple(
             "Information table",
             {{
@@ -378,7 +389,10 @@ ProjectSettings::ProjectSettings(const std::string &name) {
                         CherryKit::KeyValString("Description",
                                                 &v_ProjectDescription),
                         CherryKit::KeyValString("Version", &v_ProjectVersion),
-                        CherryKit::KeyValString("Thumbnail", &v_ProjectName),
+                        CherryKit::KeyValString("Logo path",
+                                                &v_ProjectThumbnailPath),
+                        CherryKit::KeyValString("Banner path",
+                                                &v_ProjectBannerPath),
                     }),
                 CherryKit::KeyValParent(
                     "Shipping & Distribution", true,
