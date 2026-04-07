@@ -21,7 +21,15 @@ public:
   void Render();
 
   std::string m_SelectedCategory;
+
   bool m_SelectedCategoryChanged = false;
+  bool m_AutoScroll = true;
+  float m_ScrollY = 0.0f;
+  float m_ScrollSpeed = 50.0f;
+  bool m_UserScrolled = false;
+  float m_UserScrollCooldown = 0.0f;
+  const float USER_SCROLL_PAUSE = 3.0f;
+
   void SetSelectedCategory(const std::string &c) {
     m_SelectedCategory = c;
     m_SelectedCategoryChanged = true;
@@ -39,8 +47,6 @@ public:
       m_AllCategories[VortexMaker::GetCurrentContext()->IO.em[i]->m_group]++;
     }
   }
-
-  bool m_AutoScroll = true;
 
   std::shared_ptr<Cherry::AppWindow> m_AppWindow;
 };
