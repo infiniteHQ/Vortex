@@ -1,13 +1,32 @@
+#include <plugins/interface.h>
 #include <vortex.h>
 #include <vortex/scripting/scripting.hpp>
 
 namespace VortexMaker {
 namespace Script {
 
+static PluginInterface *GetActivePlugin(lua_State *L) {
+  static const char *KEY = "active_plugin";
+  lua_pushstring(L, KEY);
+  lua_gettable(L, LUA_REGISTRYINDEX);
+  auto *plugin = (PluginInterface *)lua_touserdata(L, -1);
+  lua_pop(L, 1);
+  return plugin;
+}
+
 VXLUA_FUNC(Log) {
   std::string log = vxlua_getstring(L, 1);
 
   VXINFO("test", log);
+  return 0;
+}
+
+VXLUA_FUNC(LogT) {
+  std::string log = vxlua_getstring(L, 1);
+  PluginInterface *plugin = GetActivePlugin(L);
+  if (!plugin)
+    return 0;
+  VXINFO(plugin->m_name, log);
   return 0;
 }
 
@@ -73,12 +92,21 @@ VXLUA_FUNC(CallInputEvent) {
   return 1;
 }
 
-void RegisterLogicAPI(lua_State *L) {
+void RegisterMainAPI(lua_State *L) {
   // Logs & Debug
   VXLUA_REGISTER(L, -1, Log);
   VXLUA_REGISTER(L, -1, LogWarn);
   VXLUA_REGISTER(L, -1, LogError);
   VXLUA_REGISTER(L, -1, LogFatal);
 }
+
+void RegisterPluginAPI(lua_State *L) {
+  // Logs & Debug
+  VXLUA_REGISTER(L, -1, LogT);
+  VXLUA_REGISTER(L, -1, LogWarn);
+  VXLUA_REGISTER(L, -1, LogError);
+  VXLUA_REGISTER(L, -1, LogFatal);
+}
+
 } // namespace Script
 } // namespace VortexMaker

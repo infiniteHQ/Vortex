@@ -1,5 +1,6 @@
 #pragma once
 #include "lua_helpers.hpp"
+#include <plugins/interface.h>
 #include <vortex.h>
 
 #ifndef VORTEX_LUA_SCRIPTING_HPP
@@ -36,6 +37,19 @@ public:
 
   lua_State *GetState() { return L; }
 
+  void LoadFileForPlugin(const std::string &path,
+                         const std::shared_ptr<PluginInterface> &plugin) {
+    lua_pushstring(L, "active_plugin");
+    lua_pushlightuserdata(L, (void *)plugin.get());
+    lua_settable(L, LUA_REGISTRYINDEX);
+
+    LoadFile(path);
+
+    lua_pushstring(L, "active_plugin");
+    lua_pushnil(L);
+    lua_settable(L, LUA_REGISTRYINDEX);
+  }
+
 private:
   lua_State *L;
   std::string m_LastError;
@@ -51,7 +65,8 @@ private:
 
 VORTEX_API ScriptingEngine &GetScriptingEngine();
 
-void RegisterLogicAPI(lua_State *L);
+void RegisterMainAPI(lua_State *L);
+void RegisterPluginAPI(lua_State *L);
 void RenderLuaScript(const std::string &lua_file_path);
 void RenderLuaFreshScript(const std::string &lua_file_path);
 

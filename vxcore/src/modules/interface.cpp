@@ -709,3 +709,8 @@ VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &
 ModuleInterface::GetContentBrowserItemCreators() {
   return m_item_creators;
 }
+
+VORTEX_API void ModuleInterface::AddCreditsFile(const std::string &file_path) {
+  VortexMaker::AddCredits(this->m_proper_name + "(" + this->m_name + ")",
+                          file_path);
+}

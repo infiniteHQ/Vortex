@@ -167,10 +167,12 @@ void RenderLuaFreshScript(const std::string &lua_file_path) {
 
 void ScriptingEngine::RegisterVortexAPI() {
   lua_newtable(L);
+  RegisterMainAPI(L);
+  lua_setglobal(L, "Vortex");
 
-  RegisterLogicAPI(L);
-
-  lua_setglobal(L, "Vortex"); // global lib
+  lua_newtable(L);
+  RegisterPluginAPI(L);
+  lua_setglobal(L, "VxPlugin");
 }
 } // namespace Script
 } // namespace VortexMaker

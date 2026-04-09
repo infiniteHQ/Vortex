@@ -618,9 +618,8 @@ VORTEX_API void PluginInterface::Start() {
     return;
   }
 
-  // Execute the plugin's main script here
-  const std::string script = this->m_mainscript_path;
-  VortexMaker::Script::RenderLuaFreshScript(script);
+  auto &engine = VortexMaker::Script::GetScriptingEngine();
+  engine.LoadFileForPlugin(this->m_mainscript_path, this->GetInterface());
 
   this->m_state = "running";
 }
