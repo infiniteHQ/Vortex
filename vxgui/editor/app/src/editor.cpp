@@ -135,8 +135,8 @@ void Editor::SetAboutProjectWindowVisibility(const bool visibility) {
       spec.SetUniqueAppWindowName(m_AboutProjectWindow->GetAppWindow()->m_Name);
       spec.MinHeight = 100;
       spec.MinWidth = 200;
-      spec.Height = 350;
-      spec.Width = 550;
+      spec.Height = 380;
+      spec.Width = 520;
       spec.DisableLogo = true;
       spec.DisableResize = true;
       spec.CustomTitlebar = true;
@@ -765,5 +765,6 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 }
 
 int VortexMaker::VortexEditor(int argc, char **argv) {
+  std::cout << "Initializing runtime..." << std::endl;
   return Cherry::ThirdMain(argc, argv, CreateEditor);
 }

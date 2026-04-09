@@ -12,7 +12,7 @@ function DrawWelcomeScreen()
     local marginX = 60
     local currentY = 70
     local colWidth = (winW - (marginX * 3)) / 2
-Cherry.PushFont("Clash")
+    Cherry.PushFont("Clash")
     Cherry.DrawText(marginX, currentY, 36.0, "#FFFFFFFF", "Welcome to Vortex")
     Cherry.PopFont()
     currentY = currentY + 45

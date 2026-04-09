@@ -368,6 +368,16 @@ struct VxPaths {
   std::string hostDistFolder;
 };
 
+struct CreditEntry {
+  std::string name;
+  std::string contact;
+};
+
+struct TopicCredits {
+  std::vector<std::string> title_order;
+  std::map<std::string, std::vector<CreditEntry>> sections;
+};
+
 //-----------------------------------------------------------------------------
 // (Context) VortexMakerContext => Main VortexMaker context.
 //-----------------------------------------------------------------------------
@@ -431,6 +441,9 @@ struct VxContext {
 
   std::string platform;
   std::string arch;
+
+  // Credits
+  std::map<std::string, TopicCredits> credits;
 };
 //-----------------------------------------------------------------------------
 

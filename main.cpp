@@ -151,7 +151,7 @@ VxContext *InitRuntime(bool logger) {
   VxContext *ctx = VortexMaker::CreateContext();
 
   VortexMaker::InitializePlatformVendor();
-  std::cout << "Initializing runtime..." << std::endl;
+  VortexMaker::AddCredits("vx", Cherry::GetPath("CREDITS"));
 
   ctx->state.session_id = session_id;
 
@@ -191,6 +191,8 @@ VxContext *InitBlankRuntime(bool logger) {
 
   ctx->state.session_id = session_id;
 
+  // Link credits file
+  VortexMaker::AddCredits("vx", Cherry::GetPath("CREDITS"));
   VortexMaker::InitializePlatformVendor();
   VortexMaker::CreateGlobalLogger();
   VortexMaker::CreateConsoleLogger();

@@ -40,8 +40,9 @@ void AboutProject::SetupRenderCallback() {
 
 void AboutProject::Render() {
   float window_width = CherryGUI::GetWindowSize().x;
-  float image_height = window_width / 3.435f;
+  float image_height = window_width / 3.835f;
 
+  std::string project_version = VortexMaker::GetCurrentContext()->version;
   std::string project_name = VortexMaker::GetCurrentContext()->name;
   std::string project_description =
       VortexMaker::GetCurrentContext()->description;
@@ -84,6 +85,9 @@ void AboutProject::Render() {
 
   Cherry::SetNextComponentProperty("color_text", "#FFFFFF");
   CherryKit::TextSimple(project_name);
+  CherryGUI::SameLine();
+  Cherry::SetNextComponentProperty("color_text", "#343434");
+  CherryKit::TextSimple(project_version);
 
   if (VortexMaker::GetCurrentContext()->type == "tool") {
     CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/tools.png"), 13, 13);

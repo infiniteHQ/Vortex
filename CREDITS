@@ -1,0 +1,27 @@
+# This is the credits list for the Vortex Creation Platform UI and Core.
+#
+# This does not necessarily list everyone who has contributed code.
+# To see the full list of contributors, see the revision history in 
+# source control and dependencies.
+
+# Names should be added to this file using this pattern:
+#
+# For individuals:
+#   Name <email address> (area)
+#
+# For organizations:
+#   Organization <contact email address>
+
+# For third parties, we can add complete names or organization labels 
+# from LICENSE files. Please feel free to remove or change your name 
+# if you are one of them.
+
+-----BEGIN CREDITS-----
+
+# Infinite Staff and Project Direction
+Diego E. Moreno     <d@infinite.si>
+
+# Special thanks
+Dear ImGui contributors
+
+-----END CREDITS-----

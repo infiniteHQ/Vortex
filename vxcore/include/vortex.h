@@ -369,6 +369,15 @@ VORTEX_API void UpdateProjectSecurityFile(const std::string &path);
 VORTEX_API void UpdateProjectRootContentPath(const std::string &root_path);
 VORTEX_API void UpdateProjectStartupScript(const std::string &startup_script);
 
+VORTEX_API void AddCredits(const std::string &topic,
+                           const std::string &credit_file);
+
+VORTEX_API std::vector<std::string>
+GetTitlesFromTopic(const std::string &topic);
+
+VORTEX_API std::vector<std::string>
+GetNamesFromTopicAndTitle(const std::string &topic, const std::string &title);
+
 VORTEX_API void RefreshProjectInformations();
 
 VORTEX_API nlohmann::json DumpJSON(const std::string &file);

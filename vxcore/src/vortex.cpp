@@ -1775,4 +1775,124 @@ VORTEX_API void VortexMaker::DeletePath(const std::string &target_path) {
     std::cerr << "An unknown error occurred while processing the path." << '\n';
   }
 }
+
+VORTEX_API void VortexMaker::AddCredits(const std::string &topic,
+                                        const std::string &credit_file) {
+  auto ctx = VortexMaker::GetCurrentContext();
+
+  std::ifstream file(credit_file);
+  if (!file.is_open()) {
+    return;
+  }
+
+  TopicCredits &tc = ctx->credits[topic];
+
+  std::string line;
+  bool in_block = false;
+  std::string current_title = "";
+
+  while (std::getline(file, line)) {
+    auto trim = [](std::string s) -> std::string {
+      size_t start = s.find_first_not_of(" \t\r\n");
+      size_t end = s.find_last_not_of(" \t\r\n");
+      return (start == std::string::npos) ? ""
+                                          : s.substr(start, end - start + 1);
+    };
+    line = trim(line);
+
+    if (line == "-----BEGIN CREDITS-----") {
+      in_block = true;
+      continue;
+    }
+    if (line == "-----END CREDITS-----") {
+      break;
+    }
+    if (!in_block)
+      continue;
+
+    if (line.empty())
+      continue;
+
+    if (line[0] == '#') {
+      std::string title = trim(line.substr(1));
+      if (!title.empty()) {
+        current_title = title;
+        if (tc.sections.find(current_title) == tc.sections.end()) {
+          tc.title_order.push_back(current_title);
+          tc.sections[current_title] = {};
+        }
+      }
+      continue;
+    }
+
+    CreditEntry entry;
+
+    size_t lt = line.find('<');
+    size_t gt = line.find('>');
+    if (lt != std::string::npos && gt != std::string::npos && gt > lt) {
+      entry.contact = line.substr(lt + 1, gt - lt - 1);
+      entry.name = trim(line.substr(0, lt));
+    } else {
+      size_t lp = line.find('(');
+      size_t rp = line.find(')');
+      if (lp != std::string::npos && rp != std::string::npos && rp > lp) {
+        entry.contact = line.substr(lp + 1, rp - lp - 1);
+        entry.name = trim(line.substr(0, lp));
+      } else {
+        entry.name = line;
+      }
+    }
+
+    if (current_title.empty()) {
+      current_title = "";
+      if (tc.sections.find("") == tc.sections.end()) {
+        tc.title_order.push_back("");
+        tc.sections[""] = {};
+      }
+    }
+
+    tc.sections[current_title].push_back(entry);
+  }
+}
+
+VORTEX_API std::vector<std::string>
+VortexMaker::GetTitlesFromTopic(const std::string &topic) {
+  auto ctx = VortexMaker::GetCurrentContext();
+
+  auto it = ctx->credits.find(topic);
+  if (it == ctx->credits.end())
+    return {};
+
+  return it->second.title_order;
+}
+
+VORTEX_API std::vector<std::string>
+VortexMaker::GetNamesFromTopicAndTitle(const std::string &topic,
+                                       const std::string &title) {
+  auto ctx = VortexMaker::GetCurrentContext();
+
+  auto it = ctx->credits.find(topic);
+  if (it == ctx->credits.end())
+    return {};
+
+  auto &tc = it->second;
+  auto sit = tc.sections.find(title);
+  if (sit == tc.sections.end())
+    return {};
+
+  std::vector<std::string> results;
+  for (const auto &entry : sit->second) {
+    std::string line = entry.name;
+    if (!entry.contact.empty()) {
+      bool is_email = entry.contact.find('@') != std::string::npos;
+      if (is_email)
+        line += " <" + entry.contact + ">";
+      else
+        line += " (" + entry.contact + ")";
+    }
+    results.push_back(line);
+  }
+  return results;
+}
+
 #endif // VORTEX_DISABLE

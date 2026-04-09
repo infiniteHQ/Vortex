@@ -16,6 +16,7 @@ cd ..
 cp -r ./build/bin/* dist/${VERSION}/bin
 cp -r ./build/bin/* dist/${VERSION}/bin
 cp -r ./handle_crash.sh dist/${VERSION}/bin
+cp -r ../CREDITS dist/${VERSION}/bin
 
 rm -rf prod/
 mkdir prod

@@ -106,34 +106,28 @@ void Credits::SetupRenderCallback() {
     }
   });
 }
-
 void Credits::Render() {
+  auto ctx = VortexMaker::GetCurrentContext();
   float window_width = CherryGUI::GetWindowSize().x;
   float image_height = window_width / 3.435f;
-
   CherryGUI::Image(
       Cherry::GetTexture(Cherry::GetPath("resources/imgs/credits_banner.png")),
       ImVec2(window_width, image_height));
-
-  CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding,
-                          ImVec2(2, 2)); // CherryStyle::Padding
-  CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding,
-                          ImVec2(2, 2)); // CherryStyle::Padding
+  CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2, 2));
+  CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
   CherryGUI::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToRGBA("#00000000"));
   CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#00000000"));
   CherryStyle::AddMarginX(20.0f);
   CherryStyle::AddMarginY(5.0f);
-  CherryGUI::BeginChild("aboutchild", ImVec2(430, 0)); // cherry api
+  CherryGUI::BeginChild("aboutchild", ImVec2(430, 0));
 
   float maxScroll = ImGui::GetScrollMaxY();
   float dt = ImGui::GetIO().DeltaTime;
-
   if (m_AutoScroll) {
     if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseWheel != 0.0f) {
       m_UserScrolled = true;
       m_UserScrollCooldown = USER_SCROLL_PAUSE;
     }
-
     if (m_UserScrolled) {
       m_UserScrollCooldown -= dt;
       if (m_UserScrollCooldown <= 0.0f) {
@@ -142,41 +136,54 @@ void Credits::Render() {
       }
     } else {
       m_ScrollY += m_ScrollSpeed * dt;
-
       if (m_ScrollY >= maxScroll)
         m_ScrollY = 0.0f;
-
       ImGui::SetScrollY(m_ScrollY);
     }
   }
 
+  auto RenderTopic = [&](const std::string &topic, bool is_main) {
+    std::vector<std::string> titles = VortexMaker::GetTitlesFromTopic(topic);
+    if (titles.empty())
+      return;
+
+    CherryStyle::AddMarginY(20.0f);
+
+    if (is_main) {
+      std::string vortex_version = VORTEX_VERSION;
+      Cherry::SetNextComponentProperty("color_text", "#FFFFFF");
+      CherryKit::TitleTwo("Vortex Editor (" + vortex_version + ")");
+    } else {
+      Cherry::SetNextComponentProperty("color_text", "#FFFFFF");
+      CherryKit::TitleThree(topic);
+    }
+
+    for (const auto &title : titles) {
+      CherryStyle::AddMarginY(8.0f);
+      Cherry::SetNextComponentProperty("color_text", "#BBBBBB");
+      CherryKit::TitleSix(title);
+
+      std::vector<std::string> names =
+          VortexMaker::GetNamesFromTopicAndTitle(topic, title);
+      for (const auto &name : names) {
+        Cherry::SetNextComponentProperty("color_text", "#878787");
+        CherryKit::TextSimple(name);
+      }
+    }
+  };
+
+  RenderTopic("vx", true);
+
+  for (const auto &[topic, _] : ctx->credits) {
+    if (topic == "vx")
+      continue;
+    RenderTopic(topic, false);
+  }
+
   CherryStyle::AddMarginY(20.0f);
-  std::string vortex_launcher_version = VORTEX_VERSION;
-  Cherry::SetNextComponentProperty("color_text", "#FFFFFF");
-  CherryKit::TitleTwo("Vortex Editor (" + vortex_launcher_version + ")");
-
-  Cherry::SetNextComponentProperty("color_text", "#FFFFFF");
-  CherryKit::TitleSix("Core");
-  Cherry::SetNextComponentProperty("color_text", "#878787");
-  CherryKit::TextSimple("Name Name");
-  Cherry::SetNextComponentProperty("color_text", "#878787");
-  CherryKit::TextSimple("Name Name");
-
-  CherryStyle::AddMarginY(20.0f);
-  Cherry::SetNextComponentProperty("color_text", "#FFFFFF");
-  CherryKit::TitleThree("Example module");
-
-  Cherry::SetNextComponentProperty("color_text", "#BBBBBB");
-  CherryKit::TextSimple("Area");
-  Cherry::SetNextComponentProperty("color_text", "#878787");
-  CherryKit::TextSimple("Name Name");
-  Cherry::SetNextComponentProperty("color_text", "#878787");
-  CherryKit::TextSimple("Name Name");
-
   CherryGUI::EndChild();
-
   CherryGUI::PopStyleColor(2);
-  CherryGUI::PopStyleVar(2); // CherryStyle::Padding
+  CherryGUI::PopStyleVar(2);
 }
 
 } // namespace VortexEditor
