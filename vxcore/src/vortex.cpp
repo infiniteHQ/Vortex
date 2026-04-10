@@ -1985,4 +1985,67 @@ VortexMaker::GetNamesFromTopicAndTitle(const std::string &topic,
   return results;
 }
 
+VORTEX_API void VortexMaker::AddDocumentation(const std::string &topic,
+                                              const std::string &section,
+                                              const std::string &title,
+                                              const std::string &md_file_path) {
+  auto ctx = VortexMaker::GetCurrentContext();
+  DocumentationFile doc;
+  doc.title = title;
+  doc.file_path = md_file_path;
+
+  ctx->documentations[topic].sections[section].chapters[title] = doc;
+}
+
+VORTEX_API std::vector<std::string>
+VortexMaker::GetSections(const std::string &topic) {
+  auto ctx = VortexMaker::GetCurrentContext();
+  std::vector<std::string> section_names;
+
+  if (ctx->documentations.count(topic)) {
+    for (auto const &[name, content] : ctx->documentations[topic].sections) {
+      section_names.push_back(name);
+    }
+  }
+  return section_names;
+}
+
+VORTEX_API std::vector<std::string>
+VortexMaker::GetChapters(const std::string &topic, const std::string &section) {
+  auto ctx = VortexMaker::GetCurrentContext();
+  std::vector<std::string> chapter_titles;
+
+  if (ctx->documentations.count(topic)) {
+    auto &sections = ctx->documentations[topic].sections;
+    if (sections.count(section)) {
+      for (auto const &[title, file] : sections[section].chapters) {
+        chapter_titles.push_back(title);
+      }
+    }
+  }
+  return chapter_titles;
+}
+
+VORTEX_API std::string
+VortexMaker::GetChapterFilePath(const std::string &topic,
+                                const std::string &section,
+                                const std::string &title) {
+  auto ctx = VortexMaker::GetCurrentContext();
+
+  auto it_topic = ctx->documentations.find(topic);
+  if (it_topic == ctx->documentations.end())
+    return "";
+
+  auto &sections_map = it_topic->second.sections;
+  auto it_section = sections_map.find(section);
+  if (it_section == sections_map.end())
+    return "";
+
+  auto &chapters_map = it_section->second.chapters;
+  auto it_chapter = chapters_map.find(title);
+  if (it_chapter == chapters_map.end())
+    return "";
+
+  return it_chapter->second.file_path;
+}
 #endif // VORTEX_DISABLE

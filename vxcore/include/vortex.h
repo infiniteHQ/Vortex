@@ -373,6 +373,19 @@ VORTEX_API void AddCredits(const std::string &topic,
                            const std::string &credit_file);
 VORTEX_API void SetCreditsFile(const std::string &topic,
                                const std::string &credit_file);
+
+VORTEX_API void AddDocumentation(const std::string &topic,
+                                 const std::string &section,
+                                 const std::string &title,
+                                 const std::string &md_file_path);
+
+VORTEX_API std::vector<std::string> GetSections(const std::string &topic);
+VORTEX_API std::vector<std::string> GetChapters(const std::string &topic,
+                                                const std::string &section);
+VORTEX_API std::string GetChapterFilePath(const std::string &topic,
+                                          const std::string &section,
+                                          const std::string &title);
+
 VORTEX_API std::vector<std::string>
 GetTitlesFromTopic(const std::string &topic);
 

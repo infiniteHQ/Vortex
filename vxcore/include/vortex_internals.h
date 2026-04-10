@@ -373,6 +373,18 @@ struct CreditEntry {
   std::string contact;
 };
 
+struct DocumentationFile {
+  std::string title;
+  std::string file_path;
+};
+
+struct DocumentationSection {
+  std::map<std::string, DocumentationFile> chapters;
+};
+
+struct DocumentationTopic {
+  std::map<std::string, DocumentationSection> sections;
+};
 struct TopicCredits {
   std::vector<std::string> title_order;
   std::map<std::string, std::vector<CreditEntry>> sections;
@@ -444,6 +456,9 @@ struct VxContext {
 
   // Credits
   std::map<std::string, TopicCredits> credits;
+
+  // Embedded documentation
+  std::map<std::string, DocumentationTopic> documentations;
 };
 //-----------------------------------------------------------------------------
 
