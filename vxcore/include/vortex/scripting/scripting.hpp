@@ -13,6 +13,8 @@
 namespace VortexMaker {
 namespace Script {
 
+inline const char ACTIVE_PLUGIN_KEY = 0;
+
 class ScriptingEngine {
 public:
   ScriptingEngine();
@@ -39,15 +41,18 @@ public:
 
   void LoadFileForPlugin(const std::string &path,
                          const std::shared_ptr<PluginInterface> &plugin) {
-    lua_pushstring(L, "active_plugin");
-    lua_pushlightuserdata(L, (void *)plugin.get());
-    lua_settable(L, LUA_REGISTRYINDEX);
+    auto *stored = new std::shared_ptr<PluginInterface>(plugin);
+    lua_pushlightuserdata(L, (void *)stored);
+    lua_rawsetp(L, LUA_REGISTRYINDEX, (void *)&ACTIVE_PLUGIN_KEY);
 
+    bool wasHotReload = m_HotReloadEnabled;
+    m_HotReloadEnabled = false;
     LoadFile(path);
+    m_HotReloadEnabled = wasHotReload;
 
-    lua_pushstring(L, "active_plugin");
     lua_pushnil(L);
-    lua_settable(L, LUA_REGISTRYINDEX);
+    lua_rawsetp(L, LUA_REGISTRYINDEX, (void *)&ACTIVE_PLUGIN_KEY);
+    delete stored;
   }
 
 private:

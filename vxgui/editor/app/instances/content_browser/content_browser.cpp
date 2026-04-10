@@ -2438,6 +2438,16 @@ void ContentBrowserAppWindow::RenderContentBar() {
       }
     }
 
+    for (auto ep : VortexMaker::GetCurrentContext()->IO.ep) {
+      for (auto item : ep->GetContentBrowserItemIdentifiers()) {
+        std::string path = directoryEntry.path().string();
+        if (item->f_Detect(path)) {
+          recognized_modules_items.push_back({item, path});
+          isItem = true;
+        }
+      }
+    }
+
     if (isItem) {
       continue;
     }

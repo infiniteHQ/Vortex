@@ -3,12 +3,17 @@
 
 #include "../../../../lib/cherry/lib/lua/src/lua.hpp"
 #include "../../../../lib/json/single_include/nlohmann/json.hpp"
+#include <vortex.h>
 
 #define VXLUA_FUNC(name) static int l_##name(lua_State *L)
 
 #define VXLUA_REGISTER(L, table, name)                                         \
   lua_pushcfunction(L, l_##name);                                              \
   lua_setfield(L, -2, #name)
+
+#define VXLUA_REGISTER_AS(L, func, lua_name)                                   \
+  lua_pushcfunction(L, l_##func);                                              \
+  lua_setfield(L, -2, lua_name)
 
 #define VXLUA_REGISTER_GLOBAL_FUNC(global, name)                               \
   do {                                                                         \
@@ -96,4 +101,24 @@ static void JsonToLuaTable(lua_State *L, const nlohmann::json &j) {
     lua_settable(L, -3);
   }
 }
+
+struct LuaItemHandler {
+  int lua_ref;
+  lua_State *L;
+
+  void Call(const std::string &path) {
+    int type = lua_rawgeti(L, LUA_REGISTRYINDEX, lua_ref);
+
+    if (type == LUA_TSTRING) {
+      VortexMaker::LogError("LuaHandler", "ref contains string: " +
+                                              std::string(lua_tostring(L, -1)));
+    }
+    lua_pop(L, 1);
+  }
+  ~LuaItemHandler() {
+    VortexMaker::LogError("LuaHandler", "DESTRUCTOR called for ref=" +
+                                            std::to_string(lua_ref));
+    luaL_unref(L, LUA_REGISTRYINDEX, lua_ref);
+  }
+};
 } // namespace VortexMaker

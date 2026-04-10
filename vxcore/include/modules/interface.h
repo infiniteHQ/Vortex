@@ -141,7 +141,7 @@ public:
   VORTEX_API void LogFatal(const std::string &message);
 
   // Credits
-  VORTEX_API void AddCreditsFile(const std::string &file_path);
+  VORTEX_API void SetCreditsFile(const std::string &file_path);
 
   // TODO : AddParameterToFunction
   // TODO : AddParameterToInputEvent

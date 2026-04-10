@@ -40,7 +40,8 @@ VORTEX_API struct PluginInterfaceDep {
   bool satisfied;
 };
 
-VORTEX_API class PluginInterface {
+VORTEX_API class PluginInterface
+    : public std::enable_shared_from_this<PluginInterface> {
 public:
   virtual ~PluginInterface() {}
 
@@ -138,6 +139,9 @@ public:
   VORTEX_API void LogWarning(const std::string &message);
   VORTEX_API void LogError(const std::string &message);
   VORTEX_API void LogFatal(const std::string &message);
+
+  // Credits
+  VORTEX_API void SetCreditsFile(const std::string &file_path);
 
   // TODO : AddParameterToFunction
   // TODO : AddParameterToInputEvent

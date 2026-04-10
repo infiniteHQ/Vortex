@@ -619,7 +619,7 @@ VORTEX_API void PluginInterface::Start() {
   }
 
   auto &engine = VortexMaker::Script::GetScriptingEngine();
-  engine.LoadFileForPlugin(this->m_mainscript_path, this->GetInterface());
+  engine.LoadFileForPlugin(this->m_mainscript_path, this->shared_from_this());
 
   this->m_state = "running";
 }
@@ -709,4 +709,9 @@ VORTEX_API void PluginInterface::AddContentBrowserItemCreator(
 VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &
 PluginInterface::GetContentBrowserItemCreators() {
   return m_item_creators;
+}
+
+VORTEX_API void PluginInterface::SetCreditsFile(const std::string &file_path) {
+  VortexMaker::SetCreditsFile(this->m_proper_name + "(" + this->m_name + ")",
+                              file_path);
 }

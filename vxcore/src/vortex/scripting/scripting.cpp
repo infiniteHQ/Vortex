@@ -172,7 +172,7 @@ void ScriptingEngine::RegisterVortexAPI() {
 
   lua_newtable(L);
   RegisterPluginAPI(L);
-  lua_setglobal(L, "VxPlugin");
+  lua_setglobal(L, "VortexP");
 }
 } // namespace Script
 } // namespace VortexMaker

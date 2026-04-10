@@ -371,7 +371,8 @@ VORTEX_API void UpdateProjectStartupScript(const std::string &startup_script);
 
 VORTEX_API void AddCredits(const std::string &topic,
                            const std::string &credit_file);
-
+VORTEX_API void SetCreditsFile(const std::string &topic,
+                               const std::string &credit_file);
 VORTEX_API std::vector<std::string>
 GetTitlesFromTopic(const std::string &topic);
 

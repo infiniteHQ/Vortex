@@ -710,7 +710,7 @@ ModuleInterface::GetContentBrowserItemCreators() {
   return m_item_creators;
 }
 
-VORTEX_API void ModuleInterface::AddCreditsFile(const std::string &file_path) {
-  VortexMaker::AddCredits(this->m_proper_name + "(" + this->m_name + ")",
-                          file_path);
+VORTEX_API void ModuleInterface::SetCreditsFile(const std::string &file_path) {
+  VortexMaker::SetCreditsFile(this->m_proper_name + "(" + this->m_name + ")",
+                              file_path);
 }
