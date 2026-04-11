@@ -272,11 +272,20 @@ void CrashAppWindow::Render() {
         ImGui::Text("Failed to open or read file: %s", log_file.c_str());
       }
 
+      Cherry::PushFont("JetBrainsMono");
+      CherryStyle::PushFontSize(0.50f);
+      CherryGUI::PushStyleColor(ImGuiCol_Border,
+                                Cherry::HexToImU32("#00000000"));
+      CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+      CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
       static ImGuiInputTextFlags flags =
           ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
-      ImGui::InputTextMultiline(
-          "##logs_source", text, IM_ARRAYSIZE(text),
-          ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags);
+      ImGui::InputTextMultiline("##logs_source", text, IM_ARRAYSIZE(text),
+                                ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
+      CherryGUI::PopStyleVar(2);
+      CherryGUI::PopStyleColor();
+      CherryStyle::PopFontSize();
+      Cherry::PopFont();
 
       ImGui::EndTabItem();
     }
@@ -295,16 +304,22 @@ void CrashAppWindow::Render() {
         ImGui::Text("Failed to open or read file: %s", log_file.c_str());
       }
 
+      Cherry::PushFont("JetBrainsMono");
+      CherryStyle::PushFontSize(0.50f);
+      CherryGUI::PushStyleColor(ImGuiCol_Border,
+                                Cherry::HexToImU32("#00000000"));
+      CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+      CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
       static ImGuiInputTextFlags flags =
           ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
-      ImGui::InputTextMultiline(
-          "##processus_source", text, IM_ARRAYSIZE(text),
-          ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags);
-      ImGui::EndTabItem();
-    }
+      ImGui::InputTextMultiline("##processus_source", text, IM_ARRAYSIZE(text),
+                                ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
 
-    if (ImGui::BeginTabItem("Send details")) {
-      ImGui::Text("This is the Broccoli tab!\nblah blah blah blah blah");
+      CherryStyle::PopFontSize();
+      CherryGUI::PopStyleVar(2);
+      CherryGUI::PopStyleColor();
+      Cherry::PopFont();
       ImGui::EndTabItem();
     }
 

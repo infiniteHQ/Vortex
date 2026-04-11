@@ -59,6 +59,11 @@ Cherry::Application *CreateCrash(int argc, char **argv) {
   app->AddFont("Consola", Cherry::GetPath("ch_resources/fonts/consola.ttf"),
                17.0f);
 
+  app->AddFont("JetBrainsMono",
+               Cherry::Application::CookPath(
+                   "resources/fonts/JetBrainsMono-Regular.ttf"),
+               40.0f);
+
   app->AddLocale("fr", Cherry::GetPath("ch_resources/locales/fr.json"));
   app->AddLocale("en", Cherry::GetPath("ch_resources/locales/en.json"));
   app->SetDefaultLocale("en");

@@ -464,6 +464,11 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
                Cherry::Application::CookPath("resources/fonts/clash.ttf"),
                70.0f);
 
+  app->AddFont("JetBrainsMono",
+               Cherry::Application::CookPath(
+                   "resources/fonts/JetBrainsMono-Regular.ttf"),
+               40.0f);
+
   app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));
   app->AddLocale("en", Cherry::GetPath("resources/locales/en.json"));
   app->SetDefaultLocale("en");

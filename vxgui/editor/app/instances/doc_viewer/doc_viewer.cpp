@@ -13,12 +13,77 @@ DocViewerAppWindow::DocViewerAppWindow(const std::string &name) {
   m_AppWindow->SetCloseCallback(
       [this]() { Cherry::DeleteAppWindow(m_AppWindow); });
 
-  m_AppWindow->SetLeftMenubarCallback([this]() {
+  m_AppWindow->SetRightMenubarCallback([this]() {
+    CherryNextComponent.SetProperty("padding_y", "6.0f");
+    CherryNextComponent.SetProperty("padding_x", "10.0f");
+    CherryNextComponent.SetProperty("disable_callback", "true");
+    if (CherryKit::ButtonImageTextDropdown(
+            "Settings", GetPath("resources/imgs/icons/misc/icon_settings.png"))
+            .GetDataAs<bool>("isClicked")) {
+      ImVec2 mousePos = CherryGUI::GetMousePos();
+      ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
+      ImVec2 popupSize(150, 100);
 
+      if (mousePos.x + popupSize.x > displaySize.x) {
+        mousePos.x -= popupSize.x;
+      }
+      if (mousePos.y + popupSize.y > displaySize.y) {
+        mousePos.y -= popupSize.y;
+      }
+
+      CherryGUI::SetNextWindowSize(ImVec2(150, 100), ImGuiCond_Appearing);
+      CherryGUI::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
+      CherryGUI::OpenPopup("SettingsMenuPopup");
+    }
+    if (CherryGUI::BeginPopup("SettingsMenuPopup")) {
+      CherryKit::CheckboxText("Console font", &m_ConsoleFont);
+      CherryGUI::EndPopup();
+    }
   });
 
-  m_AppWindow->SetRightMenubarCallback([this]() {
+  m_AppWindow->SetLeftMenubarCallback([this]() {
+    auto ctx = VortexMaker::GetCurrentContext();
 
+    std::vector<std::pair<std::string, std::string>> combo_items;
+    std::vector<std::string> topic_ids;
+    int current_index = 0;
+    int counter = 0;
+
+    for (auto const &[topic_id, topic_data] : ctx->documentations) {
+      std::string label = GetLabelForTopic(topic_id);
+
+      std::string icon = GetPath("resources/imgs/icons/misc/icon_docs.png");
+      if (topic_id == "vx")
+        icon = GetPath("resources/imgs/icons/misc/icon_vortex.png");
+      else if (topic_id.find("module:") == 0)
+        icon = GetPath("resources/imgs/icons/misc/icon_module.png");
+
+      combo_items.push_back({label, icon});
+      topic_ids.push_back(topic_id);
+
+      if (m_selected_topic == topic_id) {
+        current_index = counter;
+      }
+      counter++;
+    }
+
+    if (topic_ids.empty())
+      return;
+
+    CherryNextComponent.SetProperty("size_x", 180.0f);
+    auto combo_result = CherryKit::ComboImageText("##DocTopicSelector",
+                                                  combo_items, current_index);
+
+    int selected_idx = combo_result.GetPropertyAs<int>("selected");
+    if (selected_idx >= 0 && selected_idx < (int)topic_ids.size()) {
+      std::string new_topic = topic_ids[selected_idx];
+      if (new_topic != m_selected_topic) {
+        m_selected_topic = new_topic;
+        m_selected_section = "";
+        m_selected_chapter = "";
+        m_cached_markdown_content = "";
+      }
+    }
   });
 
   m_AppWindow->SetLeftBottombarCallback([this]() {
@@ -50,25 +115,84 @@ void DocViewerAppWindow::SetupRenderCallback() {
 }
 
 void DocViewerAppWindow::Render() {
-  std::string markdownText = R"(
-#H1 Header : Text and Links
-You can add [links like this one to enkisoftware](https://www.enkisoftware.com/)
-and lines will wrap well. You can also insert images ![image alt text](image
-identifier e.g. filename) Horizontal rules:
-***
-___
-*Emphasis* and **strong emphasis** change the appearance of the text.
-## H2 Header: indented text.
-  This text has an indent (two leading spaces).
-    This one has two.
-### H3 Header: Lists
-  * Unordered lists
-    * Lists can be indented with two extra spaces.
-  * Lists can have [links like this one to Avoyd](https://www.avoyd.com/) and
-*emphasized text*
-)";
+  auto ctx = VortexMaker::GetCurrentContext();
 
-  ImGui::MarkdownView(markdownText);
+  ImGui::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToImU32("#00000000"));
+  ImGui::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
+  ImGui::BeginChild("Sidebar", ImVec2(m_sidebar_width, 0), true);
+  ImGui::Spacing();
+
+  if (ctx->documentations.count(m_selected_topic)) {
+    auto &sections = ctx->documentations[m_selected_topic].sections;
+
+    for (auto &[section_name, section_data] : sections) {
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+      bool section_open = ImGui::TreeNodeEx(
+          section_name.c_str(),
+          ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth);
+      ImGui::PopStyleColor();
+
+      if (section_open) {
+        for (auto &[chapter_title, file_data] : section_data.chapters) {
+          bool is_selected = (m_selected_chapter == chapter_title &&
+                              m_selected_section == section_name);
+
+          if (ImGui::Selectable(chapter_title.c_str(), is_selected)) {
+            m_selected_section = section_name;
+            m_selected_chapter = chapter_title;
+            LoadMarkdown(file_data.file_path);
+          }
+        }
+        ImGui::TreePop();
+      }
+      ImGui::Spacing();
+    }
+  } else {
+    ImGui::TextWrapped("No documentation found for topic: %s",
+                       m_selected_topic.c_str());
+  }
+  ImGui::EndChild();
+  ImGui::PopStyleColor(2);
+
+  ImGui::SameLine();
+  ImGui::Button("##splitter", ImVec2(5, -1));
+  if (ImGui::IsItemActive()) {
+    m_sidebar_width += ImGui::GetIO().MouseDelta.x;
+    if (m_sidebar_width < 100)
+      m_sidebar_width = 100;
+  }
+  ImGui::SameLine();
+
+  ImGui::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToImU32("#00000000"));
+  ImGui::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
+
+  if (m_ConsoleFont) {
+    Cherry::PushFont("JetBrainsMono");
+    CherryStyle::PushFontSize(0.50f);
+  }
+
+  ImGui::BeginChild("MarkdownContent", ImVec2(0, 0), false);
+  if (!m_cached_markdown_content.empty()) {
+    ImGui::TextDisabled("%s > %s", m_selected_section.c_str(),
+                        m_selected_chapter.c_str());
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ImGui::MarkdownView(m_cached_markdown_content);
+  } else {
+    ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2.0f);
+    const char *hint = "Select a chapter in the sidebar";
+    float text_width = ImGui::CalcTextSize(hint).x;
+    ImGui::SetCursorPosX((ImGui::GetWindowWidth() - text_width) / 2.0f);
+    ImGui::TextDisabled("%s", hint);
+  }
+  ImGui::EndChild();
+
+  if (m_ConsoleFont) {
+    CherryStyle::PopFontSize();
+    Cherry::PopFont();
+  }
+
+  ImGui::PopStyleColor(2);
 }
-
 } // namespace VortexEditor

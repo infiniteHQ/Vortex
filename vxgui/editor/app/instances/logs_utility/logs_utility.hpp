@@ -100,6 +100,7 @@ private:
   bool m_UseErrorFilter = false;
   bool m_UseFatalFilter = false;
   bool m_UseInfoFilter = false;
+  bool m_ConsoleFont = true;
   bool m_SearchBar = false;
 
   std::map<std::string, bool> m_TopicsFilterStates;

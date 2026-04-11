@@ -102,7 +102,8 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
     }
     if (CherryGUI::BeginPopup("ViewMenuPopup")) {
       CherryKit::SeparatorText("Pannels");
-      CherryKit::CheckboxText("Show Filter pannel", &m_ShowFilterPannel);
+      CherryKit::CheckboxText("Show filters pannel", &m_ShowFilterPannel);
+      CherryKit::CheckboxText("Console font", &m_ConsoleFont);
 
       CherryKit::SeparatorText("View mode");
       switch (
@@ -585,6 +586,10 @@ void LogsUtilityAppWindow::RenderContentBar() {
     CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
     CherryGUI::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 
+    if (m_ConsoleFont) {
+      Cherry::PushFont("JetBrainsMono");
+      CherryStyle::PushFontSize(0.50f);
+    }
     if (CherryGUI::BeginTable("LogsTable", 4, flags)) {
       CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 6.0f));
 
@@ -748,6 +753,10 @@ void LogsUtilityAppWindow::RenderContentBar() {
       CherryGUI::EndTable();
     }
 
+    if (m_ConsoleFont) {
+      Cherry::PopFont();
+      CherryStyle::PopFontSize();
+    }
     CherryGUI::PopStyleVar(2);
     CherryGUI::PopStyleColor();
   } else if (m_ShowMode == ShowMode::Simple) {
@@ -763,6 +772,10 @@ void LogsUtilityAppWindow::RenderContentBar() {
     CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
     CherryGUI::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 
+    if (m_ConsoleFont) {
+      Cherry::PushFont("JetBrainsMono");
+      CherryStyle::PushFontSize(0.50f);
+    }
     if (CherryGUI::BeginTable("LogsTableSimple", 2, flags)) {
       CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 6.0f));
 
@@ -860,6 +873,10 @@ void LogsUtilityAppWindow::RenderContentBar() {
       CherryGUI::EndTable();
     }
 
+    if (m_ConsoleFont) {
+      Cherry::PopFont();
+      CherryStyle::PopFontSize();
+    }
     CherryGUI::PopStyleVar(2);
     CherryGUI::PopStyleColor();
   } else if (m_ShowMode == ShowMode::Block) {
@@ -901,12 +918,20 @@ void LogsUtilityAppWindow::RenderContentBar() {
       ImGuiInputTextFlags flags =
           ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AllowTabInput;
 
+      if (m_ConsoleFont) {
+        Cherry::PushFont("JetBrainsMono");
+        CherryStyle::PushFontSize(0.50f);
+      }
       CherryGUI::PushStyleColor(ImGuiCol_FrameBg,
                                 ImVec4(0.1f, 0.1f, 0.1f, 0.3f));
       CherryGUI::InputTextMultiline("##FullLogText", buffer.data(),
                                     buffer.size(), ImVec2(-FLT_MIN, -FLT_MIN),
                                     flags);
       CherryGUI::PopStyleColor();
+      if (m_ConsoleFont) {
+        Cherry::PopFont();
+        CherryStyle::PopFontSize();
+      }
     }
     CherryGUI::EndChild();
 

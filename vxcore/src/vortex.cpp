@@ -2048,4 +2048,27 @@ VortexMaker::GetChapterFilePath(const std::string &topic,
 
   return it_chapter->second.file_path;
 }
+
+VORTEX_API void VortexMaker::AddVortexDocumentation() {
+  VortexMaker::AddDocumentation(
+      "vx", "Introduction", "Introduction",
+      Cherry::GetPath(
+          "docs/get_started/contents/introduction/introduction.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Introduction", "What is Vortex ?",
+      Cherry::GetPath(
+          "docs/get_started/contents/introduction/what_is_vortex.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Introduction", "Get started",
+      Cherry::GetPath("docs/get_started/contents/introduction/get_started.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Introduction", "Install Vortex",
+      Cherry::GetPath(
+          "docs/get_started/contents/introduction/install_vortex.md"));
+
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Understand Vortex Editor",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "understand_vortexeditor.md"));
+}
 #endif // VORTEX_DISABLE

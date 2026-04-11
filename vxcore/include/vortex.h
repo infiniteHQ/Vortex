@@ -392,6 +392,8 @@ GetTitlesFromTopic(const std::string &topic);
 VORTEX_API std::vector<std::string>
 GetNamesFromTopicAndTitle(const std::string &topic, const std::string &title);
 
+VORTEX_API void AddVortexDocumentation();
+
 VORTEX_API void RefreshProjectInformations();
 
 VORTEX_API nlohmann::json DumpJSON(const std::string &file);
