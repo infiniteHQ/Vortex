@@ -1135,8 +1135,6 @@ VORTEX_API void VortexMaker::RefreshProjectThemes() {
     }
   }
 
-  std::cout << ctx.IO.themes.size() << std::endl;
-
   try {
     std::ifstream configFile(json_file);
     nlohmann::json configJson;
@@ -1281,10 +1279,8 @@ VortexMaker::GetAllItemHandlersFor(const std::string &type) {
   }
 
   for (auto plug : VortexMaker::GetCurrentContext()->IO.ep) {
-    std::cout << plug->m_name << plug->m_state << plug << std::endl;
     if (plug->m_state == "running") {
       for (auto handlers : plug->GetContentBrowserItemHandler()) {
-        std::cout << handlers->type << type << std::endl;
         if (handlers->type == type)
           list.push_back(handlers);
       }

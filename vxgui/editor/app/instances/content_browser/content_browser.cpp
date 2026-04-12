@@ -1935,10 +1935,8 @@ bool ContentBrowserAppWindow::ItemCard(
                                                      textOffsetY);
   CherryGUI::SetCursorScreenPos(sizePos);
 
-  static ImTextureID logotexture =
-      Application::GetCurrentRenderedWindow()->get_texture(logo);
   drawList->AddImage(
-      logotexture, logoPos,
+      Application::GetCurrentRenderedWindow()->get_texture(logo), logoPos,
       ImVec2(logoPos.x + squareSize.x, logoPos.y + squareSize.y));
 
   CherryGUI::GetFont()->Scale = 0.7;
@@ -2239,8 +2237,7 @@ void ContentBrowserAppWindow::RenderSideBar() {
   CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
   CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
   CherryKit::HeaderImageText(
-      "Favorite",
-      Cherry::Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
+      "Favorite", Cherry::GetPath("resources/imgs/icons/misc/icon_star.png"),
       [this]() {
         for (auto custom_dir : m_FavoriteFolders) {
           DrawHierarchy(custom_dir, true);
@@ -2255,7 +2252,7 @@ void ContentBrowserAppWindow::RenderSideBar() {
   CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
   CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
   CherryKit::HeaderImageText(
-      "Main", Application::CookPath("resources/imgs/icons/misc/icon_home.png"),
+      "Main", Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"),
       [this]() { DrawHierarchy(m_BaseDirectory, true, "Main"); });
 
   CherryStyle::RemoveMarginX(6.0f);
@@ -2267,7 +2264,7 @@ void ContentBrowserAppWindow::RenderSideBar() {
   CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
   CherryKit::HeaderImageText(
       "Pools & Collections",
-      Application::CookPath("resources/imgs/icons/misc/icon_collection.png"),
+      Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"),
       [this]() {
         CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding,
                                 ImVec2(12.0f, 2.0f));
@@ -2333,8 +2330,7 @@ void ContentBrowserAppWindow::RenderFiltersBar() {
   CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
   CherryKit::HeaderImageText(
       "Basic filters",
-      Cherry::Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
-      [this]() {
+      Cherry::GetPath("resources/imgs/icons/misc/icon_star.png"), [this]() {
         CherryKit::CheckboxText("All files", &ShowFiles);
         CherryKit::CheckboxText("All folders", &ShowFolders);
         CherryKit::CheckboxText("All items", &ShowItems);
@@ -2353,8 +2349,7 @@ void ContentBrowserAppWindow::RenderFiltersBar() {
 
   CherryKit::HeaderImageText(
       "Extensions filters",
-      Cherry::Application::CookPath("resources/imgs/icons/misc/icon_star.png"),
-      [this]() {
+      Cherry::GetPath("resources/imgs/icons/misc/icon_star.png"), [this]() {
         std::vector<std::pair<std::string, std::vector<std::string>>>
             categories = {{"Configuration", {".cfg", ".ini", ".config"}},
                           {"Text based formats", {".txt", ".json"}}};
@@ -3011,7 +3006,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (ItemCard(
                     filenameString, path.string(), "Picture file",
                     fileSizeString, selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_picture_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(255, 100, 150, 255))) {
@@ -3028,7 +3023,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           case FileTypes::File_GIT: {
             if (ItemCard(filenameString, path.string(), "Git File",
                          fileSizeString, selected,
-                         Application::CookPath(
+                         Cherry::GetPath(
                              "resources/imgs/icons/files/icon_git_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(100, 100, 255, 255))) {
@@ -3045,7 +3040,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           case FileTypes::File_H: {
             if (ItemCard(filenameString, path.string(), "C Header File",
                          fileSizeString, selected,
-                         Application::CookPath(
+                         Cherry::GetPath(
                              "resources/imgs/icons/files/icon_c_h_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(220, 100, 220, 255))) {
@@ -3062,7 +3057,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           case FileTypes::File_C: {
             if (ItemCard(filenameString, path.string(), "C Source File",
                          fileSizeString, selected,
-                         Application::CookPath(
+                         Cherry::GetPath(
                              "resources/imgs/icons/files/icon_c_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(100, 100, 255, 255))) {
@@ -3079,7 +3074,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           case FileTypes::File_HPP: {
             if (ItemCard(filenameString, path.string(), "C++ Header File",
                          fileSizeString, selected,
-                         Application::CookPath(
+                         Cherry::GetPath(
                              "resources/imgs/icons/files/icon_cpp_h_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(100, 100, 255, 255))) {
@@ -3096,7 +3091,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           case FileTypes::File_CPP: {
             if (ItemCard(filenameString, path.string(), "C++ Source File",
                          fileSizeString, selected,
-                         Application::CookPath(
+                         Cherry::GetPath(
                              "resources/imgs/icons/files/icon_cpp_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(100, 100, 255, 255))) {
@@ -3113,7 +3108,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           case FileTypes::File_INI: {
             if (ItemCard(filenameString, path.string(), "Init File",
                          fileSizeString, selected,
-                         Application::CookPath(
+                         Cherry::GetPath(
                              "resources/imgs/icons/files/icon_ini_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(150, 150, 150, 255))) {
@@ -3130,7 +3125,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           case FileTypes::File_TXT: {
             if (ItemCard(filenameString, path.string(), "Text File",
                          fileSizeString, selected,
-                         Application::CookPath(
+                         Cherry::GetPath(
                              "resources/imgs/icons/files/icon_text_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(150, 150, 150, 255))) {
@@ -3147,7 +3142,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
           default: {
             if (ItemCard(filenameString, path.string(), "File", fileSizeString,
                          selected,
-                         Application::CookPath(
+                         Cherry::GetPath(
                              "resources/imgs/icons/files/icon_unknow_file.png"),
                          IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                          IM_COL32(150, 150, 150, 255))) {
@@ -3551,9 +3546,9 @@ void ContentBrowserAppWindow::RenderContentBar() {
           } else {
             auto it = kFileIconMap.find(fileType);
             if (it != kFileIconMap.end()) {
-              tex = Cherry::GetTexture(Application::CookPath(it->second));
+              tex = Cherry::GetTexture(Cherry::GetPath(it->second));
             } else {
-              tex = Cherry::GetTexture(Application::CookPath(
+              tex = Cherry::GetTexture(Cherry::GetPath(
                   "resources/imgs/icons/files/icon_unknow_file.png"));
             }
           }
@@ -3685,12 +3680,12 @@ void ContentBrowserAppWindow::RenderContentBar() {
           switch (type) {
           case FileTypes::File_PICTURE:
             tex = Application::GetCurrentRenderedWindow()->get_texture(
-                Application::CookPath(
+                Cherry::GetPath(
                     "resources/imgs/icons/files/icon_picture_file.png"));
             break;
           default:
             tex = Application::GetCurrentRenderedWindow()->get_texture(
-                Application::CookPath(
+                Cherry::GetPath(
                     "resources/imgs/icons/files/icon_default_file.png"));
             break;
           }
@@ -3747,7 +3742,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
           ImTextureID tex =
               Application::GetCurrentRenderedWindow()->get_texture(
-                  Application::CookPath(
+                  Cherry::GetPath(
                       "resources/imgs/icons/files/icon_default_file.png"));
 
           std::error_code ec;
@@ -3800,7 +3795,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
           ImTextureID tex =
               Application::GetCurrentRenderedWindow()->get_texture(
-                  Application::CookPath(
+                  Cherry::GetPath(
                       "resources/imgs/icons/files/icon_default_file.png"));
           FileTypes type = detect_file(path.string());
           std::error_code ec;
@@ -4274,7 +4269,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (HorizontalItemCard(
                     filenameString, path.string(), "Picture file",
                     fileSizeString, selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_picture_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(255, 100, 150, 255))) {
@@ -4292,7 +4287,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (HorizontalItemCard(
                     filenameString, path.string(), "Git File", fileSizeString,
                     selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_git_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(100, 100, 255, 255))) {
@@ -4310,7 +4305,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (HorizontalItemCard(
                     filenameString, path.string(), "C Header File",
                     fileSizeString, selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_c_h_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(220, 100, 220, 255))) {
@@ -4328,7 +4323,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (HorizontalItemCard(
                     filenameString, path.string(), "C Source File",
                     fileSizeString, selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_c_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(100, 100, 255, 255))) {
@@ -4346,7 +4341,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (HorizontalItemCard(
                     filenameString, path.string(), "C++ Header File",
                     fileSizeString, selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_cpp_h_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(100, 100, 255, 255))) {
@@ -4364,7 +4359,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (HorizontalItemCard(
                     filenameString, path.string(), "C++ Source File",
                     fileSizeString, selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_cpp_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(100, 100, 255, 255))) {
@@ -4382,7 +4377,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (HorizontalItemCard(
                     filenameString, path.string(), "Init File", fileSizeString,
                     selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_ini_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(150, 150, 150, 255))) {
@@ -4400,7 +4395,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (HorizontalItemCard(
                     filenameString, path.string(), "Text File", fileSizeString,
                     selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_text_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(150, 150, 150, 255))) {
@@ -4418,7 +4413,7 @@ void ContentBrowserAppWindow::RenderContentBar() {
             if (HorizontalItemCard(
                     filenameString, path.string(), "File", fileSizeString,
                     selected,
-                    Application::CookPath(
+                    Cherry::GetPath(
                         "resources/imgs/icons/files/icon_unknow_file.png"),
                     IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
                     IM_COL32(150, 150, 150, 255))) {
