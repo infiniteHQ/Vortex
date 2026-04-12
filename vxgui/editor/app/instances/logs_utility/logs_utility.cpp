@@ -105,14 +105,24 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
       CherryKit::CheckboxText("Show filters pannel", &m_ShowFilterPannel);
       CherryKit::CheckboxText("Console font", &m_ConsoleFont);
 
+      int default_index = 0;
+      if (m_ShowMode == ShowMode::Simple) {
+        default_index = 0;
+      } else if (m_ShowMode == ShowMode::Block) {
+        default_index = 1;
+      } else if (m_ShowMode == ShowMode::Advanced) {
+        default_index = 2;
+      }
+
       CherryKit::SeparatorText("View mode");
       switch (
+          CherryNextComponent.SetProperty("size_x", 150.0f);
           CherryKit::ComboImageText(
-              "Display",
+              "",
               {{"Simple", GetPath("resources/imgs/icons/misc/icon_eye.png")},
                {"Block", GetPath("resources/imgs/icons/misc/icon_eye.png")},
                {"Advanced", GetPath("resources/imgs/icons/misc/icon_eye.png")}},
-              0)
+              default_index)
               .GetPropertyAs<int>("selected")) {
       case 0: {
         m_ShowMode = ShowMode::Simple;
@@ -314,7 +324,7 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
                                  input_flags, callback)) {
       std::string cmd(s_InputBuffer);
       if (!cmd.empty()) {
-        VortexMaker::Script::GetScriptingEngine().Execute(cmd);
+        SendCommand(cmd);
 
         if (s_CommandHistory.empty() || s_CommandHistory.back() != cmd) {
           s_CommandHistory.push_back(cmd);
@@ -1032,6 +1042,14 @@ void LogsUtilityAppWindow::AddLogEntry(Cherry::Log::Level level,
     s_Entries.push_back({level, msg, 1});
   }
   s_ScrollToBottom = true;
+}
+
+void LogsUtilityAppWindow::SendCommand(const std::string &cmd) {
+  std::string finalCmd = cmd;
+  if (cmd.rfind("Vortex.", 0) != 0) {
+    finalCmd = "Vortex." + cmd;
+  }
+  VortexMaker::Script::GetScriptingEngine().Execute(finalCmd);
 }
 
 } // namespace VortexEditor

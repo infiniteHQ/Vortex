@@ -83,6 +83,8 @@ public:
   void RenderContentBar();
   void RenderFiltersBar();
 
+  void SendCommand(const std::string &cmd);
+
   bool HasCommonSubsequence(const std::string &a, const std::string &b) {
     int j = 0;
     for (int i = 0; i < a.size() && j < b.size(); i++) {
