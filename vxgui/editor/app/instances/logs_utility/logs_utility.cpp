@@ -177,92 +177,157 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
     }
   });
 
+  Cherry::Log::AddCallback(
+      [this](Cherry::Log::Level level, const std::string &msg) {
+        AddLogEntry(level, msg);
+      });
+
   m_AppWindow->SetLeftBottombarCallback([this]() {
     CherryStyle::AddMarginX(8.0f);
     CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 6.5f);
 
-    CherryNextComponent.SetProperty("size_x", "350");
-    CherryNextComponent.SetProperty("maintain_focus", "true");
-    CherryNextComponent.SetProperty("maintain_focus_with_arrows", "true");
-    CherryNextComponent.SetProperty("description", "Enter commands here...");
-    CherryNextComponent.SetProperty(
-        "description_logo", GetPath("resources/imgs/icons/misc/icon_cmd.png"));
-    CherryNextComponent.SetProperty("description_logo_place", "l");
+    auto callback = [](ImGuiInputTextCallbackData *data) -> int {
+      std::vector<CommandDef *> internal_matches;
+      std::string input(data->Buf);
+      for (auto &def : s_CommandDefs) {
+        if (!input.empty() && def.name.find(input) == 0)
+          internal_matches.push_back(&def);
+      }
 
-    static float s_KeyRepeatTimer = 0.0f;
-    static bool s_KeyWasDown = false;
+      switch (data->EventFlag) {
+      case ImGuiInputTextFlags_CallbackCompletion: {
+        if (!internal_matches.empty()) {
+          int idx = (s_SelectionIdx >= 0 &&
+                     s_SelectionIdx < (int)internal_matches.size())
+                        ? s_SelectionIdx
+                        : 0;
+          data->DeleteChars(0, data->BufTextLen);
+          data->InsertChars(0, (internal_matches[idx]->name + "(").c_str());
+          s_SelectionIdx = -1;
+        }
+        break;
+      }
 
-    static std::string s_DraftCommand;
+      case ImGuiInputTextFlags_CallbackHistory: {
+        bool navigating_history = input.empty() || s_HistoryPos != -1;
 
-    constexpr float KEY_REPEAT_DELAY = 0.35f;
-    constexpr float KEY_REPEAT_RATE = 0.08f;
+        if (navigating_history) {
+          int prev_pos = s_HistoryPos;
+          if (data->EventKey == ImGuiKey_UpArrow) {
+            if (s_HistoryPos == -1)
+              s_HistoryPos = (int)s_CommandHistory.size() - 1;
+            else if (s_HistoryPos > 0)
+              s_HistoryPos--;
+          } else if (data->EventKey == ImGuiKey_DownArrow) {
+            if (s_HistoryPos != -1) {
+              if (++s_HistoryPos >= (int)s_CommandHistory.size())
+                s_HistoryPos = -1;
+            }
+          }
+          if (prev_pos != s_HistoryPos) {
+            data->DeleteChars(0, data->BufTextLen);
+            data->InsertChars(0, s_HistoryPos >= 0
+                                     ? s_CommandHistory[s_HistoryPos].c_str()
+                                     : "");
+          }
+        } else if (!internal_matches.empty()) {
+          if (data->EventKey == ImGuiKey_UpArrow) {
+            if (--s_SelectionIdx < 0)
+              s_SelectionIdx = (int)internal_matches.size() - 1;
+          } else if (data->EventKey == ImGuiKey_DownArrow) {
+            if (++s_SelectionIdx >= (int)internal_matches.size())
+              s_SelectionIdx = 0;
+          }
+        }
+        break;
+      }
+      }
+      return 0;
+    };
 
-    auto prompt =
-        CherryKit::InputString(CherryID("CommandPrompt"), "", &m_CmdInputValue);
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 4.0f);
+    ImGuiInputTextFlags input_flags = ImGuiInputTextFlags_EnterReturnsTrue |
+                                      ImGuiInputTextFlags_CallbackCompletion |
+                                      ImGuiInputTextFlags_CallbackHistory;
 
-    auto isUp = CherryApp.IsKeyPressed(Cherry::CherryKey::UP);
-    auto isDown = CherryApp.IsKeyPressed(Cherry::CherryKey::DOWN);
-
-    float dt = ImGui::GetCurrentContext()->IO.DeltaTime;
-
-    bool trigger = false;
-    int direction = 0;
-
-    if (isUp || isDown) {
-      direction = isUp ? +1 : -1;
-
-      if (!s_KeyWasDown) {
-        trigger = true;
-        s_KeyRepeatTimer = KEY_REPEAT_DELAY;
-        s_KeyWasDown = true;
-      } else {
-        s_KeyRepeatTimer -= dt;
-        if (s_KeyRepeatTimer <= 0.0f) {
-          trigger = true;
-          s_KeyRepeatTimer = KEY_REPEAT_RATE;
+    std::string current_input(s_InputBuffer);
+    std::vector<CommandDef *> matches;
+    if (!current_input.empty() && s_HistoryPos == -1) {
+      for (auto &def : s_CommandDefs) {
+        if (def.name.find(current_input) == 0) {
+          matches.push_back(&def);
+          if (matches.size() >= 12)
+            break;
         }
       }
-    } else {
-      s_KeyWasDown = false;
     }
 
-    if (prompt.GetDataAs<bool>("focused") && trigger) {
+    if (!matches.empty()) {
+      ImVec2 pos = ImGui::GetCursorScreenPos();
+      float line_h = ImGui::GetTextLineHeightWithSpacing();
+      ImGui::SetNextWindowPos(
+          ImVec2(pos.x, pos.y - (line_h * (float)matches.size()) - 20));
+      ImGui::SetNextWindowSize(
+          ImVec2(ImGui::GetContentRegionAvail().x - 60, 0));
 
-      if (s_HistoryPos == -1)
-        s_DraftCommand = m_CmdInputValue;
+      ImGui::PushStyleColor(ImGuiCol_WindowBg,
+                            ImVec4(0.07f, 0.07f, 0.07f, 0.98f));
+      ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+      ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 4));
 
-      s_HistoryPos += direction;
+      if (ImGui::Begin("##Suggestions", nullptr,
+                       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
+                           ImGuiWindowFlags_NoResize |
+                           ImGuiWindowFlags_NoFocusOnAppearing)) {
+        for (int i = 0; i < (int)matches.size(); i++) {
+          bool selected = (i == s_SelectionIdx);
+          if (selected) {
+            ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), ">");
+          } else {
+            ImGui::Dummy(ImVec2(ImGui::GetTextLineHeight(), 1));
+          }
+          ImGui::SameLine();
+          ImGui::TextColored(ImVec4(0.4f, 0.75f, 1.0f, 1.0f), "%s",
+                             matches[i]->name.c_str());
+          ImGui::SameLine();
+          ImGui::TextDisabled("(");
+          ImGui::SameLine();
+          ImGui::TextColored(ImVec4(0.85f, 0.55f, 0.3f, 1.0f), "%s",
+                             matches[i]->params.c_str());
+          ImGui::SameLine();
+          ImGui::TextDisabled(")");
 
-      int historySize = (int)s_CommandHistory.size();
+          if (selected && !matches[i]->description.empty()) {
+            ImGui::SameLine();
+            ImGui::TextDisabled(" // %s", matches[i]->description.c_str());
+          }
+        }
+        ImGui::End();
+      }
 
-      if (s_HistoryPos < -1) {
+      ImGui::PopStyleVar(2);
+      ImGui::PopStyleColor();
+    }
+
+    if (ImGui::InputTextWithHint("##ConsoleInput", "Execute Lua command...",
+                                 s_InputBuffer, IM_ARRAYSIZE(s_InputBuffer),
+                                 input_flags, callback)) {
+      std::string cmd(s_InputBuffer);
+      if (!cmd.empty()) {
+        VortexMaker::Script::GetScriptingEngine().Execute(cmd);
+
+        if (s_CommandHistory.empty() || s_CommandHistory.back() != cmd) {
+          s_CommandHistory.push_back(cmd);
+          if (s_CommandHistory.size() > 100)
+            s_CommandHistory.erase(s_CommandHistory.begin());
+        }
+
+        s_InputBuffer[0] = '\0';
         s_HistoryPos = -1;
-        m_CmdInputValue = s_DraftCommand;
-      } else if (s_HistoryPos >= historySize) {
-        s_HistoryPos = historySize;
-        m_CmdInputValue.clear();
-      } else if (s_HistoryPos == -1) {
-        m_CmdInputValue = s_DraftCommand;
+        s_SelectionIdx = -1;
+        s_ScrollToBottom = true;
       }
-
-      else {
-        m_CmdInputValue = s_CommandHistory[s_HistoryPos];
-      }
-    }
-
-    if (prompt.GetDataAs<bool>("submitted")) {
-
-      VortexMaker::Script::GetScriptingEngine().Execute(m_CmdInputValue);
-
-      if (s_CommandHistory.empty() ||
-          s_CommandHistory.front() != m_CmdInputValue) {
-        s_CommandHistory.insert(s_CommandHistory.begin(), m_CmdInputValue);
-      }
-
-      s_HistoryPos = -1;
-      s_DraftCommand.clear();
-      s_ScrollToBottom = true;
-      m_CmdInputValue.clear();
+      ImGui::SetKeyboardFocusHere(-1);
     }
   });
 
@@ -944,6 +1009,17 @@ void LogsUtilityAppWindow::OnImGuiRender() {}
 
 void LogsUtilityAppWindow::menubar() {
   //
+}
+
+void LogsUtilityAppWindow::AddLogEntry(Cherry::Log::Level level,
+                                       const std::string &msg) {
+  if (!s_Entries.empty() && s_Entries.back().message == msg &&
+      s_Entries.back().level == level) {
+    s_Entries.back().count++;
+  } else {
+    s_Entries.push_back({level, msg, 1});
+  }
+  s_ScrollToBottom = true;
 }
 
 } // namespace VortexEditor

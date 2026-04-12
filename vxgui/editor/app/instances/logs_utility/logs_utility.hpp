@@ -25,6 +25,7 @@ struct ConsoleEntry {
 };
 
 static std::vector<ConsoleEntry> s_Entries;
+static char s_InputBuffer[256] = "";
 static bool s_ScrollToBottom = false;
 static std::vector<std::string> s_CommandHistory;
 static int s_HistoryPos = -1;
@@ -37,10 +38,8 @@ struct CommandDef {
 };
 
 static std::vector<CommandDef> s_CommandDefs = {
-    {"Cherry.IsMouseClickedOnPos", "x, y, w, h, button, [repeat]",
-     "Checks if a mouse button is clicked within a specific "
-     "window-relative "
-     "area."},
+    // --- Logic & Input Functions ---
+    {"Log", "text", "Simple message to the logs"},
 
     {"Cherry.IsMouseDoubleClickedOnPos", "x, y, w, h, button",
      "Checks if a mouse button is double-clicked within a specific "
@@ -73,7 +72,7 @@ public:
 
   void OnImGuiRender();
   void menubar();
-
+  void AddLogEntry(Cherry::Log::Level level, const std::string &msg);
   std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
   static std::shared_ptr<LogsUtilityAppWindow> Create(const std::string &name);
   void SetupRenderCallback();
