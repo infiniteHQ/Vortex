@@ -628,7 +628,7 @@ void LogsUtilityAppWindow::RenderContentBar() {
 
     CherryNextComponent.SetProperty("size_x", "240");
     CherryNextComponent.SetProperty("padding_y", "6.0f");
-    CherryNextComponent.SetProperty("description", "Search content...");
+    CherryNextComponent.SetProperty("description", "Search log...");
     CherryNextComponent.SetProperty(
         "description_logo",
         GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
@@ -706,6 +706,12 @@ void LogsUtilityAppWindow::RenderContentBar() {
 
         if (hasActiveFilter && !m_TopicsFilterStates[log->m_filter]) {
           continue;
+        }
+
+        if (!ProjectSearch.empty()) {
+          if (!HasCommonSubsequence(log->m_message, ProjectSearch)) {
+            continue;
+          }
         }
 
         CherryGUI::TableNextRow();
@@ -886,6 +892,12 @@ void LogsUtilityAppWindow::RenderContentBar() {
 
         if (hasActiveFilter && !m_TopicsFilterStates[log->m_filter]) {
           continue;
+        }
+
+        if (!ProjectSearch.empty()) {
+          if (!HasCommonSubsequence(log->m_message, ProjectSearch)) {
+            continue;
+          }
         }
 
         CherryGUI::TableNextRow();

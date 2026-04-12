@@ -83,6 +83,15 @@ public:
   void RenderContentBar();
   void RenderFiltersBar();
 
+  bool HasCommonSubsequence(const std::string &a, const std::string &b) {
+    int j = 0;
+    for (int i = 0; i < a.size() && j < b.size(); i++) {
+      if (a[i] == b[j])
+        j++;
+    }
+    return j == b.size();
+  }
+
 private:
   VxContext *ctx;
   bool opened;
