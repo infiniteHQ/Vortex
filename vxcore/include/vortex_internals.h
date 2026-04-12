@@ -397,6 +397,11 @@ struct EditMenuItem {
   std::string section;
 };
 
+struct CustomMenu {
+  std::string title;
+  std::function<void()> render;
+};
+
 //-----------------------------------------------------------------------------
 // (Context) VortexMakerContext => Main VortexMaker context.
 //-----------------------------------------------------------------------------
@@ -469,6 +474,9 @@ struct VxContext {
 
   // Edit callbacks
   std::vector<EditMenuItem> editMenuItems;
+
+  // Custom menus callabcks
+  std::vector<CustomMenu> customMenus;
 };
 //-----------------------------------------------------------------------------
 

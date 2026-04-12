@@ -2091,9 +2091,30 @@ void VortexMaker::PopEditMenuItem(const int &count) {
                            ctx->editMenuItems.end());
 }
 
-VORTEX_API void VortexMaker::ClearEditMenuItem() {
+void VortexMaker::ClearEditMenuItem() {
   auto ctx = VortexMaker::GetCurrentContext();
   ctx->editMenuItems.clear();
 }
 
+void VortexMaker::PushCustomMenu(const std::string &title,
+                                 const std::function<void()> &render) {
+  auto ctx = VortexMaker::GetCurrentContext();
+  ctx->customMenus.push_back({title, render});
+}
+
+void VortexMaker::PopCustomMenu(const int &count) {
+  if (count <= 0)
+    return;
+
+  auto ctx = VortexMaker::GetCurrentContext();
+  const int remove =
+      (std::min)(count, static_cast<int>(ctx->customMenus.size()));
+  ctx->customMenus.erase(ctx->customMenus.end() - remove,
+                         ctx->customMenus.end());
+}
+
+void VortexMaker::ClearCustomMenus() {
+  auto ctx = VortexMaker::GetCurrentContext();
+  ctx->customMenus.clear();
+}
 #endif // VORTEX_DISABLE

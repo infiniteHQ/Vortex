@@ -399,6 +399,11 @@ VORTEX_API void PushEditMenuItem(const std::string &title,
 VORTEX_API void PopEditMenuItem(const int &count = 1);
 VORTEX_API void ClearEditMenuItem();
 
+VORTEX_API void PushCustomMenu(const std::string &title,
+                               const std::function<void()> &render);
+VORTEX_API void PopCustomMenu(const int &count = 1);
+VORTEX_API void ClearCustomMenus();
+
 VORTEX_API void AddVortexDocumentation();
 
 VORTEX_API void RefreshProjectInformations();

@@ -526,6 +526,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 8.0f));
 
     static bool t;
+    auto ctx = VortexMaker::GetCurrentContext();
 
     if (CherryGUI::BeginMenu("Project")) {
 
@@ -609,8 +610,12 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     if (ImGui::BeginMenu("Edit")) {
       // TODO : General edit functions of vortex
 
-      auto ctx = VortexMaker::GetCurrentContext();
       const auto &items = ctx->editMenuItems;
+
+      if (items.empty()) {
+        CherryNextComponent.SetProperty("text_color", "#343434");
+        CherryKit::TextSimple("Nothing to edit");
+      }
 
       std::vector<std::string> sectionOrder;
       std::unordered_map<std::string, std::vector<const EditMenuItem *>>
@@ -766,9 +771,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       CherryGUI::EndMenu();
     }
 
-    // TODO modules can "add" menu items
-    static bool ModuleMenu = false;
-    if (ModuleMenu) {
+    if (ctx->customMenus.size() > 0) {
       {
         ImVec2 pos = CherryGUI::GetCursorScreenPos();
         float height = CherryGUI::GetFrameHeight();
@@ -779,9 +782,14 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
             IM_COL32(89, 89, 89, 155));
         CherryGUI::Dummy(ImVec2(thickness + 4.0f, 0));
       }
+      for (auto &menu : ctx->customMenus) {
 
-      if (CherryGUI::BeginMenu("example")) {
-        CherryGUI::EndMenu();
+        if (CherryGUI::BeginMenu(menu.title.c_str())) {
+          if (menu.render) {
+            menu.render();
+          }
+          CherryGUI::EndMenu();
+        }
       }
     }
 
@@ -790,6 +798,9 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
     // Clear edits menuitems from previous render.
     VortexMaker::ClearEditMenuItem();
+
+    // Clear custom menus from previous render.
+    VortexMaker::ClearCustomMenus();
   }
 
   );
