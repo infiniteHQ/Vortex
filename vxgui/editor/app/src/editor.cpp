@@ -606,20 +606,46 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       CherryGUI::EndMenu();
     }
 
-    if (CherryGUI::BeginMenu("Edit")) {
-      if (CherryGUI::MenuItem("Undo", "Change selected language",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_doc.png")),
-                              false)) {
-        // undo main callback
+    if (ImGui::BeginMenu("Edit")) {
+      // TODO : General edit functions of vortex
+
+      auto ctx = VortexMaker::GetCurrentContext();
+      const auto &items = ctx->editMenuItems;
+
+      std::vector<std::string> sectionOrder;
+      std::unordered_map<std::string, std::vector<const EditMenuItem *>>
+          grouped;
+
+      for (const auto &item : items) {
+        const std::string &sec = item.section.empty() ? "" : item.section;
+        if (grouped.find(sec) == grouped.end())
+          sectionOrder.push_back(sec);
+        grouped[sec].push_back(&item);
       }
-      if (CherryGUI::MenuItem("Redo", "Change selected theme",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_doc.png")),
-                              false)) {
-        // redo main callback
+
+      bool firstSection = true;
+      for (const auto &sec : sectionOrder) {
+        if (!sec.empty())
+          CherryKit::SeparatorText(sec.c_str());
+        else if (!firstSection)
+          ImGui::Separator();
+
+        firstSection = false;
+
+        for (const auto *item : grouped[sec]) {
+          ImTextureID tex =
+              item->logo.empty()
+                  ? nullptr
+                  : Cherry::GetTexture(Cherry::GetPath(item->logo));
+
+          if (CherryGUI::MenuItem(item->title.c_str(), "", tex, false)) {
+            if (item->action)
+              item->action();
+          }
+        }
       }
-      CherryGUI::EndMenu();
+
+      ImGui::EndMenu();
     }
 
     if (CherryGUI::BeginMenu("Window")) {
@@ -761,6 +787,9 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
     CherryGUI::PopStyleVar(2);
     CherryGUI::PopStyleColor(2);
+
+    // Clear edits menuitems from previous render.
+    VortexMaker::ClearEditMenuItem();
   }
 
   );

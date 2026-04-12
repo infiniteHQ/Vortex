@@ -392,6 +392,13 @@ GetTitlesFromTopic(const std::string &topic);
 VORTEX_API std::vector<std::string>
 GetNamesFromTopicAndTitle(const std::string &topic, const std::string &title);
 
+VORTEX_API void PushEditMenuItem(const std::string &title,
+                                 const std::function<void()> &action,
+                                 const std::string &logo = "",
+                                 const std::string &section = "");
+VORTEX_API void PopEditMenuItem(const int &count = 1);
+VORTEX_API void ClearEditMenuItem();
+
 VORTEX_API void AddVortexDocumentation();
 
 VORTEX_API void RefreshProjectInformations();

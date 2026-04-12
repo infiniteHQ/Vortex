@@ -2071,4 +2071,29 @@ VORTEX_API void VortexMaker::AddVortexDocumentation() {
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "understand_vortexeditor.md"));
 }
+
+void VortexMaker::PushEditMenuItem(const std::string &title,
+                                   const std::function<void()> &action,
+                                   const std::string &logo,
+                                   const std::string &section) {
+  auto ctx = VortexMaker::GetCurrentContext();
+  ctx->editMenuItems.push_back({title, action, logo, section});
+}
+
+void VortexMaker::PopEditMenuItem(const int &count) {
+  if (count <= 0)
+    return;
+
+  auto ctx = VortexMaker::GetCurrentContext();
+  const int remove =
+      (std::min)(count, static_cast<int>(ctx->editMenuItems.size()));
+  ctx->editMenuItems.erase(ctx->editMenuItems.end() - remove,
+                           ctx->editMenuItems.end());
+}
+
+VORTEX_API void VortexMaker::ClearEditMenuItem() {
+  auto ctx = VortexMaker::GetCurrentContext();
+  ctx->editMenuItems.clear();
+}
+
 #endif // VORTEX_DISABLE

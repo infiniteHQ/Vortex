@@ -390,6 +390,13 @@ struct TopicCredits {
   std::map<std::string, std::vector<CreditEntry>> sections;
 };
 
+struct EditMenuItem {
+  std::string title;
+  std::function<void()> action;
+  std::string logo;
+  std::string section;
+};
+
 //-----------------------------------------------------------------------------
 // (Context) VortexMakerContext => Main VortexMaker context.
 //-----------------------------------------------------------------------------
@@ -459,6 +466,9 @@ struct VxContext {
 
   // Embedded documentation
   std::map<std::string, DocumentationTopic> documentations;
+
+  // Edit callbacks
+  std::vector<EditMenuItem> editMenuItems;
 };
 //-----------------------------------------------------------------------------
 
