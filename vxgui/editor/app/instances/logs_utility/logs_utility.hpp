@@ -35,17 +35,47 @@ struct CommandDef {
   std::string name;
   std::string params;
   std::string description;
+  std::string snippet;
 };
 
 static std::vector<CommandDef> s_CommandDefs = {
-    // --- Logic & Input Functions ---
-    {"Log", "text", "Simple message to the logs"},
+    // Logs & Debug
+    {"Log", "text", "Simple message to the logs", "Log(\"<cursor>\")"},
+    {"LogWarn", "text", "Warning message to the logs", "LogWarn(\"<cursor>\")"},
+    {"LogError", "text", "Error message to the logs", "LogError(\"<cursor>\")"},
+    {"LogFatal", "text", "Fatal message to the logs", "LogFatal(\"<cursor>\")"},
 
-    {"Cherry.IsMouseDoubleClickedOnPos", "x, y, w, h, button",
-     "Checks if a mouse button is double-clicked within a specific "
-     "window-relative area."},
+    // Modules/Plugins events
+    {"CallOutputEvent", "text", "Call a global output event",
+     "CallOutputEvent(\"<cursor>\", {})"},
+    {"CallInputEvent", "text", "Call an input event on a module",
+     "CallInputEvent(\"<cursor>\", \"eventName\", {})"},
+
+    // Cross platform
+    {"IsLinux", "text", "Returns true if running on Linux", "IsLinux()"},
+    {"IsNotLinux", "text", "Returns true if not running on Linux",
+     "IsNotLinux()"},
+    {"IsWindows", "text", "Returns true if running on Windows", "IsWindows()"},
+    {"IsNotWindows", "text", "Returns true if not running on Windows",
+     "IsNotWindows()"},
+    {"IsMacOS", "text", "Returns true if running on macOS", "IsMacOS()"},
+    {"IsNotMacOS", "text", "Returns true if not running on macOS",
+     "IsNotMacOS()"},
+
+    // Information functions
+    {"GetBuildDate", "text", "Returns the build date of Vortex",
+     "GetBuildDate()"},
+    {"GetGitCommit", "text", "Returns the git commit hash of this build",
+     "GetGitCommit()"},
+    {"GetVortexEditorDist", "text", "Returns the editor distribution name",
+     "GetVortexEditorDist()"},
+    {"GetVortexBuildID", "text", "Returns the unique build ID",
+     "GetVortexBuildID()"},
+    {"GetVortexBuildName", "text", "Returns the readable build name",
+     "GetVortexBuildName()"},
+    {"GetVortexEditorHash", "text", "Returns the editor hash for this build",
+     "GetVortexEditorHash()"},
 };
-
 struct LogUtilityChild {
   std::function<void()> m_Child;
   std::string m_Name;

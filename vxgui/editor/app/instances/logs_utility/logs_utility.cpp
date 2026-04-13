@@ -211,16 +211,28 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
                      s_SelectionIdx < (int)internal_matches.size())
                         ? s_SelectionIdx
                         : 0;
+
+          std::string snippet = internal_matches[idx]->snippet;
+          int cursor_pos = -1;
+
+          auto tag = snippet.find("<cursor>");
+          if (tag != std::string::npos) {
+            cursor_pos = (int)tag;
+            snippet.erase(tag, 8);
+          }
+
           data->DeleteChars(0, data->BufTextLen);
-          data->InsertChars(0, (internal_matches[idx]->name + "(").c_str());
+          data->InsertChars(0, snippet.c_str());
+
+          if (cursor_pos >= 0)
+            data->CursorPos = cursor_pos;
+
           s_SelectionIdx = -1;
         }
         break;
       }
-
       case ImGuiInputTextFlags_CallbackHistory: {
         bool navigating_history = input.empty() || s_HistoryPos != -1;
-
         if (navigating_history) {
           int prev_pos = s_HistoryPos;
           if (data->EventKey == ImGuiKey_UpArrow) {
@@ -254,7 +266,6 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
       }
       return 0;
     };
-
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 4.0f);
     ImGuiInputTextFlags input_flags = ImGuiInputTextFlags_EnterReturnsTrue |
                                       ImGuiInputTextFlags_CallbackCompletion |
