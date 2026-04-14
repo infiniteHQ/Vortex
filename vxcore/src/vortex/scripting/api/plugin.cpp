@@ -14,7 +14,6 @@ static std::shared_ptr<PluginInterface> GetActivePlugin(lua_State *L) {
   return *stored;
 }
 
-// TODO : Fix main handler call
 VXLUA_FUNC(PluginAddContentBrowserItemHandler) {
   if (!lua_isfunction(L, 2))
     return luaL_error(L, "Argument 2 must be a function");
@@ -36,11 +35,20 @@ VXLUA_FUNC(PluginAddContentBrowserItemHandler) {
     luaL_unref(L, LUA_REGISTRYINDEX, ref);
     return luaL_error(L, "VortexP called outside of plugin context");
   }
+  auto handler = std::make_shared<LuaItemHandler>(ref, L);
 
-  auto handler = std::make_shared<LuaItemHandler>(LuaItemHandler{ref, L});
+  plugin->AddLuaHandler(handler);
+
+  std::weak_ptr<LuaItemHandler> weak_handler = handler;
+
   plugin->AddContentBrowserItemHandler(ItemHandlerInterface(
-      type, [handler](const std::string &path) { handler->Call(path); }, label,
-      description, icon));
+      type,
+      [weak_handler](const std::string &path) {
+        if (auto h = weak_handler.lock()) {
+          h->Call(path);
+        }
+      },
+      label, description, icon));
 
   return 0;
 }

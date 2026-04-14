@@ -20,6 +20,7 @@
 //
 #endif
 
+#include "../vortex/scripting/lua_helpers.hpp"
 #include "dummy_function.h"
 #include "event.h"
 #include "function.h"
@@ -32,6 +33,51 @@
 struct ItemHandlerInterface;
 struct ItemIdentifierInterface;
 struct ItemCreatorInterface;
+
+VORTEX_API struct LuaItemHandler {
+  int lua_ref;
+  lua_State *L;
+
+  LuaItemHandler(int ref, lua_State *state) : lua_ref(ref), L(state) {}
+
+  LuaItemHandler(const LuaItemHandler &) = delete;
+  LuaItemHandler &operator=(const LuaItemHandler &) = delete;
+
+  LuaItemHandler(LuaItemHandler &&other) noexcept
+      : lua_ref(other.lua_ref), L(other.L) {
+    other.lua_ref = LUA_NOREF;
+    other.L = nullptr;
+  }
+
+  void Call(const std::string &path) {
+    if (!L)
+      return;
+
+    int type = lua_rawgeti(L, LUA_REGISTRYINDEX, lua_ref);
+    if (type != LUA_TFUNCTION) {
+      VortexMaker::LogError(
+          "LuaHandler", "Corrupted register : ID " + std::to_string(lua_ref) +
+                            " is type " + std::string(lua_typename(L, type)));
+      lua_pop(L, 1);
+      return;
+    }
+
+    lua_pushstring(L, path.c_str());
+
+    if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+      std::string error = lua_tostring(L, -1);
+      VortexMaker::LogError("LuaHandler",
+                            "Error while executing Lua : " + error);
+      lua_pop(L, 1);
+    }
+  }
+
+  ~LuaItemHandler() {
+    if (L && lua_ref != LUA_NOREF && lua_ref != LUA_REFNIL) {
+      luaL_unref(L, LUA_REGISTRYINDEX, lua_ref);
+    }
+  }
+};
 
 VORTEX_API struct PluginInterfaceDep {
   std::string type; // em, plugin, etc..
@@ -187,6 +233,11 @@ public:
   VORTEX_API void CheckDependencies();
   VORTEX_API void CheckVersion();
 
+  VORTEX_API void
+  AddLuaHandler(const std::shared_ptr<LuaItemHandler> &handler) {
+    m_lua_handlers.push_back(handler);
+  }
+
   std::shared_ptr<hArgs> m_args;
   std::string m_datapath;
 
@@ -218,6 +269,8 @@ public:
   std::vector<std::shared_ptr<ItemHandlerInterface>> m_item_handlers;
   std::vector<std::shared_ptr<ItemIdentifierInterface>> m_item_identifiers;
   std::vector<std::shared_ptr<ItemCreatorInterface>> m_item_creators;
+
+  std::vector<std::shared_ptr<LuaItemHandler>> m_lua_handlers;
 
 private:
   std::vector<std::shared_ptr<PluginDummyFunction>> m_dummy_functions;

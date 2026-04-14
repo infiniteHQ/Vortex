@@ -102,23 +102,4 @@ static void JsonToLuaTable(lua_State *L, const nlohmann::json &j) {
   }
 }
 
-struct LuaItemHandler {
-  int lua_ref;
-  lua_State *L;
-
-  void Call(const std::string &path) {
-    int type = lua_rawgeti(L, LUA_REGISTRYINDEX, lua_ref);
-
-    if (type == LUA_TSTRING) {
-      VortexMaker::LogError("LuaHandler", "ref contains string: " +
-                                              std::string(lua_tostring(L, -1)));
-    }
-    lua_pop(L, 1);
-  }
-  ~LuaItemHandler() {
-    VortexMaker::LogError("LuaHandler", "DESTRUCTOR called for ref=" +
-                                            std::to_string(lua_ref));
-    luaL_unref(L, LUA_REGISTRYINDEX, lua_ref);
-  }
-};
 } // namespace VortexMaker

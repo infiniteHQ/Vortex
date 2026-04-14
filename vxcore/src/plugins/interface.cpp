@@ -664,6 +664,8 @@ VORTEX_API void PluginInterface::Stop() {
                      "\" with needed versions : " + dep.second + " ! ");
     }
   } else {
+    m_item_handlers.clear();
+    m_lua_handlers.clear();
     this->destroy();
     this->m_state = "stopped";
   }
