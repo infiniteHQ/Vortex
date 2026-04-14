@@ -80,7 +80,13 @@ public:
                                   ReturnValues &ret);
 
   VORTEX_API std::string GetPath();
+  VORTEX_API std::string CookPath(const std::string &path);
   VORTEX_API std::string GetBinaryPath();
+
+  // Documentation
+  VORTEX_API void AddDocumentation(const std::string &section,
+                                   const std::string &title,
+                                   const std::string &path);
 
   // Output Events
   // A output event is triggered via VortexMaker::ExecuteOutputEvent() by the

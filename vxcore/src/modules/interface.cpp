@@ -57,9 +57,20 @@ ModuleInterface::GetContentBrowserItemHandler() {
   return m_item_handlers;
 }
 
+VORTEX_API std::string ModuleInterface::CookPath(const std::string &path) {
+  return this->GetPath() + "/" + path;
+}
+
 VORTEX_API std::string ModuleInterface::GetPath() { return m_path; }
 VORTEX_API std::string ModuleInterface::GetBinaryPath() {
   return m_binary_path;
+}
+
+VORTEX_API void ModuleInterface::AddDocumentation(const std::string &section,
+                                                  const std::string &title,
+                                                  const std::string &path) {
+  std::string topic = "module:" + this->m_name;
+  VortexMaker::AddDocumentation(topic, section, title, path);
 }
 
 VORTEX_API void ModuleInterface::RefreshMainWindow() {
