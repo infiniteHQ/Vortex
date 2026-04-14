@@ -57,9 +57,20 @@ PluginInterface::GetContentBrowserItemHandler() {
   return m_item_handlers;
 }
 
+VORTEX_API std::string PluginInterface::CookPath(const std::string &path) {
+  return this->GetPath() + "/" + path;
+}
+
 VORTEX_API std::string PluginInterface::GetPath() { return m_path; }
 VORTEX_API std::string PluginInterface::GetMainScriptPath() {
   return m_mainscript_path;
+}
+
+VORTEX_API void PluginInterface::AddDocumentation(const std::string &section,
+                                                  const std::string &title,
+                                                  const std::string &path) {
+  std::string topic = "plugin:" + this->m_name;
+  VortexMaker::AddDocumentation(topic, section, title, path);
 }
 
 VORTEX_API void PluginInterface::RefreshMainWindow() {

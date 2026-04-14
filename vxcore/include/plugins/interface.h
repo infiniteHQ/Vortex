@@ -21,6 +21,7 @@
 #endif
 
 #include "../vortex/scripting/lua_helpers.hpp"
+#include "../vortex/scripting/scripting.hpp"
 #include "dummy_function.h"
 #include "event.h"
 #include "function.h"
@@ -33,18 +34,21 @@
 struct ItemHandlerInterface;
 struct ItemIdentifierInterface;
 struct ItemCreatorInterface;
+class PluginInterface;
 
 VORTEX_API struct LuaItemHandler {
   int lua_ref;
   lua_State *L;
+  std::shared_ptr<PluginInterface> plugin;
 
-  LuaItemHandler(int ref, lua_State *state) : lua_ref(ref), L(state) {}
+  LuaItemHandler(int ref, lua_State *state, std::shared_ptr<PluginInterface> p)
+      : lua_ref(ref), L(state), plugin(std::move(p)) {}
 
   LuaItemHandler(const LuaItemHandler &) = delete;
   LuaItemHandler &operator=(const LuaItemHandler &) = delete;
 
   LuaItemHandler(LuaItemHandler &&other) noexcept
-      : lua_ref(other.lua_ref), L(other.L) {
+      : lua_ref(other.lua_ref), L(other.L), plugin(std::move(other.plugin)) {
     other.lua_ref = LUA_NOREF;
     other.L = nullptr;
   }
@@ -53,12 +57,20 @@ VORTEX_API struct LuaItemHandler {
     if (!L)
       return;
 
+    lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+    lua_pushlightuserdata(L, (void *)&plugin);
+    lua_rawset(L, LUA_REGISTRYINDEX);
+
     int type = lua_rawgeti(L, LUA_REGISTRYINDEX, lua_ref);
     if (type != LUA_TFUNCTION) {
       VortexMaker::LogError(
           "LuaHandler", "Corrupted register : ID " + std::to_string(lua_ref) +
                             " is type " + std::string(lua_typename(L, type)));
       lua_pop(L, 1);
+
+      lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+      lua_pushnil(L);
+      lua_rawset(L, LUA_REGISTRYINDEX);
       return;
     }
 
@@ -70,6 +82,10 @@ VORTEX_API struct LuaItemHandler {
                             "Error while executing Lua : " + error);
       lua_pop(L, 1);
     }
+
+    lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+    lua_pushnil(L);
+    lua_rawset(L, LUA_REGISTRYINDEX);
   }
 
   ~LuaItemHandler() {
@@ -78,7 +94,6 @@ VORTEX_API struct LuaItemHandler {
     }
   }
 };
-
 VORTEX_API struct PluginInterfaceDep {
   std::string type; // em, plugin, etc..
   std::string name;
@@ -126,8 +141,13 @@ public:
                                   ReturnValues &ret);
 
   VORTEX_API std::string GetPath();
+  VORTEX_API std::string CookPath(const std::string &path);
   VORTEX_API std::string GetMainScriptPath();
 
+  // Documentation
+  VORTEX_API void AddDocumentation(const std::string &section,
+                                   const std::string &title,
+                                   const std::string &path);
   // Output Events
   // A output event is triggered via VortexMaker::ExecuteOutputEvent() by the
   // current component to all concerned extern components with the output event

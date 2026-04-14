@@ -13,8 +13,6 @@
 namespace VortexMaker {
 namespace Script {
 
-inline const char ACTIVE_PLUGIN_KEY = 0;
-
 class ScriptingEngine {
 public:
   ScriptingEngine();

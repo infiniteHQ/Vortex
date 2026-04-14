@@ -5,6 +5,8 @@
 #include "../../../../lib/json/single_include/nlohmann/json.hpp"
 #include <vortex.h>
 
+inline const char ACTIVE_PLUGIN_KEY = 0;
+
 #define VXLUA_FUNC(name) static int l_##name(lua_State *L)
 
 #define VXLUA_REGISTER(L, table, name)                                         \

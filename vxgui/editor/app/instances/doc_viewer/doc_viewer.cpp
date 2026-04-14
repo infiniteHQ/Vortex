@@ -57,6 +57,8 @@ DocViewerAppWindow::DocViewerAppWindow(const std::string &name) {
         icon = GetPath("resources/imgs/icons/misc/icon_vortex.png");
       else if (topic_id.find("module:") == 0)
         icon = GetPath("resources/imgs/icons/misc/icon_module.png");
+      else if (topic_id.find("plugin:") == 0)
+        icon = GetPath("resources/imgs/icons/misc/icon_plugin.png");
 
       combo_items.push_back({label, icon});
       topic_ids.push_back(topic_id);
