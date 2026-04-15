@@ -121,48 +121,120 @@ void DocViewerAppWindow::Render() {
 
   ImGui::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToImU32("#00000000"));
   ImGui::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
+
   ImGui::BeginChild("Sidebar", ImVec2(m_sidebar_width, 0), true);
   ImGui::Spacing();
 
   if (ctx->documentations.count(m_selected_topic)) {
     auto &sections = ctx->documentations[m_selected_topic].sections;
 
+    using SectionData = std::decay_t<decltype(sections.begin()->second)>;
+
+    std::unordered_map<std::string,
+                       std::vector<std::pair<
+                           std::string, std::reference_wrapper<SectionData>>>>
+        grouped_sections;
+
+    std::vector<std::string> order;
+
     for (auto &[section_name, section_data] : sections) {
+      size_t pos = section_name.find(':');
+
+      if (pos != std::string::npos) {
+        std::string parent = section_name.substr(0, pos);
+        std::string child = section_name.substr(pos + 1);
+
+        if (grouped_sections.find(parent) == grouped_sections.end()) {
+          order.push_back(parent);
+        }
+
+        grouped_sections[parent].push_back({child, section_data});
+      } else {
+        if (grouped_sections.find(section_name) == grouped_sections.end()) {
+          order.push_back(section_name);
+        }
+
+        grouped_sections[section_name].push_back({"", section_data});
+      }
+    }
+
+    for (auto &parent : order) {
       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
-      bool section_open = ImGui::TreeNodeEx(
-          section_name.c_str(),
-          ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth);
+
+      std::string parent_id = parent + "##parent";
+      bool open = ImGui::TreeNodeEx(parent_id.c_str(),
+                                    ImGuiTreeNodeFlags_DefaultOpen |
+                                        ImGuiTreeNodeFlags_SpanAvailWidth);
+
       ImGui::PopStyleColor();
 
-      if (section_open) {
-        for (auto &[chapter_title, file_data] : section_data.chapters) {
-          bool is_selected = (m_selected_chapter == chapter_title &&
-                              m_selected_section == section_name);
+      if (open) {
+        for (auto &[child_name, section_ref] : grouped_sections[parent]) {
+          auto &section_data = section_ref.get();
 
-          if (ImGui::Selectable(chapter_title.c_str(), is_selected)) {
-            m_selected_section = section_name;
-            m_selected_chapter = chapter_title;
-            LoadMarkdown(file_data.file_path);
+          if (child_name.empty()) {
+            for (auto &[chapter_title, file_data] : section_data.chapters) {
+
+              bool is_selected = (m_selected_chapter == chapter_title &&
+                                  m_selected_section == parent);
+
+              std::string unique_id = chapter_title + "##" + parent;
+
+              if (ImGui::Selectable(unique_id.c_str(), is_selected)) {
+                m_selected_section = parent;
+                m_selected_chapter = chapter_title;
+                LoadMarkdown(file_data.file_path);
+              }
+            }
+          } else {
+            std::string child_id = child_name + "##" + parent;
+
+            bool sub_open = ImGui::TreeNodeEx(
+                child_id.c_str(), ImGuiTreeNodeFlags_SpanAvailWidth);
+
+            if (sub_open) {
+              for (auto &[chapter_title, file_data] : section_data.chapters) {
+
+                bool is_selected =
+                    (m_selected_chapter == chapter_title &&
+                     m_selected_section == parent + ":" + child_name);
+
+                std::string unique_id =
+                    chapter_title + "##" + parent + ":" + child_name;
+
+                if (ImGui::Selectable(unique_id.c_str(), is_selected)) {
+                  m_selected_section = parent + ":" + child_name;
+                  m_selected_chapter = chapter_title;
+                  LoadMarkdown(file_data.file_path);
+                }
+              }
+              ImGui::TreePop();
+            }
           }
         }
         ImGui::TreePop();
       }
+
       ImGui::Spacing();
     }
+
   } else {
     ImGui::TextWrapped("No documentation found for topic: %s",
                        m_selected_topic.c_str());
   }
+
   ImGui::EndChild();
   ImGui::PopStyleColor(2);
 
   ImGui::SameLine();
   ImGui::Button("##splitter", ImVec2(5, -1));
+
   if (ImGui::IsItemActive()) {
     m_sidebar_width += ImGui::GetIO().MouseDelta.x;
     if (m_sidebar_width < 100)
       m_sidebar_width = 100;
   }
+
   ImGui::SameLine();
 
   ImGui::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToImU32("#00000000"));
@@ -174,20 +246,26 @@ void DocViewerAppWindow::Render() {
   }
 
   ImGui::BeginChild("MarkdownContent", ImVec2(0, 0), false);
+
   if (!m_cached_markdown_content.empty()) {
     ImGui::TextDisabled("%s > %s", m_selected_section.c_str(),
                         m_selected_chapter.c_str());
+
     ImGui::Separator();
     ImGui::Spacing();
 
     ImGui::MarkdownView(m_cached_markdown_content);
   } else {
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2.0f);
+
     const char *hint = "Select a chapter in the sidebar";
     float text_width = ImGui::CalcTextSize(hint).x;
+
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - text_width) / 2.0f);
+
     ImGui::TextDisabled("%s", hint);
   }
+
   ImGui::EndChild();
 
   if (m_ConsoleFont) {
@@ -197,4 +275,5 @@ void DocViewerAppWindow::Render() {
 
   ImGui::PopStyleColor(2);
 }
+
 } // namespace VortexEditor

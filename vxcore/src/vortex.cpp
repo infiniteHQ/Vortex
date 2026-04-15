@@ -2128,17 +2128,123 @@ VORTEX_API void VortexMaker::AddVortexDocumentation() {
       Cherry::GetPath(
           "docs/get_started/contents/introduction/what_is_vortex.md"));
   VortexMaker::AddDocumentation(
-      "vx", "Introduction", "Get started",
-      Cherry::GetPath("docs/get_started/contents/introduction/get_started.md"));
-  VortexMaker::AddDocumentation(
       "vx", "Introduction", "Install Vortex",
       Cherry::GetPath(
           "docs/get_started/contents/introduction/install_vortex.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Introduction", "Get started",
+      Cherry::GetPath("docs/get_started/contents/introduction/get_started.md"));
+
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher", "Understand Vortex Launcher",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "understand_vortexlauncher.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher", "Discover interface",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "discover_interface.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher", "Update the launcher",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "update_launcher.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher", "Manage projects",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "manage_projects.md"));
+
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher", "Understand logical contents:Brief",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "understand_logical_contents.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher",
+      "Understand logical contents:Manage system modules",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "manage_system_modules.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher",
+      "Understand logical contents:Manage system plugins",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "manage_system_plugins.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher", "Understand static contents:Brief",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "understand_static_contents.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher",
+      "Understand static contents:Manage system templates",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "manage_system_templates.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher",
+      "Understand static contents:Manage system contents",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "manage_system_contents.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher", "Manage Vortex Editors",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "manage_vortex_editor_versions.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher", "Subscribe to beta",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "subscribe_to_beta.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Launcher", "Uninstallation",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
+                      "uninstall.md"));
 
   VortexMaker::AddDocumentation(
       "vx", "Take the Vortex Editor", "Understand Vortex Editor",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "understand_vortexeditor.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Discover interface",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "discover_interface.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Content Browser",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "content_browser.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Project settings",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "project_settings.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Console logs",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "console_logs.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Handle modules",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "handle_modules.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Handle plugins",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "handle_plugins.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Import contents",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "import_contents.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Create with templates",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "create_with_templates.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Share Contents:Brief",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "share_contents.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Share Contents:Export project/tool",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "export_project.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Share Contents:Share a content",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "share_a_content.md"));
+  VortexMaker::AddDocumentation(
+      "vx", "Take the Vortex Editor", "Share Contents:Share a content",
+      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
+                      "create_a_template.md"));
 }
 
 void VortexMaker::PushEditMenuItem(const std::string &title,

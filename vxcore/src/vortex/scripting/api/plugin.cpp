@@ -174,6 +174,84 @@ VXLUA_FUNC(PluginSetCreditsFiles) {
   return 0;
 }
 
+VXLUA_FUNC(PluginCallOutputEvent) {
+  std::string event_name = vxlua_getstring(L, 1);
+
+  auto plugin = GetActivePlugin(L);
+  if (!plugin)
+    return luaL_error(L, "CallOutputEvent called outside of plugin context");
+
+  // Build args
+  ArgumentValues args;
+  if (lua_gettop(L) >= 2 && !lua_isnil(L, 2)) {
+    if (lua_isstring(L, 2)) {
+      args.SetValue(lua_tostring(L, 2));
+    } else if (lua_istable(L, 2)) {
+      nlohmann::json j;
+      lua_pushnil(L);
+      while (lua_next(L, 2)) {
+        std::string key;
+        if (lua_isstring(L, -2))
+          key = lua_tostring(L, -2);
+        else if (lua_isinteger(L, -2))
+          key = std::to_string(lua_tointeger(L, -2));
+        else {
+          lua_pop(L, 1);
+          continue;
+        }
+
+        if (lua_isstring(L, -1))
+          j[key] = lua_tostring(L, -1);
+        else if (lua_isinteger(L, -1))
+          j[key] = lua_tointeger(L, -1);
+        else if (lua_isnumber(L, -1))
+          j[key] = lua_tonumber(L, -1);
+        else if (lua_isboolean(L, -1))
+          j[key] = (bool)lua_toboolean(L, -1);
+        else
+          j[key] = nullptr;
+        lua_pop(L, 1);
+      }
+      args.SetValue(j.dump());
+    }
+  }
+
+  ReturnValues ret;
+
+  VortexMaker::CallOutputEvent(event_name, args, ret, plugin->m_name);
+
+  std::string ret_val = ret.GetValue();
+  if (ret_val.empty() || ret_val == "null") {
+    lua_pushnil(L);
+    return 1;
+  }
+
+  try {
+    nlohmann::json result = nlohmann::json::parse(ret_val);
+    if (result.is_object()) {
+      lua_newtable(L);
+      for (auto &[key, val] : result.items()) {
+        lua_pushstring(L, key.c_str());
+        if (val.is_string())
+          lua_pushstring(L, val.get<std::string>().c_str());
+        else if (val.is_number_integer())
+          lua_pushinteger(L, val.get<int64_t>());
+        else if (val.is_number())
+          lua_pushnumber(L, val.get<double>());
+        else if (val.is_boolean())
+          lua_pushboolean(L, val.get<bool>());
+        else
+          lua_pushstring(L, val.dump().c_str());
+        lua_settable(L, -3);
+      }
+      return 1;
+    }
+  } catch (...) {
+  }
+
+  lua_pushstring(L, ret_val.c_str());
+  return 1;
+}
 // TODO AddFunction
 // TODO ExecuteFunction (with support of args and return)
 
@@ -191,6 +269,8 @@ void RegisterPluginAPI(lua_State *L) {
   VXLUA_REGISTER_AS(L, PluginAddContentBrowserItemHandler,
                     "AddContentBrowserItemHandler");
   VXLUA_REGISTER_AS(L, PluginAddLogo, "AddLogo");
+
+  VXLUA_REGISTER_AS(L, PluginCallOutputEvent, "CallOutputEvent");
 }
 
 } // namespace Script
