@@ -252,6 +252,200 @@ VXLUA_FUNC(PluginCallOutputEvent) {
   lua_pushstring(L, ret_val.c_str());
   return 1;
 }
+
+VXLUA_FUNC(PluginAddOutputEvent) {
+  std::string event_name = vxlua_getstring(L, 1);
+
+  if (!lua_isfunction(L, 2))
+    return luaL_error(L, "Argument 2 must be a function");
+
+  lua_pushvalue(L, 2);
+  int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+  if (ref == LUA_NOREF || ref == LUA_REFNIL)
+    return luaL_error(L, "Failed to store callback reference");
+
+  auto plugin = GetActivePlugin(L);
+  if (!plugin) {
+    luaL_unref(L, LUA_REGISTRYINDEX, ref);
+    return luaL_error(L, "AddOutputEvent called outside of plugin context");
+  }
+
+  auto handler = std::make_shared<LuaItemHandler>(ref, L, plugin);
+  plugin->AddLuaHandler(handler);
+  std::weak_ptr<LuaItemHandler> weak_handler = handler;
+
+  // Helper: push args table onto Lua stack
+  auto push_args_table = [](lua_State *L, ArgumentValues &args) {
+    std::string args_str = args.GetValue();
+    try {
+      nlohmann::json j = nlohmann::json::parse(args_str);
+      if (j.is_object()) {
+        lua_newtable(L);
+        for (auto &[key, val] : j.items()) {
+          lua_pushstring(L, key.c_str());
+          if (val.is_string())
+            lua_pushstring(L, val.get<std::string>().c_str());
+          else if (val.is_number_integer())
+            lua_pushinteger(L, val.get<int64_t>());
+          else if (val.is_number())
+            lua_pushnumber(L, val.get<double>());
+          else if (val.is_boolean())
+            lua_pushboolean(L, val.get<bool>());
+          else
+            lua_pushstring(L, val.dump().c_str());
+          lua_settable(L, -3);
+        }
+        return;
+      }
+    } catch (...) {
+    }
+    lua_pushstring(L, args_str.c_str());
+  };
+
+  // Helper: read return value from Lua stack and fill ret
+  auto read_ret = [](lua_State *L, ReturnValues &ret) {
+    if (lua_isnil(L, -1)) {
+      // no return
+    } else if (lua_isstring(L, -1)) {
+      ret.SetValue(lua_tostring(L, -1));
+    } else if (lua_istable(L, -1)) {
+      nlohmann::json result;
+      lua_pushnil(L);
+      while (lua_next(L, -2)) {
+        std::string key;
+        if (lua_isstring(L, -2))
+          key = lua_tostring(L, -2);
+        else if (lua_isinteger(L, -2))
+          key = std::to_string(lua_tointeger(L, -2));
+        else {
+          lua_pop(L, 1);
+          continue;
+        }
+
+        if (lua_isstring(L, -1))
+          result[key] = lua_tostring(L, -1);
+        else if (lua_isinteger(L, -1))
+          result[key] = lua_tointeger(L, -1);
+        else if (lua_isnumber(L, -1))
+          result[key] = lua_tonumber(L, -1);
+        else if (lua_isboolean(L, -1))
+          result[key] = (bool)lua_toboolean(L, -1);
+        else
+          result[key] = nullptr;
+        lua_pop(L, 1);
+      }
+      ret.SetJsonValue(result);
+    }
+    lua_pop(L, 1);
+  };
+
+  std::string mode = "both";
+  if (lua_gettop(L) >= 3 && lua_isstring(L, 3)) {
+    mode = lua_tostring(L, 3);
+  }
+  if (mode == "none") {
+    plugin->AddOutputEvent(
+        [weak_handler, L]() {
+          auto h = weak_handler.lock();
+          if (!h)
+            return;
+          // Set active plugin context
+          lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+          lua_pushlightuserdata(L, (void *)&h->plugin);
+          lua_rawset(L, LUA_REGISTRYINDEX);
+
+          lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
+          if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+            VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+            lua_pop(L, 1);
+          }
+          // Clear active plugin context
+          lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+          lua_pushnil(L);
+          lua_rawset(L, LUA_REGISTRYINDEX);
+        },
+        event_name);
+
+  } else if (mode == "args") {
+    plugin->AddOutputEvent(
+        [weak_handler, L, push_args_table](ArgumentValues &args) {
+          auto h = weak_handler.lock();
+          if (!h)
+            return;
+          lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+          lua_pushlightuserdata(L, (void *)&h->plugin);
+          lua_rawset(L, LUA_REGISTRYINDEX);
+
+          lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
+          push_args_table(L, args);
+          if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+            VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+            lua_pop(L, 1);
+          }
+          lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+          lua_pushnil(L);
+          lua_rawset(L, LUA_REGISTRYINDEX);
+        },
+        event_name);
+
+  } else if (mode == "ret") {
+    plugin->AddOutputEvent(
+        [weak_handler, L, read_ret](ReturnValues &ret) {
+          auto h = weak_handler.lock();
+          if (!h)
+            return;
+          lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+          lua_pushlightuserdata(L, (void *)&h->plugin);
+          lua_rawset(L, LUA_REGISTRYINDEX);
+
+          lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
+          if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
+            VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+            lua_pop(L, 1);
+            lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+            lua_pushnil(L);
+            lua_rawset(L, LUA_REGISTRYINDEX);
+            return;
+          }
+          read_ret(L, ret);
+          lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+          lua_pushnil(L);
+          lua_rawset(L, LUA_REGISTRYINDEX);
+        },
+        event_name);
+
+  } else { // "both" (default)
+    plugin->AddOutputEvent(
+        [weak_handler, L, push_args_table, read_ret](ArgumentValues &args,
+                                                     ReturnValues &ret) {
+          auto h = weak_handler.lock();
+          if (!h)
+            return;
+          lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+          lua_pushlightuserdata(L, (void *)&h->plugin);
+          lua_rawset(L, LUA_REGISTRYINDEX);
+
+          lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
+          push_args_table(L, args);
+          if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
+            VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+            lua_pop(L, 1);
+            lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+            lua_pushnil(L);
+            lua_rawset(L, LUA_REGISTRYINDEX);
+            return;
+          }
+          read_ret(L, ret);
+          lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+          lua_pushnil(L);
+          lua_rawset(L, LUA_REGISTRYINDEX);
+        },
+        event_name);
+  }
+
+  return 0;
+}
+
 // TODO AddFunction
 // TODO ExecuteFunction (with support of args and return)
 
@@ -270,6 +464,7 @@ void RegisterPluginAPI(lua_State *L) {
                     "AddContentBrowserItemHandler");
   VXLUA_REGISTER_AS(L, PluginAddLogo, "AddLogo");
 
+  VXLUA_REGISTER_AS(L, PluginAddOutputEvent, "AddOutputEvent");
   VXLUA_REGISTER_AS(L, PluginCallOutputEvent, "CallOutputEvent");
 }
 
