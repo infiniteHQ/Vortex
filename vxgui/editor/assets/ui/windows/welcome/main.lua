@@ -158,6 +158,10 @@ function DrawWalkthroughCard(x, y, w, h, title, desc)
     Cherry.DrawRectOutline(x, y, w, h, "#333333FF", 1.0)
     
     Cherry.DrawText(x + 15, y + 15, 17.0, "#FFFFFFFF", title)
+
+    Cherry.Sameline()
+    Cherry.DrawImage(x + 45 + Cherry.CalcTextSizeX(title), y + 15, 18, 18, Cherry.GetPath("resources/imgs/icons/misc/icon_redirect.png"));
+    
     Cherry.DrawText(x + 15, y + 40, 14.0, "#888888FF", desc)
     
     return Cherry.IsMouseClickedOnCurrentPos(x, y, w, h, 0)
