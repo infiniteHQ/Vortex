@@ -607,7 +607,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       CherryGUI::EndMenu();
     }
 
-    if (ImGui::BeginMenu("Edit")) {
+    if (CherryGUI::BeginMenu("Edit")) {
       // TODO : General edit functions of vortex
 
       const auto &items = ctx->editMenuItems;
@@ -633,7 +633,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
         if (!sec.empty())
           CherryKit::SeparatorText(sec.c_str());
         else if (!firstSection)
-          ImGui::Separator();
+          CherryGUI::Separator();
 
         firstSection = false;
 
@@ -650,7 +650,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
         }
       }
 
-      ImGui::EndMenu();
+      CherryGUI::EndMenu();
     }
 
     if (CherryGUI::BeginMenu("Window")) {

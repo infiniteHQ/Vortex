@@ -23,6 +23,8 @@ xcopy /Y /E /I .\Release\vortex_shared.dll .\bin
 xcopy /Y /E /I .\Release\vortex.exe .\bin
 xcopy /Y /E /I .\Release\vortex_utils.exe .\bin
 xcopy /Y ..\handle_crash.bat .\bin
+xcopy /Y ..\..\CREDITS .\bin
+xcopy ..\..\docs .\bin\docs /E /I /Y
 
 
 echo %cd%

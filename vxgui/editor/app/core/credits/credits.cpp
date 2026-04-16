@@ -121,10 +121,10 @@ void Credits::Render() {
   CherryStyle::AddMarginY(5.0f);
   CherryGUI::BeginChild("aboutchild", ImVec2(430, 0));
 
-  float maxScroll = ImGui::GetScrollMaxY();
-  float dt = ImGui::GetIO().DeltaTime;
+  float maxScroll = CherryGUI::GetScrollMaxY();
+  float dt = CherryGUI::GetIO().DeltaTime;
   if (m_AutoScroll) {
-    if (ImGui::IsWindowHovered() && ImGui::GetIO().MouseWheel != 0.0f) {
+    if (CherryGUI::IsWindowHovered() && CherryGUI::GetIO().MouseWheel != 0.0f) {
       m_UserScrolled = true;
       m_UserScrollCooldown = USER_SCROLL_PAUSE;
     }
@@ -132,13 +132,13 @@ void Credits::Render() {
       m_UserScrollCooldown -= dt;
       if (m_UserScrollCooldown <= 0.0f) {
         m_UserScrolled = false;
-        m_ScrollY = ImGui::GetScrollY();
+        m_ScrollY = CherryGUI::GetScrollY();
       }
     } else {
       m_ScrollY += m_ScrollSpeed * dt;
       if (m_ScrollY >= maxScroll)
         m_ScrollY = 0.0f;
-      ImGui::SetScrollY(m_ScrollY);
+      CherryGUI::SetScrollY(m_ScrollY);
     }
   }
 
