@@ -475,7 +475,7 @@ VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name,
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
-  bool event_hit;
+  bool event_hit = false;
 
   // Iterate through each EventManager in the Vortex context
   for (auto em : ctx.IO.em) {

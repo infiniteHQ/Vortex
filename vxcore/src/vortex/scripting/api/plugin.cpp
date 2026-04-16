@@ -629,7 +629,7 @@ VXLUA_FUNC(PluginAddInputEvent) {
 
           lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
           if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
-            VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+            VXERROR("LuaInputEvent", lua_tostring(L, -1));
             lua_pop(L, 1);
           }
           // Clear active plugin context
@@ -652,7 +652,7 @@ VXLUA_FUNC(PluginAddInputEvent) {
           lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
           push_args_table(L, args);
           if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
-            VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+            VXERROR("LuaInputEvent", lua_tostring(L, -1));
             lua_pop(L, 1);
           }
           lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
@@ -673,7 +673,7 @@ VXLUA_FUNC(PluginAddInputEvent) {
 
           lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
           if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
-            VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+            VXERROR("LuaInputEvent", lua_tostring(L, -1));
             lua_pop(L, 1);
             lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
             lua_pushnil(L);
@@ -701,7 +701,7 @@ VXLUA_FUNC(PluginAddInputEvent) {
           lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
           push_args_table(L, args);
           if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
-            VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+            VXERROR("LuaInputEvent", lua_tostring(L, -1));
             lua_pop(L, 1);
             lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
             lua_pushnil(L);

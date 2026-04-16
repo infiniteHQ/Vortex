@@ -330,25 +330,56 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
       ImGui::PopStyleColor();
     }
 
-    if (ImGui::InputTextWithHint("##ConsoleInput", "Execute Lua command...",
+    ImTextureID logo =
+        Application::Get().GetCurrentRenderedWindow()->get_texture(
+            Cherry::GetPath("resources/imgs/icons/misc/icon_cmd.png"));
+
+    float inputWidth = 400.0f;
+    float paddingX = 7.0f;
+    float paddingY = 7.0f;
+    float logoSize = 16.0f;
+    float logoSpacing = 4.0f;
+
+    ImGui::SetNextItemWidth(inputWidth);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
+                        ImVec2(paddingX + logoSize + logoSpacing, paddingY));
+
+    ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+    ImVec2 framePadding = ImGui::GetStyle().FramePadding;
+
+    if (ImGui::InputTextWithHint("##ConsoleInput", "Execute command...",
                                  s_InputBuffer, IM_ARRAYSIZE(s_InputBuffer),
                                  input_flags, callback)) {
       std::string cmd(s_InputBuffer);
       if (!cmd.empty()) {
         SendCommand(cmd);
-
         if (s_CommandHistory.empty() || s_CommandHistory.back() != cmd) {
           s_CommandHistory.push_back(cmd);
           if (s_CommandHistory.size() > 100)
             s_CommandHistory.erase(s_CommandHistory.begin());
         }
-
         s_InputBuffer[0] = '\0';
         s_HistoryPos = -1;
         s_SelectionIdx = -1;
         s_ScrollToBottom = true;
       }
       ImGui::SetKeyboardFocusHere(-1);
+    }
+
+    ImGui::PopStyleVar();
+
+    if (logo) {
+      float logoY = cursorPos.y + framePadding.y +
+                    (ImGui::GetFontSize() - logoSize) * 0.5f;
+      float logoX = cursorPos.x + framePadding.x - logoSize - logoSpacing;
+
+      ImVec4 tint = ImGui::IsItemFocused() ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f)
+                                           : ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
+
+      ImGui::GetWindowDrawList()->AddImage(
+          logo, ImVec2(logoX, logoY),
+          ImVec2(logoX + logoSize, logoY + logoSize), ImVec2(0, 0),
+          ImVec2(1, 1), ImGui::ColorConvertFloat4ToU32(tint));
     }
   });
 
