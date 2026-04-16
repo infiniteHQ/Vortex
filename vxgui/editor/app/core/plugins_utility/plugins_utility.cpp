@@ -382,7 +382,7 @@ void PluginsUtility::RenderPluginDeletionModal() {
         ImTextureID logo = Cherry::GetTexture(g_PluginToDeleteLogoPath);
         if (logo) {
           ImVec2 logoSize = Cherry::GetTextureSize(g_PluginToDeleteLogoPath);
-          float scale = LOGO_SIZE / std::max(logoSize.x, logoSize.y);
+          float scale = LOGO_SIZE / (std::max)(logoSize.x, logoSize.y);
           ImVec2 drawSize(logoSize.x * scale, logoSize.y * scale);
           ImVec2 imgPos = ImGui::GetCursorPos();
           imgPos.x += (LOGO_SIZE - drawSize.x) * 0.5f;

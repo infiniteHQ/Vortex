@@ -246,9 +246,14 @@ int main(int argc, char *argv[]) {
                std::string(argv[1]) == "--editor") {
       PrintHeader("(Editor)");
       if (argc > 2) {
-        std::string arg2 = argv[2];
-        if (arg2.rfind("--session_id=\"", 0) == 0 && arg2.back() == '\"') {
-          session_id = arg2.substr(13, arg2.length() - 14);
+   std::string arg2 = argv[2];
+        if (arg2.rfind("--session_id=", 0) == 0) {
+          session_id = arg2.substr(13);
+          if (!session_id.empty() && session_id.front() == '"' &&
+              session_id.back() == '"') {
+            session_id = session_id.substr(1, session_id.size() - 2);
+            g_SessionID = session_id;
+          }
         }
       }
 
