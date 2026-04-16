@@ -475,6 +475,8 @@ VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name,
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
+  bool event_hit;
+
   // Iterate through each EventManager in the Vortex context
   for (auto em : ctx.IO.em) {
     // Check if the EventManager corresponds to the specified module
@@ -508,6 +510,8 @@ VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name,
                     em->m_name + "\" from \"" + origin +
                     "\" but it not exist !");
           }
+
+          event_hit = true;
         }
       }
     }
@@ -546,9 +550,17 @@ VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name,
                     ep->m_name + "\" from \"" + origin +
                     "\" but it not exist !");
           }
+
+          event_hit = true;
         }
       }
     }
+  }
+
+  if (!event_hit) {
+    std::string log = "Input event not found. (target:" + module_name +
+                      " , event:" + event_name + ")";
+    VortexMaker::LogError("Events", log);
   }
 }
 
