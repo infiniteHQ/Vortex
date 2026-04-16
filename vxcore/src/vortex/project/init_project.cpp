@@ -150,8 +150,9 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
   // Startup features
   VortexMaker::ExecuteStartScript();
 
-  // Finally, start all loaded modules.
+  // Finally, start all loaded modules/plugins.
   VortexMaker::BootstrappAllModules();
+  VortexMaker::BootstrappAllPlugins();
 
   // Load local documentation
   VortexMaker::AddVortexDocumentation();

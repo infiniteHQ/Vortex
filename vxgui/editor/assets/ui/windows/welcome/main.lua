@@ -56,14 +56,21 @@ function DrawWelcomeScreen()
     
     leftY = leftY + iconSize + 85
 
-    Cherry.DrawText(marginX, leftY, 20.0, TEXT_COLOR, "Recent Actions")
+    Cherry.DrawText(marginX, leftY, 20.0, TEXT_COLOR, "Quick Actions")
     leftY = leftY + 35
     
-    if DrawMenuButton(marginX, leftY, colWidth, "New File...", "Ctrl+N") then end
+    Cherry.BeginComponent("open_terminal")
+    if DrawMenuButton(marginX, leftY, colWidth, "Open new terminal...", "Ctrl+T") then 
+        Cherry.SetComponentData("open_terminal", "isClicked","false")
+    else        
+        Cherry.SetComponentData("open_terminal", "isClicked","false")
+    end
+    Cherry.EndComponent()
+
     leftY = leftY + 35
-    if DrawMenuButton(marginX, leftY, colWidth, "Open Folder...", "Ctrl+O") then end
+    if DrawMenuButton(marginX, leftY, colWidth, "Open new content browser...", "Ctrl+B") then end
     leftY = leftY + 35
-    if DrawMenuButton(marginX, leftY, colWidth, "Clone Repository...", "") then end
+    if DrawMenuButton(marginX, leftY, colWidth, "Open project settings...", "") then end
 
     local rightColX = marginX + colWidth + marginX
     local walkY = contentStartY 

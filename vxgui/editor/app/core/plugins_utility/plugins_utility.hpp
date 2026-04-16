@@ -1,11 +1,13 @@
 #pragma once
 
+#include "../../../../../vxcore/include/plugins/delete.h"
+#include "../../../../../vxcore/include/plugins/load.h"
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
-#include "../../instances/modules_details/modules_details.hpp"
 
 #include "../utils.hpp"
 
+#include <unordered_set>
 #ifndef PLUGINS_UTILITY_WINDOW_H
 #define PLUGINS_UTILITY_WINDOW_H
 
@@ -15,17 +17,24 @@ namespace VortexEditor {
 
 static std::string m_PluginsSearch;
 
+static bool g_TriggerPluginDeletionModal;
+static std::string g_PluginToDeleteName;
+static std::string g_PluginToDeleteProperName;
+static std::string g_PluginToDeleteDescription;
+static std::string g_PluginToDeleteVersion;
+static std::string g_PluginToDeleteLogoPath;
+
 class PluginCardItem : public Cherry::Component {
 public:
   PluginCardItem(const Cherry::Identifier &identifier,
-                 const std::shared_ptr<PluginInterface> &module,
+                 const std::shared_ptr<PluginInterface> &plugin,
                  const std::string &name, const std::string &path,
                  const std::string &description, const std::string &size,
                  bool selected, const std::string &logo, ImU32 bgColor,
                  ImU32 borderColor, ImU32 lineColor, float maxTextWidth,
                  float borderRadius)
 
-      : Cherry::Component(identifier), m_module(module), m_name(name),
+      : Cherry::Component(identifier), m_plugin(plugin), m_name(name),
         m_path(path), m_description(description), m_size(size),
         m_selected(selected), m_logo(logo), m_bgColor(bgColor),
         m_borderColor(borderColor), m_lineColor(lineColor),
@@ -73,7 +82,7 @@ public:
       truncatedText = m_name + "\n";
     }
 
-    std::string truncatedDesc = m_module->m_description;
+    std::string truncatedDesc = m_plugin->m_description;
 
     if (truncatedDesc.length() > 100) {
       truncatedDesc = truncatedDesc.substr(0, 97) + "...";
@@ -81,23 +90,23 @@ public:
     const char *originalDesc = truncatedDesc.c_str();
 
     if (CherryGUI::CalcTextSize(originalDesc).x > m_maxTextWidth) {
-      size_t len = m_module->m_description.size();
+      size_t len = m_plugin->m_description.size();
 
       size_t firstPart = std::min<size_t>(90, len);
-      truncatedDesc = m_module->m_description.substr(0, firstPart);
+      truncatedDesc = m_plugin->m_description.substr(0, firstPart);
 
       if (CherryGUI::CalcTextSize(truncatedDesc.c_str()).x > m_maxTextWidth) {
         size_t firstLine = std::min<size_t>(55, len);
         size_t secondLine = (len > 55) ? len - 55 : 0;
 
-        truncatedDesc = m_module->m_description.substr(0, firstLine);
+        truncatedDesc = m_plugin->m_description.substr(0, firstLine);
         if (secondLine > 0) {
           truncatedDesc +=
-              "\n" + m_module->m_description.substr(55, secondLine);
+              "\n" + m_plugin->m_description.substr(55, secondLine);
         }
       }
     } else {
-      truncatedDesc = m_module->m_description + "\n";
+      truncatedDesc = m_plugin->m_description + "\n";
     }
 
     ImVec2 fixedSize(m_maxTextWidth + padding * 2 + 150.0f,
@@ -236,28 +245,28 @@ public:
                cursorPos.y + padding);
     CherryGUI::SetCursorScreenPos(firstButtonPos);
 
-    if (m_module->m_state == "failed") {
+    if (m_plugin->m_state == "failed") {
 
       if (CherryKit::ButtonImage(
               Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"))
               .GetDataAs<bool>("isClicked")) {
-        m_module->Start();
+        m_plugin->Start();
       }
 
-    } else if (m_module->m_state == "unknow" ||
-               m_module->m_state == "stopped") {
+    } else if (m_plugin->m_state == "unknow" ||
+               m_plugin->m_state == "stopped") {
 
       if (CherryKit::ButtonImage(
               Cherry::GetPath("resources/imgs/icons/misc/icon_start.png"))
               .GetDataAs<bool>("isClicked")) {
-        m_module->Start();
+        m_plugin->Start();
       }
 
     } else {
       if (CherryKit::ButtonImage(
               Cherry::GetPath("resources/imgs/icons/misc/icon_stop.png"))
               .GetDataAs<bool>("isClicked")) {
-        m_module->Stop();
+        m_plugin->Stop();
       }
     }
 
@@ -268,8 +277,13 @@ public:
     if (CherryKit::ButtonImage(
             Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png"))
             .GetDataAs<bool>("isClicked")) {
-      m_module->Stop();
-      // TODO VortexMaker::DeleteProjectModule
+      m_plugin->Stop();
+      g_PluginToDeleteName = m_plugin->m_name;
+      g_PluginToDeleteProperName = m_plugin->m_proper_name;
+      g_PluginToDeleteDescription = m_plugin->m_description;
+      g_PluginToDeleteVersion = m_plugin->m_version;
+      g_PluginToDeleteLogoPath = m_plugin->m_logo_path;
+      g_TriggerPluginDeletionModal = true;
     }
 
     ImVec2 thirdButtonPos = ImVec2(
@@ -278,11 +292,7 @@ public:
     if (CherryKit::ButtonImage(
             Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"))
             .GetDataAs<bool>("isClicked")) {
-      std::string label =
-          "Details of " + m_module->m_proper_name + "####" + m_path;
-      /*std::shared_ptr<PluginDetails> window =
-          PluginDetails::Create(label, m_module);
-      Cherry::AddAppWindow(window->GetAppWindow());*/
+      // TODO Plugins detail window
     }
 
     /*
@@ -356,7 +366,7 @@ public:
   }
 
 private:
-  std::shared_ptr<PluginInterface> m_module;
+  std::shared_ptr<PluginInterface> m_plugin;
   std::string m_name;
   std::string m_path;
   std::string m_description;
@@ -372,14 +382,14 @@ private:
 
 inline Cherry::Component &
 PluginCardComponent(const Cherry::Identifier &identifier,
-                    const std::shared_ptr<PluginInterface> &module,
+                    const std::shared_ptr<PluginInterface> &plugin,
                     const std::string &name, const std::string &path,
                     const std::string &description, const std::string &size,
                     bool selected, const std::string &logo, ImU32 bgColor,
                     ImU32 borderColor, ImU32 lineColor, float maxTextWidth,
                     float borderRadius) {
   return CherryApp.PushComponent<PluginCardItem>(
-      identifier, module, name, path, description, size, selected, logo,
+      identifier, plugin, name, path, description, size, selected, logo,
       bgColor, borderColor, lineColor, maxTextWidth, borderRadius);
 }
 
@@ -422,7 +432,14 @@ public:
   static std::shared_ptr<PluginsUtility> Create(const std::string &name);
   void SetupRenderCallback();
   void Render();
+
+  void RenderInstalled();
+
   void PluginsRender();
+  void RenderImport();
+  void RenderDownload();
+
+  void RenderPluginDeletionModal();
 
   std::vector<PluginsUtilityChild> m_Childs;
 
@@ -431,12 +448,46 @@ public:
   std::function<void()> m_SettingsCallback;
   std::function<void(const std::shared_ptr<EnvProject> &)> m_ProjectCallback;
 
-  char ModulesSearch[512];
+  enum class ShowModes { Thumbmails, List };
+  enum class Pannels { Installed, Downloads, Import };
+  ShowModes m_SelectedShowMode = ShowModes::Thumbmails;
+
+  Pannels m_SelectedPannel = Pannels::Installed;
+
+  char PluginsSearch[512];
   std::vector<std::shared_ptr<EnvProject>> GetMostRecentProjects(
       const std::vector<std::shared_ptr<EnvProject>> &projects,
       size_t maxCount);
   std::vector<std::shared_ptr<EnvProject>> m_RecentProjects;
   std::string m_SelectedChildName;
+
+  std::string m_SelectedCategory;
+  bool m_SelectedCategoryChanged = false;
+  void SetSelectedCategory(const std::string &c) {
+    m_SelectedCategory = c;
+    m_SelectedCategoryChanged = true;
+  }
+  std::string GetSelectedCategory() { return m_SelectedCategory; }
+  std::unordered_map<std::string, int> m_AllCategories;
+
+  void RefreshCategories() {
+    m_AllCategories.clear();
+    for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.ep.size(); i++) {
+      if (!VortexMaker::GetCurrentContext()->IO.ep[i]) {
+        continue;
+      }
+      m_AllCategories[VortexMaker::GetCurrentContext()->IO.ep[i]->m_group]++;
+    }
+  }
+
+  bool HasCommonSubsequence(const std::string &a, const std::string &b) {
+    int j = 0;
+    for (int i = 0; i < a.size() && j < b.size(); i++) {
+      if (a[i] == b[j])
+        j++;
+    }
+    return j == b.size();
+  }
 
   std::vector<std::string> vortexDists;
   std::string VortexEditorDist;

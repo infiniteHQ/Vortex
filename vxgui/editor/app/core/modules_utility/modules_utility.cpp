@@ -53,7 +53,7 @@ ModulesUtility::ModulesUtility(const std::string &name) {
     CherryNextComponent.SetProperty("padding_x", "10.0f");
 
     if (CherryKit::ButtonImageText(
-            "Installed", GetPath("resources/imgs/icons/misc/icon_download.png"))
+            "Installed", GetPath("resources/imgs/icons/misc/icon_folder.png"))
             .GetDataAs<bool>("isClicked")) {
       m_SelectedPannel = Pannels::Installed;
     }
@@ -65,7 +65,7 @@ ModulesUtility::ModulesUtility(const std::string &name) {
     }
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     if (CherryKit::ButtonImageText(
-            "Download", GetPath("resources/imgs/icons/misc/icon_import.png"))
+            "Download", GetPath("resources/imgs/icons/misc/icon_wadd.png"))
             .GetDataAs<bool>("isClicked")) {
       m_SelectedPannel = Pannels::Downloads;
     }
@@ -518,9 +518,230 @@ void ModulesUtility::RenderModuleDeletionModal() {
   ImGui::PopStyleVar(3);
 }
 
-void ModulesUtility::RenderDownload() {}
+void ModulesUtility::RenderDownload() {
+  ImGuiIO &io = ImGui::GetIO();
+  ImVec2 windowSize = ImGui::GetContentRegionAvail();
+  ImVec2 windowPos = ImGui::GetCursorScreenPos();
 
-void ModulesUtility::RenderImport() {}
+  float centerX = windowPos.x + windowSize.x * 0.5f;
+  float centerY = windowPos.y + windowSize.y * 0.5f;
+
+  ImTextureID logo = Application::Get().GetCurrentRenderedWindow()->get_texture(
+      Cherry::GetPath("resources/imgs/infinite_garage.png"));
+
+  float logoWidth = 214.0f;
+  float logoHeight = 100.0f;
+  float totalBlockHeight =
+      logoHeight + 20.0f + 36.0f + 12.0f + 60.0f + 20.0f + 28.0f + 80.0f;
+
+  float startY = centerY - totalBlockHeight * 0.5f;
+
+  ImGui::SetCursorScreenPos(ImVec2(centerX - logoWidth * 0.5f, startY));
+  ImGui::Image(logo, ImVec2(logoWidth, logoHeight));
+
+  Cherry::PushFont("JetBrainsMono");
+  const char *title =
+      "You will be able to download content from the Infinite Garage";
+  ImVec2 titleSize = ImGui::CalcTextSize(title);
+  ImGui::SetCursorScreenPos(
+      ImVec2(centerX - titleSize.x * 0.5f, startY + logoHeight + 20.0f));
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+  ImGui::Text("%s", title);
+  Cherry::PopFont();
+
+  const char *badge = "  WIP  ";
+  ImVec2 badgeSize = ImGui::CalcTextSize(badge);
+  float badgePaddingX = 16.0f;
+  float badgePaddingY = 6.0f;
+  float badgeTotalW = badgeSize.x + badgePaddingX * 2.0f;
+  float badgeTotalH = badgeSize.y + badgePaddingY * 2.0f;
+  float badgeX = centerX - badgeTotalW * 0.5f;
+  float badgeY = startY + logoHeight + 20.0f + 36.0f + 12.0f;
+
+  ImDrawList *draw = ImGui::GetWindowDrawList();
+  draw->AddRectFilled(ImVec2(badgeX, badgeY),
+                      ImVec2(badgeX + badgeTotalW, badgeY + badgeTotalH),
+                      IM_COL32(47, 47, 47, 255), 6.0f);
+  ImGui::SetCursorScreenPos(
+      ImVec2(badgeX + badgePaddingX, badgeY + badgePaddingY));
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+  ImGui::Text("%s", badge);
+  ImGui::PopStyleColor();
+
+  float sepY = badgeY + badgeTotalH + 20.0f;
+  draw->AddLine(ImVec2(centerX - 120.0f, sepY), ImVec2(centerX + 120.0f, sepY),
+                IM_COL32(255, 255, 255, 30), 1.0f);
+
+  const char *desc =
+      "Download & content management is currently in development.";
+  const char *desc2 = "The Infinite Garage is a sharing platform for makers.";
+
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.65f, 0.65f, 0.75f, 1.0f));
+
+  ImVec2 d1 = ImGui::CalcTextSize(desc);
+  ImGui::SetCursorScreenPos(ImVec2(centerX - d1.x * 0.5f, sepY + 16.0f));
+  ImGui::Text("%s", desc);
+
+  ImVec2 d2 = ImGui::CalcTextSize(desc2);
+  float desc2Y = sepY + 16.0f + d1.y + 6.0f;
+  ImGui::SetCursorScreenPos(ImVec2(centerX - d2.x * 0.5f, desc2Y));
+  ImGui::Text("%s", desc2);
+
+  ImGui::PopStyleColor(2);
+
+  float sep2Y = desc2Y + d2.y + 22.0f;
+  draw->AddLine(ImVec2(centerX - 200.0f, sep2Y),
+                ImVec2(centerX + 200.0f, sep2Y), IM_COL32(255, 255, 255, 18),
+                1.0f);
+
+  float tipY = sep2Y + 14.0f;
+
+  const char *tipTitle = "Manual installation";
+  ImVec2 tipTitleSize = ImGui::CalcTextSize(tipTitle);
+  ImGui::SetCursorScreenPos(ImVec2(centerX - tipTitleSize.x * 0.5f, tipY));
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.78f, 0.40f, 1.0f));
+  ImGui::Text("%s", tipTitle);
+  ImGui::PopStyleColor();
+
+  const char *tip1 = "You can still browse & download content from the Garage,";
+  const char *tip2 =
+      "then import it manually into your project's  .vx/modules/  folder.";
+  const char *tip3 = "For more information, refer to the documentation.";
+
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.58f, 0.68f, 1.0f));
+
+  ImVec2 t1 = ImGui::CalcTextSize(tip1);
+  ImGui::SetCursorScreenPos(ImVec2(centerX - t1.x * 0.5f, tipY + 22.0f));
+  ImGui::Text("%s", tip1);
+
+  ImVec2 t2 = ImGui::CalcTextSize(tip2);
+  ImGui::SetCursorScreenPos(
+      ImVec2(centerX - t2.x * 0.5f, tipY + 22.0f + t1.y + 4.0f));
+  ImGui::Text("%s", tip2);
+
+  ImVec2 t3 = ImGui::CalcTextSize(tip3);
+  float tip3Y = tipY + 22.0f + t1.y + 4.0f + t2.y + 4.0f;
+  ImGui::SetCursorScreenPos(ImVec2(centerX - t3.x * 0.5f, tip3Y));
+  ImGui::Text("%s", tip3);
+
+  ImGui::PopStyleColor();
+
+  if (true) {
+    float btnW = 140.0f;
+    float btnH = 34.0f;
+    float btnY = tip3Y + t3.y + 28.0f;
+
+    ImGui::SetCursorScreenPos(ImVec2(centerX - btnW * 0.5f, btnY));
+
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.38f, 0.40f, 0.95f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                          ImVec4(0.48f, 0.50f, 1.0f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                          ImVec4(0.28f, 0.30f, 0.80f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
+
+    if (CherryKit::ButtonImageTextImage(
+            "Browse the Garage",
+            Cherry::GetPath("resources/imgs/icons/misc/icon_net.png"),
+            Cherry::GetPath("resources/imgs/icons/misc/icon_redirect.png"))
+            .GetDataAs<bool>("isClicked")) {
+      VortexMaker::OpenURL("https://garage.infinite.si");
+    }
+
+    ImGui::PopStyleVar();
+    ImGui::PopStyleColor(4);
+  }
+}
+
+void ModulesUtility::RenderImport() {
+  ImGuiIO &io = ImGui::GetIO();
+  ImVec2 windowSize = ImGui::GetContentRegionAvail();
+  ImVec2 windowPos = ImGui::GetCursorScreenPos();
+
+  float centerX = windowPos.x + windowSize.x * 0.5f;
+  float centerY = windowPos.y + windowSize.y * 0.5f;
+
+  float totalBlockHeight =
+      20.0f + 36.0f + 12.0f + 60.0f + 20.0f + 28.0f + 80.0f;
+
+  float startY = centerY - totalBlockHeight * 0.5f;
+
+  ImGui::SetCursorScreenPos(ImVec2(centerX * 0.5f, startY));
+
+  Cherry::PushFont("JetBrainsMono");
+  const char *title = "You will be able to import contents directly here";
+  ImVec2 titleSize = ImGui::CalcTextSize(title);
+  ImGui::SetCursorScreenPos(
+      ImVec2(centerX - titleSize.x * 0.5f, startY + 20.0f));
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+  ImGui::Text("%s", title);
+  Cherry::PopFont();
+
+  const char *badge = "  WIP  ";
+  ImVec2 badgeSize = ImGui::CalcTextSize(badge);
+  float badgePaddingX = 16.0f;
+  float badgePaddingY = 6.0f;
+  float badgeTotalW = badgeSize.x + badgePaddingX * 2.0f;
+  float badgeTotalH = badgeSize.y + badgePaddingY * 2.0f;
+  float badgeX = centerX - badgeTotalW * 0.5f;
+  float badgeY = startY + 20.0f + 36.0f + 12.0f;
+
+  ImDrawList *draw = ImGui::GetWindowDrawList();
+  draw->AddRectFilled(ImVec2(badgeX, badgeY),
+                      ImVec2(badgeX + badgeTotalW, badgeY + badgeTotalH),
+                      IM_COL32(47, 47, 47, 255), 6.0f);
+  ImGui::SetCursorScreenPos(
+      ImVec2(badgeX + badgePaddingX, badgeY + badgePaddingY));
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+  ImGui::Text("%s", badge);
+  ImGui::PopStyleColor();
+
+  float sepY = badgeY + badgeTotalH + 20.0f;
+  draw->AddLine(ImVec2(centerX - 120.0f, sepY), ImVec2(centerX + 120.0f, sepY),
+                IM_COL32(255, 255, 255, 30), 1.0f);
+
+  const char *desc = "Quick importation utility is currently in development.";
+
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.65f, 0.65f, 0.75f, 1.0f));
+
+  ImVec2 d1 = ImGui::CalcTextSize(desc);
+  ImGui::SetCursorScreenPos(ImVec2(centerX - d1.x * 0.5f, sepY + 16.0f));
+  ImGui::Text("%s", desc);
+
+  ImGui::PopStyleColor(2);
+
+  float sep2Y = badgeY + badgeTotalH + 122.0f;
+  draw->AddLine(ImVec2(centerX - 200.0f, sep2Y),
+                ImVec2(centerX + 200.0f, sep2Y), IM_COL32(255, 255, 255, 18),
+                1.0f);
+
+  float tipY = sep2Y + 14.0f;
+
+  const char *tipTitle = "Manual installation";
+  ImVec2 tipTitleSize = ImGui::CalcTextSize(tipTitle);
+  ImGui::SetCursorScreenPos(ImVec2(centerX - tipTitleSize.x * 0.5f, tipY));
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.78f, 0.40f, 1.0f));
+  ImGui::Text("%s", tipTitle);
+  ImGui::PopStyleColor();
+
+  const char *tip1 =
+      "You can still import manually into your project's  .vx/modules/  folder";
+  const char *tip3 = "For more information, refer to the documentation.";
+
+  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.58f, 0.68f, 1.0f));
+
+  ImVec2 t1 = ImGui::CalcTextSize(tip1);
+  ImGui::SetCursorScreenPos(ImVec2(centerX - t1.x * 0.5f, tipY + 22.0f));
+  ImGui::Text("%s", tip1);
+
+  ImVec2 t3 = ImGui::CalcTextSize(tip3);
+  float tip3Y = tipY + 22.0f + t1.y + 4.0f + 4.0f;
+  ImGui::SetCursorScreenPos(ImVec2(centerX - t3.x * 0.5f, tip3Y));
+  ImGui::Text("%s", tip3);
+
+  ImGui::PopStyleColor();
+}
 
 void ModulesUtility::RenderInstalled() {
   const float minPaneWidth = 50.0f;
