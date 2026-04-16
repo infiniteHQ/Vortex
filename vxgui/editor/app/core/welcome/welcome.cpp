@@ -86,5 +86,39 @@ void Welcome::Render() {
       "true") {
     c_Editor->ToggleProjectSettings();
   }
+
+  if (CherryApp.GetComponentData(CherryID("open_terminal"), "isClicked") ==
+      "true") {
+    c_Editor->SpawnLogsUtility();
+  }
+
+  if (CherryApp.GetComponentData(CherryID("open_content_browser"),
+                                 "isClicked") == "true") {
+    c_Editor->SpawnContentBrowser();
+  }
+
+  if (CherryApp.GetComponentData(CherryID("open_project_settings"),
+                                 "isClicked") == "true") {
+    c_Editor->ToggleProjectSettings();
+  }
+
+  if (CherryApp.GetComponentData(CherryID("taking_control"), "isClicked") ==
+      "true") {
+    VortexMaker::OpenURL("https://vortex.infinite.si/"
+                         "docpage?version=1.0&content_name=take_vortex_editor&"
+                         "section=get_started&page_name=discover_interface");
+  }
+
+  if (CherryApp.GetComponentData(CherryID("learn_modules"), "isClicked") ==
+      "true") {
+    VortexMaker::OpenURL("https://vortex.infinite.si/"
+                         "docpage?version=1.0&content_name=take_vortex_editor&"
+                         "section=get_started&page_name=handle_modules");
+  }
+
+  if (CherryApp.GetComponentData(CherryID("visit_website"), "isClicked") ==
+      "true") {
+    VortexMaker::OpenURL("https://vortex.infinite.si/");
+  }
 }
 } // namespace VortexEditor

@@ -61,16 +61,29 @@ function DrawWelcomeScreen()
     
     Cherry.BeginComponent("open_terminal")
     if DrawMenuButton(marginX, leftY, colWidth, "Open new terminal...", "Ctrl+T") then 
-        Cherry.SetComponentData("open_terminal", "isClicked","false")
+        Cherry.SetComponentData("open_terminal", "isClicked","true")
     else        
         Cherry.SetComponentData("open_terminal", "isClicked","false")
     end
     Cherry.EndComponent()
 
     leftY = leftY + 35
-    if DrawMenuButton(marginX, leftY, colWidth, "Open new content browser...", "Ctrl+B") then end
+    Cherry.BeginComponent("open_content_browser")
+    if DrawMenuButton(marginX, leftY, colWidth, "Open new content browser...", "Ctrl+B") then
+        Cherry.SetComponentData("open_content_browser", "isClicked","true")
+    else        
+        Cherry.SetComponentData("open_content_browser", "isClicked","false")
+    end
+    Cherry.EndComponent()
+    
     leftY = leftY + 35
-    if DrawMenuButton(marginX, leftY, colWidth, "Open project settings...", "") then end
+    Cherry.BeginComponent("open_project_settings")
+    if DrawMenuButton(marginX, leftY, colWidth, "Open project settings...", "") then
+        Cherry.SetComponentData("open_project_settings", "isClicked","true")
+    else        
+        Cherry.SetComponentData("open_project_settings", "isClicked","false")
+    end
+    Cherry.EndComponent()
 
     local rightColX = marginX + colWidth + marginX
     local walkY = contentStartY 
@@ -78,17 +91,32 @@ function DrawWelcomeScreen()
     Cherry.DrawText(rightColX, walkY, 20.0, TEXT_COLOR, "Walkthroughs")
     walkY = walkY + 40
 
-    if DrawWalkthroughCard(rightColX, walkY, colWidth, 80, "Get Started with Lua", "Learn the basics of the language") then 
-        Cherry.Log("Doc: Lua")
+    Cherry.BeginComponent("taking_control")
+    if DrawWalkthroughCard(rightColX, walkY, colWidth, 80, "Taking control of Vortex", "Learn the basics of the Vortex Creation platform") then
+        Cherry.SetComponentData("taking_control", "isClicked","true")
+    else        
+        Cherry.SetComponentData("taking_control", "isClicked","false")
     end
+    Cherry.EndComponent()
+
     walkY = walkY + 95
-    if DrawWalkthroughCard(rightColX, walkY, colWidth, 80, "Customize Vortex", "Change themes and workspace fonts") then 
-        Cherry.Log("Doc: Custom")
+    Cherry.BeginComponent("learn_modules")
+    if DrawWalkthroughCard(rightColX, walkY, colWidth, 80, "Work with modules", "Learn how modules work and add your first module") then
+        Cherry.SetComponentData("learn_modules", "isClicked","true")
+    else        
+        Cherry.SetComponentData("learn_modules", "isClicked","false")
     end
+    Cherry.EndComponent()
+
     walkY = walkY + 95
-    if DrawWalkthroughCard(rightColX, walkY, colWidth, 80, "API Reference", "Full documentation of Cherry API") then 
-        Cherry.Log("Doc: API")
+    Cherry.BeginComponent("visit_website")
+    if DrawWalkthroughCard(rightColX, walkY, colWidth, 80, "Visit the Vortex website", "Visit the website, discover documentation, tutorials and all news !") then 
+        Cherry.SetComponentData("visit_website", "isClicked","true")
+    else        
+        Cherry.SetComponentData("visit_website", "isClicked","false")
     end
+    Cherry.EndComponent()
+
 end
 
 function DrawAppIcon(x, y, size, label, iconPath)

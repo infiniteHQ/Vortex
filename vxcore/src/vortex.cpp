@@ -893,8 +893,10 @@ VORTEX_API void VortexMaker::OpenURL(const std::string &url) {
   std::string command = "open " + url;
   system(command.c_str());
 #elif defined(__linux__)
-  std::string command = "xdg-open " + url;
-  system(command.c_str());
+  if (fork() == 0) {
+    execlp("xdg-open", "xdg-open", url.c_str(), (char *)nullptr);
+    _exit(1);
+  }
 #else
   std::cerr << "Unsupported platform: unable to open URL." << std::endl;
 #endif
