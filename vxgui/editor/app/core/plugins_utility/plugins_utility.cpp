@@ -325,170 +325,170 @@ void PluginsUtility::Render() {
 
 void PluginsUtility::RenderPluginDeletionModal() {
   if (g_TriggerPluginDeletionModal) {
-    ImGui::OpenPopup("##delete_plugin_modal");
+    CherryGUI::OpenPopup("##delete_plugin_modal");
     g_TriggerPluginDeletionModal = false;
   }
 
-  ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-  ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-  ImGui::SetNextWindowSize(ImVec2(520, 0), ImGuiCond_Appearing);
-  ImGui::SetNextWindowBgAlpha(1.0f);
+  ImVec2 center = CherryGUI::GetMainViewport()->GetCenter();
+  CherryGUI::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+  CherryGUI::SetNextWindowSize(ImVec2(520, 0), ImGuiCond_Appearing);
+  CherryGUI::SetNextWindowBgAlpha(1.0f);
 
-  ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 12.0f);
-  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-  ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
-  ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.11f, 0.11f, 0.12f, 1.00f));
-  ImGui::PushStyleColor(ImGuiCol_ModalWindowDimBg,
+  CherryGUI::PushStyleVar(ImGuiStyleVar_WindowRounding, 12.0f);
+  CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+  CherryGUI::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
+  CherryGUI::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.11f, 0.11f, 0.12f, 1.00f));
+  CherryGUI::PushStyleColor(ImGuiCol_ModalWindowDimBg,
                         ImVec4(0.00f, 0.00f, 0.00f, 0.65f));
-  ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.22f, 0.22f, 0.24f, 1.00f));
+  CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.22f, 0.22f, 0.24f, 1.00f));
 
   bool open = true;
-  if (ImGui::BeginPopupModal("##delete_plugin_modal", &open,
+  if (CherryGUI::BeginPopupModal("##delete_plugin_modal", &open,
                              ImGuiWindowFlags_AlwaysAutoResize |
                                  ImGuiWindowFlags_NoMove |
                                  ImGuiWindowFlags_NoTitleBar)) {
     const float MODAL_W = 520.0f;
 
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.62f, 0.10f, 0.10f, 1.0f));
-    ImGui::BeginChild("##topbar", ImVec2(MODAL_W, 48.0f), false,
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.62f, 0.10f, 0.10f, 1.0f));
+    CherryGUI::BeginChild("##topbar", ImVec2(MODAL_W, 48.0f), false,
                       ImGuiWindowFlags_NoScrollbar);
     {
-      ImGui::SetCursorPos(ImVec2(16.0f, 13.0f));
-      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-      ImGui::TextUnformatted("Delete plugin");
-      ImGui::PopStyleColor();
+      CherryGUI::SetCursorPos(ImVec2(16.0f, 13.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+      CherryGUI::TextUnformatted("Delete plugin");
+      CherryGUI::PopStyleColor();
     }
-    ImGui::EndChild();
-    ImGui::PopStyleColor();
+    CherryGUI::EndChild();
+    CherryGUI::PopStyleColor();
 
-    ImGui::SetCursorPosX(0.0f);
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-    ImGui::BeginChild("##body", ImVec2(MODAL_W, 200.0f), false,
+    CherryGUI::SetCursorPosX(0.0f);
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    CherryGUI::BeginChild("##body", ImVec2(MODAL_W, 200.0f), false,
                       ImGuiWindowFlags_NoScrollbar |
                           ImGuiWindowFlags_AlwaysAutoResize);
     {
-      ImGui::SetCursorPos(ImVec2(20.0f, 16.0f));
+      CherryGUI::SetCursorPos(ImVec2(20.0f, 16.0f));
 
-      ImGui::PushStyleColor(ImGuiCol_ChildBg,
+      CherryGUI::PushStyleColor(ImGuiCol_ChildBg,
                             ImVec4(0.16f, 0.16f, 0.18f, 1.0f));
-      ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 8.0f);
-      ImGui::SetCursorPosX(20.0f);
-      ImGui::BeginChild("##plugincard", ImVec2(MODAL_W - 40.0f, 82.0f), false,
+      CherryGUI::PushStyleVar(ImGuiStyleVar_ChildRounding, 8.0f);
+      CherryGUI::SetCursorPosX(20.0f);
+      CherryGUI::BeginChild("##plugincard", ImVec2(MODAL_W - 40.0f, 82.0f), false,
                         ImGuiWindowFlags_NoScrollbar);
       {
         const float LOGO_SIZE = 52.0f;
-        ImGui::SetCursorPos(ImVec2(14.0f, 15.0f));
+        CherryGUI::SetCursorPos(ImVec2(14.0f, 15.0f));
 
         ImTextureID logo = Cherry::GetTexture(g_PluginToDeleteLogoPath);
         if (logo) {
           ImVec2 logoSize = Cherry::GetTextureSize(g_PluginToDeleteLogoPath);
           float scale = LOGO_SIZE / (std::max)(logoSize.x, logoSize.y);
           ImVec2 drawSize(logoSize.x * scale, logoSize.y * scale);
-          ImVec2 imgPos = ImGui::GetCursorPos();
+          ImVec2 imgPos = CherryGUI::GetCursorPos();
           imgPos.x += (LOGO_SIZE - drawSize.x) * 0.5f;
           imgPos.y += (LOGO_SIZE - drawSize.y) * 0.5f;
-          ImGui::SetCursorPos(imgPos);
-          ImGui::Image(logo, drawSize);
+          CherryGUI::SetCursorPos(imgPos);
+          CherryGUI::Image(logo, drawSize);
         } else {
-          ImVec2 p = ImGui::GetCursorScreenPos();
-          ImDrawList *dl = ImGui::GetWindowDrawList();
+          ImVec2 p = CherryGUI::GetCursorScreenPos();
+          ImDrawList *dl = CherryGUI::GetWindowDrawList();
           dl->AddRectFilled(p, ImVec2(p.x + LOGO_SIZE, p.y + LOGO_SIZE),
                             IM_COL32(80, 40, 40, 255), 8.0f);
           std::string initials = g_PluginToDeleteProperName.size() >= 2
                                      ? g_PluginToDeleteProperName.substr(0, 2)
                                      : "??";
-          ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.6f, 1.0f));
-          ImVec2 ts = ImGui::CalcTextSize(initials.c_str());
-          ImGui::SetCursorScreenPos(ImVec2(p.x + (LOGO_SIZE - ts.x) * 0.5f,
+          CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.6f, 1.0f));
+          ImVec2 ts = CherryGUI::CalcTextSize(initials.c_str());
+          CherryGUI::SetCursorScreenPos(ImVec2(p.x + (LOGO_SIZE - ts.x) * 0.5f,
                                            p.y + (LOGO_SIZE - ts.y) * 0.5f));
-          ImGui::TextUnformatted(initials.c_str());
-          ImGui::PopStyleColor();
-          ImGui::SetCursorPos(ImVec2(14.0f + LOGO_SIZE + 14.0f, 15.0f));
+          CherryGUI::TextUnformatted(initials.c_str());
+          CherryGUI::PopStyleColor();
+          CherryGUI::SetCursorPos(ImVec2(14.0f + LOGO_SIZE + 14.0f, 15.0f));
         }
 
         float textX = 14.0f + LOGO_SIZE + 14.0f;
-        ImGui::SetCursorPos(ImVec2(textX, 15.0f));
+        CherryGUI::SetCursorPos(ImVec2(textX, 15.0f));
 
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.95f, 0.95f, 0.96f, 1.0f));
-        ImGui::TextUnformatted(g_PluginToDeleteProperName.c_str());
-        ImGui::PopStyleColor();
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.95f, 0.95f, 0.96f, 1.0f));
+        CherryGUI::TextUnformatted(g_PluginToDeleteProperName.c_str());
+        CherryGUI::PopStyleColor();
 
-        ImGui::SetCursorPos(ImVec2(textX, 36.0f));
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.55f, 0.55f, 0.58f, 1.0f));
-        ImGui::Text("v%s", g_PluginToDeleteVersion.c_str());
-        ImGui::PopStyleColor();
+        CherryGUI::SetCursorPos(ImVec2(textX, 36.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.55f, 0.55f, 0.58f, 1.0f));
+        CherryGUI::Text("v%s", g_PluginToDeleteVersion.c_str());
+        CherryGUI::PopStyleColor();
 
         if (!g_PluginToDeleteDescription.empty()) {
-          ImGui::SetCursorPos(ImVec2(textX, 54.0f));
-          ImGui::PushStyleColor(ImGuiCol_Text,
+          CherryGUI::SetCursorPos(ImVec2(textX, 54.0f));
+          CherryGUI::PushStyleColor(ImGuiCol_Text,
                                 ImVec4(0.45f, 0.45f, 0.48f, 1.0f));
           // Clamp to single line with ellipsis
           std::string desc = g_PluginToDeleteDescription;
           const float maxW = MODAL_W - 40.0f - textX - 14.0f;
           while (!desc.empty() &&
-                 ImGui::CalcTextSize((desc + "...").c_str()).x > maxW)
+                 CherryGUI::CalcTextSize((desc + "...").c_str()).x > maxW)
             desc.pop_back();
           if (desc.size() < g_PluginToDeleteDescription.size())
             desc += "...";
-          ImGui::TextUnformatted(desc.c_str());
-          ImGui::PopStyleColor();
+          CherryGUI::TextUnformatted(desc.c_str());
+          CherryGUI::PopStyleColor();
         }
       }
-      ImGui::EndChild();
-      ImGui::PopStyleVar();
-      ImGui::PopStyleColor();
+      CherryGUI::EndChild();
+      CherryGUI::PopStyleVar();
+      CherryGUI::PopStyleColor();
 
-      ImGui::SetCursorPos(ImVec2(20.0f, ImGui::GetCursorPosY() + 8.0f));
-      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.62f, 0.62f, 0.65f, 1.0f));
-      ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + MODAL_W - 40.0f);
-      ImGui::TextUnformatted("This action is permanent. The plugin files "
+      CherryGUI::SetCursorPos(ImVec2(20.0f, CherryGUI::GetCursorPosY() + 8.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.62f, 0.62f, 0.65f, 1.0f));
+      CherryGUI::PushTextWrapPos(CherryGUI::GetCursorPosX() + MODAL_W - 40.0f);
+      CherryGUI::TextUnformatted("This action is permanent. The plugin files "
                              "will be removed from disk "
                              "and cannot be recovered.");
-      ImGui::PopTextWrapPos();
-      ImGui::PopStyleColor();
+      CherryGUI::PopTextWrapPos();
+      CherryGUI::PopStyleColor();
 
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 14.0f);
-      ImDrawList *dl = ImGui::GetWindowDrawList();
-      ImVec2 sepA = ImGui::GetCursorScreenPos();
+      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 14.0f);
+      ImDrawList *dl = CherryGUI::GetWindowDrawList();
+      ImVec2 sepA = CherryGUI::GetCursorScreenPos();
       dl->AddLine(sepA, ImVec2(sepA.x + MODAL_W, sepA.y),
                   IM_COL32(50, 50, 55, 255), 1.0f);
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 1.0f);
+      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 1.0f);
 
       const float BTN_H = 36.0f;
       const float BTN_W = 140.0f;
       const float PAD = 16.0f;
 
-      ImGui::SetCursorPos(ImVec2(MODAL_W - (BTN_W * 2.0f + 8.0f + PAD),
-                                 ImGui::GetCursorPosY() + 12.0f));
+      CherryGUI::SetCursorPos(ImVec2(MODAL_W - (BTN_W * 2.0f + 8.0f + PAD),
+                                 CherryGUI::GetCursorPosY() + 12.0f));
 
-      ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 7.0f);
-      ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.20f, 0.20f, 0.22f, 1.0f));
-      ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+      CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 7.0f);
+      CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.20f, 0.20f, 0.22f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered,
                             ImVec4(0.26f, 0.26f, 0.28f, 1.0f));
-      ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+      CherryGUI::PushStyleColor(ImGuiCol_ButtonActive,
                             ImVec4(0.17f, 0.17f, 0.19f, 1.0f));
-      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.78f, 0.78f, 0.80f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.78f, 0.78f, 0.80f, 1.0f));
 
-      if (ImGui::Button("Cancel", ImVec2(BTN_W, BTN_H))) {
+      if (CherryGUI::Button("Cancel", ImVec2(BTN_W, BTN_H))) {
         g_PluginToDeleteName.clear();
         g_PluginToDeleteProperName.clear();
         g_PluginToDeleteDescription.clear();
         g_PluginToDeleteVersion.clear();
         g_PluginToDeleteLogoPath.clear();
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
-      ImGui::PopStyleColor(4);
+      CherryGUI::PopStyleColor(4);
 
-      ImGui::SameLine(0.0f, 8.0f);
+      CherryGUI::SameLine(0.0f, 8.0f);
 
-      ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.62f, 0.10f, 0.10f, 1.0f));
-      ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+      CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.62f, 0.10f, 0.10f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered,
                             ImVec4(0.75f, 0.14f, 0.14f, 1.0f));
-      ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+      CherryGUI::PushStyleColor(ImGuiCol_ButtonActive,
                             ImVec4(0.50f, 0.08f, 0.08f, 1.0f));
-      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 
-      if (ImGui::Button("Delete plugin", ImVec2(BTN_W, BTN_H))) {
+      if (CherryGUI::Button("Delete plugin", ImVec2(BTN_W, BTN_H))) {
         VortexMaker::DeleteProjectPlugin(g_PluginToDeleteName,
                                          g_PluginToDeleteVersion);
         VortexMaker::LoadEditorPlugins(
@@ -502,27 +502,27 @@ void PluginsUtility::RenderPluginDeletionModal() {
         g_PluginToDeleteLogoPath.clear();
         m_SelectedCategoryChanged = true;
         RefreshCategories();
-        ImGui::CloseCurrentPopup();
+        CherryGUI::CloseCurrentPopup();
       }
-      ImGui::PopStyleColor(4);
-      ImGui::PopStyleVar();
+      CherryGUI::PopStyleColor(4);
+      CherryGUI::PopStyleVar();
 
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 14.0f);
+      CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 14.0f);
     }
-    ImGui::EndChild();
-    ImGui::PopStyleColor();
+    CherryGUI::EndChild();
+    CherryGUI::PopStyleColor();
 
-    ImGui::EndPopup();
+    CherryGUI::EndPopup();
   }
 
-  ImGui::PopStyleColor(3);
-  ImGui::PopStyleVar(3);
+  CherryGUI::PopStyleColor(3);
+  CherryGUI::PopStyleVar(3);
 }
 
 void PluginsUtility::RenderDownload() {
-  ImGuiIO &io = ImGui::GetIO();
-  ImVec2 windowSize = ImGui::GetContentRegionAvail();
-  ImVec2 windowPos = ImGui::GetCursorScreenPos();
+  ImGuiIO &io = CherryGUI::GetIO();
+  ImVec2 windowSize = CherryGUI::GetContentRegionAvail();
+  ImVec2 windowPos = CherryGUI::GetCursorScreenPos();
 
   float centerX = windowPos.x + windowSize.x * 0.5f;
   float centerY = windowPos.y + windowSize.y * 0.5f;
@@ -537,21 +537,21 @@ void PluginsUtility::RenderDownload() {
 
   float startY = centerY - totalBlockHeight * 0.5f;
 
-  ImGui::SetCursorScreenPos(ImVec2(centerX - logoWidth * 0.5f, startY));
-  ImGui::Image(logo, ImVec2(logoWidth, logoHeight));
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - logoWidth * 0.5f, startY));
+  CherryGUI::Image(logo, ImVec2(logoWidth, logoHeight));
 
   Cherry::PushFont("JetBrainsMono");
   const char *title =
       "You will be able to download content from the Infinite Garage";
-  ImVec2 titleSize = ImGui::CalcTextSize(title);
-  ImGui::SetCursorScreenPos(
+  ImVec2 titleSize = CherryGUI::CalcTextSize(title);
+  CherryGUI::SetCursorScreenPos(
       ImVec2(centerX - titleSize.x * 0.5f, startY + logoHeight + 20.0f));
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-  ImGui::Text("%s", title);
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+  CherryGUI::Text("%s", title);
   Cherry::PopFont();
 
   const char *badge = "  WIP  ";
-  ImVec2 badgeSize = ImGui::CalcTextSize(badge);
+  ImVec2 badgeSize = CherryGUI::CalcTextSize(badge);
   float badgePaddingX = 16.0f;
   float badgePaddingY = 6.0f;
   float badgeTotalW = badgeSize.x + badgePaddingX * 2.0f;
@@ -559,15 +559,15 @@ void PluginsUtility::RenderDownload() {
   float badgeX = centerX - badgeTotalW * 0.5f;
   float badgeY = startY + logoHeight + 20.0f + 36.0f + 12.0f;
 
-  ImDrawList *draw = ImGui::GetWindowDrawList();
+  ImDrawList *draw = CherryGUI::GetWindowDrawList();
   draw->AddRectFilled(ImVec2(badgeX, badgeY),
                       ImVec2(badgeX + badgeTotalW, badgeY + badgeTotalH),
                       IM_COL32(47, 47, 47, 255), 6.0f);
-  ImGui::SetCursorScreenPos(
+  CherryGUI::SetCursorScreenPos(
       ImVec2(badgeX + badgePaddingX, badgeY + badgePaddingY));
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-  ImGui::Text("%s", badge);
-  ImGui::PopStyleColor();
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+  CherryGUI::Text("%s", badge);
+  CherryGUI::PopStyleColor();
 
   float sepY = badgeY + badgeTotalH + 20.0f;
   draw->AddLine(ImVec2(centerX - 120.0f, sepY), ImVec2(centerX + 120.0f, sepY),
@@ -577,18 +577,18 @@ void PluginsUtility::RenderDownload() {
       "Download & content management is currently in development.";
   const char *desc2 = "The Infinite Garage is a sharing platform for makers.";
 
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.65f, 0.65f, 0.75f, 1.0f));
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.65f, 0.65f, 0.75f, 1.0f));
 
-  ImVec2 d1 = ImGui::CalcTextSize(desc);
-  ImGui::SetCursorScreenPos(ImVec2(centerX - d1.x * 0.5f, sepY + 16.0f));
-  ImGui::Text("%s", desc);
+  ImVec2 d1 = CherryGUI::CalcTextSize(desc);
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - d1.x * 0.5f, sepY + 16.0f));
+  CherryGUI::Text("%s", desc);
 
-  ImVec2 d2 = ImGui::CalcTextSize(desc2);
+  ImVec2 d2 = CherryGUI::CalcTextSize(desc2);
   float desc2Y = sepY + 16.0f + d1.y + 6.0f;
-  ImGui::SetCursorScreenPos(ImVec2(centerX - d2.x * 0.5f, desc2Y));
-  ImGui::Text("%s", desc2);
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - d2.x * 0.5f, desc2Y));
+  CherryGUI::Text("%s", desc2);
 
-  ImGui::PopStyleColor(2);
+  CherryGUI::PopStyleColor(2);
 
   float sep2Y = desc2Y + d2.y + 22.0f;
   draw->AddLine(ImVec2(centerX - 200.0f, sep2Y),
@@ -598,49 +598,49 @@ void PluginsUtility::RenderDownload() {
   float tipY = sep2Y + 14.0f;
 
   const char *tipTitle = "Manual installation";
-  ImVec2 tipTitleSize = ImGui::CalcTextSize(tipTitle);
-  ImGui::SetCursorScreenPos(ImVec2(centerX - tipTitleSize.x * 0.5f, tipY));
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.78f, 0.40f, 1.0f));
-  ImGui::Text("%s", tipTitle);
-  ImGui::PopStyleColor();
+  ImVec2 tipTitleSize = CherryGUI::CalcTextSize(tipTitle);
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - tipTitleSize.x * 0.5f, tipY));
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.78f, 0.40f, 1.0f));
+  CherryGUI::Text("%s", tipTitle);
+  CherryGUI::PopStyleColor();
 
   const char *tip1 = "You can still browse & download content from the Garage,";
   const char *tip2 =
       "then import it manually into your project's  .vx/plugins/  folder.";
   const char *tip3 = "For more information, refer to the documentation.";
 
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.58f, 0.68f, 1.0f));
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.58f, 0.68f, 1.0f));
 
-  ImVec2 t1 = ImGui::CalcTextSize(tip1);
-  ImGui::SetCursorScreenPos(ImVec2(centerX - t1.x * 0.5f, tipY + 22.0f));
-  ImGui::Text("%s", tip1);
+  ImVec2 t1 = CherryGUI::CalcTextSize(tip1);
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - t1.x * 0.5f, tipY + 22.0f));
+  CherryGUI::Text("%s", tip1);
 
-  ImVec2 t2 = ImGui::CalcTextSize(tip2);
-  ImGui::SetCursorScreenPos(
+  ImVec2 t2 = CherryGUI::CalcTextSize(tip2);
+  CherryGUI::SetCursorScreenPos(
       ImVec2(centerX - t2.x * 0.5f, tipY + 22.0f + t1.y + 4.0f));
-  ImGui::Text("%s", tip2);
+  CherryGUI::Text("%s", tip2);
 
-  ImVec2 t3 = ImGui::CalcTextSize(tip3);
+  ImVec2 t3 = CherryGUI::CalcTextSize(tip3);
   float tip3Y = tipY + 22.0f + t1.y + 4.0f + t2.y + 4.0f;
-  ImGui::SetCursorScreenPos(ImVec2(centerX - t3.x * 0.5f, tip3Y));
-  ImGui::Text("%s", tip3);
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - t3.x * 0.5f, tip3Y));
+  CherryGUI::Text("%s", tip3);
 
-  ImGui::PopStyleColor();
+  CherryGUI::PopStyleColor();
 
   if (true) {
     float btnW = 140.0f;
     float btnH = 34.0f;
     float btnY = tip3Y + t3.y + 28.0f;
 
-    ImGui::SetCursorScreenPos(ImVec2(centerX - btnW * 0.5f, btnY));
+    CherryGUI::SetCursorScreenPos(ImVec2(centerX - btnW * 0.5f, btnY));
 
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.38f, 0.40f, 0.95f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+    CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.38f, 0.40f, 0.95f, 1.0f));
+    CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered,
                           ImVec4(0.48f, 0.50f, 1.0f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+    CherryGUI::PushStyleColor(ImGuiCol_ButtonActive,
                           ImVec4(0.28f, 0.30f, 0.80f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
+    CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 6.0f);
 
     if (CherryKit::ButtonImageTextImage(
             "Browse the Garage",
@@ -650,15 +650,15 @@ void PluginsUtility::RenderDownload() {
       VortexMaker::OpenURL("https://garage.infinite.si");
     }
 
-    ImGui::PopStyleVar();
-    ImGui::PopStyleColor(4);
+    CherryGUI::PopStyleVar();
+    CherryGUI::PopStyleColor(4);
   }
 }
 
 void PluginsUtility::RenderImport() {
-  ImGuiIO &io = ImGui::GetIO();
-  ImVec2 windowSize = ImGui::GetContentRegionAvail();
-  ImVec2 windowPos = ImGui::GetCursorScreenPos();
+  ImGuiIO &io = CherryGUI::GetIO();
+  ImVec2 windowSize = CherryGUI::GetContentRegionAvail();
+  ImVec2 windowPos = CherryGUI::GetCursorScreenPos();
 
   float centerX = windowPos.x + windowSize.x * 0.5f;
   float centerY = windowPos.y + windowSize.y * 0.5f;
@@ -668,19 +668,19 @@ void PluginsUtility::RenderImport() {
 
   float startY = centerY - totalBlockHeight * 0.5f;
 
-  ImGui::SetCursorScreenPos(ImVec2(centerX * 0.5f, startY));
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX * 0.5f, startY));
 
   Cherry::PushFont("JetBrainsMono");
   const char *title = "You will be able to import contents directly here";
-  ImVec2 titleSize = ImGui::CalcTextSize(title);
-  ImGui::SetCursorScreenPos(
+  ImVec2 titleSize = CherryGUI::CalcTextSize(title);
+  CherryGUI::SetCursorScreenPos(
       ImVec2(centerX - titleSize.x * 0.5f, startY + 20.0f));
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-  ImGui::Text("%s", title);
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+  CherryGUI::Text("%s", title);
   Cherry::PopFont();
 
   const char *badge = "  WIP  ";
-  ImVec2 badgeSize = ImGui::CalcTextSize(badge);
+  ImVec2 badgeSize = CherryGUI::CalcTextSize(badge);
   float badgePaddingX = 16.0f;
   float badgePaddingY = 6.0f;
   float badgeTotalW = badgeSize.x + badgePaddingX * 2.0f;
@@ -688,15 +688,15 @@ void PluginsUtility::RenderImport() {
   float badgeX = centerX - badgeTotalW * 0.5f;
   float badgeY = startY + 20.0f + 36.0f + 12.0f;
 
-  ImDrawList *draw = ImGui::GetWindowDrawList();
+  ImDrawList *draw = CherryGUI::GetWindowDrawList();
   draw->AddRectFilled(ImVec2(badgeX, badgeY),
                       ImVec2(badgeX + badgeTotalW, badgeY + badgeTotalH),
                       IM_COL32(47, 47, 47, 255), 6.0f);
-  ImGui::SetCursorScreenPos(
+  CherryGUI::SetCursorScreenPos(
       ImVec2(badgeX + badgePaddingX, badgeY + badgePaddingY));
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-  ImGui::Text("%s", badge);
-  ImGui::PopStyleColor();
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+  CherryGUI::Text("%s", badge);
+  CherryGUI::PopStyleColor();
 
   float sepY = badgeY + badgeTotalH + 20.0f;
   draw->AddLine(ImVec2(centerX - 120.0f, sepY), ImVec2(centerX + 120.0f, sepY),
@@ -704,13 +704,13 @@ void PluginsUtility::RenderImport() {
 
   const char *desc = "Quick importation utility is currently in development.";
 
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.65f, 0.65f, 0.75f, 1.0f));
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.65f, 0.65f, 0.75f, 1.0f));
 
-  ImVec2 d1 = ImGui::CalcTextSize(desc);
-  ImGui::SetCursorScreenPos(ImVec2(centerX - d1.x * 0.5f, sepY + 16.0f));
-  ImGui::Text("%s", desc);
+  ImVec2 d1 = CherryGUI::CalcTextSize(desc);
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - d1.x * 0.5f, sepY + 16.0f));
+  CherryGUI::Text("%s", desc);
 
-  ImGui::PopStyleColor(2);
+  CherryGUI::PopStyleColor(2);
 
   float sep2Y = badgeY + badgeTotalH + 122.0f;
   draw->AddLine(ImVec2(centerX - 200.0f, sep2Y),
@@ -720,28 +720,28 @@ void PluginsUtility::RenderImport() {
   float tipY = sep2Y + 14.0f;
 
   const char *tipTitle = "Manual installation";
-  ImVec2 tipTitleSize = ImGui::CalcTextSize(tipTitle);
-  ImGui::SetCursorScreenPos(ImVec2(centerX - tipTitleSize.x * 0.5f, tipY));
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.78f, 0.40f, 1.0f));
-  ImGui::Text("%s", tipTitle);
-  ImGui::PopStyleColor();
+  ImVec2 tipTitleSize = CherryGUI::CalcTextSize(tipTitle);
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - tipTitleSize.x * 0.5f, tipY));
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.85f, 0.78f, 0.40f, 1.0f));
+  CherryGUI::Text("%s", tipTitle);
+  CherryGUI::PopStyleColor();
 
   const char *tip1 =
       "You can still import manually into your project's  .vx/plugins/  folder";
   const char *tip3 = "For more information, refer to the documentation.";
 
-  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.58f, 0.68f, 1.0f));
+  CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.58f, 0.68f, 1.0f));
 
-  ImVec2 t1 = ImGui::CalcTextSize(tip1);
-  ImGui::SetCursorScreenPos(ImVec2(centerX - t1.x * 0.5f, tipY + 22.0f));
-  ImGui::Text("%s", tip1);
+  ImVec2 t1 = CherryGUI::CalcTextSize(tip1);
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - t1.x * 0.5f, tipY + 22.0f));
+  CherryGUI::Text("%s", tip1);
 
-  ImVec2 t3 = ImGui::CalcTextSize(tip3);
+  ImVec2 t3 = CherryGUI::CalcTextSize(tip3);
   float tip3Y = tipY + 22.0f + t1.y + 4.0f + 4.0f;
-  ImGui::SetCursorScreenPos(ImVec2(centerX - t3.x * 0.5f, tip3Y));
-  ImGui::Text("%s", tip3);
+  CherryGUI::SetCursorScreenPos(ImVec2(centerX - t3.x * 0.5f, tip3Y));
+  CherryGUI::Text("%s", tip3);
 
-  ImGui::PopStyleColor();
+  CherryGUI::PopStyleColor();
 }
 
 void PluginsUtility::RenderInstalled() {
