@@ -266,7 +266,7 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
       }
       return 0;
     };
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 4.0f);
+    CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 4.0f);
     ImGuiInputTextFlags input_flags = ImGuiInputTextFlags_EnterReturnsTrue |
                                       ImGuiInputTextFlags_CallbackCompletion |
                                       ImGuiInputTextFlags_CallbackHistory;
@@ -284,50 +284,50 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
     }
 
     if (!matches.empty()) {
-      ImVec2 pos = ImGui::GetCursorScreenPos();
-      float line_h = ImGui::GetTextLineHeightWithSpacing();
-      ImGui::SetNextWindowPos(
+      ImVec2 pos = CherryGUI::GetCursorScreenPos();
+      float line_h = CherryGUI::GetTextLineHeightWithSpacing();
+      CherryGUI::SetNextWindowPos(
           ImVec2(pos.x, pos.y - (line_h * (float)matches.size()) - 20));
-      ImGui::SetNextWindowSize(
-          ImVec2(ImGui::GetContentRegionAvail().x - 60, 0));
+      CherryGUI::SetNextWindowSize(
+          ImVec2(CherryGUI::GetContentRegionAvail().x - 60, 0));
 
-      ImGui::PushStyleColor(ImGuiCol_WindowBg,
+      CherryGUI::PushStyleColor(ImGuiCol_WindowBg,
                             ImVec4(0.07f, 0.07f, 0.07f, 0.98f));
-      ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
-      ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 4));
+      CherryGUI::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+      CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 4));
 
-      if (ImGui::Begin("##Suggestions", nullptr,
+      if (CherryGUI::Begin("##Suggestions", nullptr,
                        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove |
                            ImGuiWindowFlags_NoResize |
                            ImGuiWindowFlags_NoFocusOnAppearing)) {
         for (int i = 0; i < (int)matches.size(); i++) {
           bool selected = (i == s_SelectionIdx);
           if (selected) {
-            ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), ">");
+            CherryGUI::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), ">");
           } else {
-            ImGui::Dummy(ImVec2(ImGui::GetTextLineHeight(), 1));
+            CherryGUI::Dummy(ImVec2(CherryGUI::GetTextLineHeight(), 1));
           }
-          ImGui::SameLine();
-          ImGui::TextColored(ImVec4(0.4f, 0.75f, 1.0f, 1.0f), "%s",
+          CherryGUI::SameLine();
+          CherryGUI::TextColored(ImVec4(0.4f, 0.75f, 1.0f, 1.0f), "%s",
                              matches[i]->name.c_str());
-          ImGui::SameLine();
-          ImGui::TextDisabled("(");
-          ImGui::SameLine();
-          ImGui::TextColored(ImVec4(0.85f, 0.55f, 0.3f, 1.0f), "%s",
+          CherryGUI::SameLine();
+          CherryGUI::TextDisabled("(");
+          CherryGUI::SameLine();
+          CherryGUI::TextColored(ImVec4(0.85f, 0.55f, 0.3f, 1.0f), "%s",
                              matches[i]->params.c_str());
-          ImGui::SameLine();
-          ImGui::TextDisabled(")");
+          CherryGUI::SameLine();
+          CherryGUI::TextDisabled(")");
 
           if (selected && !matches[i]->description.empty()) {
-            ImGui::SameLine();
-            ImGui::TextDisabled(" // %s", matches[i]->description.c_str());
+            CherryGUI::SameLine();
+            CherryGUI::TextDisabled(" // %s", matches[i]->description.c_str());
           }
         }
-        ImGui::End();
+        CherryGUI::End();
       }
 
-      ImGui::PopStyleVar(2);
-      ImGui::PopStyleColor();
+      CherryGUI::PopStyleVar(2);
+      CherryGUI::PopStyleColor();
     }
 
     ImTextureID logo =
@@ -340,14 +340,14 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
     float logoSize = 16.0f;
     float logoSpacing = 4.0f;
 
-    ImGui::SetNextItemWidth(inputWidth);
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
+    CherryGUI::SetNextItemWidth(inputWidth);
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding,
                         ImVec2(paddingX + logoSize + logoSpacing, paddingY));
 
-    ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-    ImVec2 framePadding = ImGui::GetStyle().FramePadding;
+    ImVec2 cursorPos = CherryGUI::GetCursorScreenPos();
+    ImVec2 framePadding = CherryGUI::GetStyle().FramePadding;
 
-    if (ImGui::InputTextWithHint("##ConsoleInput", "Execute command...",
+    if (CherryGUI::InputTextWithHint("##ConsoleInput", "Execute command...",
                                  s_InputBuffer, IM_ARRAYSIZE(s_InputBuffer),
                                  input_flags, callback)) {
       std::string cmd(s_InputBuffer);
@@ -363,23 +363,23 @@ LogsUtilityAppWindow::LogsUtilityAppWindow(const std::string &name) {
         s_SelectionIdx = -1;
         s_ScrollToBottom = true;
       }
-      ImGui::SetKeyboardFocusHere(-1);
+      CherryGUI::SetKeyboardFocusHere(-1);
     }
 
-    ImGui::PopStyleVar();
+    CherryGUI::PopStyleVar();
 
     if (logo) {
       float logoY = cursorPos.y + framePadding.y +
-                    (ImGui::GetFontSize() - logoSize) * 0.5f;
+                    (CherryGUI::GetFontSize() - logoSize) * 0.5f;
       float logoX = cursorPos.x + framePadding.x - logoSize - logoSpacing;
 
-      ImVec4 tint = ImGui::IsItemFocused() ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f)
+      ImVec4 tint = CherryGUI::IsItemFocused() ? ImVec4(1.0f, 1.0f, 1.0f, 1.0f)
                                            : ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
 
-      ImGui::GetWindowDrawList()->AddImage(
+      CherryGUI::GetWindowDrawList()->AddImage(
           logo, ImVec2(logoX, logoY),
           ImVec2(logoX + logoSize, logoY + logoSize), ImVec2(0, 0),
-          ImVec2(1, 1), ImGui::ColorConvertFloat4ToU32(tint));
+          ImVec2(1, 1), CherryGUI::ColorConvertFloat4ToU32(tint));
     }
   });
 
