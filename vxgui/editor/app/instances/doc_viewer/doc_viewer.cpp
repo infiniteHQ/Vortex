@@ -119,6 +119,16 @@ void DocViewerAppWindow::SetupRenderCallback() {
 void DocViewerAppWindow::Render() {
   auto ctx = VortexMaker::GetCurrentContext();
 
+  CherryGUI::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(255, 221, 0, 255));
+  CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
+  CherryGUI::BeginChild("DevBanner", ImVec2(0, 30), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+  CherryGUI::SetCursorPosX((CherryGUI::GetWindowSize().x - CherryGUI::CalcTextSize("This documentation utility is under development. Please visit vortex.infinite.si").x) * 0.5f);
+  CherryGUI::Text("This documentation utility is under development. Please visit vortex.infinite.si");
+
+  CherryGUI::EndChild();
+  CherryGUI::PopStyleColor(2);
+
   CherryGUI::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToImU32("#00000000"));
   CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
 
