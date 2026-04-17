@@ -102,7 +102,7 @@ void AboutVortex::Render() {
 
   if (CherryKit::ButtonImageTextImage(
           "Support Us",
-          Cherry::GetPath("resources/imgs/icons/launcher/heart.png"),
+          Cherry::GetPath("resources/imgs/icons/editor/heart.png"),
           Cherry::GetPath("resources/imgs/weblink.png"))
           .GetData("isClicked") == "true") {
     VortexMaker::OpenURL("https://fund.infinite.si/");
@@ -131,7 +131,7 @@ void AboutVortex::Render() {
   CherryNextProp("size_y", "20");
   if (CherryKit::ButtonImageTextImage(
           "Learn and Documentation",
-          Cherry::GetPath("resources/imgs/icons/launcher/docs.png"),
+          Cherry::GetPath("resources/imgs/icons/editor/docs.png"),
           Cherry::GetPath("resources/imgs/weblink.png"))
           .GetData("isClicked") == "true") {
     VortexMaker::OpenURL("https://vortex.infinite.si/learn");
