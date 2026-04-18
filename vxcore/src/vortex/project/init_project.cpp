@@ -104,6 +104,9 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
       VortexMaker::LogError("Core", "root_content_path does not exist: " +
                                         rootContentPath.string());
     }
+  } else {
+      ctx.projectDataPath = ctx.projectPath;
+      VortexMaker::LogError("Core", "root_content_path does not exist: ");
   }
 
   // TODO : Only for early development.
