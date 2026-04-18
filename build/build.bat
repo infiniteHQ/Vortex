@@ -31,10 +31,12 @@ echo %cd%
 cd ..
 echo %cd%
 
+xcopy /E /Y .\build\bin\ dist\%VERSION%\bin\
+xcopy /E /Y .\build\Release\ prod\
+xcopy /E /Y .\build\cherry_build\Release\ prod\
 
-xcopy /E /Y .\build\bin\ dist\%VERSION%\bin
-xcopy /E /Y .\build\Release\ prod
-xcopy /E /Y .\build\cherry_build\Release\ prod
+copy /Y ..\manifest.json dist\%VERSION%\bin\
+copy /Y ..\vortex_banner.png dist\%VERSION%\bin\
 
 rmdir /S /Q shipping
 mkdir shipping\vortex\windows

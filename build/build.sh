@@ -16,8 +16,11 @@ cd ..
 cp -r ./build/bin/* dist/${VERSION}/bin
 cp -r ./build/bin/* dist/${VERSION}/bin
 cp -r ./handle_crash.sh dist/${VERSION}/bin
-cp -r ../CREDITS dist/${VERSION}/bin
 cp -r ../docs dist/${VERSION}/bin
+cp ../CREDITS dist/${VERSION}/bin
+cp ../manifest.json dist/${VERSION}/bin
+cp ../manifest.json dist/${VERSION}
+cp ../vortex_banner.png dist/${VERSION}
 
 rm -rf prod/
 mkdir prod
