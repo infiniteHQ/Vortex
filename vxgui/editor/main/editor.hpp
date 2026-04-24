@@ -1,19 +1,20 @@
+
 #pragma once
-#include "../../../../lib/cherry/cherry.hpp"
+#include "../../../vxcore/include/vortex.h"
 
 // Static windows
-#include "../core/about/about.hpp"
-#include "../core/about_project/about_project.hpp"
-#include "../core/credits/credits.hpp"
-#include "../core/modules_utility/modules_utility.hpp"
-#include "../core/plugins_utility/plugins_utility.hpp"
-#include "../core/project_settings/project_settings.hpp"
-#include "../core/welcome/welcome.hpp"
+#include "./core/about/about.hpp"
+#include "./core/about_project/about_project.hpp"
+#include "./core/credits/credits.hpp"
+#include "./core/modules_utility/modules_utility.hpp"
+#include "./core/plugins_utility/plugins_utility.hpp"
+#include "./core/project_settings/project_settings.hpp"
+#include "./core/welcome/welcome.hpp"
 
 // Instanciable windows
-#include "../instances/content_browser/content_browser.hpp"
-#include "../instances/doc_viewer/doc_viewer.hpp"
-#include "../instances/logs_utility/logs_utility.hpp"
+#include "./instances/content_browser/content_browser.hpp"
+#include "./instances/doc_viewer/doc_viewer.hpp"
+#include "./instances/logs_utility/logs_utility.hpp"
 
 using namespace VortexMaker;
 

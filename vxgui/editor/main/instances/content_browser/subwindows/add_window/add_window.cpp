@@ -48,29 +48,29 @@ ContentBrowserAddWindow::ContentBrowserAddWindow(const std::string &name,
   std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
 }
 
-std::shared_ptr<Cherry::AppWindow> &ContentBrowserAddWindow::GetAppWindow() {
+std::shared_ptr<Cherry::AppWindow> &ContentBrowserAddWindow::get_app_window() {
   return m_AppWindow;
 }
 
 std::shared_ptr<ContentBrowserAddWindow>
-ContentBrowserAddWindow::Create(const std::string &name,
+ContentBrowserAddWindow::create(const std::string &name,
                                 const std::string &path) {
   auto instance = std::shared_ptr<ContentBrowserAddWindow>(
       new ContentBrowserAddWindow(name, path));
-  instance->SetupRenderCallback();
+  instance->setup_render_callback();
   return instance;
 }
 
-void ContentBrowserAddWindow::SetupRenderCallback() {
+void ContentBrowserAddWindow::setup_render_callback() {
   auto self = shared_from_this();
   m_AppWindow->SetRenderCallback([self]() {
     if (self) {
-      self->Render();
+      self->render();
     }
   });
 }
 
-void ContentBrowserAddWindow::Render() {
+void ContentBrowserAddWindow::render() {
   float window_width = CherryGUI::GetWindowSize().x;
   float main_header_width = window_width - 46.0f;
   float main_buttons_width = window_width - 17.0f;

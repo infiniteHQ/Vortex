@@ -75,7 +75,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/cherry cherry_build)
 
 file(GLOB_RECURSE VORTEX_ALL_SOURCES 
     "${CMAKE_CURRENT_SOURCE_DIR}/vxcore/src/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/vxgui/editor/app/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/vxgui/editor/main/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/vxgui/crash_handler/src/*.cpp"
 )
 

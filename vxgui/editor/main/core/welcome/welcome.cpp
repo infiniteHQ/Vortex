@@ -1,6 +1,6 @@
 #include "./welcome.hpp"
 #include "../../../../../lib/cherry/cherry.hpp"
-#include "../../src/editor.hpp"
+#include "../../editor.hpp"
 
 #include <cstdlib> // std::system
 #include <cstring>

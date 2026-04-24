@@ -1,8 +1,5 @@
 #include "./editor.hpp"
 
-#include "../../../../vxcore/include/vortex.h"
-#include "../../../../vxcore/include/vortex_internals.h"
-
 std::string GetVortexBuildType() { return VORTEX_BUILD; }
 
 Editor::Editor() {
@@ -218,7 +215,7 @@ std::string Editor::SpawnContentBrowser() {
   std::string label = "Content Browser ####Content Browser-" +
                       std::to_string(c_ContentBrowserInstances.size() + 1);
   std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser =
-      VortexEditor::ContentBrowserAppWindow::Create(
+      VortexEditor::ContentBrowserAppWindow::create(
           label.c_str(),
           VortexMaker::GetCurrentContext()->projectDataPath.string());
 
@@ -226,7 +223,7 @@ std::string Editor::SpawnContentBrowser() {
   ContentBrowser->m_CopyPathsCallback = VortexMaker::Copy;
   ContentBrowser->m_PastePathsCallback = VortexMaker::PasteAllSelections;
   ContentBrowser->m_DeletePathCallback = VortexMaker::DeletePath;
-  Cherry::AddAppWindow(ContentBrowser->GetAppWindow());
+  Cherry::AddAppWindow(ContentBrowser->get_app_window());
   c_ContentBrowserInstances.push_back(ContentBrowser);
   return label;
 }

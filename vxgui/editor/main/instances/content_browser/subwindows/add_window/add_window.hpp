@@ -16,11 +16,11 @@ class ContentBrowserAddWindow
 public:
   ContentBrowserAddWindow(const std::string &name, const std::string &path);
 
-  std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
+  std::shared_ptr<Cherry::AppWindow> &get_app_window();
   static std::shared_ptr<ContentBrowserAddWindow>
-  Create(const std::string &name, const std::string &path);
-  void SetupRenderCallback();
-  void Render();
+  create(const std::string &name, const std::string &path);
+  void setup_render_callback();
+  void render();
 
   void SetCreateFileCallback(const std::function<void()> &callback) {
     m_CreateFileCallback = callback;

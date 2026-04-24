@@ -6,7 +6,7 @@
 
 // UI instances
 #include "./vxgui/crash_handler/crash_handler.hpp"
-#include "./vxgui/editor/app/src/editor.hpp"
+#include "./vxgui/editor/main/editor.hpp"
 
 #include "./lib/cherry/cherry.hpp"
 #include "./vxcore/include/templates/load.h"
@@ -246,7 +246,7 @@ int main(int argc, char *argv[]) {
                std::string(argv[1]) == "--editor") {
       PrintHeader("(Editor)");
       if (argc > 2) {
-   std::string arg2 = argv[2];
+        std::string arg2 = argv[2];
         if (arg2.rfind("--session_id=", 0) == 0) {
           session_id = arg2.substr(13);
           if (!session_id.empty() && session_id.front() == '"' &&
