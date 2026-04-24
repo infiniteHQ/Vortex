@@ -325,7 +325,7 @@ FileTypes detect_file(const std::string &path) {
       {"go", FileTypes::File_GO},
       {"java", FileTypes::File_JAVA},
       {"js", FileTypes::File_JAVASCRIPT},
-      {"ts", FileTypes::File_JAVASCRIPT}, // TypeScript as JavaScript
+      {"ts", FileTypes::File_TYPESCRIPT},
       {"cob", FileTypes::File_COBOL},
       {"p", FileTypes::File_PASCAL},
       {"pas", FileTypes::File_PASCAL},
@@ -422,13 +422,27 @@ FileTypes detect_file(const std::string &path) {
       {"dat", FileTypes::File_DATA},
   };
 
+  std::string filename = path;
+  auto slash_pos = path.find_last_of("/\\");
+  if (slash_pos != std::string::npos)
+    filename = path.substr(slash_pos + 1);
+
+  static const std::unordered_map<std::string, FileTypes> name_map = {
+      {"LICENSE", FileTypes::File_LICENSE},
+      {"LICENSE.txt", FileTypes::File_LICENSE},
+      {"vortex.config", FileTypes::File_VORTEX},
+  };
+
+  auto name_it = name_map.find(filename);
+  if (name_it != name_map.end())
+    return name_it->second;
+
   std::string extension = get_extension(path);
   auto it = extension_map.find(extension);
-  if (it != extension_map.end()) {
+  if (it != extension_map.end())
     return it->second;
-  } else {
+  else
     return FileTypes::File_UNKNOWN;
-  }
 }
 
 static std::vector<
@@ -3001,165 +3015,23 @@ void ContentBrowserAppWindow::RenderContentBar() {
 
           FileTypes fileType = detect_file(path.string());
 
-          switch (fileType) {
-          case FileTypes::File_PICTURE: {
-            if (ItemCard(
-                    filenameString, path.string(), "Picture file",
-                    fileSizeString, selected,
-                    Cherry::GetPath(
-                        "resources/imgs/icons/files/icon_picture_file.png"),
-                    IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                    IM_COL32(255, 100, 150, 255))) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path.string());
-              } else {
-                m_Selected.clear();
-                m_Selected.push_back(path.string());
-              }
+          auto it = kFileTypeInfos.find(fileType);
+          const FileTypeInfo &info =
+              (it != kFileTypeInfos.end()) ? it->second : kDefaultFileInfo;
+
+          if (ItemCard(filenameString, path.string(), info.label,
+                       fileSizeString, selected, Cherry::GetPath(info.icon),
+                       IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
+                       Cherry::HexToImU32(info.color))) {
+            if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
+                CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
+              m_Selected.push_back(path.string());
+            } else {
+              m_Selected.clear();
+              m_Selected.push_back(path.string());
             }
-            break;
-          }
-          case FileTypes::File_GIT: {
-            if (ItemCard(filenameString, path.string(), "Git File",
-                         fileSizeString, selected,
-                         Cherry::GetPath(
-                             "resources/imgs/icons/files/icon_git_file.png"),
-                         IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                         IM_COL32(100, 100, 255, 255))) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path.string());
-              } else {
-                m_Selected.clear();
-                m_Selected.push_back(path.string());
-              }
-            }
-            break;
-          }
-          case FileTypes::File_H: {
-            if (ItemCard(filenameString, path.string(), "C Header File",
-                         fileSizeString, selected,
-                         Cherry::GetPath(
-                             "resources/imgs/icons/files/icon_c_h_file.png"),
-                         IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                         IM_COL32(220, 100, 220, 255))) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path.string());
-              } else {
-                m_Selected.clear();
-                m_Selected.push_back(path.string());
-              }
-            }
-            break;
-          }
-          case FileTypes::File_C: {
-            if (ItemCard(filenameString, path.string(), "C Source File",
-                         fileSizeString, selected,
-                         Cherry::GetPath(
-                             "resources/imgs/icons/files/icon_c_file.png"),
-                         IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                         IM_COL32(100, 100, 255, 255))) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path.string());
-              } else {
-                m_Selected.clear();
-                m_Selected.push_back(path.string());
-              }
-            }
-            break;
-          }
-          case FileTypes::File_HPP: {
-            if (ItemCard(filenameString, path.string(), "C++ Header File",
-                         fileSizeString, selected,
-                         Cherry::GetPath(
-                             "resources/imgs/icons/files/icon_cpp_h_file.png"),
-                         IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                         IM_COL32(100, 100, 255, 255))) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path.string());
-              } else {
-                m_Selected.clear();
-                m_Selected.push_back(path.string());
-              }
-            }
-            break;
-          }
-          case FileTypes::File_CPP: {
-            if (ItemCard(filenameString, path.string(), "C++ Source File",
-                         fileSizeString, selected,
-                         Cherry::GetPath(
-                             "resources/imgs/icons/files/icon_cpp_file.png"),
-                         IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                         IM_COL32(100, 100, 255, 255))) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path.string());
-              } else {
-                m_Selected.clear();
-                m_Selected.push_back(path.string());
-              }
-            }
-            break;
-          }
-          case FileTypes::File_INI: {
-            if (ItemCard(filenameString, path.string(), "Init File",
-                         fileSizeString, selected,
-                         Cherry::GetPath(
-                             "resources/imgs/icons/files/icon_ini_file.png"),
-                         IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                         IM_COL32(150, 150, 150, 255))) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path.string());
-              } else {
-                m_Selected.clear();
-                m_Selected.push_back(path.string());
-              }
-            }
-            break;
-          }
-          case FileTypes::File_TXT: {
-            if (ItemCard(filenameString, path.string(), "Text File",
-                         fileSizeString, selected,
-                         Cherry::GetPath(
-                             "resources/imgs/icons/files/icon_text_file.png"),
-                         IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                         IM_COL32(150, 150, 150, 255))) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path.string());
-              } else {
-                m_Selected.clear();
-                m_Selected.push_back(path.string());
-              }
-            }
-            break;
-          }
-          default: {
-            if (ItemCard(filenameString, path.string(), "File", fileSizeString,
-                         selected,
-                         Cherry::GetPath(
-                             "resources/imgs/icons/files/icon_unknow_file.png"),
-                         IM_COL32(56, 56, 56, 150), IM_COL32(50, 50, 50, 255),
-                         IM_COL32(150, 150, 150, 255))) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) ||
-                  CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                m_Selected.push_back(path.string());
-              } else {
-                m_Selected.clear();
-                m_Selected.push_back(path.string());
-              }
-            }
-            break;
           }
 
-            CherryGUI::PopStyleVar(2);
-            CherryGUI::PopStyleColor(3);
-          }
           float oldsize = CherryGUI::GetFont()->Scale;
 
           CherryGUI::PopID();
