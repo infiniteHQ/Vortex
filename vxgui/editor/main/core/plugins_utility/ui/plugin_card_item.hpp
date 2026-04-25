@@ -1,6 +1,6 @@
 //
-//  module_card_item.hpp
-//  Plugin card UI component, for rendering modules and show quick
+//  plugin_card_item.hpp
+//  Plugin card UI component, for rendering plugins and show quick
 //  actions.
 //
 //	Copyright (c) 2026 Infinite
@@ -10,14 +10,14 @@
 //
 
 #include "../../../../../../lib/cherry/cherry.hpp"
-#include "../../../../../../vxcore/include/modules/delete.h"
-#include "../../../../../../vxcore/include/modules/load.h"
+#include "../../../../../../vxcore/include/plugins/delete.h"
+#include "../../../../../../vxcore/include/plugins/load.h"
 #include "../../../../../../vxcore/include/vortex.h"
 #include "../../../../../../vxcore/include/vortex_internals.h"
 #include "../../../instances/modules_details/modules_details.hpp"
 
 namespace vxe {
-  static void DrawModuleCardHighlightedText(
+  static void DrawPluginCardHighlightedText(
       ImDrawList *drawList,
       ImVec2 textPos,
       const char *text,
@@ -55,7 +55,7 @@ namespace vxe {
     }
   }
 
-  static void DrawModuleCardDescription(
+  static void DrawPluginCardDescription(
       ImDrawList *drawList,
       ImVec2 textPos,
       const char *text,
@@ -99,11 +99,11 @@ namespace vxe {
     CherryGUI::PopFont();
   }
 
-  class ModuleCardItem : public Cherry::Component {
+  class PluginCardItem : public Cherry::Component {
    public:
-    ModuleCardItem(
+    PluginCardItem(
         const Cherry::Identifier &identifier,
-        const std::shared_ptr<ModuleInterface> &plugin,
+        const std::shared_ptr<PluginInterface> &plugin,
         const std::string &name,
         const std::string &path,
         const std::string &description,
@@ -115,11 +115,11 @@ namespace vxe {
         ImU32 lineColor,
         float maxTextWidth,
         float borderRadius,
-        std::function<void(const std::shared_ptr<ModuleInterface> &mod)> deletion_callback,
+        std::function<void(const std::shared_ptr<PluginInterface> &mod)> deletion_callback,
         std::string *search_ptr)
 
         : Cherry::Component(identifier),
-          m_module(plugin),
+          m_plugin(plugin),
           m_name(name),
           m_path(path),
           m_description(description),
@@ -131,7 +131,7 @@ namespace vxe {
           m_lineColor(lineColor),
           m_maxTextWidth(maxTextWidth),
           m_borderRadius(borderRadius),
-          module_deletion_callback_(deletion_callback),
+          plugin_deletion_callback_(deletion_callback),
           search_ptr_(search_ptr) {
     }
 
@@ -174,7 +174,7 @@ namespace vxe {
         truncatedText = m_name + "\n";
       }
 
-      std::string truncatedDesc = m_module->m_description;
+      std::string truncatedDesc = m_plugin->m_description;
 
       if (truncatedDesc.length() > 100) {
         truncatedDesc = truncatedDesc.substr(0, 97) + "...";
@@ -182,22 +182,22 @@ namespace vxe {
       const char *originalDesc = truncatedDesc.c_str();
 
       if (CherryGUI::CalcTextSize(originalDesc).x > m_maxTextWidth) {
-        size_t len = m_module->m_description.size();
+        size_t len = m_plugin->m_description.size();
 
         size_t firstPart = std::min<size_t>(90, len);
-        truncatedDesc = m_module->m_description.substr(0, firstPart);
+        truncatedDesc = m_plugin->m_description.substr(0, firstPart);
 
         if (CherryGUI::CalcTextSize(truncatedDesc.c_str()).x > m_maxTextWidth) {
           size_t firstLine = std::min<size_t>(55, len);
           size_t secondLine = (len > 55) ? len - 55 : 0;
 
-          truncatedDesc = m_module->m_description.substr(0, firstLine);
+          truncatedDesc = m_plugin->m_description.substr(0, firstLine);
           if (secondLine > 0) {
-            truncatedDesc += "\n" + m_module->m_description.substr(55, secondLine);
+            truncatedDesc += "\n" + m_plugin->m_description.substr(55, secondLine);
           }
         }
       } else {
-        truncatedDesc = m_module->m_description + "\n";
+        truncatedDesc = m_plugin->m_description + "\n";
       }
 
       ImVec2 fixedSize(m_maxTextWidth + padding * 2 + 150.0f, logoSize + extraHeight + padding * 2);
@@ -274,7 +274,7 @@ namespace vxe {
       ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
       ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
       if (search_ptr_) {
-        DrawModuleCardHighlightedText(
+        DrawPluginCardHighlightedText(
             drawList, textPos, truncatedText.c_str(), search_ptr_->c_str(), highlightColor, textColor, highlightTextColor);
       }
       CherryGUI::PopItemWidth();
@@ -303,7 +303,7 @@ namespace vxe {
       CherryGUI::PushItemWidth(fixedSize.x);
 
       if (search_ptr_) {
-        DrawModuleCardDescription(
+        DrawPluginCardDescription(
             drawList,
             descriptionPos,
             truncatedDesc.c_str(),
@@ -327,22 +327,22 @@ namespace vxe {
       ImVec2 firstButtonPos = ImVec2(cursorPos.x + fixedSize.x - padding - buttonWidth - 10, cursorPos.y + padding);
       CherryGUI::SetCursorScreenPos(firstButtonPos);
 
-      if (m_module->m_state == "failed") {
+      if (m_plugin->m_state == "failed") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"))
                 .GetDataAs<bool>("isClicked")) {
-          m_module->Start();
+          m_plugin->Start();
         }
 
-      } else if (m_module->m_state == "unknow" || m_module->m_state == "stopped") {
+      } else if (m_plugin->m_state == "unknow" || m_plugin->m_state == "stopped") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_start.png"))
                 .GetDataAs<bool>("isClicked")) {
-          m_module->Start();
+          m_plugin->Start();
         }
 
       } else {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_stop.png"))
                 .GetDataAs<bool>("isClicked")) {
-          m_module->Stop();
+          m_plugin->Stop();
         }
       }
 
@@ -350,9 +350,9 @@ namespace vxe {
       CherryGUI::SetCursorScreenPos(secondButtonPos);
 
       if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png")).GetDataAs<bool>("isClicked")) {
-        m_module->Stop();
-        if (module_deletion_callback_) {
-          module_deletion_callback_(m_module);
+        m_plugin->Stop();
+        if (plugin_deletion_callback_) {
+          plugin_deletion_callback_(m_plugin);
         }
       }
 
@@ -360,9 +360,6 @@ namespace vxe {
       CherryGUI::SetCursorScreenPos(thirdButtonPos);
       if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"))
               .GetDataAs<bool>("isClicked")) {
-        std::string label = "Details of " + m_module->m_proper_name + "####" + m_path;
-        std::shared_ptr<ModuleDetails> window = ModuleDetails::Create(label, m_module);
-        Cherry::AddAppWindow(window->GetAppWindow());
       }
 
       /*
@@ -434,8 +431,8 @@ namespace vxe {
     }
 
    private:
-    std::function<void(const std::shared_ptr<ModuleInterface> &mod)> module_deletion_callback_;
-    std::shared_ptr<ModuleInterface> m_module;
+    std::function<void(const std::shared_ptr<PluginInterface> &mod)> plugin_deletion_callback_;
+    std::shared_ptr<PluginInterface> m_plugin;
     std::string m_name;
     std::string m_path;
     std::string m_description;
@@ -451,9 +448,9 @@ namespace vxe {
     std::string *search_ptr_;
   };
 
-  inline Cherry::Component &ModuleCardComponent(
+  inline Cherry::Component &PluginCardComponent(
       const Cherry::Identifier &identifier,
-      const std::shared_ptr<ModuleInterface> &plugin,
+      const std::shared_ptr<PluginInterface> &plugin,
       const std::string &name,
       const std::string &path,
       const std::string &description,
@@ -465,9 +462,9 @@ namespace vxe {
       ImU32 lineColor,
       float maxTextWidth,
       float borderRadius,
-      std::function<void(const std::shared_ptr<ModuleInterface> &mod)> deletion_callback,
+      std::function<void(const std::shared_ptr<PluginInterface> &mod)> deletion_callback,
       std::string *search_ptr) {
-    return CherryApp.PushComponent<ModuleCardItem>(
+    return CherryApp.PushComponent<PluginCardItem>(
         identifier,
         plugin,
         name,
@@ -485,8 +482,8 @@ namespace vxe {
         search_ptr);
   }
 
-  inline Cherry::Component &ModuleCard(
-      const std::shared_ptr<ModuleInterface> &plugin,
+  inline Cherry::Component &PluginCard(
+      const std::shared_ptr<PluginInterface> &plugin,
       const std::string &name,
       const std::string &path,
       const std::string &description,
@@ -498,9 +495,9 @@ namespace vxe {
       ImU32 lineColor,
       float maxTextWidth,
       float borderRadius,
-      std::function<void(const std::shared_ptr<ModuleInterface> &mod)> deletion_callback,
+      std::function<void(const std::shared_ptr<PluginInterface> &mod)> deletion_callback,
       std::string *search_ptr) {
-    return ModuleCardComponent(
+    return PluginCardComponent(
         Cherry::Application::GenerateUniqueID(
             plugin,
             name,
@@ -516,7 +513,7 @@ namespace vxe {
             borderRadius,
             deletion_callback,
             search_ptr,
-            "ModuleCardComponent"),
+            "PluginCardComponent"),
         plugin,
         name,
         path,

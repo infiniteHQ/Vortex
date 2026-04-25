@@ -1,6 +1,6 @@
 //
-//  modules_utility_helpers.hpp
-//  Helpers and structures for the modules utility.
+//  plugins_utility_helpers.hpp
+//  Helpers and structures for the plugins utility.
 //
 //	Copyright (c) 2026 Infinite
 //
@@ -13,19 +13,19 @@
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
 
-#ifndef MODULES_UTILITY_HELPERS_HPP
-#define MODULES_UTILITY_HELPERS_HPP
+#ifndef PLUGINS_UTILITY_HELPERS_HPP
+#define PLUGINS_UTILITY_HELPERS_HPP
 
 namespace vxe {
 
-  enum class ShowModes { Thumbmails, List };
-  enum class Pannels { Installed, Downloads, Import };
+  enum class PluginsUtilityShowModes { Thumbmails, List };
+  enum class PluginsUtilityPannels { Installed, Downloads, Import };
 
-  struct ModulesUtilityChild {
+  struct PluginsUtilityChild {
     std::function<void()> render_callback;
     std::string logo_path;
     std::string name;
-    ModulesUtilityChild(
+    PluginsUtilityChild(
         const std::string &name,
         const std::function<void()> &render_callback = []() { },
         const std::string &logo_path = "undefined")

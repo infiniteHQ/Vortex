@@ -1,6 +1,6 @@
 //
-//  modules_utility.hpp
-//  Header and declarations for the modules utility front-end
+//  plugins_utility.hpp
+//  Header and declarations for the plugins utility front-end
 //
 //	Copyright (c) 2026 Infinite
 //
@@ -12,26 +12,26 @@
 
 #include <unordered_set>
 
-#include "../../../../../vxcore/include/modules/delete.h"
-#include "../../../../../vxcore/include/modules/load.h"
+#include "../../../../../vxcore/include/plugins/delete.h"
+#include "../../../../../vxcore/include/plugins/load.h"
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
 #include "../../instances/modules_details/modules_details.hpp"
-#include "./ui/module_card_item.hpp"
-#include "modules_utility_helpers.hpp"
+#include "./ui/plugin_card_item.hpp"
+#include "plugins_utility_helpers.hpp"
 
-#ifndef MODULES_UTILITY_WINDOW_H
-#define MODULES_UTILITY_WINDOW_H
+#ifndef PLUGINS_UTILITY_WINDOW_H
+#define PLUGINS_UTILITY_WINDOW_H
 
 namespace vxe {
 
-  class ModulesUtility : public std::enable_shared_from_this<ModulesUtility> {
+  class PluginsUtility : public std::enable_shared_from_this<PluginsUtility> {
    public:
-    ModulesUtility(const std::string &name);
+    PluginsUtility(const std::string &name);
 
     // window
     std::shared_ptr<Cherry::AppWindow> &get_app_window();
-    static std::shared_ptr<ModulesUtility> create(const std::string &name);
+    static std::shared_ptr<PluginsUtility> create(const std::string &name);
     void setup_render_callback();
 
     // rendering
@@ -39,7 +39,7 @@ namespace vxe {
     void render_installed();
     void render_import();
     void render_download();
-    void render_module_deletion_modal();
+    void render_plugin_deletion_modal();
     void render_left_menubar();
     void render_right_menubar();
 
@@ -48,23 +48,23 @@ namespace vxe {
 
     // utils
     bool has_common_subsequence(const std::string &a, const std::string &b);
-    void set_module_to_delete(const std::shared_ptr<ModuleInterface> &mod);
+    void set_plugin_to_delete(const std::shared_ptr<PluginInterface> &mod);
     void set_selected_category(const std::string &c);
     std::string get_selected_category();
 
    private:
-    std::vector<ModulesUtilityChild> childs_;
+    std::vector<PluginsUtilityChild> childs_;
 
-    std::string modules_search_;
-    bool trigger_module_deletion_modal_ = false;
-    std::string module_to_delete_name_;
-    std::string module_to_delete_proper_name_;
-    std::string module_to_delete_description_;
-    std::string module_to_delete_version_;
-    std::string module_to_delete_logo_path_;
+    std::string plugins_search_;
+    bool trigger_plugin_deletion_modal_ = false;
+    std::string plugin_to_delete_name_;
+    std::string plugin_to_delete_proper_name_;
+    std::string plugin_to_delete_description_;
+    std::string plugin_to_delete_version_;
+    std::string plugin_to_delete_logo_path_;
 
-    ShowModes selected_show_mode_ = ShowModes::Thumbmails;
-    Pannels selected_pannel_ = Pannels::Installed;
+    PluginsUtilityShowModes selected_show_mode_ = PluginsUtilityShowModes::Thumbmails;
+    PluginsUtilityPannels selected_pannel_ = PluginsUtilityPannels::Installed;
 
     std::string selected_category_;
     bool selected_category_changed_ = false;

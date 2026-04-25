@@ -1,5 +1,5 @@
 //
-//  modules_utility_rendering.cpp
+//  plugins_utility_rendering.cpp
 //  Sources of rendering and UI related functions
 //
 //	Copyright (c) 2026 Infinite
@@ -8,24 +8,24 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include "./modules_utility.hpp"
+#include "./plugins_utility.hpp"
 
 namespace vxe {
 
-  void ModulesUtility::render() {
-    render_module_deletion_modal();
-    if (selected_pannel_ == Pannels::Installed) {
+  void PluginsUtility::render() {
+    render_plugin_deletion_modal();
+    if (selected_pannel_ == PluginsUtilityPannels::Installed) {
       render_installed();
-    } else if (selected_pannel_ == Pannels::Import) {
+    } else if (selected_pannel_ == PluginsUtilityPannels::Import) {
       render_import();
-    } else if (selected_pannel_ == Pannels::Downloads) {
+    } else if (selected_pannel_ == PluginsUtilityPannels::Downloads) {
       render_download();
     }
   }
 
-  void ModulesUtility::render_module_deletion_modal() {
-    if (trigger_module_deletion_modal_) {
-      CherryGUI::OpenPopup("##delete_module_modal");
+  void PluginsUtility::render_plugin_deletion_modal() {
+    if (trigger_plugin_deletion_modal_) {
+      CherryGUI::OpenPopup("##delete_plugin_modal");
     }
 
     ImVec2 center = CherryGUI::GetMainViewport()->GetCenter();
@@ -41,8 +41,8 @@ namespace vxe {
     CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.22f, 0.22f, 0.24f, 1.00f));
 
     if (CherryGUI::BeginPopupModal(
-            "##delete_module_modal",
-            &trigger_module_deletion_modal_,
+            "##delete_plugin_modal",
+            &trigger_plugin_deletion_modal_,
             ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar)) {
       const float MODAL_W = 520.0f;
 
@@ -67,14 +67,14 @@ namespace vxe {
         CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.16f, 0.16f, 0.18f, 1.0f));
         CherryGUI::PushStyleVar(ImGuiStyleVar_ChildRounding, 8.0f);
         CherryGUI::SetCursorPosX(20.0f);
-        CherryGUI::BeginChild("##modulecard", ImVec2(MODAL_W - 40.0f, 82.0f), false, ImGuiWindowFlags_NoScrollbar);
+        CherryGUI::BeginChild("##plugincard", ImVec2(MODAL_W - 40.0f, 82.0f), false, ImGuiWindowFlags_NoScrollbar);
         {
           const float LOGO_SIZE = 52.0f;
           CherryGUI::SetCursorPos(ImVec2(14.0f, 15.0f));
 
-          ImTextureID logo = Cherry::GetTexture(module_to_delete_logo_path_);
+          ImTextureID logo = Cherry::GetTexture(plugin_to_delete_logo_path_);
           if (logo) {
-            ImVec2 logoSize = Cherry::GetTextureSize(module_to_delete_logo_path_);
+            ImVec2 logoSize = Cherry::GetTextureSize(plugin_to_delete_logo_path_);
             float scale = LOGO_SIZE / (std::max)(logoSize.x, logoSize.y);
             ImVec2 drawSize(logoSize.x * scale, logoSize.y * scale);
             ImVec2 imgPos = CherryGUI::GetCursorPos();
@@ -87,7 +87,7 @@ namespace vxe {
             ImDrawList *dl = CherryGUI::GetWindowDrawList();
             dl->AddRectFilled(p, ImVec2(p.x + LOGO_SIZE, p.y + LOGO_SIZE), IM_COL32(80, 40, 40, 255), 8.0f);
             std::string initials =
-                module_to_delete_proper_name_.size() >= 2 ? module_to_delete_proper_name_.substr(0, 2) : "??";
+                plugin_to_delete_proper_name_.size() >= 2 ? plugin_to_delete_proper_name_.substr(0, 2) : "??";
             CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.6f, 1.0f));
             ImVec2 ts = CherryGUI::CalcTextSize(initials.c_str());
             CherryGUI::SetCursorScreenPos(ImVec2(p.x + (LOGO_SIZE - ts.x) * 0.5f, p.y + (LOGO_SIZE - ts.y) * 0.5f));
@@ -100,23 +100,23 @@ namespace vxe {
           CherryGUI::SetCursorPos(ImVec2(textX, 15.0f));
 
           CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.95f, 0.95f, 0.96f, 1.0f));
-          CherryGUI::TextUnformatted(module_to_delete_proper_name_.c_str());
+          CherryGUI::TextUnformatted(plugin_to_delete_proper_name_.c_str());
           CherryGUI::PopStyleColor();
 
           CherryGUI::SetCursorPos(ImVec2(textX, 36.0f));
           CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.55f, 0.55f, 0.58f, 1.0f));
-          CherryGUI::Text("v%s", module_to_delete_version_.c_str());
+          CherryGUI::Text("v%s", plugin_to_delete_version_.c_str());
           CherryGUI::PopStyleColor();
 
-          if (!module_to_delete_description_.empty()) {
+          if (!plugin_to_delete_description_.empty()) {
             CherryGUI::SetCursorPos(ImVec2(textX, 54.0f));
             CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.45f, 0.45f, 0.48f, 1.0f));
             // Clamp to single line with ellipsis
-            std::string desc = module_to_delete_description_;
+            std::string desc = plugin_to_delete_description_;
             const float maxW = MODAL_W - 40.0f - textX - 14.0f;
             while (!desc.empty() && CherryGUI::CalcTextSize((desc + "...").c_str()).x > maxW)
               desc.pop_back();
-            if (desc.size() < module_to_delete_description_.size())
+            if (desc.size() < plugin_to_delete_description_.size())
               desc += "...";
             CherryGUI::TextUnformatted(desc.c_str());
             CherryGUI::PopStyleColor();
@@ -155,12 +155,12 @@ namespace vxe {
         CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.78f, 0.78f, 0.80f, 1.0f));
 
         if (CherryGUI::Button("Cancel", ImVec2(BTN_W, BTN_H))) {
-          module_to_delete_name_.clear();
-          module_to_delete_proper_name_.clear();
-          module_to_delete_description_.clear();
-          module_to_delete_version_.clear();
-          module_to_delete_logo_path_.clear();
-          trigger_module_deletion_modal_ = false;
+          plugin_to_delete_name_.clear();
+          plugin_to_delete_proper_name_.clear();
+          plugin_to_delete_description_.clear();
+          plugin_to_delete_version_.clear();
+          plugin_to_delete_logo_path_.clear();
+          trigger_plugin_deletion_modal_ = false;
           CherryGUI::CloseCurrentPopup();
         }
         CherryGUI::PopStyleColor(4);
@@ -173,16 +173,16 @@ namespace vxe {
         CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 
         if (CherryGUI::Button("Delete plugin", ImVec2(BTN_W, BTN_H))) {
-          vxe::DeleteProjectModule(module_to_delete_name_, module_to_delete_version_);
-          vxe::LoadEditorModules(
+          vxe::DeleteProjectPlugin(plugin_to_delete_name_, plugin_to_delete_version_);
+          vxe::LoadEditorPlugins(
               vxe::GetCurrentContext()->projectPath.string(),
-              vxe::GetCurrentContext()->IO.em_handles,
+              vxe::GetCurrentContext()->IO.ep_handles,
               vxe::GetCurrentContext()->IO.ep);
-          module_to_delete_name_.clear();
-          module_to_delete_proper_name_.clear();
-          module_to_delete_description_.clear();
-          module_to_delete_version_.clear();
-          module_to_delete_logo_path_.clear();
+          plugin_to_delete_name_.clear();
+          plugin_to_delete_proper_name_.clear();
+          plugin_to_delete_description_.clear();
+          plugin_to_delete_version_.clear();
+          plugin_to_delete_logo_path_.clear();
           selected_category_changed_ = true;
           refresh_categories();
           CherryGUI::CloseCurrentPopup();
@@ -202,7 +202,7 @@ namespace vxe {
     CherryGUI::PopStyleVar(3);
   }
 
-  void ModulesUtility::render_download() {
+  void PluginsUtility::render_download() {
     ImGuiIO &io = CherryGUI::GetIO();
     ImVec2 windowSize = CherryGUI::GetContentRegionAvail();
     ImVec2 windowPos = CherryGUI::GetCursorScreenPos();
@@ -279,7 +279,7 @@ namespace vxe {
     CherryGUI::PopStyleColor();
 
     const char *tip1 = "You can still browse & download content from the Garage,";
-    const char *tip2 = "then import it manually into your project's  .vx/modules/  folder.";
+    const char *tip2 = "then import it manually into your project's  .vx/plugins/  folder.";
     const char *tip3 = "For more information, refer to the documentation.";
 
     CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.58f, 0.68f, 1.0f));
@@ -325,7 +325,7 @@ namespace vxe {
     }
   }
 
-  void ModulesUtility::render_import() {
+  void PluginsUtility::render_import() {
     ImGuiIO &io = CherryGUI::GetIO();
     ImVec2 windowSize = CherryGUI::GetContentRegionAvail();
     ImVec2 windowPos = CherryGUI::GetCursorScreenPos();
@@ -389,7 +389,7 @@ namespace vxe {
     CherryGUI::Text("%s", tipTitle);
     CherryGUI::PopStyleColor();
 
-    const char *tip1 = "You can still import manually into your project's  .vx/modules/  folder";
+    const char *tip1 = "You can still import manually into your project's  .vx/plugins/  folder";
     const char *tip3 = "For more information, refer to the documentation.";
 
     CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.58f, 0.68f, 1.0f));
@@ -406,7 +406,7 @@ namespace vxe {
     CherryGUI::PopStyleColor();
   }
 
-  void ModulesUtility::render_installed() {
+  void PluginsUtility::render_installed() {
     const float minPaneWidth = 50.0f;
     const float splitterWidth = 1.5f;
 
@@ -427,7 +427,7 @@ namespace vxe {
     CherryStyle::RemoveMarginY(40.0f);
     CherryStyle::AddMarginX(15.0f);
     CherryStyle::PushFontSize(0.28f);
-    CherryKit::TitleOne("Modules");
+    CherryKit::TitleOne("Plugins");
     CherryStyle::PopFontSize();
     Cherry::PopFont();
 
@@ -452,7 +452,7 @@ namespace vxe {
       CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, Cherry::HexToRGBA("#454545"));
     }
 
-    std::string header_label = "All Modules (" + std::to_string(vxe::GetCurrentContext()->IO.ep.size()) + ")";
+    std::string header_label = "All Plugins (" + std::to_string(vxe::GetCurrentContext()->IO.ep.size()) + ")";
     if (CherryGUI::ImageSizeButtonWithText(
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
             header_width,
@@ -473,7 +473,7 @@ namespace vxe {
     CherryStyle::AddMarginX(6.0f);
     CherryKit::SeparatorText("All types");
 
-    static std::string SearchModulesString;
+    static std::string SearchPluginsString;
     CherryStyle::AddMarginX(6.0f);
     CherryNextComponent.SetProperty("size_x", input_width);
     CherryNextComponent.SetProperty("padding_y", "6.0f");
@@ -481,12 +481,12 @@ namespace vxe {
     CherryNextComponent.SetProperty(
         "description_logo", Cherry::GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
     CherryNextComponent.SetProperty("description_logo_place", "r");
-    CherryKit::InputString("", &SearchModulesString);
+    CherryKit::InputString("", &SearchPluginsString);
 
-    CherryGUI::BeginChild("####ModulesCategoryLists");
+    CherryGUI::BeginChild("####PluginsCategoryLists");
     for (const auto &[category, count] : all_categories) {
-      if (!SearchModulesString.empty()) {
-        if (!has_common_subsequence(category, SearchModulesString)) {
+      if (!SearchPluginsString.empty()) {
+        if (!has_common_subsequence(category, SearchPluginsString)) {
           continue;
         }
       }
@@ -571,7 +571,7 @@ namespace vxe {
       CherryNextComponent.SetProperty(
           "description_logo", Cherry::GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
       CherryNextComponent.SetProperty("description_logo_place", "r");
-      CherryKit::InputString("", &modules_search_);
+      CherryKit::InputString("", &plugins_search_);
 
       CherryNextProp("color", "#252525");
       CherryKit::Separator();
@@ -579,11 +579,11 @@ namespace vxe {
       CherryGUI::Spacing();
 
       if (vxe::GetCurrentContext()->IO.ep.empty()) {
-        CherryKit::TitleFour("No modules founded.");
+        CherryKit::TitleFour("No plugins founded.");
       }
 
-      std::vector<Cherry::Component> modules_blocks;
-      if (selected_show_mode_ == ShowModes::Thumbmails) {
+      std::vector<Cherry::Component> plugins_blocks;
+      if (selected_show_mode_ == PluginsUtilityShowModes::Thumbmails) {
         for (int i = 0; i < vxe::GetCurrentContext()->IO.ep.size(); i++) {
           if (!vxe::GetCurrentContext()->IO.ep[i]) {
             continue;
@@ -595,21 +595,21 @@ namespace vxe {
             }
           }
           static std::string LatestChange;
-          if (LatestChange != modules_search_) {
-            LatestChange = modules_search_;
+          if (LatestChange != plugins_search_) {
+            LatestChange = plugins_search_;
             selected_category_changed_ = true;
           }
 
-          if (!modules_search_.empty()) {
-            if (!has_common_subsequence(vxe::GetCurrentContext()->IO.ep[i]->m_name, modules_search_) &&
-                !has_common_subsequence(vxe::GetCurrentContext()->IO.ep[i]->m_proper_name, modules_search_) &&
-                !has_common_subsequence(vxe::GetCurrentContext()->IO.ep[i]->m_description, modules_search_)) {
+          if (!plugins_search_.empty()) {
+            if (!has_common_subsequence(vxe::GetCurrentContext()->IO.ep[i]->m_name, plugins_search_) &&
+                !has_common_subsequence(vxe::GetCurrentContext()->IO.ep[i]->m_proper_name, plugins_search_) &&
+                !has_common_subsequence(vxe::GetCurrentContext()->IO.ep[i]->m_description, plugins_search_)) {
               continue;
             }
           }
 
           CherryNextComponent.SetRenderMode(Cherry::RenderMode::CreateOnly);
-          auto item = ModuleCard(
+          auto item = PluginCard(
               vxe::GetCurrentContext()->IO.ep[i],
               vxe::GetCurrentContext()->IO.ep[i]->m_proper_name,
               vxe::GetCurrentContext()->IO.ep[i]->m_path,
@@ -622,17 +622,17 @@ namespace vxe {
               Cherry::HexToImU32("#B1FF31FF"),
               100.0f,
               5.0f,
-              [this](const std::shared_ptr<ModuleInterface> &mod) { set_module_to_delete(mod); },
-              &modules_search_);
+              [this](const std::shared_ptr<PluginInterface> &mod) { set_plugin_to_delete(mod); },
+              &plugins_search_);
 
-          modules_blocks.push_back(item);
+          plugins_blocks.push_back(item);
         }
         if (!selected_category_changed_) {
-          CherryKit::GridSimple(250.0f, 250.0f, modules_blocks);
+          CherryKit::GridSimple(250.0f, 250.0f, plugins_blocks);
         } else {
           selected_category_changed_ = false;
         }
-      } else if (selected_show_mode_ == ShowModes::List) {
+      } else if (selected_show_mode_ == PluginsUtilityShowModes::List) {
       }
     }
     CherryGUI::EndChild();
@@ -642,10 +642,10 @@ namespace vxe {
     CherryGUI::EndGroup();
   }
 
-  void ModulesUtility::render_left_menubar() {
+  void PluginsUtility::render_left_menubar() {
     CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 3.0f);
 
-    if (selected_pannel_ != Pannels::Installed) {
+    if (selected_pannel_ != PluginsUtilityPannels::Installed) {
       CherryNextComponent.SetProperty("color_border", "#00000000");
       CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
       CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
@@ -655,10 +655,10 @@ namespace vxe {
 
     if (CherryKit::ButtonImageText("Installed", Cherry::GetPath("resources/imgs/icons/misc/icon_folder.png"))
             .GetDataAs<bool>("isClicked")) {
-      selected_pannel_ = Pannels::Installed;
+      selected_pannel_ = PluginsUtilityPannels::Installed;
     }
 
-    if (selected_pannel_ != Pannels::Downloads) {
+    if (selected_pannel_ != PluginsUtilityPannels::Downloads) {
       CherryNextComponent.SetProperty("color_border", "#00000000");
       CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
       CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
@@ -666,10 +666,10 @@ namespace vxe {
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     if (CherryKit::ButtonImageText("Download", Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png"))
             .GetDataAs<bool>("isClicked")) {
-      selected_pannel_ = Pannels::Downloads;
+      selected_pannel_ = PluginsUtilityPannels::Downloads;
     }
 
-    if (selected_pannel_ != Pannels::Import) {
+    if (selected_pannel_ != PluginsUtilityPannels::Import) {
       CherryNextComponent.SetProperty("color_border", "#00000000");
       CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
       CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
@@ -678,11 +678,11 @@ namespace vxe {
     CherryNextComponent.SetProperty("padding_x", "10.0f");
     if (CherryKit::ButtonImageText("Import", Cherry::GetPath("resources/imgs/icons/misc/icon_import.png"))
             .GetDataAs<bool>("isClicked")) {
-      selected_pannel_ = Pannels::Import;
+      selected_pannel_ = PluginsUtilityPannels::Import;
     }
   }
 
-  void ModulesUtility::render_right_menubar() {
+  void PluginsUtility::render_right_menubar() {
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     CherryNextComponent.SetProperty("padding_x", "10.0f");
     CherryNextComponent.SetProperty("disable_callback", "true");
@@ -717,9 +717,9 @@ namespace vxe {
 
       int default_index = 0;
 
-      if (selected_show_mode_ == ShowModes::Thumbmails) {
+      if (selected_show_mode_ == PluginsUtilityShowModes::Thumbmails) {
         default_index = 0;
-      } else if (selected_show_mode_ == ShowModes::List) {
+      } else if (selected_show_mode_ == PluginsUtilityShowModes::List) {
         default_index = 1;
       }
 
@@ -733,15 +733,15 @@ namespace vxe {
                   default_index)
                   .GetPropertyAs<int>("selected")) {
         case 0: {
-          selected_show_mode_ = ShowModes::Thumbmails;
+          selected_show_mode_ = PluginsUtilityShowModes::Thumbmails;
           break;
         }
         case 1: {
-          selected_show_mode_ = ShowModes::List;
+          selected_show_mode_ = PluginsUtilityShowModes::List;
           break;
         }
         default: {
-          selected_show_mode_ = ShowModes::Thumbmails;
+          selected_show_mode_ = PluginsUtilityShowModes::Thumbmails;
           break;
         }
       }
