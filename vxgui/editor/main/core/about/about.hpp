@@ -1,27 +1,37 @@
+//
+//  about.hpp
+//  Header and declarations for the about window.
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #pragma once
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
 
-#ifndef ABOUT_WINDOW_H
-#define ABOUT_WINDOW_H
-
-#define CHERRY_V1
-#include "../../../../../lib/cherry/cherry.hpp"
+#ifndef ABOUT_WINDOW_HPP
+#define ABOUT_WINDOW_HPP
 
 namespace vxe {
-  // This window can be a "subappwindow" of a parent if you use the constructor
-  // with parent parameter.
+
   class AboutVortex : public std::enable_shared_from_this<AboutVortex> {
    public:
     AboutVortex(const std::string &name);
 
-    std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
-    static std::shared_ptr<AboutVortex> Create(const std::string &name);
-    void SetupRenderCallback();
-    void Render();
+    // window
+    std::shared_ptr<Cherry::AppWindow> &get_app_window();
+    static std::shared_ptr<AboutVortex> create(const std::string &name);
+    void setup_render_callback();
 
+    // rendering
+    void render();
+
+   private:
     std::shared_ptr<Cherry::AppWindow> app_window_;
   };
 }  // namespace vxe
 
-#endif  // ABOUT_WINDOW_H
+#endif  // ABOUT_WINDOW_HPP

@@ -225,9 +225,9 @@ std::string Editor::SpawnContentBrowser() {
 
 std::string Editor::SpawnDocViewer() {
   std::string label = "Doc viewer ####Doc viewer -" + std::to_string(c_DocViewerInstances.size() + 1);
-  std::shared_ptr<vxe::DocViewerAppWindow> DocViewer = vxe::DocViewerAppWindow::Create(label.c_str());
+  std::shared_ptr<vxe::DocViewer> DocViewer = vxe::DocViewer::create(label.c_str());
 
-  Cherry::AddAppWindow(DocViewer->GetAppWindow());
+  Cherry::AddAppWindow(DocViewer->get_app_window());
   c_DocViewerInstances.push_back(DocViewer);
   return label;
 }
@@ -771,6 +771,5 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 }
 
 int vxe::VortexEditor(int argc, char **argv) {
-  std::cout << "Initializing runtime..." << std::endl;
   return Cherry::ThirdMain(argc, argv, CreateEditor);
 }

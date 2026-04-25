@@ -23,7 +23,7 @@ using namespace vxe;
 
 static std::vector<std::shared_ptr<vxe::ContentBrowser>> c_ContentBrowserInstances;
 static std::vector<std::shared_ptr<vxe::LogsUtility>> c_LogsUtilityInstances;
-static std::vector<std::shared_ptr<vxe::DocViewerAppWindow>> c_DocViewerInstances;
+static std::vector<std::shared_ptr<vxe::DocViewer>> c_DocViewerInstances;
 
 class Editor {
  public:

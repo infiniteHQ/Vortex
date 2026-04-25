@@ -1,3 +1,13 @@
+//
+//  about.cpp
+//  Rendering sources for the about window.
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "./about.hpp"
 
 namespace vxe {
@@ -18,26 +28,26 @@ namespace vxe {
     std::shared_ptr<Cherry::AppWindow> win = app_window_;
   }
 
-  std::shared_ptr<Cherry::AppWindow> &AboutVortex::GetAppWindow() {
+  std::shared_ptr<Cherry::AppWindow> &AboutVortex::get_app_window() {
     return app_window_;
   }
 
-  std::shared_ptr<AboutVortex> AboutVortex::Create(const std::string &name) {
+  std::shared_ptr<AboutVortex> AboutVortex::create(const std::string &name) {
     auto instance = std::shared_ptr<AboutVortex>(new AboutVortex(name));
-    instance->SetupRenderCallback();
+    instance->setup_render_callback();
     return instance;
   }
 
-  void AboutVortex::SetupRenderCallback() {
+  void AboutVortex::setup_render_callback() {
     auto self = shared_from_this();
     app_window_->SetRenderCallback([self]() {
       if (self) {
-        self->Render();
+        self->render();
       }
     });
   }
 
-  void AboutVortex::Render() {
+  void AboutVortex::render() {
     float window_width = CherryGUI::GetWindowSize().x;
     float image_height = window_width / 3.435f;
 
