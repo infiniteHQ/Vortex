@@ -21,15 +21,12 @@ using namespace vxe;
 #ifndef EDITOR_H
 #define EDITOR_H
 
-static std::vector<std::shared_ptr<vxe::ContentBrowser>>
-    c_ContentBrowserInstances;
-static std::vector<std::shared_ptr<vxe::LogsUtilityAppWindow>>
-    c_LogsUtilityInstances;
-static std::vector<std::shared_ptr<vxe::DocViewerAppWindow>>
-    c_DocViewerInstances;
+static std::vector<std::shared_ptr<vxe::ContentBrowser>> c_ContentBrowserInstances;
+static std::vector<std::shared_ptr<vxe::LogsUtility>> c_LogsUtilityInstances;
+static std::vector<std::shared_ptr<vxe::DocViewerAppWindow>> c_DocViewerInstances;
 
 class Editor {
-public:
+ public:
   Editor();
 
   bool GetCreditsVisibility();
@@ -44,8 +41,7 @@ public:
   void SetTemplatesUtilityVisibility(const bool &visibility);
   bool GetTemplatesUtilityVisibility();
 
-  void SetProjectSettingsVisibility(const bool &visibility,
-                                    const std::string &tab);
+  void SetProjectSettingsVisibility(const bool &visibility, const std::string &tab);
   bool GetProjectSettingsVisibility();
 
   void SetModulesUtilityVisibility(const bool &visibility);
@@ -71,7 +67,7 @@ public:
   bool ShowProjectSettings = false;
   bool ShowLogUtility = false;
 
-private:
+ private:
   std::shared_ptr<vxe::Welcome> m_WelcomeAppWindow;
   std::shared_ptr<vxe::ModulesUtility> m_ModulesUtility;
   std::shared_ptr<vxe::PluginsUtility> m_PluginsUtility;
@@ -84,7 +80,7 @@ private:
 static std::shared_ptr<Editor> c_Editor;
 
 namespace vxe {
-VORTEX_API int VortexEditor(int argc, char **argv);
+  VORTEX_API int VortexEditor(int argc, char **argv);
 }
 
 #endif

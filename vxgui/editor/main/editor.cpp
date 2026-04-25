@@ -252,8 +252,8 @@ void Editor::SpawnContentBrowserBottom() {
 
 void Editor::SpawnLogsUtility() {
   std::string label = "Logs utility ####Logs utility-" + std::to_string(c_LogsUtilityInstances.size() + 1);
-  std::shared_ptr<vxe::LogsUtilityAppWindow> LogsUtility = vxe::LogsUtilityAppWindow::Create(label.c_str());
-  Cherry::AddAppWindow(LogsUtility->GetAppWindow());
+  std::shared_ptr<vxe::LogsUtility> LogsUtility = vxe::LogsUtility::create(label.c_str());
+  Cherry::AddAppWindow(LogsUtility->get_app_window());
   c_LogsUtilityInstances.push_back(LogsUtility);
 }
 
