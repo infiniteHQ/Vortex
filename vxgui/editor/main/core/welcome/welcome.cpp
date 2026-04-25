@@ -1,21 +1,16 @@
+//
+//  welcome.cpp
+//  Sources of rendering and lua script integration for the "welcome" window.
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "./welcome.hpp"
 
-#include <cstdlib>  // std::system
-#include <cstring>
-#include <iostream>
-#include <string>
-
 #include "../../editor.hpp"
-
-#if defined(_WIN32)
-#include <shellapi.h>
-#include <windows.h>
-#elif defined(__APPLE__)
-#include <TargetConditionals.h>
-#include <stdlib.h>
-#elif defined(__linux__)
-#include <stdlib.h>
-#endif
 
 namespace vxe {
 
@@ -30,43 +25,26 @@ namespace vxe {
     app_window_->SetInternalPaddingY(0.0f);
   }
 
-  std::vector<std::shared_ptr<EnvProject>> Welcome::GetMostRecentProjects(
-      const std::vector<std::shared_ptr<EnvProject>> &projects,
-      size_t maxCount) {
-    auto sortedProjects = projects;
-    std::sort(
-        sortedProjects.begin(),
-        sortedProjects.end(),
-        [](const std::shared_ptr<EnvProject> &a, const std::shared_ptr<EnvProject> &b) {
-          return a->lastOpened > b->lastOpened;
-        });
-
-    if (sortedProjects.size() > maxCount) {
-      sortedProjects.resize(maxCount);
-    }
-    return sortedProjects;
-  }
-
-  std::shared_ptr<Cherry::AppWindow> &Welcome::GetAppWindow() {
+  std::shared_ptr<Cherry::AppWindow> &Welcome::get_app_window() {
     return app_window_;
   }
 
-  std::shared_ptr<Welcome> Welcome::Create(const std::string &name) {
+  std::shared_ptr<Welcome> Welcome::create(const std::string &name) {
     auto instance = std::shared_ptr<Welcome>(new Welcome(name));
-    instance->SetupRenderCallback();
+    instance->setup_render_callback();
     return instance;
   }
 
-  void Welcome::SetupRenderCallback() {
+  void Welcome::setup_render_callback() {
     auto self = shared_from_this();
     app_window_->SetRenderCallback([self]() {
       if (self) {
-        self->Render();
+        self->render();
       }
     });
   }
 
-  void Welcome::Render() {
+  void Welcome::render() {
     Cherry::Script::RenderLuaFreshScript(Cherry::GetPath("ui/windows/welcome/main.lua"));
 
     // If Browser Clicked
@@ -114,4 +92,5 @@ namespace vxe {
       vxe::OpenURL("https://vortex.infinite.si/");
     }
   }
+
 }  // namespace vxe

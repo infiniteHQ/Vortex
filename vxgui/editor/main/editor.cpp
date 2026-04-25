@@ -5,9 +5,9 @@ std::string GetVortexBuildType() {
 }
 
 Editor::Editor() {
-  m_WelcomeAppWindow = vxe::Welcome::Create("?loc:loc.window_names.welcome");
-  m_WelcomeAppWindow->GetAppWindow()->SetVisibility(true);
-  Cherry::AddAppWindow(m_WelcomeAppWindow->GetAppWindow());
+  m_WelcomeAppWindow = vxe::Welcome::create("?loc:loc.window_names.welcome");
+  m_WelcomeAppWindow->get_app_window()->SetVisibility(true);
+  Cherry::AddAppWindow(m_WelcomeAppWindow->get_app_window());
 
   m_ModulesUtility = vxe::ModulesUtility::Create("Modules utily");
   m_ModulesUtility->GetAppWindow()->SetVisibility(false);
@@ -17,25 +17,25 @@ Editor::Editor() {
   m_PluginsUtility->GetAppWindow()->SetVisibility(false);
   Cherry::AddAppWindow(m_PluginsUtility->GetAppWindow());
 
-  m_ProjectSettings = vxe::ProjectSettings::Create("Project settings");
-  m_ProjectSettings->GetAppWindow()->SetVisibility(false);
-  Cherry::AddAppWindow(m_ProjectSettings->GetAppWindow());
+  m_ProjectSettings = vxe::ProjectSettings::create("Project settings");
+  m_ProjectSettings->get_app_window()->SetVisibility(false);
+  Cherry::AddAppWindow(m_ProjectSettings->get_app_window());
 };
 
 bool Editor::GetCreditsVisibility() {
   if (!m_CreditsWindow)
     return false;
-  return m_CreditsWindow->GetAppWindow()->m_Visible;
+  return m_CreditsWindow->get_app_window()->m_Visible;
 }
 
 void Editor::SetCreditsVisibility(const bool visibility) {
   if (visibility) {
     if (!m_CreditsWindow) {
-      m_CreditsWindow = vxe::Credits::Create("Credits");
+      m_CreditsWindow = vxe::Credits::create("Credits");
 
       Cherry::ApplicationSpecification spec;
       spec.SetName("Credits");
-      spec.SetUniqueAppWindowName(m_CreditsWindow->GetAppWindow()->m_Name);
+      spec.SetUniqueAppWindowName(m_CreditsWindow->get_app_window()->m_Name);
       spec.MinHeight = 200;
       spec.MinWidth = 100;
       spec.Height = 750;
@@ -50,20 +50,20 @@ void Editor::SetCreditsVisibility(const bool visibility) {
 
       spec.UsingCloseCallback = true;
       spec.CloseCallback = [this]() {
-        Cherry::DeleteAppWindow(m_CreditsWindow->GetAppWindow());
+        Cherry::DeleteAppWindow(m_CreditsWindow->get_app_window());
         m_CreditsWindow = nullptr;
       };
 
       spec.MenubarCallback = []() { };
 
-      m_CreditsWindow->GetAppWindow()->AttachOnNewWindow(spec);
-      Cherry::AddAppWindow(m_CreditsWindow->GetAppWindow());
+      m_CreditsWindow->get_app_window()->AttachOnNewWindow(spec);
+      Cherry::AddAppWindow(m_CreditsWindow->get_app_window());
     }
 
-    m_CreditsWindow->GetAppWindow()->SetVisibility(true);
+    m_CreditsWindow->get_app_window()->SetVisibility(true);
   } else {
     if (m_CreditsWindow) {
-      Cherry::DeleteAppWindow(m_CreditsWindow->GetAppWindow());
+      Cherry::DeleteAppWindow(m_CreditsWindow->get_app_window());
       m_CreditsWindow = nullptr;
     }
   }
@@ -72,17 +72,17 @@ void Editor::SetCreditsVisibility(const bool visibility) {
 bool Editor::GetAboutAppWindowVisibility() {
   if (!m_AboutWindow)
     return false;
-  return m_AboutWindow->GetAppWindow()->m_Visible;
+  return m_AboutWindow->get_app_window()->m_Visible;
 }
 
 void Editor::SetAboutWindowVisibility(const bool visibility) {
   if (visibility) {
     if (!m_AboutWindow) {
-      m_AboutWindow = vxe::AboutVortex::Create("About Vortex");
+      m_AboutWindow = vxe::AboutVortex::create("About Vortex");
 
       Cherry::ApplicationSpecification spec;
       spec.SetName("About Vortex");
-      spec.SetUniqueAppWindowName(m_AboutWindow->GetAppWindow()->m_Name);
+      spec.SetUniqueAppWindowName(m_AboutWindow->get_app_window()->m_Name);
       spec.MinHeight = 100;
       spec.MinWidth = 200;
       spec.Height = 450;
@@ -97,20 +97,20 @@ void Editor::SetAboutWindowVisibility(const bool visibility) {
 
       spec.UsingCloseCallback = true;
       spec.CloseCallback = [this]() {
-        Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
+        Cherry::DeleteAppWindow(m_AboutWindow->get_app_window());
         m_AboutWindow = nullptr;
       };
 
       spec.MenubarCallback = []() { };
 
-      m_AboutWindow->GetAppWindow()->AttachOnNewWindow(spec);
-      Cherry::AddAppWindow(m_AboutWindow->GetAppWindow());
+      m_AboutWindow->get_app_window()->AttachOnNewWindow(spec);
+      Cherry::AddAppWindow(m_AboutWindow->get_app_window());
     }
 
-    m_AboutWindow->GetAppWindow()->SetVisibility(true);
+    m_AboutWindow->get_app_window()->SetVisibility(true);
   } else {
     if (m_AboutWindow) {
-      Cherry::DeleteAppWindow(m_AboutWindow->GetAppWindow());
+      Cherry::DeleteAppWindow(m_AboutWindow->get_app_window());
       m_AboutWindow = nullptr;
     }
   }
@@ -119,17 +119,17 @@ void Editor::SetAboutWindowVisibility(const bool visibility) {
 bool Editor::GetAboutProjectAppWindowVisibility() {
   if (!m_AboutProjectWindow)
     return false;
-  return m_AboutProjectWindow->GetAppWindow()->m_Visible;
+  return m_AboutProjectWindow->get_app_window()->m_Visible;
 }
 
 void Editor::SetAboutProjectWindowVisibility(const bool visibility) {
   if (visibility) {
     if (!m_AboutProjectWindow) {
-      m_AboutProjectWindow = vxe::AboutProject::Create("About this project");
+      m_AboutProjectWindow = vxe::AboutProject::create("About this project");
 
       Cherry::ApplicationSpecification spec;
       spec.SetName("About this project");
-      spec.SetUniqueAppWindowName(m_AboutProjectWindow->GetAppWindow()->m_Name);
+      spec.SetUniqueAppWindowName(m_AboutProjectWindow->get_app_window()->m_Name);
       spec.MinHeight = 100;
       spec.MinWidth = 200;
       spec.Height = 380;
@@ -144,20 +144,20 @@ void Editor::SetAboutProjectWindowVisibility(const bool visibility) {
 
       spec.UsingCloseCallback = true;
       spec.CloseCallback = [this]() {
-        Cherry::DeleteAppWindow(m_AboutProjectWindow->GetAppWindow());
+        Cherry::DeleteAppWindow(m_AboutProjectWindow->get_app_window());
         m_AboutProjectWindow = nullptr;
       };
 
       spec.MenubarCallback = []() { };
 
-      m_AboutProjectWindow->GetAppWindow()->AttachOnNewWindow(spec);
-      Cherry::AddAppWindow(m_AboutProjectWindow->GetAppWindow());
+      m_AboutProjectWindow->get_app_window()->AttachOnNewWindow(spec);
+      Cherry::AddAppWindow(m_AboutProjectWindow->get_app_window());
     }
 
-    m_AboutProjectWindow->GetAppWindow()->SetVisibility(true);
+    m_AboutProjectWindow->get_app_window()->SetVisibility(true);
   } else {
     if (m_AboutProjectWindow) {
-      Cherry::DeleteAppWindow(m_AboutProjectWindow->GetAppWindow());
+      Cherry::DeleteAppWindow(m_AboutProjectWindow->get_app_window());
       m_AboutProjectWindow = nullptr;
     }
   }
@@ -173,16 +173,16 @@ bool Editor::GetTemplatesUtilityVisibility() {
 
 void Editor::SetProjectSettingsVisibility(const bool &visibility, const std::string &tab = "") {
   if (!tab.empty()) {
-    m_ProjectSettings->LoadTabUserWant(tab);
+    m_ProjectSettings->load_tab_user_want(tab);
   }
-  m_ProjectSettings->GetAppWindow()->SetVisibility(visibility);
+  m_ProjectSettings->get_app_window()->SetVisibility(visibility);
   if (visibility) {
-    CherryGUI::SetWindowFocus(m_ProjectSettings->GetAppWindow()->m_IdName.c_str());
+    CherryGUI::SetWindowFocus(m_ProjectSettings->get_app_window()->m_IdName.c_str());
   }
 }
 
 bool Editor::GetProjectSettingsVisibility() {
-  return m_ProjectSettings->GetAppWindow()->m_Visible;
+  return m_ProjectSettings->get_app_window()->m_Visible;
 }
 
 void Editor::SetModulesUtilityVisibility(const bool &visibility) {
