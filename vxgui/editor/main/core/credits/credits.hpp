@@ -1,57 +1,60 @@
+//
+//  credits.hpp
+//  Header and declarations for the "credits" window.
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #pragma once
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
 
-#ifndef CREDITS_WINDOW_H
-#define CREDITS_WINDOW_H
-
-#define CHERRY_V1
-#include "../../../../../lib/cherry/cherry.hpp"
+#ifndef CREDITS_WINDOW_HPP
+#define CREDITS_WINDOW_HPP
 
 namespace vxe {
-  // This window can be a "subappwindow" of a parent if you use the constructor
-  // with parent parameter.
+
   class Credits : public std::enable_shared_from_this<Credits> {
    public:
     Credits(const std::string &name);
 
-    std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
-    static std::shared_ptr<Credits> Create(const std::string &name);
-    void SetupRenderCallback();
-    void Render();
+    // window
+    std::shared_ptr<Cherry::AppWindow> &get_app_window();
+    static std::shared_ptr<Credits> create(const std::string &name);
+    void setup_render_Callback();
 
-    std::string m_SelectedCategory;
+    // rendering
+    void render();
+    void render_left_menubar();
 
-    bool m_SelectedCategoryChanged = false;
-    bool m_AutoScroll = true;
-    float m_ScrollY = 0.0f;
-    float m_ScrollSpeed = 50.0f;
-    bool m_UserScrolled = false;
-    float m_UserScrollCooldown = 0.0f;
-    const float USER_SCROLL_PAUSE = 3.0f;
+    // logic
+    void set_selected_category(const std::string &c);
+    void refresh_categories();
+    std::string get_selected_category();
 
-    void SetSelectedCategory(const std::string &c) {
-      m_SelectedCategory = c;
-      m_SelectedCategoryChanged = true;
-    }
-    std::string GetSelectedCategory() {
-      return m_SelectedCategory;
-    }
+   private:
+    // logic
+    std::string selected_category_;
+    std::unordered_map<std::string, int> all_categories_;
 
-    std::unordered_map<std::string, int> m_AllCategories;
+    // ui states
+    bool selected_category_changed_ = false;
+    bool user_scrolled_ = false;
+    float scroll_y_ = 0.0f;
 
-    void RefreshCategories() {
-      m_AllCategories.clear();
-      for (int i = 0; i < vxe::GetCurrentContext()->IO.em.size(); i++) {
-        if (!vxe::GetCurrentContext()->IO.em[i]) {
-          continue;
-        }
-        m_AllCategories[vxe::GetCurrentContext()->IO.em[i]->m_group]++;
-      }
-    }
+    // ui properties
+    bool auto_scroll_ = true;
+    float user_scroll_cooldown_ = 0.0f;
+    float user_scroll_pause_ = 3.0f;
+    float scroll_speed_ = 50.0f;
 
+    // window
     std::shared_ptr<Cherry::AppWindow> app_window_;
   };
+
 }  // namespace vxe
 
-#endif  // CREDITS_WINDOW_H
+#endif  // CREDITS_WINDOW_HPP

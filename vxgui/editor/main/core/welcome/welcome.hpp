@@ -2,12 +2,9 @@
 
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
-#include "../utils.hpp"
 
 #ifndef WELCOME_WINDOW_H
 #define WELCOME_WINDOW_H
-
-#include "../../../../../lib/cherry/cherry.hpp"
 
 namespace vxe {
 
@@ -20,6 +17,7 @@ namespace vxe {
     void SetupRenderCallback();
     void Render();
 
+   private:
     std::function<void()> m_CreateProjectCallback;
     std::function<void()> m_OpenProjectCallback;
     std::function<void()> m_SettingsCallback;

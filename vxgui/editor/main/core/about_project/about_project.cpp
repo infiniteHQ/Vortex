@@ -1,3 +1,13 @@
+//
+//  about_project.cpp
+//  Rendering sources for the "about project" window.
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "./about_project.hpp"
 
 namespace vxe {
@@ -18,26 +28,26 @@ namespace vxe {
     std::shared_ptr<Cherry::AppWindow> win = app_window_;
   }
 
-  std::shared_ptr<Cherry::AppWindow> &AboutProject::GetAppWindow() {
+  std::shared_ptr<Cherry::AppWindow> &AboutProject::get_app_window() {
     return app_window_;
   }
 
-  std::shared_ptr<AboutProject> AboutProject::Create(const std::string &name) {
+  std::shared_ptr<AboutProject> AboutProject::create(const std::string &name) {
     auto instance = std::shared_ptr<AboutProject>(new AboutProject(name));
-    instance->SetupRenderCallback();
+    instance->setup_render_callback();
     return instance;
   }
 
-  void AboutProject::SetupRenderCallback() {
+  void AboutProject::setup_render_callback() {
     auto self = shared_from_this();
     app_window_->SetRenderCallback([self]() {
       if (self) {
-        self->Render();
+        self->render();
       }
     });
   }
 
-  void AboutProject::Render() {
+  void AboutProject::render() {
     float window_width = CherryGUI::GetWindowSize().x;
     float image_height = window_width / 3.835f;
 

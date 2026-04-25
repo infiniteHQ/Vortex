@@ -5,7 +5,6 @@
 #include <iostream>
 #include <string>
 
-#include "../../../../../lib/cherry/cherry.hpp"
 #include "../../editor.hpp"
 
 #if defined(_WIN32)

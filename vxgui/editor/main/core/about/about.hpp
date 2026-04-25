@@ -32,6 +32,7 @@ namespace vxe {
    private:
     std::shared_ptr<Cherry::AppWindow> app_window_;
   };
+
 }  // namespace vxe
 
 #endif  // ABOUT_WINDOW_HPP
