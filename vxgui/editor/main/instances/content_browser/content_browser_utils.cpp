@@ -102,6 +102,7 @@ namespace vxe {
 
     return similarity >= threshold_;
   }
+
   std::string ContentBrowser::get_extension(const std::string &path) {
     size_t dot_pos = path.find_last_of('.');
     if (dot_pos == std::string::npos)
@@ -311,4 +312,21 @@ namespace vxe {
   void ContentBrowser::set_colored_folder(const std::string &path, const std::string &hex_color) {
     // TODO or DELETE ?
   }
+
+  void ContentBrowser::set_delete_path_callback(const std::function<void(const std::string &)> &foo) {
+    delete_path_callback_ = foo;
+  }
+
+  void ContentBrowser::set_copy_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo) {
+    copy_paths_callback_ = foo;
+  }
+
+  void ContentBrowser::set_cut_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo) {
+    cut_paths_callback_ = foo;
+  }
+
+  void ContentBrowser::set_paste_paths_callback(const std::function<void(const std::string &)> &foo) {
+    paste_paths_callback_ = foo;
+  }
+
 }  // namespace vxe
