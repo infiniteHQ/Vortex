@@ -9,9 +9,9 @@ Editor::Editor() {
   m_WelcomeAppWindow->get_app_window()->SetVisibility(true);
   Cherry::AddAppWindow(m_WelcomeAppWindow->get_app_window());
 
-  m_ModulesUtility = vxe::ModulesUtility::Create("Modules utily");
-  m_ModulesUtility->GetAppWindow()->SetVisibility(false);
-  Cherry::AddAppWindow(m_ModulesUtility->GetAppWindow());
+  m_ModulesUtility = vxe::ModulesUtility::create("Modules utily");
+  m_ModulesUtility->get_app_window()->SetVisibility(false);
+  Cherry::AddAppWindow(m_ModulesUtility->get_app_window());
 
   m_PluginsUtility = vxe::PluginsUtility::Create("Plugins utily");
   m_PluginsUtility->GetAppWindow()->SetVisibility(false);
@@ -186,11 +186,11 @@ bool Editor::GetProjectSettingsVisibility() {
 }
 
 void Editor::SetModulesUtilityVisibility(const bool &visibility) {
-  m_ModulesUtility->GetAppWindow()->SetVisibility(visibility);
+  m_ModulesUtility->get_app_window()->SetVisibility(visibility);
 }
 
 bool Editor::GetModulesUtilityVisibility() {
-  return m_ModulesUtility->GetAppWindow()->m_Visible;
+  return m_ModulesUtility->get_app_window()->m_Visible;
 }
 
 void Editor::SetPluginsUtilityVisibility(const bool &visibility) {
@@ -202,11 +202,11 @@ bool Editor::GetPluginsUtilityVisibility() {
 }
 
 void Editor::SetWelcomeVisibility(const bool &visibility) {
-  m_WelcomeAppWindow->GetAppWindow()->SetVisibility(visibility);
+  m_WelcomeAppWindow->get_app_window()->SetVisibility(visibility);
 }
 
 bool Editor::GetWelcomeVisibility() {
-  return m_WelcomeAppWindow->GetAppWindow()->m_Visible;
+  return m_WelcomeAppWindow->get_app_window()->m_Visible;
 }
 
 std::string Editor::SpawnContentBrowser() {

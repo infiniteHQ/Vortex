@@ -12,7 +12,6 @@
 
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
-#include "../utils.hpp"
 
 #ifndef PROJECT_SETTINGS_HELPERS_HPP
 #define PROJECT_SETTINGS_HELPERS_HPP

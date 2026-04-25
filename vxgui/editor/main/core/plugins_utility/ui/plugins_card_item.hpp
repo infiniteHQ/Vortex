@@ -1,6 +1,6 @@
 //
 //  module_card_item.hpp
-//  Module card UI component, for rendering modules and show quick
+//  Plugin card UI component, for rendering modules and show quick
 //  actions.
 //
 //	Copyright (c) 2026 Infinite
@@ -103,7 +103,7 @@ namespace vxe {
    public:
     ModuleCardItem(
         const Cherry::Identifier &identifier,
-        const std::shared_ptr<ModuleInterface> &module,
+        const std::shared_ptr<ModuleInterface> &plugin,
         const std::string &name,
         const std::string &path,
         const std::string &description,
@@ -119,7 +119,7 @@ namespace vxe {
         std::string *search_ptr)
 
         : Cherry::Component(identifier),
-          m_module(module),
+          m_module(plugin),
           m_name(name),
           m_path(path),
           m_description(description),
@@ -367,13 +367,13 @@ namespace vxe {
 
       /*
 
-         if (ctx->IO.em[i]->m_state == "failed")
+         if (ctx->IO.ep[i]->m_state == "failed")
           {
               if (CherryGUI::ImageButtonWithText(listIcon, "Retry to launch",
          ImVec2(this->m_RefreshIcon->GetWidth(),
          this->m_RefreshIcon->GetHeight())))
               {
-                  ctx->IO.em[i]->Start();
+                  ctx->IO.ep[i]->Start();
               }
               CherryGUI::SameLine();
               if (CherryGUI::ImageButtonWithText(trashIcon, "Delete",
@@ -389,18 +389,18 @@ namespace vxe {
               {
                   // Behavior
                   std::shared_ptr<ModuleDetails> instance =
-         std::make_shared<ModuleDetails>(this->ctx, ctx->IO.em[i]);
+         std::make_shared<ModuleDetails>(this->ctx, ctx->IO.ep[i]);
                   this->factory->SpawnInstance(instance);
               }
           }
-          if (ctx->IO.em[i]->m_state == "unknow" || ctx->IO.em[i]->m_state ==
+          if (ctx->IO.ep[i]->m_state == "unknow" || ctx->IO.ep[i]->m_state ==
          "stopped")
           {
               if (CherryGUI::ImageButtonWithText(startIcon, "Launch",
          ImVec2(this->m_RefreshIcon->GetWidth(),
          this->m_RefreshIcon->GetHeight())))
               {
-                  ctx->IO.em[i]->Start();
+                  ctx->IO.ep[i]->Start();
               }
               CherryGUI::SameLine();
               if (CherryGUI::ImageButtonWithText(trashIcon, "Delete",
@@ -416,7 +416,7 @@ namespace vxe {
               {
                   // Behavior
                   std::shared_ptr<ModuleDetails> instance =
-         std::make_shared<ModuleDetails>(this->ctx, ctx->IO.em[i]);
+         std::make_shared<ModuleDetails>(this->ctx, ctx->IO.ep[i]);
                   this->factory->SpawnInstance(instance);
               }
           }
@@ -453,7 +453,7 @@ namespace vxe {
 
   inline Cherry::Component &ModuleCardComponent(
       const Cherry::Identifier &identifier,
-      const std::shared_ptr<ModuleInterface> &module,
+      const std::shared_ptr<ModuleInterface> &plugin,
       const std::string &name,
       const std::string &path,
       const std::string &description,
@@ -469,7 +469,7 @@ namespace vxe {
       std::string *search_ptr) {
     return CherryApp.PushComponent<ModuleCardItem>(
         identifier,
-        module,
+        plugin,
         name,
         path,
         description,
@@ -486,7 +486,7 @@ namespace vxe {
   }
 
   inline Cherry::Component &ModuleCard(
-      const std::shared_ptr<ModuleInterface> &module,
+      const std::shared_ptr<ModuleInterface> &plugin,
       const std::string &name,
       const std::string &path,
       const std::string &description,
@@ -502,7 +502,7 @@ namespace vxe {
       std::string *search_ptr) {
     return ModuleCardComponent(
         Cherry::Application::GenerateUniqueID(
-            module,
+            plugin,
             name,
             path,
             description,
@@ -517,7 +517,7 @@ namespace vxe {
             deletion_callback,
             search_ptr,
             "ModuleCardComponent"),
-        module,
+        plugin,
         name,
         path,
         description,

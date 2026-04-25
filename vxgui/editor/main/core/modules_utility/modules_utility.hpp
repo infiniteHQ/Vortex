@@ -1,3 +1,13 @@
+//
+//  modules_utility.hpp
+//  Header and declarations for the modules utility front-end
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #pragma once
 
 #include <unordered_set>
@@ -7,7 +17,6 @@
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
 #include "../../instances/modules_details/modules_details.hpp"
-#include "../utils.hpp"
 #include "./ui/module_card_item.hpp"
 #include "modules_utility_helpers.hpp"
 
@@ -21,83 +30,49 @@ namespace vxe {
     ModulesUtility(const std::string &name);
 
     // window
-    std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
-    static std::shared_ptr<ModulesUtility> Create(const std::string &name);
-    void SetupRenderCallback();
-    void AddChild(const ModulesUtilityChild &child);
-    void RemoveChild(const std::string &child_name);
-    ModulesUtilityChild *GetChild(const std::string &child_name);
+    std::shared_ptr<Cherry::AppWindow> &get_app_window();
+    static std::shared_ptr<ModulesUtility> create(const std::string &name);
+    void setup_render_callback();
 
     // rendering
-    void Render();
-    void RenderInstalled();
-    void ModulesRender();
-    void RenderImport();
-    void RenderDownload();
-    void RenderModuleDeletionModal();
+    void render();
+    void render_installed();
+    void render_import();
+    void render_download();
+    void render_module_deletion_modal();
+    void render_left_menubar();
+    void render_right_menubar();
 
     // logic
-    void RefreshCategories();
+    void refresh_categories();
 
     // utils
-    bool HasCommonSubsequence(const std::string &a, const std::string &b);
-
-    void setmoduletodelete(const std::shared_ptr<ModuleInterface> &mod) {
-      g_ModuleToDeleteName = mod->m_name;
-      g_ModuleToDeleteProperName = mod->m_proper_name;
-      g_ModuleToDeleteDescription = mod->m_description;
-      g_ModuleToDeleteVersion = mod->m_version;
-      g_ModuleToDeleteLogoPath = mod->m_logo_path;
-      g_TriggerModuleDeletionModal = true;
-    }
+    bool has_common_subsequence(const std::string &a, const std::string &b);
+    void set_module_to_delete(const std::shared_ptr<ModuleInterface> &mod);
+    void set_selected_category(const std::string &c);
+    std::string get_selected_category();
 
    private:
     std::vector<ModulesUtilityChild> childs_;
 
-    std::string m_ModulesSearch;
-    bool g_TriggerModuleDeletionModal;
-    std::string g_ModuleToDeleteName;
-    std::string g_ModuleToDeleteProperName;
-    std::string g_ModuleToDeleteDescription;
-    std::string g_ModuleToDeleteVersion;
-    std::string g_ModuleToDeleteLogoPath;
+    std::string modules_search_;
+    bool trigger_module_deletion_modal_ = false;
+    std::string module_to_delete_name_;
+    std::string module_to_delete_proper_name_;
+    std::string module_to_delete_description_;
+    std::string module_to_delete_version_;
+    std::string module_to_delete_logo_path_;
 
-    std::function<void()> m_CreateProjectCallback;
-    std::function<void()> m_OpenProjectCallback;
-    std::function<void()> m_SettingsCallback;
-    std::function<void(const std::shared_ptr<EnvProject> &)> m_ProjectCallback;
+    ShowModes selected_show_mode_ = ShowModes::Thumbmails;
+    Pannels selected_pannel_ = Pannels::Installed;
 
-    enum class ShowModes { Thumbmails, List };
-    enum class Pannels { Installed, Downloads, Import };
-    ShowModes m_SelectedShowMode = ShowModes::Thumbmails;
+    std::string selected_category_;
+    bool selected_category_changed_ = false;
+    std::unordered_map<std::string, int> all_categories;
 
-    Pannels m_SelectedPannel = Pannels::Installed;
-
-    char ModulesSearch[512];
-    std::vector<std::shared_ptr<EnvProject>> GetMostRecentProjects(
-        const std::vector<std::shared_ptr<EnvProject>> &projects,
-        size_t maxCount);
-    std::vector<std::shared_ptr<EnvProject>> m_RecentProjects;
-    std::string m_SelectedChildName;
-
-    std::string m_SelectedCategory;
-    bool m_SelectedCategoryChanged = false;
-    void SetSelectedCategory(const std::string &c) {
-      m_SelectedCategory = c;
-      m_SelectedCategoryChanged = true;
-    }
-    std::string GetSelectedCategory() {
-      return m_SelectedCategory;
-    }
-    std::unordered_map<std::string, int> m_AllCategories;
-
-    std::vector<std::string> vortexDists;
-    std::string VortexEditorDist;
-    std::string newDist;
+    float left_panel_width = 290.0f;
 
     std::shared_ptr<Cherry::AppWindow> app_window_;
-    int selected;
-    float leftPaneWidth = 290.0f;
   };
 }  // namespace vxe
 #endif  // MODULEs_UTILITY_WINDOW_H

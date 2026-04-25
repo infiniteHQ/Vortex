@@ -232,4 +232,86 @@ namespace vxe {
     current_save_ = newsave;
   }
 
+  void ProjectSettings::refresh_project_informations() {
+    vxe::RefreshProjectInformations();
+    auto *ctx = vxe::GetCurrentContext();
+
+    initial_project_info_ = {
+      .name = ctx->name,
+      .description = ctx->description,
+      .version = ctx->project_version,
+      .thumbnail_path = ctx->logo_path,
+      .banner_path = ctx->banner_path,
+      .type = ctx->type,
+      .tags = ctx->tags,
+      .author = ctx->author,
+      .website = ctx->website,
+      .support_contact = ctx->support_contact,
+      .copyright_file = ctx->copyright_file,
+      .license_file = ctx->license_file,
+      .startup_script = ctx->startup_script,
+      .readme_file = ctx->readme_file,
+      .requirements_file = ctx->requirements_file,
+      .code_of_conduct_file = ctx->code_of_conduct_file,
+      .security_file = ctx->security_file,
+      .root_content_path = ctx->root_content_path,
+    };
+
+    current_project_info_ = initial_project_info_;  // copie propre
+  }
+
+  void ProjectSettings::update_project_informations() {
+    vxe::UpdateProjectName(current_project_info_.name);
+    vxe::UpdateProjectDescription(current_project_info_.description);
+    vxe::UpdateProjectVersion(current_project_info_.version);
+    vxe::UpdateProjectAuthor(current_project_info_.author);
+    vxe::UpdateProjectTags(current_project_info_.tags);
+    vxe::UpdateProjectType(current_project_info_.type);
+    vxe::UpdateProjectLogoPath(current_project_info_.thumbnail_path);
+    vxe::UpdateProjectWebsite(current_project_info_.website);
+    vxe::UpdateProjectSupportContact(current_project_info_.support_contact);
+    vxe::UpdateProjectCopyrightFile(current_project_info_.copyright_file);
+    vxe::UpdateProjectLicenseFile(current_project_info_.license_file);
+    vxe::UpdateProjectReadmeFile(current_project_info_.readme_file);
+    vxe::UpdateProjectRequirementsFile(current_project_info_.requirements_file);
+    vxe::UpdateProjectCodeOfConductFile(current_project_info_.code_of_conduct_file);
+    vxe::UpdateProjectSecurityFile(current_project_info_.security_file);
+    vxe::UpdateProjectRootContentPath(current_project_info_.root_content_path);
+    vxe::UpdateProjectStartupScript(current_project_info_.startup_script);
+
+    initial_project_info_ = current_project_info_;
+    refresh_project_informations();
+  }
+
+  void ProjectSettings::update() {
+    std::string oldname = vxe::GetCurrentContext()->name;
+
+    std::string vortex_version = VORTEX_VERSION;
+
+    nlohmann::json jsonData;
+    jsonData["project"]["name"] = current_save_->name;
+    jsonData["project"]["author"] = current_save_->author;
+    jsonData["project"]["description"] = current_save_->description;
+    jsonData["project"]["compatibleWith"] = vortex_version;
+    jsonData["project"]["type"] = current_save_->type;
+    jsonData["project"]["version"] = current_save_->version;
+    jsonData["project"]["include_system_templates"] = current_save_->include_system_templates;
+
+    std::string path = vxe::GetCurrentContext()->projectPath.string();
+    path += "/vortex.config";
+
+    std::ofstream file(path);
+    if (file.is_open()) {
+      file << std::setw(4) << jsonData << std::endl;
+      vxe::LogInfo("Core", "Object saved to " + path);
+      file.close();
+    } else {
+      vxe::LogError("Core", "Unable to open file " + path + " for writing!");
+    }
+
+    refresh();
+
+    vxe::UpdateEnvironmentProject(oldname);
+  }
+
 }  // namespace vxe
