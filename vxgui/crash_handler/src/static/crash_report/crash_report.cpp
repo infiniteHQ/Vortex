@@ -1,12 +1,11 @@
 #include "crash_report.hpp"
 
-CrashAppWindow::CrashAppWindow(const std::string &name,
-                               const std::string &session_id) {
-  m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
-  m_AppWindow->SetIcon(Cherry::GetPath("ch_resources/imgs/icon_crash.png"));
-  m_AppWindow->SetClosable(false);
+CrashAppWindow::CrashAppWindow(const std::string &name, const std::string &session_id) {
+  app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
+  app_window_->SetIcon(Cherry::GetPath("ch_resources/imgs/icon_crash.png"));
+  app_window_->SetClosable(false);
 
-  m_AppWindow->m_TabMenuCallback = []() {
+  app_window_->m_TabMenuCallback = []() {
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
     ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
     ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
@@ -30,12 +29,12 @@ CrashAppWindow::CrashAppWindow(const std::string &name,
     }
   };
 
-  m_AppWindow->SetInternalPaddingX(10.0f);
-  m_AppWindow->SetInternalPaddingY(10.0f);
+  app_window_->SetInternalPaddingX(10.0f);
+  app_window_->SetInternalPaddingY(10.0f);
 
   m_SessionID = session_id;
 
-  std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
+  std::shared_ptr<Cherry::AppWindow> win = app_window_;
 }
 
 std::string CrashAppWindow::GetHomeDirectory() {
@@ -57,45 +56,42 @@ std::string CrashAppWindow::GetHomeDirectory() {
   }
   return std::string(homePath);
 #endif
-  throw std::runtime_error(
-      "Unknown platform: Unable to determine home directory");
+  throw std::runtime_error("Unknown platform: Unable to determine home directory");
 }
 
 // Updated loadFileToString function
 bool loadFileToString(const std::string &filename, char *text, size_t maxSize) {
   std::ifstream file(filename);
   if (!file.is_open()) {
-    return false; // Unable to open file
+    return false;  // Unable to open file
   }
 
   std::string line;
   size_t index = 0;
 
   while (std::getline(file, line)) {
-    if (index + line.size() < maxSize - 1) { // Check boundary to avoid overflow
-      std::strcpy(text + index, line.c_str()); // Copy line into text buffer
+    if (index + line.size() < maxSize - 1) {    // Check boundary to avoid overflow
+      std::strcpy(text + index, line.c_str());  // Copy line into text buffer
       index += line.size();
-      text[index++] = '\n'; // Add newline character
+      text[index++] = '\n';  // Add newline character
     } else {
-      break; // Text buffer full
+      break;  // Text buffer full
     }
   }
 
-  text[index] = '\0'; // Null-terminate the string
+  text[index] = '\0';  // Null-terminate the string
 
   file.close();
   return true;
 }
 
-static std::vector<std::tuple<std::string, std::string, std::string>>
-    modifiable_values;
+static std::vector<std::tuple<std::string, std::string, std::string>> modifiable_values;
 
 std::shared_ptr<Cherry::AppWindow> &CrashAppWindow::GetAppWindow() {
-  return m_AppWindow;
+  return app_window_;
 }
 
-std::shared_ptr<CrashAppWindow> CrashAppWindow::Create(const std::string &name,
-                                                       const std::string &id) {
+std::shared_ptr<CrashAppWindow> CrashAppWindow::Create(const std::string &name, const std::string &id) {
   auto instance = std::shared_ptr<CrashAppWindow>(new CrashAppWindow(name, id));
   instance->SetupRenderCallback();
   return instance;
@@ -103,7 +99,7 @@ std::shared_ptr<CrashAppWindow> CrashAppWindow::Create(const std::string &name,
 
 void CrashAppWindow::SetupRenderCallback() {
   auto self = shared_from_this();
-  m_AppWindow->SetRenderCallback([self]() {
+  app_window_->SetRenderCallback([self]() {
     if (self) {
       self->Render();
     }
@@ -150,10 +146,8 @@ void CrashAppWindow::Render() {
       ImGui::GetFont()->Scale = oldsize;
       ImGui::PopFont();
 
-      static ImGuiTableFlags flags =
-          ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg |
-          ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable |
-          ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+      static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders |
+                                     ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
       if (ImGui::BeginTable("table_deps", 2, flags)) {
         ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
@@ -228,27 +222,22 @@ void CrashAppWindow::Render() {
               if (column == 0) {
                 ImGui::Text("Build");
               } else if (column == 1) {
-                const std::string build =
-                    "Build: " + VortexMaker::GetVortexBuildID() + " ; " +
-                    VortexMaker::GetBuildDate() + " (" +
-                    VortexMaker::GetVortexEditorDist() + ")";
+                const std::string build = "Build: " + vxe::GetVortexBuildID() + " ; " + vxe::GetBuildDate() + " (" +
+                                          vxe::GetVortexEditorDist() + ")";
                 ImGui::Text(build.c_str());
               }
             } else if (i == 2) {
               if (column == 0) {
                 ImGui::Text("Hash");
               } else if (column == 1) {
-                const std::string hash =
-                    " exe(" + VortexMaker::GetVortexEditorHash() + ") git(" +
-                    VortexMaker::GetGitCommit() + ")";
+                const std::string hash = " exe(" + vxe::GetVortexEditorHash() + ") git(" + vxe::GetGitCommit() + ")";
                 ImGui::Text(hash.c_str());
               }
             } else if (i == 3) {
               if (column == 0) {
                 ImGui::Text("System");
               } else if (column == 1) {
-                const std::string system =
-                    os_name + " " + os_arch + system_desktop;
+                const std::string system = os_name + " " + os_arch + system_desktop;
                 ImGui::Text(system.c_str());
               }
             }
@@ -265,8 +254,7 @@ void CrashAppWindow::Render() {
       static char text[bufferSize];
 
       // Load content from file into text variable
-      static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" +
-                                    m_SessionID + "/logs/global.log";
+      static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" + m_SessionID + "/logs/global.log";
       if (!loadFileToString(log_file, text, bufferSize)) {
         // Handle error opening or reading the file
         ImGui::Text("Failed to open or read file: %s", log_file.c_str());
@@ -274,14 +262,11 @@ void CrashAppWindow::Render() {
 
       Cherry::PushFont("JetBrainsMono");
       CherryStyle::PushFontSize(0.50f);
-      CherryGUI::PushStyleColor(ImGuiCol_Border,
-                                Cherry::HexToImU32("#00000000"));
+      CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
       CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
       CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-      static ImGuiInputTextFlags flags =
-          ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
-      ImGui::InputTextMultiline("##logs_source", text, IM_ARRAYSIZE(text),
-                                ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
+      static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
+      ImGui::InputTextMultiline("##logs_source", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
       CherryGUI::PopStyleVar(2);
       CherryGUI::PopStyleColor();
       CherryStyle::PopFontSize();
@@ -291,14 +276,12 @@ void CrashAppWindow::Render() {
     }
 
     if (ImGui::BeginTabItem("Processus report")) {
-
       static const int bufferSize = 1024 * 16;
       // Declare the text buffer
       static char text[bufferSize];
 
       // Load content from file into text variable
-      static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" +
-                                    m_SessionID + "/crash/core_dumped.txt";
+      static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" + m_SessionID + "/crash/core_dumped.txt";
       if (!loadFileToString(log_file, text, bufferSize)) {
         // Handle error opening or reading the file
         ImGui::Text("Failed to open or read file: %s", log_file.c_str());
@@ -306,15 +289,12 @@ void CrashAppWindow::Render() {
 
       Cherry::PushFont("JetBrainsMono");
       CherryStyle::PushFontSize(0.50f);
-      CherryGUI::PushStyleColor(ImGuiCol_Border,
-                                Cherry::HexToImU32("#00000000"));
+      CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
       CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
       CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-      static ImGuiInputTextFlags flags =
-          ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
-      ImGui::InputTextMultiline("##processus_source", text, IM_ARRAYSIZE(text),
-                                ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
+      static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
+      ImGui::InputTextMultiline("##processus_source", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
 
       CherryStyle::PopFontSize();
       CherryGUI::PopStyleVar(2);
@@ -326,11 +306,9 @@ void CrashAppWindow::Render() {
     ImGui::EndTabBar();
   }
 
-  std::string text =
-      CherryApp.GetLocale("loc.continue") + CherryApp.GetLocale("loc.close");
+  std::string text = CherryApp.GetLocale("loc.continue") + CherryApp.GetLocale("loc.close");
   ImVec2 to_remove = CherryGUI::CalcTextSize(text.c_str());
-  CherryGUI::SetCursorPosX(CherryGUI::GetContentRegionMax().x - to_remove.x -
-                           50);
+  CherryGUI::SetCursorPosX(CherryGUI::GetContentRegionMax().x - to_remove.x - 50);
   CherryGUI::SetCursorPosY(CherryGUI::GetContentRegionMax().y - 35.0f);
   CherryNextProp("color", "#222222");
   CherryKit::Separator();
@@ -341,8 +319,7 @@ void CrashAppWindow::Render() {
   }
 
   CherryGUI::SetCursorPosY(CherryGUI::GetContentRegionMax().y - 28.0f);
-  CherryGUI::SetCursorPosX(CherryGUI::GetContentRegionMax().x - to_remove.x -
-                           20);
+  CherryGUI::SetCursorPosX(CherryGUI::GetContentRegionMax().x - to_remove.x - 20);
 
   CherryNextProp("color_text", "#B1FF31");
   if (CherryKit::ButtonText("Restart project").GetData("isClicked") == "true") {
@@ -362,8 +339,7 @@ static void handleRefresh() {
   // Behavior
 }
 
-static void handleAddToProject(const std::string &name,
-                               const std::string &version) {
+static void handleAddToProject(const std::string &name, const std::string &version) {
   // Behavior
 }
 
@@ -383,9 +359,11 @@ static void handleSearch() {
   // Behavior
 }
 
-void CrashAppWindow::addModuleModal() {}
+void CrashAppWindow::addModuleModal() {
+}
 
-void CrashAppWindow::mainButtonsMenuItem() {}
+void CrashAppWindow::mainButtonsMenuItem() {
+}
 
 void CrashAppWindow::filterMenuItem() {
   ImGui::Separator();
@@ -431,4 +409,4 @@ void CrashAppWindow::menubar() {
   }
 }
 
-void CrashAppWindow::Refresh() {};
+void CrashAppWindow::Refresh() { };

@@ -15,12 +15,12 @@
  *
  * @param main_configs JSON object containing main project configurations.
  */
-VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
+VORTEX_API void vxe::InitProject(const nlohmann::json &main_configs) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   if (!main_configs.contains("project")) {
-    VortexMaker::LogError("Core", "Invalid config: missing 'project' section");
+    vxe::LogError("Core", "Invalid config: missing 'project' section");
     return;
   }
 
@@ -101,12 +101,12 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
 
     } else {
       ctx.projectDataPath = ctx.projectPath;
-      VortexMaker::LogError("Core", "root_content_path does not exist: " +
-                                        rootContentPath.string());
+      vxe::LogError("Core", "root_content_path does not exist: " +
+                                rootContentPath.string());
     }
   } else {
-      ctx.projectDataPath = ctx.projectPath;
-      VortexMaker::LogError("Core", "root_content_path does not exist: ");
+    ctx.projectDataPath = ctx.projectPath;
+    vxe::LogError("Core", "root_content_path does not exist: ");
   }
 
   // TODO : Only for early development.
@@ -114,49 +114,49 @@ VORTEX_API void VortexMaker::InitProject(const nlohmann::json &main_configs) {
   ctx.logger_registering = true;
 
   // Initialize environment
-  VortexMaker::InitEnvironment();
+  vxe::InitEnvironment();
 
   // Update projet metadata (last opened, etc...) in the
   // ~/.vx/data/projects.json
-  VortexMaker::UpdateEnvironmentProject();
+  vxe::UpdateEnvironmentProject();
 
   // Load modules installed in the current project
-  VortexMaker::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles,
-                                 ctx.IO.em);
+  vxe::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles,
+                         ctx.IO.em);
 
   // Load plugins installed in the current project
-  VortexMaker::LoadEditorPlugins(ctx.projectPath.string(), ctx.IO.ep_handles,
-                                 ctx.IO.ep);
+  vxe::LoadEditorPlugins(ctx.projectPath.string(), ctx.IO.ep_handles,
+                         ctx.IO.ep);
 
   // Load modules installed in the system
   // Note: These modules are simply initialized in the project, not loaded, but
   // we can add these in CLI/GUI
-  VortexMaker::LoadSystemModules(ctx.IO.sys_em);
+  vxe::LoadSystemModules(ctx.IO.sys_em);
 
   // Load plugins installed in the system
   // Note: These modules are simply initialized in the project, not loaded, but
   // we can add these in CLI/GUI
-  VortexMaker::LoadSystemPlugins(ctx.IO.sys_ep);
+  vxe::LoadSystemPlugins(ctx.IO.sys_ep);
 
   // Load templates installed in the system if the configuration allow it
   // Note: These templates are simply initialized in the project, not included,
   // but we can add these in CLI/GUI
   if (ctx.include_system_templates) {
-    VortexMaker::LoadSystemTemplates(ctx.IO.sys_templates);
+    vxe::LoadSystemTemplates(ctx.IO.sys_templates);
   }
 
   // Refresh themes
-  VortexMaker::VerifyAndPouplateThemes();
-  VortexMaker::RefreshProjectThemes();
-  VortexMaker::RebuildTheme();
+  vxe::VerifyAndPouplateThemes();
+  vxe::RefreshProjectThemes();
+  vxe::RebuildTheme();
 
   // Startup features
-  VortexMaker::ExecuteStartScript();
+  vxe::ExecuteStartScript();
 
   // Finally, start all loaded modules/plugins.
-  VortexMaker::BootstrappAllModules();
-  VortexMaker::BootstrappAllPlugins();
+  vxe::BootstrappAllModules();
+  vxe::BootstrappAllPlugins();
 
   // Load local documentation
-  VortexMaker::AddVortexDocumentation();
+  vxe::AddVortexDocumentation();
 }

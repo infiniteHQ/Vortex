@@ -8,7 +8,7 @@
 
 static std::string g_SessionID = "unknow";
 
-namespace VortexMaker {
+namespace vxe {
 int VortexCrash(int argc, char **argv);
 }
 
@@ -173,6 +173,6 @@ Cherry::Application *CreateCrash(int argc, char **argv) {
   return app;
 }
 
-int VortexMaker::VortexCrash(int argc, char **argv) {
+int vxe::VortexCrash(int argc, char **argv) {
   return Cherry::ThirdMain(argc, argv, CreateCrash);
 }

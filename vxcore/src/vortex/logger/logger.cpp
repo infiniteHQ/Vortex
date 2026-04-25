@@ -1,18 +1,18 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-VORTEX_API void VortexMaker::DropLoggers() { spdlog::drop_all(); }
+VORTEX_API void vxe::DropLoggers() { spdlog::drop_all(); }
 
 VORTEX_API std::shared_ptr<spdlog::logger>
-VortexMaker::CreateLogPool(const std::string &pool_name) {
+vxe::CreateLogPool(const std::string &pool_name) {
   VxContext &ctx = *CVortexMaker;
 
 #if defined(_WIN32) || defined(_WIN64)
-  std::string file_path = VortexMaker::getHomeDirectory() +
-                          "\\.vx\\sessions\\" + ctx.state.session_id +
-                          "\\logs\\" + pool_name + ".log";
+  std::string file_path = vxe::getHomeDirectory() + "\\.vx\\sessions\\" +
+                          ctx.state.session_id + "\\logs\\" + pool_name +
+                          ".log";
 #else
-  std::string file_path = VortexMaker::getHomeDirectory() + "/.vx/sessions/" +
+  std::string file_path = vxe::getHomeDirectory() + "/.vx/sessions/" +
                           ctx.state.session_id + "/logs/" + pool_name + ".log";
 #endif
 
@@ -25,15 +25,14 @@ VortexMaker::CreateLogPool(const std::string &pool_name) {
   return new_logger;
 }
 
-VORTEX_API std::shared_ptr<spdlog::logger> VortexMaker::CreateGlobalLogger() {
+VORTEX_API std::shared_ptr<spdlog::logger> vxe::CreateGlobalLogger() {
   VxContext &ctx = *CVortexMaker;
 
 #if defined(_WIN32) || defined(_WIN64)
-  std::string file_path = VortexMaker::getHomeDirectory() +
-                          "\\.vx\\sessions\\" + ctx.state.session_id +
-                          "\\logs\\global.log";
+  std::string file_path = vxe::getHomeDirectory() + "\\.vx\\sessions\\" +
+                          ctx.state.session_id + "\\logs\\global.log";
 #else
-  std::string file_path = VortexMaker::getHomeDirectory() + "/.vx/sessions/" +
+  std::string file_path = vxe::getHomeDirectory() + "/.vx/sessions/" +
                           ctx.state.session_id + "/logs/global.log";
 #endif
 
@@ -42,15 +41,15 @@ VORTEX_API std::shared_ptr<spdlog::logger> VortexMaker::CreateGlobalLogger() {
   return ctx.global_logger;
 }
 
-VORTEX_API std::shared_ptr<spdlog::logger> VortexMaker::CreateConsoleLogger() {
+VORTEX_API std::shared_ptr<spdlog::logger> vxe::CreateConsoleLogger() {
   VxContext &ctx = *CVortexMaker;
   ctx.console_logger = spdlog::stdout_color_mt("console");
   return ctx.console_logger;
 }
 
-VORTEX_API void VortexMaker::LogInfo(const std::string &pool_name,
-                                     const std::string &scope,
-                                     const std::string &message) {
+VORTEX_API void vxe::LogInfo(const std::string &pool_name,
+                             const std::string &scope,
+                             const std::string &message) {
   VxContext &ctx = *CVortexMaker;
   if (ctx.logger) {
     bool finded = false;
@@ -69,7 +68,7 @@ VORTEX_API void VortexMaker::LogInfo(const std::string &pool_name,
         if (ctx.logger_registering) {
           std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(
               spdlog::level::level_enum::info, scope, message);
-          log->m_timestamp = VortexMaker::getCurrentTimeStamp();
+          log->m_timestamp = vxe::getCurrentTimeStamp();
           ctx.registered_logs.push_back(log);
         }
 
@@ -78,8 +77,7 @@ VORTEX_API void VortexMaker::LogInfo(const std::string &pool_name,
     }
 
     if (!finded) {
-      std::shared_ptr<spdlog::logger> logger =
-          VortexMaker::CreateLogPool(pool_name);
+      std::shared_ptr<spdlog::logger> logger = vxe::CreateLogPool(pool_name);
 
       ctx.global_logger->info("[{}] {}", pool_name,
                               "[" + scope + "] : " + message);
@@ -100,8 +98,8 @@ VORTEX_API void VortexMaker::LogInfo(const std::string &pool_name,
  * @param scope The scope of the log message.
  * @param message The message to be logged.
  */
-VORTEX_API void VortexMaker::LogInfo(const std::string &scope,
-                                     const std::string &message) {
+VORTEX_API void vxe::LogInfo(const std::string &scope,
+                             const std::string &message) {
   VxContext &ctx = *CVortexMaker;
   if (ctx.logger) {
 
@@ -112,7 +110,7 @@ VORTEX_API void VortexMaker::LogInfo(const std::string &scope,
     if (ctx.logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(
           spdlog::level::level_enum::info, scope, message);
-      log->m_timestamp = VortexMaker::getCurrentTimeStamp();
+      log->m_timestamp = vxe::getCurrentTimeStamp();
       ctx.registered_logs.push_back(log);
     }
   }
@@ -127,8 +125,8 @@ VORTEX_API void VortexMaker::LogInfo(const std::string &scope,
  * @param scope The scope of the log message.
  * @param message The message to be logged.
  */
-VORTEX_API void VortexMaker::LogWarn(const std::string &scope,
-                                     const std::string &message) {
+VORTEX_API void vxe::LogWarn(const std::string &scope,
+                             const std::string &message) {
   VxContext &ctx = *CVortexMaker;
   if (ctx.logger) {
     spdlog::warn("[" + scope + "] : " + message);
@@ -136,7 +134,7 @@ VORTEX_API void VortexMaker::LogWarn(const std::string &scope,
     if (ctx.logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(
           spdlog::level::level_enum::warn, scope, message);
-      log->m_timestamp = VortexMaker::getCurrentTimeStamp();
+      log->m_timestamp = vxe::getCurrentTimeStamp();
       ctx.registered_logs.push_back(log);
     }
   }
@@ -151,8 +149,8 @@ VORTEX_API void VortexMaker::LogWarn(const std::string &scope,
  * @param scope The scope of the log message.
  * @param message The message to be logged.
  */
-VORTEX_API void VortexMaker::LogError(const std::string &scope,
-                                      const std::string &message) {
+VORTEX_API void vxe::LogError(const std::string &scope,
+                              const std::string &message) {
   VxContext &ctx = *CVortexMaker;
   if (ctx.logger) {
     spdlog::error("[" + scope + "] : " + message);
@@ -160,7 +158,7 @@ VORTEX_API void VortexMaker::LogError(const std::string &scope,
     if (ctx.logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(
           spdlog::level::level_enum::err, scope, message);
-      log->m_timestamp = VortexMaker::getCurrentTimeStamp();
+      log->m_timestamp = vxe::getCurrentTimeStamp();
       ctx.registered_logs.push_back(log);
     }
   }
@@ -175,8 +173,8 @@ VORTEX_API void VortexMaker::LogError(const std::string &scope,
  * @param scope The scope of the log message.
  * @param message The message to be logged.
  */
-VORTEX_API void VortexMaker::LogFatal(const std::string &scope,
-                                      const std::string &message) {
+VORTEX_API void vxe::LogFatal(const std::string &scope,
+                              const std::string &message) {
   VxContext &ctx = *CVortexMaker;
   if (ctx.logger) {
     spdlog::critical("[" + scope + "] : " + message);
@@ -184,7 +182,7 @@ VORTEX_API void VortexMaker::LogFatal(const std::string &scope,
     if (ctx.logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(
           spdlog::level::level_enum::critical, scope, message);
-      log->m_timestamp = VortexMaker::getCurrentTimeStamp();
+      log->m_timestamp = vxe::getCurrentTimeStamp();
       ctx.registered_logs.push_back(log);
     }
   }

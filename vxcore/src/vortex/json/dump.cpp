@@ -11,9 +11,9 @@
  * @return A JSON object containing the data from the file.
  * @throws std::runtime_error if the file cannot be opened.
  */
-VORTEX_API nlohmann::json VortexMaker::DumpJSON(const std::string &file) {
+VORTEX_API nlohmann::json vxe::DumpJSON(const std::string &file) {
   if (!std::filesystem::exists(file)) {
-    VortexMaker::LogError("Core", "File not found: " + file);
+    vxe::LogError("Core", "File not found: " + file);
     return "{}";
   }
 
@@ -23,7 +23,7 @@ VORTEX_API nlohmann::json VortexMaker::DumpJSON(const std::string &file) {
   // Check if the file is opened successfully
   if (!fichier.is_open()) {
     // Throw an exception if the file cannot be opened
-    VortexMaker::LogError("Core", "Error while opening file " + file);
+    vxe::LogError("Core", "Error while opening file " + file);
     return "{}";
   }
 

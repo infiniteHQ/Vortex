@@ -1,7 +1,7 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-VORTEX_API void VortexMaker::RefreshProjectInformations() {
+VORTEX_API void vxe::RefreshProjectInformations() {
   VxContext &ctx = *CVortexMaker;
 
   const std::string project_file = (ctx.projectPath / "vortex.config").string();
@@ -13,20 +13,19 @@ VORTEX_API void VortexMaker::RefreshProjectInformations() {
     try {
       file >> jsonContent;
     } catch (const std::exception &e) {
-      VortexMaker::LogError(
-          "Core",
-          std::string("Failed to parse vortex.config JSON: ") + e.what());
+      vxe::LogError("Core",
+                    std::string("Failed to parse vortex.config JSON: ") +
+                        e.what());
       return;
     }
-    // VortexMaker::InitProject(jsonContent);
+    // vxe::InitProject(jsonContent);
   } else {
-    VortexMaker::LogError("Core", "Failed to open vortex.config file");
+    vxe::LogError("Core", "Failed to open vortex.config file");
     return;
   }
 
   if (!jsonContent.contains("project") || !jsonContent["project"].is_object()) {
-    VortexMaker::LogError("Core",
-                          "vortex.config missing valid 'project' section");
+    vxe::LogError("Core", "vortex.config missing valid 'project' section");
     return;
   }
 

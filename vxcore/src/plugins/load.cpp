@@ -2,7 +2,7 @@
 #include <vortex.h>
 #include <vortex_internals.h>
 
-namespace VortexMaker {
+namespace vxe {
 
 VORTEX_API void
 LoadEditorPlugins(const std::string &directory,
@@ -11,13 +11,13 @@ LoadEditorPlugins(const std::string &directory,
   plugins.clear();
   plugins_handlers.clear();
 
-  auto plugin_files = VortexMaker::SearchFiles(directory, "plugin.json");
+  auto plugin_files = vxe::SearchFiles(directory, "plugin.json");
 
   // Load scripts etc instead of dll/so (only for plugins)
 
   for (const auto &file : plugin_files) {
     try {
-      auto json_data = VortexMaker::DumpJSON(file);
+      auto json_data = vxe::DumpJSON(file);
 
       fs::path plugin_path(file);
       fs::path path = plugin_path.parent_path();
@@ -58,8 +58,8 @@ LoadEditorPlugins(const std::string &directory,
           json_data["compatibility"].get<std::vector<std::string>>();
       plugins.push_back(new_plugin);
     } catch (const std::exception &e) {
-      VortexMaker::LogError("Plugins", "Failed to load plugin metadata: " +
-                                           std::string(e.what()));
+      vxe::LogError("Plugins",
+                    "Failed to load plugin metadata: " + std::string(e.what()));
     }
   }
 }
@@ -67,13 +67,13 @@ LoadEditorPlugins(const std::string &directory,
 VORTEX_API void
 LoadSystemPlugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins) {
   // Get the home directory
-  std::string homeDir = VortexMaker::getHomeDirectory();
+  std::string homeDir = vxe::getHomeDirectory();
 
   // Plugin path on the system
   std::string path = homeDir + "/.vx/plugins";
 
   // Search for plugin files recursively in the directory
-  auto plugin_files = VortexMaker::SearchSystemFiles(path, "plugin.json");
+  auto plugin_files = vxe::SearchSystemFiles(path, "plugin.json");
 
   // Clear system plugins vector
   sys_plugins.clear();
@@ -82,7 +82,7 @@ LoadSystemPlugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins) {
   for (const auto &file : plugin_files) {
     try {
       // Load JSON data from the plugin configuration file
-      auto json_data = VortexMaker::DumpJSON(file);
+      auto json_data = vxe::DumpJSON(file);
 
       std::string plugin_path = file.substr(0, file.find_last_of("/"));
 
@@ -131,9 +131,9 @@ LoadSystemPlugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins) {
       sys_plugins.push_back(new_plugin);
     } catch (const std::exception &e) {
       // Print error if an exception occurs
-      VortexMaker::LogError("Core", std::string("Error: ") + e.what());
+      vxe::LogError("Core", std::string("Error: ") + e.what());
     }
   }
 }
 
-} // namespace VortexMaker
+} // namespace vxe

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace VortexMaker {
+namespace vxe {
 namespace Script {
 
 class ScriptingEngine {
@@ -75,6 +75,6 @@ void RenderLuaFreshScript(const std::string &lua_file_path);
 
 } // namespace Script
 
-} // namespace VortexMaker
+} // namespace vxe
 
 #endif // VORTEX_LUA_SCRIPTING_HPP

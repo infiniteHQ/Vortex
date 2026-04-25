@@ -9,7 +9,7 @@ static std::string s_Parent;
 static int mb_selected = 0;
 static std::vector<std::string> mb_syslabels;
 
-namespace VortexEditor
+namespace vxe
 {
     void ShowSystemTemplates(const std::string &filter = "none")
     {
@@ -24,23 +24,23 @@ namespace VortexEditor
 
     void ShowTemplates(const std::string &filter = "none")
     {
-        /*for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.em.size(); i++)
+        /*for (int i = 0; i < vxe::GetCurrentContext()->IO.em.size(); i++)
                 {
-                    resetValue(VortexMaker::GetCurrentContext()->IO.em[i]->m_group);
+                    resetValue(vxe::GetCurrentContext()->IO.em[i]->m_group);
                 }*/
 
-        for (int i = 0; i < VortexMaker::GetCurrentContext()->IO.em.size(); i++)
+        for (int i = 0; i < vxe::GetCurrentContext()->IO.em.size(); i++)
         {
-            if (VortexMaker::GetCurrentContext()->IO.em[i]->m_group == labels[selected])
+            if (vxe::GetCurrentContext()->IO.em[i]->m_group == labels[selected])
             {
-                std::string childLabel = "module##" + VortexMaker::GetCurrentContext()->IO.em[i]->m_name;
+                std::string childLabel = "module##" + vxe::GetCurrentContext()->IO.em[i]->m_name;
 
                 ImGui::BeginChild(childLabel.c_str(), ImVec2(0, 250), true);
 
                 {
                     ImGui::BeginChild("LOGO_", ImVec2(70, 70), true);
 
-                    ImGui::Image(Cherry::GetTexture(Cherry::GetPath(VortexMaker::GetCurrentContext()->IO.em[i]->m_logo_path)), ImVec2(15, 15));
+                    ImGui::Image(Cherry::GetTexture(Cherry::GetPath(vxe::GetCurrentContext()->IO.em[i]->m_logo_path)), ImVec2(15, 15));
 
                     ImGui::EndChild();
                     ImGui::SameLine();
@@ -52,26 +52,26 @@ namespace VortexEditor
                     ImGui::GetFont()->Scale *= 1.3;
                     ImGui::PushFont(ImGui::GetFont());
 
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), VortexMaker::GetCurrentContext()->IO.em[i]->m_proper_name.c_str());
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.8f), vxe::GetCurrentContext()->IO.em[i]->m_proper_name.c_str());
 
                     ImGui::GetFont()->Scale = oldsize;
                     ImGui::PopFont();
 
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "v");
                     ImGui::SameLine();
-                    ImGui::Text(VortexMaker::GetCurrentContext()->IO.em[i]->m_version.c_str());
+                    ImGui::Text(vxe::GetCurrentContext()->IO.em[i]->m_version.c_str());
                     ImGui::EndChild();
                 }
 
-                if (VortexMaker::GetCurrentContext()->IO.em[i]->m_state == "running")
+                if (vxe::GetCurrentContext()->IO.em[i]->m_state == "running")
                 {
                     ImGui::TextColored(ImVec4(0.6f, 1.0f, 0.6f, 0.8f), "Running");
                 }
-                if (VortexMaker::GetCurrentContext()->IO.em[i]->m_state == "failed")
+                if (vxe::GetCurrentContext()->IO.em[i]->m_state == "failed")
                 {
                     ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.6f, 0.8f), "Failed");
                 }
-                if (VortexMaker::GetCurrentContext()->IO.em[i]->m_state == "unknow" || VortexMaker::GetCurrentContext()->IO.em[i]->m_state == "stopped")
+                if (vxe::GetCurrentContext()->IO.em[i]->m_state == "unknow" || vxe::GetCurrentContext()->IO.em[i]->m_state == "stopped")
                 {
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Not running");
                 }
@@ -79,30 +79,30 @@ namespace VortexEditor
                 {
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Name : ");
                     ImGui::SameLine();
-                    ImGui::Text(VortexMaker::GetCurrentContext()->IO.em[i]->m_name.c_str());
+                    ImGui::Text(vxe::GetCurrentContext()->IO.em[i]->m_name.c_str());
                 }
 
                 {
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Author(s) : ");
                     ImGui::SameLine();
-                    ImGui::Text(VortexMaker::GetCurrentContext()->IO.em[i]->m_author.c_str());
+                    ImGui::Text(vxe::GetCurrentContext()->IO.em[i]->m_author.c_str());
                 }
 
                 {
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Description : ");
                     ImGui::SameLine();
-                    ImGui::Text(VortexMaker::GetCurrentContext()->IO.em[i]->m_description.c_str());
+                    ImGui::Text(vxe::GetCurrentContext()->IO.em[i]->m_description.c_str());
                 }
 
                 {
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), "Contributors : ");
                     int contrib = 0;
-                    for (auto contributor : VortexMaker::GetCurrentContext()->IO.em[i]->m_contributors)
+                    for (auto contributor : vxe::GetCurrentContext()->IO.em[i]->m_contributors)
                     {
                         contrib++;
                         if (contrib <= 3)
                         {
-                            if (contrib < VortexMaker::GetCurrentContext()->IO.em[i]->m_contributors.size())
+                            if (contrib < vxe::GetCurrentContext()->IO.em[i]->m_contributors.size())
                             {
                                 ImGui::SameLine();
                                 std::string contri = contributor + ",";
@@ -117,7 +117,7 @@ namespace VortexEditor
                         else
                         {
                             ImGui::SameLine();
-                            int counter = VortexMaker::GetCurrentContext()->IO.em[i]->m_contributors.size() - 3;
+                            int counter = vxe::GetCurrentContext()->IO.em[i]->m_contributors.size() - 3;
                             std::string label = " and " + std::to_string(counter) + " other...";
                             ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), label.c_str());
                             break;
@@ -125,26 +125,26 @@ namespace VortexEditor
                     }
                 }
 
-                if (VortexMaker::GetCurrentContext()->IO.em[i]->m_state == "running")
+                if (vxe::GetCurrentContext()->IO.em[i]->m_state == "running")
                 {
                     if (ImGui::Button("Stop"))
                     {
-                        VortexMaker::GetCurrentContext()->IO.em[i]->Stop();
+                        vxe::GetCurrentContext()->IO.em[i]->Stop();
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("Details"))
                     {
                         // Behavior
-                        // std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(VortexMaker::GetCurrentContext(), VortexMaker::GetCurrentContext()->IO.em[i]);
+                        // std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(vxe::GetCurrentContext(), vxe::GetCurrentContext()->IO.em[i]);
                         // this->factory->SpawnInstance(instance);
                     }
                 }
 
-                if (VortexMaker::GetCurrentContext()->IO.em[i]->m_state == "failed")
+                if (vxe::GetCurrentContext()->IO.em[i]->m_state == "failed")
                 {
                     /*if (ImGui::ImageButtonWithText(listIcon, "Retry to launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
-                        VortexMaker::GetCurrentContext()->IO.em[i]->Start();
+                        vxe::GetCurrentContext()->IO.em[i]->Start();
                     }
                     ImGui::SameLine();
                     if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
@@ -155,15 +155,15 @@ namespace VortexEditor
                     if (ImGui::ImageButtonWithText(logIcon, "Details", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
                         // Behavior
-                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(VortexMaker::GetCurrentContext(), VortexMaker::GetCurrentContext()->IO.em[i]);
+                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(vxe::GetCurrentContext(), vxe::GetCurrentContext()->IO.em[i]);
                         this->factory->SpawnInstance(instance);
                     }*/
                 }
-                if (VortexMaker::GetCurrentContext()->IO.em[i]->m_state == "unknow" || VortexMaker::GetCurrentContext()->IO.em[i]->m_state == "stopped")
+                if (vxe::GetCurrentContext()->IO.em[i]->m_state == "unknow" || vxe::GetCurrentContext()->IO.em[i]->m_state == "stopped")
                 {
                     /*if (ImGui::ImageButtonWithText(startIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
-                        VortexMaker::GetCurrentContext()->IO.em[i]->Start();
+                        vxe::GetCurrentContext()->IO.em[i]->Start();
                     }
                     ImGui::SameLine();
                     if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
@@ -174,12 +174,12 @@ namespace VortexEditor
                     if (ImGui::ImageButtonWithText(logIcon, "Details", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
                         // Behavior
-                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(VortexMaker::GetCurrentContext(), VortexMaker::GetCurrentContext()->IO.em[i]);
+                        std::shared_ptr<ModuleDetails> instance = std::make_shared<ModuleDetails>(vxe::GetCurrentContext(), vxe::GetCurrentContext()->IO.em[i]);
                         this->factory->SpawnInstance(instance);
                     }*/
                 }
 
-                // incrementValue(VortexMaker::GetCurrentContext()->IO.em[i]->m_group);
+                // incrementValue(vxe::GetCurrentContext()->IO.em[i]->m_group);
                 ImGui::EndChild();
             }
         }
@@ -187,12 +187,12 @@ namespace VortexEditor
 
     TemplatesUtilityAppWindow::TemplatesUtilityAppWindow(const std::string &name)
     {
-        m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
-        m_AppWindow->SetIcon("/usr/local/include/Vortex/imgs/vortex.png");
-        m_AppWindow->SetClosable(false);
+        app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
+        app_window_->SetIcon("/usr/local/include/Vortex/imgs/vortex.png");
+        app_window_->SetClosable(false);
         RegisterAvailableVersions();
 
-        m_AppWindow->m_TabMenuCallback = []()
+        app_window_->m_TabMenuCallback = []()
         {
             ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
             ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
@@ -220,8 +220,8 @@ namespace VortexEditor
             }
         };
 
-        m_AppWindow->SetInternalPaddingX(10.0f);
-        m_AppWindow->SetInternalPaddingY(10.0f);
+        app_window_->SetInternalPaddingX(10.0f);
+        app_window_->SetInternalPaddingY(10.0f);
 
         m_SelectedChildName = "?loc:loc.window_names.welcome.overview";
 
@@ -236,12 +236,12 @@ namespace VortexEditor
                            ShowTemplates();
                        });
 
-        std::shared_ptr<Cherry::AppWindow> win = m_AppWindow;
+        std::shared_ptr<Cherry::AppWindow> win = app_window_;
     }
 
     void TemplatesUtilityAppWindow::AddChild(const std::string &parent_name, const std::string &child_name, const std::function<void()> &child)
     {
-        m_Childs.push_back(TemplatesUtilityAppWindowChild(parent_name, child_name, child));
+        childs_.push_back(TemplatesUtilityAppWindowChild(parent_name, child_name, child));
     }
 
     void TemplatesUtilityAppWindow::RemoveChild(const std::string &child_name)
@@ -250,7 +250,7 @@ namespace VortexEditor
 
     std::function<void()> TemplatesUtilityAppWindow::GetChild(const std::string &child_name)
     {
-        for (auto &child : m_Childs)
+        for (auto &child : childs_)
         {
             if (child.m_ChildName == child_name)
             {
@@ -262,7 +262,7 @@ namespace VortexEditor
 
     std::shared_ptr<Cherry::AppWindow> &TemplatesUtilityAppWindow::GetAppWindow()
     {
-        return m_AppWindow;
+        return app_window_;
     }
 
     std::shared_ptr<TemplatesUtilityAppWindow> TemplatesUtilityAppWindow::Create(const std::string &name)
@@ -275,7 +275,7 @@ namespace VortexEditor
     void TemplatesUtilityAppWindow::SetupRenderCallback()
     {
         auto self = shared_from_this();
-        m_AppWindow->SetRenderCallback([self]()
+        app_window_->SetRenderCallback([self]()
                                        {
             if (self) {
                 self->Render();
@@ -290,7 +290,7 @@ namespace VortexEditor
         static int selected;
 
         std::map<std::string, std::vector<TemplatesUtilityAppWindowChild>> groupedByParent;
-        for (const auto &child : m_Childs)
+        for (const auto &child : childs_)
         {
             groupedByParent[child.m_Parent].push_back(child);
         }

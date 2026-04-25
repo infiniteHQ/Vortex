@@ -9,13 +9,13 @@
 #include <openssl/sha.h>
 #endif
 
-namespace VortexMaker {
+namespace vxe {
 std::string GetBuildDate();
 std::string GetGitCommit();
 std::string GetVortexEditorDist();
 std::string GetVortexBuildID();
 std::string GetVortexBuildName();
-} // namespace VortexMaker
+} // namespace vxe
 
 #ifdef _WIN32
 #define VORTEX_EXECUTABLE "vortex_launcher.exe"
@@ -37,35 +37,35 @@ static std::string system_desktop = "undefined";
 
 #pragma comment(lib, "advapi32.lib")
 
-namespace VortexMaker {
+namespace vxe {
 std::string ComputeSHA256Short(const std::string &filepath, size_t length = 10);
 }
 #else
 
-namespace VortexMaker {
+namespace vxe {
 std::string ComputeSHA256Short(const std::string &filepath, size_t length = 10);
-} // namespace VortexMaker
+} // namespace vxe
 #endif
 
-namespace VortexMaker {
+namespace vxe {
 std::string GetVortexEditorHash();
 }
 
 #if defined(_WIN32)
 
-namespace VortexMaker {
+namespace vxe {
 std::string GetWindowsVersion();
-} // namespace VortexMaker
+} // namespace vxe
 
-#define OS_NAME VortexMaker::GetWindowsVersion().c_str()
+#define OS_NAME vxe::GetWindowsVersion().c_str()
 #elif defined(__APPLE__) && defined(__MACH__)
 #define OS_NAME "macOS"
 #elif defined(__linux__)
-namespace VortexMaker {
+namespace vxe {
 std::string GetLinuxDistroName();
 std::string GetLinuxDesktopEnvAndDisplayServer();
-} // namespace VortexMaker
-#define OS_NAME VortexMaker::GetLinuxDistroName().c_str()
+} // namespace vxe
+#define OS_NAME vxe::GetLinuxDistroName().c_str()
 #else
 #define OS_NAME "Unknown OS"
 #endif

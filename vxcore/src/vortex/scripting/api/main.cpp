@@ -2,7 +2,7 @@
 #include <vortex.h>
 #include <vortex/scripting/scripting.hpp>
 
-namespace VortexMaker {
+namespace vxe {
 namespace Script {
 
 VXLUA_FUNC(Log) {
@@ -45,7 +45,7 @@ VXLUA_FUNC(CallOutputEvent) {
   ArgumentValues args(j.dump());
   ReturnValues ret;
 
-  VortexMaker::CallOutputEvent(eventName, args, ret, origin);
+  vxe::CallOutputEvent(eventName, args, ret, origin);
 
   if (ret.GetValue() != "null") {
     JsonToLuaTable(L, ret.GetJsonValue());
@@ -68,91 +68,91 @@ VXLUA_FUNC(CallInputEvent) {
   ArgumentValues args(j.dump());
   ReturnValues ret;
 
-  VortexMaker::CallInputEvent(moduleName, eventName, args, ret, origin);
+  vxe::CallInputEvent(moduleName, eventName, args, ret, origin);
 
   JsonToLuaTable(L, ret.GetJsonValue());
   return 1;
 }
 
 VXLUA_FUNC(IsLinux) {
-  bool res = VortexMaker::IsLinux();
+  bool res = vxe::IsLinux();
 
   lua_pushboolean(L, res);
   return 1;
 }
 
 VXLUA_FUNC(IsNotLinux) {
-  bool res = VortexMaker::IsNotLinux();
+  bool res = vxe::IsNotLinux();
 
   lua_pushboolean(L, res);
   return 1;
 }
 
 VXLUA_FUNC(IsWindows) {
-  bool res = VortexMaker::IsWindows();
+  bool res = vxe::IsWindows();
 
   lua_pushboolean(L, res);
   return 1;
 }
 
 VXLUA_FUNC(IsNotWindows) {
-  bool res = VortexMaker::IsNotWindows();
+  bool res = vxe::IsNotWindows();
 
   lua_pushboolean(L, res);
   return 1;
 }
 
 VXLUA_FUNC(IsMacOS) {
-  bool res = VortexMaker::IsMacOs();
+  bool res = vxe::IsMacOs();
 
   lua_pushboolean(L, res);
   return 1;
 }
 
 VXLUA_FUNC(IsNotMacOS) {
-  bool res = VortexMaker::IsNotMacOS();
+  bool res = vxe::IsNotMacOS();
 
   lua_pushboolean(L, res);
   return 1;
 }
 
 VXLUA_FUNC(GetBuildDate) {
-  auto res = VortexMaker::GetBuildDate();
+  auto res = vxe::GetBuildDate();
 
   lua_pushstring(L, res.c_str());
   return 1;
 }
 
 VXLUA_FUNC(GetGitCommit) {
-  auto res = VortexMaker::GetGitCommit();
+  auto res = vxe::GetGitCommit();
 
   lua_pushstring(L, res.c_str());
   return 1;
 }
 
 VXLUA_FUNC(GetVortexEditorDist) {
-  auto res = VortexMaker::GetVortexEditorDist();
+  auto res = vxe::GetVortexEditorDist();
 
   lua_pushstring(L, res.c_str());
   return 1;
 }
 
 VXLUA_FUNC(GetVortexBuildID) {
-  auto res = VortexMaker::GetVortexBuildID();
+  auto res = vxe::GetVortexBuildID();
 
   lua_pushstring(L, res.c_str());
   return 1;
 }
 
 VXLUA_FUNC(GetVortexBuildName) {
-  auto res = VortexMaker::GetVortexBuildName();
+  auto res = vxe::GetVortexBuildName();
 
   lua_pushstring(L, res.c_str());
   return 1;
 }
 
 VXLUA_FUNC(GetVortexEditorHash) {
-  auto res = VortexMaker::GetVortexEditorHash();
+  auto res = vxe::GetVortexEditorHash();
 
   lua_pushstring(L, res.c_str());
   return 1;
@@ -187,4 +187,4 @@ void RegisterMainAPI(lua_State *L) {
 }
 
 } // namespace Script
-} // namespace VortexMaker
+} // namespace vxe

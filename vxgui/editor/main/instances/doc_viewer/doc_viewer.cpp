@@ -2,288 +2,279 @@
 
 #include <iostream>
 
-namespace VortexEditor {
-DocViewerAppWindow::DocViewerAppWindow(const std::string &name) {
-  std::cout << "DocViewerAppWindow" << std::endl;
-  m_AppWindow = std::make_shared<AppWindow>(name, name);
-  m_AppWindow->SetIcon(
-      Cherry::GetPath("resources/imgs/icons/misc/icon_journal.png"));
-  std::shared_ptr<AppWindow> win = m_AppWindow;
-  m_AppWindow->m_Closable = true;
-  m_AppWindow->SetCloseCallback(
-      [this]() { Cherry::DeleteAppWindow(m_AppWindow); });
+namespace vxe {
+  DocViewerAppWindow::DocViewerAppWindow(const std::string &name) {
+    std::cout << "DocViewerAppWindow" << std::endl;
+    app_window_ = std::make_shared<AppWindow>(name, name);
+    app_window_->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_journal.png"));
+    std::shared_ptr<AppWindow> win = app_window_;
+    app_window_->m_Closable = true;
+    app_window_->SetCloseCallback([this]() { Cherry::DeleteAppWindow(app_window_); });
 
-  m_AppWindow->SetRightMenubarCallback([this]() {
-    CherryNextComponent.SetProperty("padding_y", "6.0f");
-    CherryNextComponent.SetProperty("padding_x", "10.0f");
-    CherryNextComponent.SetProperty("disable_callback", "true");
-    if (CherryKit::ButtonImageTextDropdown(
-            "Settings", GetPath("resources/imgs/icons/misc/icon_settings.png"))
-            .GetDataAs<bool>("isClicked")) {
-      ImVec2 mousePos = CherryGUI::GetMousePos();
-      ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
-      ImVec2 popupSize(150, 100);
+    app_window_->SetRightMenubarCallback([this]() {
+      CherryNextComponent.SetProperty("padding_y", "6.0f");
+      CherryNextComponent.SetProperty("padding_x", "10.0f");
+      CherryNextComponent.SetProperty("disable_callback", "true");
+      if (CherryKit::ButtonImageTextDropdown("Settings", GetPath("resources/imgs/icons/misc/icon_settings.png"))
+              .GetDataAs<bool>("isClicked")) {
+        ImVec2 mousePos = CherryGUI::GetMousePos();
+        ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
+        ImVec2 popupSize(150, 100);
 
-      if (mousePos.x + popupSize.x > displaySize.x) {
-        mousePos.x -= popupSize.x;
-      }
-      if (mousePos.y + popupSize.y > displaySize.y) {
-        mousePos.y -= popupSize.y;
-      }
-
-      CherryGUI::SetNextWindowSize(ImVec2(150, 100), ImGuiCond_Appearing);
-      CherryGUI::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
-      CherryGUI::OpenPopup("SettingsMenuPopup");
-    }
-    if (CherryGUI::BeginPopup("SettingsMenuPopup")) {
-      CherryKit::CheckboxText("Console font", &m_ConsoleFont);
-      CherryGUI::EndPopup();
-    }
-  });
-
-  m_AppWindow->SetLeftMenubarCallback([this]() {
-    auto ctx = VortexMaker::GetCurrentContext();
-
-    std::vector<std::pair<std::string, std::string>> combo_items;
-    std::vector<std::string> topic_ids;
-    int current_index = 0;
-    int counter = 0;
-
-    for (auto const &[topic_id, topic_data] : ctx->documentations) {
-      std::string label = GetLabelForTopic(topic_id);
-
-      std::string icon = GetPath("resources/imgs/icons/misc/icon_docs.png");
-      if (topic_id == "vx")
-        icon = GetPath("resources/imgs/icons/misc/icon_vortex.png");
-      else if (topic_id.find("module:") == 0)
-        icon = GetPath("resources/imgs/icons/misc/icon_module.png");
-      else if (topic_id.find("plugin:") == 0)
-        icon = GetPath("resources/imgs/icons/misc/icon_plugin.png");
-
-      combo_items.push_back({label, icon});
-      topic_ids.push_back(topic_id);
-
-      if (m_selected_topic == topic_id) {
-        current_index = counter;
-      }
-      counter++;
-    }
-
-    if (topic_ids.empty())
-      return;
-
-    CherryNextComponent.SetProperty("size_x", 180.0f);
-    auto combo_result = CherryKit::ComboImageText("##DocTopicSelector",
-                                                  combo_items, current_index);
-
-    int selected_idx = combo_result.GetPropertyAs<int>("selected");
-    if (selected_idx >= 0 && selected_idx < (int)topic_ids.size()) {
-      std::string new_topic = topic_ids[selected_idx];
-      if (new_topic != m_selected_topic) {
-        m_selected_topic = new_topic;
-        m_selected_section = "";
-        m_selected_chapter = "";
-        m_cached_markdown_content = "";
-      }
-    }
-  });
-
-  m_AppWindow->SetLeftBottombarCallback([this]() {
-
-  });
-
-  this->ctx = VortexMaker::GetCurrentContext();
-}
-
-std::shared_ptr<Cherry::AppWindow> &DocViewerAppWindow::GetAppWindow() {
-  return m_AppWindow;
-}
-
-std::shared_ptr<DocViewerAppWindow>
-DocViewerAppWindow::Create(const std::string &name) {
-  auto instance =
-      std::shared_ptr<DocViewerAppWindow>(new DocViewerAppWindow(name));
-  instance->SetupRenderCallback();
-  return instance;
-}
-
-void DocViewerAppWindow::SetupRenderCallback() {
-  auto self = shared_from_this();
-  m_AppWindow->SetRenderCallback([self]() {
-    if (self) {
-      self->Render();
-    }
-  });
-}
-
-void DocViewerAppWindow::Render() {
-  auto ctx = VortexMaker::GetCurrentContext();
-
-  CherryGUI::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(255, 221, 0, 255));
-  CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
-  CherryGUI::BeginChild("DevBanner", ImVec2(0, 30), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-
-  CherryGUI::SetCursorPosX((CherryGUI::GetWindowSize().x - CherryGUI::CalcTextSize("This documentation utility is under development. Please visit vortex.infinite.si").x) * 0.5f);
-  CherryGUI::Text("This documentation utility is under development. Please visit vortex.infinite.si");
-
-  CherryGUI::EndChild();
-  CherryGUI::PopStyleColor(2);
-
-  CherryGUI::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToImU32("#00000000"));
-  CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
-
-  CherryGUI::BeginChild("Sidebar", ImVec2(m_sidebar_width, 0), true);
-  CherryGUI::Spacing();
-
-  if (ctx->documentations.count(m_selected_topic)) {
-    auto &sections = ctx->documentations[m_selected_topic].sections;
-
-    using SectionData = std::decay_t<decltype(sections.begin()->second)>;
-
-    std::unordered_map<std::string,
-                       std::vector<std::pair<
-                           std::string, std::reference_wrapper<SectionData>>>>
-        grouped_sections;
-
-    std::vector<std::string> order;
-
-    for (auto &[section_name, section_data] : sections) {
-      size_t pos = section_name.find(':');
-
-      if (pos != std::string::npos) {
-        std::string parent = section_name.substr(0, pos);
-        std::string child = section_name.substr(pos + 1);
-
-        if (grouped_sections.find(parent) == grouped_sections.end()) {
-          order.push_back(parent);
+        if (mousePos.x + popupSize.x > displaySize.x) {
+          mousePos.x -= popupSize.x;
+        }
+        if (mousePos.y + popupSize.y > displaySize.y) {
+          mousePos.y -= popupSize.y;
         }
 
-        grouped_sections[parent].push_back({child, section_data});
-      } else {
-        if (grouped_sections.find(section_name) == grouped_sections.end()) {
-          order.push_back(section_name);
-        }
-
-        grouped_sections[section_name].push_back({"", section_data});
+        CherryGUI::SetNextWindowSize(ImVec2(150, 100), ImGuiCond_Appearing);
+        CherryGUI::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
+        CherryGUI::OpenPopup("SettingsMenuPopup");
       }
-    }
+      if (CherryGUI::BeginPopup("SettingsMenuPopup")) {
+        CherryKit::CheckboxText("Console font", &m_ConsoleFont);
+        CherryGUI::EndPopup();
+      }
+    });
 
-    for (auto &parent : order) {
-      CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+    app_window_->SetLeftMenubarCallback([this]() {
+      auto ctx = vxe::GetCurrentContext();
 
-      std::string parent_id = parent + "##parent";
-      bool open = CherryGUI::TreeNodeEx(parent_id.c_str(),
-                                    ImGuiTreeNodeFlags_DefaultOpen |
-                                        ImGuiTreeNodeFlags_SpanAvailWidth);
+      std::vector<std::pair<std::string, std::string>> combo_items;
+      std::vector<std::string> topic_ids;
+      int current_index = 0;
+      int counter = 0;
 
-      CherryGUI::PopStyleColor();
+      for (auto const &[topic_id, topic_data] : ctx->documentations) {
+        std::string label = GetLabelForTopic(topic_id);
 
-      if (open) {
-        for (auto &[child_name, section_ref] : grouped_sections[parent]) {
-          auto &section_data = section_ref.get();
+        std::string icon = GetPath("resources/imgs/icons/misc/icon_docs.png");
+        if (topic_id == "vx")
+          icon = GetPath("resources/imgs/icons/misc/icon_vortex.png");
+        else if (topic_id.find("module:") == 0)
+          icon = GetPath("resources/imgs/icons/misc/icon_module.png");
+        else if (topic_id.find("plugin:") == 0)
+          icon = GetPath("resources/imgs/icons/misc/icon_plugin.png");
 
-          if (child_name.empty()) {
-            for (auto &[chapter_title, file_data] : section_data.chapters) {
+        combo_items.push_back({ label, icon });
+        topic_ids.push_back(topic_id);
 
-              bool is_selected = (m_selected_chapter == chapter_title &&
-                                  m_selected_section == parent);
+        if (m_selected_topic == topic_id) {
+          current_index = counter;
+        }
+        counter++;
+      }
 
-              std::string unique_id = chapter_title + "##" + parent;
+      if (topic_ids.empty())
+        return;
 
-              if (CherryGUI::Selectable(unique_id.c_str(), is_selected)) {
-                m_selected_section = parent;
-                m_selected_chapter = chapter_title;
-                LoadMarkdown(file_data.file_path);
-              }
-            }
-          } else {
-            std::string child_id = child_name + "##" + parent;
+      CherryNextComponent.SetProperty("size_x", 180.0f);
+      auto combo_result = CherryKit::ComboImageText("##DocTopicSelector", combo_items, current_index);
 
-            bool sub_open = CherryGUI::TreeNodeEx(
-                child_id.c_str(), ImGuiTreeNodeFlags_SpanAvailWidth);
+      int selected_idx = combo_result.GetPropertyAs<int>("selected");
+      if (selected_idx >= 0 && selected_idx < (int)topic_ids.size()) {
+        std::string new_topic = topic_ids[selected_idx];
+        if (new_topic != m_selected_topic) {
+          m_selected_topic = new_topic;
+          m_selected_section = "";
+          m_selected_chapter = "";
+          m_cached_markdown_content = "";
+        }
+      }
+    });
 
-            if (sub_open) {
+    app_window_->SetLeftBottombarCallback([this]() {
+
+    });
+
+    this->ctx = vxe::GetCurrentContext();
+  }
+
+  std::shared_ptr<Cherry::AppWindow> &DocViewerAppWindow::GetAppWindow() {
+    return app_window_;
+  }
+
+  std::shared_ptr<DocViewerAppWindow> DocViewerAppWindow::Create(const std::string &name) {
+    auto instance = std::shared_ptr<DocViewerAppWindow>(new DocViewerAppWindow(name));
+    instance->SetupRenderCallback();
+    return instance;
+  }
+
+  void DocViewerAppWindow::SetupRenderCallback() {
+    auto self = shared_from_this();
+    app_window_->SetRenderCallback([self]() {
+      if (self) {
+        self->Render();
+      }
+    });
+  }
+
+  void DocViewerAppWindow::Render() {
+    auto ctx = vxe::GetCurrentContext();
+
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(255, 221, 0, 255));
+    CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
+    CherryGUI::BeginChild(
+        "DevBanner", ImVec2(0, 30), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+    CherryGUI::SetCursorPosX(
+        (CherryGUI::GetWindowSize().x - CherryGUI::CalcTextSize(
+                                            "This documentation utility is under "
+                                            "development. Please visit vortex.infinite.si")
+                                            .x) *
+        0.5f);
+    CherryGUI::Text(
+        "This documentation utility is under development. Please "
+        "visit vortex.infinite.si");
+
+    CherryGUI::EndChild();
+    CherryGUI::PopStyleColor(2);
+
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToImU32("#00000000"));
+    CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
+
+    CherryGUI::BeginChild("Sidebar", ImVec2(m_sidebar_width, 0), true);
+    CherryGUI::Spacing();
+
+    if (ctx->documentations.count(m_selected_topic)) {
+      auto &sections = ctx->documentations[m_selected_topic].sections;
+
+      using SectionData = std::decay_t<decltype(sections.begin()->second)>;
+
+      std::unordered_map<std::string, std::vector<std::pair<std::string, std::reference_wrapper<SectionData>>>>
+          grouped_sections;
+
+      std::vector<std::string> order;
+
+      for (auto &[section_name, section_data] : sections) {
+        size_t pos = section_name.find(':');
+
+        if (pos != std::string::npos) {
+          std::string parent = section_name.substr(0, pos);
+          std::string child = section_name.substr(pos + 1);
+
+          if (grouped_sections.find(parent) == grouped_sections.end()) {
+            order.push_back(parent);
+          }
+
+          grouped_sections[parent].push_back({ child, section_data });
+        } else {
+          if (grouped_sections.find(section_name) == grouped_sections.end()) {
+            order.push_back(section_name);
+          }
+
+          grouped_sections[section_name].push_back({ "", section_data });
+        }
+      }
+
+      for (auto &parent : order) {
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+
+        std::string parent_id = parent + "##parent";
+        bool open =
+            CherryGUI::TreeNodeEx(parent_id.c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth);
+
+        CherryGUI::PopStyleColor();
+
+        if (open) {
+          for (auto &[child_name, section_ref] : grouped_sections[parent]) {
+            auto &section_data = section_ref.get();
+
+            if (child_name.empty()) {
               for (auto &[chapter_title, file_data] : section_data.chapters) {
+                bool is_selected = (m_selected_chapter == chapter_title && m_selected_section == parent);
 
-                bool is_selected =
-                    (m_selected_chapter == chapter_title &&
-                     m_selected_section == parent + ":" + child_name);
-
-                std::string unique_id =
-                    chapter_title + "##" + parent + ":" + child_name;
+                std::string unique_id = chapter_title + "##" + parent;
 
                 if (CherryGUI::Selectable(unique_id.c_str(), is_selected)) {
-                  m_selected_section = parent + ":" + child_name;
+                  m_selected_section = parent;
                   m_selected_chapter = chapter_title;
                   LoadMarkdown(file_data.file_path);
                 }
               }
-              CherryGUI::TreePop();
+            } else {
+              std::string child_id = child_name + "##" + parent;
+
+              bool sub_open = CherryGUI::TreeNodeEx(child_id.c_str(), ImGuiTreeNodeFlags_SpanAvailWidth);
+
+              if (sub_open) {
+                for (auto &[chapter_title, file_data] : section_data.chapters) {
+                  bool is_selected =
+                      (m_selected_chapter == chapter_title && m_selected_section == parent + ":" + child_name);
+
+                  std::string unique_id = chapter_title + "##" + parent + ":" + child_name;
+
+                  if (CherryGUI::Selectable(unique_id.c_str(), is_selected)) {
+                    m_selected_section = parent + ":" + child_name;
+                    m_selected_chapter = chapter_title;
+                    LoadMarkdown(file_data.file_path);
+                  }
+                }
+                CherryGUI::TreePop();
+              }
             }
           }
+          CherryGUI::TreePop();
         }
-        CherryGUI::TreePop();
+
+        CherryGUI::Spacing();
       }
 
-      CherryGUI::Spacing();
+    } else {
+      CherryGUI::TextWrapped("No documentation found for topic: %s", m_selected_topic.c_str());
     }
 
-  } else {
-    CherryGUI::TextWrapped("No documentation found for topic: %s",
-                       m_selected_topic.c_str());
+    CherryGUI::EndChild();
+    CherryGUI::PopStyleColor(2);
+
+    CherryGUI::SameLine();
+    CherryGUI::Button("##splitter", ImVec2(5, -1));
+
+    if (CherryGUI::IsItemActive()) {
+      m_sidebar_width += CherryGUI::GetIO().MouseDelta.x;
+      if (m_sidebar_width < 100)
+        m_sidebar_width = 100;
+    }
+
+    CherryGUI::SameLine();
+
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToImU32("#00000000"));
+    CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
+
+    if (m_ConsoleFont) {
+      Cherry::PushFont("JetBrainsMono");
+      CherryStyle::PushFontSize(0.50f);
+    }
+
+    CherryGUI::BeginChild("MarkdownContent", ImVec2(0, 0), false);
+
+    if (!m_cached_markdown_content.empty()) {
+      CherryGUI::TextDisabled("%s > %s", m_selected_section.c_str(), m_selected_chapter.c_str());
+
+      CherryGUI::Separator();
+      CherryGUI::Spacing();
+
+      CherryGUI::MarkdownView(m_cached_markdown_content);
+    } else {
+      CherryGUI::SetCursorPosY(CherryGUI::GetWindowHeight() / 2.0f);
+
+      const char *hint = "Select a chapter in the sidebar";
+      float text_width = CherryGUI::CalcTextSize(hint).x;
+
+      CherryGUI::SetCursorPosX((CherryGUI::GetWindowWidth() - text_width) / 2.0f);
+
+      CherryGUI::TextDisabled("%s", hint);
+    }
+
+    CherryGUI::EndChild();
+
+    if (m_ConsoleFont) {
+      CherryStyle::PopFontSize();
+      Cherry::PopFont();
+    }
+
+    CherryGUI::PopStyleColor(2);
   }
 
-  CherryGUI::EndChild();
-  CherryGUI::PopStyleColor(2);
-
-  CherryGUI::SameLine();
-  CherryGUI::Button("##splitter", ImVec2(5, -1));
-
-  if (CherryGUI::IsItemActive()) {
-    m_sidebar_width += CherryGUI::GetIO().MouseDelta.x;
-    if (m_sidebar_width < 100)
-      m_sidebar_width = 100;
-  }
-
-  CherryGUI::SameLine();
-
-  CherryGUI::PushStyleColor(ImGuiCol_ChildBg, Cherry::HexToImU32("#00000000"));
-  CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToImU32("#00000000"));
-
-  if (m_ConsoleFont) {
-    Cherry::PushFont("JetBrainsMono");
-    CherryStyle::PushFontSize(0.50f);
-  }
-
-  CherryGUI::BeginChild("MarkdownContent", ImVec2(0, 0), false);
-
-  if (!m_cached_markdown_content.empty()) {
-    CherryGUI::TextDisabled("%s > %s", m_selected_section.c_str(),
-                        m_selected_chapter.c_str());
-
-    CherryGUI::Separator();
-    CherryGUI::Spacing();
-
-    CherryGUI::MarkdownView(m_cached_markdown_content);
-  } else {
-    CherryGUI::SetCursorPosY(CherryGUI::GetWindowHeight() / 2.0f);
-
-    const char *hint = "Select a chapter in the sidebar";
-    float text_width = CherryGUI::CalcTextSize(hint).x;
-
-    CherryGUI::SetCursorPosX((CherryGUI::GetWindowWidth() - text_width) / 2.0f);
-
-    CherryGUI::TextDisabled("%s", hint);
-  }
-
-  CherryGUI::EndChild();
-
-  if (m_ConsoleFont) {
-    CherryStyle::PopFontSize();
-    Cherry::PopFont();
-  }
-
-  CherryGUI::PopStyleColor(2);
-}
-
-} // namespace VortexEditor
+}  // namespace vxe

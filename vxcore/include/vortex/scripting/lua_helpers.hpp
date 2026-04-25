@@ -35,7 +35,7 @@ inline const char ACTIVE_PLUGIN_KEY = 0;
     lua_pop(L, 1);                                                             \
   } while (0)
 
-namespace VortexMaker {
+namespace vxe {
 
 inline std::string vxlua_getstring(lua_State *L, int idx) {
   return luaL_checkstring(L, idx);
@@ -104,4 +104,4 @@ static void JsonToLuaTable(lua_State *L, const nlohmann::json &j) {
   }
 }
 
-} // namespace VortexMaker
+} // namespace vxe

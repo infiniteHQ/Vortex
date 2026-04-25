@@ -110,7 +110,7 @@ static void *CVxAllocatorUserData = NULL;
  *
  * @return A pointer to the newly created Vortex context.
  */
-VORTEX_API VxContext *VortexMaker::CreateContext() {
+VORTEX_API VxContext *vxe::CreateContext() {
   // Save the previous context before creating a new one
   VxContext *prev_ctx = GetCurrentContext();
 
@@ -140,7 +140,7 @@ VORTEX_API VxContext *VortexMaker::CreateContext() {
  *
  * @param ctx A pointer to the Vortex context to be set as the current context.
  */
-void VortexMaker::SetCurrentContext(VxContext *ctx) {
+void vxe::SetCurrentContext(VxContext *ctx) {
 #ifdef USE_CURRENT_CONTEXT_FUNC
   // If custom thread-based control is enabled, call the custom function
   USE_CURRENT_CONTEXT_FUNC(ctx);
@@ -160,7 +160,7 @@ void VortexMaker::SetCurrentContext(VxContext *ctx) {
  * @param ctx A pointer to the Vortex context to be destroyed. If nullptr, the
  * current context will be destroyed.
  */
-VORTEX_API void VortexMaker::DestroyContext(VxContext *ctx) {
+VORTEX_API void vxe::DestroyContext(VxContext *ctx) {
   // Save the previous context before destroying the specified context
   VxContext *prev_ctx = GetCurrentContext();
 
@@ -185,7 +185,7 @@ VORTEX_API void VortexMaker::DestroyContext(VxContext *ctx) {
  * This function initializes the VortexMaker by setting the initialized flag in
  * the context.
  */
-VORTEX_API void VortexMaker::Initialize() {
+VORTEX_API void vxe::Initialize() {
   // Get the reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -204,9 +204,9 @@ VORTEX_API void VortexMaker::Initialize() {
  * @param free_func The custom free function pointer.
  * @param user_data The custom user data pointer.
  */
-void VortexMaker::SetAllocatorFunctions(VortexMakerMemAllocFunc alloc_func,
-                                        VortexMakerMemFreeFunc free_func,
-                                        void *user_data) {
+void vxe::SetAllocatorFunctions(VortexMakerMemAllocFunc alloc_func,
+                                VortexMakerMemFreeFunc free_func,
+                                void *user_data) {
   // Set the custom allocator functions and user data for VortexMaker
   CVxAllocatorAllocFunc = alloc_func;
   CVxAllocatorFreeFunc = free_func;
@@ -224,9 +224,9 @@ void VortexMaker::SetAllocatorFunctions(VortexMakerMemAllocFunc alloc_func,
  * @param p_free_func Pointer to store the free function.
  * @param p_user_data Pointer to store the user data.
  */
-void VortexMaker::GetAllocatorFunctions(VortexMakerMemAllocFunc *p_alloc_func,
-                                        VortexMakerMemFreeFunc *p_free_func,
-                                        void **p_user_data) {
+void vxe::GetAllocatorFunctions(VortexMakerMemAllocFunc *p_alloc_func,
+                                VortexMakerMemFreeFunc *p_free_func,
+                                void **p_user_data) {
   // Retrieve the allocator functions and user data from the VortexMaker
   *p_alloc_func = CVxAllocatorAllocFunc;
   *p_free_func = CVxAllocatorFreeFunc;
@@ -241,7 +241,7 @@ void VortexMaker::GetAllocatorFunctions(VortexMakerMemAllocFunc *p_alloc_func,
  *
  * @return A pointer to the current Vortex context.
  */
-VORTEX_API VxContext *VortexMaker::GetCurrentContext() {
+VORTEX_API VxContext *vxe::GetCurrentContext() {
   return CVortexMaker; // Return the current Vortex context pointer
 }
 
@@ -256,7 +256,7 @@ VORTEX_API VxContext *VortexMaker::GetCurrentContext() {
  * @param size The size of memory to allocate.
  * @return A pointer to the allocated memory, or nullptr if allocation fails.
  */
-void *VortexMaker::MemAlloc(size_t size) {
+void *vxe::MemAlloc(size_t size) {
   // Call the Vortex memory allocator function pointer to allocate memory
   void *ptr = (*CVxAllocatorAllocFunc)(size, CVxAllocatorUserData);
 
@@ -271,8 +271,8 @@ void *VortexMaker::MemAlloc(size_t size) {
   return ptr; // Return the allocated memory pointer
 }
 
-// Vx_FREE() == VortexMaker::MemFree()
-void VortexMaker::MemFree(void *ptr) {
+// Vx_FREE() == vxe::MemFree()
+void vxe::MemFree(void *ptr) {
   if (ptr)
     if (VxContext *ctx = CVortexMaker)
       ctx->IO.MetricsActiveAllocations--;
@@ -282,8 +282,8 @@ void VortexMaker::MemFree(void *ptr) {
 // We record the number of allocation in recent frames, as a way to
 // audit/sanitize our guiding principles of "no allocations on idle/repeating
 // frames"
-void VortexMaker::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
-                                 size_t size) {
+void vxe::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
+                         size_t size) {
   // VortexMakerDebugAllocEntry* entry =
   // &info->LastEntriesBuf[info->LastEntriesIdx];
   VX_UNUSED(ptr);
@@ -375,7 +375,7 @@ void hString::append(const char *str, const char *str_end) {
  * @param version The version string to check.
  * @return True if the version string matches, false otherwise.
  */
-bool VortexMaker::DebugCheckVersionAndDataLayout(const char *version) {
+bool vxe::DebugCheckVersionAndDataLayout(const char *version) {
   bool error = false;
 
   // Check if the provided version string matches the defined VORTEX_VERSION
@@ -389,10 +389,9 @@ bool VortexMaker::DebugCheckVersionAndDataLayout(const char *version) {
   return !error; // Return true if no error occurred
 }
 
-VORTEX_API void VortexMaker::CallOutputEvent(const std::string &event_name,
-                                             ArgumentValues &args,
-                                             ReturnValues &ret,
-                                             const std::string &origin) {
+VORTEX_API void vxe::CallOutputEvent(const std::string &event_name,
+                                     ArgumentValues &args, ReturnValues &ret,
+                                     const std::string &origin) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -467,11 +466,10 @@ VORTEX_API void VortexMaker::CallOutputEvent(const std::string &event_name,
   }
 }
 
-VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name,
-                                            const std::string &event_name,
-                                            ArgumentValues &args,
-                                            ReturnValues &ret,
-                                            const std::string &origin) {
+VORTEX_API void vxe::CallInputEvent(const std::string &module_name,
+                                    const std::string &event_name,
+                                    ArgumentValues &args, ReturnValues &ret,
+                                    const std::string &origin) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -560,16 +558,16 @@ VORTEX_API void VortexMaker::CallInputEvent(const std::string &module_name,
   if (!event_hit) {
     std::string log = "Input event not found. (target:" + module_name +
                       " , event:" + event_name + ")";
-    VortexMaker::LogError("Events", log);
+    vxe::LogError("Events", log);
   }
 }
 
-VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path) {
+VORTEX_API void vxe::InstallModuleToSystem(const std::string &path) {
   std::string modules_path = "~/.vx/modules";
   std::string json_file = path + "/module.json";
 
   try {
-    auto json_data = VortexMaker::DumpJSON(json_file);
+    auto json_data = vxe::DumpJSON(json_file);
     std::string name = json_data["name"].get<std::string>();
     std::string proper_name = json_data["proper_name"].get<std::string>();
     std::string type = json_data["type"].get<std::string>();
@@ -580,7 +578,7 @@ VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path) {
     // std::string origin_path = path.substr(0, path.find_last_of("/"));
     modules_path += "/" + name + "." + version;
 
-    VortexMaker::LogInfo("Core", "Installing the module " + name + "...");
+    vxe::LogInfo("Core", "Installing the module " + name + "...");
 
     {
       std::string cmd = "mkdir " + modules_path;
@@ -596,15 +594,14 @@ VORTEX_API void VortexMaker::InstallModuleToSystem(const std::string &path) {
   }
 }
 
-VORTEX_API void
-VortexMaker::AddModuleToProject(const std::string &module_name) {}
+VORTEX_API void vxe::AddModuleToProject(const std::string &module_name) {}
 
-VORTEX_API void VortexMaker::InstallPluginToSystem(const std::string &path) {
+VORTEX_API void vxe::InstallPluginToSystem(const std::string &path) {
   std::string plugins_path = "~/.vx/plugins";
   std::string json_file = path + "/plugin.json";
 
   try {
-    auto json_data = VortexMaker::DumpJSON(json_file);
+    auto json_data = vxe::DumpJSON(json_file);
     std::string name = json_data["name"].get<std::string>();
     std::string proper_name = json_data["proper_name"].get<std::string>();
     std::string type = json_data["type"].get<std::string>();
@@ -615,7 +612,7 @@ VORTEX_API void VortexMaker::InstallPluginToSystem(const std::string &path) {
     // std::string origin_path = path.substr(0, path.find_last_of("/"));
     plugins_path += "/" + name + "." + version;
 
-    VortexMaker::LogInfo("Core", "Installing the plugin " + name + "...");
+    vxe::LogInfo("Core", "Installing the plugin " + name + "...");
 
     {
       std::string cmd = "mkdir " + plugins_path;
@@ -631,10 +628,9 @@ VORTEX_API void VortexMaker::InstallPluginToSystem(const std::string &path) {
   }
 }
 
-VORTEX_API void
-VortexMaker::AddPluginToProject(const std::string &plugin_name) {}
+VORTEX_API void vxe::AddPluginToProject(const std::string &plugin_name) {}
 
-VORTEX_API std::string VortexMaker::replacePlaceholders(
+VORTEX_API std::string vxe::replacePlaceholders(
     const std::string &command,
     const std::unordered_map<std::string, std::string> &replacements) {
   std::string result = command;
@@ -648,14 +644,14 @@ VORTEX_API std::string VortexMaker::replacePlaceholders(
   return result;
 }
 
-VORTEX_API std::string VortexMaker::getHomeDirectory() {
-  if (VortexMaker::IsLinux() || VortexMaker::IsMacOs()) {
+VORTEX_API std::string vxe::getHomeDirectory() {
+  if (vxe::IsLinux() || vxe::IsMacOs()) {
     const char *homePath = std::getenv("HOME");
     if (homePath == nullptr) {
       throw std::runtime_error("HOME environment variable not set");
     }
     return std::string(homePath);
-  } else if (VortexMaker::IsWindows()) {
+  } else if (vxe::IsWindows()) {
     const char *homePath = std::getenv("USERPROFILE");
     if (homePath == nullptr) {
       const char *homeDrive = std::getenv("HOMEDRIVE");
@@ -672,12 +668,11 @@ VORTEX_API std::string VortexMaker::getHomeDirectory() {
       "Unknown platform: Unable to determine home directory");
 }
 
-VORTEX_API void
-VortexMaker::InstallContentOnSystem(const std::string &directory) {
+VORTEX_API void vxe::InstallContentOnSystem(const std::string &directory) {
   fs::path dir_path(directory);
 
   if (!fs::exists(dir_path) || !fs::is_directory(dir_path)) {
-    VortexMaker::LogError("Core", "So such file or directory.");
+    vxe::LogError("Core", "So such file or directory.");
     return;
   }
 
@@ -685,27 +680,28 @@ VortexMaker::InstallContentOnSystem(const std::string &directory) {
   bool template_found = fs::exists(dir_path / "template.json");
 
   if (module_found) {
-    VortexMaker::InstallModuleToSystem(directory);
+    vxe::InstallModuleToSystem(directory);
   } else if (template_found) {
-    VortexMaker::InstallTemplateOnSystem(directory);
+    vxe::InstallTemplateOnSystem(directory);
   }
 }
 
-VORTEX_API void VortexMaker::AddContentBrowserItem(
-    const std::shared_ptr<ContenBrowserItem> &item) {
+VORTEX_API void
+vxe::AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   ctx.IO.contentbrowser_items.push_back(item);
 }
 
-VORTEX_API void VortexMaker::AddGeneralUtility(
-    const std::shared_ptr<ModuleInterfaceUtility> &utility) {}
+VORTEX_API void
+vxe::AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility) {
+}
 
-VORTEX_API void VortexMaker::PostCustomFolderToJson() {
+VORTEX_API void vxe::PostCustomFolderToJson() {
   VxContext &ctx = *CVortexMaker;
   std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
-  VortexMaker::createFolderIfNotExists(path);
+  vxe::createFolderIfNotExists(path);
 
   std::string file_path = path + "/customized_folders.json";
 
@@ -722,11 +718,11 @@ VORTEX_API void VortexMaker::PostCustomFolderToJson() {
     json_data["custom_folders"].push_back(folder_data);
   }
 
-  VortexMaker::PopulateJSON(json_data, file_path);
+  vxe::PopulateJSON(json_data, file_path);
 }
 
-VORTEX_API void VortexMaker::PublishPool(const std::string &absolute_pool_path,
-                                         const std::string &name) {
+VORTEX_API void vxe::PublishPool(const std::string &absolute_pool_path,
+                                 const std::string &name) {
   VxContext &ctx = *CVortexMaker;
 
   std::size_t endPos = absolute_pool_path.size() - 1;
@@ -743,10 +739,10 @@ VORTEX_API void VortexMaker::PublishPool(const std::string &absolute_pool_path,
 
   ctx.IO.contentbrowser_pools.push_back({absolute_pool_path, name});
 
-  VortexMaker::PostPoolsToJson();
+  vxe::PostPoolsToJson();
 }
 
-VORTEX_API void VortexMaker::PublishContentBrowserCustomFolder(
+VORTEX_API void vxe::PublishContentBrowserCustomFolder(
     const std::string &path, const std::string &hex_color, const bool &isFav) {
   VxContext &ctx = *CVortexMaker;
 
@@ -755,7 +751,7 @@ VORTEX_API void VortexMaker::PublishContentBrowserCustomFolder(
       folder->m_Color = hex_color;
       folder->m_IsFav = isFav;
       folder->path = path;
-      VortexMaker::PostCustomFolderToJson();
+      vxe::PostCustomFolderToJson();
       return;
     }
   }
@@ -768,11 +764,10 @@ VORTEX_API void VortexMaker::PublishContentBrowserCustomFolder(
 
   ctx.IO.contentbrowser_customfolders.push_back(new_folder);
 
-  VortexMaker::PostCustomFolderToJson();
+  vxe::PostCustomFolderToJson();
 }
 
-VORTEX_API bool
-VortexMaker::ContentBrowserFolderIsFav(const std::string &path) {
+VORTEX_API bool vxe::ContentBrowserFolderIsFav(const std::string &path) {
   VxContext &ctx = *CVortexMaker;
 
   for (auto customized_folder : ctx.IO.contentbrowser_customfolders) {
@@ -783,9 +778,8 @@ VortexMaker::ContentBrowserFolderIsFav(const std::string &path) {
   return false;
 }
 
-VORTEX_API bool
-VortexMaker::GetContentBrowserFolderColor(const std::string &path,
-                                          ImU32 *color) {
+VORTEX_API bool vxe::GetContentBrowserFolderColor(const std::string &path,
+                                                  ImU32 *color) {
   VxContext &ctx = *CVortexMaker;
 
   for (auto customized_folder : ctx.IO.contentbrowser_customfolders) {
@@ -797,7 +791,7 @@ VortexMaker::GetContentBrowserFolderColor(const std::string &path,
   return false;
 }
 
-VORTEX_API ImU32 VortexMaker::HexToImU32(const std::string &hex) {
+VORTEX_API ImU32 vxe::HexToImU32(const std::string &hex) {
   if (hex[0] != '#' || hex.length() != 7) {
     throw std::invalid_argument("Invalid hex format");
   }
@@ -816,7 +810,7 @@ VORTEX_API ImU32 VortexMaker::HexToImU32(const std::string &hex) {
   return IM_COL32(r, g, b, 255); // Alpha is set to 255 (opaque)
 }
 
-VORTEX_API std::string VortexMaker::ImU32ToHex(ImU32 color) {
+VORTEX_API std::string vxe::ImU32ToHex(ImU32 color) {
   unsigned char r = (color >> IM_COL32_R_SHIFT) & 0xFF;
   unsigned char g = (color >> IM_COL32_G_SHIFT) & 0xFF;
   unsigned char b = (color >> IM_COL32_B_SHIFT) & 0xFF;
@@ -830,10 +824,10 @@ VORTEX_API std::string VortexMaker::ImU32ToHex(ImU32 color) {
   return ss.str();
 }
 
-VORTEX_API void VortexMaker::FetchPools() {
+VORTEX_API void vxe::FetchPools() {
   VxContext &ctx = *CVortexMaker;
   std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
-  VortexMaker::createFolderIfNotExists(path);
+  vxe::createFolderIfNotExists(path);
 
   std::string file_path = path + "/pools.json";
 
@@ -841,7 +835,7 @@ VORTEX_API void VortexMaker::FetchPools() {
   json_data["main_pool"] = ctx.projectPath.string();
   json_data["pools"] = nlohmann::json::array();
 
-  VortexMaker::createJsonFileIfNotExists(file_path, json_data);
+  vxe::createJsonFileIfNotExists(file_path, json_data);
 
   std::ifstream file(file_path);
 
@@ -863,10 +857,10 @@ VORTEX_API void VortexMaker::FetchPools() {
   }
 }
 
-VORTEX_API void VortexMaker::PostPoolsToJson() {
+VORTEX_API void vxe::PostPoolsToJson() {
   VxContext &ctx = *CVortexMaker;
   std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
-  VortexMaker::createFolderIfNotExists(path);
+  vxe::createFolderIfNotExists(path);
 
   std::string file_path = path + "/pools.json";
 
@@ -883,10 +877,10 @@ VORTEX_API void VortexMaker::PostPoolsToJson() {
     json_data["pools"].push_back(folder_data);
   }
 
-  VortexMaker::PopulateJSON(json_data, file_path);
+  vxe::PopulateJSON(json_data, file_path);
 }
 
-VORTEX_API void VortexMaker::OpenURL(const std::string &url) {
+VORTEX_API void vxe::OpenURL(const std::string &url) {
 #if defined(_WIN32)
   ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 #elif defined(__APPLE__)
@@ -902,10 +896,10 @@ VORTEX_API void VortexMaker::OpenURL(const std::string &url) {
 #endif
 }
 
-VORTEX_API void VortexMaker::FetchCustomFolders() {
+VORTEX_API void vxe::FetchCustomFolders() {
   VxContext &ctx = *CVortexMaker;
   std::string path = (ctx.projectPath / ".vx/configs/content_browser").string();
-  VortexMaker::createFolderIfNotExists(path);
+  vxe::createFolderIfNotExists(path);
 
   std::string file_path = path + "/customized_folders.json";
 
@@ -913,7 +907,7 @@ VORTEX_API void VortexMaker::FetchCustomFolders() {
 
   };
 
-  VortexMaker::createJsonFileIfNotExists(file_path, json_data);
+  vxe::createJsonFileIfNotExists(file_path, json_data);
 
   try {
     std::ifstream file(file_path);
@@ -934,7 +928,7 @@ VORTEX_API void VortexMaker::FetchCustomFolders() {
       new_folder->m_IsFav = directory["isFav"].get<bool>();
       new_folder->path = directory["path"].get<std::string>();
 
-      VortexMaker::createFolderIfNotExists(new_folder->path);
+      vxe::createFolderIfNotExists(new_folder->path);
 
       ctx.IO.contentbrowser_customfolders.push_back(new_folder);
     }
@@ -944,8 +938,8 @@ VORTEX_API void VortexMaker::FetchCustomFolders() {
   }
 }
 
-VORTEX_API void VortexMaker::Copy(std::vector<std::string> selection,
-                                  bool in_addition) {
+VORTEX_API void vxe::Copy(std::vector<std::string> selection,
+                          bool in_addition) {
   VxContext &ctx = *CVortexMaker;
 
   if (!in_addition) {
@@ -957,8 +951,8 @@ VORTEX_API void VortexMaker::Copy(std::vector<std::string> selection,
   }
 }
 
-VORTEX_API void VortexMaker::SubmitRename(const std::string &oldPathStr,
-                                          const std::string &newName) {
+VORTEX_API void vxe::SubmitRename(const std::string &oldPathStr,
+                                  const std::string &newName) {
   fs::path oldPath(oldPathStr);
   fs::path parentDir = oldPath.parent_path();
 
@@ -1000,8 +994,7 @@ VORTEX_API void VortexMaker::SubmitRename(const std::string &oldPathStr,
   }
 }
 
-VORTEX_API void VortexMaker::Cut(std::vector<std::string> selection,
-                                 bool in_addition) {
+VORTEX_API void vxe::Cut(std::vector<std::string> selection, bool in_addition) {
   VxContext &ctx = *CVortexMaker;
 
   if (!in_addition) {
@@ -1013,13 +1006,13 @@ VORTEX_API void VortexMaker::Cut(std::vector<std::string> selection,
   }
 }
 
-VORTEX_API void VortexMaker::ClearCutSelection() {
+VORTEX_API void vxe::ClearCutSelection() {
   VxContext &ctx = *CVortexMaker;
 
   ctx.IO.cut_selection.clear();
 }
 
-VORTEX_API void VortexMaker::ClearCopySelection() {
+VORTEX_API void vxe::ClearCopySelection() {
   VxContext &ctx = *CVortexMaker;
 
   ctx.IO.copy_selection.clear();
@@ -1071,8 +1064,7 @@ void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest,
   }
 }
 
-VORTEX_API void
-VortexMaker::PasteAllSelections(const std::string &target_path_str) {
+VORTEX_API void vxe::PasteAllSelections(const std::string &target_path_str) {
   VxContext &ctx = *CVortexMaker;
   fs::path targetPath(target_path_str);
 
@@ -1157,8 +1149,8 @@ VortexMaker::PasteAllSelections(const std::string &target_path_str) {
   }
 }
 
-VORTEX_API void VortexMaker::RenameFolder(const std::string &target_path,
-                                          const std::string &new_name) {
+VORTEX_API void vxe::RenameFolder(const std::string &target_path,
+                                  const std::string &new_name) {
   namespace fs = std::filesystem;
 
   try {
@@ -1177,7 +1169,7 @@ VORTEX_API void VortexMaker::RenameFolder(const std::string &target_path,
   }
 }
 
-VORTEX_API void VortexMaker::RefreshProjectThemes() {
+VORTEX_API void vxe::RefreshProjectThemes() {
   VxContext &ctx = *CVortexMaker;
 
   std::string home = ctx.projectPath.string();
@@ -1185,12 +1177,12 @@ VORTEX_API void VortexMaker::RefreshProjectThemes() {
   std::string config_path = home + "/.vx/configs/themes";
   std::string json_file = config_path + "/themes.json";
 
-  VortexMaker::createFolderIfNotExists(themes_path);
-  VortexMaker::createFolderIfNotExists(config_path);
+  vxe::createFolderIfNotExists(themes_path);
+  vxe::createFolderIfNotExists(config_path);
 
   nlohmann::json defaultData = {{"used_theme", "dark"},
                                 {"override_themes", nlohmann::json::array()}};
-  VortexMaker::createJsonFileIfNotExists(json_file, defaultData);
+  vxe::createJsonFileIfNotExists(json_file, defaultData);
 
   ctx.IO.themes.clear();
 
@@ -1215,9 +1207,9 @@ VORTEX_API void VortexMaker::RefreshProjectThemes() {
           ctx.IO.themes.push_back(themeObj);
         }
       } catch (const std::exception &e) {
-        VortexMaker::LogError("Core", "Failed to parse theme file: " +
-                                          entry.path().string());
-        VortexMaker::LogError("Core", e.what());
+        vxe::LogError("Core",
+                      "Failed to parse theme file: " + entry.path().string());
+        vxe::LogError("Core", e.what());
       }
     }
   }
@@ -1231,16 +1223,16 @@ VORTEX_API void VortexMaker::RefreshProjectThemes() {
     ctx.IO.override_themes =
         configJson.value("override_themes", std::vector<std::string>());
   } catch (const std::exception &e) {
-    VortexMaker::LogError("Core", "Failed to load theme config: " +
-                                      std::string(e.what()));
+    vxe::LogError("Core",
+                  "Failed to load theme config: " + std::string(e.what()));
   }
 }
 
 VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme,
                                    const std::string &title) {
   std::string themes_path =
-      VortexMaker::getHomeDirectory() + "/.vx/configs/themes/data";
-  VortexMaker::createFolderIfNotExists(themes_path);
+      vxe::getHomeDirectory() + "/.vx/configs/themes/data";
+  vxe::createFolderIfNotExists(themes_path);
 
   nlohmann::json j;
   j["label"] = theme->label;
@@ -1261,15 +1253,14 @@ VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme,
   try {
     std::ofstream out(filepath);
     out << std::setw(4) << j << std::endl;
-    VortexMaker::LogInfo("Core", "Theme '" + theme->label + "' updated.");
+    vxe::LogInfo("Core", "Theme '" + theme->label + "' updated.");
   } catch (const std::exception &e) {
-    VortexMaker::LogError("Core", "Failed to update theme file: " + filepath);
-    VortexMaker::LogError("Core", e.what());
+    vxe::LogError("Core", "Failed to update theme file: " + filepath);
+    vxe::LogError("Core", e.what());
   }
 }
 
-VORTEX_API std::shared_ptr<Theme>
-VortexMaker::GetTheme(const std::string &label) {
+VORTEX_API std::shared_ptr<Theme> vxe::GetTheme(const std::string &label) {
 
   VxContext &ctx = *CVortexMaker;
   const auto &themes = ctx.IO.themes;
@@ -1283,7 +1274,7 @@ VortexMaker::GetTheme(const std::string &label) {
   }
   return nullptr;
 }
-VORTEX_API std::shared_ptr<Theme> VortexMaker::GetSelectedTheme() {
+VORTEX_API std::shared_ptr<Theme> vxe::GetSelectedTheme() {
 
   VxContext &ctx = *CVortexMaker;
   const std::string &used = ctx.IO.used_theme;
@@ -1297,23 +1288,20 @@ VORTEX_API std::shared_ptr<Theme> VortexMaker::GetSelectedTheme() {
     }
   }
 
-  VortexMaker::LogError("Core", "No theme matched used_theme: '" + used + "'");
+  vxe::LogError("Core", "No theme matched used_theme: '" + used + "'");
   return nullptr;
 }
 
-VORTEX_API void
-VortexMaker::CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
-                            const std::string &title) {
+VORTEX_API void vxe::CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
+                                    const std::string &title) {
   if (!base_theme) {
-    VortexMaker::LogError("Theme",
-                          "Base theme is null. Cannot create new theme.");
+    vxe::LogError("Theme", "Base theme is null. Cannot create new theme.");
     return;
   }
 
-  std::string themes_path =
-      VortexMaker::GetCurrentContext()->projectPath.string() +
-      "/.vx/configs/themes/data";
-  VortexMaker::createFolderIfNotExists(themes_path);
+  std::string themes_path = vxe::GetCurrentContext()->projectPath.string() +
+                            "/.vx/configs/themes/data";
+  vxe::createFolderIfNotExists(themes_path);
 
   std::string base_filename = title;
   std::transform(
@@ -1345,18 +1333,18 @@ VortexMaker::CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
   try {
     std::ofstream file(final_path);
     file << std::setw(4) << theme_json << std::endl;
-    VortexMaker::LogInfo("Theme", "New theme created: " + final_filename);
+    vxe::LogInfo("Theme", "New theme created: " + final_filename);
   } catch (const std::exception &e) {
-    VortexMaker::LogError("Theme", "Failed to write new theme file: " +
-                                       std::string(e.what()));
+    vxe::LogError("Theme",
+                  "Failed to write new theme file: " + std::string(e.what()));
   }
 }
 
 VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>>
-VortexMaker::GetAllItemHandlersFor(const std::string &type) {
+vxe::GetAllItemHandlersFor(const std::string &type) {
   std::vector<std::shared_ptr<ItemHandlerInterface>> list;
 
-  for (auto mod : VortexMaker::GetCurrentContext()->IO.em) {
+  for (auto mod : vxe::GetCurrentContext()->IO.em) {
     if (mod->m_state == "running") {
       for (auto handlers : mod->GetContentBrowserItemHandler()) {
         if (handlers->type == type)
@@ -1365,7 +1353,7 @@ VortexMaker::GetAllItemHandlersFor(const std::string &type) {
     }
   }
 
-  for (auto plug : VortexMaker::GetCurrentContext()->IO.ep) {
+  for (auto plug : vxe::GetCurrentContext()->IO.ep) {
     if (plug->m_state == "running") {
       for (auto handlers : plug->GetContentBrowserItemHandler()) {
         if (handlers->type == type)
@@ -1377,12 +1365,11 @@ VortexMaker::GetAllItemHandlersFor(const std::string &type) {
   return list;
 }
 
-VORTEX_API void VortexMaker::VerifyAndPouplateThemes() {
-  std::string themes_path =
-      VortexMaker::GetCurrentContext()->projectPath.string() +
-      "/.vx/configs/themes/data";
+VORTEX_API void vxe::VerifyAndPouplateThemes() {
+  std::string themes_path = vxe::GetCurrentContext()->projectPath.string() +
+                            "/.vx/configs/themes/data";
 
-  VortexMaker::createFolderIfNotExists(themes_path);
+  vxe::createFolderIfNotExists(themes_path);
 
   const std::vector<std::string> required_themes = {"dark.json", "clear.json"};
 
@@ -1391,7 +1378,7 @@ VORTEX_API void VortexMaker::VerifyAndPouplateThemes() {
     bool needs_creation = false;
 
     if (!fs::exists(path)) {
-      VortexMaker::LogInfo("Theme", theme_file + " is missing. Recreating.");
+      vxe::LogInfo("Theme", theme_file + " is missing. Recreating.");
       needs_creation = true;
     } else {
       try {
@@ -1402,13 +1389,11 @@ VORTEX_API void VortexMaker::VerifyAndPouplateThemes() {
         if (!theme_json.contains("label") || !theme_json.contains("name") ||
             !theme_json.contains("description") ||
             !theme_json.contains("authors") || !theme_json.contains("theme")) {
-          VortexMaker::LogError("Theme",
-                                theme_file + " is invalid. Recreating.");
+          vxe::LogError("Theme", theme_file + " is invalid. Recreating.");
           needs_creation = true;
         }
       } catch (...) {
-        VortexMaker::LogError("Theme",
-                              theme_file + " is corrupted. Recreating.");
+        vxe::LogError("Theme", theme_file + " is corrupted. Recreating.");
         needs_creation = true;
       }
     }
@@ -1717,10 +1702,9 @@ VORTEX_API void VortexMaker::VerifyAndPouplateThemes() {
   }
 }
 
-VORTEX_API void VortexMaker::UpdateProjectThemesComfig() {
+VORTEX_API void vxe::UpdateProjectThemesComfig() {
   VxContext &ctx = *CVortexMaker;
-  std::string config_path =
-      VortexMaker::getHomeDirectory() + "/.vx/configs/themes";
+  std::string config_path = vxe::getHomeDirectory() + "/.vx/configs/themes";
   std::string json_file = config_path + "/themes.json";
 
   nlohmann::json configJson;
@@ -1730,36 +1714,35 @@ VORTEX_API void VortexMaker::UpdateProjectThemesComfig() {
   try {
     std::ofstream out(json_file);
     out << std::setw(4) << configJson << std::endl;
-    VortexMaker::LogInfo("Core", "Theme configuration updated.");
+    vxe::LogInfo("Core", "Theme configuration updated.");
   } catch (const std::exception &e) {
-    VortexMaker::LogError("Core", "Failed to update theme config file: " +
-                                      std::string(e.what()));
+    vxe::LogError("Core", "Failed to update theme config file: " +
+                              std::string(e.what()));
   }
 }
 
-VORTEX_API std::string
-VortexMaker::ConvertPathToWindowsStyle(const std::string &path) {
+VORTEX_API std::string vxe::ConvertPathToWindowsStyle(const std::string &path) {
   std::string windowsPath = path;
   std::replace(windowsPath.begin(), windowsPath.end(), '/', '\\');
   return windowsPath;
 }
 
-VORTEX_API void VortexMaker::ThemeRebuilded() {
+VORTEX_API void vxe::ThemeRebuilded() {
   VxContext &ctx = *CVortexMaker;
   ctx.IO.theme_changed = false;
 }
 
-VORTEX_API void VortexMaker::RebuildTheme() {
+VORTEX_API void vxe::RebuildTheme() {
   VxContext &ctx = *CVortexMaker;
   ctx.IO.theme_changed = true;
 }
 
-VORTEX_API bool VortexMaker::IsThemeNeedsRebuild() {
+VORTEX_API bool vxe::IsThemeNeedsRebuild() {
   VxContext &ctx = *CVortexMaker;
   return ctx.IO.theme_changed;
 }
 
-VORTEX_API std::string VortexMaker::CreateFile(const std::string &path) {
+VORTEX_API std::string vxe::CreateFile(const std::string &path) {
   fs::path basePath(path);
   std::string baseName = "New file";
   std::string extension = ".txt";
@@ -1778,7 +1761,7 @@ VORTEX_API std::string VortexMaker::CreateFile(const std::string &path) {
   return fs::absolute(fullPath).string();
 }
 
-VORTEX_API std::string VortexMaker::CreateFolder(const std::string &path) {
+VORTEX_API std::string vxe::CreateFolder(const std::string &path) {
   fs::path basePath(path);
   std::string baseName = "New folder";
   fs::path fullPath = basePath / baseName;
@@ -1794,8 +1777,8 @@ VORTEX_API std::string VortexMaker::CreateFolder(const std::string &path) {
   return fs::absolute(fullPath).string();
 }
 
-VORTEX_API void VortexMaker::RenameFile(const std::string &target_path,
-                                        const std::string &new_name) {
+VORTEX_API void vxe::RenameFile(const std::string &target_path,
+                                const std::string &new_name) {
   namespace fs = std::filesystem;
 
   try {
@@ -1813,7 +1796,7 @@ VORTEX_API void VortexMaker::RenameFile(const std::string &target_path,
   }
 }
 
-VORTEX_API void VortexMaker::DeleteFile(const std::string &target_path) {
+VORTEX_API void vxe::DeleteFile(const std::string &target_path) {
   try {
     if (!std::filesystem::exists(target_path) ||
         !std::filesystem::is_regular_file(target_path)) {
@@ -1831,7 +1814,7 @@ VORTEX_API void VortexMaker::DeleteFile(const std::string &target_path) {
   }
 }
 
-VORTEX_API void VortexMaker::DeleteFolder(const std::string &target_path) {
+VORTEX_API void vxe::DeleteFolder(const std::string &target_path) {
   try {
     if (!std::filesystem::exists(target_path) ||
         !std::filesystem::is_directory(target_path)) {
@@ -1849,7 +1832,7 @@ VORTEX_API void VortexMaker::DeleteFolder(const std::string &target_path) {
   }
 }
 
-VORTEX_API void VortexMaker::DeletePath(const std::string &target_path) {
+VORTEX_API void vxe::DeletePath(const std::string &target_path) {
   try {
     if (!std::filesystem::exists(target_path)) {
       throw std::invalid_argument("The specified path does not exist.");
@@ -1870,9 +1853,9 @@ VORTEX_API void VortexMaker::DeletePath(const std::string &target_path) {
   }
 }
 
-VORTEX_API void VortexMaker::AddCredits(const std::string &topic,
-                                        const std::string &credit_file) {
-  auto ctx = VortexMaker::GetCurrentContext();
+VORTEX_API void vxe::AddCredits(const std::string &topic,
+                                const std::string &credit_file) {
+  auto ctx = vxe::GetCurrentContext();
 
   std::ifstream file(credit_file);
   if (!file.is_open()) {
@@ -1949,9 +1932,9 @@ VORTEX_API void VortexMaker::AddCredits(const std::string &topic,
   }
 }
 
-VORTEX_API void VortexMaker::SetCreditsFile(const std::string &topic,
-                                            const std::string &credit_file) {
-  auto ctx = VortexMaker::GetCurrentContext();
+VORTEX_API void vxe::SetCreditsFile(const std::string &topic,
+                                    const std::string &credit_file) {
+  auto ctx = vxe::GetCurrentContext();
 
   TopicCredits &tc = ctx->credits[topic];
 
@@ -2029,8 +2012,8 @@ VORTEX_API void VortexMaker::SetCreditsFile(const std::string &topic,
 }
 
 VORTEX_API std::vector<std::string>
-VortexMaker::GetTitlesFromTopic(const std::string &topic) {
-  auto ctx = VortexMaker::GetCurrentContext();
+vxe::GetTitlesFromTopic(const std::string &topic) {
+  auto ctx = vxe::GetCurrentContext();
 
   auto it = ctx->credits.find(topic);
   if (it == ctx->credits.end())
@@ -2040,9 +2023,9 @@ VortexMaker::GetTitlesFromTopic(const std::string &topic) {
 }
 
 VORTEX_API std::vector<std::string>
-VortexMaker::GetNamesFromTopicAndTitle(const std::string &topic,
-                                       const std::string &title) {
-  auto ctx = VortexMaker::GetCurrentContext();
+vxe::GetNamesFromTopicAndTitle(const std::string &topic,
+                               const std::string &title) {
+  auto ctx = vxe::GetCurrentContext();
 
   auto it = ctx->credits.find(topic);
   if (it == ctx->credits.end())
@@ -2068,11 +2051,11 @@ VortexMaker::GetNamesFromTopicAndTitle(const std::string &topic,
   return results;
 }
 
-VORTEX_API void VortexMaker::AddDocumentation(const std::string &topic,
-                                              const std::string &section,
-                                              const std::string &title,
-                                              const std::string &md_file_path) {
-  auto ctx = VortexMaker::GetCurrentContext();
+VORTEX_API void vxe::AddDocumentation(const std::string &topic,
+                                      const std::string &section,
+                                      const std::string &title,
+                                      const std::string &md_file_path) {
+  auto ctx = vxe::GetCurrentContext();
   DocumentationFile doc;
   doc.title = title;
   doc.file_path = md_file_path;
@@ -2080,9 +2063,8 @@ VORTEX_API void VortexMaker::AddDocumentation(const std::string &topic,
   ctx->documentations[topic].sections[section].chapters[title] = doc;
 }
 
-VORTEX_API std::vector<std::string>
-VortexMaker::GetSections(const std::string &topic) {
-  auto ctx = VortexMaker::GetCurrentContext();
+VORTEX_API std::vector<std::string> vxe::GetSections(const std::string &topic) {
+  auto ctx = vxe::GetCurrentContext();
   std::vector<std::string> section_names;
 
   if (ctx->documentations.count(topic)) {
@@ -2094,8 +2076,8 @@ VortexMaker::GetSections(const std::string &topic) {
 }
 
 VORTEX_API std::vector<std::string>
-VortexMaker::GetChapters(const std::string &topic, const std::string &section) {
-  auto ctx = VortexMaker::GetCurrentContext();
+vxe::GetChapters(const std::string &topic, const std::string &section) {
+  auto ctx = vxe::GetCurrentContext();
   std::vector<std::string> chapter_titles;
 
   if (ctx->documentations.count(topic)) {
@@ -2109,11 +2091,10 @@ VortexMaker::GetChapters(const std::string &topic, const std::string &section) {
   return chapter_titles;
 }
 
-VORTEX_API std::string
-VortexMaker::GetChapterFilePath(const std::string &topic,
-                                const std::string &section,
-                                const std::string &title) {
-  auto ctx = VortexMaker::GetCurrentContext();
+VORTEX_API std::string vxe::GetChapterFilePath(const std::string &topic,
+                                               const std::string &section,
+                                               const std::string &title) {
+  auto ctx = vxe::GetCurrentContext();
 
   auto it_topic = ctx->documentations.find(topic);
   if (it_topic == ctx->documentations.end())
@@ -2132,178 +2113,178 @@ VortexMaker::GetChapterFilePath(const std::string &topic,
   return it_chapter->second.file_path;
 }
 
-VORTEX_API void VortexMaker::AddVortexDocumentation() {
-  VortexMaker::AddDocumentation(
+VORTEX_API void vxe::AddVortexDocumentation() {
+  vxe::AddDocumentation(
       "vx", "Introduction", "Introduction",
       Cherry::GetPath(
           "docs/get_started/contents/introduction/introduction.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Introduction", "What is Vortex ?",
       Cherry::GetPath(
           "docs/get_started/contents/introduction/what_is_vortex.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Introduction", "Install Vortex",
       Cherry::GetPath(
           "docs/get_started/contents/introduction/install_vortex.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Introduction", "Get started",
       Cherry::GetPath("docs/get_started/contents/introduction/get_started.md"));
 
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher", "Understand Vortex Launcher",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "understand_vortexlauncher.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher", "Discover interface",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "discover_interface.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher", "Update the launcher",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "update_launcher.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher", "Manage projects",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "manage_projects.md"));
 
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher", "Understand logical contents:Brief",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "understand_logical_contents.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher",
       "Understand logical contents:Manage system modules",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "manage_system_modules.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher",
       "Understand logical contents:Manage system plugins",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "manage_system_plugins.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher", "Understand static contents:Brief",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "understand_static_contents.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher",
       "Understand static contents:Manage system templates",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "manage_system_templates.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher",
       "Understand static contents:Manage system contents",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "manage_system_contents.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher", "Manage Vortex Editors",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "manage_vortex_editor_versions.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher", "Subscribe to beta",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "subscribe_to_beta.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Launcher", "Uninstallation",
       Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
                       "uninstall.md"));
 
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Understand Vortex Editor",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "understand_vortexeditor.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Discover interface",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "discover_interface.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Content Browser",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "content_browser.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Project settings",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "project_settings.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Console logs",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "console_logs.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Handle modules",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "handle_modules.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Handle plugins",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "handle_plugins.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Import contents",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "import_contents.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Create with templates",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "create_with_templates.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Share Contents:Brief",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "share_contents.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Share Contents:Export project/tool",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "export_project.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Share Contents:Share a content",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "share_a_content.md"));
-  VortexMaker::AddDocumentation(
+  vxe::AddDocumentation(
       "vx", "Take the Vortex Editor", "Share Contents:Share a content",
       Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
                       "create_a_template.md"));
 }
 
-void VortexMaker::PushEditMenuItem(const std::string &title,
-                                   const std::function<void()> &action,
-                                   const std::string &logo,
-                                   const std::string &section) {
-  auto ctx = VortexMaker::GetCurrentContext();
+void vxe::PushEditMenuItem(const std::string &title,
+                           const std::function<void()> &action,
+                           const std::string &logo,
+                           const std::string &section) {
+  auto ctx = vxe::GetCurrentContext();
   ctx->editMenuItems.push_back({title, action, logo, section});
 }
 
-void VortexMaker::PopEditMenuItem(const int &count) {
+void vxe::PopEditMenuItem(const int &count) {
   if (count <= 0)
     return;
 
-  auto ctx = VortexMaker::GetCurrentContext();
+  auto ctx = vxe::GetCurrentContext();
   const int remove =
       (std::min)(count, static_cast<int>(ctx->editMenuItems.size()));
   ctx->editMenuItems.erase(ctx->editMenuItems.end() - remove,
                            ctx->editMenuItems.end());
 }
 
-void VortexMaker::ClearEditMenuItem() {
-  auto ctx = VortexMaker::GetCurrentContext();
+void vxe::ClearEditMenuItem() {
+  auto ctx = vxe::GetCurrentContext();
   ctx->editMenuItems.clear();
 }
 
-void VortexMaker::PushCustomMenu(const std::string &title,
-                                 const std::function<void()> &render) {
-  auto ctx = VortexMaker::GetCurrentContext();
+void vxe::PushCustomMenu(const std::string &title,
+                         const std::function<void()> &render) {
+  auto ctx = vxe::GetCurrentContext();
   ctx->customMenus.push_back({title, render});
 }
 
-void VortexMaker::PopCustomMenu(const int &count) {
+void vxe::PopCustomMenu(const int &count) {
   if (count <= 0)
     return;
 
-  auto ctx = VortexMaker::GetCurrentContext();
+  auto ctx = vxe::GetCurrentContext();
   const int remove =
       (std::min)(count, static_cast<int>(ctx->customMenus.size()));
   ctx->customMenus.erase(ctx->customMenus.end() - remove,
                          ctx->customMenus.end());
 }
 
-void VortexMaker::ClearCustomMenus() {
-  auto ctx = VortexMaker::GetCurrentContext();
+void vxe::ClearCustomMenus() {
+  auto ctx = vxe::GetCurrentContext();
   ctx->customMenus.clear();
 }
 #endif // VORTEX_DISABLE

@@ -70,7 +70,7 @@ VORTEX_API void PluginInterface::AddDocumentation(const std::string &section,
                                                   const std::string &title,
                                                   const std::string &path) {
   std::string topic = "plugin:" + this->m_name;
-  VortexMaker::AddDocumentation(topic, section, title, path);
+  vxe::AddDocumentation(topic, section, title, path);
 }
 
 VORTEX_API void PluginInterface::RefreshMainWindow() {
@@ -323,7 +323,7 @@ VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::GetInterface() {
  */
 VORTEX_API std::shared_ptr<PluginInterface>
 PluginInterface::GetEditorPluginByName(const std::string &name) {
-  VxContext *ctx = VortexMaker::GetCurrentContext();
+  VxContext *ctx = vxe::GetCurrentContext();
 
   for (auto ep : ctx->IO.ep) {
     if (name == ep->m_name) {
@@ -455,7 +455,7 @@ VORTEX_API void PluginInterface::ExecuteOutputEvent(const std::string &name,
  * @param message The message to log.
  */
 VORTEX_API void PluginInterface::LogInfo(const std::string &message) {
-  VortexMaker::LogInfo(this->m_name, message);
+  vxe::LogInfo(this->m_name, message);
 }
 
 /**
@@ -466,7 +466,7 @@ VORTEX_API void PluginInterface::LogInfo(const std::string &message) {
  * @param message The warning message to log.
  */
 VORTEX_API void PluginInterface::LogWarning(const std::string &message) {
-  VortexMaker::LogWarn(this->m_name, message);
+  vxe::LogWarn(this->m_name, message);
 }
 
 /**
@@ -477,7 +477,7 @@ VORTEX_API void PluginInterface::LogWarning(const std::string &message) {
  * @param message The error message to log.
  */
 VORTEX_API void PluginInterface::LogError(const std::string &message) {
-  VortexMaker::LogError(this->m_name, message);
+  vxe::LogError(this->m_name, message);
 }
 
 /**
@@ -488,7 +488,7 @@ VORTEX_API void PluginInterface::LogError(const std::string &message) {
  * @param message The fatal error message to log.
  */
 VORTEX_API void PluginInterface::LogFatal(const std::string &message) {
-  VortexMaker::LogFatal(this->m_name, message);
+  vxe::LogFatal(this->m_name, message);
 }
 
 /**
@@ -499,7 +499,7 @@ VORTEX_API void PluginInterface::LogFatal(const std::string &message) {
  */
 VORTEX_API void PluginInterface::CheckDependencies() {
   // Get the current Vortex context
-  VxContext *ctx = VortexMaker::GetCurrentContext();
+  VxContext *ctx = vxe::GetCurrentContext();
 
   // Iterate through each dependency
   for (auto dependency : this->m_dependencies) {
@@ -538,7 +538,7 @@ VORTEX_API void PluginInterface::CheckDependencies() {
  */
 VORTEX_API void PluginInterface::Start() {
   // Get the current Vortex context
-  VxContext *ctx = VortexMaker::GetCurrentContext();
+  VxContext *ctx = vxe::GetCurrentContext();
 
   // Update dependencies
   this->CheckDependencies();
@@ -629,7 +629,7 @@ VORTEX_API void PluginInterface::Start() {
     return;
   }
 
-  auto &engine = VortexMaker::Script::GetScriptingEngine();
+  auto &engine = vxe::Script::GetScriptingEngine();
   engine.LoadFileForPlugin(this->m_mainscript_path, this->shared_from_this());
 
   this->m_state = "running";
@@ -643,7 +643,7 @@ VORTEX_API void PluginInterface::Start() {
  */
 VORTEX_API void PluginInterface::Stop() {
   // Get the current Vortex context
-  VxContext *ctx = VortexMaker::GetCurrentContext();
+  VxContext *ctx = vxe::GetCurrentContext();
 
   bool authorized = true;
   std::vector<std::pair<std::string, std::string>> deps;
@@ -687,14 +687,14 @@ VORTEX_API void PluginInterface::ResetPlugin() { m_item_handlers.clear(); }
 VORTEX_API void PluginInterface::CallOutputEvent(const std::string &event_name,
                                                  ArgumentValues &args,
                                                  ReturnValues &ret) {
-  VortexMaker::CallOutputEvent(event_name, args, ret, this->m_name);
+  vxe::CallOutputEvent(event_name, args, ret, this->m_name);
 }
 
 VORTEX_API void PluginInterface::CallInputEvent(const std::string &plugin_name,
                                                 const std::string &event_name,
                                                 ArgumentValues &args,
                                                 ReturnValues &ret) {
-  VortexMaker::CallInputEvent(plugin_name, event_name, args, ret, this->m_name);
+  vxe::CallInputEvent(plugin_name, event_name, args, ret, this->m_name);
 }
 
 VORTEX_API void PluginInterface::CheckVersion() {}
@@ -725,6 +725,6 @@ PluginInterface::GetContentBrowserItemCreators() {
 }
 
 VORTEX_API void PluginInterface::SetCreditsFile(const std::string &file_path) {
-  VortexMaker::SetCreditsFile(this->m_proper_name + "(" + this->m_name + ")",
-                              file_path);
+  vxe::SetCreditsFile(this->m_proper_name + "(" + this->m_name + ")",
+                      file_path);
 }

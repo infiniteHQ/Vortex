@@ -2,20 +2,20 @@
 #include <plugins/load.h>
 #include <plugins/runtime.h>
 
-VORTEX_API void VortexMaker::InstallPlugin(const std::string &plugin_name,
-                                           const std::string &version,
-                                           bool &restart_plugins) {
+VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name,
+                                   const std::string &version,
+                                   bool &restart_plugins) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   // Get the home directory
-  std::string homeDir = VortexMaker::getHomeDirectory();
+  std::string homeDir = vxe::getHomeDirectory();
 
   // Plugin path on the system
   std::string path = homeDir + "/.vx/plugins";
 
   // Search plugins registered
-  auto plugin_files = VortexMaker::SearchFiles(path, "plugin.json");
+  auto plugin_files = vxe::SearchFiles(path, "plugin.json");
 
   // Finded state
   bool finded = false;
@@ -24,7 +24,7 @@ VORTEX_API void VortexMaker::InstallPlugin(const std::string &plugin_name,
   for (const auto &file : plugin_files) {
     try {
       // Load JSON data from the plugin configuration file
-      auto json_data = VortexMaker::DumpJSON(file);
+      auto json_data = vxe::DumpJSON(file);
 
       std::string plugin_path = file.substr(0, file.find_last_of("/"));
 
@@ -52,24 +52,24 @@ VORTEX_API void VortexMaker::InstallPlugin(const std::string &plugin_name,
           ctx.IO.ep.clear();
 
           // Load plugins installed in the current project
-          VortexMaker::LoadEditorPlugins(ctx.projectPath.string(),
-                                         ctx.IO.ep_handles, ctx.IO.ep);
+          vxe::LoadEditorPlugins(ctx.projectPath.string(), ctx.IO.ep_handles,
+                                 ctx.IO.ep);
 
           // Finally, start all loaded plugins.
-          VortexMaker::StartAllPlugins();
+          vxe::StartAllPlugins();
         }
 
         return;
       }
     } catch (std::exception e) {
-      VortexMaker::LogError("Core", e.what());
+      vxe::LogError("Core", e.what());
     }
   }
 
   if (!finded) {
-    VortexMaker::LogError("Core", "Failed to find the plugin " + plugin_name +
-                                      " with version " + version +
-                                      ", this plugin is installed ?");
+    vxe::LogError("Core", "Failed to find the plugin " + plugin_name +
+                              " with version " + version +
+                              ", this plugin is installed ?");
   }
 
   // Search plugin registered by plugin_name in env
@@ -80,15 +80,15 @@ VORTEX_API void VortexMaker::InstallPlugin(const std::string &plugin_name,
 }
 
 VORTEX_API std::shared_ptr<PluginInterface>
-VortexMaker::FindPluginInDirectory(const std::string &directory) {
+vxe::FindPluginInDirectory(const std::string &directory) {
   // Search plugins registered
-  auto plugin_files = VortexMaker::SearchFiles(directory, "plugin.json");
+  auto plugin_files = vxe::SearchFiles(directory, "plugin.json");
 
   // Iterate through each found plugin file
   for (const auto &file : plugin_files) {
     try {
       // Load JSON data from the plugin configuration file
-      auto json_data = VortexMaker::DumpJSON(file);
+      auto json_data = vxe::DumpJSON(file);
 
       std::string plugin_path = file.substr(0, file.find_last_of("/"));
 
@@ -101,19 +101,19 @@ VortexMaker::FindPluginInDirectory(const std::string &directory) {
       return plugin_interface;
 
     } catch (std::exception e) {
-      VortexMaker::LogError("Core", e.what());
+      vxe::LogError("Core", e.what());
     }
   }
 
-  VortexMaker::LogError("Core", "Failed to find the plugin at " + directory +
-                                    ", no plugins detected.");
+  vxe::LogError("Core", "Failed to find the plugin at " + directory +
+                            ", no plugins detected.");
   return nullptr;
 }
 
 VORTEX_API std::vector<std::shared_ptr<PluginInterface>>
-VortexMaker::FindPluginsInDirectory(const std::string &directory) {
+vxe::FindPluginsInDirectory(const std::string &directory) {
   // Search plugins registered
-  auto plugin_files = VortexMaker::SearchFiles(directory, "plugin.json", 3);
+  auto plugin_files = vxe::SearchFiles(directory, "plugin.json", 3);
 
   std::vector<std::shared_ptr<PluginInterface>> interfaces;
 
@@ -121,7 +121,7 @@ VortexMaker::FindPluginsInDirectory(const std::string &directory) {
   for (const auto &file : plugin_files) {
     try {
       // Load JSON data from the plugin configuration file
-      auto json_data = VortexMaker::DumpJSON(file);
+      auto json_data = vxe::DumpJSON(file);
 
       std::string plugin_path = file.substr(0, file.find_last_of("/"));
 
@@ -161,7 +161,7 @@ VortexMaker::FindPluginsInDirectory(const std::string &directory) {
       interfaces.push_back(plugin_interface);
 
     } catch (std::exception e) {
-      VortexMaker::LogError("Core", e.what());
+      vxe::LogError("Core", e.what());
     }
   }
 

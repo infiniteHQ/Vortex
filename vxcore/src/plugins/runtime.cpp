@@ -10,15 +10,15 @@ FinalStartPlugin(const std::string &plugin_name,
   for (auto ep : ctx.IO.ep) {
     if (ep->m_name == plugin_name) {
       if (ep->m_state != "running" || ep->m_state != "waiting") {
-        VortexMaker::LogInfo("Plugins", "Start \"" + ep->m_name + "\"");
+        vxe::LogInfo("Plugins", "Start \"" + ep->m_name + "\"");
         processed_plugins->push_back(ep->m_name);
 
         try {
           ep->Start();
         } catch (const std::exception &e) {
           // Log the error
-          VortexMaker::LogError("Plugins", "Error starting plugin \"" +
-                                               ep->m_name + "\": " + e.what());
+          vxe::LogError("Plugins", "Error starting plugin \"" + ep->m_name +
+                                       "\": " + e.what());
           // Continue to the next plugin
           continue;
         }
@@ -27,7 +27,7 @@ FinalStartPlugin(const std::string &plugin_name,
   }
 }
 
-VORTEX_API void VortexMaker::StartPlugin(const std::string &plugin_name) {
+VORTEX_API void vxe::StartPlugin(const std::string &plugin_name) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -35,7 +35,7 @@ VORTEX_API void VortexMaker::StartPlugin(const std::string &plugin_name) {
   for (auto ep : ctx.IO.ep) {
     if (ep->m_name == plugin_name) {
       if (ep->m_state != "running") {
-        VortexMaker::LogInfo("Plugins", "Start \"" + ep->m_name + "\"");
+        vxe::LogInfo("Plugins", "Start \"" + ep->m_name + "\"");
 
         std::shared_ptr<std::vector<std::string>> processed_plugins =
             std::make_shared<std::vector<std::string>>();
@@ -52,7 +52,7 @@ VORTEX_API void VortexMaker::StartPlugin(const std::string &plugin_name) {
   }
 }
 
-VORTEX_API void VortexMaker::StartAllPlugins() {
+VORTEX_API void vxe::StartAllPlugins() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -76,7 +76,7 @@ VORTEX_API void VortexMaker::StartAllPlugins() {
   }
 }
 
-VORTEX_API void VortexMaker::BootstrappAllPlugins() {
+VORTEX_API void vxe::BootstrappAllPlugins() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 

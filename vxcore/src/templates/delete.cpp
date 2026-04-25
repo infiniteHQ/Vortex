@@ -8,8 +8,8 @@
  * @param name Name of the system module.
  * @param version Version of the system module.
  */
-VORTEX_API void VortexMaker::DeleteSystemTemplate(const std::string &name,
-                                                  const std::string &version) {
+VORTEX_API void vxe::DeleteSystemTemplate(const std::string &name,
+                                          const std::string &version) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -23,15 +23,13 @@ VORTEX_API void VortexMaker::DeleteSystemTemplate(const std::string &name,
         system(cmd.c_str());
       }
 
-      VortexMaker::LogInfo("Core", "System template nammed \"" + name +
-                                       "\" with version \"" + version +
-                                       "\" deleted !");
+      vxe::LogInfo("Core", "System template nammed \"" + name +
+                               "\" with version \"" + version + "\" deleted !");
 
       return;
     }
   }
 
-  VortexMaker::LogError("Core", "Unable to delete a system template nammed \"" +
-                                    name + "\" with version \"" + version +
-                                    "\"");
+  vxe::LogError("Core", "Unable to delete a system template nammed \"" + name +
+                            "\" with version \"" + version + "\"");
 }

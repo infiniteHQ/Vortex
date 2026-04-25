@@ -10,8 +10,7 @@
  * @param name The name of the project.
  * @param path The path where the project will be created.
  */
-void VortexMaker::CreateProject(const std::string &name,
-                                const std::string &path) {
+void vxe::CreateProject(const std::string &name, const std::string &path) {
   std::string projectPath;
 
   // Creating main project folder
@@ -95,20 +94,18 @@ void VortexMaker::CreateProject(const std::string &name,
   }
 }
 
-VORTEX_API void VortexMaker::CreateProject(const std::string &name,
-                                           const std::string &author,
-                                           const std::string &version,
-                                           const std::string &description,
-                                           const std::string &path,
-                                           const std::string &logo_path,
-                                           const std::string &template_name) {
+VORTEX_API void
+vxe::CreateProject(const std::string &name, const std::string &author,
+                   const std::string &version, const std::string &description,
+                   const std::string &path, const std::string &logo_path,
+                   const std::string &template_name) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   // Verify the name
   for (auto existing_project : ctx.IO.sys_projects) {
     if (existing_project->name == name) {
-      VortexMaker::LogError(
+      vxe::LogError(
           "Core",
           "Cannot create a new project \"" + name +
               "\" because another project is already nammed like this !");
@@ -116,15 +113,15 @@ VORTEX_API void VortexMaker::CreateProject(const std::string &name,
     }
   }
 
-  VortexMaker::createFolderIfNotExists(path);
-  VortexMaker::InstallTemplate(template_name, path);
+  vxe::createFolderIfNotExists(path);
+  vxe::InstallTemplate(template_name, path);
 
   std::string vortex_version = VORTEX_VERSION;
 
   std::string config_file = path + "/vortex.config";
 
   // Load JSON data from the project configuration file
-  auto config_data = VortexMaker::DumpJSON(config_file);
+  auto config_data = vxe::DumpJSON(config_file);
 
   // Project with the old name exists, update its information
   config_data["project"]["name"] = name;
@@ -140,7 +137,6 @@ VORTEX_API void VortexMaker::CreateProject(const std::string &name,
       4); // Use pretty print with indentation of 4 spaces
   output.close();
 
-  VortexMaker::UpdateEnvironmentProject(name, author, version, vortex_version,
-                                        description, path, logo_path,
-                                        template_name);
+  vxe::UpdateEnvironmentProject(name, author, version, vortex_version,
+                                description, path, logo_path, template_name);
 }

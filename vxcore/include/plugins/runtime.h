@@ -5,10 +5,10 @@
 #ifndef PLUGIN_RUNTIME_H
 #define PLUGIN_RUNTIME_H
 
-namespace VortexMaker {
+namespace vxe {
 VORTEX_API void StartPlugin(const std::string &plugin_name);
 VORTEX_API void StartAllPlugins();
 VORTEX_API void BootstrappAllPlugins();
-} // namespace VortexMaker
+} // namespace vxe
 
 #endif

@@ -1,22 +1,23 @@
 #include "./editor.hpp"
 
-std::string GetVortexBuildType() { return VORTEX_BUILD; }
+std::string GetVortexBuildType() {
+  return VORTEX_BUILD;
+}
 
 Editor::Editor() {
-  m_WelcomeAppWindow =
-      VortexEditor::Welcome::Create("?loc:loc.window_names.welcome");
+  m_WelcomeAppWindow = vxe::Welcome::Create("?loc:loc.window_names.welcome");
   m_WelcomeAppWindow->GetAppWindow()->SetVisibility(true);
   Cherry::AddAppWindow(m_WelcomeAppWindow->GetAppWindow());
 
-  m_ModulesUtility = VortexEditor::ModulesUtility::Create("Modules utily");
+  m_ModulesUtility = vxe::ModulesUtility::Create("Modules utily");
   m_ModulesUtility->GetAppWindow()->SetVisibility(false);
   Cherry::AddAppWindow(m_ModulesUtility->GetAppWindow());
 
-  m_PluginsUtility = VortexEditor::PluginsUtility::Create("Plugins utily");
+  m_PluginsUtility = vxe::PluginsUtility::Create("Plugins utily");
   m_PluginsUtility->GetAppWindow()->SetVisibility(false);
   Cherry::AddAppWindow(m_PluginsUtility->GetAppWindow());
 
-  m_ProjectSettings = VortexEditor::ProjectSettings::Create("Project settings");
+  m_ProjectSettings = vxe::ProjectSettings::Create("Project settings");
   m_ProjectSettings->GetAppWindow()->SetVisibility(false);
   Cherry::AddAppWindow(m_ProjectSettings->GetAppWindow());
 };
@@ -30,7 +31,7 @@ bool Editor::GetCreditsVisibility() {
 void Editor::SetCreditsVisibility(const bool visibility) {
   if (visibility) {
     if (!m_CreditsWindow) {
-      m_CreditsWindow = VortexEditor::Credits::Create("Credits");
+      m_CreditsWindow = vxe::Credits::Create("Credits");
 
       Cherry::ApplicationSpecification spec;
       spec.SetName("Credits");
@@ -53,7 +54,7 @@ void Editor::SetCreditsVisibility(const bool visibility) {
         m_CreditsWindow = nullptr;
       };
 
-      spec.MenubarCallback = []() {};
+      spec.MenubarCallback = []() { };
 
       m_CreditsWindow->GetAppWindow()->AttachOnNewWindow(spec);
       Cherry::AddAppWindow(m_CreditsWindow->GetAppWindow());
@@ -77,7 +78,7 @@ bool Editor::GetAboutAppWindowVisibility() {
 void Editor::SetAboutWindowVisibility(const bool visibility) {
   if (visibility) {
     if (!m_AboutWindow) {
-      m_AboutWindow = VortexEditor::AboutVortex::Create("About Vortex");
+      m_AboutWindow = vxe::AboutVortex::Create("About Vortex");
 
       Cherry::ApplicationSpecification spec;
       spec.SetName("About Vortex");
@@ -100,7 +101,7 @@ void Editor::SetAboutWindowVisibility(const bool visibility) {
         m_AboutWindow = nullptr;
       };
 
-      spec.MenubarCallback = []() {};
+      spec.MenubarCallback = []() { };
 
       m_AboutWindow->GetAppWindow()->AttachOnNewWindow(spec);
       Cherry::AddAppWindow(m_AboutWindow->GetAppWindow());
@@ -124,8 +125,7 @@ bool Editor::GetAboutProjectAppWindowVisibility() {
 void Editor::SetAboutProjectWindowVisibility(const bool visibility) {
   if (visibility) {
     if (!m_AboutProjectWindow) {
-      m_AboutProjectWindow =
-          VortexEditor::AboutProject::Create("About this project");
+      m_AboutProjectWindow = vxe::AboutProject::Create("About this project");
 
       Cherry::ApplicationSpecification spec;
       spec.SetName("About this project");
@@ -148,7 +148,7 @@ void Editor::SetAboutProjectWindowVisibility(const bool visibility) {
         m_AboutProjectWindow = nullptr;
       };
 
-      spec.MenubarCallback = []() {};
+      spec.MenubarCallback = []() { };
 
       m_AboutProjectWindow->GetAppWindow()->AttachOnNewWindow(spec);
       Cherry::AddAppWindow(m_AboutProjectWindow->GetAppWindow());
@@ -171,15 +171,13 @@ bool Editor::GetTemplatesUtilityVisibility() {
   return false;
 }
 
-void Editor::SetProjectSettingsVisibility(const bool &visibility,
-                                          const std::string &tab = "") {
+void Editor::SetProjectSettingsVisibility(const bool &visibility, const std::string &tab = "") {
   if (!tab.empty()) {
     m_ProjectSettings->LoadTabUserWant(tab);
   }
   m_ProjectSettings->GetAppWindow()->SetVisibility(visibility);
   if (visibility) {
-    CherryGUI::SetWindowFocus(
-        m_ProjectSettings->GetAppWindow()->m_IdName.c_str());
+    CherryGUI::SetWindowFocus(m_ProjectSettings->GetAppWindow()->m_IdName.c_str());
   }
 }
 
@@ -212,27 +210,22 @@ bool Editor::GetWelcomeVisibility() {
 }
 
 std::string Editor::SpawnContentBrowser() {
-  std::string label = "Content Browser ####Content Browser-" +
-                      std::to_string(c_ContentBrowserInstances.size() + 1);
-  std::shared_ptr<VortexEditor::ContentBrowserAppWindow> ContentBrowser =
-      VortexEditor::ContentBrowserAppWindow::create(
-          label.c_str(),
-          VortexMaker::GetCurrentContext()->projectDataPath.string());
+  std::string label = "Content Browser ####Content Browser-" + std::to_string(c_ContentBrowserInstances.size() + 1);
+  std::shared_ptr<vxe::ContentBrowser> ContentBrowser =
+      vxe::ContentBrowser::create(label.c_str(), vxe::GetCurrentContext()->projectDataPath.string());
 
-  ContentBrowser->m_CutPathsCallback = VortexMaker::Cut;
-  ContentBrowser->m_CopyPathsCallback = VortexMaker::Copy;
-  ContentBrowser->m_PastePathsCallback = VortexMaker::PasteAllSelections;
-  ContentBrowser->m_DeletePathCallback = VortexMaker::DeletePath;
+  ContentBrowser->cut_paths_callback_ = vxe::Cut;
+  ContentBrowser->copy_paths_callback_ = vxe::Copy;
+  ContentBrowser->paste_paths_callback_ = vxe::PasteAllSelections;
+  ContentBrowser->delete_path_callback_ = vxe::DeletePath;
   Cherry::AddAppWindow(ContentBrowser->get_app_window());
   c_ContentBrowserInstances.push_back(ContentBrowser);
   return label;
 }
 
 std::string Editor::SpawnDocViewer() {
-  std::string label = "Doc viewer ####Doc viewer -" +
-                      std::to_string(c_DocViewerInstances.size() + 1);
-  std::shared_ptr<VortexEditor::DocViewerAppWindow> DocViewer =
-      VortexEditor::DocViewerAppWindow::Create(label.c_str());
+  std::string label = "Doc viewer ####Doc viewer -" + std::to_string(c_DocViewerInstances.size() + 1);
+  std::shared_ptr<vxe::DocViewerAppWindow> DocViewer = vxe::DocViewerAppWindow::Create(label.c_str());
 
   Cherry::AddAppWindow(DocViewer->GetAppWindow());
   c_DocViewerInstances.push_back(DocViewer);
@@ -258,23 +251,20 @@ void Editor::SpawnContentBrowserBottom() {
 }
 
 void Editor::SpawnLogsUtility() {
-  std::string label = "Logs utility ####Logs utility-" +
-                      std::to_string(c_LogsUtilityInstances.size() + 1);
-  std::shared_ptr<VortexEditor::LogsUtilityAppWindow> LogsUtility =
-      VortexEditor::LogsUtilityAppWindow::Create(label.c_str());
+  std::string label = "Logs utility ####Logs utility-" + std::to_string(c_LogsUtilityInstances.size() + 1);
+  std::shared_ptr<vxe::LogsUtilityAppWindow> LogsUtility = vxe::LogsUtilityAppWindow::Create(label.c_str());
   Cherry::AddAppWindow(LogsUtility->GetAppWindow());
   c_LogsUtilityInstances.push_back(LogsUtility);
 }
 
 void Editor::ToggleProjectSettings() {
-  c_Editor->SetProjectSettingsVisibility(
-      !c_Editor->GetProjectSettingsVisibility());
+  c_Editor->SetProjectSettingsVisibility(!c_Editor->GetProjectSettingsVisibility());
 }
 
 // Frame task
 void RebuildCherryTheme() {
-  if (VortexMaker::IsThemeNeedsRebuild()) {
-    for (auto t : VortexMaker::GetCurrentContext()->IO.themes) {
+  if (vxe::IsThemeNeedsRebuild()) {
+    for (auto t : vxe::GetCurrentContext()->IO.themes) {
       if (!t) {
         continue;
       }
@@ -291,14 +281,13 @@ void RebuildCherryTheme() {
     CherryApp.m_Themes.clear();
 
     // set selected theme
-    auto selected_theme = VortexMaker::GetSelectedTheme();
+    auto selected_theme = vxe::GetSelectedTheme();
     if (selected_theme) {
-
       CherryApp.SetTheme(selected_theme->label);
     }
 
     // set override themes
-    VortexMaker::ThemeRebuilded();
+    vxe::ThemeRebuilded();
   }
 }
 
@@ -329,7 +318,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     float oldSize = CherryGUI::GetFont()->Scale;
     CherryGUI::PushFont(CherryGUI::GetFont());
 
-    const char *text = VortexMaker::GetCurrentContext()->name.c_str();
+    const char *text = vxe::GetCurrentContext()->name.c_str();
     CherryGUI::GetFont()->Scale *= 0.84;
     CherryGUI::PushFont(CherryGUI::GetFont());
 
@@ -344,14 +333,11 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
 
     float yOffset = 5.0f;
 
-    ImVec2 circlePos = ImVec2(cursorPos.x - 12 + circleRadius,
-                              cursorPos.y + textSize.y * 0.1f + 6);
+    ImVec2 circlePos = ImVec2(cursorPos.x - 12 + circleRadius, cursorPos.y + textSize.y * 0.1f + 6);
 
-    ImVec2 rectMin = ImVec2(cursorPos.x + circleRadius + circlePadding,
-                            cursorPos.y - 38 + yOffset);
+    ImVec2 rectMin = ImVec2(cursorPos.x + circleRadius + circlePadding, cursorPos.y - 38 + yOffset);
     ImVec2 rectMax =
-        ImVec2(rectMin.x + textSize.x + 2 * rectanglePaddingX,
-               cursorPos.y + textSize.y + 2 * rectanglePaddingY - 45);
+        ImVec2(rectMin.x + textSize.x + 2 * rectanglePaddingX, cursorPos.y + textSize.y + 2 * rectanglePaddingY - 45);
 
     ImDrawList *drawList = CherryGUI::GetWindowDrawList();
     if (ShowProjectName) {
@@ -359,29 +345,24 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     }
 
     if (GetVortexBuildType() == "dev") {
-      CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
-                               CherryGUI::CalcTextSize("DEV").x - 20.0f);
+      CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() - CherryGUI::CalcTextSize("DEV").x - 20.0f);
 
       if (ShowProjectType) {
         CherryGUI::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "DEV");
       }
     } else {
-      if (VortexMaker::GetCurrentContext()->type == "tool") {
-        CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
-                                 CherryGUI::CalcTextSize("Tool").x - 20.0f);
+      if (vxe::GetCurrentContext()->type == "tool") {
+        CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() - CherryGUI::CalcTextSize("Tool").x - 20.0f);
 
         if (ShowProjectType) {
-          CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/tools.png"), 13,
-                                13);
+          CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/tools.png"), 13, 13);
           CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Tool");
         }
-      } else if (VortexMaker::GetCurrentContext()->type == "project") {
-        CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() -
-                                 CherryGUI::CalcTextSize("Project").x - 20.0f);
+      } else if (vxe::GetCurrentContext()->type == "project") {
+        CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() - CherryGUI::CalcTextSize("Project").x - 20.0f);
 
         if (ShowProjectType) {
-          CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/light.png"), 13,
-                                13);
+          CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/light.png"), 13, 13);
           CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), "Project");
         }
       }
@@ -394,16 +375,13 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     }
 
     CherryGUI::SetCursorScreenPos(circlePos);
-    CherryGUI::InvisibleButton("circleButton",
-                               ImVec2(circleRadius * 2, circleRadius * 2));
+    CherryGUI::InvisibleButton("circleButton", ImVec2(circleRadius * 2, circleRadius * 2));
     if (ShowAccountMenu) {
       if (CherryGUI::IsItemHovered()) {
-        drawList->AddCircle(circlePos, circleRadius + 1.0f,
-                            IM_COL32(200, 200, 200, 255), 32, 2.0f);
+        drawList->AddCircle(circlePos, circleRadius + 1.0f, IM_COL32(200, 200, 200, 255), 32, 2.0f);
       }
 
-      drawList->AddCircleFilled(circlePos, circleRadius,
-                                IM_COL32(40, 40, 40, 255));
+      drawList->AddCircleFilled(circlePos, circleRadius, IM_COL32(40, 40, 40, 255));
 
       if (CherryGUI::IsItemClicked(ImGuiMouseButton_Left)) {
         CherryGUI::OpenPopup("circleMenu");
@@ -432,10 +410,8 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       }
     }
 
-    ImVec2 textPos =
-        ImVec2(rectMin.x + rectanglePaddingX,
-               rectMin.y + (rectMax.y - rectMin.y - textSize.y) * 0.5f +
-                   rectanglePaddingY - 10);
+    ImVec2 textPos = ImVec2(
+        rectMin.x + rectanglePaddingX, rectMin.y + (rectMax.y - rectMin.y - textSize.y) * 0.5f + rectanglePaddingY - 10);
 
     CherryGUI::SetCursorScreenPos(textPos);
 
@@ -454,17 +430,10 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   });
   Cherry::Application *app = new Cherry::Application(spec);
   app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/icon.png"));
-  app->AddFont("Consola",
-               Cherry::Application::CookPath("resources/fonts/consola.ttf"),
-               50.0f);
-  app->AddFont("Clash",
-               Cherry::Application::CookPath("resources/fonts/clash.ttf"),
-               70.0f);
+  app->AddFont("Consola", Cherry::Application::CookPath("resources/fonts/consola.ttf"), 50.0f);
+  app->AddFont("Clash", Cherry::Application::CookPath("resources/fonts/clash.ttf"), 70.0f);
 
-  app->AddFont("JetBrainsMono",
-               Cherry::Application::CookPath(
-                   "resources/fonts/JetBrainsMono-Regular.ttf"),
-               40.0f);
+  app->AddFont("JetBrainsMono", Cherry::Application::CookPath("resources/fonts/JetBrainsMono-Regular.ttf"), 40.0f);
 
   app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));
   app->AddLocale("en", Cherry::GetPath("resources/locales/en.json"));
@@ -472,20 +441,20 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   app->SetLocale("en");
 
   // Cherry INIT from mopdules
-  for (auto mod : VortexMaker::GetCurrentContext()->IO.em) {
+  for (auto mod : vxe::GetCurrentContext()->IO.em) {
     if (mod) {
       mod->init_ui();
     }
   }
 
-  for (auto &modules : VortexMaker::GetCurrentContext()->IO.em) {
+  for (auto &modules : vxe::GetCurrentContext()->IO.em) {
     modules->RefreshMainWindow();
   }
 
   app->SetMenubarCallback([app]() {
-    if (VortexMaker::IsThemeNeedsRebuild()) {
+    if (vxe::IsThemeNeedsRebuild()) {
       CherryApp.m_Themes.clear();
-      for (auto t : VortexMaker::GetCurrentContext()->IO.themes) {
+      for (auto t : vxe::GetCurrentContext()->IO.themes) {
         if (!t) {
           continue;
         }
@@ -500,14 +469,13 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       }
 
       // set selected theme
-      auto selected_theme = VortexMaker::GetSelectedTheme();
+      auto selected_theme = vxe::GetSelectedTheme();
       if (selected_theme) {
-
         CherryApp.SetTheme(selected_theme->label);
       }
 
       // set override themes
-      VortexMaker::ThemeRebuilded();
+      vxe::ThemeRebuilded();
     }
 
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
@@ -523,81 +491,80 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 8.0f));
 
     static bool t;
-    auto ctx = VortexMaker::GetCurrentContext();
+    auto ctx = vxe::GetCurrentContext();
 
     if (CherryGUI::BeginMenu("Project")) {
-
-      if (CherryGUI::MenuItem("Welcome", "",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_hand.png")),
-                              c_Editor->GetWelcomeVisibility())) {
+      if (CherryGUI::MenuItem(
+              "Welcome",
+              "",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_hand.png")),
+              c_Editor->GetWelcomeVisibility())) {
         c_Editor->SetWelcomeVisibility(!c_Editor->GetWelcomeVisibility());
       }
 
       CherryKit::SeparatorText("Logical contents");
 
       if (CherryGUI::MenuItem(
-              "Modules utility", "Open the modules utility",
-              Cherry::GetTexture(Cherry::GetPath(
-                  "resources/imgs/icons/misc/icon_bricksearch.png")),
+              "Modules utility",
+              "Open the modules utility",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_bricksearch.png")),
               c_Editor->GetModulesUtilityVisibility())) {
-        c_Editor->SetModulesUtilityVisibility(
-            !c_Editor->GetModulesUtilityVisibility());
+        c_Editor->SetModulesUtilityVisibility(!c_Editor->GetModulesUtilityVisibility());
       }
-      if (CherryGUI::MenuItem("Plugins utility", "Open the plugins utility",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_plugin.png")),
-                              c_Editor->GetPluginsUtilityVisibility())) {
-        c_Editor->SetPluginsUtilityVisibility(
-            !c_Editor->GetPluginsUtilityVisibility());
+      if (CherryGUI::MenuItem(
+              "Plugins utility",
+              "Open the plugins utility",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_plugin.png")),
+              c_Editor->GetPluginsUtilityVisibility())) {
+        c_Editor->SetPluginsUtilityVisibility(!c_Editor->GetPluginsUtilityVisibility());
       }
 
       CherryKit::SeparatorText("Static contents");
-      if (CherryGUI::MenuItem("Templates utility", "Open the templates utility",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_stack.png")),
-                              c_Editor->GetTemplatesUtilityVisibility())) {
-        c_Editor->SetTemplatesUtilityVisibility(
-            !c_Editor->GetTemplatesUtilityVisibility());
+      if (CherryGUI::MenuItem(
+              "Templates utility",
+              "Open the templates utility",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
+              c_Editor->GetTemplatesUtilityVisibility())) {
+        c_Editor->SetTemplatesUtilityVisibility(!c_Editor->GetTemplatesUtilityVisibility());
       }
-      if (CherryGUI::MenuItem("Contents utility", "Open the contents utility",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_stack.png")),
-                              c_Editor->GetTemplatesUtilityVisibility())) {
+      if (CherryGUI::MenuItem(
+              "Contents utility",
+              "Open the contents utility",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
+              c_Editor->GetTemplatesUtilityVisibility())) {
       }
 
       CherryKit::SeparatorText("Configurations & Settings");
       if (CherryGUI::MenuItem(
-              "Project settings", "Open the main settings of this project",
-              Cherry::GetTexture(Cherry::GetPath(
-                  "resources/imgs/icons/misc/icon_settings.png")),
+              "Project settings",
+              "Open the main settings of this project",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png")),
               c_Editor->GetProjectSettingsVisibility())) {
-        c_Editor->SetProjectSettingsVisibility(
-            !c_Editor->GetProjectSettingsVisibility());
+        c_Editor->SetProjectSettingsVisibility(!c_Editor->GetProjectSettingsVisibility());
       }
 
       CherryKit::SeparatorText("Other");
 
-      if (CherryGUI::MenuItem("About Vortex", "About the Vortex Editor",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_info.png")),
-                              c_Editor->GetAboutAppWindowVisibility())) {
-        c_Editor->SetAboutWindowVisibility(
-            !c_Editor->GetAboutAppWindowVisibility());
+      if (CherryGUI::MenuItem(
+              "About Vortex",
+              "About the Vortex Editor",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")),
+              c_Editor->GetAboutAppWindowVisibility())) {
+        c_Editor->SetAboutWindowVisibility(!c_Editor->GetAboutAppWindowVisibility());
       }
 
-      if (CherryGUI::MenuItem("About this project", "About the current project",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_info.png")),
-                              c_Editor->GetAboutProjectAppWindowVisibility())) {
-        c_Editor->SetAboutProjectWindowVisibility(
-            !c_Editor->GetAboutProjectAppWindowVisibility());
+      if (CherryGUI::MenuItem(
+              "About this project",
+              "About the current project",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")),
+              c_Editor->GetAboutProjectAppWindowVisibility())) {
+        c_Editor->SetAboutProjectWindowVisibility(!c_Editor->GetAboutProjectAppWindowVisibility());
       }
-      if (CherryGUI::MenuItem("Credits",
-                              "Vortex team, developers and contributors",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_book.png")),
-                              c_Editor->GetCreditsVisibility())) {
+      if (CherryGUI::MenuItem(
+              "Credits",
+              "Vortex team, developers and contributors",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_book.png")),
+              c_Editor->GetCreditsVisibility())) {
         c_Editor->SetCreditsVisibility(!c_Editor->GetCreditsVisibility());
       }
 
@@ -615,8 +582,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       }
 
       std::vector<std::string> sectionOrder;
-      std::unordered_map<std::string, std::vector<const EditMenuItem *>>
-          grouped;
+      std::unordered_map<std::string, std::vector<const EditMenuItem *>> grouped;
 
       for (const auto &item : items) {
         const std::string &sec = item.section.empty() ? "" : item.section;
@@ -635,10 +601,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
         firstSection = false;
 
         for (const auto *item : grouped[sec]) {
-          ImTextureID tex =
-              item->logo.empty()
-                  ? nullptr
-                  : Cherry::GetTexture(Cherry::GetPath(item->logo));
+          ImTextureID tex = item->logo.empty() ? nullptr : Cherry::GetTexture(Cherry::GetPath(item->logo));
 
           if (CherryGUI::MenuItem(item->title.c_str(), "", tex, false)) {
             if (item->action)
@@ -653,49 +616,54 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     if (CherryGUI::BeginMenu("Window")) {
       CherryKit::SeparatorText("Upper bar");
 
-      if (CherryGUI::MenuItem("Show project name", "",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_info.png")),
-                              ShowProjectName)) {
+      if (CherryGUI::MenuItem(
+              "Show project name",
+              "",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")),
+              ShowProjectName)) {
         ShowProjectName = !ShowProjectName;
       }
-      if (CherryGUI::MenuItem("Show project nature", "",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_info.png")),
-                              ShowProjectType)) {
+      if (CherryGUI::MenuItem(
+              "Show project nature",
+              "",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")),
+              ShowProjectType)) {
         ShowProjectType = !ShowProjectType;
       }
-      if (CherryGUI::MenuItem("Show my profile ", "",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_info.png")),
-                              ShowAccountMenu)) {
+      if (CherryGUI::MenuItem(
+              "Show my profile ",
+              "",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")),
+              ShowAccountMenu)) {
         ShowAccountMenu = !ShowAccountMenu;
       }
-      if (CherryGUI::MenuItem("Show errors and warnings ", "",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_info.png")),
-                              ShowDebugNumbers)) {
+      if (CherryGUI::MenuItem(
+              "Show errors and warnings ",
+              "",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")),
+              ShowDebugNumbers)) {
         ShowDebugNumbers = !ShowDebugNumbers;
       }
       CherryGUI::EndMenu();
     }
 
     if (CherryGUI::BeginMenu("Tools")) {
-
       CherryKit::SeparatorText("Contents, managment");
 
-      if (CherryGUI::MenuItem("Content Browser", "Open a content browser",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/frame_files.png")),
-                              false)) {
+      if (CherryGUI::MenuItem(
+              "Content Browser",
+              "Open a content browser",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/frame_files.png")),
+              false)) {
         c_Editor->SpawnContentBrowser();
       }
 
       CherryKit::SeparatorText("Console, logs, debugging");
-      if (CherryGUI::MenuItem("Console logs", "Open a console with logs",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/frame_cli.png")),
-                              false)) {
+      if (CherryGUI::MenuItem(
+              "Console logs",
+              "Open a console with logs",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/frame_cli.png")),
+              false)) {
         c_Editor->SpawnLogsUtility();
       }
 
@@ -706,16 +674,16 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
       CherryKit::SeparatorText("Quick settings");
 
       if (CherryGUI::MenuItem(
-              "Switch language", "Change selected language",
-              Cherry::GetTexture(Cherry::GetPath(
-                  "resources/imgs/icons/misc/icon_language.png")),
+              "Switch language",
+              "Change selected language",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_language.png")),
               false)) {
         c_Editor->SetProjectSettingsVisibility(true, "language");
       }
       if (CherryGUI::MenuItem(
-              "Switch theme", "Change selected theme",
-              Cherry::GetTexture(Cherry::GetPath(
-                  "resources/imgs/icons/misc/icon_palette.png")),
+              "Switch theme",
+              "Change selected theme",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_palette.png")),
               false)) {
         c_Editor->SetProjectSettingsVisibility(true, "theme");
       }
@@ -724,44 +692,42 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     }
 
     if (CherryGUI::BeginMenu("Help")) {
-      if (CherryGUI::MenuItem("Welcome", "",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_hand.png")),
-                              false)) {
+      if (CherryGUI::MenuItem(
+              "Welcome", "", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_hand.png")), false)) {
         c_Editor->SetWelcomeVisibility(!c_Editor->GetWelcomeVisibility());
       }
       CherryKit::SeparatorText("Learning, documentation");
 
       if (CherryGUI::MenuItem(
-              "Documentation", "Open embedded documentations",
-              Cherry::GetTexture(Cherry::GetPath(
-                  "resources/imgs/icons/misc/icon_journal.png")),
+              "Documentation",
+              "Open embedded documentations",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_journal.png")),
               false)) {
         c_Editor->SpawnDocViewer();
       }
 
       CherryKit::SeparatorText("About");
 
-      if (CherryGUI::MenuItem("About Vortex", "About the Vortex Editor",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_info.png")),
-                              c_Editor->GetAboutAppWindowVisibility())) {
-        c_Editor->SetAboutWindowVisibility(
-            !c_Editor->GetAboutAppWindowVisibility());
+      if (CherryGUI::MenuItem(
+              "About Vortex",
+              "About the Vortex Editor",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")),
+              c_Editor->GetAboutAppWindowVisibility())) {
+        c_Editor->SetAboutWindowVisibility(!c_Editor->GetAboutAppWindowVisibility());
       }
 
-      if (CherryGUI::MenuItem("About this project", "About the current project",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_info.png")),
-                              c_Editor->GetAboutProjectAppWindowVisibility())) {
-        c_Editor->SetAboutProjectWindowVisibility(
-            !c_Editor->GetAboutProjectAppWindowVisibility());
+      if (CherryGUI::MenuItem(
+              "About this project",
+              "About the current project",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")),
+              c_Editor->GetAboutProjectAppWindowVisibility())) {
+        c_Editor->SetAboutProjectWindowVisibility(!c_Editor->GetAboutProjectAppWindowVisibility());
       }
-      if (CherryGUI::MenuItem("Credits",
-                              "Vortex team, developers and contributors",
-                              Cherry::GetTexture(Cherry::GetPath(
-                                  "resources/imgs/icons/misc/icon_book.png")),
-                              c_Editor->GetCreditsVisibility())) {
+      if (CherryGUI::MenuItem(
+              "Credits",
+              "Vortex team, developers and contributors",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_book.png")),
+              c_Editor->GetCreditsVisibility())) {
         c_Editor->SetCreditsVisibility(!c_Editor->GetCreditsVisibility());
       }
 
@@ -775,12 +741,10 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
         float thickness = 1.5f;
 
         CherryGUI::GetWindowDrawList()->AddRectFilled(
-            ImVec2(pos.x, pos.y), ImVec2(pos.x + thickness, pos.y + height),
-            IM_COL32(89, 89, 89, 155));
+            ImVec2(pos.x, pos.y), ImVec2(pos.x + thickness, pos.y + height), IM_COL32(89, 89, 89, 155));
         CherryGUI::Dummy(ImVec2(thickness + 4.0f, 0));
       }
       for (auto &menu : ctx->customMenus) {
-
         if (CherryGUI::BeginMenu(menu.title.c_str())) {
           if (menu.render) {
             menu.render();
@@ -794,10 +758,10 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     CherryGUI::PopStyleColor(2);
 
     // Clear edits menuitems from previous render.
-    VortexMaker::ClearEditMenuItem();
+    vxe::ClearEditMenuItem();
 
     // Clear custom menus from previous render.
-    VortexMaker::ClearCustomMenus();
+    vxe::ClearCustomMenus();
   }
 
   );
@@ -806,7 +770,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   return app;
 }
 
-int VortexMaker::VortexEditor(int argc, char **argv) {
+int vxe::VortexEditor(int argc, char **argv) {
   std::cout << "Initializing runtime..." << std::endl;
   return Cherry::ThirdMain(argc, argv, CreateEditor);
 }

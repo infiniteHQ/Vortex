@@ -3,171 +3,162 @@
 
 /**
  * @brief SearchFilesRecursive searches for files recursively in a directory.
- * 
- * This function recursively searches for files in the specified directory and its subdirectories.
- * If a file with the specified filename is found, its path is added to the provided vector of filenames.
- * 
+ *
+ * This function recursively searches for files in the specified directory and
+ * its subdirectories. If a file with the specified filename is found, its path
+ * is added to the provided vector of filenames.
+ *
  * @param path The path of the directory to search in.
  * @param filename The name of the file to search for.
  * @param file A vector to store the paths of the found files.
- * @return The path of the first found file matching the filename, or "null" if no file is found.
+ * @return The path of the first found file matching the filename, or "null" if
+ * no file is found.
  */
-VORTEX_API void VortexMaker::SearchFilesRecursive(
-    const fs::path &path,
-    const std::string &filename,
-    std::vector<std::string> &file)
-{
-    try
-    {
-        for (const auto &entry : std::filesystem::directory_iterator(path))
-        {
-            if (entry.is_regular_file() &&
-                entry.path().filename().string().find(filename) != std::string::npos)
-            {
-                file.push_back(entry.path().string());
-            }
-            else if (entry.is_directory())
-            {
-                SearchFilesRecursive(entry.path(), filename, file);
-            }
-        }
+VORTEX_API void vxe::SearchFilesRecursive(const fs::path &path,
+                                          const std::string &filename,
+                                          std::vector<std::string> &file) {
+  try {
+    for (const auto &entry : std::filesystem::directory_iterator(path)) {
+      if (entry.is_regular_file() && entry.path().filename().string().find(
+                                         filename) != std::string::npos) {
+        file.push_back(entry.path().string());
+      } else if (entry.is_directory()) {
+        SearchFilesRecursive(entry.path(), filename, file);
+      }
     }
-    catch (const std::exception &e)
-    {
-        // Prevent crash on invalid directories
-        std::cerr << "Skipping path: " << path << " (" << e.what() << ")\n";
-    }
+  } catch (const std::exception &e) {
+    // Prevent crash on invalid directories
+    std::cerr << "Skipping path: " << path << " (" << e.what() << ")\n";
+  }
 }
-
-
 
 /**
  * @brief SearchFilesRecursive searches for files recursively in a directory.
- * 
- * This function recursively searches for files in the specified directory and its subdirectories.
- * If a file with the specified filename is found, its path is added to the provided vector of filenames.
- * 
+ *
+ * This function recursively searches for files in the specified directory and
+ * its subdirectories. If a file with the specified filename is found, its path
+ * is added to the provided vector of filenames.
+ *
  * @param path The path of the directory to search in.
  * @param filename The name of the file to search for.
  * @param file A vector to store the paths of the found files.
- * @return The path of the first found file matching the filename, or "null" if no file is found.
+ * @return The path of the first found file matching the filename, or "null" if
+ * no file is found.
  */
-VORTEX_API std::string VortexMaker::SearchFilesRecursive(const fs::path &path, const std::string &filename, std::vector<std::string> &file, int recursions, int counter)
-{
-  if(counter >= recursions)
-  return "null";
+VORTEX_API std::string vxe::SearchFilesRecursive(const fs::path &path,
+                                                 const std::string &filename,
+                                                 std::vector<std::string> &file,
+                                                 int recursions, int counter) {
+  if (counter >= recursions)
+    return "null";
 
   counter++;
 
   // Iterate through each entry in the directory
-  for (const auto &entry : fs::directory_iterator(path))
-  {
-    // If the entry is a regular file and its filename contains the specified filename
-    if (entry.is_regular_file() && entry.path().filename().string().find(filename) != std::string::npos)
-    {
+  for (const auto &entry : fs::directory_iterator(path)) {
+    // If the entry is a regular file and its filename contains the specified
+    // filename
+    if (entry.is_regular_file() &&
+        entry.path().filename().string().find(filename) != std::string::npos) {
       // Add the path of the found file to the vector and return its path
       file.push_back(entry.path().string());
       return entry.path().string();
     }
     // If the entry is a directory, recursively search in it
-    else if (entry.is_directory())
-    {
-      VortexMaker::SearchFilesRecursive(entry.path(), filename, file, recursions, counter);
+    else if (entry.is_directory()) {
+      vxe::SearchFilesRecursive(entry.path(), filename, file, recursions,
+                                counter);
     }
   }
   // Return "null" if no file is found
   return "null";
 }
 
-
 /**
  * @brief SearchFiles searches for files in a directory.
- * 
- * This function searches for files in the specified directory and its subdirectories.
- * It returns a vector containing the paths of all files found matching the specified filename.
- * 
+ *
+ * This function searches for files in the specified directory and its
+ * subdirectories. It returns a vector containing the paths of all files found
+ * matching the specified filename.
+ *
  * @param path The relative path of the directory to search in.
  * @param filename The name of the file to search for.
- * @return A vector containing the paths of all files found matching the filename.
+ * @return A vector containing the paths of all files found matching the
+ * filename.
  */
-VORTEX_API std::vector<std::string> VortexMaker::SearchFiles(
-    const std::string &path,
-    const std::string &filename)
-{
-    std::vector<std::string> foundFiles;
-    fs::path fullPath(path);
+VORTEX_API std::vector<std::string>
+vxe::SearchFiles(const std::string &path, const std::string &filename) {
+  std::vector<std::string> foundFiles;
+  fs::path fullPath(path);
 
-    // Si le chemin est relatif -> le rendre absolu
-    if (!fullPath.is_absolute())
-        fullPath = fs::current_path() / fullPath;
+  // Si le chemin est relatif -> le rendre absolu
+  if (!fullPath.is_absolute())
+    fullPath = fs::current_path() / fullPath;
 
-    try
-    {
-        if (fs::is_regular_file(fullPath))
-        {
-            if (fullPath.filename() == filename)
-                foundFiles.push_back(fullPath.string());
+  try {
+    if (fs::is_regular_file(fullPath)) {
+      if (fullPath.filename() == filename)
+        foundFiles.push_back(fullPath.string());
+    } else if (fs::is_directory(fullPath)) {
+      for (const auto &entry : fs::recursive_directory_iterator(fullPath)) {
+        if (entry.is_regular_file() && entry.path().filename() == filename) {
+          foundFiles.push_back(entry.path().string());
         }
-        else if (fs::is_directory(fullPath))
-        {
-            for (const auto &entry : fs::recursive_directory_iterator(fullPath))
-            {
-                if (entry.is_regular_file() && entry.path().filename() == filename)
-                {
-                    foundFiles.push_back(entry.path().string());
-                }
-            }
-        }
+      }
     }
-    catch (const std::exception &e)
-    {
-        std::cerr << "SearchFiles error: " << e.what() << "\n";
-    }
+  } catch (const std::exception &e) {
+    std::cerr << "SearchFiles error: " << e.what() << "\n";
+  }
 
-    return foundFiles;
+  return foundFiles;
 }
 
-
 /**
  * @brief SearchFiles searches for files in a directory.
- * 
- * This function searches for files in the specified directory and its subdirectories.
- * It returns a vector containing the paths of all files found matching the specified filename.
- * 
+ *
+ * This function searches for files in the specified directory and its
+ * subdirectories. It returns a vector containing the paths of all files found
+ * matching the specified filename.
+ *
  * @param path The relative path of the directory to search in.
  * @param filename The name of the file to search for.
- * @return A vector containing the paths of all files found matching the filename.
+ * @return A vector containing the paths of all files found matching the
+ * filename.
  */
-VORTEX_API std::vector<std::string> VortexMaker::SearchFiles(const std::string &path, const std::string &filename, int recursions)
-{
+VORTEX_API std::vector<std::string>
+vxe::SearchFiles(const std::string &path, const std::string &filename,
+                 int recursions) {
   // Initialize a vector to store the paths of found files
   std::vector<std::string> fichiersTest;
-  
+
   // Call the recursive function to search for files
-  VortexMaker::SearchFilesRecursive(fs::current_path() / path, filename, fichiersTest, recursions, 0);
-  
+  vxe::SearchFilesRecursive(fs::current_path() / path, filename, fichiersTest,
+                            recursions, 0);
+
   // Return the vector containing the paths of found files
   return fichiersTest;
 }
 
 /**
  * @brief SearchFiles searches for files in a directory.
- * 
- * This function searches for files in the specified directory and its subdirectories (in system variant).
- * It returns a vector containing the paths of all files found matching the specified filename.
- * 
+ *
+ * This function searches for files in the specified directory and its
+ * subdirectories (in system variant). It returns a vector containing the paths
+ * of all files found matching the specified filename.
+ *
  * @param path The relative path of the directory to search in.
  * @param filename The name of the file to search for.
- * @return A vector containing the paths of all files found matching the filename.
+ * @return A vector containing the paths of all files found matching the
+ * filename.
  */
-VORTEX_API std::vector<std::string> VortexMaker::SearchSystemFiles(const std::string &path, const std::string &filename)
-{
+VORTEX_API std::vector<std::string>
+vxe::SearchSystemFiles(const std::string &path, const std::string &filename) {
   // Initialize a vector to store the paths of found files
   std::vector<std::string> fichiersTest;
-  
+
   // Call the recursive function to search for files
-  VortexMaker::SearchFilesRecursive(path, filename, fichiersTest);
-  
+  vxe::SearchFilesRecursive(path, filename, fichiersTest);
+
   // Return the vector containing the paths of found files
   return fichiersTest;
 }

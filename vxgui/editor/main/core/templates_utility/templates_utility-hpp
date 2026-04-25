@@ -9,7 +9,7 @@
 
 using namespace Cherry;
 
-namespace VortexEditor
+namespace vxe
 {
     struct TemplatesUtilityAppWindowChild
     {
@@ -38,11 +38,11 @@ namespace VortexEditor
         void SetupRenderCallback();
         void Render();
 
-        std::vector<TemplatesUtilityAppWindowChild> m_Childs;
+        std::vector<TemplatesUtilityAppWindowChild> childs_;
 
         std::string m_SelectedChildName;
 
-        std::shared_ptr<Cherry::AppWindow> m_AppWindow;
+        std::shared_ptr<Cherry::AppWindow> app_window_;
     };
 }
 

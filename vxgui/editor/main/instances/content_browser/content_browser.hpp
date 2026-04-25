@@ -5,244 +5,176 @@
 //
 //	Copyright (c) 2026 Infinite
 //
-//	This work is licensed under the terms of the MIT license.
-//	For a copy,see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
 #pragma once
 #include "../../../../../vxcore/include/vortex.h"
-#include "./content_browser_utils.hpp"
+#include "./content_browser_helpers.hpp"
 
-#ifndef VORTEX_EDITOR_CONTENT_BROWSER_APPWINDOW_H
-#define VORTEX_EDITOR_CONTENT_BROWSER_APPWINDOW_H
+#ifndef VORTEX_EDITOR_CONTENT_BROWSER_HPP
+#define VORTEX_EDITOR_CONTENT_BROWSER_HPP
 
 using namespace Cherry;
 
-namespace VortexEditor {
+namespace vxe {
 
-class ContentBrowserAppWindow
-    : public std::enable_shared_from_this<ContentBrowserAppWindow> {
-public:
-  ContentBrowserAppWindow(const std::string &name,
-                          const std::string &start_path);
+  class ContentBrowser : public std::enable_shared_from_this<ContentBrowser> {
+   public:
+    ContentBrowser(const std::string &name, const std::string &start_path);
 
-  // Create window
-  static std::shared_ptr<ContentBrowserAppWindow>
-  create(const std::string &name, const std::string &base_path);
+    // window managment
+    static std::shared_ptr<ContentBrowser> create(const std::string &name, const std::string &base_path);
+    std::shared_ptr<Cherry::AppWindow> &get_app_window();
+    void setup_render_callback();
 
-  // Rendering
-  std::shared_ptr<Cherry::AppWindow> &get_app_window();
-  void setup_render_callback();
-  void render();
-  void render_side_bar();
-  void render_filters_bar();
-  void render_content_bar();
-  void render_details_bar();
-  void render_right_menubar();
-  void render_menubar();
-  void draw_path_bar(const std::string &path);
-  void draw_folder_icon(ImVec2 pos, ImVec2 size, ImU32 color);
+    // rendering
+    void render();
+    void render_side_bar();
+    void render_filters_bar();
+    void render_content_bar();
+    void render_details_bar();
+    void render_right_menubar();
+    void render_menubar();
+    void add_child(const ContentBrowserChild &child);
+    void spawn_add_window();
+    void spawn_import_window();
 
-  // Widgets
-  bool item_card(const ItemCardParams &p);
-  bool horizontal_item_card(const ItemCardParams &p);
+    // widgets
+    void draw_folder(const std::string &colorHex, float width, float height, ImVec2 pos);
+    bool draw_item_card(const ItemCardParams &p);
+    bool draw_horizontal_draw_item_card(const ItemCardParams &p);
+    void draw_folder_button(const char *id, ImVec2 size, const std::string &path, const std::string &color);
+    void draw_hierarchy(std::filesystem::path path, bool isDir, const std::string &label = "");
+    void draw_path_bar(const std::string &path);
+    void draw_folder_icon(ImVec2 pos, ImVec2 size, ImU32 color);
+    bool draw_color_picker_3U32(const char *label, ImU32 *color, ImGuiColorEditFlags flags = 0);
+    void draw_highlighted_text_(
+        ImDrawList *drawList,
+        ImVec2 textPos,
+        const char *text,
+        const char *search,
+        ImU32 highlightColor,
+        ImU32 textColor,
+        ImU32 highlightTextColor);
+    void folder_icon(ImVec2 size, ImU32 color);
 
-  // Navigation
-  void change_directory(const std::filesystem::path &new_directory);
-  void go_back();
-  void go_forward();
-  void path_changed();
-  void select(const std::string &path) {
-    for (auto already : selected_) {
-      if (path == already) {
-        return;
-      }
-    }
-    selected_.push_back(path);
-  }
+    // navigation
+    void change_directory(const std::filesystem::path &new_directory);
+    void go_back();
+    void go_forward();
+    void path_changed();
+    void select(const std::string &path);
+    void refresh_custom_folders();
+    void refresh_pools();
 
-  void RefreshCustomFolders();
-  void RefreshPools();
+    // fs manipulation
+    void create_file();
+    void create_folder();
 
-  void add_child(const ContentBrowserChild &child);
-  void CreateFile();
-  void CreateFolder();
-  void SpawnImportWindow();
+    // utils
+    void change_show_mode(ContentShowMode mode);
+    void set_default_folder_color(const std::string &hex);
+    void set_colored_folder(const std::string &path, const std::string &hex_color);
+    void toggle_extension(const std::string &ext, bool *state);
+    std::string get_file_type_str(FileTypes type);
+    std::string to_lower_case(const std::string &str);
+    std::string get_extension(const std::string &path);
+    std::string format_file_size(size_t size);
+    std::string get_content_browser_folder_color(const std::string &path);
+    bool has_common_letters(const std::string &s1, const std::string &s2);
+    bool are_strings_similar(const std::string &s1, const std::string &s2, double threshold_);
+    bool has_extension(const std::string &ext);
+    bool is_only_spaces_or_empty(const char *str);
+    bool is_path_favorite(const std::string &path);
+    int levenshtein_distance(const std::string &s1, const std::string &s2);
+    std::uintmax_t get_directory_size(const std::filesystem::path &directoryPath);
+    FileTypes detect_file(const std::string &path);
 
-  void ChangeShowMode(ContentShowMode mode) { this->m_ShowMode = mode; }
+   private:
+    // callbacks
+    std::function<void(const std::string &)> delete_path_callback_;
+    std::function<void(const std::vector<std::string> &, bool)> copy_paths_callback_;
+    std::function<void(const std::vector<std::string> &, bool)> cut_paths_callback_;
+    std::function<void(const std::string &)> paste_paths_callback_;
 
-  void FolderButton(const char *id, ImVec2 size, const std::string &path,
-                    const std::string &color);
-  void DrawHierarchy(std::filesystem::path path, bool isDir,
-                     const std::string &label);
+    // directories
+    std::filesystem::path base_directory_;
+    std::filesystem::path previous_directory_;
+    std::filesystem::path current_directory_;
 
-  std::string GetFileTypeStr(FileTypes type);
+    // history
+    std::stack<std::filesystem::path> back_history_;
+    std::stack<std::filesystem::path> forward_history_;
 
-  void SetDefaultFolderColor(const std::string &hex);
+    // selection
+    std::vector<std::string> selected_;
+    std::vector<std::string> copy_selection_;
+    std::vector<std::string> cut_selection_;
 
-  void FolderIcon(ImVec2 size, ImU32 color);
+    // path/color
+    std::vector<std::pair<std::string, std::string>> folder_colors_;
+    std::string default_folder_color_;
+    std::string default_hidden_folder_color_;
 
-  std::vector<std::shared_ptr<VortexEditor::ContentBrowserAddWindow>>
-      m_AddWindows;
+    // pools and special items
+    std::vector<std::string> favorite_folders_;
+    std::vector<std::pair<std::string, std::string>> pools_;
+    std::vector<std::shared_ptr<ContenBrowserItem>> item_to_reconize_;
+    std::vector<std::filesystem::path> favorites_;
 
-  int m_AddWindowCounter = 0;
+    // filters
+    bool show_hidden_ = false;
+    bool show_folders_ = true;
+    bool show_files_ = true;
+    bool show_items_ = true;
+    std::vector<std::string> extentions_filters_;
 
-  void SpawnAddWindow() {
-    m_AddWindowCounter++;
-    Cherry::ApplicationSpecification spec;
+    // items
+    std::vector<std::shared_ptr<ItemHandlerInterface>> item_handles_;
+    std::vector<std::pair<std::string, std::string>> item_paths_;
+    std::vector<std::pair<std::shared_ptr<ItemIdentifierInterface>, std::string>> recognized_modules_items_;
 
-    std::string name = "?loc:loc.window_names.add_content" +
-                       std::to_string(m_AddWindowCounter);
-    auto new_win = VortexEditor::ContentBrowserAddWindow::create(
-        name, current_directory_.string());
-    new_win->get_app_window()->SetVisibility(true);
-    new_win->SetCreateFileCallback([this]() { this->CreateFile(); });
-    new_win->SetCreateFolderCallback([this]() { this->CreateFolder(); });
-    new_win->SetImportContentCallback([this]() { this->SpawnImportWindow(); });
+    // ui properties
+    float sidebar_width_ = 250.0f;
+    float filterbar_width_ = 250.0f;
+    float padding = 30.0f;
+    float thumbnail_size = 94.0f;
+    float threshold_ = 0.4f;
+    bool thumbnail_mode_ = true;
+    bool list_mode_ = false;
+    bool show_folder_pannel_ = true;
+    bool show_selection_quantifier_ = false;
+    bool show_types_ = false;
+    bool show_sizes_ = false;
+    bool show_filter_pannel_ = false;
+    bool show_thumbnail_visualizer_ = false;
 
-    std::string label = "Add content";
-    spec.Name = label;
-    spec.MinHeight = 300;
-    spec.MinWidth = 175;
-    spec.Height = 600;
-    spec.DisableLogo = true;
-    spec.DisableResize = true;
-    spec.Width = 400;
-    spec.CustomTitlebar = true;
-    spec.DisableWindowManagerTitleBar = true;
-    spec.WindowOnlyClosable = true;
-    spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
-    spec.UniqueAppWindowName = new_win->get_app_window()->m_Name;
-    spec.FramebarCallback = []() {};
-    spec.UsingCloseCallback = true;
-    spec.CloseCallback = [this, new_win]() {
-      Cherry::DeleteAppWindow(new_win->get_app_window());
-    };
+    ContentShowMode show_mode_ = ContentShowMode::Thumbmails;
 
-    spec.MenubarCallback = []() {};
-    spec.WindowSaves = false;
-    new_win->get_app_window()->AttachOnNewWindow(spec);
-    Cherry::AddAppWindow(new_win->get_app_window());
-  }
+    // ui states
+    std::string path_to_rename_ = "";
+    std::string project_search_;
+    std::pair<std::string, ImU32> current_editing_folder_;
+    bool current_editing_folder_is_favorite_;
+    bool search_bar_ = false;
+    bool item_context_menu_opened_ = false;
+    bool pool_add_mode_ = false;
+    bool childs_initialized_ = false;
+    bool will_show_filter_pannel_ = false;
+    bool previous_filter_pannel_state_ = false;
+    bool previous_thumbnail_visualizer_state_ = false;
+    char pool_add_path_[512];
+    char pool_add_name_[512];
 
-  std::string GetContentBrowserFolderColor(const std::string &path) {
-    size_t lastSlashIndex = path.find_last_of('/');
-    std::string folderName = path.substr(lastSlashIndex + 1);
+    // hosted
+    std::vector<ContentBrowserChild> childs_;
+    std::vector<std::shared_ptr<vxe::ContentBrowserAddWindow>> add_windows_;
+    int add_windows_counter_ = 0;
 
-    for (auto &colored_folder : folder_colors_) {
-      if (colored_folder.first == path) {
-        return colored_folder.second;
-      }
-    }
-
-    if (!folderName.empty() && folderName[0] == '.') {
-      return "#544F46FF";
-    }
-
-    return "#c2a24c";
-  }
-
-  void AddReconizedItem(const std::shared_ptr<ContenBrowserItem> &item) {};
-  bool IsPathFavorite(const std::string &path) {
-    for (auto fav_folder : m_FavoriteFolders) {
-      if (fav_folder == path) {
-        return true;
-      }
-    }
-    return false;
+    std::shared_ptr<AppWindow> app_window_;
   };
+}  // namespace vxe
 
-  void SetColoredFolder(const std::string &path, const std::string &hex_color) {
-  };
-
-  std::vector<ContentBrowserChild> m_Childs;
-
-  std::function<void(const std::string &)> m_DeletePathCallback;
-  std::function<void(const std::vector<std::string> &, bool)>
-      m_CopyPathsCallback;
-  std::function<void(const std::vector<std::string> &, bool)>
-      m_CutPathsCallback;
-  std::function<void(const std::string &)> m_PastePathsCallback;
-
-  bool HasExtension(const std::string &ext) {
-    return std::find(ExtentionsFilters.begin(), ExtentionsFilters.end(), ext) !=
-           ExtentionsFilters.end();
-  }
-
-  void ToggleExtension(const std::string &ext, bool *state) {
-    if (*state) {
-      if (!HasExtension(ext)) {
-        ExtentionsFilters.push_back(ext);
-      }
-    } else {
-      ExtentionsFilters.erase(
-          std::remove(ExtentionsFilters.begin(), ExtentionsFilters.end(), ext),
-          ExtentionsFilters.end());
-    }
-  }
-
-private:
-  bool opened;
-
-  bool thumbnail_mode_ = true;
-  bool list_mode_ = false;
-
-  bool show_types_ = false;
-  bool show_sizes_ = false;
-  bool show_filter_pannel_ = false;
-  bool show_thumbnail_visualizer_ = false;
-
-  bool will_show_filter_pannel_ = false;
-  bool previous_filter_pannel_state_ = false;
-  bool m_PreviousThumbnailVisualizerState = false;
-
-  bool m_ShowFolderPannel = true;
-  bool m_ShowSelectionQuantifier = false;
-  bool m_ChildSizesInitialized = false;
-
-  ContentShowMode m_ShowMode = ContentShowMode::Thumbmails;
-
-  // directories
-  std::filesystem::path base_directory_;
-  std::filesystem::path previous_directory_;
-  std::filesystem::path current_directory_;
-
-  // history
-  std::stack<std::filesystem::path> back_history_;
-  std::stack<std::filesystem::path> forward_history_;
-
-  // selection
-  std::vector<std::string> selected_;
-  std::vector<std::string> copy_selection_;
-  std::vector<std::string> cut_selection_;
-
-  // Path/Color
-  std::vector<std::pair<std::string, std::string>> folder_colors_;
-  std::string default_folder_color_;
-  std::string default_hidden_folder_color_;
-
-  // pools and special items
-  std::vector<std::string> m_FavoriteFolders;
-  std::vector<std::pair<std::string, std::string>> m_Pools;
-  std::vector<std::shared_ptr<ContenBrowserItem>> m_ItemToReconize;
-
-  std::vector<std::filesystem::path> m_Favorites;
-
-  std::shared_ptr<Image> m_ProjectIcon;
-  std::shared_ptr<Image> m_FileIcon;
-  std::shared_ptr<Image> m_DirectoryIcon;
-
-  // Filters
-  bool ShowHidden = false;
-  bool ShowFolders = true;
-  bool ShowFiles = true;
-  bool ShowItems = true;
-  std::vector<std::string> ExtentionsFilters;
-
-  bool m_SearchBar = false;
-
-  std::shared_ptr<AppWindow> m_AppWindow;
-};
-} // namespace VortexEditor
-
-#endif // VORTEX_EDITOR_CONTENT_BROWSER_APPWINDOW_H
+#endif  // VORTEX_EDITOR_CONTENT_BROWSER_HPP

@@ -5,12 +5,12 @@
 #ifndef PLUGIN_INSTALL_H
 #define PLUGIN_INSTALL_H
 
-namespace VortexMaker {
+namespace vxe {
 VORTEX_API void InstallPlugin(const std::string &directory);
 VORTEX_API std::shared_ptr<PluginInterface>
 FindPluginInDirectory(const std::string &directory);
 VORTEX_API std::vector<std::shared_ptr<PluginInterface>>
 FindPluginsInDirectory(const std::string &directory);
-} // namespace VortexMaker
+} // namespace vxe
 
 #endif

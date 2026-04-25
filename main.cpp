@@ -148,35 +148,35 @@ bool CheckDirectory() {
 }
 
 VxContext *InitRuntime(bool logger) {
-  VxContext *ctx = VortexMaker::CreateContext();
+  VxContext *ctx = vxe::CreateContext();
 
-  VortexMaker::InitializePlatformVendor();
-  VortexMaker::AddCredits("vx", Cherry::GetPath("CREDITS"));
+  vxe::InitializePlatformVendor();
+  vxe::AddCredits("vx", Cherry::GetPath("CREDITS"));
 
   ctx->state.session_id = session_id;
 
-  VortexMaker::CreateGlobalLogger();
-  VortexMaker::CreateConsoleLogger();
+  vxe::CreateGlobalLogger();
+  vxe::CreateConsoleLogger();
   ctx->logger = logger;
 
-  VortexMaker::CreateSessionTopic(ctx->state.session_id);
+  vxe::CreateSessionTopic(ctx->state.session_id);
 
   // Initialize environment
-  VortexMaker::InitEnvironment();
-  VortexMaker::DetectPlatform();
-  VortexMaker::DetectArch();
+  vxe::InitEnvironment();
+  vxe::DetectPlatform();
+  vxe::DetectArch();
 
   // Refresh environment registered projects
-  VortexMaker::RefreshEnvironmentProjects();
+  vxe::RefreshEnvironmentProjects();
 
-  VortexMaker::LoadSystemTemplates(ctx->IO.sys_templates);
+  vxe::LoadSystemTemplates(ctx->IO.sys_templates);
 
   std::ifstream file("vortex.config");
 
   if (file) {
     nlohmann::json jsonContent;
     file >> jsonContent;
-    VortexMaker::InitProject(jsonContent);
+    vxe::InitProject(jsonContent);
   }
 
   return ctx;
@@ -187,28 +187,28 @@ VxContext *InitRuntime(bool logger) {
 // Template deployment overrides (project, modules_content, etc...)
 
 VxContext *InitBlankRuntime(bool logger) {
-  VxContext *ctx = VortexMaker::CreateContext();
+  VxContext *ctx = vxe::CreateContext();
 
   ctx->state.session_id = session_id;
 
   // Link credits file
-  VortexMaker::AddCredits("vx", Cherry::GetPath("CREDITS"));
-  VortexMaker::InitializePlatformVendor();
-  VortexMaker::CreateGlobalLogger();
-  VortexMaker::CreateConsoleLogger();
-  VortexMaker::LogInfo("Bootstrapp", "Initializing runtime...");
+  vxe::AddCredits("vx", Cherry::GetPath("CREDITS"));
+  vxe::InitializePlatformVendor();
+  vxe::CreateGlobalLogger();
+  vxe::CreateConsoleLogger();
+  vxe::LogInfo("Bootstrapp", "Initializing runtime...");
 
-  VortexMaker::CreateSessionTopic(ctx->state.session_id);
+  vxe::CreateSessionTopic(ctx->state.session_id);
 
   // Initialize environment
-  VortexMaker::InitEnvironment();
-  VortexMaker::DetectPlatform();
-  VortexMaker::DetectArch();
+  vxe::InitEnvironment();
+  vxe::DetectPlatform();
+  vxe::DetectArch();
 
   // Refresh environment registered projects
-  VortexMaker::RefreshEnvironmentProjects();
+  vxe::RefreshEnvironmentProjects();
 
-  VortexMaker::LoadSystemTemplates(ctx->IO.sys_templates);
+  vxe::LoadSystemTemplates(ctx->IO.sys_templates);
 
   ctx->logger = logger;
   return ctx;
@@ -240,8 +240,8 @@ int main(int argc, char *argv[]) {
       }
 
       InitBlankRuntime(true);
-      VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
-      VortexMaker::VortexCrash(argc, argv);
+      vxe::LogInfo("Bootstrapp", "Opening the graphical interface...");
+      vxe::VortexCrash(argc, argv);
     } else if (std::string(argv[1]) == "-e" ||
                std::string(argv[1]) == "--editor") {
       PrintHeader("(Editor)");
@@ -258,9 +258,9 @@ int main(int argc, char *argv[]) {
       }
 
       InitRuntime(true);
-      VortexMaker::LogInfo("Bootstrapp", "Opening the graphical interface...");
+      vxe::LogInfo("Bootstrapp", "Opening the graphical interface...");
 
-      VortexMaker::VortexEditor(argc, argv);
+      vxe::VortexEditor(argc, argv);
     }
   }
 

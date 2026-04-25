@@ -5,25 +5,22 @@
 #ifndef MODULES_DETAILS_APPWINDOW_H
 #define MODULES_DETAILS_APPWINDOW_H
 
-using namespace VortexMaker;
+using namespace vxe;
 
 class ModuleDetails : public std::enable_shared_from_this<ModuleDetails> {
-public:
-  ModuleDetails(const std::string &name,
-                const std::shared_ptr<ModuleInterface> &module);
+ public:
+  ModuleDetails(const std::string &name, const std::shared_ptr<ModuleInterface> &module);
 
   void close();
 
   void menubar();
 
   std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
-  static std::shared_ptr<ModuleDetails>
-  Create(const std::string &name,
-         const std::shared_ptr<ModuleInterface> &module);
+  static std::shared_ptr<ModuleDetails> Create(const std::string &name, const std::shared_ptr<ModuleInterface> &module);
   void SetupRenderCallback();
   void Render();
 
-  std::shared_ptr<Cherry::AppWindow> m_AppWindow;
+  std::shared_ptr<Cherry::AppWindow> app_window_;
   void Refresh();
   void Save();
 
@@ -47,4 +44,4 @@ public:
   std::shared_ptr<ModuleInterface> m_module;
 };
 
-#endif // MODULES_DETAILS_APPWINDOW_H
+#endif  // MODULES_DETAILS_APPWINDOW_H

@@ -2,173 +2,168 @@
 #include "../../include/modules/load.h"
 #include "../../include/modules/runtime.h"
 
-VORTEX_API void VortexMaker::InstallModule(const std::string &module_name, const std::string &version, bool &restart_modules)
-{
-    // Get reference to the Vortex context
-    VxContext &ctx = *CVortexMaker;
+VORTEX_API void vxe::InstallModule(const std::string &module_name,
+                                   const std::string &version,
+                                   bool &restart_modules) {
+  // Get reference to the Vortex context
+  VxContext &ctx = *CVortexMaker;
 
-    // Get the home directory
-    std::string homeDir = VortexMaker::getHomeDirectory();
+  // Get the home directory
+  std::string homeDir = vxe::getHomeDirectory();
 
-    // Module path on the system
-    std::string path = homeDir + "/.vx/modules";
+  // Module path on the system
+  std::string path = homeDir + "/.vx/modules";
 
-    // Search modules registered
-    auto module_files = VortexMaker::SearchFiles(path, "module.json");
+  // Search modules registered
+  auto module_files = vxe::SearchFiles(path, "module.json");
 
-    // Finded state
-    bool finded = false;
+  // Finded state
+  bool finded = false;
 
-    // Iterate through each found module file
-    for (const auto &file : module_files)
-    {
-        try
+  // Iterate through each found module file
+  for (const auto &file : module_files) {
+    try {
+      // Load JSON data from the module configuration file
+      auto json_data = vxe::DumpJSON(file);
+
+      std::string module_path = file.substr(0, file.find_last_of("/"));
+
+      std::string name = json_data["name"].get<std::string>();
+      std::string version = json_data["version"].get<std::string>();
+
+      if (name == module_name && version == version) {
+        finded = true;
+
+        // Move the module into the project
         {
-            // Load JSON data from the module configuration file
-            auto json_data = VortexMaker::DumpJSON(file);
-
-            std::string module_path = file.substr(0, file.find_last_of("/"));
-
-            std::string name = json_data["name"].get<std::string>();
-            std::string version = json_data["version"].get<std::string>();
-
-            if (name == module_name && version == version)
-            {
-                finded = true;
-
-                // Move the module into the project
-                {
-                    std::string cmd = "cp -r " + module_path + " " + ctx.projectPath.string() + "/.vx/modules/";
-                    system(cmd.c_str());
-                }
-
-                // If restart_modules == true, restart all modules
-                if (restart_modules)
-                {
-                    // Stop all modules
-                    for (auto em : ctx.IO.em)
-                    {
-                        em->Stop();
-                    }
-
-                    // Clear closed modules
-                    ctx.IO.em.clear();
-
-                    // Load modules installed in the current project
-                    VortexMaker::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles, ctx.IO.em);
-
-                    // Finally, start all loaded modules.
-                    VortexMaker::StartAllModules();
-                }
-
-                return;
-            }
+          std::string cmd = "cp -r " + module_path + " " +
+                            ctx.projectPath.string() + "/.vx/modules/";
+          system(cmd.c_str());
         }
-        catch (std::exception e)
-        {
-            VortexMaker::LogError("Core", e.what());
+
+        // If restart_modules == true, restart all modules
+        if (restart_modules) {
+          // Stop all modules
+          for (auto em : ctx.IO.em) {
+            em->Stop();
+          }
+
+          // Clear closed modules
+          ctx.IO.em.clear();
+
+          // Load modules installed in the current project
+          vxe::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles,
+                                 ctx.IO.em);
+
+          // Finally, start all loaded modules.
+          vxe::StartAllModules();
         }
-    }
 
-    if (!finded)
-    {
-        VortexMaker::LogError("Core", "Failed to find the module " + module_name + " with version " + version + ", this module is installed ?");
+        return;
+      }
+    } catch (std::exception e) {
+      vxe::LogError("Core", e.what());
     }
+  }
 
-    // Search module registered by module_name in env
-    // Get main informations
-    // Create the folder name
-    // Copy distant module content into the module into the projet
-    // Restart modules
+  if (!finded) {
+    vxe::LogError("Core", "Failed to find the module " + module_name +
+                              " with version " + version +
+                              ", this module is installed ?");
+  }
+
+  // Search module registered by module_name in env
+  // Get main informations
+  // Create the folder name
+  // Copy distant module content into the module into the projet
+  // Restart modules
 }
 
-VORTEX_API std::shared_ptr<ModuleInterface> VortexMaker::FindModuleInDirectory(const std::string &directory)
-{
-    // Search modules registered
-    auto module_files = VortexMaker::SearchFiles(directory, "module.json");
+VORTEX_API std::shared_ptr<ModuleInterface>
+vxe::FindModuleInDirectory(const std::string &directory) {
+  // Search modules registered
+  auto module_files = vxe::SearchFiles(directory, "module.json");
 
+  // Iterate through each found module file
+  for (const auto &file : module_files) {
+    try {
+      // Load JSON data from the module configuration file
+      auto json_data = vxe::DumpJSON(file);
 
-    // Iterate through each found module file
-    for (const auto &file : module_files)
-    {
-        try
-        {
-            // Load JSON data from the module configuration file
-            auto json_data = VortexMaker::DumpJSON(file);
+      std::string module_path = file.substr(0, file.find_last_of("/"));
 
-            std::string module_path = file.substr(0, file.find_last_of("/"));
+      std::shared_ptr<ModuleInterface> module_interface =
+          std::make_shared<ModuleInterface>();
 
-            std::shared_ptr<ModuleInterface> module_interface = std::make_shared<ModuleInterface>();
+      module_interface->m_name = json_data["name"].get<std::string>();
+      module_interface->m_version = json_data["version"].get<std::string>();
 
-            module_interface->m_name = json_data["name"].get<std::string>();
-            module_interface->m_version = json_data["version"].get<std::string>();
-            
-            return module_interface;
-            
-        }
-        catch (std::exception e)
-        {
-            VortexMaker::LogError("Core", e.what());
-        }
+      return module_interface;
+
+    } catch (std::exception e) {
+      vxe::LogError("Core", e.what());
     }
+  }
 
-    VortexMaker::LogError("Core", "Failed to find the module at " + directory + ", no modules detected.");
-    return nullptr;
+  vxe::LogError("Core", "Failed to find the module at " + directory +
+                            ", no modules detected.");
+  return nullptr;
 }
 
-VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> VortexMaker::FindModulesInDirectory(const std::string &directory)
-{
-    // Search modules registered
-    auto module_files = VortexMaker::SearchFiles(directory, "module.json", 3);
+VORTEX_API std::vector<std::shared_ptr<ModuleInterface>>
+vxe::FindModulesInDirectory(const std::string &directory) {
+  // Search modules registered
+  auto module_files = vxe::SearchFiles(directory, "module.json", 3);
 
-    std::vector<std::shared_ptr<ModuleInterface>> interfaces;
+  std::vector<std::shared_ptr<ModuleInterface>> interfaces;
 
-    // Iterate through each found module file
-    for (const auto &file : module_files)
-    {
-        try
-        {
-            // Load JSON data from the module configuration file
-            auto json_data = VortexMaker::DumpJSON(file);
+  // Iterate through each found module file
+  for (const auto &file : module_files) {
+    try {
+      // Load JSON data from the module configuration file
+      auto json_data = vxe::DumpJSON(file);
 
-            std::string module_path = file.substr(0, file.find_last_of("/"));
+      std::string module_path = file.substr(0, file.find_last_of("/"));
 
-            std::shared_ptr<ModuleInterface> module_interface = std::make_shared<ModuleInterface>();
-                    module_interface->m_name = json_data["name"].get<std::string>();
-                    module_interface->m_auto_exec = json_data["auto_exec"].get<bool>();
-                    module_interface->m_proper_name = json_data["proper_name"].get<std::string>();
-                    module_interface->m_type = json_data["type"].get<std::string>();
-                    module_interface->m_version = json_data["version"].get<std::string>();
-                    module_interface->m_description = json_data["description"].get<std::string>();
-                    module_interface->m_picture = json_data["picture"].get<std::string>();
-                    module_interface->m_logo_path = module_path + "/" + module_interface->m_picture;
-                    module_interface->m_path = module_path + "/";
-                    module_interface->m_author = json_data["author"].get<std::string>();
-                    module_interface->m_group = json_data["group"].get<std::string>();
-                    module_interface->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+      std::shared_ptr<ModuleInterface> module_interface =
+          std::make_shared<ModuleInterface>();
+      module_interface->m_name = json_data["name"].get<std::string>();
+      module_interface->m_auto_exec = json_data["auto_exec"].get<bool>();
+      module_interface->m_proper_name =
+          json_data["proper_name"].get<std::string>();
+      module_interface->m_type = json_data["type"].get<std::string>();
+      module_interface->m_version = json_data["version"].get<std::string>();
+      module_interface->m_description =
+          json_data["description"].get<std::string>();
+      module_interface->m_picture = json_data["picture"].get<std::string>();
+      module_interface->m_logo_path =
+          module_path + "/" + module_interface->m_picture;
+      module_interface->m_path = module_path + "/";
+      module_interface->m_author = json_data["author"].get<std::string>();
+      module_interface->m_group = json_data["group"].get<std::string>();
+      module_interface->m_contributors =
+          json_data["contributors"].get<std::vector<std::string>>();
 
-                    for (auto dep : json_data["deps"])
-                    {
-                        std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
-                        dependence->name = dep["name"].get<std::string>();
-                        dependence->type = dep["type"].get<std::string>();
-                        for (auto version : dep["versions"])
-                        {
-                            dependence->supported_versions.push_back(version);
-                        }
-                        module_interface->m_dependencies.push_back(dependence);
-                    }
-
-                    module_interface->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
-
-            interfaces.push_back(module_interface);
-            
+      for (auto dep : json_data["deps"]) {
+        std::shared_ptr<ModuleInterfaceDep> dependence =
+            std::make_shared<ModuleInterfaceDep>();
+        dependence->name = dep["name"].get<std::string>();
+        dependence->type = dep["type"].get<std::string>();
+        for (auto version : dep["versions"]) {
+          dependence->supported_versions.push_back(version);
         }
-        catch (std::exception e)
-        {
-            VortexMaker::LogError("Core", e.what());
-        }
+        module_interface->m_dependencies.push_back(dependence);
+      }
+
+      module_interface->m_supported_versions =
+          json_data["compatibility"].get<std::vector<std::string>>();
+
+      interfaces.push_back(module_interface);
+
+    } catch (std::exception e) {
+      vxe::LogError("Core", e.what());
     }
+  }
 
-    return interfaces;
+  return interfaces;
 }

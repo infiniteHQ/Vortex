@@ -4,7 +4,7 @@
 #ifndef MODULE_DELETE_H
 #define MODULE_DELETE_H
 
-namespace VortexMaker {
+namespace vxe {
 VORTEX_API void DeleteProjectModule(const std::string &name,
                                     const std::string &version);
 }

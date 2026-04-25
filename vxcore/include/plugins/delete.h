@@ -4,7 +4,7 @@
 #ifndef PLUGIN_DELETE_H
 #define PLUGIN_DELETE_H
 
-namespace VortexMaker {
+namespace vxe {
 VORTEX_API void DeleteProjectPlugin(const std::string &name,
                                     const std::string &version);
 }

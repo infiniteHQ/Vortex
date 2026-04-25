@@ -89,7 +89,7 @@ public:
                                    const std::string &path);
 
   // Output Events
-  // A output event is triggered via VortexMaker::ExecuteOutputEvent() by the
+  // A output event is triggered via vxe::ExecuteOutputEvent() by the
   // current component to all concerned extern components with the output event
   // added.
   VORTEX_API void AddOutputEvent(std::function<void()> foo,
@@ -104,7 +104,7 @@ public:
   VORTEX_API void AddOutputEvent(const ModuleOutputEvent &event);
 
   // Input Events
-  // A input event is triggered via VortexMaker::ExecuteInputEvent() by a extern
+  // A input event is triggered via vxe::ExecuteInputEvent() by a extern
   // component to the current component with the input component added.
   VORTEX_API void AddInputEvent(std::function<void()> foo,
                                 const std::string &name);

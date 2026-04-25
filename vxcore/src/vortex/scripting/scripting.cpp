@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-namespace VortexMaker {
+namespace vxe {
 namespace Script {
 
 namespace fs = std::filesystem;
@@ -175,19 +175,19 @@ void ScriptingEngine::RegisterVortexAPI() {
   lua_setglobal(L, "VortexP");
 }
 } // namespace Script
-} // namespace VortexMaker
+} // namespace vxe
 
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-void VortexMaker::ExecuteStartScript() {
-  auto ctx = VortexMaker::GetCurrentContext();
+void vxe::ExecuteStartScript() {
+  auto ctx = vxe::GetCurrentContext();
   const auto &startup_file = ctx->startup_script;
 
   if (startup_file.empty())
     return;
 
-  lua_State *L = VortexMaker::Script::GetScriptingEngine().GetState();
+  lua_State *L = vxe::Script::GetScriptingEngine().GetState();
 
   if (luaL_loadfile(L, startup_file.c_str()) != LUA_OK) {
     const char *error = lua_tostring(L, -1);
@@ -197,6 +197,5 @@ void VortexMaker::ExecuteStartScript() {
   }
 
   lua_pop(L, 1);
-  VortexMaker::Script::GetScriptingEngine().InternalRenderScript(startup_file,
-                                                                 true, 0);
+  vxe::Script::GetScriptingEngine().InternalRenderScript(startup_file, true, 0);
 }

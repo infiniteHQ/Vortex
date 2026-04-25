@@ -63,9 +63,9 @@ VORTEX_API struct LuaItemHandler {
 
     int type = lua_rawgeti(L, LUA_REGISTRYINDEX, lua_ref);
     if (type != LUA_TFUNCTION) {
-      VortexMaker::LogError(
-          "LuaHandler", "Corrupted register : ID " + std::to_string(lua_ref) +
-                            " is type " + std::string(lua_typename(L, type)));
+      vxe::LogError("LuaHandler", "Corrupted register : ID " +
+                                      std::to_string(lua_ref) + " is type " +
+                                      std::string(lua_typename(L, type)));
       lua_pop(L, 1);
 
       lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
@@ -78,8 +78,7 @@ VORTEX_API struct LuaItemHandler {
 
     if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
       std::string error = lua_tostring(L, -1);
-      VortexMaker::LogError("LuaHandler",
-                            "Error while executing Lua : " + error);
+      vxe::LogError("LuaHandler", "Error while executing Lua : " + error);
       lua_pop(L, 1);
     }
 
@@ -149,7 +148,7 @@ public:
                                    const std::string &title,
                                    const std::string &path);
   // Output Events
-  // A output event is triggered via VortexMaker::ExecuteOutputEvent() by the
+  // A output event is triggered via vxe::ExecuteOutputEvent() by the
   // current component to all concerned extern components with the output event
   // added.
   VORTEX_API void AddOutputEvent(std::function<void()> foo,
@@ -164,7 +163,7 @@ public:
   VORTEX_API void AddOutputEvent(const PluginOutputEvent &event);
 
   // Input Events
-  // A input event is triggered via VortexMaker::ExecuteInputEvent() by a extern
+  // A input event is triggered via vxe::ExecuteInputEvent() by a extern
   // component to the current component with the input component added.
   VORTEX_API void AddInputEvent(std::function<void()> foo,
                                 const std::string &name);

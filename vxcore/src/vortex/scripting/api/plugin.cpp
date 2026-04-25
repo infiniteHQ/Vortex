@@ -2,7 +2,7 @@
 #include <vortex.h>
 #include <vortex/scripting/scripting.hpp>
 
-namespace VortexMaker {
+namespace vxe {
 namespace Script {
 
 static std::shared_ptr<PluginInterface> GetActivePlugin(lua_State *L) {
@@ -218,7 +218,7 @@ VXLUA_FUNC(PluginCallOutputEvent) {
 
   ReturnValues ret;
 
-  VortexMaker::CallOutputEvent(event_name, args, ret, plugin->m_name);
+  vxe::CallOutputEvent(event_name, args, ret, plugin->m_name);
 
   std::string ret_val = ret.GetValue();
   if (ret_val.empty() || ret_val == "null") {
@@ -490,8 +490,7 @@ VXLUA_FUNC(PluginCallInputEvent) {
   }
 
   ReturnValues ret;
-  VortexMaker::CallInputEvent(module_name, event_name, args, ret,
-                              plugin->m_name);
+  vxe::CallInputEvent(module_name, event_name, args, ret, plugin->m_name);
 
   std::string ret_val = ret.GetValue();
   if (ret_val.empty() || ret_val == "null") {
@@ -745,4 +744,4 @@ void RegisterPluginAPI(lua_State *L) {
 }
 
 } // namespace Script
-} // namespace VortexMaker
+} // namespace vxe

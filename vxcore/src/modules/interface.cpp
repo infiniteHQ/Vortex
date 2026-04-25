@@ -70,7 +70,7 @@ VORTEX_API void ModuleInterface::AddDocumentation(const std::string &section,
                                                   const std::string &title,
                                                   const std::string &path) {
   std::string topic = "module:" + this->m_name;
-  VortexMaker::AddDocumentation(topic, section, title, path);
+  vxe::AddDocumentation(topic, section, title, path);
 }
 
 VORTEX_API void ModuleInterface::RefreshMainWindow() {
@@ -323,7 +323,7 @@ VORTEX_API std::shared_ptr<ModuleInterface> ModuleInterface::GetInterface() {
  */
 VORTEX_API std::shared_ptr<ModuleInterface>
 ModuleInterface::GetEditorModuleByName(const std::string &name) {
-  VxContext *ctx = VortexMaker::GetCurrentContext();
+  VxContext *ctx = vxe::GetCurrentContext();
 
   for (auto em : ctx->IO.em) {
     if (name == em->m_name) {
@@ -455,7 +455,7 @@ VORTEX_API void ModuleInterface::ExecuteOutputEvent(const std::string &name,
  * @param message The message to log.
  */
 VORTEX_API void ModuleInterface::LogInfo(const std::string &message) {
-  VortexMaker::LogInfo(this->m_name, message);
+  vxe::LogInfo(this->m_name, message);
 }
 
 /**
@@ -466,7 +466,7 @@ VORTEX_API void ModuleInterface::LogInfo(const std::string &message) {
  * @param message The warning message to log.
  */
 VORTEX_API void ModuleInterface::LogWarning(const std::string &message) {
-  VortexMaker::LogWarn(this->m_name, message);
+  vxe::LogWarn(this->m_name, message);
 }
 
 /**
@@ -477,7 +477,7 @@ VORTEX_API void ModuleInterface::LogWarning(const std::string &message) {
  * @param message The error message to log.
  */
 VORTEX_API void ModuleInterface::LogError(const std::string &message) {
-  VortexMaker::LogError(this->m_name, message);
+  vxe::LogError(this->m_name, message);
 }
 
 /**
@@ -488,7 +488,7 @@ VORTEX_API void ModuleInterface::LogError(const std::string &message) {
  * @param message The fatal error message to log.
  */
 VORTEX_API void ModuleInterface::LogFatal(const std::string &message) {
-  VortexMaker::LogFatal(this->m_name, message);
+  vxe::LogFatal(this->m_name, message);
 }
 
 /**
@@ -499,7 +499,7 @@ VORTEX_API void ModuleInterface::LogFatal(const std::string &message) {
  */
 VORTEX_API void ModuleInterface::CheckDependencies() {
   // Get the current Vortex context
-  VxContext *ctx = VortexMaker::GetCurrentContext();
+  VxContext *ctx = vxe::GetCurrentContext();
 
   // Iterate through each dependency
   for (auto dependency : this->m_dependencies) {
@@ -538,7 +538,7 @@ VORTEX_API void ModuleInterface::CheckDependencies() {
  */
 VORTEX_API void ModuleInterface::Start() {
   // Get the current Vortex context
-  VxContext *ctx = VortexMaker::GetCurrentContext();
+  VxContext *ctx = vxe::GetCurrentContext();
 
   // Update dependencies
   this->CheckDependencies();
@@ -642,7 +642,7 @@ VORTEX_API void ModuleInterface::Start() {
  */
 VORTEX_API void ModuleInterface::Stop() {
   // Get the current Vortex context
-  VxContext *ctx = VortexMaker::GetCurrentContext();
+  VxContext *ctx = vxe::GetCurrentContext();
 
   bool authorized = true;
   std::vector<std::pair<std::string, std::string>> deps;
@@ -684,14 +684,14 @@ VORTEX_API void ModuleInterface::ResetModule() { m_item_handlers.clear(); }
 VORTEX_API void ModuleInterface::CallOutputEvent(const std::string &event_name,
                                                  ArgumentValues &args,
                                                  ReturnValues &ret) {
-  VortexMaker::CallOutputEvent(event_name, args, ret, this->m_name);
+  vxe::CallOutputEvent(event_name, args, ret, this->m_name);
 }
 
 VORTEX_API void ModuleInterface::CallInputEvent(const std::string &module_name,
                                                 const std::string &event_name,
                                                 ArgumentValues &args,
                                                 ReturnValues &ret) {
-  VortexMaker::CallInputEvent(module_name, event_name, args, ret, this->m_name);
+  vxe::CallInputEvent(module_name, event_name, args, ret, this->m_name);
 }
 
 VORTEX_API void ModuleInterface::CheckVersion() {}
@@ -722,6 +722,6 @@ ModuleInterface::GetContentBrowserItemCreators() {
 }
 
 VORTEX_API void ModuleInterface::SetCreditsFile(const std::string &file_path) {
-  VortexMaker::SetCreditsFile(this->m_proper_name + "(" + this->m_name + ")",
-                              file_path);
+  vxe::SetCreditsFile(this->m_proper_name + "(" + this->m_name + ")",
+                      file_path);
 }

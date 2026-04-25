@@ -11,7 +11,7 @@
 #include "../../../../vxcore/include/vortex_core.h"
 #include "../../../../vxcore/include/vortex_internals.h"
 
-using namespace VortexMaker;
+using namespace vxe;
 
 class InstanceWindow {
 public:
@@ -57,8 +57,8 @@ public:
        this->m_SaveIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                     static ImTextureID addIcon =
        this->m_AddIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-                    static ImTextureID folderIcon =
-       this->m_FolderIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                    static ImTextureID folder_icon =
+       this->m_folder_icon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
                     static ImTextureID settingsIcon =
        this->m_SettingsIcon->GetImGuiTextureID(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -69,9 +69,9 @@ public:
                         //Save behavior
                     }
 
-                    if(ImGui::ImageButtonWithText(folderIcon, "Open",
-       ImVec2(this->m_FolderIcon->GetWidth(),
-       this->m_FolderIcon->GetHeight()))){
+                    if(ImGui::ImageButtonWithText(folder_icon, "Open",
+       ImVec2(this->m_folder_icon->GetWidth(),
+       this->m_folder_icon->GetHeight()))){
                         //Save behavior
                     }
 
@@ -302,7 +302,7 @@ public:
   std::shared_ptr<Cherry::Image> m_SaveIcon;
   std::shared_ptr<Cherry::Image> m_SettingsIcon;
   std::shared_ptr<Cherry::Image> m_AddIcon;
-  std::shared_ptr<Cherry::Image> m_FolderIcon;
+  std::shared_ptr<Cherry::Image> m_folder_icon;
 };
 
 #endif

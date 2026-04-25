@@ -95,7 +95,7 @@ namespace fs = std::filesystem;
   offsetof(_TYPE, _MEMBER) // Offset of _MEMBER within _TYPE. Standardized as
                            // offsetof() in C++11
 #define VX_CHECKVERSION()                                                      \
-  VortexMaker::DebugCheckVersionAndDataLayout(VORTEX_VERSION) // Version
+  vxe::DebugCheckVersionAndDataLayout(VORTEX_VERSION) // Version
 
 // Disable some of MSVC most aggressive Debug runtime checks in function
 // header/footer (used in some simple/low-level functions)
@@ -173,20 +173,20 @@ struct VxContext;
 // Callback and functions types
 typedef void *(*VortexMakerMemAllocFunc)(
     size_t sz, void *user_data); // Function signature for
-                                 // VortexMaker::SetAllocatorFunctions()
+                                 // vxe::SetAllocatorFunctions()
 typedef void (*VortexMakerMemFreeFunc)(
     void *ptr, void *user_data); // Function signature for
-                                 // VortexMaker::SetAllocatorFunctions()
+                                 // vxe::SetAllocatorFunctions()
 
 //_____________________________________________________________________________
 // [SECTION] VortexMaker API
 //_____________________________________________________________________________
 // Note for all VortexMaker internals modifications ! : Please considere
-// (Note that VortexMaker:: being a namespace, you can add extra VortexMaker::
+// (Note that vxe:: being a namespace, you can add extra vxe::
 // functions in your own separate file. Please don't modify VortexMaker source
 // files!)
 //_____________________________________________________________________________
-namespace VortexMaker {
+namespace vxe {
 // Main project/context manipulation
 // Definitions : /src/vortex.cpp
 VORTEX_API VxContext *CreateContext();
@@ -439,22 +439,21 @@ VORTEX_API void GetAllocatorFunctions(VortexMakerMemAllocFunc *p_alloc_func,
 VORTEX_API void *MemAlloc(size_t size);
 VORTEX_API void MemFree(void *ptr);
 
-} // namespace VortexMaker
+} // namespace vxe
 //_____________________________________________________________________________
 
 struct VxNewWrapper {};
 inline void *operator new(size_t, VxNewWrapper, void *ptr) { return ptr; }
 inline void operator delete(void *, VxNewWrapper, void *) {
 } // This is only required so we can use the symmetrical new()
-#define VX_ALLOC(_SIZE) VortexMaker::MemAlloc(_SIZE)
-#define VX_FREE(_PTR) VortexMaker::MemFree(_PTR)
+#define VX_ALLOC(_SIZE) vxe::MemAlloc(_SIZE)
+#define VX_FREE(_PTR) vxe::MemFree(_PTR)
 #define VX_PLACEMENT_NEW(_PTR) new (VxNewWrapper(), _PTR)
-#define VX_NEW(_TYPE)                                                          \
-  new (VxNewWrapper(), VortexMaker::MemAlloc(sizeof(_TYPE))) _TYPE
+#define VX_NEW(_TYPE) new (VxNewWrapper(), vxe::MemAlloc(sizeof(_TYPE))) _TYPE
 template <typename T> void VX_DELETE(T *p) {
   if (p) {
     p->~T();
-    VortexMaker::MemFree(p);
+    vxe::MemFree(p);
   }
 }
 
@@ -1060,7 +1059,7 @@ public:
 };
 //=============================================================================
 
-namespace VortexMaker {
+namespace vxe {
 /**
  * @brief Data structure for modules & plugins functions, events and other
  * stuff, oriented around JSON architecture to easely communicate complex types
@@ -1084,14 +1083,14 @@ public:
 private:
   std::string value = "null";
 };
-} // namespace VortexMaker
+} // namespace vxe
 
-struct ArgumentValues : public VortexMaker::Values {
-  using VortexMaker::Values::Values;
+struct ArgumentValues : public vxe::Values {
+  using vxe::Values::Values;
 };
 
-struct ReturnValues : public VortexMaker::Values {
-  using VortexMaker::Values::Values;
+struct ReturnValues : public vxe::Values {
+  using vxe::Values::Values;
 };
 
 #endif // #ifndef VORTEX_DISABLE

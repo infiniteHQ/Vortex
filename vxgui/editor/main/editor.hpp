@@ -16,16 +16,16 @@
 #include "./instances/doc_viewer/doc_viewer.hpp"
 #include "./instances/logs_utility/logs_utility.hpp"
 
-using namespace VortexMaker;
+using namespace vxe;
 
 #ifndef EDITOR_H
 #define EDITOR_H
 
-static std::vector<std::shared_ptr<VortexEditor::ContentBrowserAppWindow>>
+static std::vector<std::shared_ptr<vxe::ContentBrowser>>
     c_ContentBrowserInstances;
-static std::vector<std::shared_ptr<VortexEditor::LogsUtilityAppWindow>>
+static std::vector<std::shared_ptr<vxe::LogsUtilityAppWindow>>
     c_LogsUtilityInstances;
-static std::vector<std::shared_ptr<VortexEditor::DocViewerAppWindow>>
+static std::vector<std::shared_ptr<vxe::DocViewerAppWindow>>
     c_DocViewerInstances;
 
 class Editor {
@@ -72,18 +72,18 @@ public:
   bool ShowLogUtility = false;
 
 private:
-  std::shared_ptr<VortexEditor::Welcome> m_WelcomeAppWindow;
-  std::shared_ptr<VortexEditor::ModulesUtility> m_ModulesUtility;
-  std::shared_ptr<VortexEditor::PluginsUtility> m_PluginsUtility;
-  std::shared_ptr<VortexEditor::ProjectSettings> m_ProjectSettings;
-  std::shared_ptr<VortexEditor::AboutVortex> m_AboutWindow;
-  std::shared_ptr<VortexEditor::AboutProject> m_AboutProjectWindow;
-  std::shared_ptr<VortexEditor::Credits> m_CreditsWindow;
+  std::shared_ptr<vxe::Welcome> m_WelcomeAppWindow;
+  std::shared_ptr<vxe::ModulesUtility> m_ModulesUtility;
+  std::shared_ptr<vxe::PluginsUtility> m_PluginsUtility;
+  std::shared_ptr<vxe::ProjectSettings> m_ProjectSettings;
+  std::shared_ptr<vxe::AboutVortex> m_AboutWindow;
+  std::shared_ptr<vxe::AboutProject> m_AboutProjectWindow;
+  std::shared_ptr<vxe::Credits> m_CreditsWindow;
 };
 
 static std::shared_ptr<Editor> c_Editor;
 
-namespace VortexMaker {
+namespace vxe {
 VORTEX_API int VortexEditor(int argc, char **argv);
 }
 

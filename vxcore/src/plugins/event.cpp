@@ -45,16 +45,16 @@ void PluginInputEvent::trigger_happening(const std::string &trigger_name,
   new_trigger->m_trigger_name = trigger_name;
   new_trigger->m_state = state;
   new_trigger->m_log = log;
-  new_trigger->m_timestamp = VortexMaker::getCurrentTimeStamp();
+  new_trigger->m_timestamp = vxe::getCurrentTimeStamp();
 
   if (state == HappeningState::INFO) {
-    VortexMaker::LogInfo("Plugins Events", log);
+    vxe::LogInfo("Plugins Events", log);
   } else if (state == HappeningState::WARNING) {
-    VortexMaker::LogWarn("Plugins Events", log);
+    vxe::LogWarn("Plugins Events", log);
   } else if (state == HappeningState::ERR) {
-    VortexMaker::LogError("Plugins Events", log);
+    vxe::LogError("Plugins Events", log);
   } else if (state == HappeningState::FATAL) {
-    VortexMaker::LogFatal("Plugins Events", log);
+    vxe::LogFatal("Plugins Events", log);
   }
 
   this->m_happenings.push_back(new_trigger);
@@ -76,16 +76,16 @@ void PluginOutputEvent::trigger_happening(const std::string &trigger_name,
   new_trigger->m_trigger_name = trigger_name;
   new_trigger->m_state = state;
   new_trigger->m_log = log;
-  new_trigger->m_timestamp = VortexMaker::getCurrentTimeStamp();
+  new_trigger->m_timestamp = vxe::getCurrentTimeStamp();
 
   if (state == HappeningState::INFO) {
-    VortexMaker::LogInfo("Plugins Events", log);
+    vxe::LogInfo("Plugins Events", log);
   } else if (state == HappeningState::WARNING) {
-    VortexMaker::LogWarn("Plugins Events", log);
+    vxe::LogWarn("Plugins Events", log);
   } else if (state == HappeningState::ERR) {
-    VortexMaker::LogError("Plugins Events", log);
+    vxe::LogError("Plugins Events", log);
   } else if (state == HappeningState::FATAL) {
-    VortexMaker::LogFatal("Plugins Events", log);
+    vxe::LogFatal("Plugins Events", log);
   }
 
   this->m_happenings.push_back(new_trigger);

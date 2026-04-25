@@ -5,13 +5,13 @@
   if (json_data.contains("project")) {                                         \
     json_data["project"][FIELD] = VALUE;                                       \
   } else {                                                                     \
-    VortexMaker::LogError("Core", "Cannot update the project " FIELD           \
-                                  " : no 'project' key in the file");          \
+    vxe::LogError("Core", "Cannot update the project " FIELD                   \
+                          " : no 'project' key in the file");                  \
     return;                                                                    \
   }
 
 #define UPDATE_PROJECT_FIELD(FUNC_NAME, JSON_FIELD)                            \
-  VORTEX_API void VortexMaker::FUNC_NAME(const std::string &value) {           \
+  VORTEX_API void vxe::FUNC_NAME(const std::string &value) {                   \
     VxContext &ctx = *CVortexMaker;                                            \
                                                                                \
     const std::string project_file =                                           \
@@ -19,8 +19,8 @@
                                                                                \
     std::ifstream input_file(project_file);                                    \
     if (!input_file.is_open()) {                                               \
-      VortexMaker::LogError("Core", "Cannot update the project " #JSON_FIELD   \
-                                    " : bad file");                            \
+      vxe::LogError("Core",                                                    \
+                    "Cannot update the project " #JSON_FIELD " : bad file");   \
       return;                                                                  \
     }                                                                          \
                                                                                \
@@ -32,8 +32,8 @@
                                                                                \
     std::ofstream output_file(project_file);                                   \
     if (!output_file.is_open()) {                                              \
-      VortexMaker::LogError("Core", "Cannot update the project " #JSON_FIELD   \
-                                    " : cannot write into the file");          \
+      vxe::LogError("Core", "Cannot update the project " #JSON_FIELD           \
+                            " : cannot write into the file");                  \
       return;                                                                  \
     }                                                                          \
     output_file << json_data.dump(4);                                          \

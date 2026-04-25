@@ -1,11 +1,12 @@
 #include "./welcome.hpp"
-#include "../../../../../lib/cherry/cherry.hpp"
-#include "../../editor.hpp"
 
-#include <cstdlib> // std::system
+#include <cstdlib>  // std::system
 #include <cstring>
 #include <iostream>
 #include <string>
+
+#include "../../../../../lib/cherry/cherry.hpp"
+#include "../../editor.hpp"
 
 #if defined(_WIN32)
 #include <shellapi.h>
@@ -17,108 +18,101 @@
 #include <stdlib.h>
 #endif
 
-namespace VortexEditor {
+namespace vxe {
 
-Welcome::Welcome(const std::string &name) {
-  m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
-  m_AppWindow->SetIcon(
-      Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
+  Welcome::Welcome(const std::string &name) {
+    app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
+    app_window_->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
 
-  m_AppWindow->SetClosable(true);
-  m_AppWindow->m_CloseCallback = [=]() { m_AppWindow->SetVisibility(false); };
+    app_window_->SetClosable(true);
+    app_window_->m_CloseCallback = [=]() { app_window_->SetVisibility(false); };
 
-  m_AppWindow->SetInternalPaddingX(0.0f);
-  m_AppWindow->SetInternalPaddingY(0.0f);
-}
-
-std::vector<std::shared_ptr<EnvProject>> Welcome::GetMostRecentProjects(
-    const std::vector<std::shared_ptr<EnvProject>> &projects, size_t maxCount) {
-  auto sortedProjects = projects;
-  std::sort(sortedProjects.begin(), sortedProjects.end(),
-            [](const std::shared_ptr<EnvProject> &a,
-               const std::shared_ptr<EnvProject> &b) {
-              return a->lastOpened > b->lastOpened;
-            });
-
-  if (sortedProjects.size() > maxCount) {
-    sortedProjects.resize(maxCount);
+    app_window_->SetInternalPaddingX(0.0f);
+    app_window_->SetInternalPaddingY(0.0f);
   }
-  return sortedProjects;
-}
 
-std::shared_ptr<Cherry::AppWindow> &Welcome::GetAppWindow() {
-  return m_AppWindow;
-}
+  std::vector<std::shared_ptr<EnvProject>> Welcome::GetMostRecentProjects(
+      const std::vector<std::shared_ptr<EnvProject>> &projects,
+      size_t maxCount) {
+    auto sortedProjects = projects;
+    std::sort(
+        sortedProjects.begin(),
+        sortedProjects.end(),
+        [](const std::shared_ptr<EnvProject> &a, const std::shared_ptr<EnvProject> &b) {
+          return a->lastOpened > b->lastOpened;
+        });
 
-std::shared_ptr<Welcome> Welcome::Create(const std::string &name) {
-  auto instance = std::shared_ptr<Welcome>(new Welcome(name));
-  instance->SetupRenderCallback();
-  return instance;
-}
-
-void Welcome::SetupRenderCallback() {
-  auto self = shared_from_this();
-  m_AppWindow->SetRenderCallback([self]() {
-    if (self) {
-      self->Render();
+    if (sortedProjects.size() > maxCount) {
+      sortedProjects.resize(maxCount);
     }
-  });
-}
-
-void Welcome::Render() {
-  Cherry::Script::RenderLuaFreshScript(
-      Cherry::GetPath("ui/windows/welcome/main.lua"));
-
-  // If Browser Clicked
-  if (CherryApp.GetComponentData(CherryID("welcome_browser"), "isClicked") ==
-      "true") {
-    c_Editor->SpawnContentBrowserBottom();
+    return sortedProjects;
   }
 
-  // If Terminal Clicked
-  if (CherryApp.GetComponentData(CherryID("welcome_terminal"), "isClicked") ==
-      "true") {
-    c_Editor->SpawnLogsUtility();
+  std::shared_ptr<Cherry::AppWindow> &Welcome::GetAppWindow() {
+    return app_window_;
   }
 
-  // If Scripts Clicked
-  if (CherryApp.GetComponentData(CherryID("welcome_settings"), "isClicked") ==
-      "true") {
-    c_Editor->ToggleProjectSettings();
+  std::shared_ptr<Welcome> Welcome::Create(const std::string &name) {
+    auto instance = std::shared_ptr<Welcome>(new Welcome(name));
+    instance->SetupRenderCallback();
+    return instance;
   }
 
-  if (CherryApp.GetComponentData(CherryID("open_terminal"), "isClicked") ==
-      "true") {
-    c_Editor->SpawnLogsUtility();
+  void Welcome::SetupRenderCallback() {
+    auto self = shared_from_this();
+    app_window_->SetRenderCallback([self]() {
+      if (self) {
+        self->Render();
+      }
+    });
   }
 
-  if (CherryApp.GetComponentData(CherryID("open_content_browser"),
-                                 "isClicked") == "true") {
-    c_Editor->SpawnContentBrowser();
-  }
+  void Welcome::Render() {
+    Cherry::Script::RenderLuaFreshScript(Cherry::GetPath("ui/windows/welcome/main.lua"));
 
-  if (CherryApp.GetComponentData(CherryID("open_project_settings"),
-                                 "isClicked") == "true") {
-    c_Editor->ToggleProjectSettings();
-  }
+    // If Browser Clicked
+    if (CherryApp.GetComponentData(CherryID("welcome_browser"), "isClicked") == "true") {
+      c_Editor->SpawnContentBrowserBottom();
+    }
 
-  if (CherryApp.GetComponentData(CherryID("taking_control"), "isClicked") ==
-      "true") {
-    VortexMaker::OpenURL("https://vortex.infinite.si/"
-                         "docpage?version=1.0&content_name=take_vortex_editor&"
-                         "section=get_started&page_name=discover_interface");
-  }
+    // If Terminal Clicked
+    if (CherryApp.GetComponentData(CherryID("welcome_terminal"), "isClicked") == "true") {
+      c_Editor->SpawnLogsUtility();
+    }
 
-  if (CherryApp.GetComponentData(CherryID("learn_modules"), "isClicked") ==
-      "true") {
-    VortexMaker::OpenURL("https://vortex.infinite.si/"
-                         "docpage?version=1.0&content_name=take_vortex_editor&"
-                         "section=get_started&page_name=handle_modules");
-  }
+    // If Scripts Clicked
+    if (CherryApp.GetComponentData(CherryID("welcome_settings"), "isClicked") == "true") {
+      c_Editor->ToggleProjectSettings();
+    }
 
-  if (CherryApp.GetComponentData(CherryID("visit_website"), "isClicked") ==
-      "true") {
-    VortexMaker::OpenURL("https://vortex.infinite.si/");
+    if (CherryApp.GetComponentData(CherryID("open_terminal"), "isClicked") == "true") {
+      c_Editor->SpawnLogsUtility();
+    }
+
+    if (CherryApp.GetComponentData(CherryID("open_content_browser"), "isClicked") == "true") {
+      c_Editor->SpawnContentBrowser();
+    }
+
+    if (CherryApp.GetComponentData(CherryID("open_project_settings"), "isClicked") == "true") {
+      c_Editor->ToggleProjectSettings();
+    }
+
+    if (CherryApp.GetComponentData(CherryID("taking_control"), "isClicked") == "true") {
+      vxe::OpenURL(
+          "https://vortex.infinite.si/"
+          "docpage?version=1.0&content_name=take_vortex_editor&"
+          "section=get_started&page_name=discover_interface");
+    }
+
+    if (CherryApp.GetComponentData(CherryID("learn_modules"), "isClicked") == "true") {
+      vxe::OpenURL(
+          "https://vortex.infinite.si/"
+          "docpage?version=1.0&content_name=take_vortex_editor&"
+          "section=get_started&page_name=handle_modules");
+    }
+
+    if (CherryApp.GetComponentData(CherryID("visit_website"), "isClicked") == "true") {
+      vxe::OpenURL("https://vortex.infinite.si/");
+    }
   }
-}
-} // namespace VortexEditor
+}  // namespace vxe

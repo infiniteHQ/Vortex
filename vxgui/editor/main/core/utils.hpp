@@ -446,7 +446,7 @@ static void RegisterAvailableVersions() {
   available_versions.clear();
   m_VortexRegisteredVersions.clear();
   for (auto &base_path :
-       VortexMaker::GetCurrentContext()->IO.sys_vortex_versions_pools) {
+       vxe::GetCurrentContext()->IO.sys_vortex_versions_pools) {
     for (const auto &entry : std::filesystem::directory_iterator(base_path)) {
       if (entry.is_directory()) {
         std::string version_dir = entry.path().filename().string();

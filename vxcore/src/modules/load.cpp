@@ -31,7 +31,7 @@ std::string ConvertToString(const std::wstring &wstr) {
 }
 #endif
 
-namespace VortexMaker {
+namespace vxe {
 
 VORTEX_API void
 LoadEditorModules(const std::string &directory,
@@ -40,19 +40,19 @@ LoadEditorModules(const std::string &directory,
   modules.clear();
   modules_handlers.clear();
 
-  auto module_files = VortexMaker::SearchFiles(directory, "module.json");
+  auto module_files = vxe::SearchFiles(directory, "module.json");
 
   for (const auto &file : module_files) {
     try {
-      auto json_data = VortexMaker::DumpJSON(file);
+      auto json_data = vxe::DumpJSON(file);
 
       fs::path module_path(file);
       fs::path path = module_path.parent_path();
 
 #ifdef _WIN32
-      auto so_files = VortexMaker::SearchFiles(path.string(), "module.dll");
+      auto so_files = vxe::SearchFiles(path.string(), "module.dll");
 #else
-      auto so_files = VortexMaker::SearchFiles(path.string(), "libmodule.so");
+      auto so_files = vxe::SearchFiles(path.string(), "libmodule.so");
 #endif
 
       for (auto &s : so_files)
@@ -79,8 +79,7 @@ LoadEditorModules(const std::string &directory,
           LocalFree(msg_buffer);
 
           std::string error_msg = ConvertToString(wide_error_msg);
-          VortexMaker::LogFatal("Modules",
-                                "Failed to load module: " + error_msg);
+          vxe::LogFatal("Modules", "Failed to load module: " + error_msg);
           continue;
         }
 
@@ -100,8 +99,7 @@ LoadEditorModules(const std::string &directory,
           LocalFree(msg_buffer);
 
           std::string error_msg = ConvertToString(wide_error_msg);
-          VortexMaker::LogFatal("Modules",
-                                "Failed to load symbol: " + error_msg);
+          vxe::LogFatal("Modules", "Failed to load symbol: " + error_msg);
           FreeLibrary((HMODULE)handle);
           continue;
         }
@@ -109,8 +107,7 @@ LoadEditorModules(const std::string &directory,
         handle = dlopen(so_file.c_str(), RTLD_LAZY | RTLD_GLOBAL);
         if (!handle) {
           std::string error_msg = dlerror();
-          VortexMaker::LogFatal("Modules",
-                                "Failed to load module: " + error_msg);
+          vxe::LogFatal("Modules", "Failed to load module: " + error_msg);
           continue;
         }
 
@@ -119,8 +116,7 @@ LoadEditorModules(const std::string &directory,
         const char *dlsym_error = dlerror();
         if (dlsym_error) {
           std::string error_msg = dlsym_error;
-          VortexMaker::LogFatal("Modules",
-                                "Failed to load symbol: " + error_msg);
+          vxe::LogFatal("Modules", "Failed to load symbol: " + error_msg);
           dlclose(handle);
           continue;
         }
@@ -162,16 +158,16 @@ LoadEditorModules(const std::string &directory,
           new_module->m_supported_versions =
               json_data["compatibility"].get<std::vector<std::string>>();
         } catch (const std::exception &e) {
-          VortexMaker::LogError("Modules", "Failed to load module metadata: " +
-                                               std::string(e.what()));
+          vxe::LogError("Modules", "Failed to load module metadata: " +
+                                       std::string(e.what()));
         }
 
         modules.push_back(new_module);
         modules_handlers.push_back(handle);
       }
     } catch (const std::exception &e) {
-      VortexMaker::LogError("Modules", "Error processing module file: " +
-                                           std::string(e.what()));
+      vxe::LogError("Modules",
+                    "Error processing module file: " + std::string(e.what()));
     }
   }
 }
@@ -179,13 +175,13 @@ LoadEditorModules(const std::string &directory,
 VORTEX_API void
 LoadSystemModules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules) {
   // Get the home directory
-  std::string homeDir = VortexMaker::getHomeDirectory();
+  std::string homeDir = vxe::getHomeDirectory();
 
   // Module path on the system
   std::string path = homeDir + "/.vx/modules";
 
   // Search for module files recursively in the directory
-  auto module_files = VortexMaker::SearchSystemFiles(path, "module.json");
+  auto module_files = vxe::SearchSystemFiles(path, "module.json");
 
   // Clear system modules vector
   sys_modules.clear();
@@ -194,7 +190,7 @@ LoadSystemModules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules) {
   for (const auto &file : module_files) {
     try {
       // Load JSON data from the module configuration file
-      auto json_data = VortexMaker::DumpJSON(file);
+      auto json_data = vxe::DumpJSON(file);
 
       std::string module_path = file.substr(0, file.find_last_of("/"));
 
@@ -241,9 +237,9 @@ LoadSystemModules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules) {
       sys_modules.push_back(new_module);
     } catch (const std::exception &e) {
       // Print error if an exception occurs
-      VortexMaker::LogError("Core", std::string("Error: ") + e.what());
+      vxe::LogError("Core", std::string("Error: ") + e.what());
     }
   }
 }
 
-} // namespace VortexMaker
+} // namespace vxe

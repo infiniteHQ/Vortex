@@ -1,14 +1,13 @@
 #include <templates/install.h>
 
-VORTEX_API void
-VortexMaker::InstallTemplateOnSystem(const std::string &directory) {
+VORTEX_API void vxe::InstallTemplateOnSystem(const std::string &directory) {
   std::string templates_path = "~/.vx/templates";
   std::string json_file = directory + "/template.json";
 
   // Verify if the module is valid
   try {
     // Load JSON data from the module configuration file
-    auto json_data = VortexMaker::DumpJSON(json_file);
+    auto json_data = vxe::DumpJSON(json_file);
     std::string name = json_data["name"].get<std::string>();
     std::string proper_name = json_data["proper_name"].get<std::string>();
     std::string type = json_data["type"].get<std::string>();
@@ -19,7 +18,7 @@ VortexMaker::InstallTemplateOnSystem(const std::string &directory) {
     // std::string origin_path = path.substr(0, path.find_last_of("/"));
     templates_path += "/" + name + "." + version;
 
-    VortexMaker::LogInfo("Core", "Installing the template " + name + "...");
+    vxe::LogInfo("Core", "Installing the template " + name + "...");
 
     // Create directory
     {
@@ -33,20 +32,20 @@ VortexMaker::InstallTemplateOnSystem(const std::string &directory) {
       system(cmd.c_str());
     }
 
-    VortexMaker::LogInfo("Core", "The template " + name +
-                                     "is now installed on system !");
+    vxe::LogInfo("Core",
+                 "The template " + name + "is now installed on system !");
     return;
   } catch (const std::exception &e) {
     // Print error if an exception occurs
-    VortexMaker::LogError("Core", e.what());
+    vxe::LogError("Core", e.what());
   }
 
-  VortexMaker::LogError("Core", "Cannot find template registered at" +
-                                    directory + " !");
+  vxe::LogError("Core",
+                "Cannot find template registered at" + directory + " !");
 }
 
-VORTEX_API void VortexMaker::InstallTemplate(const std::string &name,
-                                             const std::string &path) {
+VORTEX_API void vxe::InstallTemplate(const std::string &name,
+                                     const std::string &path) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -60,8 +59,7 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name,
 
   for (auto tem : ctx.IO.sys_templates) {
     if (tem->m_name == name) {
-      VortexMaker::LogInfo("Core",
-                           "Installing the template \"" + name + "\" ...");
+      vxe::LogInfo("Core", "Installing the template \"" + name + "\" ...");
 
       std::string cmd = "tar -xvf " + tem->m_path + tem->m_tarball +
                         " --strip-components=1 " + " -C " + path;
@@ -77,13 +75,13 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name,
   ctx.include_system_templates)
   {
       // Get the home directory
-      std::string homeDir = VortexMaker::getHomeDirectory();
+      std::string homeDir = vxe::getHomeDirectory();
 
       // Module path on the system
       std::string path = homeDir + "/.vx/templates";
 
       // Search modules registered in system
-      auto module_files = VortexMaker::SearchFiles(path, "template.json");
+      auto module_files = vxe::SearchFiles(path, "template.json");
 
       // Iterate through each found module file
       for (const auto &file : module_files)
@@ -91,7 +89,7 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name,
           try
           {
               // Load JSON data from the module configuration file
-              auto json_data = VortexMaker::DumpJSON(file);
+              auto json_data = vxe::DumpJSON(file);
 
               std::string module_path = file.substr(0, file.find_last_of("/"));
 
@@ -101,7 +99,7 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name,
               {
                   finded = true;
 
-                  VortexMaker::LogInfo("Core", "Installing the template \"" +
+                  vxe::LogInfo("Core", "Installing the template \"" +
   name + "\" ...");
 
                   // TODO : Call Deploy function of the template
@@ -116,22 +114,22 @@ VORTEX_API void VortexMaker::InstallTemplate(const std::string &name,
           }
           catch (std::exception e)
           {
-              VortexMaker::LogError("Core", e.what());
+              vxe::LogError("Core", e.what());
           }
       }
   }
 
   if (!finded)
   {
-      VortexMaker::LogError("Core", "Failed to find the template " + name + "
+      vxe::LogError("Core", "Failed to find the template " + name + "
   this template is installed ?");
   }*/
 }
 
 VORTEX_API std::vector<std::shared_ptr<TemplateInterface>>
-VortexMaker::FindTemplatesInDirectory(const std::string &directory) {
+vxe::FindTemplatesInDirectory(const std::string &directory) {
   // Search modules registered
-  auto template_files = VortexMaker::SearchFiles(directory, "template.json", 3);
+  auto template_files = vxe::SearchFiles(directory, "template.json", 3);
 
   std::vector<std::shared_ptr<TemplateInterface>> interfaces;
 
@@ -139,7 +137,7 @@ VortexMaker::FindTemplatesInDirectory(const std::string &directory) {
   for (const auto &file : template_files) {
     try {
       // Load JSON data from the module configuration file
-      auto json_data = VortexMaker::DumpJSON(file);
+      auto json_data = vxe::DumpJSON(file);
 
       std::string module_path = file.substr(0, file.find_last_of("/"));
 
@@ -172,7 +170,7 @@ VortexMaker::FindTemplatesInDirectory(const std::string &directory) {
 
       interfaces.push_back(new_template);
     } catch (std::exception e) {
-      VortexMaker::LogError("Core", e.what());
+      vxe::LogError("Core", e.what());
     }
   }
 

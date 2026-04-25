@@ -1,18 +1,18 @@
 #include "../include/utils/infos.hpp"
 
-std::string VortexMaker::GetBuildDate() { return BUILD_DATE_STR; }
+std::string vxe::GetBuildDate() { return BUILD_DATE_STR; }
 
-std::string VortexMaker::GetGitCommit() { return GIT_COMMIT_HASH; }
+std::string vxe::GetGitCommit() { return GIT_COMMIT_HASH; }
 
-std::string VortexMaker::GetVortexEditorDist() { return BUILD_DIST; }
+std::string vxe::GetVortexEditorDist() { return BUILD_DIST; }
 
-std::string VortexMaker::GetVortexBuildID() { return VORTEX_BUILDID; }
+std::string vxe::GetVortexBuildID() { return VORTEX_BUILDID; }
 
-std::string VortexMaker::GetVortexBuildName() { return VORTEX_BUILDNAME; }
+std::string vxe::GetVortexBuildName() { return VORTEX_BUILDNAME; }
 
 #ifdef _WIN32
-std::string VortexMaker::ComputeSHA256Short(const std::string &filepath,
-                                            size_t length) {
+std::string vxe::ComputeSHA256Short(const std::string &filepath,
+                                    size_t length) {
   std::ifstream file(filepath, std::ios::binary);
   if (!file)
     return "undefined";
@@ -61,8 +61,8 @@ std::string VortexMaker::ComputeSHA256Short(const std::string &filepath,
   return result.substr(0, length);
 }
 #else
-std::string VortexMaker::ComputeSHA256Short(const std::string &filepath,
-                                            size_t length) {
+std::string vxe::ComputeSHA256Short(const std::string &filepath,
+                                    size_t length) {
   std::ifstream file(filepath, std::ios::binary);
   if (!file)
     return "undefined";
@@ -88,7 +88,7 @@ std::string VortexMaker::ComputeSHA256Short(const std::string &filepath,
 }
 #endif
 
-std::string VortexMaker::GetVortexEditorHash() {
+std::string vxe::GetVortexEditorHash() {
   if (vxl_exehash.empty()) {
     std::string exename = VORTEX_EXECUTABLE;
     std::string exepath = Cherry::GetPath(exename);
@@ -100,7 +100,7 @@ std::string VortexMaker::GetVortexEditorHash() {
 }
 
 #if defined(_WIN32)
-std::string VortexMaker::GetWindowsVersion() {
+std::string vxe::GetWindowsVersion() {
   HKEY hKey;
   LONG lRes = RegOpenKeyExA(HKEY_LOCAL_MACHINE,
                             "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
@@ -134,7 +134,7 @@ std::string VortexMaker::GetWindowsVersion() {
 #elif defined(__APPLE__) && defined(__MACH__)
 #define OS_NAME "macOS"
 #elif defined(__linux__)
-std::string VortexMaker::GetLinuxDistroName() {
+std::string vxe::GetLinuxDistroName() {
   std::ifstream file("/etc/os-release");
   std::string line;
   std::string distro = "Linux";
@@ -150,7 +150,7 @@ std::string VortexMaker::GetLinuxDistroName() {
 
   return distro;
 }
-std::string VortexMaker::GetLinuxDesktopEnvAndDisplayServer() {
+std::string vxe::GetLinuxDesktopEnvAndDisplayServer() {
   const char *xdgDesktop = std::getenv("XDG_CURRENT_DESKTOP");
   const char *desktopSession = std::getenv("DESKTOP_SESSION");
   const char *waylandDisplay = std::getenv("WAYLAND_DISPLAY");

@@ -10,11 +10,11 @@
  * @param name Name of the system plugin.
  * @param version Version of the system plugin.
  */
-VORTEX_API void VortexMaker::DeleteProjectPlugin(const std::string &name,
-                                                 const std::string &version) {
+VORTEX_API void vxe::DeleteProjectPlugin(const std::string &name,
+                                         const std::string &version) {
   if (name.empty() || version.empty()) {
-    VortexMaker::LogError(
-        "Core", "DeleteProjectPlugin: name and version must not be empty.");
+    vxe::LogError("Core",
+                  "DeleteProjectPlugin: name and version must not be empty.");
     return;
   }
 
@@ -24,7 +24,7 @@ VORTEX_API void VortexMaker::DeleteProjectPlugin(const std::string &name,
   };
 
   if (containsDangerousChars(name) || containsDangerousChars(version)) {
-    VortexMaker::LogError(
+    vxe::LogError(
         "Core",
         "DeleteProjectPlugin: name or version contains forbidden characters.");
     return;
@@ -33,8 +33,8 @@ VORTEX_API void VortexMaker::DeleteProjectPlugin(const std::string &name,
   VxContext &ctx = *CVortexMaker;
 
   if (ctx.projectPath.empty()) {
-    VortexMaker::LogError(
-        "Core", "DeleteProjectPlugin: projectPath is not set in context.");
+    vxe::LogError("Core",
+                  "DeleteProjectPlugin: projectPath is not set in context.");
     return;
   }
 
@@ -44,9 +44,9 @@ VORTEX_API void VortexMaker::DeleteProjectPlugin(const std::string &name,
       std::filesystem::canonical(ctx.projectPath / ".vx" / "plugins", ec);
 
   if (ec) {
-    VortexMaker::LogError(
-        "Core", "DeleteProjectPlugin: cannot resolve allowed base path: " +
-                    ec.message());
+    vxe::LogError("Core",
+                  "DeleteProjectPlugin: cannot resolve allowed base path: " +
+                      ec.message());
     return;
   }
 
@@ -61,76 +61,75 @@ VORTEX_API void VortexMaker::DeleteProjectPlugin(const std::string &name,
     const std::filesystem::path pluginPath = plugin->m_path;
 
     if (!pluginPath.is_absolute()) {
-      VortexMaker::LogError(
-          "Core", "DeleteProjectPlugin: plugin path is not absolute: " +
-                      pluginPath.string());
+      vxe::LogError("Core",
+                    "DeleteProjectPlugin: plugin path is not absolute: " +
+                        pluginPath.string());
       return;
     }
 
     if (!std::filesystem::exists(pluginPath, ec) || ec) {
-      VortexMaker::LogError(
-          "Core", "DeleteProjectPlugin: plugin path does not exist: " +
-                      pluginPath.string());
+      vxe::LogError("Core",
+                    "DeleteProjectPlugin: plugin path does not exist: " +
+                        pluginPath.string());
       return;
     }
     if (!std::filesystem::is_directory(pluginPath, ec) || ec) {
-      VortexMaker::LogError(
-          "Core", "DeleteProjectPlugin: plugin path is not a directory: " +
-                      pluginPath.string());
+      vxe::LogError("Core",
+                    "DeleteProjectPlugin: plugin path is not a directory: " +
+                        pluginPath.string());
       return;
     }
 
     const std::filesystem::path canonical =
         std::filesystem::canonical(pluginPath, ec);
     if (ec) {
-      VortexMaker::LogError(
-          "Core", "DeleteProjectPlugin: cannot canonicalize plugin path: " +
-                      pluginPath.string());
+      vxe::LogError("Core",
+                    "DeleteProjectPlugin: cannot canonicalize plugin path: " +
+                        pluginPath.string());
       return;
     }
 
     auto [a, b] = std::mismatch(allowedBase.begin(), allowedBase.end(),
                                 canonical.begin());
     if (a != allowedBase.end() || canonical == allowedBase) {
-      VortexMaker::LogError("Core", "DeleteProjectPlugin: refusing to delete "
-                                    "path outside of .vx/plugins/: " +
-                                        canonical.string());
+      vxe::LogError("Core", "DeleteProjectPlugin: refusing to delete "
+                            "path outside of .vx/plugins/: " +
+                                canonical.string());
       return;
     }
 
     const std::filesystem::path relative =
         std::filesystem::relative(canonical, allowedBase, ec);
     if (ec || relative.empty() || relative.begin() == relative.end()) {
-      VortexMaker::LogError(
-          "Core", "DeleteProjectPlugin: cannot compute relative path for: " +
-                      canonical.string());
+      vxe::LogError("Core",
+                    "DeleteProjectPlugin: cannot compute relative path for: " +
+                        canonical.string());
       return;
     }
 
     if (std::distance(relative.begin(), relative.end()) != 1) {
-      VortexMaker::LogError("Core", "DeleteProjectPlugin: plugin path is not a "
-                                    "direct child of .vx/plugins/: " +
-                                        canonical.string());
+      vxe::LogError("Core", "DeleteProjectPlugin: plugin path is not a "
+                            "direct child of .vx/plugins/: " +
+                                canonical.string());
       return;
     }
 
     const std::uintmax_t removed = std::filesystem::remove_all(canonical, ec);
     if (ec || removed == static_cast<std::uintmax_t>(-1)) {
-      VortexMaker::LogError("Core",
-                            "DeleteProjectPlugin: deletion failed for \"" +
+      vxe::LogError("Core", "DeleteProjectPlugin: deletion failed for \"" +
                                 name + "\" v" + version + " — " + ec.message());
       return;
     }
 
-    VortexMaker::LogInfo("Core", "System plugin \"" + name + "\" v" + version +
-                                     " deleted (" + std::to_string(removed) +
-                                     " entries removed).");
+    vxe::LogInfo("Core", "System plugin \"" + name + "\" v" + version +
+                             " deleted (" + std::to_string(removed) +
+                             " entries removed).");
 
     return;
   }
 
   if (!found) {
-    VortexMaker::LogError("Core", "DeleteProjectPlugin: no plugin named \"" +
-                                      name + "\" v" + version + " found.");
+    vxe::LogError("Core", "DeleteProjectPlugin: no plugin named \"" + name +
+                              "\" v" + version + " found.");
   }
 }

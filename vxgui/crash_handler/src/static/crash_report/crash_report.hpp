@@ -5,9 +5,8 @@
 #ifndef CRASH_H
 #define CRASH_H
 
-class VORTEX_API CrashAppWindow
-    : public std::enable_shared_from_this<CrashAppWindow> {
-public:
+class VORTEX_API CrashAppWindow : public std::enable_shared_from_this<CrashAppWindow> {
+ public:
   CrashAppWindow(const std::string &name, const std::string &session_id);
 
   void menubar();
@@ -17,8 +16,7 @@ public:
   void Update();
 
   std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
-  static std::shared_ptr<CrashAppWindow> Create(const std::string &name,
-                                                const std::string &id);
+  static std::shared_ptr<CrashAppWindow> Create(const std::string &name, const std::string &id);
   void SetupRenderCallback();
   void Render();
   std::string GetHomeDirectory();
@@ -33,12 +31,12 @@ public:
 
   std::string m_SessionID;
 
-private:
+ private:
   bool opened;
 
-  std::shared_ptr<Cherry::AppWindow> m_AppWindow;
+  std::shared_ptr<Cherry::AppWindow> app_window_;
 
   bool CollapseAll = false;
 };
 
-#endif // CRASH_H
+#endif  // CRASH_H

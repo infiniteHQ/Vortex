@@ -490,7 +490,7 @@ struct VxContext {
 // Basicly, you don't need to care about this. For all user interactions of
 // Hypernet & Vx, go on the main userapi on vortex.h
 //__________________________________________________________________________________________________________________
-namespace VortexMaker {
+namespace vxe {
 
 // Utils & Base
 VORTEX_API void
@@ -536,7 +536,7 @@ VORTEX_API void RenameFile(const std::string &target_path,
 
 VORTEX_API ImU32 HexToImU32(const std::string &hex);
 VORTEX_API std::string ImU32ToHex(ImU32 color);
-} // namespace VortexMaker
+} // namespace vxe
 //_____________________________________________________________________________
 
 #endif // VORTEX_DISABLE
