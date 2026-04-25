@@ -2298,11 +2298,11 @@ namespace vxe {
     Cherry::ApplicationSpecification spec;
 
     std::string name = "?loc:loc.window_names.add_content" + std::to_string(add_windows_counter_);
-    auto new_win = vxe::ContentBrowserAddWindow::create(name, current_directory_.string());
+    auto new_win = vxe::AddWindow::create(name, current_directory_.string());
     new_win->get_app_window()->SetVisibility(true);
-    new_win->Setcreate_fileCallback([this]() { this->create_file(); });
-    new_win->Setcreate_folderCallback([this]() { this->create_folder(); });
-    new_win->SetImportContentCallback([this]() { this->spawn_import_window(); });
+    new_win->set_create_file_callback([this]() { this->create_file(); });
+    new_win->set_create_folder_callback([this]() { this->create_folder(); });
+    new_win->set_import_content_callback([this]() { this->spawn_import_window(); });
 
     std::string label = "Add content";
     spec.Name = label;

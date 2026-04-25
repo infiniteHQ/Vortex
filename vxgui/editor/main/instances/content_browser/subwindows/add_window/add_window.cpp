@@ -1,8 +1,17 @@
+//
+//  add_window.cpp
+//  Sources for the "add window" of the content browser
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "./add_window.hpp"
 
 namespace vxe {
-  static std::string AddWindowSearch;
-  ContentBrowserAddWindow::ContentBrowserAddWindow(const std::string &name, const std::string &path) {
+  AddWindow::AddWindow(const std::string &name, const std::string &path) {
     app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
     app_window_->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
 
@@ -37,24 +46,22 @@ namespace vxe {
       }
     });
 
-    m_CreationPath = path;
+    creation_path_ = path;
 
     std::shared_ptr<Cherry::AppWindow> win = app_window_;
   }
 
-  std::shared_ptr<Cherry::AppWindow> &ContentBrowserAddWindow::get_app_window() {
+  std::shared_ptr<Cherry::AppWindow> &AddWindow::get_app_window() {
     return app_window_;
   }
 
-  std::shared_ptr<ContentBrowserAddWindow> ContentBrowserAddWindow::create(
-      const std::string &name,
-      const std::string &path) {
-    auto instance = std::shared_ptr<ContentBrowserAddWindow>(new ContentBrowserAddWindow(name, path));
+  std::shared_ptr<AddWindow> AddWindow::create(const std::string &name, const std::string &path) {
+    auto instance = std::shared_ptr<AddWindow>(new AddWindow(name, path));
     instance->setup_render_callback();
     return instance;
   }
 
-  void ContentBrowserAddWindow::setup_render_callback() {
+  void AddWindow::setup_render_callback() {
     auto self = shared_from_this();
     app_window_->SetRenderCallback([self]() {
       if (self) {
@@ -63,7 +70,7 @@ namespace vxe {
     });
   }
 
-  void ContentBrowserAddWindow::render() {
+  void AddWindow::render() {
     float window_width = CherryGUI::GetWindowSize().x;
     float main_header_width = window_width - 46.0f;
     float main_buttons_width = window_width - 17.0f;
@@ -89,7 +96,7 @@ namespace vxe {
     CherryNextComponent.SetProperty(
         "description_logo", Cherry::GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"));
     CherryNextComponent.SetProperty("description_logo_place", "r");
-    CherryKit::InputString("", &AddWindowSearch);
+    CherryKit::InputString("", &add_window_search_);
 
     CherryStyle::AddMarginX(8.0f);
     CherryKit::SeparatorText("Basics");
@@ -116,8 +123,8 @@ namespace vxe {
                 },
             })
             .GetDataAs<bool>("isClicked")) {
-      if (m_create_folderCallback) {
-        m_create_folderCallback();
+      if (create_folder_callback_) {
+        create_folder_callback_();
       }
       Cherry::DeleteAppWindow(app_window_);
     }
@@ -144,8 +151,8 @@ namespace vxe {
             },
             2)
             .GetDataAs<bool>("isClicked")) {
-      if (m_create_fileCallback) {
-        m_create_fileCallback();
+      if (create_file_callback_) {
+        create_file_callback_();
       }
       Cherry::DeleteAppWindow(app_window_);
     }
@@ -171,8 +178,8 @@ namespace vxe {
             },
             3)
             .GetDataAs<bool>("isClicked")) {
-      if (m_ImportContentCallback) {
-        m_ImportContentCallback();
+      if (import_content_callback_) {
+        import_content_callback_();
       }
       Cherry::DeleteAppWindow(app_window_);
     }
@@ -276,8 +283,8 @@ namespace vxe {
                               },
                           })
                           .GetDataAs<bool>("isClicked")) {
-                    if (ic->f_CreateFunction && !m_CreationPath.empty()) {
-                      ic->f_CreateFunction(m_CreationPath);
+                    if (ic->f_CreateFunction && !creation_path_.empty()) {
+                      ic->f_CreateFunction(creation_path_);
                     }
                     Cherry::DeleteAppWindow(app_window_);
                   }
@@ -286,6 +293,18 @@ namespace vxe {
         }
       }
     }
+  }
+
+  void AddWindow::set_create_file_callback(const std::function<void()> &callback) {
+    create_file_callback_ = callback;
+  }
+
+  void AddWindow::set_create_folder_callback(const std::function<void()> &callback) {
+    create_folder_callback_ = callback;
+  }
+
+  void AddWindow::set_import_content_callback(const std::function<void()> &callback) {
+    import_content_callback_ = callback;
   }
 
 }  // namespace vxe

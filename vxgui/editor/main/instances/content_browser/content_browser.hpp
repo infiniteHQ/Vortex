@@ -174,7 +174,7 @@ namespace vxe {
 
     // hosted
     std::vector<ContentBrowserChild> childs_;
-    std::vector<std::shared_ptr<vxe::ContentBrowserAddWindow>> add_windows_;
+    std::vector<std::shared_ptr<vxe::AddWindow>> add_windows_;
     int add_windows_counter_ = 0;
 
     std::shared_ptr<AppWindow> app_window_;

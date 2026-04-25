@@ -1,44 +1,48 @@
+//
+//  add_window.hpp
+//  Headers and declarations for the "add window" of the content browser
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #pragma once
 #include "../../../../../../../vxcore/include/vortex.h"
 #include "../../../../../../../vxcore/include/vortex_internals.h"
 
-#ifndef CONTENT_BROWSER_ADD_WINDOW_H
-#define CONTENT_BROWSER_ADD_WINDOW_H
-
-#define CHERRY_V1
-#include "../../../../../../../lib/cherry/cherry.hpp"
+#ifndef CONTENT_BROWSER_ADD_WINDOW_HPP
+#define CONTENT_BROWSER_ADD_WINDOW_HPP
 
 namespace vxe {
-  // This window can be a "subappwindow" of a parent if you use the constructor
-  // with parent parameter.
-  class ContentBrowserAddWindow : public std::enable_shared_from_this<ContentBrowserAddWindow> {
-   public:
-    ContentBrowserAddWindow(const std::string &name, const std::string &path);
 
+  class AddWindow : public std::enable_shared_from_this<AddWindow> {
+   public:
+    AddWindow(const std::string &name, const std::string &path);
+
+    // window and rendering
     std::shared_ptr<Cherry::AppWindow> &get_app_window();
-    static std::shared_ptr<ContentBrowserAddWindow> create(const std::string &name, const std::string &path);
+    static std::shared_ptr<AddWindow> create(const std::string &name, const std::string &path);
     void setup_render_callback();
     void render();
 
-    void Setcreate_fileCallback(const std::function<void()> &callback) {
-      m_create_fileCallback = callback;
-    }
+    // utils
+    void set_create_file_callback(const std::function<void()> &callback);
+    void set_create_folder_callback(const std::function<void()> &callback);
+    void set_import_content_callback(const std::function<void()> &callback);
 
-    void Setcreate_folderCallback(const std::function<void()> &callback) {
-      m_create_folderCallback = callback;
-    }
+   private:
+    // callbacks
+    std::function<void()> create_file_callback_;
+    std::function<void()> create_folder_callback_;
+    std::function<void()> import_content_callback_;
 
-    void SetImportContentCallback(const std::function<void()> &callback) {
-      m_ImportContentCallback = callback;
-    }
-
-    std::function<void()> m_create_fileCallback;
-    std::function<void()> m_create_folderCallback;
-    std::function<void()> m_ImportContentCallback;
-    std::string m_CreationPath;
+    std::string creation_path_;
+    std::string add_window_search_;
 
     std::shared_ptr<Cherry::AppWindow> app_window_;
   };
 }  // namespace vxe
 
-#endif  // CONTENT_BROWSER_ADD_WINDOW_H
+#endif  // CONTENT_BROWSER_ADD_WINDOW_HPP
