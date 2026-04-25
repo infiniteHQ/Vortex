@@ -74,17 +74,21 @@ namespace vxe {
     void create_folder();
 
     // utils
-    void change_show_mode(ContentShowMode mode);
     void set_default_folder_color(const std::string &hex);
     void set_colored_folder(const std::string &path, const std::string &hex_color);
+    void set_delete_path_callback(const std::function<void(const std::string &)> &foo);
+    void set_copy_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo);
+    void set_cut_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo);
+    void set_paste_paths_callback(const std::function<void(const std::string &)> &foo);
     void toggle_extension(const std::string &ext, bool *state);
-    std::string get_file_type_str(FileTypes type);
-    std::string to_lower_case(const std::string &str);
+    void change_show_mode(ContentShowMode mode);
     std::string get_extension(const std::string &path);
-    std::string format_file_size(size_t size);
     std::string get_content_browser_folder_color(const std::string &path);
-    bool has_common_letters(const std::string &s1, const std::string &s2);
+    std::string get_file_type_str(FileTypes type);
+    std::string format_file_size(size_t size);
+    std::string to_lower_case(const std::string &str);
     bool are_strings_similar(const std::string &s1, const std::string &s2, double threshold_);
+    bool has_common_letters(const std::string &s1, const std::string &s2);
     bool has_extension(const std::string &ext);
     bool is_only_spaces_or_empty(const char *str);
     bool is_path_favorite(const std::string &path);
