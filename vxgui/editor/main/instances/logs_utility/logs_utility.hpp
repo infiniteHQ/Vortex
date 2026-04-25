@@ -47,34 +47,35 @@ namespace vxe {
     bool has_common_subsequence(const std::string &a, const std::string &b);
 
    private:
-    std::string log_search_value_;
-    std::shared_ptr<Cherry::AppWindow> app_window_;
-    bool show_filter_pannel_ = false;
-    bool previous_filter_pannel_state_ = false;
-    bool childs_initialized_ = false;
-
-    std::vector<ConsoleEntry> entries_;
-    char input_buffer_[256] = "";
-    bool scroll_to_bottom_ = false;
-    std::vector<std::string> command_history_;
+    // logics
     int history_pos_ = -1;
-
     int selection_idx_ = -1;
-
+    char input_buffer_[256] = "";
     std::string project_search_;
+    std::string log_search_value_;
+    std::vector<std::string> command_history_;
+    std::vector<ConsoleEntry> entries_;
+    std::map<std::string, bool> topics_filter_states_;
 
-    float filterbar_width_ = 250.0f;
-    ShowMode show_mode_ = ShowMode::Simple;
-    bool will_show_filter_pannel_ = false;
+    // ui properties
     bool use_warning_filter_ = false;
     bool use_error_filter_ = false;
     bool use_fatal_filter_ = false;
     bool use_info_filter_ = false;
     bool console_font_ = true;
     bool search_bar_ = false;
+    bool scroll_to_bottom_ = false;
+    bool show_filter_pannel_ = false;
+    float filterbar_width_ = 250.0f;
+    ShowMode show_mode_ = ShowMode::Simple;
 
-    std::map<std::string, bool> topics_filter_states_;
+    // ui states
+    bool will_show_filter_pannel_ = false;
+    bool childs_initialized_ = false;
+    bool previous_filter_pannel_state_ = false;
 
+    // ui
+    std::shared_ptr<Cherry::AppWindow> app_window_;
     std::vector<LogUtilityChild> childs_;
   };
 }  // namespace vxe
