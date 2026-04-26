@@ -175,9 +175,9 @@ namespace vxe {
         if (CherryGUI::Button("Delete module", ImVec2(BTN_W, BTN_H))) {
           vxe::DeleteProjectModule(module_to_delete_name_, module_to_delete_version_);
           vxe::LoadEditorModules(
-              vxe::GetCurrentContext()->projectPath.string(),
-              vxe::GetCurrentContext()->IO.em_handles,
-              vxe::GetCurrentContext()->IO.em);
+              vxe::get_current_context()->projectPath.string(),
+              vxe::get_current_context()->IO.em_handles,
+              vxe::get_current_context()->IO.em);
           module_to_delete_name_.clear();
           module_to_delete_proper_name_.clear();
           module_to_delete_description_.clear();
@@ -452,7 +452,7 @@ namespace vxe {
       CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, Cherry::HexToRGBA("#454545"));
     }
 
-    std::string header_label = "All Modules (" + std::to_string(vxe::GetCurrentContext()->IO.em.size()) + ")";
+    std::string header_label = "All Modules (" + std::to_string(vxe::get_current_context()->IO.em.size()) + ")";
     if (CherryGUI::ImageSizeButtonWithText(
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
             header_width,
@@ -578,19 +578,19 @@ namespace vxe {
 
       CherryGUI::Spacing();
 
-      if (vxe::GetCurrentContext()->IO.em.empty()) {
+      if (vxe::get_current_context()->IO.em.empty()) {
         CherryKit::TitleFour("No modules founded.");
       }
 
       std::vector<Cherry::Component> modules_blocks;
       if (selected_show_mode_ == ShowModes::Thumbmails) {
-        for (int i = 0; i < vxe::GetCurrentContext()->IO.em.size(); i++) {
-          if (!vxe::GetCurrentContext()->IO.em[i]) {
+        for (int i = 0; i < vxe::get_current_context()->IO.em.size(); i++) {
+          if (!vxe::get_current_context()->IO.em[i]) {
             continue;
           }
 
           if (!selected_category_.empty() && selected_category_ != "all") {
-            if (selected_category_ != vxe::GetCurrentContext()->IO.em[i]->m_group) {
+            if (selected_category_ != vxe::get_current_context()->IO.em[i]->m_group) {
               continue;
             }
           }
@@ -601,22 +601,22 @@ namespace vxe {
           }
 
           if (!modules_search_.empty()) {
-            if (!has_common_subsequence(vxe::GetCurrentContext()->IO.em[i]->m_name, modules_search_) &&
-                !has_common_subsequence(vxe::GetCurrentContext()->IO.em[i]->m_proper_name, modules_search_) &&
-                !has_common_subsequence(vxe::GetCurrentContext()->IO.em[i]->m_description, modules_search_)) {
+            if (!has_common_subsequence(vxe::get_current_context()->IO.em[i]->m_name, modules_search_) &&
+                !has_common_subsequence(vxe::get_current_context()->IO.em[i]->m_proper_name, modules_search_) &&
+                !has_common_subsequence(vxe::get_current_context()->IO.em[i]->m_description, modules_search_)) {
               continue;
             }
           }
 
           CherryNextComponent.SetRenderMode(Cherry::RenderMode::CreateOnly);
           auto item = ModuleCard(
-              vxe::GetCurrentContext()->IO.em[i],
-              vxe::GetCurrentContext()->IO.em[i]->m_proper_name,
-              vxe::GetCurrentContext()->IO.em[i]->m_path,
-              vxe::GetCurrentContext()->IO.em[i]->m_name,
-              vxe::GetCurrentContext()->IO.em[i]->m_version,
+              vxe::get_current_context()->IO.em[i],
+              vxe::get_current_context()->IO.em[i]->m_proper_name,
+              vxe::get_current_context()->IO.em[i]->m_path,
+              vxe::get_current_context()->IO.em[i]->m_name,
+              vxe::get_current_context()->IO.em[i]->m_version,
               false,
-              vxe::GetCurrentContext()->IO.em[i]->m_logo_path,
+              vxe::get_current_context()->IO.em[i]->m_logo_path,
               IM_COL32(56, 56, 56, 150),
               IM_COL32(50, 50, 50, 255),
               Cherry::HexToImU32("#B1FF31FF"),

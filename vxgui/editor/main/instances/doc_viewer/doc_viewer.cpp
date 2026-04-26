@@ -70,7 +70,7 @@ namespace vxe {
   }
 
   void DocViewer::render_left_menubar() {
-    auto ctx = vxe::GetCurrentContext();
+    auto ctx = vxe::get_current_context();
 
     std::vector<std::pair<std::string, std::string>> combo_items;
     std::vector<std::string> topic_ids;
@@ -116,7 +116,7 @@ namespace vxe {
   }
 
   void DocViewer::render() {
-    auto ctx = vxe::GetCurrentContext();
+    auto ctx = vxe::get_current_context();
 
     CherryGUI::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(255, 221, 0, 255));
     CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 0, 0, 255));
@@ -297,7 +297,7 @@ namespace vxe {
       return "Vortex";
     }
 
-    auto ctx = vxe::GetCurrentContext();
+    auto ctx = vxe::get_current_context();
     if (!ctx)
       return topic;
 

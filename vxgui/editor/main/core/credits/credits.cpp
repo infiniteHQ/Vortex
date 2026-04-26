@@ -48,7 +48,7 @@ namespace vxe {
     });
   }
   void Credits::render() {
-    auto ctx = vxe::GetCurrentContext();
+    auto ctx = vxe::get_current_context();
     float window_width = CherryGUI::GetWindowSize().x;
     float image_height = window_width / 3.435f;
     CherryGUI::Image(
@@ -194,11 +194,11 @@ namespace vxe {
 
   void Credits::refresh_categories() {
     all_categories_.clear();
-    for (int i = 0; i < vxe::GetCurrentContext()->IO.em.size(); i++) {
-      if (!vxe::GetCurrentContext()->IO.em[i]) {
+    for (int i = 0; i < vxe::get_current_context()->IO.em.size(); i++) {
+      if (!vxe::get_current_context()->IO.em[i]) {
         continue;
       }
-      all_categories_[vxe::GetCurrentContext()->IO.em[i]->m_group]++;
+      all_categories_[vxe::get_current_context()->IO.em[i]->m_group]++;
     }
   }
 

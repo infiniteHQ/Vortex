@@ -16,71 +16,63 @@
 #include "./instances/doc_viewer/doc_viewer.hpp"
 #include "./instances/logs_utility/logs_utility.hpp"
 
-using namespace vxe;
-
 #ifndef EDITOR_H
 #define EDITOR_H
 
-static std::vector<std::shared_ptr<vxe::ContentBrowser>> c_ContentBrowserInstances;
-static std::vector<std::shared_ptr<vxe::LogsUtility>> c_LogsUtilityInstances;
-static std::vector<std::shared_ptr<vxe::DocViewer>> c_DocViewerInstances;
-
-class Editor {
- public:
-  Editor();
-
-  bool GetCreditsVisibility();
-  void SetCreditsVisibility(const bool visibility);
-
-  bool GetAboutAppWindowVisibility();
-  void SetAboutWindowVisibility(const bool visibility);
-
-  bool GetAboutProjectAppWindowVisibility();
-  void SetAboutProjectWindowVisibility(const bool visibility);
-
-  void SetTemplatesUtilityVisibility(const bool &visibility);
-  bool GetTemplatesUtilityVisibility();
-
-  void SetProjectSettingsVisibility(const bool &visibility, const std::string &tab);
-  bool GetProjectSettingsVisibility();
-
-  void SetModulesUtilityVisibility(const bool &visibility);
-  bool GetModulesUtilityVisibility();
-
-  void SetPluginsUtilityVisibility(const bool &visibility);
-  bool GetPluginsUtilityVisibility();
-
-  void SetWelcomeVisibility(const bool &visibility);
-  bool GetWelcomeVisibility();
-
-  std::string SpawnContentBrowser();
-  std::string SpawnDocViewer();
-  void SpawnContentBrowserBottom();
-  void SpawnLogsUtility();
-  void ToggleProjectSettings();
-  void Menubar(Cherry::Application *app);
-
-  bool ShowContentBrowser = true;
-  bool ShowProjectViewer = false;
-  bool ShowModulesManager = false;
-  bool ShowTemplateManager = false;
-  bool ShowProjectSettings = false;
-  bool ShowLogUtility = false;
-
- private:
-  std::shared_ptr<vxe::Welcome> m_WelcomeAppWindow;
-  std::shared_ptr<vxe::ModulesUtility> m_ModulesUtility;
-  std::shared_ptr<vxe::PluginsUtility> m_PluginsUtility;
-  std::shared_ptr<vxe::ProjectSettings> m_ProjectSettings;
-  std::shared_ptr<vxe::AboutVortex> m_AboutWindow;
-  std::shared_ptr<vxe::AboutProject> m_AboutProjectWindow;
-  std::shared_ptr<vxe::Credits> m_CreditsWindow;
-};
-
-static std::shared_ptr<Editor> c_Editor;
+static std::vector<std::shared_ptr<vxe::ContentBrowser>> content_browser_instances_;
+static std::vector<std::shared_ptr<vxe::LogsUtility>> logs_utility_instances_;
+static std::vector<std::shared_ptr<vxe::DocViewer>> doc_viewer_instances_;
 
 namespace vxe {
+
+  class Editor {
+   public:
+    Editor();
+
+    // window getter/setter
+    bool get_credits_visibility();
+    bool get_about_visibility();
+    bool get_about_project_visibility();
+    bool get_templates_utility_visibility();
+    bool get_project_settings_visibility();
+    bool get_modules_utility_visibility();
+    bool get_plugins_utility_visibility();
+    bool get_welcome_visibility();
+
+    void set_credits_visibility(const bool visibility);
+    void set_about_visibility(const bool visibility);
+    void set_about_project_visibility(const bool visibility);
+    void set_templates_utility_visibility(const bool &visibility);
+    void set_project_settings_visibility(const bool &visibility, const std::string &tab);
+    void set_modules_utility_visibility(const bool &visibility);
+    void set_plugins_utility_visibility(const bool &visibility);
+    void set_welcome_visibility(const bool &visibility);
+
+    std::string spawn_content_browser();
+    std::string SpawnDocViewer();
+    void spawn_content_browser_on_bottom();
+    void spawn_logs_utility();
+    void toggle_project_settings();
+
+    void render_menubar();
+    void render_framebar();
+
+   private:
+    // ui static windows
+    std::shared_ptr<vxe::Welcome> welcome_window_;
+    std::shared_ptr<vxe::ModulesUtility> modules_utility_window_;
+    std::shared_ptr<vxe::PluginsUtility> plugins_utility_window_;
+    std::shared_ptr<vxe::ProjectSettings> project_settings_window_;
+    std::shared_ptr<vxe::AboutVortex> about_window_;
+    std::shared_ptr<vxe::AboutProject> about_project_window_;
+    std::shared_ptr<vxe::Credits> credits_window_;
+
+    // ui instances
+  };
+
+  static std::shared_ptr<Editor> c_Editor;
+
   VORTEX_API int VortexEditor(int argc, char **argv);
-}
+}  // namespace vxe
 
 #endif

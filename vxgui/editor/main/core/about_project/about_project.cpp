@@ -51,13 +51,14 @@ namespace vxe {
     float window_width = CherryGUI::GetWindowSize().x;
     float image_height = window_width / 3.835f;
 
-    std::string project_version = vxe::GetCurrentContext()->version;
-    std::string project_name = vxe::GetCurrentContext()->name;
-    std::string project_description = vxe::GetCurrentContext()->description;
-    std::string project_author = vxe::GetCurrentContext()->author;
-    std::string logo_path_str = vxe::GetCurrentContext()->projectPath.string() + "" + vxe::GetCurrentContext()->logo_path;
+    std::string project_version = vxe::get_current_context()->version;
+    std::string project_name = vxe::get_current_context()->name;
+    std::string project_description = vxe::get_current_context()->description;
+    std::string project_author = vxe::get_current_context()->author;
+    std::string logo_path_str =
+        vxe::get_current_context()->projectPath.string() + "" + vxe::get_current_context()->logo_path;
     std::string banner_path_str =
-        vxe::GetCurrentContext()->projectPath.string() + "" + vxe::GetCurrentContext()->banner_path;
+        vxe::get_current_context()->projectPath.string() + "" + vxe::get_current_context()->banner_path;
 
     std::string logo_path = std::filesystem::exists(logo_path_str) && std::filesystem::is_regular_file(logo_path_str)
                                 ? logo_path_str
@@ -87,13 +88,13 @@ namespace vxe {
     Cherry::SetNextComponentProperty("color_text", "#343434");
     CherryKit::TextSimple(project_version);
 
-    if (vxe::GetCurrentContext()->type == "tool") {
+    if (vxe::get_current_context()->type == "tool") {
       CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/tools.png"), 13, 13);
       CherryGUI::SameLine();
       Cherry::SetNextComponentProperty("color_text", "#565656");
       CherryKit::TextSimple("Tool");
 
-    } else if (vxe::GetCurrentContext()->type == "project") {
+    } else if (vxe::get_current_context()->type == "project") {
       CherryKit::ImageLocal(Cherry::GetPath("resources/imgs/light.png"), 13, 13);
       CherryGUI::SameLine();
       Cherry::SetNextComponentProperty("color_text", "#565656");

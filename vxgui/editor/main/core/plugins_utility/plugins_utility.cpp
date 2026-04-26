@@ -55,11 +55,11 @@ namespace vxe {
   }
   void PluginsUtility::refresh_categories() {
     all_categories.clear();
-    for (int i = 0; i < vxe::GetCurrentContext()->IO.ep.size(); i++) {
-      if (!vxe::GetCurrentContext()->IO.ep[i]) {
+    for (int i = 0; i < vxe::get_current_context()->IO.ep.size(); i++) {
+      if (!vxe::get_current_context()->IO.ep[i]) {
         continue;
       }
-      all_categories[vxe::GetCurrentContext()->IO.ep[i]->m_group]++;
+      all_categories[vxe::get_current_context()->IO.ep[i]->m_group]++;
     }
   }
 

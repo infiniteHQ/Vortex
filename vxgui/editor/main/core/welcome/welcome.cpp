@@ -49,29 +49,29 @@ namespace vxe {
 
     // If Browser Clicked
     if (CherryApp.GetComponentData(CherryID("welcome_browser"), "isClicked") == "true") {
-      c_Editor->SpawnContentBrowserBottom();
+      c_Editor->spawn_content_browser_on_bottom();
     }
 
     // If Terminal Clicked
     if (CherryApp.GetComponentData(CherryID("welcome_terminal"), "isClicked") == "true") {
-      c_Editor->SpawnLogsUtility();
+      c_Editor->spawn_logs_utility();
     }
 
     // If Scripts Clicked
     if (CherryApp.GetComponentData(CherryID("welcome_settings"), "isClicked") == "true") {
-      c_Editor->ToggleProjectSettings();
+      c_Editor->toggle_project_settings();
     }
 
     if (CherryApp.GetComponentData(CherryID("open_terminal"), "isClicked") == "true") {
-      c_Editor->SpawnLogsUtility();
+      c_Editor->spawn_logs_utility();
     }
 
     if (CherryApp.GetComponentData(CherryID("open_content_browser"), "isClicked") == "true") {
-      c_Editor->SpawnContentBrowser();
+      c_Editor->spawn_content_browser();
     }
 
     if (CherryApp.GetComponentData(CherryID("open_project_settings"), "isClicked") == "true") {
-      c_Editor->ToggleProjectSettings();
+      c_Editor->toggle_project_settings();
     }
 
     if (CherryApp.GetComponentData(CherryID("taking_control"), "isClicked") == "true") {

@@ -316,7 +316,7 @@ namespace vxe {
         auto oldFilterStates = topics_filter_states_;
         topics_filter_states_.clear();
 
-        for (auto log : vxe::GetCurrentContext()->registered_logs) {
+        for (auto log : vxe::get_current_context()->registered_logs) {
           const std::string &topic = log->m_filter;
 
           if (oldFilterStates.find(topic) != oldFilterStates.end()) {
@@ -329,7 +329,7 @@ namespace vxe {
         bool hasActiveFilter = std::any_of(
             topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto &pair) { return pair.second; });
 
-        for (auto log : vxe::GetCurrentContext()->registered_logs) {
+        for (auto log : vxe::get_current_context()->registered_logs) {
           if (oldFilterStates.find(log->m_filter) != oldFilterStates.end()) {
             topics_filter_states_[log->m_filter] = oldFilterStates[log->m_filter];
           } else {
@@ -477,7 +477,7 @@ namespace vxe {
         auto oldFilterStates = topics_filter_states_;
         topics_filter_states_.clear();
 
-        for (auto log : vxe::GetCurrentContext()->registered_logs) {
+        for (auto log : vxe::get_current_context()->registered_logs) {
           const std::string &topic = log->m_filter;
 
           if (oldFilterStates.find(topic) != oldFilterStates.end()) {
@@ -490,7 +490,7 @@ namespace vxe {
         bool hasActiveFilter = std::any_of(
             topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto &pair) { return pair.second; });
 
-        for (auto log : vxe::GetCurrentContext()->registered_logs) {
+        for (auto log : vxe::get_current_context()->registered_logs) {
           if (oldFilterStates.find(log->m_filter) != oldFilterStates.end()) {
             topics_filter_states_[log->m_filter] = oldFilterStates[log->m_filter];
           } else {
@@ -576,7 +576,7 @@ namespace vxe {
         auto oldFilterStates = topics_filter_states_;
         topics_filter_states_.clear();
 
-        for (auto log : vxe::GetCurrentContext()->registered_logs) {
+        for (auto log : vxe::get_current_context()->registered_logs) {
           const std::string &topic = log->m_filter;
 
           if (oldFilterStates.find(topic) != oldFilterStates.end()) {
@@ -590,7 +590,7 @@ namespace vxe {
             topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto &pair) { return pair.second; });
 
         std::string logText;
-        for (auto log : vxe::GetCurrentContext()->registered_logs) {
+        for (auto log : vxe::get_current_context()->registered_logs) {
           std::string line = log->m_timestamp + " | " + log->m_filter + " | " + log->m_message + "\n";
           logText += line;
         }

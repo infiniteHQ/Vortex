@@ -13,7 +13,7 @@
 namespace vxe {
 
   void ContentBrowser::draw_path_bar(const std::string &path) {
-    std::string homePath = vxe::GetCurrentContext()->projectDataPath.string();
+    std::string homePath = vxe::get_current_context()->projectDataPath.string();
     bool FirstPathPartIsHome = false;
     std::string displayPath = path;
 

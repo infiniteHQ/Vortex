@@ -266,7 +266,7 @@ namespace vxe {
     vxe::FetchCustomFolders();
     favorite_folders_.clear();
     folder_colors_.clear();
-    for (auto custom_folder : vxe::GetCurrentContext()->IO.contentbrowser_customfolders) {
+    for (auto custom_folder : vxe::get_current_context()->IO.contentbrowser_customfolders) {
       if (custom_folder->m_IsFav) {
         favorite_folders_.push_back(custom_folder->path);
       }
@@ -283,7 +283,7 @@ namespace vxe {
   void ContentBrowser::refresh_pools() {
     vxe::FetchPools();
     pools_.clear();
-    for (auto pool : vxe::GetCurrentContext()->IO.contentbrowser_pools) {
+    for (auto pool : vxe::get_current_context()->IO.contentbrowser_pools) {
       pools_.push_back(pool);
     }
   }

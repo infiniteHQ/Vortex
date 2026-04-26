@@ -63,7 +63,7 @@ namespace vxe {
 
   void ProjectSettings::refresh_project_themes() {
     available_themes_.clear();
-    for (auto t : vxe::GetCurrentContext()->IO.themes) {
+    for (auto t : vxe::get_current_context()->IO.themes) {
       available_themes_.push_back(t->label);
     }
   }
@@ -199,42 +199,42 @@ namespace vxe {
   }
 
   void ProjectSettings::refresh() {
-    std::string path = vxe::GetCurrentContext()->projectPath.string();
+    std::string path = vxe::get_current_context()->projectPath.string();
     path += "/vortex.config";
 
     nlohmann::json projectData = vxe::DumpJSON(path);
 
     std::shared_ptr<ProjectSettingsSave> newsave = std::make_shared<ProjectSettingsSave>();
 
-    vxe::GetCurrentContext()->name = projectData["project"]["name"].get<std::string>();
-    strncpy(newsave->name, vxe::GetCurrentContext()->name.c_str(), sizeof(newsave->name));
+    vxe::get_current_context()->name = projectData["project"]["name"].get<std::string>();
+    strncpy(newsave->name, vxe::get_current_context()->name.c_str(), sizeof(newsave->name));
     newsave->name[sizeof(newsave->name) - 1] = '\0';
 
-    vxe::GetCurrentContext()->author = projectData["project"]["author"].get<std::string>();
-    strncpy(newsave->author, vxe::GetCurrentContext()->author.c_str(), sizeof(newsave->author));
+    vxe::get_current_context()->author = projectData["project"]["author"].get<std::string>();
+    strncpy(newsave->author, vxe::get_current_context()->author.c_str(), sizeof(newsave->author));
     newsave->author[sizeof(newsave->author) - 1] = '\0';
 
-    vxe::GetCurrentContext()->description = projectData["project"]["description"].get<std::string>();
-    strncpy(newsave->description, vxe::GetCurrentContext()->description.c_str(), sizeof(newsave->description));
+    vxe::get_current_context()->description = projectData["project"]["description"].get<std::string>();
+    strncpy(newsave->description, vxe::get_current_context()->description.c_str(), sizeof(newsave->description));
     newsave->description[sizeof(newsave->description) - 1] = '\0';
 
-    vxe::GetCurrentContext()->type = projectData["project"]["type"].get<std::string>();
-    strncpy(newsave->type, vxe::GetCurrentContext()->type.c_str(), sizeof(newsave->type));
+    vxe::get_current_context()->type = projectData["project"]["type"].get<std::string>();
+    strncpy(newsave->type, vxe::get_current_context()->type.c_str(), sizeof(newsave->type));
     newsave->type[sizeof(newsave->type) - 1] = '\0';
 
-    vxe::GetCurrentContext()->project_version = projectData["project"]["version"].get<std::string>();
-    strncpy(newsave->version, vxe::GetCurrentContext()->version.c_str(), sizeof(newsave->version));
+    vxe::get_current_context()->project_version = projectData["project"]["version"].get<std::string>();
+    strncpy(newsave->version, vxe::get_current_context()->version.c_str(), sizeof(newsave->version));
     newsave->version[sizeof(newsave->version) - 1] = '\0';
 
-    vxe::GetCurrentContext()->include_system_templates = projectData["project"]["include_system_templates"].get<bool>();
-    newsave->include_system_templates = vxe::GetCurrentContext()->include_system_templates;
+    vxe::get_current_context()->include_system_templates = projectData["project"]["include_system_templates"].get<bool>();
+    newsave->include_system_templates = vxe::get_current_context()->include_system_templates;
 
     current_save_ = newsave;
   }
 
   void ProjectSettings::refresh_project_informations() {
     vxe::RefreshProjectInformations();
-    auto *ctx = vxe::GetCurrentContext();
+    auto *ctx = vxe::get_current_context();
 
     initial_project_info_ = {
       .name = ctx->name,
@@ -284,7 +284,7 @@ namespace vxe {
   }
 
   void ProjectSettings::update() {
-    std::string oldname = vxe::GetCurrentContext()->name;
+    std::string oldname = vxe::get_current_context()->name;
 
     std::string vortex_version = VORTEX_VERSION;
 
@@ -297,7 +297,7 @@ namespace vxe {
     jsonData["project"]["version"] = current_save_->version;
     jsonData["project"]["include_system_templates"] = current_save_->include_system_templates;
 
-    std::string path = vxe::GetCurrentContext()->projectPath.string();
+    std::string path = vxe::get_current_context()->projectPath.string();
     path += "/vortex.config";
 
     std::ofstream file(path);

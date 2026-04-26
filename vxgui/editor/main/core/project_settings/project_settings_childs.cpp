@@ -324,7 +324,7 @@ namespace vxe {
           if (theme && selected_theme) {
             if (theme->label != selected_theme->label) {
               theme_changed = true;
-              vxe::GetCurrentContext()->IO.used_theme = theme->label;
+              vxe::get_current_context()->IO.used_theme = theme->label;
               vxe::UpdateProjectThemesComfig();
               vxe::RebuildTheme();
             }

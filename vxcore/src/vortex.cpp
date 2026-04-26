@@ -1,191 +1,96 @@
-// The VortexMaker Project
-// [Main sources]
-
-// Index of this file:
-
-//-------------------------------------------------------------------------
-// [INCLUDES]
-//-------------------------------------------------------------------------
+//
+//  vortex.cpp
+//  Sources of main context features
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
 
 #include "../include/vortex.h"
 #ifndef VORTEX_DISABLE
 #include "../include/vortex_internals.h"
 
-//-----------------------------------------------------------------------------
-// [SECTION] Forward declarations
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// [SECTION] CONTEXT AND MEMORY ALLOCATORS
-//-----------------------------------------------------------------------------
 // Current runtime pointer.
 #ifndef CVortexMaker
 VxContext *CVortexMaker = NULL;
 #endif
 
-// Memory Allocator functions. Use SetAllocatorFunctions() to change them.
-// - You probably don't want to modify that mid-program, and if you use
-// global/static e.g. ImVector<> instances you may need to keep them accessible
-// during program destruction.
-// - DLL users: read comments above.
-
 #ifndef DISABLE_DEFAULT_ALLOCATORS
 
-/**
- * @brief Wrapper function for malloc.
- *
- * This function is a wrapper for the malloc function.
- * It allocates memory of the specified size using the standard malloc function.
- *
- * @param size The size of memory to allocate.
- * @param user_data Unused user data pointer (required by Vortex allocator
- * signature).
- * @return A pointer to the allocated memory, or nullptr if allocation fails.
- */
 static void *MallocWrapper(size_t size, void *user_data) {
-  VX_UNUSED(user_data); // Unused parameter
-  return malloc(size);  // Call standard malloc
+  VX_UNUSED(user_data);  // Unused parameter
+  return malloc(size);   // Call standard malloc
 }
 
-/**
- * @brief Wrapper function for free.
- *
- * This function is a wrapper for the free function.
- * It deallocates memory pointed to by ptr using the standard free function.
- *
- * @param ptr Pointer to the memory block to deallocate.
- * @param user_data Unused user data pointer (required by Vortex allocator
- * signature).
- */
 static void FreeWrapper(void *ptr, void *user_data) {
-  VX_UNUSED(user_data); // Unused parameter
-  free(ptr);            // Call standard free
+  VX_UNUSED(user_data);  // Unused parameter
+  free(ptr);             // Call standard free
 }
 
-#else // DISABLE_DEFAULT_ALLOCATORS
+#else  // DISABLE_DEFAULT_ALLOCATORS
 
-/**
- * @brief Dummy MallocWrapper function.
- *
- * This function is a dummy wrapper for malloc used when default allocators are
- * disabled. It should not be called and will trigger an assertion.
- *
- * @param size Unused size parameter.
- * @param user_data Unused user data parameter.
- * @return Always returns nullptr, triggering an assertion.
- */
 static void *MallocWrapper(size_t size, void *user_data) {
-  VX_UNUSED(size);      // Unused parameter
-  VX_UNUSED(user_data); // Unused parameter
-  VX_ASSERT(0);         // Trigger assertion, should not be called
-  return nullptr;       // Return nullptr
+  VX_UNUSED(size);       // Unused parameter
+  VX_UNUSED(user_data);  // Unused parameter
+  VX_ASSERT(0);          // Trigger assertion, should not be called
+  return nullptr;        // Return nullptr
 }
 
-/**
- * @brief Dummy FreeWrapper function.
- *
- * This function is a dummy wrapper for free used when default allocators are
- * disabled. It should not be called and will trigger an assertion.
- *
- * @param ptr Unused pointer parameter.
- * @param user_data Unused user data parameter.
- */
 static void FreeWrapper(void *ptr, void *user_data) {
-  VX_UNUSED(ptr);       // Unused parameter
-  VX_UNUSED(user_data); // Unused parameter
-  VX_ASSERT(0);         // Trigger assertion, should not be called
+  VX_UNUSED(ptr);        // Unused parameter
+  VX_UNUSED(user_data);  // Unused parameter
+  VX_ASSERT(0);          // Trigger assertion, should not be called
 }
 
-#endif // DISABLE_DEFAULT_ALLOCATORS
+#endif  // DISABLE_DEFAULT_ALLOCATORS
 
 static VortexMakerMemAllocFunc CVxAllocatorAllocFunc = MallocWrapper;
 static VortexMakerMemFreeFunc CVxAllocatorFreeFunc = FreeWrapper;
 static void *CVxAllocatorUserData = NULL;
 
-/**
- * @brief CreateContext creates a new Vortex context.
- *
- * This function creates a new Vortex context and initializes it. It ensures
- * memory safety by properly managing memory allocation and context switching.
- *
- * @return A pointer to the newly created Vortex context.
- */
-VORTEX_API VxContext *vxe::CreateContext() {
-  // Save the previous context before creating a new one
-  VxContext *prev_ctx = GetCurrentContext();
+VORTEX_API VxContext *vxe::create_context() {
+  VxContext *prev_ctx = get_current_context();
 
-  // Allocate memory for the new context
   VxContext *ctx = VX_NEW(VxContext);
+  set_current_context(ctx);
+  initialize();
 
-  // Set the current context to the newly created context
-  SetCurrentContext(ctx);
-
-  // Initialize the new context
-  Initialize();
-
-  // Restore the previous context if it exists
   if (prev_ctx != nullptr)
-    SetCurrentContext(prev_ctx);
+    set_current_context(prev_ctx);
 
-  // Return the pointer to the newly created context
   return ctx;
 }
 
-/**
- * @brief SetCurrentContext sets the current Vortex context.
- *
- * This function sets the current Vortex context to the provided context
- * pointer. It offers flexibility by allowing custom thread-based context
- * control if enabled.
- *
- * @param ctx A pointer to the Vortex context to be set as the current context.
- */
-void vxe::SetCurrentContext(VxContext *ctx) {
+void vxe::set_current_context(VxContext *ctx) {
 #ifdef USE_CURRENT_CONTEXT_FUNC
-  // If custom thread-based control is enabled, call the custom function
   USE_CURRENT_CONTEXT_FUNC(ctx);
 #else
-  // Otherwise, set the current context directly
   CVortexMaker = ctx;
 #endif
 }
 
-/**
- * @brief DestroyContext destroys a Vortex context.
- *
- * This function destroys the specified Vortex context. If no context is
- * provided, it destroys the current context. It ensures proper context
- * switching and memory deallocation.
- *
- * @param ctx A pointer to the Vortex context to be destroyed. If nullptr, the
- * current context will be destroyed.
- */
-VORTEX_API void vxe::DestroyContext(VxContext *ctx) {
+VORTEX_API void vxe::destroy_context(VxContext *ctx) {
   // Save the previous context before destroying the specified context
-  VxContext *prev_ctx = GetCurrentContext();
+  VxContext *prev_ctx = get_current_context();
 
   // If no context is provided, destroy the current context
   if (ctx == nullptr)
     ctx = prev_ctx;
 
   // Set the current context to the one to be destroyed
-  SetCurrentContext(ctx);
+  set_current_context(ctx);
 
   // If the previous context is different from the one to be destroyed, restore
   // it
-  SetCurrentContext((prev_ctx != ctx) ? prev_ctx : nullptr);
+  set_current_context((prev_ctx != ctx) ? prev_ctx : nullptr);
 
   // Deallocate memory for the context
   VX_DELETE(ctx);
 }
 
-/**
- * @brief Initialize initializes the VortexMaker.
- *
- * This function initializes the VortexMaker by setting the initialized flag in
- * the context.
- */
-VORTEX_API void vxe::Initialize() {
+VORTEX_API void vxe::initialize() {
   // Get the reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -204,9 +109,7 @@ VORTEX_API void vxe::Initialize() {
  * @param free_func The custom free function pointer.
  * @param user_data The custom user data pointer.
  */
-void vxe::SetAllocatorFunctions(VortexMakerMemAllocFunc alloc_func,
-                                VortexMakerMemFreeFunc free_func,
-                                void *user_data) {
+void vxe::SetAllocatorFunctions(VortexMakerMemAllocFunc alloc_func, VortexMakerMemFreeFunc free_func, void *user_data) {
   // Set the custom allocator functions and user data for VortexMaker
   CVxAllocatorAllocFunc = alloc_func;
   CVxAllocatorFreeFunc = free_func;
@@ -224,9 +127,10 @@ void vxe::SetAllocatorFunctions(VortexMakerMemAllocFunc alloc_func,
  * @param p_free_func Pointer to store the free function.
  * @param p_user_data Pointer to store the user data.
  */
-void vxe::GetAllocatorFunctions(VortexMakerMemAllocFunc *p_alloc_func,
-                                VortexMakerMemFreeFunc *p_free_func,
-                                void **p_user_data) {
+void vxe::GetAllocatorFunctions(
+    VortexMakerMemAllocFunc *p_alloc_func,
+    VortexMakerMemFreeFunc *p_free_func,
+    void **p_user_data) {
   // Retrieve the allocator functions and user data from the VortexMaker
   *p_alloc_func = CVxAllocatorAllocFunc;
   *p_free_func = CVxAllocatorFreeFunc;
@@ -241,8 +145,8 @@ void vxe::GetAllocatorFunctions(VortexMakerMemAllocFunc *p_alloc_func,
  *
  * @return A pointer to the current Vortex context.
  */
-VORTEX_API VxContext *vxe::GetCurrentContext() {
-  return CVortexMaker; // Return the current Vortex context pointer
+VORTEX_API VxContext *vxe::get_current_context() {
+  return CVortexMaker;  // Return the current Vortex context pointer
 }
 
 /**
@@ -268,7 +172,7 @@ void *vxe::MemAlloc(size_t size) {
   }
 #endif
 
-  return ptr; // Return the allocated memory pointer
+  return ptr;  // Return the allocated memory pointer
 }
 
 // Vx_FREE() == vxe::MemFree()
@@ -282,8 +186,7 @@ void vxe::MemFree(void *ptr) {
 // We record the number of allocation in recent frames, as a way to
 // audit/sanitize our guiding principles of "no allocations on idle/repeating
 // frames"
-void vxe::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
-                         size_t size) {
+void vxe::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr, size_t size) {
   // VortexMakerDebugAllocEntry* entry =
   // &info->LastEntriesBuf[info->LastEntriesIdx];
   VX_UNUSED(ptr);
@@ -325,7 +228,7 @@ void vxe::DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
 #endif
 #endif
 
-char hString::EmptyString[1] = {0};
+char hString::EmptyString[1] = { 0 };
 
 /**
  * @brief Append a string to the hString buffer.
@@ -382,16 +285,14 @@ bool vxe::DebugCheckVersionAndDataLayout(const char *version) {
   if (strcmp(version, VORTEX_VERSION) != 0) {
     error = true;
     // Assertion for debugging purposes, will only trigger in debug builds
-    VX_ASSERT(strcmp(version, VORTEX_VERSION) == 0 &&
-              "Mismatched version string!");
+    VX_ASSERT(strcmp(version, VORTEX_VERSION) == 0 && "Mismatched version string!");
   }
 
-  return !error; // Return true if no error occurred
+  return !error;  // Return true if no error occurred
 }
 
-VORTEX_API void vxe::CallOutputEvent(const std::string &event_name,
-                                     ArgumentValues &args, ReturnValues &ret,
-                                     const std::string &origin) {
+VORTEX_API void
+vxe::CallOutputEvent(const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string &origin) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -405,26 +306,27 @@ VORTEX_API void vxe::CallOutputEvent(const std::string &event_name,
         if (output_event->m_function) {
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
-              origin + ":call_output_event", HappeningState::INFO,
-              "Calling module output event \"" + output_event->m_name +
-                  "\" of module \"" + em->m_name + "\" from \"" + origin +
-                  "\"");
+              origin + ":call_output_event",
+              HappeningState::INFO,
+              "Calling module output event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" +
+                  origin + "\"");
 
           // Call the corresponding event function with the provided arguments
           output_event->m_function(args, ret);
 
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
-              origin + ":call_output_event", HappeningState::INFO,
-              "Output event \"" + output_event->m_name + "\" of module \"" +
-                  em->m_name + "\" called succefully from \"" + origin +
-                  "\" !");
+              origin + ":call_output_event",
+              HappeningState::INFO,
+              "Output event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" called succefully from \"" +
+                  origin + "\" !");
         } else {
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
-              origin + ":call_output_event", HappeningState::INFO,
-              "Trying to call \"" + output_event->m_name + "\" of module \"" +
-                  em->m_name + "\" from \"" + origin + "\" but it not exist !");
+              origin + ":call_output_event",
+              HappeningState::INFO,
+              "Trying to call \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin +
+                  "\" but it not exist !");
         }
       }
     }
@@ -440,36 +342,39 @@ VORTEX_API void vxe::CallOutputEvent(const std::string &event_name,
         if (output_event->m_function) {
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
-              origin + ":call_output_event", HappeningState::INFO,
-              "Calling module output event \"" + output_event->m_name +
-                  "\" of module \"" + ep->m_name + "\" from \"" + origin +
-                  "\"");
+              origin + ":call_output_event",
+              HappeningState::INFO,
+              "Calling module output event \"" + output_event->m_name + "\" of module \"" + ep->m_name + "\" from \"" +
+                  origin + "\"");
 
           // Call the corresponding event function with the provided arguments
           output_event->m_function(args, ret);
 
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
-              origin + ":call_output_event", HappeningState::INFO,
-              "Output event \"" + output_event->m_name + "\" of module \"" +
-                  ep->m_name + "\" called succefully from \"" + origin +
-                  "\" !");
+              origin + ":call_output_event",
+              HappeningState::INFO,
+              "Output event \"" + output_event->m_name + "\" of module \"" + ep->m_name + "\" called succefully from \"" +
+                  origin + "\" !");
         } else {
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
-              origin + ":call_output_event", HappeningState::INFO,
-              "Trying to call \"" + output_event->m_name + "\" of module \"" +
-                  ep->m_name + "\" from \"" + origin + "\" but it not exist !");
+              origin + ":call_output_event",
+              HappeningState::INFO,
+              "Trying to call \"" + output_event->m_name + "\" of module \"" + ep->m_name + "\" from \"" + origin +
+                  "\" but it not exist !");
         }
       }
     }
   }
 }
 
-VORTEX_API void vxe::CallInputEvent(const std::string &module_name,
-                                    const std::string &event_name,
-                                    ArgumentValues &args, ReturnValues &ret,
-                                    const std::string &origin) {
+VORTEX_API void vxe::CallInputEvent(
+    const std::string &module_name,
+    const std::string &event_name,
+    ArgumentValues &args,
+    ReturnValues &ret,
+    const std::string &origin) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -487,25 +392,25 @@ VORTEX_API void vxe::CallInputEvent(const std::string &module_name,
           if (input_event->m_function) {
             // Trigger a information trigger in the input event
             input_event->trigger_happening(
-                origin + ":call_input_event", HappeningState::INFO,
-                "Calling module input event \"" + input_event->m_name +
-                    "\" of module \"" + em->m_name + "\" from \"" + origin +
-                    "\"");
+                origin + ":call_input_event",
+                HappeningState::INFO,
+                "Calling module input event \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" from \"" +
+                    origin + "\"");
 
             // Call the corresponding event function with the provided arguments
             input_event->m_function(args, ret);
 
             // Trigger a information trigger in the input event
             input_event->trigger_happening(
-                origin + ":call_input_event", HappeningState::INFO,
-                "Input event \"" + input_event->m_name + "\" of module \"" +
-                    em->m_name + "\" called succefully from \"" + origin +
-                    "\" !");
+                origin + ":call_input_event",
+                HappeningState::INFO,
+                "Input event \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" called succefully from \"" +
+                    origin + "\" !");
           } else {
             input_event->trigger_happening(
-                origin + ":call_input_event", HappeningState::INFO,
-                "Trying to call \"" + input_event->m_name + "\" of module \"" +
-                    em->m_name + "\" from \"" + origin +
+                origin + ":call_input_event",
+                HappeningState::INFO,
+                "Trying to call \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin +
                     "\" but it not exist !");
           }
 
@@ -527,25 +432,25 @@ VORTEX_API void vxe::CallInputEvent(const std::string &module_name,
           if (input_event->m_function) {
             // Trigger a information trigger in the input event
             input_event->trigger_happening(
-                origin + ":call_input_event", HappeningState::INFO,
-                "Calling module input event \"" + input_event->m_name +
-                    "\" of module \"" + ep->m_name + "\" from \"" + origin +
-                    "\"");
+                origin + ":call_input_event",
+                HappeningState::INFO,
+                "Calling module input event \"" + input_event->m_name + "\" of module \"" + ep->m_name + "\" from \"" +
+                    origin + "\"");
 
             // Call the corresponding event function with the provided arguments
             input_event->m_function(args, ret);
 
             // Trigger a information trigger in the input event
             input_event->trigger_happening(
-                origin + ":call_input_event", HappeningState::INFO,
-                "Input event \"" + input_event->m_name + "\" of module \"" +
-                    ep->m_name + "\" called succefully from \"" + origin +
-                    "\" !");
+                origin + ":call_input_event",
+                HappeningState::INFO,
+                "Input event \"" + input_event->m_name + "\" of module \"" + ep->m_name + "\" called succefully from \"" +
+                    origin + "\" !");
           } else {
             input_event->trigger_happening(
-                origin + ":call_input_event", HappeningState::INFO,
-                "Trying to call \"" + input_event->m_name + "\" of module \"" +
-                    ep->m_name + "\" from \"" + origin +
+                origin + ":call_input_event",
+                HappeningState::INFO,
+                "Trying to call \"" + input_event->m_name + "\" of module \"" + ep->m_name + "\" from \"" + origin +
                     "\" but it not exist !");
           }
 
@@ -556,8 +461,7 @@ VORTEX_API void vxe::CallInputEvent(const std::string &module_name,
   }
 
   if (!event_hit) {
-    std::string log = "Input event not found. (target:" + module_name +
-                      " , event:" + event_name + ")";
+    std::string log = "Input event not found. (target:" + module_name + " , event:" + event_name + ")";
     vxe::LogError("Events", log);
   }
 }
@@ -594,7 +498,8 @@ VORTEX_API void vxe::InstallModuleToSystem(const std::string &path) {
   }
 }
 
-VORTEX_API void vxe::AddModuleToProject(const std::string &module_name) {}
+VORTEX_API void vxe::AddModuleToProject(const std::string &module_name) {
+}
 
 VORTEX_API void vxe::InstallPluginToSystem(const std::string &path) {
   std::string plugins_path = "~/.vx/plugins";
@@ -628,7 +533,8 @@ VORTEX_API void vxe::InstallPluginToSystem(const std::string &path) {
   }
 }
 
-VORTEX_API void vxe::AddPluginToProject(const std::string &plugin_name) {}
+VORTEX_API void vxe::AddPluginToProject(const std::string &plugin_name) {
+}
 
 VORTEX_API std::string vxe::replacePlaceholders(
     const std::string &command,
@@ -664,8 +570,7 @@ VORTEX_API std::string vxe::getHomeDirectory() {
     return std::string(homePath);
   }
 
-  throw std::runtime_error(
-      "Unknown platform: Unable to determine home directory");
+  throw std::runtime_error("Unknown platform: Unable to determine home directory");
 }
 
 VORTEX_API void vxe::InstallContentOnSystem(const std::string &directory) {
@@ -686,16 +591,14 @@ VORTEX_API void vxe::InstallContentOnSystem(const std::string &directory) {
   }
 }
 
-VORTEX_API void
-vxe::AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item) {
+VORTEX_API void vxe::AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   ctx.IO.contentbrowser_items.push_back(item);
 }
 
-VORTEX_API void
-vxe::AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility) {
+VORTEX_API void vxe::AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility) {
 }
 
 VORTEX_API void vxe::PostCustomFolderToJson() {
@@ -721,8 +624,7 @@ VORTEX_API void vxe::PostCustomFolderToJson() {
   vxe::PopulateJSON(json_data, file_path);
 }
 
-VORTEX_API void vxe::PublishPool(const std::string &absolute_pool_path,
-                                 const std::string &name) {
+VORTEX_API void vxe::PublishPool(const std::string &absolute_pool_path, const std::string &name) {
   VxContext &ctx = *CVortexMaker;
 
   std::size_t endPos = absolute_pool_path.size() - 1;
@@ -737,13 +639,13 @@ VORTEX_API void vxe::PublishPool(const std::string &absolute_pool_path,
     }
   }
 
-  ctx.IO.contentbrowser_pools.push_back({absolute_pool_path, name});
+  ctx.IO.contentbrowser_pools.push_back({ absolute_pool_path, name });
 
   vxe::PostPoolsToJson();
 }
 
-VORTEX_API void vxe::PublishContentBrowserCustomFolder(
-    const std::string &path, const std::string &hex_color, const bool &isFav) {
+VORTEX_API void
+vxe::PublishContentBrowserCustomFolder(const std::string &path, const std::string &hex_color, const bool &isFav) {
   VxContext &ctx = *CVortexMaker;
 
   for (auto folder : ctx.IO.contentbrowser_customfolders) {
@@ -756,8 +658,7 @@ VORTEX_API void vxe::PublishContentBrowserCustomFolder(
     }
   }
 
-  std::shared_ptr<ContentBrowserCustomFolder> new_folder =
-      std::make_shared<ContentBrowserCustomFolder>();
+  std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
   new_folder->m_Color = hex_color;
   new_folder->m_IsFav = isFav;
   new_folder->path = path;
@@ -778,8 +679,7 @@ VORTEX_API bool vxe::ContentBrowserFolderIsFav(const std::string &path) {
   return false;
 }
 
-VORTEX_API bool vxe::GetContentBrowserFolderColor(const std::string &path,
-                                                  ImU32 *color) {
+VORTEX_API bool vxe::GetContentBrowserFolderColor(const std::string &path, ImU32 *color) {
   VxContext &ctx = *CVortexMaker;
 
   for (auto customized_folder : ctx.IO.contentbrowser_customfolders) {
@@ -807,7 +707,7 @@ VORTEX_API ImU32 vxe::HexToImU32(const std::string &hex) {
   ss << std::hex << hex.substr(5, 2);
   ss >> b;
 
-  return IM_COL32(r, g, b, 255); // Alpha is set to 255 (opaque)
+  return IM_COL32(r, g, b, 255);  // Alpha is set to 255 (opaque)
 }
 
 VORTEX_API std::string vxe::ImU32ToHex(ImU32 color) {
@@ -816,10 +716,8 @@ VORTEX_API std::string vxe::ImU32ToHex(ImU32 color) {
   unsigned char b = (color >> IM_COL32_B_SHIFT) & 0xFF;
 
   std::stringstream ss;
-  ss << "#" << std::setfill('0') << std::setw(2) << std::hex
-     << static_cast<int>(r) << std::setfill('0') << std::setw(2) << std::hex
-     << static_cast<int>(g) << std::setfill('0') << std::setw(2) << std::hex
-     << static_cast<int>(b);
+  ss << "#" << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(r) << std::setfill('0') << std::setw(2)
+     << std::hex << static_cast<int>(g) << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(b);
 
   return ss.str();
 }
@@ -845,15 +743,14 @@ VORTEX_API void vxe::FetchPools() {
   ctx.IO.contentbrowser_mainpool = json_data["main_pool"].get<std::string>();
 
   std::string projectPath = ctx.projectPath.string();
-  ctx.IO.contentbrowser_absolute_mainpool =
-      projectPath + "/" + ctx.IO.contentbrowser_mainpool;
+  ctx.IO.contentbrowser_absolute_mainpool = projectPath + "/" + ctx.IO.contentbrowser_mainpool;
 
   // From other pool absolute paths
   ctx.IO.contentbrowser_pools.clear();
   for (auto directory : json_data["pools"]) {
     std::string path = directory["path"].get<std::string>();
     std::string name = directory["name"].get<std::string>();
-    ctx.IO.contentbrowser_pools.push_back({path, name});
+    ctx.IO.contentbrowser_pools.push_back({ path, name });
   }
 }
 
@@ -903,7 +800,7 @@ VORTEX_API void vxe::FetchCustomFolders() {
 
   std::string file_path = path + "/customized_folders.json";
 
-  nlohmann::json json_data = {{"custom_folders", nlohmann::json::array()}
+  nlohmann::json json_data = { { "custom_folders", nlohmann::json::array() }
 
   };
 
@@ -922,8 +819,7 @@ VORTEX_API void vxe::FetchCustomFolders() {
     ctx.IO.contentbrowser_customfolders.clear();
 
     for (auto &directory : json_data["custom_folders"]) {
-      std::shared_ptr<ContentBrowserCustomFolder> new_folder =
-          std::make_shared<ContentBrowserCustomFolder>();
+      std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
       new_folder->m_Color = directory["color"].get<std::string>();
       new_folder->m_IsFav = directory["isFav"].get<bool>();
       new_folder->path = directory["path"].get<std::string>();
@@ -933,13 +829,11 @@ VORTEX_API void vxe::FetchCustomFolders() {
       ctx.IO.contentbrowser_customfolders.push_back(new_folder);
     }
   } catch (const std::exception &e) {
-    std::cerr << "Erreur lors de la lecture ou du traitement du fichier JSON : "
-              << e.what() << std::endl;
+    std::cerr << "Erreur lors de la lecture ou du traitement du fichier JSON : " << e.what() << std::endl;
   }
 }
 
-VORTEX_API void vxe::Copy(std::vector<std::string> selection,
-                          bool in_addition) {
+VORTEX_API void vxe::Copy(std::vector<std::string> selection, bool in_addition) {
   VxContext &ctx = *CVortexMaker;
 
   if (!in_addition) {
@@ -951,8 +845,7 @@ VORTEX_API void vxe::Copy(std::vector<std::string> selection,
   }
 }
 
-VORTEX_API void vxe::SubmitRename(const std::string &oldPathStr,
-                                  const std::string &newName) {
+VORTEX_API void vxe::SubmitRename(const std::string &oldPathStr, const std::string &newName) {
   fs::path oldPath(oldPathStr);
   fs::path parentDir = oldPath.parent_path();
 
@@ -963,8 +856,7 @@ VORTEX_API void vxe::SubmitRename(const std::string &oldPathStr,
 
   if (fs::exists(newPath)) {
     std::string baseName = newPath.stem().string();
-    std::string extension =
-        newPath.has_extension() ? newPath.extension().string() : "";
+    std::string extension = newPath.has_extension() ? newPath.extension().string() : "";
 
     std::regex suffixPattern(R"( \((\d+)\)$)");
     std::smatch match;
@@ -978,8 +870,7 @@ VORTEX_API void vxe::SubmitRename(const std::string &oldPathStr,
 
     fs::path candidate;
     do {
-      candidate = parentDir /
-                  (baseName + " (" + std::to_string(counter) + ")" + extension);
+      candidate = parentDir / (baseName + " (" + std::to_string(counter) + ")" + extension);
       counter++;
     } while (fs::exists(candidate));
 
@@ -1018,15 +909,12 @@ VORTEX_API void vxe::ClearCopySelection() {
   ctx.IO.copy_selection.clear();
 }
 
-static bool isStrictSubPath(const fs::path &potentialSub,
-                            const fs::path &base) {
-  auto rel = fs::weakly_canonical(potentialSub)
-                 .lexically_relative(fs::weakly_canonical(base));
+static bool isStrictSubPath(const fs::path &potentialSub, const fs::path &base) {
+  auto rel = fs::weakly_canonical(potentialSub).lexically_relative(fs::weakly_canonical(base));
   return !rel.empty() && rel.native()[0] != '.';
 }
 
-void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest,
-                              const fs::path &destRoot) {
+void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest, const fs::path &destRoot) {
   if (!fs::exists(src) || !fs::is_directory(src)) {
     // err
     return;
@@ -1048,8 +936,7 @@ void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest,
       destRootCanonical = fs::weakly_canonical(destRoot);
     }
 
-    if (isStrictSubPath(fromCanonical, destRootCanonical) ||
-        fromCanonical == destRootCanonical) {
+    if (isStrictSubPath(fromCanonical, destRootCanonical) || fromCanonical == destRootCanonical) {
       continue;
     }
     try {
@@ -1068,15 +955,13 @@ VORTEX_API void vxe::PasteAllSelections(const std::string &target_path_str) {
   VxContext &ctx = *CVortexMaker;
   fs::path targetPath(target_path_str);
 
-  auto generateNonConflictingPath =
-      [](const fs::path &targetDir, const fs::path &originalName) -> fs::path {
+  auto generateNonConflictingPath = [](const fs::path &targetDir, const fs::path &originalName) -> fs::path {
     fs::path newPath = targetDir / originalName;
     if (!fs::exists(newPath))
       return newPath;
 
     std::string stem = originalName.stem().string();
-    std::string extension =
-        originalName.has_extension() ? originalName.extension().string() : "";
+    std::string extension = originalName.has_extension() ? originalName.extension().string() : "";
     int counter = 1;
 
     while (true) {
@@ -1097,8 +982,7 @@ VORTEX_API void vxe::PasteAllSelections(const std::string &target_path_str) {
       continue;
     }
 
-    fs::path destPath =
-        generateNonConflictingPath(targetPath, srcPath.filename());
+    fs::path destPath = generateNonConflictingPath(targetPath, srcPath.filename());
 
     // ❌ NE PLUS BLOQUER LA COPIE — la prévention est faite proprement en
     // récursif
@@ -1118,8 +1002,7 @@ VORTEX_API void vxe::PasteAllSelections(const std::string &target_path_str) {
       }
 
     } catch (const std::exception &e) {
-      std::cerr << "Erreur de copie : " << srcPath << " → " << destPath << " : "
-                << e.what() << "\n";
+      std::cerr << "Erreur de copie : " << srcPath << " → " << destPath << " : " << e.what() << "\n";
     }
   }
 
@@ -1130,34 +1013,29 @@ VORTEX_API void vxe::PasteAllSelections(const std::string &target_path_str) {
       continue;
     }
 
-    fs::path destPath =
-        generateNonConflictingPath(targetPath, srcPath.filename());
+    fs::path destPath = generateNonConflictingPath(targetPath, srcPath.filename());
 
     // 🚫 Prévention contre le déplacement récursif
     if (fs::is_directory(srcPath) && isStrictSubPath(destPath, srcPath)) {
-      std::cerr << "Déplacement récursif détecté, opération ignorée : "
-                << srcPath << " → " << destPath << "\n";
+      std::cerr << "Déplacement récursif détecté, opération ignorée : " << srcPath << " → " << destPath << "\n";
       continue;
     }
 
     try {
       fs::rename(srcPath, destPath);
     } catch (const std::exception &e) {
-      std::cerr << "Erreur de déplacement : " << srcPath << " → " << destPath
-                << " : " << e.what() << "\n";
+      std::cerr << "Erreur de déplacement : " << srcPath << " → " << destPath << " : " << e.what() << "\n";
     }
   }
 }
 
-VORTEX_API void vxe::RenameFolder(const std::string &target_path,
-                                  const std::string &new_name) {
+VORTEX_API void vxe::RenameFolder(const std::string &target_path, const std::string &new_name) {
   namespace fs = std::filesystem;
 
   try {
     fs::path target(target_path);
     if (!fs::exists(target) || !fs::is_directory(target)) {
-      throw std::runtime_error(
-          "Target path does not exist or is not a directory.");
+      throw std::runtime_error("Target path does not exist or is not a directory.");
     }
 
     fs::path new_path = target.parent_path() / new_name;
@@ -1180,8 +1058,7 @@ VORTEX_API void vxe::RefreshProjectThemes() {
   vxe::createFolderIfNotExists(themes_path);
   vxe::createFolderIfNotExists(config_path);
 
-  nlohmann::json defaultData = {{"used_theme", "dark"},
-                                {"override_themes", nlohmann::json::array()}};
+  nlohmann::json defaultData = { { "used_theme", "dark" }, { "override_themes", nlohmann::json::array() } };
   vxe::createJsonFileIfNotExists(json_file, defaultData);
 
   ctx.IO.themes.clear();
@@ -1207,8 +1084,7 @@ VORTEX_API void vxe::RefreshProjectThemes() {
           ctx.IO.themes.push_back(themeObj);
         }
       } catch (const std::exception &e) {
-        vxe::LogError("Core",
-                      "Failed to parse theme file: " + entry.path().string());
+        vxe::LogError("Core", "Failed to parse theme file: " + entry.path().string());
         vxe::LogError("Core", e.what());
       }
     }
@@ -1220,18 +1096,14 @@ VORTEX_API void vxe::RefreshProjectThemes() {
     configFile >> configJson;
 
     ctx.IO.used_theme = configJson.value("used_theme", "dark");
-    ctx.IO.override_themes =
-        configJson.value("override_themes", std::vector<std::string>());
+    ctx.IO.override_themes = configJson.value("override_themes", std::vector<std::string>());
   } catch (const std::exception &e) {
-    vxe::LogError("Core",
-                  "Failed to load theme config: " + std::string(e.what()));
+    vxe::LogError("Core", "Failed to load theme config: " + std::string(e.what()));
   }
 }
 
-VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme,
-                                   const std::string &title) {
-  std::string themes_path =
-      vxe::getHomeDirectory() + "/.vx/configs/themes/data";
+VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme, const std::string &title) {
+  std::string themes_path = vxe::getHomeDirectory() + "/.vx/configs/themes/data";
   vxe::createFolderIfNotExists(themes_path);
 
   nlohmann::json j;
@@ -1261,7 +1133,6 @@ VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme,
 }
 
 VORTEX_API std::shared_ptr<Theme> vxe::GetTheme(const std::string &label) {
-
   VxContext &ctx = *CVortexMaker;
   const auto &themes = ctx.IO.themes;
 
@@ -1275,7 +1146,6 @@ VORTEX_API std::shared_ptr<Theme> vxe::GetTheme(const std::string &label) {
   return nullptr;
 }
 VORTEX_API std::shared_ptr<Theme> vxe::GetSelectedTheme() {
-
   VxContext &ctx = *CVortexMaker;
   const std::string &used = ctx.IO.used_theme;
   const auto &themes = ctx.IO.themes;
@@ -1292,21 +1162,19 @@ VORTEX_API std::shared_ptr<Theme> vxe::GetSelectedTheme() {
   return nullptr;
 }
 
-VORTEX_API void vxe::CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
-                                    const std::string &title) {
+VORTEX_API void vxe::CreateNewTheme(const std::shared_ptr<Theme> &base_theme, const std::string &title) {
   if (!base_theme) {
     vxe::LogError("Theme", "Base theme is null. Cannot create new theme.");
     return;
   }
 
-  std::string themes_path = vxe::GetCurrentContext()->projectPath.string() +
-                            "/.vx/configs/themes/data";
+  std::string themes_path = vxe::get_current_context()->projectPath.string() + "/.vx/configs/themes/data";
   vxe::createFolderIfNotExists(themes_path);
 
   std::string base_filename = title;
-  std::transform(
-      base_filename.begin(), base_filename.end(), base_filename.begin(),
-      [](unsigned char c) { return std::isspace(c) ? '_' : std::tolower(c); });
+  std::transform(base_filename.begin(), base_filename.end(), base_filename.begin(), [](unsigned char c) {
+    return std::isspace(c) ? '_' : std::tolower(c);
+  });
 
   std::string final_filename = base_filename + ".json";
   std::string final_path = themes_path + "/" + final_filename;
@@ -1335,16 +1203,14 @@ VORTEX_API void vxe::CreateNewTheme(const std::shared_ptr<Theme> &base_theme,
     file << std::setw(4) << theme_json << std::endl;
     vxe::LogInfo("Theme", "New theme created: " + final_filename);
   } catch (const std::exception &e) {
-    vxe::LogError("Theme",
-                  "Failed to write new theme file: " + std::string(e.what()));
+    vxe::LogError("Theme", "Failed to write new theme file: " + std::string(e.what()));
   }
 }
 
-VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>>
-vxe::GetAllItemHandlersFor(const std::string &type) {
+VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> vxe::GetAllItemHandlersFor(const std::string &type) {
   std::vector<std::shared_ptr<ItemHandlerInterface>> list;
 
-  for (auto mod : vxe::GetCurrentContext()->IO.em) {
+  for (auto mod : vxe::get_current_context()->IO.em) {
     if (mod->m_state == "running") {
       for (auto handlers : mod->GetContentBrowserItemHandler()) {
         if (handlers->type == type)
@@ -1353,7 +1219,7 @@ vxe::GetAllItemHandlersFor(const std::string &type) {
     }
   }
 
-  for (auto plug : vxe::GetCurrentContext()->IO.ep) {
+  for (auto plug : vxe::get_current_context()->IO.ep) {
     if (plug->m_state == "running") {
       for (auto handlers : plug->GetContentBrowserItemHandler()) {
         if (handlers->type == type)
@@ -1366,12 +1232,11 @@ vxe::GetAllItemHandlersFor(const std::string &type) {
 }
 
 VORTEX_API void vxe::VerifyAndPouplateThemes() {
-  std::string themes_path = vxe::GetCurrentContext()->projectPath.string() +
-                            "/.vx/configs/themes/data";
+  std::string themes_path = vxe::get_current_context()->projectPath.string() + "/.vx/configs/themes/data";
 
   vxe::createFolderIfNotExists(themes_path);
 
-  const std::vector<std::string> required_themes = {"dark.json", "clear.json"};
+  const std::vector<std::string> required_themes = { "dark.json", "clear.json" };
 
   for (const auto &theme_file : required_themes) {
     std::string path = themes_path + "/" + theme_file;
@@ -1386,8 +1251,7 @@ VORTEX_API void vxe::VerifyAndPouplateThemes() {
         nlohmann::json theme_json;
         in >> theme_json;
 
-        if (!theme_json.contains("label") || !theme_json.contains("name") ||
-            !theme_json.contains("description") ||
+        if (!theme_json.contains("label") || !theme_json.contains("name") || !theme_json.contains("description") ||
             !theme_json.contains("authors") || !theme_json.contains("theme")) {
           vxe::LogError("Theme", theme_file + " is invalid. Recreating.");
           needs_creation = true;
@@ -1401,7 +1265,7 @@ VORTEX_API void vxe::VerifyAndPouplateThemes() {
     if (needs_creation && theme_file == "dark.json") {
       std::shared_ptr<Theme> dark_theme = std::make_shared<Theme>();
       dark_theme->description = "Default dark theme";
-      dark_theme->authors = {"Vortex DevTeam"};
+      dark_theme->authors = { "Vortex DevTeam" };
 
       // clang-format off
       std::map<std::string, std::string> properties = {
@@ -1585,113 +1449,112 @@ VORTEX_API void vxe::VerifyAndPouplateThemes() {
     } else if (needs_creation && theme_file == "clear.json") {
       std::shared_ptr<Theme> light_theme = std::make_shared<Theme>();
       light_theme->description = "Default light theme";
-      light_theme->authors = {"Vortex DevTeam"};
+      light_theme->authors = { "Vortex DevTeam" };
 
-      std::map<std::string, std::string> properties = {
-          {"color_header", "#EAEAEA"},
-          {"color_header_hovered", "#DCDCDC"},
-          {"color_header_active", "#D0D0D0"},
-          {"color", "#F5F5F5"},
-          {"color_hovered", "#EBEBEB"},
-          {"color_active", "#DADADA"},
-          {"color_framebg", "#FFFFFF"},
-          {"color_framebg_hovered", "#F0F0F0"},
-          {"color_framebg_active", "#E0E0E0"},
-          {"color_text", "#252525FF"},
-          {"color_tab", "#F2F2F2"},
-          {"color_tab_hovered", "#E6E6E6"},
-          {"color_tab_active", "#DDDDDD"},
-          {"color_tab_unfocused", "#F2F2F2"},
-          {"color_tab_unfocused_active", "#E6E6E6"},
-          {"color_titlebg", "#F0F0F0"},
-          {"color_titlebg_active", "#E0E0E0"},
-          {"color_titlebg_collapsed", "#FAFAFA"},
-          {"color_resizegrip", "#AAAAAA40"},
-          {"color_resizegrip_hovered", "#888888AA"},
-          {"color_resizegrip_active", "#3D7EFF"},
-          {"color_scrollbar_bg", "#EEEEEE"},
-          {"color_scrollbar_grab", "#C2C2C2"},
-          {"color_scrollbar_grab_hovered", "#A8A8A8"},
-          {"color_scrollbar_grab_active", "#8F8F8F"},
-          {"color_checkmark", "#3D7EFF"},
-          {"color_slidergrab", "#BBBBBB"},
-          {"color_slidergrab_active", "#3D7EFF"},
-          {"color_separator", "#DDDDDD"},
-          {"color_separator_active", "#3D7EFF"},
-          {"color_separator_hovered", "#CCCCCC"},
-          {"color_window_bg", "#FFFFFF"},
-          {"color_child_bg", "#F9F9F9"},
-          {"color_popup_bg", "#FFFFFF"},
-          {"color_border", "#DDDDDD"},
-          {"color_table_header_bg", "#EDEDED"},
-          {"color_table_border_light", "#F3F3F3"},
-          {"color_menubar_bg", "#FAFAFA"},
+      std::map<std::string, std::string> properties = { { "color_header", "#EAEAEA" },
+                                                        { "color_header_hovered", "#DCDCDC" },
+                                                        { "color_header_active", "#D0D0D0" },
+                                                        { "color", "#F5F5F5" },
+                                                        { "color_hovered", "#EBEBEB" },
+                                                        { "color_active", "#DADADA" },
+                                                        { "color_framebg", "#FFFFFF" },
+                                                        { "color_framebg_hovered", "#F0F0F0" },
+                                                        { "color_framebg_active", "#E0E0E0" },
+                                                        { "color_text", "#252525FF" },
+                                                        { "color_tab", "#F2F2F2" },
+                                                        { "color_tab_hovered", "#E6E6E6" },
+                                                        { "color_tab_active", "#DDDDDD" },
+                                                        { "color_tab_unfocused", "#F2F2F2" },
+                                                        { "color_tab_unfocused_active", "#E6E6E6" },
+                                                        { "color_titlebg", "#F0F0F0" },
+                                                        { "color_titlebg_active", "#E0E0E0" },
+                                                        { "color_titlebg_collapsed", "#FAFAFA" },
+                                                        { "color_resizegrip", "#AAAAAA40" },
+                                                        { "color_resizegrip_hovered", "#888888AA" },
+                                                        { "color_resizegrip_active", "#3D7EFF" },
+                                                        { "color_scrollbar_bg", "#EEEEEE" },
+                                                        { "color_scrollbar_grab", "#C2C2C2" },
+                                                        { "color_scrollbar_grab_hovered", "#A8A8A8" },
+                                                        { "color_scrollbar_grab_active", "#8F8F8F" },
+                                                        { "color_checkmark", "#3D7EFF" },
+                                                        { "color_slidergrab", "#BBBBBB" },
+                                                        { "color_slidergrab_active", "#3D7EFF" },
+                                                        { "color_separator", "#DDDDDD" },
+                                                        { "color_separator_active", "#3D7EFF" },
+                                                        { "color_separator_hovered", "#CCCCCC" },
+                                                        { "color_window_bg", "#FFFFFF" },
+                                                        { "color_child_bg", "#F9F9F9" },
+                                                        { "color_popup_bg", "#FFFFFF" },
+                                                        { "color_border", "#DDDDDD" },
+                                                        { "color_table_header_bg", "#EDEDED" },
+                                                        { "color_table_border_light", "#F3F3F3" },
+                                                        { "color_menubar_bg", "#FAFAFA" },
 
-          // Buttons
-          {"button_color_border", "#CCCCCC"},
-          {"button_color_border_hovered", "#BBBBBB"},
-          {"button_color_border_clicked", "#AAAAAA"},
-          {"button_color_border_pressed", "#3D7EFF"},
-          {"button_color_bg", "#F0F0F0"},
-          {"button_color_bg_hovered", "#E6E6E6"},
-          {"button_color_bg_pressed", "#DADADA"},
-          {"button_color_bg_clicked", "#DADADA"},
-          {"button_color_text", "#333333"},
-          {"button_color_text_hovered", "#000000"},
-          {"button_color_text_pressed", "#000000"},
-          {"button_color_underline", "#CCCCCC"},
-          {"button_color_underline_hovered", "#AAAAAA"},
-          {"button_color_underline_pressed", "#3D7EFF"},
-          {"button_size_x", "0"},
-          {"button_size_y", "0"},
-          {"button_padding_x", "6"},
-          {"button_padding_y", "6"},
-          {"button_scale", "0"},
+                                                        // Buttons
+                                                        { "button_color_border", "#CCCCCC" },
+                                                        { "button_color_border_hovered", "#BBBBBB" },
+                                                        { "button_color_border_clicked", "#AAAAAA" },
+                                                        { "button_color_border_pressed", "#3D7EFF" },
+                                                        { "button_color_bg", "#F0F0F0" },
+                                                        { "button_color_bg_hovered", "#E6E6E6" },
+                                                        { "button_color_bg_pressed", "#DADADA" },
+                                                        { "button_color_bg_clicked", "#DADADA" },
+                                                        { "button_color_text", "#333333" },
+                                                        { "button_color_text_hovered", "#000000" },
+                                                        { "button_color_text_pressed", "#000000" },
+                                                        { "button_color_underline", "#CCCCCC" },
+                                                        { "button_color_underline_hovered", "#AAAAAA" },
+                                                        { "button_color_underline_pressed", "#3D7EFF" },
+                                                        { "button_size_x", "0" },
+                                                        { "button_size_y", "0" },
+                                                        { "button_padding_x", "6" },
+                                                        { "button_padding_y", "6" },
+                                                        { "button_scale", "0" },
 
-          // Checkbox
-          {"checkbox_color_border", "#CCCCCC"},
-          {"checkbox_color_border_hovered", "#AAAAAA"},
-          {"checkbox_color_border_clicked", "#888888"},
-          {"checkbox_color_border_pressed", "#3D7EFF"},
-          {"checkbox_color_bg", "#FFFFFF"},
-          {"checkbox_color_bg_hovered", "#F5F5F5"},
-          {"checkbox_color_bg_pressed", "#E5E5E5"},
-          {"checkbox_color_bg_clicked", "#E5E5E5"},
-          {"checkbox_size_x", "6"},
-          {"checkbox_size_y", "6"},
+                                                        // Checkbox
+                                                        { "checkbox_color_border", "#CCCCCC" },
+                                                        { "checkbox_color_border_hovered", "#AAAAAA" },
+                                                        { "checkbox_color_border_clicked", "#888888" },
+                                                        { "checkbox_color_border_pressed", "#3D7EFF" },
+                                                        { "checkbox_color_bg", "#FFFFFF" },
+                                                        { "checkbox_color_bg_hovered", "#F5F5F5" },
+                                                        { "checkbox_color_bg_pressed", "#E5E5E5" },
+                                                        { "checkbox_color_bg_clicked", "#E5E5E5" },
+                                                        { "checkbox_size_x", "6" },
+                                                        { "checkbox_size_y", "6" },
 
-          // Tooltip
-          {"tooltip_color_border", "#CCCCCC"},
-          {"tooltip_color_border_hovered", "#AAAAAA"},
-          {"tooltip_color_border_clicked", "#888888"},
-          {"tooltip_color_bg", "#FAFAFA"},
-          {"tooltip_color_bg_hovered", "#F0F0F0"},
-          {"tooltip_color_bg_clicked", "#E0E0E0"},
+                                                        // Tooltip
+                                                        { "tooltip_color_border", "#CCCCCC" },
+                                                        { "tooltip_color_border_hovered", "#AAAAAA" },
+                                                        { "tooltip_color_border_clicked", "#888888" },
+                                                        { "tooltip_color_bg", "#FAFAFA" },
+                                                        { "tooltip_color_bg_hovered", "#F0F0F0" },
+                                                        { "tooltip_color_bg_clicked", "#E0E0E0" },
 
-          // Text Area
-          {"text_area_color_text", "#222222"},
+                                                        // Text Area
+                                                        { "text_area_color_text", "#222222" },
 
-          // Text
-          {"text_color_text", "#222222"},
+                                                        // Text
+                                                        { "text_color_text", "#222222" },
 
-          // Titles
-          {"title_color_text", "#000000"},
+                                                        // Titles
+                                                        { "title_color_text", "#000000" },
 
-          // Notification
-          {"notification_color_border", "#AAAAAA"},
-          {"notification_color_border_hovered", "#3D7EFF"},
-          {"notification_color_bg", "#FFFFFF"},
-          {"notification_color_bg_hovered", "#F7F7F7"},
+                                                        // Notification
+                                                        { "notification_color_border", "#AAAAAA" },
+                                                        { "notification_color_border_hovered", "#3D7EFF" },
+                                                        { "notification_color_bg", "#FFFFFF" },
+                                                        { "notification_color_bg_hovered", "#F7F7F7" },
 
-          // Blocks
-          {"block_color", "#F5F5F5"},
-          {"block_color_hovered", "#E5E5E5"},
-          {"block_color_pressed", "#D5D5D5"},
-          {"block_border_color", "#CCCCCC"},
-          {"block_border_color_hovered", "#BBBBBB"},
-          {"block_border_color_pressed", "#3D7EFF"},
-          {"block_border_radius", "0.0"},
-          {"block_border_size", "1.0"}};
+                                                        // Blocks
+                                                        { "block_color", "#F5F5F5" },
+                                                        { "block_color_hovered", "#E5E5E5" },
+                                                        { "block_color_pressed", "#D5D5D5" },
+                                                        { "block_border_color", "#CCCCCC" },
+                                                        { "block_border_color_hovered", "#BBBBBB" },
+                                                        { "block_border_color_pressed", "#3D7EFF" },
+                                                        { "block_border_radius", "0.0" },
+                                                        { "block_border_size", "1.0" } };
 
       for (const auto &[k, v] : properties) {
         light_theme->theme[k] = v;
@@ -1716,8 +1579,7 @@ VORTEX_API void vxe::UpdateProjectThemesComfig() {
     out << std::setw(4) << configJson << std::endl;
     vxe::LogInfo("Core", "Theme configuration updated.");
   } catch (const std::exception &e) {
-    vxe::LogError("Core", "Failed to update theme config file: " +
-                              std::string(e.what()));
+    vxe::LogError("Core", "Failed to update theme config file: " + std::string(e.what()));
   }
 }
 
@@ -1750,8 +1612,7 @@ VORTEX_API std::string vxe::CreateFile(const std::string &path) {
 
   int counter = 2;
   while (fs::exists(fullPath)) {
-    fullPath =
-        basePath / (baseName + " " + std::to_string(counter) + extension);
+    fullPath = basePath / (baseName + " " + std::to_string(counter) + extension);
     ++counter;
   }
 
@@ -1777,8 +1638,7 @@ VORTEX_API std::string vxe::CreateFolder(const std::string &path) {
   return fs::absolute(fullPath).string();
 }
 
-VORTEX_API void vxe::RenameFile(const std::string &target_path,
-                                const std::string &new_name) {
+VORTEX_API void vxe::RenameFile(const std::string &target_path, const std::string &new_name) {
   namespace fs = std::filesystem;
 
   try {
@@ -1798,10 +1658,8 @@ VORTEX_API void vxe::RenameFile(const std::string &target_path,
 
 VORTEX_API void vxe::DeleteFile(const std::string &target_path) {
   try {
-    if (!std::filesystem::exists(target_path) ||
-        !std::filesystem::is_regular_file(target_path)) {
-      throw std::invalid_argument(
-          "The specified path does not exist or is not a file.");
+    if (!std::filesystem::exists(target_path) || !std::filesystem::is_regular_file(target_path)) {
+      throw std::invalid_argument("The specified path does not exist or is not a file.");
     }
 
     std::filesystem::remove(target_path);
@@ -1816,10 +1674,8 @@ VORTEX_API void vxe::DeleteFile(const std::string &target_path) {
 
 VORTEX_API void vxe::DeleteFolder(const std::string &target_path) {
   try {
-    if (!std::filesystem::exists(target_path) ||
-        !std::filesystem::is_directory(target_path)) {
-      throw std::invalid_argument(
-          "The specified path does not exist or is not a directory.");
+    if (!std::filesystem::exists(target_path) || !std::filesystem::is_directory(target_path)) {
+      throw std::invalid_argument("The specified path does not exist or is not a directory.");
     }
 
     std::filesystem::remove_all(target_path);
@@ -1843,8 +1699,7 @@ VORTEX_API void vxe::DeletePath(const std::string &target_path) {
     } else if (std::filesystem::is_regular_file(target_path)) {
       DeleteFile(target_path);
     } else {
-      throw std::invalid_argument(
-          "The specified path is neither a regular file nor a directory.");
+      throw std::invalid_argument("The specified path is neither a regular file nor a directory.");
     }
   } catch (const std::exception &e) {
     std::cerr << "Error: " << e.what() << '\n';
@@ -1853,9 +1708,8 @@ VORTEX_API void vxe::DeletePath(const std::string &target_path) {
   }
 }
 
-VORTEX_API void vxe::AddCredits(const std::string &topic,
-                                const std::string &credit_file) {
-  auto ctx = vxe::GetCurrentContext();
+VORTEX_API void vxe::AddCredits(const std::string &topic, const std::string &credit_file) {
+  auto ctx = vxe::get_current_context();
 
   std::ifstream file(credit_file);
   if (!file.is_open()) {
@@ -1872,8 +1726,7 @@ VORTEX_API void vxe::AddCredits(const std::string &topic,
     auto trim = [](std::string s) -> std::string {
       size_t start = s.find_first_not_of(" \t\r\n");
       size_t end = s.find_last_not_of(" \t\r\n");
-      return (start == std::string::npos) ? ""
-                                          : s.substr(start, end - start + 1);
+      return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
     };
     line = trim(line);
 
@@ -1932,9 +1785,8 @@ VORTEX_API void vxe::AddCredits(const std::string &topic,
   }
 }
 
-VORTEX_API void vxe::SetCreditsFile(const std::string &topic,
-                                    const std::string &credit_file) {
-  auto ctx = vxe::GetCurrentContext();
+VORTEX_API void vxe::SetCreditsFile(const std::string &topic, const std::string &credit_file) {
+  auto ctx = vxe::get_current_context();
 
   TopicCredits &tc = ctx->credits[topic];
 
@@ -1954,8 +1806,7 @@ VORTEX_API void vxe::SetCreditsFile(const std::string &topic,
     auto trim = [](std::string s) -> std::string {
       size_t start = s.find_first_not_of(" \t\r\n");
       size_t end = s.find_last_not_of(" \t\r\n");
-      return (start == std::string::npos) ? ""
-                                          : s.substr(start, end - start + 1);
+      return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
     };
 
     line = trim(line);
@@ -2011,9 +1862,8 @@ VORTEX_API void vxe::SetCreditsFile(const std::string &topic,
   }
 }
 
-VORTEX_API std::vector<std::string>
-vxe::GetTitlesFromTopic(const std::string &topic) {
-  auto ctx = vxe::GetCurrentContext();
+VORTEX_API std::vector<std::string> vxe::GetTitlesFromTopic(const std::string &topic) {
+  auto ctx = vxe::get_current_context();
 
   auto it = ctx->credits.find(topic);
   if (it == ctx->credits.end())
@@ -2022,10 +1872,8 @@ vxe::GetTitlesFromTopic(const std::string &topic) {
   return it->second.title_order;
 }
 
-VORTEX_API std::vector<std::string>
-vxe::GetNamesFromTopicAndTitle(const std::string &topic,
-                               const std::string &title) {
-  auto ctx = vxe::GetCurrentContext();
+VORTEX_API std::vector<std::string> vxe::GetNamesFromTopicAndTitle(const std::string &topic, const std::string &title) {
+  auto ctx = vxe::get_current_context();
 
   auto it = ctx->credits.find(topic);
   if (it == ctx->credits.end())
@@ -2051,11 +1899,12 @@ vxe::GetNamesFromTopicAndTitle(const std::string &topic,
   return results;
 }
 
-VORTEX_API void vxe::AddDocumentation(const std::string &topic,
-                                      const std::string &section,
-                                      const std::string &title,
-                                      const std::string &md_file_path) {
-  auto ctx = vxe::GetCurrentContext();
+VORTEX_API void vxe::AddDocumentation(
+    const std::string &topic,
+    const std::string &section,
+    const std::string &title,
+    const std::string &md_file_path) {
+  auto ctx = vxe::get_current_context();
   DocumentationFile doc;
   doc.title = title;
   doc.file_path = md_file_path;
@@ -2064,7 +1913,7 @@ VORTEX_API void vxe::AddDocumentation(const std::string &topic,
 }
 
 VORTEX_API std::vector<std::string> vxe::GetSections(const std::string &topic) {
-  auto ctx = vxe::GetCurrentContext();
+  auto ctx = vxe::get_current_context();
   std::vector<std::string> section_names;
 
   if (ctx->documentations.count(topic)) {
@@ -2075,9 +1924,8 @@ VORTEX_API std::vector<std::string> vxe::GetSections(const std::string &topic) {
   return section_names;
 }
 
-VORTEX_API std::vector<std::string>
-vxe::GetChapters(const std::string &topic, const std::string &section) {
-  auto ctx = vxe::GetCurrentContext();
+VORTEX_API std::vector<std::string> vxe::GetChapters(const std::string &topic, const std::string &section) {
+  auto ctx = vxe::get_current_context();
   std::vector<std::string> chapter_titles;
 
   if (ctx->documentations.count(topic)) {
@@ -2091,10 +1939,9 @@ vxe::GetChapters(const std::string &topic, const std::string &section) {
   return chapter_titles;
 }
 
-VORTEX_API std::string vxe::GetChapterFilePath(const std::string &topic,
-                                               const std::string &section,
-                                               const std::string &title) {
-  auto ctx = vxe::GetCurrentContext();
+VORTEX_API std::string
+vxe::GetChapterFilePath(const std::string &topic, const std::string &section, const std::string &title) {
+  auto ctx = vxe::get_current_context();
 
   auto it_topic = ctx->documentations.find(topic);
   if (it_topic == ctx->documentations.end())
@@ -2115,176 +1962,239 @@ VORTEX_API std::string vxe::GetChapterFilePath(const std::string &topic,
 
 VORTEX_API void vxe::AddVortexDocumentation() {
   vxe::AddDocumentation(
-      "vx", "Introduction", "Introduction",
-      Cherry::GetPath(
-          "docs/get_started/contents/introduction/introduction.md"));
+      "vx", "Introduction", "Introduction", Cherry::GetPath("docs/get_started/contents/introduction/introduction.md"));
   vxe::AddDocumentation(
-      "vx", "Introduction", "What is Vortex ?",
-      Cherry::GetPath(
-          "docs/get_started/contents/introduction/what_is_vortex.md"));
+      "vx", "Introduction", "What is Vortex ?", Cherry::GetPath("docs/get_started/contents/introduction/what_is_vortex.md"));
   vxe::AddDocumentation(
-      "vx", "Introduction", "Install Vortex",
-      Cherry::GetPath(
-          "docs/get_started/contents/introduction/install_vortex.md"));
+      "vx", "Introduction", "Install Vortex", Cherry::GetPath("docs/get_started/contents/introduction/install_vortex.md"));
   vxe::AddDocumentation(
-      "vx", "Introduction", "Get started",
-      Cherry::GetPath("docs/get_started/contents/introduction/get_started.md"));
+      "vx", "Introduction", "Get started", Cherry::GetPath("docs/get_started/contents/introduction/get_started.md"));
 
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher", "Understand Vortex Launcher",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "understand_vortexlauncher.md"));
+      "vx",
+      "Take the Vortex Launcher",
+      "Understand Vortex Launcher",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "understand_vortexlauncher.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher", "Discover interface",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "discover_interface.md"));
+      "vx",
+      "Take the Vortex Launcher",
+      "Discover interface",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "discover_interface.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher", "Update the launcher",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "update_launcher.md"));
+      "vx",
+      "Take the Vortex Launcher",
+      "Update the launcher",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "update_launcher.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher", "Manage projects",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "manage_projects.md"));
+      "vx",
+      "Take the Vortex Launcher",
+      "Manage projects",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "manage_projects.md"));
 
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher", "Understand logical contents:Brief",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "understand_logical_contents.md"));
+      "vx",
+      "Take the Vortex Launcher",
+      "Understand logical contents:Brief",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "understand_logical_contents.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher",
+      "vx",
+      "Take the Vortex Launcher",
       "Understand logical contents:Manage system modules",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "manage_system_modules.md"));
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "manage_system_modules.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher",
+      "vx",
+      "Take the Vortex Launcher",
       "Understand logical contents:Manage system plugins",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "manage_system_plugins.md"));
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "manage_system_plugins.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher", "Understand static contents:Brief",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "understand_static_contents.md"));
+      "vx",
+      "Take the Vortex Launcher",
+      "Understand static contents:Brief",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "understand_static_contents.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher",
+      "vx",
+      "Take the Vortex Launcher",
       "Understand static contents:Manage system templates",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "manage_system_templates.md"));
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "manage_system_templates.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher",
+      "vx",
+      "Take the Vortex Launcher",
       "Understand static contents:Manage system contents",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "manage_system_contents.md"));
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "manage_system_contents.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher", "Manage Vortex Editors",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "manage_vortex_editor_versions.md"));
+      "vx",
+      "Take the Vortex Launcher",
+      "Manage Vortex Editors",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "manage_vortex_editor_versions.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher", "Subscribe to beta",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "subscribe_to_beta.md"));
+      "vx",
+      "Take the Vortex Launcher",
+      "Subscribe to beta",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "subscribe_to_beta.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Launcher", "Uninstallation",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_launcher/"
-                      "uninstall.md"));
+      "vx",
+      "Take the Vortex Launcher",
+      "Uninstallation",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_launcher/"
+          "uninstall.md"));
 
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Understand Vortex Editor",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "understand_vortexeditor.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Understand Vortex Editor",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "understand_vortexeditor.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Discover interface",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "discover_interface.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Discover interface",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "discover_interface.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Content Browser",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "content_browser.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Content Browser",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "content_browser.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Project settings",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "project_settings.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Project settings",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "project_settings.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Console logs",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "console_logs.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Console logs",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "console_logs.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Handle modules",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "handle_modules.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Handle modules",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "handle_modules.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Handle plugins",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "handle_plugins.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Handle plugins",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "handle_plugins.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Import contents",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "import_contents.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Import contents",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "import_contents.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Create with templates",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "create_with_templates.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Create with templates",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "create_with_templates.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Share Contents:Brief",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "share_contents.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Share Contents:Brief",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "share_contents.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Share Contents:Export project/tool",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "export_project.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Share Contents:Export project/tool",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "export_project.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Share Contents:Share a content",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "share_a_content.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Share Contents:Share a content",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "share_a_content.md"));
   vxe::AddDocumentation(
-      "vx", "Take the Vortex Editor", "Share Contents:Share a content",
-      Cherry::GetPath("docs/get_started/contents/take_vortex_editor/"
-                      "create_a_template.md"));
+      "vx",
+      "Take the Vortex Editor",
+      "Share Contents:Share a content",
+      Cherry::GetPath(
+          "docs/get_started/contents/take_vortex_editor/"
+          "create_a_template.md"));
 }
 
-void vxe::PushEditMenuItem(const std::string &title,
-                           const std::function<void()> &action,
-                           const std::string &logo,
-                           const std::string &section) {
-  auto ctx = vxe::GetCurrentContext();
-  ctx->editMenuItems.push_back({title, action, logo, section});
+void vxe::PushEditMenuItem(
+    const std::string &title,
+    const std::function<void()> &action,
+    const std::string &logo,
+    const std::string &section) {
+  auto ctx = vxe::get_current_context();
+  ctx->editMenuItems.push_back({ title, action, logo, section });
 }
 
 void vxe::PopEditMenuItem(const int &count) {
   if (count <= 0)
     return;
 
-  auto ctx = vxe::GetCurrentContext();
-  const int remove =
-      (std::min)(count, static_cast<int>(ctx->editMenuItems.size()));
-  ctx->editMenuItems.erase(ctx->editMenuItems.end() - remove,
-                           ctx->editMenuItems.end());
+  auto ctx = vxe::get_current_context();
+  const int remove = (std::min)(count, static_cast<int>(ctx->editMenuItems.size()));
+  ctx->editMenuItems.erase(ctx->editMenuItems.end() - remove, ctx->editMenuItems.end());
 }
 
 void vxe::ClearEditMenuItem() {
-  auto ctx = vxe::GetCurrentContext();
+  auto ctx = vxe::get_current_context();
   ctx->editMenuItems.clear();
 }
 
-void vxe::PushCustomMenu(const std::string &title,
-                         const std::function<void()> &render) {
-  auto ctx = vxe::GetCurrentContext();
-  ctx->customMenus.push_back({title, render});
+void vxe::PushCustomMenu(const std::string &title, const std::function<void()> &render) {
+  auto ctx = vxe::get_current_context();
+  ctx->customMenus.push_back({ title, render });
 }
 
 void vxe::PopCustomMenu(const int &count) {
   if (count <= 0)
     return;
 
-  auto ctx = vxe::GetCurrentContext();
-  const int remove =
-      (std::min)(count, static_cast<int>(ctx->customMenus.size()));
-  ctx->customMenus.erase(ctx->customMenus.end() - remove,
-                         ctx->customMenus.end());
+  auto ctx = vxe::get_current_context();
+  const int remove = (std::min)(count, static_cast<int>(ctx->customMenus.size()));
+  ctx->customMenus.erase(ctx->customMenus.end() - remove, ctx->customMenus.end());
 }
 
 void vxe::ClearCustomMenus() {
-  auto ctx = vxe::GetCurrentContext();
+  auto ctx = vxe::get_current_context();
   ctx->customMenus.clear();
 }
-#endif // VORTEX_DISABLE
+#endif  // VORTEX_DISABLE

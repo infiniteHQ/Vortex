@@ -32,67 +32,6 @@
 #include "./vortex/scripting/scripting.hpp"
 //_____________________________________________________________________________
 
-// Enable SSE intrinsics if available
-#if (defined __SSE__ || defined __x86_64__ || defined _M_X64 ||                \
-     (defined(_M_IX86_FP) && (_M_IX86_FP >= 1))) &&                            \
-    !defined(IMGUI_DISABLE_SSE)
-#define IMGUI_ENABLE_SSE
-#include <immintrin.h>
-#endif
-
-// Visual Studio warnings
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4251) // class 'xxx' needs to have dll-interface to be
-                                // used by clients of struct 'xxx' // when
-                                // IMGUI_API is set to__declspec(dllexport)
-#pragma warning(                                                               \
-    disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class'
-                     // over 'enum' (Enum.3). [MSVC Static Analyzer)
-#pragma warning(                                                               \
-    disable : 26495) // [Static Analyzer] Variable 'XXX' is uninitialized.
-                     // Always initialize a member variable (type.6).
-#if defined(_MSC_VER) && _MSC_VER >= 1922 // MSVC 2019 16.2 or later
-#pragma warning(disable : 5054) // operator '|': deprecated between enumerations
-                                // of different types
-#endif
-#endif
-
-// Clang/GCC warnings with -Weverything
-#if defined(__clang__)
-#pragma clang diagnostic push
-#if __has_warning("-Wunknown-warning-option")
-#pragma clang diagnostic ignored                                               \
-    "-Wunknown-warning-option" // warning: unknown warning group 'xxx'
-#endif
-#pragma clang diagnostic ignored                                               \
-    "-Wunknown-pragmas" // warning: unknown warning group 'xxx'
-#pragma clang diagnostic ignored                                               \
-    "-Wfloat-equal" // warning: comparing floating point with == or != is unsafe
-                    // // storing and comparing against same constants ok, for
-                    // ImFloor()
-#pragma clang diagnostic ignored "-Wunused-function"    // for stb_textedit.h
-#pragma clang diagnostic ignored "-Wmissing-prototypes" // for stb_textedit.h
-#pragma clang diagnostic ignored "-Wold-style-cast"
-#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
-#pragma clang diagnostic ignored "-Wdouble-promotion"
-#pragma clang diagnostic ignored                                               \
-    "-Wimplicit-int-float-conversion" // warning: implicit conversion from 'xxx'
-                                      // to 'float' may lose precision
-#pragma clang diagnostic ignored                                               \
-    "-Wmissing-noreturn" // warning: function 'xxx' could be declared with
-                         // attribute 'noreturn'
-#elif defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored                                                 \
-    "-Wpragmas" // warning: unknown option after '#pragma GCC diagnostic' kind
-#pragma GCC diagnostic ignored                                                 \
-    "-Wclass-memaccess" // [__GNUC__ >= 8] warning: 'memset/memcpy'
-                        // clearing/writing an object of type 'xxxx' with no
-                        // trivial copy-assignment; use assignment or
-                        // value-initialization instead
-#endif
-
 //_____________________________________________________________________________
 // [SECTION] Forward declarations
 //_____________________________________________________________________________
@@ -104,7 +43,7 @@ struct VxContext;
 // See implementation of this variable in imgui.cpp for comments and details.
 //_____________________________________________________________________________
 #ifndef CVortexMaker
-extern VORTEX_API VxContext *CVortexMaker; // Current implicit context pointer
+extern VORTEX_API VxContext *CVortexMaker;  // Current implicit context pointer
 #endif
 //_____________________________________________________________________________
 
@@ -119,16 +58,17 @@ extern VORTEX_API VxContext *CVortexMaker; // Current implicit context pointer
 // [SECTION]: Generic helpers & utils
 //_____________________________________________________________________________
 
-#define Vx_STRING_TO_INT(_str, _h) str2int(_str, _h);
 #define Vx_BASE64ENCODE(_toencodebuffer) base64_encode(_toencodebuffer);
 #define Vx_BASE64DECODE(_todecodebuffer) base64_decode(_todecodebuffer);
 
 //_____________________________________________________________________________
 
 struct VortexMakerDebugAllocInfo {
-  int TotalAllocCount; // Number of call to MemAlloc().
+  int TotalAllocCount;  // Number of call to MemAlloc().
   int TotalFreeCount;
-  VortexMakerDebugAllocInfo() { memset(this, 0, sizeof(*this)); }
+  VortexMakerDebugAllocInfo() {
+    memset(this, 0, sizeof(*this));
+  }
 };
 
 //_____________________________________________________________________________
@@ -141,9 +81,10 @@ struct VxSystemLog {
   std::string m_message;
   std::string m_timestamp;
 
-  VxSystemLog(spdlog::level::level_enum level, std::string filter,
-              std::string message)
-      : m_level(level), m_filter(filter), m_message(message) {};
+  VxSystemLog(spdlog::level::level_enum level, std::string filter, std::string message)
+      : m_level(level),
+        m_filter(filter),
+        m_message(message) { };
 };
 
 struct EnvProject {
@@ -158,7 +99,7 @@ struct EnvProject {
 };
 
 class ContenBrowserItem {
-public:
+ public:
   bool (*f_Detect)(const std::string &path);
 
   std::string m_Name;
@@ -167,15 +108,19 @@ public:
   ImVec4 m_LineColor;
   std::string m_Description;
 
-  ContenBrowserItem(bool (*detect_function)(const std::string &path),
-                    const std::string &name, const std::string &description,
-                    const ImVec4 &line_color)
-      : m_Name(name), m_Description(description), f_Detect(detect_function),
-        m_LineColor(line_color) {};
+  ContenBrowserItem(
+      bool (*detect_function)(const std::string &path),
+      const std::string &name,
+      const std::string &description,
+      const ImVec4 &line_color)
+      : m_Name(name),
+        m_Description(description),
+        f_Detect(detect_function),
+        m_LineColor(line_color) { };
 };
 
 class ContenBrowserHandler {
-public:
+ public:
   void (*f_Execute)(const std::string &path);
 
   std::string m_Name;
@@ -187,7 +132,7 @@ public:
 
 // All custom pinned folder.
 class ContenBrowserPinnedFolder {
-public:
+ public:
   std::string m_Name;
   std::string m_Path;
   std::string m_Logo;
@@ -196,7 +141,7 @@ public:
 
 // On a custom folder, we can change the logo, the color, if it is favorite.
 class ContenBrowserCustomFolder {
-public:
+ public:
   std::string m_Name;
   ImTextureID m_Logo;
   ImVec4 m_LineColor;
@@ -204,7 +149,7 @@ public:
 };
 
 class ModuleInterfaceUtility {
-  virtual void render() {};
+  virtual void render() { };
 
   std::string m_Name;
   ImTextureID m_Logo;
@@ -233,7 +178,7 @@ struct SessionState {
 };
 
 struct ItemIdentifierInterface {
-public:
+ public:
   bool (*f_Detect)(const std::string &path);
 
   std::string m_Name;
@@ -243,15 +188,19 @@ public:
   std::string m_LineColor;
   std::string m_Description;
 
-  ItemIdentifierInterface(bool (*detect_function)(const std::string &path),
-                          const std::string &name,
-                          const std::string &description,
-                          const std::string &line_color,
-                          const std::string &logo_path = "",
-                          const std::string &bg_image_path = "")
-      : m_Name(name), m_Description(description), f_Detect(detect_function),
-        m_LineColor(line_color), m_LogoPath(logo_path),
-        m_BackgroundImagePath(bg_image_path) {};
+  ItemIdentifierInterface(
+      bool (*detect_function)(const std::string &path),
+      const std::string &name,
+      const std::string &description,
+      const std::string &line_color,
+      const std::string &logo_path = "",
+      const std::string &bg_image_path = "")
+      : m_Name(name),
+        m_Description(description),
+        f_Detect(detect_function),
+        m_LineColor(line_color),
+        m_LogoPath(logo_path),
+        m_BackgroundImagePath(bg_image_path) { };
 };
 
 struct ItemHandlerInterface {
@@ -261,11 +210,18 @@ struct ItemHandlerInterface {
   std::string description;
   std::string logo;
 
-  ItemHandlerInterface(const std::string &ty,
-                       std::function<void(const std::string &)> h,
-                       const std::string &ti, const std::string &d = "",
-                       const std::string &l = "")
-      : handler(std::move(h)), type(ty), title(ti), description(d), logo(l) {}
+  ItemHandlerInterface(
+      const std::string &ty,
+      std::function<void(const std::string &)> h,
+      const std::string &ti,
+      const std::string &d = "",
+      const std::string &l = "")
+      : handler(std::move(h)),
+        type(ty),
+        title(ti),
+        description(d),
+        logo(l) {
+  }
 };
 
 // Todo : Creation configurations (names, variantes, etc)
@@ -277,12 +233,17 @@ struct ItemCreatorInterface {
   std::string m_LineColor;
   std::string m_Description;
 
-  ItemCreatorInterface(std::function<void(const std::string &path)> function,
-                       const std::string &name, const std::string &description,
-                       const std::string &line_color = "#343434",
-                       const std::string &logo_path = "")
-      : m_Name(name), m_Description(description), f_CreateFunction(function),
-        m_LineColor(line_color), m_LogoPath(logo_path) {};
+  ItemCreatorInterface(
+      std::function<void(const std::string &path)> function,
+      const std::string &name,
+      const std::string &description,
+      const std::string &line_color = "#343434",
+      const std::string &logo_path = "")
+      : m_Name(name),
+        m_Description(description),
+        f_CreateFunction(function),
+        m_LineColor(line_color),
+        m_LogoPath(logo_path) { };
 };
 
 enum class DevFlag {
@@ -344,20 +305,19 @@ struct VxIO {
   std::vector<std::shared_ptr<Theme>> themes;
   std::string used_theme;
   std::vector<std::string> override_themes;
-  bool theme_changed = false; // Flag, when the user change the theme this flag
-                              // will be true and the UI will be rebuilded wich
-                              // changed values, whatever if refresh or test
+  bool theme_changed = false;  // Flag, when the user change the theme this flag
+                               // will be true and the UI will be rebuilded wich
+                               // changed values, whatever if refresh or test
 
   // Content browser items
   std::vector<std::shared_ptr<ContenBrowserItem>> contentbrowser_items;
-  std::vector<std::shared_ptr<ContentBrowserCustomFolder>>
-      contentbrowser_customfolders;
+  std::vector<std::shared_ptr<ContentBrowserCustomFolder>> contentbrowser_customfolders;
   std::string contentbrowser_mainpool;
   std::string contentbrowser_absolute_mainpool;
   std::vector<std::pair<std::string, std::string>> contentbrowser_pools;
   std::vector<std::string> copy_selection;
   std::vector<std::string> cut_selection;
-  float past_state; // from 0.0f (0%) to 1.0f (100%)
+  float past_state;  // from 0.0f (0%) to 1.0f (100%)
 
   // Main utilities
   std::vector<std::shared_ptr<ModuleInterfaceUtility>> em_utilities;
@@ -417,8 +377,7 @@ struct VxContext {
   bool logger_registering = true;
   std::shared_ptr<spdlog::logger> global_logger;
   std::shared_ptr<spdlog::logger> console_logger;
-  std::vector<std::pair<std::string, std::shared_ptr<spdlog::logger>>>
-      pool_loggers;
+  std::vector<std::pair<std::string, std::shared_ptr<spdlog::logger>>> pool_loggers;
 
   // Vendor
   PlatformVendor m_PlatformVendor;
@@ -492,51 +451,45 @@ struct VxContext {
 //__________________________________________________________________________________________________________________
 namespace vxe {
 
-// Utils & Base
-VORTEX_API void
-DebugAllocHook(VortexMakerDebugAllocInfo *info, void *ptr,
-               size_t size); // size >= 0 : alloc, size = -1 : free
-VORTEX_API void
-AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility);
-VORTEX_API void
-AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item);
+  // Utils & Base
+  VORTEX_API void DebugAllocHook(
+      VortexMakerDebugAllocInfo *info,
+      void *ptr,
+      size_t size);  // size >= 0 : alloc, size = -1 : free
+  VORTEX_API void AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility);
+  VORTEX_API void AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item);
 
-// Publish to ROM
-VORTEX_API void PublishContentBrowserCustomFolder(const std::string &path,
-                                                  const std::string &hex_color,
-                                                  const bool &isFav);
-VORTEX_API void PublishPool(const std::string &absolute_pool_path,
-                            const std::string &name);
-VORTEX_API void PostCustomFolderToJson();
-VORTEX_API void PostPoolsToJson();
+  // Publish to ROM
+  VORTEX_API void
+  PublishContentBrowserCustomFolder(const std::string &path, const std::string &hex_color, const bool &isFav);
+  VORTEX_API void PublishPool(const std::string &absolute_pool_path, const std::string &name);
+  VORTEX_API void PostCustomFolderToJson();
+  VORTEX_API void PostPoolsToJson();
 
-// Fetch from ROM
-VORTEX_API void FetchCustomFolders();
-VORTEX_API void FetchPools();
+  // Fetch from ROM
+  VORTEX_API void FetchCustomFolders();
+  VORTEX_API void FetchPools();
 
-// Cotnent browser IO manipulations
-VORTEX_API bool ContentBrowserFolderIsFav(const std::string &path);
-VORTEX_API bool GetContentBrowserFolderColor(const std::string &path,
-                                             ImU32 *color);
+  // Cotnent browser IO manipulations
+  VORTEX_API bool ContentBrowserFolderIsFav(const std::string &path);
+  VORTEX_API bool GetContentBrowserFolderColor(const std::string &path, ImU32 *color);
 
-VORTEX_API void Copy(std::vector<std::string> selection, bool in_addition);
-VORTEX_API void Cut(std::vector<std::string> selection, bool in_addition);
-VORTEX_API void ClearCopySelection();
-VORTEX_API void ClearCutSelection();
-VORTEX_API void PasteAllSelections(const std::string &target_path);
+  VORTEX_API void Copy(std::vector<std::string> selection, bool in_addition);
+  VORTEX_API void Cut(std::vector<std::string> selection, bool in_addition);
+  VORTEX_API void ClearCopySelection();
+  VORTEX_API void ClearCutSelection();
+  VORTEX_API void PasteAllSelections(const std::string &target_path);
 
-VORTEX_API void DeleteFolder(const std::string &target_path);
-VORTEX_API void DeleteFile(const std::string &target_path);
-VORTEX_API void DeletePath(const std::string &target_path);
+  VORTEX_API void DeleteFolder(const std::string &target_path);
+  VORTEX_API void DeleteFile(const std::string &target_path);
+  VORTEX_API void DeletePath(const std::string &target_path);
 
-VORTEX_API void RenameFolder(const std::string &target_path,
-                             const std::string &new_name);
-VORTEX_API void RenameFile(const std::string &target_path,
-                           const std::string &new_name);
+  VORTEX_API void RenameFolder(const std::string &target_path, const std::string &new_name);
+  VORTEX_API void RenameFile(const std::string &target_path, const std::string &new_name);
 
-VORTEX_API ImU32 HexToImU32(const std::string &hex);
-VORTEX_API std::string ImU32ToHex(ImU32 color);
-} // namespace vxe
+  VORTEX_API ImU32 HexToImU32(const std::string &hex);
+  VORTEX_API std::string ImU32ToHex(ImU32 color);
+}  // namespace vxe
 //_____________________________________________________________________________
 
-#endif // VORTEX_DISABLE
+#endif  // VORTEX_DISABLE

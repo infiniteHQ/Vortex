@@ -42,13 +42,15 @@ VORTEX_API struct LuaItemHandler {
   std::shared_ptr<PluginInterface> plugin;
 
   LuaItemHandler(int ref, lua_State *state, std::shared_ptr<PluginInterface> p)
-      : lua_ref(ref), L(state), plugin(std::move(p)) {}
+      : lua_ref(ref),
+        L(state),
+        plugin(std::move(p)) {
+  }
 
   LuaItemHandler(const LuaItemHandler &) = delete;
   LuaItemHandler &operator=(const LuaItemHandler &) = delete;
 
-  LuaItemHandler(LuaItemHandler &&other) noexcept
-      : lua_ref(other.lua_ref), L(other.L), plugin(std::move(other.plugin)) {
+  LuaItemHandler(LuaItemHandler &&other) noexcept : lua_ref(other.lua_ref), L(other.L), plugin(std::move(other.plugin)) {
     other.lua_ref = LUA_NOREF;
     other.L = nullptr;
   }
@@ -63,9 +65,9 @@ VORTEX_API struct LuaItemHandler {
 
     int type = lua_rawgeti(L, LUA_REGISTRYINDEX, lua_ref);
     if (type != LUA_TFUNCTION) {
-      vxe::LogError("LuaHandler", "Corrupted register : ID " +
-                                      std::to_string(lua_ref) + " is type " +
-                                      std::string(lua_typename(L, type)));
+      vxe::LogError(
+          "LuaHandler",
+          "Corrupted register : ID " + std::to_string(lua_ref) + " is type " + std::string(lua_typename(L, type)));
       lua_pop(L, 1);
 
       lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
@@ -94,21 +96,21 @@ VORTEX_API struct LuaItemHandler {
   }
 };
 VORTEX_API struct PluginInterfaceDep {
-  std::string type; // em, plugin, etc..
+  std::string type;  // em, plugin, etc..
   std::string name;
   std::vector<std::string> supported_versions;
   bool satisfied;
 };
 
-VORTEX_API class PluginInterface
-    : public std::enable_shared_from_this<PluginInterface> {
-public:
-  virtual ~PluginInterface() {}
+VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInterface> {
+ public:
+  virtual ~PluginInterface() {
+  }
 
   // Main functions
-  virtual void execute() {};
-  virtual void destroy() {};
-  virtual void render() {};
+  virtual void execute() { };
+  virtual void destroy() { };
+  virtual void render() { };
 
   VORTEX_API void Start();
   VORTEX_API void Stop();
@@ -123,57 +125,38 @@ public:
   VORTEX_API void ResetPlugin();
 
   // Functions of the plugins (gives the Vortex abstraction/features)
-  VORTEX_API void AddFunction(std::function<void()> foo,
-                              const std::string &name);
-  VORTEX_API void AddFunction(std::function<void(ArgumentValues &)> foo,
-                              const std::string &name);
-  VORTEX_API void AddFunction(std::function<void(ReturnValues &)> foo,
-                              const std::string &name);
-  VORTEX_API void
-  AddFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo,
-              const std::string &name);
+  VORTEX_API void AddFunction(std::function<void()> foo, const std::string &name);
+  VORTEX_API void AddFunction(std::function<void(ArgumentValues &)> foo, const std::string &name);
+  VORTEX_API void AddFunction(std::function<void(ReturnValues &)> foo, const std::string &name);
+  VORTEX_API void AddFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
   VORTEX_API void ExecuteFunction(const std::string &name);
-  VORTEX_API void ExecuteFunction(const std::string &name,
-                                  ArgumentValues &args);
+  VORTEX_API void ExecuteFunction(const std::string &name, ArgumentValues &args);
   VORTEX_API void ExecuteFunction(const std::string &name, ReturnValues &ret);
-  VORTEX_API void ExecuteFunction(const std::string &name, ArgumentValues &args,
-                                  ReturnValues &ret);
+  VORTEX_API void ExecuteFunction(const std::string &name, ArgumentValues &args, ReturnValues &ret);
 
   VORTEX_API std::string GetPath();
   VORTEX_API std::string CookPath(const std::string &path);
   VORTEX_API std::string GetMainScriptPath();
 
   // Documentation
-  VORTEX_API void AddDocumentation(const std::string &section,
-                                   const std::string &title,
-                                   const std::string &path);
+  VORTEX_API void AddDocumentation(const std::string &section, const std::string &title, const std::string &path);
   // Output Events
   // A output event is triggered via vxe::ExecuteOutputEvent() by the
   // current component to all concerned extern components with the output event
   // added.
-  VORTEX_API void AddOutputEvent(std::function<void()> foo,
-                                 const std::string &name);
-  VORTEX_API void AddOutputEvent(std::function<void(ArgumentValues &)> foo,
-                                 const std::string &name);
-  VORTEX_API void AddOutputEvent(std::function<void(ReturnValues &)> foo,
-                                 const std::string &name);
-  VORTEX_API void
-  AddOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo,
-                 const std::string &name);
+  VORTEX_API void AddOutputEvent(std::function<void()> foo, const std::string &name);
+  VORTEX_API void AddOutputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name);
+  VORTEX_API void AddOutputEvent(std::function<void(ReturnValues &)> foo, const std::string &name);
+  VORTEX_API void AddOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
   VORTEX_API void AddOutputEvent(const PluginOutputEvent &event);
 
   // Input Events
   // A input event is triggered via vxe::ExecuteInputEvent() by a extern
   // component to the current component with the input component added.
-  VORTEX_API void AddInputEvent(std::function<void()> foo,
-                                const std::string &name);
-  VORTEX_API void AddInputEvent(std::function<void(ArgumentValues &)> foo,
-                                const std::string &name);
-  VORTEX_API void AddInputEvent(std::function<void(ReturnValues &)> foo,
-                                const std::string &name);
-  VORTEX_API void
-  AddInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo,
-                const std::string &name);
+  VORTEX_API void AddInputEvent(std::function<void()> foo, const std::string &name);
+  VORTEX_API void AddInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name);
+  VORTEX_API void AddInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name);
+  VORTEX_API void AddInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
   VORTEX_API void AddInputEvent(const PluginInputEvent &event);
 
   // GUI stuffs
@@ -182,22 +165,16 @@ public:
   VORTEX_API void AddWindow(const std::shared_ptr<Cherry::AppWindow> &win);
 
   // Content Browser item handler
-  VORTEX_API void
-  AddContentBrowserItemHandler(const ItemHandlerInterface &handler);
-  VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>>
-  GetContentBrowserItemHandler();
+  VORTEX_API void AddContentBrowserItemHandler(const ItemHandlerInterface &handler);
+  VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> GetContentBrowserItemHandler();
 
   // Content Browser item identifier
-  VORTEX_API void
-  AddContentBrowserItemIdentifier(const ItemIdentifierInterface &item);
-  VORTEX_API std::vector<std::shared_ptr<ItemIdentifierInterface>> &
-  GetContentBrowserItemIdentifiers();
+  VORTEX_API void AddContentBrowserItemIdentifier(const ItemIdentifierInterface &item);
+  VORTEX_API std::vector<std::shared_ptr<ItemIdentifierInterface>> &GetContentBrowserItemIdentifiers();
 
   // Content Browser item creators
-  VORTEX_API void
-  AddContentBrowserItemCreator(const ItemCreatorInterface &item);
-  VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &
-  GetContentBrowserItemCreators();
+  VORTEX_API void AddContentBrowserItemCreator(const ItemCreatorInterface &item);
+  VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &GetContentBrowserItemCreators();
 
   // Logs & Metrics
   VORTEX_API void LogInfo(const std::string &message);
@@ -220,47 +197,40 @@ public:
   // params);
   VORTEX_API std::shared_ptr<PluginInterface> GetInterface();
 
-  VORTEX_API void ExecuteOutputEvent(const std::string &name,
-                                     ArgumentValues &args, ReturnValues &ret);
-  VORTEX_API void ExecuteInputEvent(const std::string &name,
-                                    ArgumentValues &args, ReturnValues &ret);
+  VORTEX_API void ExecuteOutputEvent(const std::string &name, ArgumentValues &args, ReturnValues &ret);
+  VORTEX_API void ExecuteInputEvent(const std::string &name, ArgumentValues &args, ReturnValues &ret);
 
   // Trigger all output events for every modules/plugins
-  VORTEX_API void DeployOutputEvent(const std::string &name,
-                                    std::shared_ptr<hArgs> args);
-  VORTEX_API void ExecOutputEvent(const std::string &name,
-                                  std::shared_ptr<hArgs> args);
+  VORTEX_API void DeployOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
+  VORTEX_API void ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
 
-  template <typename T>
-  VORTEX_API void AddPluginItemParam(const void *item,
-                                     std::pair<std::string, T> parameter);
+  template<typename T>
+  VORTEX_API void AddPluginItemParam(const void *item, std::pair<std::string, T> parameter);
 
-  VORTEX_API void
-  AddPluginRenderInstance(const std::shared_ptr<PluginRenderInstance> &event);
+  VORTEX_API void AddPluginRenderInstance(const std::shared_ptr<PluginRenderInstance> &event);
   VORTEX_API void AddPluginFunction(const PluginFunction &event);
   std::vector<std::shared_ptr<PluginRenderInstance>> GetPluginRenderInstances();
 
-  VORTEX_API void CallOutputEvent(const std::string &event_name,
-                                  ArgumentValues &args, ReturnValues &ret);
-  VORTEX_API void CallInputEvent(const std::string &plugin_name, // or module
-                                 const std::string &event_name,
-                                 ArgumentValues &args, ReturnValues &ret);
+  VORTEX_API void CallOutputEvent(const std::string &event_name, ArgumentValues &args, ReturnValues &ret);
+  VORTEX_API void CallInputEvent(
+      const std::string &plugin_name,  // or module
+      const std::string &event_name,
+      ArgumentValues &args,
+      ReturnValues &ret);
 
-  VORTEX_API static std::shared_ptr<PluginInterface>
-  GetEditorPluginByName(const std::string &name);
+  VORTEX_API static std::shared_ptr<PluginInterface> GetEditorPluginByName(const std::string &name);
 
   VORTEX_API void CheckDependencies();
   VORTEX_API void CheckVersion();
 
-  VORTEX_API void
-  AddLuaHandler(const std::shared_ptr<LuaItemHandler> &handler) {
+  VORTEX_API void AddLuaHandler(const std::shared_ptr<LuaItemHandler> &handler) {
     m_lua_handlers.push_back(handler);
   }
 
   std::shared_ptr<hArgs> m_args;
   std::string m_datapath;
 
-public:
+ public:
   std::string m_type;
   std::string m_proper_name;
   std::string m_name;
@@ -291,9 +261,9 @@ public:
 
   std::vector<std::shared_ptr<LuaItemHandler>> m_lua_handlers;
 
-private:
+ private:
   std::vector<std::shared_ptr<PluginDummyFunction>> m_dummy_functions;
   std::vector<std::shared_ptr<PluginRenderInstance>> m_render_instances;
 };
 
-#endif // PLUGIN_INTERFACE_H
+#endif  // PLUGIN_INTERFACE_H

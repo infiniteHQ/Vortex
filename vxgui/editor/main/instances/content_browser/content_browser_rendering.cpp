@@ -625,7 +625,7 @@ namespace vxe {
 
     for (auto &directoryEntry : std::filesystem::directory_iterator(current_directory_)) {
       bool isItem = false;
-      for (auto em : vxe::GetCurrentContext()->IO.em) {
+      for (auto em : vxe::get_current_context()->IO.em) {
         for (auto item : em->GetContentBrowserItemIdentifiers()) {
           std::string path = directoryEntry.path().string();
           if (item->f_Detect(path)) {
@@ -635,7 +635,7 @@ namespace vxe {
         }
       }
 
-      for (auto ep : vxe::GetCurrentContext()->IO.ep) {
+      for (auto ep : vxe::get_current_context()->IO.ep) {
         for (auto item : ep->GetContentBrowserItemIdentifiers()) {
           std::string path = directoryEntry.path().string();
           if (item->f_Detect(path)) {
@@ -1678,7 +1678,7 @@ namespace vxe {
           }
         };
 
-        fs::path projectRoot = vxe::GetCurrentContext()->projectDataPath;
+        fs::path projectRoot = vxe::get_current_context()->projectDataPath;
 
         if (!current_directory_.empty()) {
           auto rel = fs::relative(current_directory_, projectRoot);

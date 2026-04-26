@@ -241,7 +241,7 @@ namespace vxe {
     CherryStyle::AddMarginX(8.0f);
     CherryKit::SeparatorText("From modules");
 
-    for (auto m : vxe::GetCurrentContext()->IO.em) {
+    for (auto m : vxe::get_current_context()->IO.em) {
       if (m) {
         auto item_creators = m->GetContentBrowserItemCreators();
         if (!item_creators.empty()) {

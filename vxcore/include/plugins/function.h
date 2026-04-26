@@ -26,16 +26,13 @@ Function [void]             [void]
 enum class PluginFunctionScope { PRIVATE, PUBLIC, RESTRICTED };
 
 class PluginFunction {
-public:
-  PluginFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo,
-                 const std::string &name);
-  PluginFunction(std::function<void(ArgumentValues &)> foo,
-                 const std::string &name);
-  PluginFunction(std::function<void(ReturnValues &)> foo,
-                 const std::string &name);
+ public:
+  PluginFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
+  PluginFunction(std::function<void(ArgumentValues &)> foo, const std::string &name);
+  PluginFunction(std::function<void(ReturnValues &)> foo, const std::string &name);
   PluginFunction(std::function<void()> foo, const std::string &name);
 
-  virtual void execute() {};
+  virtual void execute() { };
 
   std::function<void(ArgumentValues &, ReturnValues &)> m_function;
   ArgumentValues m_return_values;

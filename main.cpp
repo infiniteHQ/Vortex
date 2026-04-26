@@ -5,12 +5,11 @@
 #include <string>
 
 // UI instances
-#include "./vxgui/crash_handler/crash_handler.hpp"
-#include "./vxgui/editor/main/editor.hpp"
-
 #include "./lib/cherry/cherry.hpp"
 #include "./vxcore/include/templates/load.h"
 #include "./vxcore/include/vortex.h"
+#include "./vxgui/crash_handler/crash_handler.hpp"
+#include "./vxgui/editor/main/editor.hpp"
 
 static std::string session_id = "unknow";
 
@@ -46,8 +45,7 @@ void PrintHeader(const std::string &additions = "") {
   std::cout << "\033[0m";
 
   std::cout << "\033[38;2;177;255;49m"
-            << " Vortex " << VORTEX_VERSION << " " << additions << "\033[0m"
-            << std::endl;
+            << " Vortex " << VORTEX_VERSION << " " << additions << "\033[0m" << std::endl;
 
   std::cout << "┌──────────────────────────────────────────────────────────────"
                "──────────────────────────────────┐"
@@ -125,10 +123,9 @@ void PrintHeader(const std::string &additions = "") {
   std::cout << "│ 💬 Discord : https://discord.gg/H2wptkecUg                   "
                "                                  │ "
             << std::endl;
-  std::cout
-      << "│ 🧑‍💻 GitHub : https://github.com/infiniteHQ/Vortex        "
-         "                                       │ "
-      << std::endl;
+  std::cout << "│ 🧑‍💻 GitHub : https://github.com/infiniteHQ/Vortex        "
+               "                                       │ "
+            << std::endl;
   std::cout << "└──────────────────────────────────────────────────────────────"
                "──────────────────────────────────┘ "
             << std::endl;
@@ -148,7 +145,7 @@ bool CheckDirectory() {
 }
 
 VxContext *InitRuntime(bool logger) {
-  VxContext *ctx = vxe::CreateContext();
+  VxContext *ctx = vxe::create_context();
 
   vxe::InitializePlatformVendor();
   vxe::AddCredits("vx", Cherry::GetPath("CREDITS"));
@@ -161,7 +158,7 @@ VxContext *InitRuntime(bool logger) {
 
   vxe::CreateSessionTopic(ctx->state.session_id);
 
-  // Initialize environment
+  // initialize environment
   vxe::InitEnvironment();
   vxe::DetectPlatform();
   vxe::DetectArch();
@@ -187,7 +184,7 @@ VxContext *InitRuntime(bool logger) {
 // Template deployment overrides (project, modules_content, etc...)
 
 VxContext *InitBlankRuntime(bool logger) {
-  VxContext *ctx = vxe::CreateContext();
+  VxContext *ctx = vxe::create_context();
 
   ctx->state.session_id = session_id;
 
@@ -200,7 +197,7 @@ VxContext *InitBlankRuntime(bool logger) {
 
   vxe::CreateSessionTopic(ctx->state.session_id);
 
-  // Initialize environment
+  // initialize environment
   vxe::InitEnvironment();
   vxe::DetectPlatform();
   vxe::DetectArch();
@@ -223,16 +220,14 @@ int main(int argc, char *argv[]) {
   } else {
     if (std::string(argv[1]) == "-test") {
       return 0;
-    } else if (std::string(argv[1]) == "--crash" ||
-               std::string(argv[1]) == "--get-last-crash") {
+    } else if (std::string(argv[1]) == "--crash" || std::string(argv[1]) == "--get-last-crash") {
       PrintHeader("(Crash handler)");
 
       if (argc > 2) {
         std::string arg2 = argv[2];
         if (arg2.rfind("--session_id=", 0) == 0) {
           session_id = arg2.substr(13);
-          if (!session_id.empty() && session_id.front() == '"' &&
-              session_id.back() == '"') {
+          if (!session_id.empty() && session_id.front() == '"' && session_id.back() == '"') {
             session_id = session_id.substr(1, session_id.size() - 2);
             g_SessionID = session_id;
           }
@@ -242,15 +237,13 @@ int main(int argc, char *argv[]) {
       InitBlankRuntime(true);
       vxe::LogInfo("Bootstrapp", "Opening the graphical interface...");
       vxe::VortexCrash(argc, argv);
-    } else if (std::string(argv[1]) == "-e" ||
-               std::string(argv[1]) == "--editor") {
+    } else if (std::string(argv[1]) == "-e" || std::string(argv[1]) == "--editor") {
       PrintHeader("(Editor)");
       if (argc > 2) {
         std::string arg2 = argv[2];
         if (arg2.rfind("--session_id=", 0) == 0) {
           session_id = arg2.substr(13);
-          if (!session_id.empty() && session_id.front() == '"' &&
-              session_id.back() == '"') {
+          if (!session_id.empty() && session_id.front() == '"' && session_id.back() == '"') {
             session_id = session_id.substr(1, session_id.size() - 2);
             g_SessionID = session_id;
           }

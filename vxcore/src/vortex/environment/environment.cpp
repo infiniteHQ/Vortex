@@ -17,9 +17,7 @@ VORTEX_API void vxe::InitEnvironment() {
   }
 
   {
-    std::string path =
-        vxe::getHomeDirectory() +
-        "/.vx/templates/vortex.templates.builtin.__blankproject/";
+    std::string path = vxe::getHomeDirectory() + "/.vx/templates/vortex.templates.builtin.__blankproject/";
     vxe::createFolderIfNotExists(path);
   }
 
@@ -27,7 +25,7 @@ VORTEX_API void vxe::InitEnvironment() {
     std::string path = vxe::getHomeDirectory() + "/.vx/data/";
     std::string file = path + "projects.json";
 
-    nlohmann::json default_data = {{"projects", nlohmann::json::array()}};
+    nlohmann::json default_data = { { "projects", nlohmann::json::array() } };
 
     vxe::createJsonFileIfNotExists(file, default_data);
   }
@@ -69,33 +67,39 @@ VORTEX_API void vxe::RefreshEnvironmentProjects() {
 
 VORTEX_API void vxe::InitializePlatformVendor() {
 #if defined(__linux__)
-  vxe::GetCurrentContext()->m_PlatformVendor = PlatformVendor::Linux;
+  vxe::get_current_context()->m_PlatformVendor = PlatformVendor::Linux;
 #elif defined(_WIN32) || defined(_WIN64)
-  vxe::GetCurrentContext()->m_PlatformVendor = PlatformVendor::Windows;
+  vxe::get_current_context()->m_PlatformVendor = PlatformVendor::Windows;
 #elif defined(__APPLE__)
-  vxe::GetCurrentContext()->m_PlatformVendor = PlatformVendor::Macos;
+  vxe::get_current_context()->m_PlatformVendor = PlatformVendor::Macos;
 #else
   //
 #endif
 }
 
 VORTEX_API bool vxe::IsLinux() {
-  return vxe::GetCurrentContext()->m_PlatformVendor == PlatformVendor::Linux;
+  return vxe::get_current_context()->m_PlatformVendor == PlatformVendor::Linux;
 }
 
-VORTEX_API bool vxe::IsNotLinux() { return !IsLinux(); }
+VORTEX_API bool vxe::IsNotLinux() {
+  return !IsLinux();
+}
 
 VORTEX_API bool vxe::IsWindows() {
-  return vxe::GetCurrentContext()->m_PlatformVendor == PlatformVendor::Windows;
+  return vxe::get_current_context()->m_PlatformVendor == PlatformVendor::Windows;
 }
 
-VORTEX_API bool vxe::IsNotWindows() { return !IsWindows(); }
+VORTEX_API bool vxe::IsNotWindows() {
+  return !IsWindows();
+}
 
 VORTEX_API bool vxe::IsMacOs() {
-  return vxe::GetCurrentContext()->m_PlatformVendor == PlatformVendor::Macos;
+  return vxe::get_current_context()->m_PlatformVendor == PlatformVendor::Macos;
 }
 
-VORTEX_API bool vxe::IsNotMacOS() { return !IsMacOs(); }
+VORTEX_API bool vxe::IsNotMacOS() {
+  return !IsMacOs();
+}
 
 VORTEX_API void vxe::RefreshEnvironmentVortexVersionsPools() {
   // Get reference to the Vortex context
@@ -160,11 +164,14 @@ void vxe::DetectArch() {
 }
 
 VORTEX_API void vxe::UpdateEnvironmentProject(
-    const std::string &name, const std::string &author,
-    const std::string &version, const std::string &compatibleWith,
-    const std::string &description, const std::string &path,
+    const std::string &name,
+    const std::string &author,
+    const std::string &version,
+    const std::string &compatibleWith,
+    const std::string &description,
+    const std::string &path,
     const std::string &logo_path,
-    const std::string &template_name) { // Get reference to the Vortex context
+    const std::string &template_name) {  // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   std::string sys_path = vxe::getHomeDirectory() + "/.vx/data/";
@@ -174,8 +181,7 @@ VORTEX_API void vxe::UpdateEnvironmentProject(
   // Load JSON data from the project configuration file
   auto json_data = vxe::DumpJSON(json_file);
 
-  vxe::LogInfo("Core", "Verify if the new project \"" + name +
-                           "\" is not already existing.");
+  vxe::LogInfo("Core", "Verify if the new project \"" + name + "\" is not already existing.");
 
   // Check if a project with the given name exists
   bool projectExists = false;
@@ -186,22 +192,22 @@ VORTEX_API void vxe::UpdateEnvironmentProject(
     }
   }
 
-  vxe::LogInfo("Core", "Create a new entry in registered projects for \"" +
-                           name + "\".");
+  vxe::LogInfo("Core", "Create a new entry in registered projects for \"" + name + "\".");
 
   // If the project doesn't exist, create a new JSON object and add it to the
   // list
-  json_data["projects"].push_back({{"name", name},
-                                   {"version", version},
-                                   {"description", description},
-                                   {"path", path},
-                                   {"lastOpened", vxe::getCurrentTimeStamp()},
-                                   {"compatibleWith", compatibleWith},
-                                   {"logoPath", logo_path}});
+  json_data["projects"].push_back(
+      { { "name", name },
+        { "version", version },
+        { "description", description },
+        { "path", path },
+        { "lastOpened", vxe::getCurrentTimeStamp() },
+        { "compatibleWith", compatibleWith },
+        { "logoPath", logo_path } });
 
   // Write the updated JSON data back to the file
   std::ofstream output(json_file);
-  output << json_data.dump(4); // Use pretty print with indentation of 4 spaces
+  output << json_data.dump(4);  // Use pretty print with indentation of 4 spaces
   output.close();
 }
 
@@ -239,19 +245,18 @@ VORTEX_API void vxe::UpdateEnvironmentProject() {
     // list
     if (!projectExists) {
       json_data["projects"].push_back(
-          {{"name", ctx.name},
-           {"version", ctx.project_version},
-           {"description", ctx.description},
-           {"path", ctx.projectPath},
-           {"lastOpened", vxe::getCurrentTimeStamp()},
-           {"compatibleWith", ctx.compatibleWith},
-           {"logoPath", ctx.logoPath}});
+          { { "name", ctx.name },
+            { "version", ctx.project_version },
+            { "description", ctx.description },
+            { "path", ctx.projectPath },
+            { "lastOpened", vxe::getCurrentTimeStamp() },
+            { "compatibleWith", ctx.compatibleWith },
+            { "logoPath", ctx.logoPath } });
     }
 
     // Write the updated JSON data back to the file
     std::ofstream output(json_file);
-    output << json_data.dump(
-        4); // Use pretty print with indentation of 4 spaces
+    output << json_data.dump(4);  // Use pretty print with indentation of 4 spaces
     output.close();
   } catch (const std::exception &e) {
     // Print error if an exception occurs
@@ -289,17 +294,17 @@ VORTEX_API void vxe::UpdateEnvironmentProject(const std::string &oldname) {
     // If the project doesn't exist, create a new JSON object and add it to the
     // list
     if (!projectExists) {
-      json_data["projects"].push_back({{"name", ctx.name},
-                                       {"version", ctx.version},
-                                       {"description", ctx.description},
-                                       {"path", ctx.projectPath},
-                                       {"logoPath", ctx.logoPath}});
+      json_data["projects"].push_back(
+          { { "name", ctx.name },
+            { "version", ctx.version },
+            { "description", ctx.description },
+            { "path", ctx.projectPath },
+            { "logoPath", ctx.logoPath } });
     }
 
     // Write the updated JSON data back to the file
     std::ofstream output(json_file);
-    output << json_data.dump(
-        4); // Use pretty print with indentation of 4 spaces
+    output << json_data.dump(4);  // Use pretty print with indentation of 4 spaces
     output.close();
   } catch (const std::exception &e) {
     // Print error if an exception occurs

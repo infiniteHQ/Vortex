@@ -175,9 +175,9 @@ namespace vxe {
         if (CherryGUI::Button("Delete plugin", ImVec2(BTN_W, BTN_H))) {
           vxe::DeleteProjectPlugin(plugin_to_delete_name_, plugin_to_delete_version_);
           vxe::LoadEditorPlugins(
-              vxe::GetCurrentContext()->projectPath.string(),
-              vxe::GetCurrentContext()->IO.ep_handles,
-              vxe::GetCurrentContext()->IO.ep);
+              vxe::get_current_context()->projectPath.string(),
+              vxe::get_current_context()->IO.ep_handles,
+              vxe::get_current_context()->IO.ep);
           plugin_to_delete_name_.clear();
           plugin_to_delete_proper_name_.clear();
           plugin_to_delete_description_.clear();
@@ -452,7 +452,7 @@ namespace vxe {
       CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, Cherry::HexToRGBA("#454545"));
     }
 
-    std::string header_label = "All Plugins (" + std::to_string(vxe::GetCurrentContext()->IO.ep.size()) + ")";
+    std::string header_label = "All Plugins (" + std::to_string(vxe::get_current_context()->IO.ep.size()) + ")";
     if (CherryGUI::ImageSizeButtonWithText(
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
             header_width,
@@ -578,19 +578,19 @@ namespace vxe {
 
       CherryGUI::Spacing();
 
-      if (vxe::GetCurrentContext()->IO.ep.empty()) {
+      if (vxe::get_current_context()->IO.ep.empty()) {
         CherryKit::TitleFour("No plugins founded.");
       }
 
       std::vector<Cherry::Component> plugins_blocks;
       if (selected_show_mode_ == PluginsUtilityShowModes::Thumbmails) {
-        for (int i = 0; i < vxe::GetCurrentContext()->IO.ep.size(); i++) {
-          if (!vxe::GetCurrentContext()->IO.ep[i]) {
+        for (int i = 0; i < vxe::get_current_context()->IO.ep.size(); i++) {
+          if (!vxe::get_current_context()->IO.ep[i]) {
             continue;
           }
 
           if (!selected_category_.empty() && selected_category_ != "all") {
-            if (selected_category_ != vxe::GetCurrentContext()->IO.ep[i]->m_group) {
+            if (selected_category_ != vxe::get_current_context()->IO.ep[i]->m_group) {
               continue;
             }
           }
@@ -601,22 +601,22 @@ namespace vxe {
           }
 
           if (!plugins_search_.empty()) {
-            if (!has_common_subsequence(vxe::GetCurrentContext()->IO.ep[i]->m_name, plugins_search_) &&
-                !has_common_subsequence(vxe::GetCurrentContext()->IO.ep[i]->m_proper_name, plugins_search_) &&
-                !has_common_subsequence(vxe::GetCurrentContext()->IO.ep[i]->m_description, plugins_search_)) {
+            if (!has_common_subsequence(vxe::get_current_context()->IO.ep[i]->m_name, plugins_search_) &&
+                !has_common_subsequence(vxe::get_current_context()->IO.ep[i]->m_proper_name, plugins_search_) &&
+                !has_common_subsequence(vxe::get_current_context()->IO.ep[i]->m_description, plugins_search_)) {
               continue;
             }
           }
 
           CherryNextComponent.SetRenderMode(Cherry::RenderMode::CreateOnly);
           auto item = PluginCard(
-              vxe::GetCurrentContext()->IO.ep[i],
-              vxe::GetCurrentContext()->IO.ep[i]->m_proper_name,
-              vxe::GetCurrentContext()->IO.ep[i]->m_path,
-              vxe::GetCurrentContext()->IO.ep[i]->m_name,
-              vxe::GetCurrentContext()->IO.ep[i]->m_version,
+              vxe::get_current_context()->IO.ep[i],
+              vxe::get_current_context()->IO.ep[i]->m_proper_name,
+              vxe::get_current_context()->IO.ep[i]->m_path,
+              vxe::get_current_context()->IO.ep[i]->m_name,
+              vxe::get_current_context()->IO.ep[i]->m_version,
               false,
-              vxe::GetCurrentContext()->IO.ep[i]->m_logo_path,
+              vxe::get_current_context()->IO.ep[i]->m_logo_path,
               IM_COL32(56, 56, 56, 150),
               IM_COL32(50, 50, 50, 255),
               Cherry::HexToImU32("#B1FF31FF"),
