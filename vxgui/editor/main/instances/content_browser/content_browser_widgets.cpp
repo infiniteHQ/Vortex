@@ -398,9 +398,9 @@ namespace vxe {
 
       if (item_handles_.empty()) {
         if (p.content.item_ident) {
-          item_handles_ = vxe::GetAllItemHandlersFor(p.content.item_ident->m_Name);
+          item_handles_ = vxe::get_all_item_handlers_for(p.content.item_ident->m_Name);
         } else {
-          item_handles_ = vxe::GetAllItemHandlersFor(get_file_type_str(fileType));
+          item_handles_ = vxe::get_all_item_handlers_for(get_file_type_str(fileType));
         }
       }
 
@@ -687,7 +687,7 @@ namespace vxe {
       }
 
       if (renameConfirmed) {
-        vxe::SubmitRename(path_to_rename_, buffer);
+        vxe::submit_rename(path_to_rename_, buffer);
         renameBuffers.erase(path_to_rename_);
         path_to_rename_.clear();
       }
@@ -864,9 +864,9 @@ namespace vxe {
 
       if (item_handles_.empty()) {
         if (p.content.item_ident) {
-          item_handles_ = vxe::GetAllItemHandlersFor(p.content.item_ident->m_Name);
+          item_handles_ = vxe::get_all_item_handlers_for(p.content.item_ident->m_Name);
         } else {
-          item_handles_ = vxe::GetAllItemHandlersFor(get_file_type_str(fileType));
+          item_handles_ = vxe::get_all_item_handlers_for(get_file_type_str(fileType));
         }
       }
 
@@ -987,7 +987,7 @@ namespace vxe {
         std::strncpy(buffer, p.content.name.c_str(), sizeof(buffer));
       }
       if (CherryGUI::InputText("##rename_input", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-        vxe::SubmitRename(path_to_rename_, buffer);
+        vxe::submit_rename(path_to_rename_, buffer);
         renameBuffers.erase(path_to_rename_);
         path_to_rename_.clear();
       }
@@ -1140,7 +1140,7 @@ namespace vxe {
 
     if (CherryGUI::Button("Done", ImVec2(75.0f, 0.0f))) {
       *color = ImColor(col[0], col[1], col[2]);
-      vxe::PublishContentBrowserCustomFolder(
+      vxe::publish_content_browser_custom_folder(
           current_editing_folder_.first, vxe::ImU32ToHex(*color), current_editing_folder_is_favorite_);
     }
 

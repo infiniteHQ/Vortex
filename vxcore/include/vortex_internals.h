@@ -10,6 +10,7 @@
 #include "./templates/install.h"
 #include "./templates/interface.h"
 #include "./utils/infos.hpp"
+#include "./vortex/content_browser/content_browser.hpp"
 #include "./vortex/credits/credits.hpp"
 #include "./vortex/documentation/documentation.hpp"
 #include "./vortex/environment/environment.hpp"
@@ -64,63 +65,6 @@ struct EnvProject {
   std::string logoPath;
   std::string author;
   std::string lastOpened;
-};
-
-class ContenBrowserItem {
- public:
-  bool (*f_Detect)(const std::string &path);
-
-  std::string m_Name;
-
-  ImTextureID m_Logo;
-  ImVec4 m_LineColor;
-  std::string m_Description;
-
-  ContenBrowserItem(
-      bool (*detect_function)(const std::string &path),
-      const std::string &name,
-      const std::string &description,
-      const ImVec4 &line_color)
-      : m_Name(name),
-        m_Description(description),
-        f_Detect(detect_function),
-        m_LineColor(line_color) { };
-};
-
-class ContenBrowserHandler {
- public:
-  void (*f_Execute)(const std::string &path);
-
-  std::string m_Name;
-
-  ImTextureID m_Logo;
-  ImVec4 m_LineColor;
-  std::string m_Description;
-};
-
-// All custom pinned folder.
-class ContenBrowserPinnedFolder {
- public:
-  std::string m_Name;
-  std::string m_Path;
-  std::string m_Logo;
-  ImVec4 m_Color;
-};
-
-// On a custom folder, we can change the logo, the color, if it is favorite.
-class ContenBrowserCustomFolder {
- public:
-  std::string m_Name;
-  ImTextureID m_Logo;
-  ImVec4 m_LineColor;
-  bool m_IsFavorite;
-};
-
-class ModuleInterfaceUtility {
-  virtual void render() { };
-
-  std::string m_Name;
-  ImTextureID m_Logo;
 };
 
 enum class PlatformVendor { Linux, Windows, Macos };
@@ -424,37 +368,10 @@ namespace vxe {
       VortexMakerDebugAllocInfo *info,
       void *ptr,
       size_t size);  // size >= 0 : alloc, size = -1 : free
-  VORTEX_API void AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtility> &utility);
-  VORTEX_API void AddContentBrowserItem(const std::shared_ptr<ContenBrowserItem> &item);
 
   // Publish to ROM
-  VORTEX_API void
-  PublishContentBrowserCustomFolder(const std::string &path, const std::string &hex_color, const bool &isFav);
-  VORTEX_API void PublishPool(const std::string &absolute_pool_path, const std::string &name);
-  VORTEX_API void PostCustomFolderToJson();
-  VORTEX_API void PostPoolsToJson();
 
   // Fetch from ROM
-  VORTEX_API void FetchCustomFolders();
-  VORTEX_API void FetchPools();
-
-  // Cotnent browser IO manipulations
-  VORTEX_API bool ContentBrowserFolderIsFav(const std::string &path);
-  VORTEX_API bool GetContentBrowserFolderColor(const std::string &path, ImU32 *color);
-
-  VORTEX_API void Copy(std::vector<std::string> selection, bool in_addition);
-  VORTEX_API void Cut(std::vector<std::string> selection, bool in_addition);
-  VORTEX_API void ClearCopySelection();
-  VORTEX_API void ClearCutSelection();
-  VORTEX_API void PasteAllSelections(const std::string &target_path);
-
-  VORTEX_API void DeleteFolder(const std::string &target_path);
-  VORTEX_API void DeleteFile(const std::string &target_path);
-  VORTEX_API void DeletePath(const std::string &target_path);
-
-  VORTEX_API void RenameFolder(const std::string &target_path, const std::string &new_name);
-  VORTEX_API void RenameFile(const std::string &target_path, const std::string &new_name);
-
   VORTEX_API ImU32 HexToImU32(const std::string &hex);
   VORTEX_API std::string ImU32ToHex(ImU32 color);
 }  // namespace vxe

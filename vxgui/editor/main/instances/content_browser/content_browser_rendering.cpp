@@ -253,7 +253,7 @@ namespace vxe {
                     -1,
                     ImVec4(0, 0, 0, 0),
                     ImVec4(1, 1, 1, 1))) {
-              vxe::PublishPool(pool_add_path_, pool_add_name_);
+              vxe::publish_pool(pool_add_path_, pool_add_name_);
               refresh_pools();
               pool_add_mode_ = false;
             }
@@ -882,7 +882,7 @@ namespace vxe {
               }
 
               if (renameConfirmed) {
-                vxe::SubmitRename(path_to_rename_, buffer);
+                vxe::submit_rename(path_to_rename_, buffer);
                 renameBuffers.erase(path_to_rename_);
                 path_to_rename_.clear();
               }
@@ -1042,7 +1042,7 @@ namespace vxe {
                 current_editing_folder_is_favorite_ = !current_editing_folder_is_favorite_;
                 set_colored_folder(current_editing_folder_.first, ImU32ToHex(current_editing_folder_.second));
 
-                vxe::PublishContentBrowserCustomFolder(
+                vxe::publish_content_browser_custom_folder(
                     current_editing_folder_.first,
                     Cherry::ImU32ToHex(current_editing_folder_.second),
                     current_editing_folder_is_favorite_);
@@ -1366,9 +1366,9 @@ namespace vxe {
 
               if (item_handles_.empty()) {
                 if (item_ident) {
-                  item_handles_ = vxe::GetAllItemHandlersFor(item_ident->m_Name);
+                  item_handles_ = vxe::get_all_item_handlers_for(item_ident->m_Name);
                 } else {
-                  item_handles_ = vxe::GetAllItemHandlersFor(get_file_type_str(fileType));
+                  item_handles_ = vxe::get_all_item_handlers_for(get_file_type_str(fileType));
                 }
               }
 
@@ -1631,7 +1631,7 @@ namespace vxe {
             }
 
             if (renameConfirmed) {
-              vxe::SubmitRename(path_to_rename_, buffer);
+              vxe::submit_rename(path_to_rename_, buffer);
               renameBuffers.erase(path_to_rename_);
               path_to_rename_.clear();
             }
@@ -2086,7 +2086,7 @@ namespace vxe {
                 CherryGUI::SetKeyboardFocusHere();
               }
               if (CherryGUI::InputText("##rename_input", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-                vxe::SubmitRename(path_to_rename_, buffer);
+                vxe::submit_rename(path_to_rename_, buffer);
                 renameBuffers.erase(path_to_rename_);
                 path_to_rename_.clear();
               }

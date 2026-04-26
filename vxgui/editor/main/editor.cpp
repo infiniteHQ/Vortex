@@ -216,8 +216,8 @@ std::string Editor::spawn_content_browser() {
 
   ContentBrowser->set_cut_paths_callback(vxe::Cut);
   ContentBrowser->set_copy_paths_callback(vxe::Copy);
-  ContentBrowser->set_paste_paths_callback(vxe::PasteAllSelections);
-  ContentBrowser->set_delete_path_callback(vxe::DeletePath);
+  ContentBrowser->set_paste_paths_callback(vxe::paste_all_selections);
+  ContentBrowser->set_delete_path_callback(vxe::delete_path);
   Cherry::AddAppWindow(ContentBrowser->get_app_window());
   content_browser_instances_.push_back(ContentBrowser);
   return label;

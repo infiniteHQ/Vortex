@@ -117,8 +117,6 @@ namespace vxe {
 
   VORTEX_API void initialize();
 
-  VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> GetAllItemHandlersFor(const std::string &type);
-
   VORTEX_API void InstallPluginToSystem(const std::string &path);
 
   VORTEX_API void InstallPlugin(const std::string &plugin_name, const std::string &version, bool &restart_plugins);
@@ -126,17 +124,10 @@ namespace vxe {
 
   VORTEX_API void RemoveSystemProjectEntry(const std::string &project_name);
 
-  VORTEX_API void ExecuteStartScript();
-
   bool DebugCheckVersionAndDataLayout(const char *version);
 
-  VORTEX_API std::string CreateFile(const std::string &path);
-  VORTEX_API std::string CreateFolder(const std::string &path);
-  VORTEX_API void MoveAllContent();
-  VORTEX_API void CopyAllContent();
+  VORTEX_API void ExecuteStartScript();
   VORTEX_API void ExecuteCommand();
-
-  VORTEX_API void SubmitRename(const std::string &oldPathStr, const std::string &newName);
 
   VORTEX_API void PushEditMenuItem(
       const std::string &title,
