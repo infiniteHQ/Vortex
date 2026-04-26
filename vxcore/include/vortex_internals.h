@@ -349,18 +349,7 @@ struct VxContext {
   // Custom menus callabcks
   std::vector<CustomMenu> customMenus;
 };
-//-----------------------------------------------------------------------------
 
-//_____________________________________________________________________________
-
-//__________________________________________________________________________________________________________________
-// [SECTION]: Internal API of VortexMaker
-//__________________________________________________________________________________________________________________
-// Internals functions of HypernetTK. Contain all basic stuff and low level
-// features. All of theses functions are called by upper level api & user-api.
-// Basicly, you don't need to care about this. For all user interactions of
-// Hypernet & Vx, go on the main userapi on vortex.h
-//__________________________________________________________________________________________________________________
 namespace vxe {
 
   // Utils & Base
@@ -369,9 +358,4 @@ namespace vxe {
       void *ptr,
       size_t size);  // size >= 0 : alloc, size = -1 : free
 
-  // Publish to ROM
-
-  // Fetch from ROM
-  VORTEX_API ImU32 HexToImU32(const std::string &hex);
-  VORTEX_API std::string ImU32ToHex(ImU32 color);
 }  // namespace vxe

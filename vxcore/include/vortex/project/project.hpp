@@ -20,6 +20,7 @@ namespace vxe {
   VORTEX_API void import_project(const std::string &path);
   VORTEX_API std::vector<std::shared_ptr<EnvProject>> find_project_in_folder(const std::string &path);
   VORTEX_API void refresh_project_informations();
+  VORTEX_API void remove_system_project_entry(const std::string &project_name);
 
   VORTEX_API void update_project_data(const std::string &old_name, const std::string &path);
   VORTEX_API void update_project_name(const std::string &name);

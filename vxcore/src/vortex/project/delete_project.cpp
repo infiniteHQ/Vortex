@@ -16,7 +16,7 @@ VORTEX_API void vxe::delete_project(const std::string &path, const std::string &
     // Lancez une exception si le fichier n'existe pas
     vxe::log_error("Core", "Project not found (File not found: " + path + "/vortex.config)");
     vxe::log_warn("Core", "Delete the project entry of environment.");
-    vxe::RemoveSystemProjectEntry(project_name);
+    vxe::remove_system_project_entry(project_name);
     return;
   }
 
@@ -33,7 +33,7 @@ VORTEX_API void vxe::delete_project(const std::string &path, const std::string &
           if (std::system(cmd.c_str()) == 0) {
             vxe::log_info(
                 "Core", "The project \"" + json_data["project"]["name"].get<std::string>() + "\" is succefully deleted !");
-            vxe::RemoveSystemProjectEntry(project_name);
+            vxe::remove_system_project_entry(project_name);
             return;
           } else {
             vxe::log_error(
@@ -50,7 +50,7 @@ VORTEX_API void vxe::delete_project(const std::string &path, const std::string &
   vxe::log_error("Core", "No project to delete at \"" + path + "\"");
 }
 
-VORTEX_API void vxe::RemoveSystemProjectEntry(const std::string &project_name) {
+VORTEX_API void vxe::remove_system_project_entry(const std::string &project_name) {
   std::string dataPath = vxe::get_home_directory() + "/.vx/data/";
   std::string configFile = dataPath + "/projects.json";
 

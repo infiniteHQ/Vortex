@@ -117,18 +117,12 @@ namespace vxe {
 
   VORTEX_API void initialize();
 
+  // to install plugin
   VORTEX_API void InstallPluginToSystem(const std::string &path);
-
   VORTEX_API void InstallPlugin(const std::string &plugin_name, const std::string &version, bool &restart_plugins);
   VORTEX_API void AddPluginToProject(const std::string &plugin_name);
 
-  VORTEX_API void RemoveSystemProjectEntry(const std::string &project_name);
-
-  bool DebugCheckVersionAndDataLayout(const char *version);
-
-  VORTEX_API void ExecuteStartScript();
-  VORTEX_API void ExecuteCommand();
-
+  // to menubar
   VORTEX_API void PushEditMenuItem(
       const std::string &title,
       const std::function<void()> &action,
@@ -136,7 +130,6 @@ namespace vxe {
       const std::string &section = "");
   VORTEX_API void PopEditMenuItem(const int &count = 1);
   VORTEX_API void ClearEditMenuItem();
-
   VORTEX_API void PushCustomMenu(const std::string &title, const std::function<void()> &render);
   VORTEX_API void PopCustomMenu(const int &count = 1);
   VORTEX_API void ClearCustomMenus();
@@ -153,6 +146,7 @@ namespace vxe {
   GetAllocatorFunctions(VortexMakerMemAllocFunc *p_alloc_func, VortexMakerMemFreeFunc *p_free_func, void **p_user_data);
   VORTEX_API void *MemAlloc(size_t size);
   VORTEX_API void MemFree(void *ptr);
+  bool DebugCheckVersionAndDataLayout(const char *version);
 
 }  // namespace vxe
 //_____________________________________________________________________________

@@ -326,37 +326,6 @@ VORTEX_API void vxe::InstallPluginToSystem(const std::string &path) {
 VORTEX_API void vxe::AddPluginToProject(const std::string &plugin_name) {
 }
 
-VORTEX_API ImU32 vxe::HexToImU32(const std::string &hex) {
-  if (hex[0] != '#' || hex.length() != 7) {
-    throw std::invalid_argument("Invalid hex format");
-  }
-
-  unsigned int r, g, b;
-  std::stringstream ss;
-  ss << std::hex << hex.substr(1, 2);
-  ss >> r;
-  ss.clear();
-  ss << std::hex << hex.substr(3, 2);
-  ss >> g;
-  ss.clear();
-  ss << std::hex << hex.substr(5, 2);
-  ss >> b;
-
-  return IM_COL32(r, g, b, 255);  // Alpha is set to 255 (opaque)
-}
-
-VORTEX_API std::string vxe::ImU32ToHex(ImU32 color) {
-  unsigned char r = (color >> IM_COL32_R_SHIFT) & 0xFF;
-  unsigned char g = (color >> IM_COL32_G_SHIFT) & 0xFF;
-  unsigned char b = (color >> IM_COL32_B_SHIFT) & 0xFF;
-
-  std::stringstream ss;
-  ss << "#" << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(r) << std::setfill('0') << std::setw(2)
-     << std::hex << static_cast<int>(g) << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(b);
-
-  return ss.str();
-}
-
 void vxe::PushEditMenuItem(
     const std::string &title,
     const std::function<void()> &action,
