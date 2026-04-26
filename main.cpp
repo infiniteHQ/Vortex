@@ -147,24 +147,24 @@ bool CheckDirectory() {
 VxContext *InitRuntime(bool logger) {
   VxContext *ctx = vxe::create_context();
 
-  vxe::InitializePlatformVendor();
+  vxe::initialize_platform_vendor();
   vxe::AddCredits("vx", Cherry::GetPath("CREDITS"));
 
   ctx->state.session_id = session_id;
 
-  vxe::CreateGlobalLogger();
-  vxe::CreateConsoleLogger();
+  vxe::create_global_logger();
+  vxe::create_console_logger();
   ctx->logger = logger;
 
   vxe::CreateSessionTopic(ctx->state.session_id);
 
   // initialize environment
-  vxe::InitEnvironment();
-  vxe::DetectPlatform();
-  vxe::DetectArch();
+  vxe::init_environment();
+  vxe::detect_platform();
+  vxe::detect_arch();
 
   // Refresh environment registered projects
-  vxe::RefreshEnvironmentProjects();
+  vxe::refresh_environment_projects();
 
   vxe::LoadSystemTemplates(ctx->IO.sys_templates);
 
@@ -173,7 +173,7 @@ VxContext *InitRuntime(bool logger) {
   if (file) {
     nlohmann::json jsonContent;
     file >> jsonContent;
-    vxe::InitProject(jsonContent);
+    vxe::init_project(jsonContent);
   }
 
   return ctx;
@@ -190,20 +190,20 @@ VxContext *InitBlankRuntime(bool logger) {
 
   // Link credits file
   vxe::AddCredits("vx", Cherry::GetPath("CREDITS"));
-  vxe::InitializePlatformVendor();
-  vxe::CreateGlobalLogger();
-  vxe::CreateConsoleLogger();
-  vxe::LogInfo("Bootstrapp", "Initializing runtime...");
+  vxe::initialize_platform_vendor();
+  vxe::create_global_logger();
+  vxe::create_console_logger();
+  vxe::log_info("Bootstrapp", "Initializing runtime...");
 
   vxe::CreateSessionTopic(ctx->state.session_id);
 
   // initialize environment
-  vxe::InitEnvironment();
-  vxe::DetectPlatform();
-  vxe::DetectArch();
+  vxe::init_environment();
+  vxe::detect_platform();
+  vxe::detect_arch();
 
   // Refresh environment registered projects
-  vxe::RefreshEnvironmentProjects();
+  vxe::refresh_environment_projects();
 
   vxe::LoadSystemTemplates(ctx->IO.sys_templates);
 
@@ -235,7 +235,7 @@ int main(int argc, char *argv[]) {
       }
 
       InitBlankRuntime(true);
-      vxe::LogInfo("Bootstrapp", "Opening the graphical interface...");
+      vxe::log_info("Bootstrapp", "Opening the graphical interface...");
       vxe::VortexCrash(argc, argv);
     } else if (std::string(argv[1]) == "-e" || std::string(argv[1]) == "--editor") {
       PrintHeader("(Editor)");
@@ -251,7 +251,7 @@ int main(int argc, char *argv[]) {
       }
 
       InitRuntime(true);
-      vxe::LogInfo("Bootstrapp", "Opening the graphical interface...");
+      vxe::log_info("Bootstrapp", "Opening the graphical interface...");
 
       vxe::VortexEditor(argc, argv);
     }

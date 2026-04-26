@@ -291,187 +291,12 @@ bool vxe::DebugCheckVersionAndDataLayout(const char *version) {
   return !error;  // Return true if no error occurred
 }
 
-VORTEX_API void
-vxe::CallOutputEvent(const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string &origin) {
-  // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
-
-  // Iterate through each EventManager in the Vortex context
-  for (auto em : ctx.IO.em) {
-    // Iterate through each input event in the EventManager
-    for (auto output_event : em->m_output_events) {
-      // Check if the input event name matches the provided event name
-      if (output_event->m_name == event_name) {
-        // Check if the event function pointer is valid
-        if (output_event->m_function) {
-          // Trigger a information trigger in the input event
-          output_event->trigger_happening(
-              origin + ":call_output_event",
-              HappeningState::INFO,
-              "Calling module output event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" +
-                  origin + "\"");
-
-          // Call the corresponding event function with the provided arguments
-          output_event->m_function(args, ret);
-
-          // Trigger a information trigger in the input event
-          output_event->trigger_happening(
-              origin + ":call_output_event",
-              HappeningState::INFO,
-              "Output event \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" called succefully from \"" +
-                  origin + "\" !");
-        } else {
-          // Trigger a information trigger in the input event
-          output_event->trigger_happening(
-              origin + ":call_output_event",
-              HappeningState::INFO,
-              "Trying to call \"" + output_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin +
-                  "\" but it not exist !");
-        }
-      }
-    }
-  }
-
-  // Iterate through each plugins
-  for (auto ep : ctx.IO.ep) {
-    // Iterate through each input event in the EventManager
-    for (auto output_event : ep->m_output_events) {
-      // Check if the input event name matches the provided event name
-      if (output_event->m_name == event_name) {
-        // Check if the event function pointer is valid
-        if (output_event->m_function) {
-          // Trigger a information trigger in the input event
-          output_event->trigger_happening(
-              origin + ":call_output_event",
-              HappeningState::INFO,
-              "Calling module output event \"" + output_event->m_name + "\" of module \"" + ep->m_name + "\" from \"" +
-                  origin + "\"");
-
-          // Call the corresponding event function with the provided arguments
-          output_event->m_function(args, ret);
-
-          // Trigger a information trigger in the input event
-          output_event->trigger_happening(
-              origin + ":call_output_event",
-              HappeningState::INFO,
-              "Output event \"" + output_event->m_name + "\" of module \"" + ep->m_name + "\" called succefully from \"" +
-                  origin + "\" !");
-        } else {
-          // Trigger a information trigger in the input event
-          output_event->trigger_happening(
-              origin + ":call_output_event",
-              HappeningState::INFO,
-              "Trying to call \"" + output_event->m_name + "\" of module \"" + ep->m_name + "\" from \"" + origin +
-                  "\" but it not exist !");
-        }
-      }
-    }
-  }
-}
-
-VORTEX_API void vxe::CallInputEvent(
-    const std::string &module_name,
-    const std::string &event_name,
-    ArgumentValues &args,
-    ReturnValues &ret,
-    const std::string &origin) {
-  // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
-
-  bool event_hit = false;
-
-  // Iterate through each EventManager in the Vortex context
-  for (auto em : ctx.IO.em) {
-    // Check if the EventManager corresponds to the specified module
-    if (em->m_name == module_name) {
-      // Iterate through each input event in the EventManager
-      for (auto input_event : em->m_input_events) {
-        // Check if the input event name matches the provided event name
-        if (input_event->m_name == event_name) {
-          // Check if the event function pointer is valid
-          if (input_event->m_function) {
-            // Trigger a information trigger in the input event
-            input_event->trigger_happening(
-                origin + ":call_input_event",
-                HappeningState::INFO,
-                "Calling module input event \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" from \"" +
-                    origin + "\"");
-
-            // Call the corresponding event function with the provided arguments
-            input_event->m_function(args, ret);
-
-            // Trigger a information trigger in the input event
-            input_event->trigger_happening(
-                origin + ":call_input_event",
-                HappeningState::INFO,
-                "Input event \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" called succefully from \"" +
-                    origin + "\" !");
-          } else {
-            input_event->trigger_happening(
-                origin + ":call_input_event",
-                HappeningState::INFO,
-                "Trying to call \"" + input_event->m_name + "\" of module \"" + em->m_name + "\" from \"" + origin +
-                    "\" but it not exist !");
-          }
-
-          event_hit = true;
-        }
-      }
-    }
-  }
-
-  // Iterate through each plguins in the Vortex context
-  for (auto ep : ctx.IO.ep) {
-    // Check if the EventManager corresponds to the specified module
-    if (ep->m_name == module_name) {
-      // Iterate through each input event in the EventManager
-      for (auto input_event : ep->m_input_events) {
-        // Check if the input event name matches the provided event name
-        if (input_event->m_name == event_name) {
-          // Check if the event function pointer is valid
-          if (input_event->m_function) {
-            // Trigger a information trigger in the input event
-            input_event->trigger_happening(
-                origin + ":call_input_event",
-                HappeningState::INFO,
-                "Calling module input event \"" + input_event->m_name + "\" of module \"" + ep->m_name + "\" from \"" +
-                    origin + "\"");
-
-            // Call the corresponding event function with the provided arguments
-            input_event->m_function(args, ret);
-
-            // Trigger a information trigger in the input event
-            input_event->trigger_happening(
-                origin + ":call_input_event",
-                HappeningState::INFO,
-                "Input event \"" + input_event->m_name + "\" of module \"" + ep->m_name + "\" called succefully from \"" +
-                    origin + "\" !");
-          } else {
-            input_event->trigger_happening(
-                origin + ":call_input_event",
-                HappeningState::INFO,
-                "Trying to call \"" + input_event->m_name + "\" of module \"" + ep->m_name + "\" from \"" + origin +
-                    "\" but it not exist !");
-          }
-
-          event_hit = true;
-        }
-      }
-    }
-  }
-
-  if (!event_hit) {
-    std::string log = "Input event not found. (target:" + module_name + " , event:" + event_name + ")";
-    vxe::LogError("Events", log);
-  }
-}
-
 VORTEX_API void vxe::InstallModuleToSystem(const std::string &path) {
   std::string modules_path = "~/.vx/modules";
   std::string json_file = path + "/module.json";
 
   try {
-    auto json_data = vxe::DumpJSON(json_file);
+    auto json_data = vxe::dump_json(json_file);
     std::string name = json_data["name"].get<std::string>();
     std::string proper_name = json_data["proper_name"].get<std::string>();
     std::string type = json_data["type"].get<std::string>();
@@ -482,7 +307,7 @@ VORTEX_API void vxe::InstallModuleToSystem(const std::string &path) {
     // std::string origin_path = path.substr(0, path.find_last_of("/"));
     modules_path += "/" + name + "." + version;
 
-    vxe::LogInfo("Core", "Installing the module " + name + "...");
+    vxe::log_info("Core", "Installing the module " + name + "...");
 
     {
       std::string cmd = "mkdir " + modules_path;
@@ -506,7 +331,7 @@ VORTEX_API void vxe::InstallPluginToSystem(const std::string &path) {
   std::string json_file = path + "/plugin.json";
 
   try {
-    auto json_data = vxe::DumpJSON(json_file);
+    auto json_data = vxe::dump_json(json_file);
     std::string name = json_data["name"].get<std::string>();
     std::string proper_name = json_data["proper_name"].get<std::string>();
     std::string type = json_data["type"].get<std::string>();
@@ -517,7 +342,7 @@ VORTEX_API void vxe::InstallPluginToSystem(const std::string &path) {
     // std::string origin_path = path.substr(0, path.find_last_of("/"));
     plugins_path += "/" + name + "." + version;
 
-    vxe::LogInfo("Core", "Installing the plugin " + name + "...");
+    vxe::log_info("Core", "Installing the plugin " + name + "...");
 
     {
       std::string cmd = "mkdir " + plugins_path;
@@ -551,13 +376,13 @@ VORTEX_API std::string vxe::replacePlaceholders(
 }
 
 VORTEX_API std::string vxe::getHomeDirectory() {
-  if (vxe::IsLinux() || vxe::IsMacOs()) {
+  if (vxe::is_linux() || vxe::is_macos()) {
     const char *homePath = std::getenv("HOME");
     if (homePath == nullptr) {
       throw std::runtime_error("HOME environment variable not set");
     }
     return std::string(homePath);
-  } else if (vxe::IsWindows()) {
+  } else if (vxe::is_windows()) {
     const char *homePath = std::getenv("USERPROFILE");
     if (homePath == nullptr) {
       const char *homeDrive = std::getenv("HOMEDRIVE");
@@ -577,7 +402,7 @@ VORTEX_API void vxe::InstallContentOnSystem(const std::string &directory) {
   fs::path dir_path(directory);
 
   if (!fs::exists(dir_path) || !fs::is_directory(dir_path)) {
-    vxe::LogError("Core", "So such file or directory.");
+    vxe::log_error("Core", "So such file or directory.");
     return;
   }
 
@@ -604,7 +429,7 @@ VORTEX_API void vxe::AddGeneralUtility(const std::shared_ptr<ModuleInterfaceUtil
 VORTEX_API void vxe::PostCustomFolderToJson() {
   VxContext &ctx = *CVortexMaker;
   std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
-  vxe::createFolderIfNotExists(path);
+  vxe::create_folder_if_not_exists(path);
 
   std::string file_path = path + "/customized_folders.json";
 
@@ -621,7 +446,7 @@ VORTEX_API void vxe::PostCustomFolderToJson() {
     json_data["custom_folders"].push_back(folder_data);
   }
 
-  vxe::PopulateJSON(json_data, file_path);
+  vxe::populate_json(json_data, file_path);
 }
 
 VORTEX_API void vxe::PublishPool(const std::string &absolute_pool_path, const std::string &name) {
@@ -725,7 +550,7 @@ VORTEX_API std::string vxe::ImU32ToHex(ImU32 color) {
 VORTEX_API void vxe::FetchPools() {
   VxContext &ctx = *CVortexMaker;
   std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
-  vxe::createFolderIfNotExists(path);
+  vxe::create_folder_if_not_exists(path);
 
   std::string file_path = path + "/pools.json";
 
@@ -733,7 +558,7 @@ VORTEX_API void vxe::FetchPools() {
   json_data["main_pool"] = ctx.projectPath.string();
   json_data["pools"] = nlohmann::json::array();
 
-  vxe::createJsonFileIfNotExists(file_path, json_data);
+  vxe::create_file_if_not_exists(file_path, json_data);
 
   std::ifstream file(file_path);
 
@@ -757,7 +582,7 @@ VORTEX_API void vxe::FetchPools() {
 VORTEX_API void vxe::PostPoolsToJson() {
   VxContext &ctx = *CVortexMaker;
   std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
-  vxe::createFolderIfNotExists(path);
+  vxe::create_folder_if_not_exists(path);
 
   std::string file_path = path + "/pools.json";
 
@@ -774,7 +599,7 @@ VORTEX_API void vxe::PostPoolsToJson() {
     json_data["pools"].push_back(folder_data);
   }
 
-  vxe::PopulateJSON(json_data, file_path);
+  vxe::populate_json(json_data, file_path);
 }
 
 VORTEX_API void vxe::OpenURL(const std::string &url) {
@@ -796,7 +621,7 @@ VORTEX_API void vxe::OpenURL(const std::string &url) {
 VORTEX_API void vxe::FetchCustomFolders() {
   VxContext &ctx = *CVortexMaker;
   std::string path = (ctx.projectPath / ".vx/configs/content_browser").string();
-  vxe::createFolderIfNotExists(path);
+  vxe::create_folder_if_not_exists(path);
 
   std::string file_path = path + "/customized_folders.json";
 
@@ -804,7 +629,7 @@ VORTEX_API void vxe::FetchCustomFolders() {
 
   };
 
-  vxe::createJsonFileIfNotExists(file_path, json_data);
+  vxe::create_file_if_not_exists(file_path, json_data);
 
   try {
     std::ifstream file(file_path);
@@ -824,7 +649,7 @@ VORTEX_API void vxe::FetchCustomFolders() {
       new_folder->m_IsFav = directory["isFav"].get<bool>();
       new_folder->path = directory["path"].get<std::string>();
 
-      vxe::createFolderIfNotExists(new_folder->path);
+      vxe::create_folder_if_not_exists(new_folder->path);
 
       ctx.IO.contentbrowser_customfolders.push_back(new_folder);
     }
@@ -1055,11 +880,11 @@ VORTEX_API void vxe::RefreshProjectThemes() {
   std::string config_path = home + "/.vx/configs/themes";
   std::string json_file = config_path + "/themes.json";
 
-  vxe::createFolderIfNotExists(themes_path);
-  vxe::createFolderIfNotExists(config_path);
+  vxe::create_folder_if_not_exists(themes_path);
+  vxe::create_folder_if_not_exists(config_path);
 
   nlohmann::json defaultData = { { "used_theme", "dark" }, { "override_themes", nlohmann::json::array() } };
-  vxe::createJsonFileIfNotExists(json_file, defaultData);
+  vxe::create_file_if_not_exists(json_file, defaultData);
 
   ctx.IO.themes.clear();
 
@@ -1084,8 +909,8 @@ VORTEX_API void vxe::RefreshProjectThemes() {
           ctx.IO.themes.push_back(themeObj);
         }
       } catch (const std::exception &e) {
-        vxe::LogError("Core", "Failed to parse theme file: " + entry.path().string());
-        vxe::LogError("Core", e.what());
+        vxe::log_error("Core", "Failed to parse theme file: " + entry.path().string());
+        vxe::log_error("Core", e.what());
       }
     }
   }
@@ -1098,13 +923,13 @@ VORTEX_API void vxe::RefreshProjectThemes() {
     ctx.IO.used_theme = configJson.value("used_theme", "dark");
     ctx.IO.override_themes = configJson.value("override_themes", std::vector<std::string>());
   } catch (const std::exception &e) {
-    vxe::LogError("Core", "Failed to load theme config: " + std::string(e.what()));
+    vxe::log_error("Core", "Failed to load theme config: " + std::string(e.what()));
   }
 }
 
 VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme, const std::string &title) {
   std::string themes_path = vxe::getHomeDirectory() + "/.vx/configs/themes/data";
-  vxe::createFolderIfNotExists(themes_path);
+  vxe::create_folder_if_not_exists(themes_path);
 
   nlohmann::json j;
   j["label"] = theme->label;
@@ -1125,10 +950,10 @@ VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme, const st
   try {
     std::ofstream out(filepath);
     out << std::setw(4) << j << std::endl;
-    vxe::LogInfo("Core", "Theme '" + theme->label + "' updated.");
+    vxe::log_info("Core", "Theme '" + theme->label + "' updated.");
   } catch (const std::exception &e) {
-    vxe::LogError("Core", "Failed to update theme file: " + filepath);
-    vxe::LogError("Core", e.what());
+    vxe::log_error("Core", "Failed to update theme file: " + filepath);
+    vxe::log_error("Core", e.what());
   }
 }
 
@@ -1158,18 +983,18 @@ VORTEX_API std::shared_ptr<Theme> vxe::GetSelectedTheme() {
     }
   }
 
-  vxe::LogError("Core", "No theme matched used_theme: '" + used + "'");
+  vxe::log_error("Core", "No theme matched used_theme: '" + used + "'");
   return nullptr;
 }
 
 VORTEX_API void vxe::CreateNewTheme(const std::shared_ptr<Theme> &base_theme, const std::string &title) {
   if (!base_theme) {
-    vxe::LogError("Theme", "Base theme is null. Cannot create new theme.");
+    vxe::log_error("Theme", "Base theme is null. Cannot create new theme.");
     return;
   }
 
   std::string themes_path = vxe::get_current_context()->projectPath.string() + "/.vx/configs/themes/data";
-  vxe::createFolderIfNotExists(themes_path);
+  vxe::create_folder_if_not_exists(themes_path);
 
   std::string base_filename = title;
   std::transform(base_filename.begin(), base_filename.end(), base_filename.begin(), [](unsigned char c) {
@@ -1201,9 +1026,9 @@ VORTEX_API void vxe::CreateNewTheme(const std::shared_ptr<Theme> &base_theme, co
   try {
     std::ofstream file(final_path);
     file << std::setw(4) << theme_json << std::endl;
-    vxe::LogInfo("Theme", "New theme created: " + final_filename);
+    vxe::log_info("Theme", "New theme created: " + final_filename);
   } catch (const std::exception &e) {
-    vxe::LogError("Theme", "Failed to write new theme file: " + std::string(e.what()));
+    vxe::log_error("Theme", "Failed to write new theme file: " + std::string(e.what()));
   }
 }
 
@@ -1234,7 +1059,7 @@ VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> vxe::GetAllItemHan
 VORTEX_API void vxe::VerifyAndPouplateThemes() {
   std::string themes_path = vxe::get_current_context()->projectPath.string() + "/.vx/configs/themes/data";
 
-  vxe::createFolderIfNotExists(themes_path);
+  vxe::create_folder_if_not_exists(themes_path);
 
   const std::vector<std::string> required_themes = { "dark.json", "clear.json" };
 
@@ -1243,7 +1068,7 @@ VORTEX_API void vxe::VerifyAndPouplateThemes() {
     bool needs_creation = false;
 
     if (!fs::exists(path)) {
-      vxe::LogInfo("Theme", theme_file + " is missing. Recreating.");
+      vxe::log_info("Theme", theme_file + " is missing. Recreating.");
       needs_creation = true;
     } else {
       try {
@@ -1253,11 +1078,11 @@ VORTEX_API void vxe::VerifyAndPouplateThemes() {
 
         if (!theme_json.contains("label") || !theme_json.contains("name") || !theme_json.contains("description") ||
             !theme_json.contains("authors") || !theme_json.contains("theme")) {
-          vxe::LogError("Theme", theme_file + " is invalid. Recreating.");
+          vxe::log_error("Theme", theme_file + " is invalid. Recreating.");
           needs_creation = true;
         }
       } catch (...) {
-        vxe::LogError("Theme", theme_file + " is corrupted. Recreating.");
+        vxe::log_error("Theme", theme_file + " is corrupted. Recreating.");
         needs_creation = true;
       }
     }
@@ -1577,9 +1402,9 @@ VORTEX_API void vxe::UpdateProjectThemesComfig() {
   try {
     std::ofstream out(json_file);
     out << std::setw(4) << configJson << std::endl;
-    vxe::LogInfo("Core", "Theme configuration updated.");
+    vxe::log_info("Core", "Theme configuration updated.");
   } catch (const std::exception &e) {
-    vxe::LogError("Core", "Failed to update theme config file: " + std::string(e.what()));
+    vxe::log_error("Core", "Failed to update theme config file: " + std::string(e.what()));
   }
 }
 

@@ -2,7 +2,7 @@
 #include "../../../include/vortex_internals.h"
 
 /**
- * @brief CreateProject creates a new project with the specified name and path.
+ * @brief create_project creates a new project with the specified name and path.
  *
  * This function creates a new project directory structure and initializes
  * necessary files such as 'vortex.config'.
@@ -10,20 +10,18 @@
  * @param name The name of the project.
  * @param path The path where the project will be created.
  */
-VORTEX_API void vxe::DeleteProject(const std::string &path,
-                                   const std::string &project_name) {
+VORTEX_API void vxe::delete_project(const std::string &path, const std::string &project_name) {
   // Vérifiez si le fichier existe avant de l'ouvrir
   if (!std::filesystem::exists(path + "/vortex.config")) {
     // Lancez une exception si le fichier n'existe pas
-    vxe::LogError("Core", "Project not found (File not found: " + path +
-                              "/vortex.config)");
-    vxe::LogWarn("Core", "Delete the project entry of environment.");
+    vxe::log_error("Core", "Project not found (File not found: " + path + "/vortex.config)");
+    vxe::log_warn("Core", "Delete the project entry of environment.");
     vxe::RemoveSystemProjectEntry(project_name);
     return;
   }
 
   // Load JSON data from the module configuration file
-  auto json_data = vxe::DumpJSON(path + "/vortex.config");
+  auto json_data = vxe::dump_json(path + "/vortex.config");
 
   if (!json_data.empty() || json_data == "{}") {
     if (!json_data["project"]["name"].get<std::string>().empty()) {
@@ -33,18 +31,15 @@ VORTEX_API void vxe::DeleteProject(const std::string &path,
         {
           std::string cmd = "rm -rf " + project_path;
           if (std::system(cmd.c_str()) == 0) {
-            vxe::LogInfo("Core",
-                         "The project \"" +
-                             json_data["project"]["name"].get<std::string>() +
-                             "\" is succefully deleted !");
+            vxe::log_info(
+                "Core", "The project \"" + json_data["project"]["name"].get<std::string>() + "\" is succefully deleted !");
             vxe::RemoveSystemProjectEntry(project_name);
             return;
           } else {
-            vxe::LogError("Core",
-                          "Failed to delete the project \"" +
-                              json_data["project"]["name"].get<std::string>() +
-                              "\" at path \"" +
-                              json_data["path"].get<std::string>() + "\"");
+            vxe::log_error(
+                "Core",
+                "Failed to delete the project \"" + json_data["project"]["name"].get<std::string>() + "\" at path \"" +
+                    json_data["path"].get<std::string>() + "\"");
             return;
           }
         }
@@ -52,7 +47,7 @@ VORTEX_API void vxe::DeleteProject(const std::string &path,
     }
   }
 
-  vxe::LogError("Core", "No project to delete at \"" + path + "\"");
+  vxe::log_error("Core", "No project to delete at \"" + path + "\"");
 }
 
 VORTEX_API void vxe::RemoveSystemProjectEntry(const std::string &project_name) {
@@ -60,15 +55,15 @@ VORTEX_API void vxe::RemoveSystemProjectEntry(const std::string &project_name) {
   std::string configFile = dataPath + "/projects.json";
 
   // Load JSON data from the module configuration file
-  auto json_data = vxe::DumpJSON(configFile);
+  auto json_data = vxe::dump_json(configFile);
 
   if (!json_data.empty()) {
     auto &projects = json_data["projects"];
     for (auto it = projects.begin(); it != projects.end(); ++it) {
       if ((*it)["name"].get<std::string>() == project_name) {
         projects.erase(it);
-        break; // Assuming project names are unique, we can break after finding
-               // the project
+        break;  // Assuming project names are unique, we can break after finding
+                // the project
       }
     }
   } else {
@@ -77,6 +72,6 @@ VORTEX_API void vxe::RemoveSystemProjectEntry(const std::string &project_name) {
 
   // Write the updated JSON data back to the file
   std::ofstream output(configFile);
-  output << json_data.dump(4); // Use pretty print with indentation of 4 spaces
+  output << json_data.dump(4);  // Use pretty print with indentation of 4 spaces
   output.close();
 }

@@ -411,8 +411,8 @@ VORTEX_API void ModuleInterface::ExecuteOutputEvent(const std::string &name, Arg
  *
  * @param message The message to log.
  */
-VORTEX_API void ModuleInterface::LogInfo(const std::string &message) {
-  vxe::LogInfo(this->m_name, message);
+VORTEX_API void ModuleInterface::log_info(const std::string &message) {
+  vxe::log_info(this->m_name, message);
 }
 
 /**
@@ -423,7 +423,7 @@ VORTEX_API void ModuleInterface::LogInfo(const std::string &message) {
  * @param message The warning message to log.
  */
 VORTEX_API void ModuleInterface::LogWarning(const std::string &message) {
-  vxe::LogWarn(this->m_name, message);
+  vxe::log_warn(this->m_name, message);
 }
 
 /**
@@ -433,8 +433,8 @@ VORTEX_API void ModuleInterface::LogWarning(const std::string &message) {
  *
  * @param message The error message to log.
  */
-VORTEX_API void ModuleInterface::LogError(const std::string &message) {
-  vxe::LogError(this->m_name, message);
+VORTEX_API void ModuleInterface::log_error(const std::string &message) {
+  vxe::log_error(this->m_name, message);
 }
 
 /**
@@ -444,8 +444,8 @@ VORTEX_API void ModuleInterface::LogError(const std::string &message) {
  *
  * @param message The fatal error message to log.
  */
-VORTEX_API void ModuleInterface::LogFatal(const std::string &message) {
-  vxe::LogFatal(this->m_name, message);
+VORTEX_API void ModuleInterface::log_fatal(const std::string &message) {
+  vxe::log_fatal(this->m_name, message);
 }
 
 /**
@@ -556,16 +556,16 @@ VORTEX_API void ModuleInterface::Start() {
 
   // If any dependency is not satisfied, log and set state to "failed"
   if (!allDependenciesSatisfied) {
-    this->LogError("Dependencies not satisfied!");
+    this->log_error("Dependencies not satisfied!");
     for (auto unsatisfiedDep : unsatisfiedDependencies) {
-      this->LogError("Failed to retrieve: " + unsatisfiedDep.first + " with version(s) " + unsatisfiedDep.second);
+      this->log_error("Failed to retrieve: " + unsatisfiedDep.first + " with version(s) " + unsatisfiedDep.second);
     }
     this->m_state = "failed";
     return;
   }
 
   if (!isVersionCompatible) {
-    this->LogError(
+    this->log_error(
         "This module isn't compatible with this version of Vortex (\"" + major + "\") ! Is incompatible with \"" +
         this->m_name + "\" supported version(s).");
 
@@ -574,10 +574,10 @@ VORTEX_API void ModuleInterface::Start() {
   }
 
   if (!needToRunDependencies.empty()) {
-    this->LogError("Dependencies of this modules are not running !");
+    this->log_error("Dependencies of this modules are not running !");
 
     for (auto notRunningDeps : needToRunDependencies) {
-      this->LogError("Please run : " + notRunningDeps.first + " with version(s) " + notRunningDeps.second);
+      this->log_error("Please run : " + notRunningDeps.first + " with version(s) " + notRunningDeps.second);
     }
     this->m_state = "failed";
     return;
@@ -622,9 +622,9 @@ VORTEX_API void ModuleInterface::Stop() {
   }
 
   if (!authorized) {
-    this->LogError("Cannot stop \"" + this->m_name + "\" ! ");
+    this->log_error("Cannot stop \"" + this->m_name + "\" ! ");
     for (auto dep : deps) {
-      this->LogError("This module is used by \"" + dep.first + "\" with needed versions : " + dep.second + " ! ");
+      this->log_error("This module is used by \"" + dep.first + "\" with needed versions : " + dep.second + " ! ");
     }
   } else {
     this->destroy();
@@ -636,16 +636,16 @@ VORTEX_API void ModuleInterface::ResetModule() {
   m_item_handlers.clear();
 }
 
-VORTEX_API void ModuleInterface::CallOutputEvent(const std::string &event_name, ArgumentValues &args, ReturnValues &ret) {
-  vxe::CallOutputEvent(event_name, args, ret, this->m_name);
+VORTEX_API void ModuleInterface::call_output_event(const std::string &event_name, ArgumentValues &args, ReturnValues &ret) {
+  vxe::call_output_event(event_name, args, ret, this->m_name);
 }
 
-VORTEX_API void ModuleInterface::CallInputEvent(
+VORTEX_API void ModuleInterface::call_input_event(
     const std::string &module_name,
     const std::string &event_name,
     ArgumentValues &args,
     ReturnValues &ret) {
-  vxe::CallInputEvent(module_name, event_name, args, ret, this->m_name);
+  vxe::call_input_event(module_name, event_name, args, ret, this->m_name);
 }
 
 VORTEX_API void ModuleInterface::CheckVersion() {

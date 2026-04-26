@@ -202,7 +202,7 @@ namespace vxe {
     std::string path = vxe::get_current_context()->projectPath.string();
     path += "/vortex.config";
 
-    nlohmann::json projectData = vxe::DumpJSON(path);
+    nlohmann::json projectData = vxe::dump_json(path);
 
     std::shared_ptr<ProjectSettingsSave> newsave = std::make_shared<ProjectSettingsSave>();
 
@@ -233,7 +233,7 @@ namespace vxe {
   }
 
   void ProjectSettings::refresh_project_informations() {
-    vxe::RefreshProjectInformations();
+    vxe::refresh_project_informations();
     auto *ctx = vxe::get_current_context();
 
     initial_project_info_ = {
@@ -261,23 +261,23 @@ namespace vxe {
   }
 
   void ProjectSettings::update_project_informations() {
-    vxe::UpdateProjectName(current_project_info_.name);
-    vxe::UpdateProjectDescription(current_project_info_.description);
-    vxe::UpdateProjectVersion(current_project_info_.version);
-    vxe::UpdateProjectAuthor(current_project_info_.author);
-    vxe::UpdateProjectTags(current_project_info_.tags);
-    vxe::UpdateProjectType(current_project_info_.type);
-    vxe::UpdateProjectLogoPath(current_project_info_.thumbnail_path);
-    vxe::UpdateProjectWebsite(current_project_info_.website);
-    vxe::UpdateProjectSupportContact(current_project_info_.support_contact);
-    vxe::UpdateProjectCopyrightFile(current_project_info_.copyright_file);
-    vxe::UpdateProjectLicenseFile(current_project_info_.license_file);
-    vxe::UpdateProjectReadmeFile(current_project_info_.readme_file);
-    vxe::UpdateProjectRequirementsFile(current_project_info_.requirements_file);
-    vxe::UpdateProjectCodeOfConductFile(current_project_info_.code_of_conduct_file);
-    vxe::UpdateProjectSecurityFile(current_project_info_.security_file);
-    vxe::UpdateProjectRootContentPath(current_project_info_.root_content_path);
-    vxe::UpdateProjectStartupScript(current_project_info_.startup_script);
+    vxe::update_project_name(current_project_info_.name);
+    vxe::update_project_description(current_project_info_.description);
+    vxe::update_project_version(current_project_info_.version);
+    vxe::update_project_author(current_project_info_.author);
+    vxe::update_project_tags(current_project_info_.tags);
+    vxe::update_project_type(current_project_info_.type);
+    vxe::update_project_logo_path(current_project_info_.thumbnail_path);
+    vxe::update_project_website(current_project_info_.website);
+    vxe::update_project_support_contact(current_project_info_.support_contact);
+    vxe::update_project_copyright_flle(current_project_info_.copyright_file);
+    vxe::update_project_license_flle(current_project_info_.license_file);
+    vxe::update_project_readme_flle(current_project_info_.readme_file);
+    vxe::update_project_requirements_flle(current_project_info_.requirements_file);
+    vxe::update_project_code_of_conduct_flle(current_project_info_.code_of_conduct_file);
+    vxe::update_project_security_flle(current_project_info_.security_file);
+    vxe::update_project_root_content_path(current_project_info_.root_content_path);
+    vxe::update_project_startup_script(current_project_info_.startup_script);
 
     initial_project_info_ = current_project_info_;
     refresh_project_informations();
@@ -303,15 +303,15 @@ namespace vxe {
     std::ofstream file(path);
     if (file.is_open()) {
       file << std::setw(4) << jsonData << std::endl;
-      vxe::LogInfo("Core", "Object saved to " + path);
+      vxe::log_info("Core", "Object saved to " + path);
       file.close();
     } else {
-      vxe::LogError("Core", "Unable to open file " + path + " for writing!");
+      vxe::log_error("Core", "Unable to open file " + path + " for writing!");
     }
 
     refresh();
 
-    vxe::UpdateEnvironmentProject(oldname);
+    vxe::update_environment_project(oldname);
   }
 
 }  // namespace vxe

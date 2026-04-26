@@ -15,12 +15,12 @@
  *
  * @param main_configs JSON object containing main project configurations.
  */
-VORTEX_API void vxe::InitProject(const nlohmann::json &main_configs) {
+VORTEX_API void vxe::init_project(const nlohmann::json &main_configs) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   if (!main_configs.contains("project")) {
-    vxe::LogError("Core", "Invalid config: missing 'project' section");
+    vxe::log_error("Core", "Invalid config: missing 'project' section");
     return;
   }
 
@@ -75,15 +75,13 @@ VORTEX_API void vxe::InitProject(const nlohmann::json &main_configs) {
     ctx.requirements_file = project["requirements_file"].get<std::string>();
 
   if (project.contains("code_of_conduct_file"))
-    ctx.code_of_conduct_file =
-        project["code_of_conduct_file"].get<std::string>();
+    ctx.code_of_conduct_file = project["code_of_conduct_file"].get<std::string>();
 
   if (project.contains("security_file"))
     ctx.security_file = project["security_file"].get<std::string>();
 
   if (project.contains("include_system_templates"))
-    ctx.include_system_templates =
-        project["include_system_templates"].get<bool>();
+    ctx.include_system_templates = project["include_system_templates"].get<bool>();
 
   if (project.contains("name"))
     ctx.label = ctx.name;
@@ -101,12 +99,11 @@ VORTEX_API void vxe::InitProject(const nlohmann::json &main_configs) {
 
     } else {
       ctx.projectDataPath = ctx.projectPath;
-      vxe::LogError("Core", "root_content_path does not exist: " +
-                                rootContentPath.string());
+      vxe::log_error("Core", "root_content_path does not exist: " + rootContentPath.string());
     }
   } else {
     ctx.projectDataPath = ctx.projectPath;
-    vxe::LogError("Core", "root_content_path does not exist: ");
+    vxe::log_error("Core", "root_content_path does not exist: ");
   }
 
   // TODO : Only for early development.
@@ -114,19 +111,17 @@ VORTEX_API void vxe::InitProject(const nlohmann::json &main_configs) {
   ctx.logger_registering = true;
 
   // Initialize environment
-  vxe::InitEnvironment();
+  vxe::init_environment();
 
   // Update projet metadata (last opened, etc...) in the
   // ~/.vx/data/projects.json
-  vxe::UpdateEnvironmentProject();
+  vxe::update_environment_project();
 
   // Load modules installed in the current project
-  vxe::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles,
-                         ctx.IO.em);
+  vxe::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles, ctx.IO.em);
 
   // Load plugins installed in the current project
-  vxe::LoadEditorPlugins(ctx.projectPath.string(), ctx.IO.ep_handles,
-                         ctx.IO.ep);
+  vxe::LoadEditorPlugins(ctx.projectPath.string(), ctx.IO.ep_handles, ctx.IO.ep);
 
   // Load modules installed in the system
   // Note: These modules are simply initialized in the project, not loaded, but

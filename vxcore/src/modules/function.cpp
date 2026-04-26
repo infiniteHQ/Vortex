@@ -1,5 +1,7 @@
 #include "../../include/modules/function.h"
 
+#include "../../include/vortex_internals.h"
+
 /**
  * @brief Constructor for ModuleFunction.
  *
@@ -7,7 +9,9 @@
  * @param name The name of the function.
  */
 ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
-    : m_function(foo), m_name(name) {}
+    : m_function(foo),
+      m_name(name) {
+}
 
 /**
  * @brief Constructor for ModuleFunction.
@@ -16,11 +20,12 @@ ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &, ReturnValues
  * @param name The name of the function.
  */
 ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &args, ReturnValues &ret)
-                 {
-          ret = ReturnValues(); 
-          foo(args); }),
-      m_name(name) {}
+    : m_function([foo](ArgumentValues &args, ReturnValues &ret) {
+        ret = ReturnValues();
+        foo(args);
+      }),
+      m_name(name) {
+}
 /**
  * @brief Constructor for ModuleFunction.
  *
@@ -28,12 +33,8 @@ ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &)> foo, const 
  * @param name The name of the function.
  */
 ModuleFunction::ModuleFunction(std::function<void(ReturnValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &ret)
-                 {
-                     foo(ret);
-                 }),
-      m_name(name)
-{
+    : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
+      m_name(name) {
 }
 
 /**
@@ -43,6 +44,6 @@ ModuleFunction::ModuleFunction(std::function<void(ReturnValues &)> foo, const st
  * @param name The name of the function.
  */
 ModuleFunction::ModuleFunction(std::function<void()> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &)
-                 { foo(); }),
-      m_name(name) {}
+    : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
+      m_name(name) {
+}

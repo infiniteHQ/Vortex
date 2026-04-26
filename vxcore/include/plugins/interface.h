@@ -41,59 +41,16 @@ VORTEX_API struct LuaItemHandler {
   lua_State *L;
   std::shared_ptr<PluginInterface> plugin;
 
-  LuaItemHandler(int ref, lua_State *state, std::shared_ptr<PluginInterface> p)
-      : lua_ref(ref),
-        L(state),
-        plugin(std::move(p)) {
-  }
+  LuaItemHandler(int ref, lua_State *state, std::shared_ptr<PluginInterface> p);
 
   LuaItemHandler(const LuaItemHandler &) = delete;
   LuaItemHandler &operator=(const LuaItemHandler &) = delete;
 
-  LuaItemHandler(LuaItemHandler &&other) noexcept : lua_ref(other.lua_ref), L(other.L), plugin(std::move(other.plugin)) {
-    other.lua_ref = LUA_NOREF;
-    other.L = nullptr;
-  }
+  LuaItemHandler(LuaItemHandler &&other) noexcept;
 
-  void Call(const std::string &path) {
-    if (!L)
-      return;
+  void Call(const std::string &path);
 
-    lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
-    lua_pushlightuserdata(L, (void *)&plugin);
-    lua_rawset(L, LUA_REGISTRYINDEX);
-
-    int type = lua_rawgeti(L, LUA_REGISTRYINDEX, lua_ref);
-    if (type != LUA_TFUNCTION) {
-      vxe::LogError(
-          "LuaHandler",
-          "Corrupted register : ID " + std::to_string(lua_ref) + " is type " + std::string(lua_typename(L, type)));
-      lua_pop(L, 1);
-
-      lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
-      lua_pushnil(L);
-      lua_rawset(L, LUA_REGISTRYINDEX);
-      return;
-    }
-
-    lua_pushstring(L, path.c_str());
-
-    if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
-      std::string error = lua_tostring(L, -1);
-      vxe::LogError("LuaHandler", "Error while executing Lua : " + error);
-      lua_pop(L, 1);
-    }
-
-    lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
-    lua_pushnil(L);
-    lua_rawset(L, LUA_REGISTRYINDEX);
-  }
-
-  ~LuaItemHandler() {
-    if (L && lua_ref != LUA_NOREF && lua_ref != LUA_REFNIL) {
-      luaL_unref(L, LUA_REGISTRYINDEX, lua_ref);
-    }
-  }
+  ~LuaItemHandler();
 };
 VORTEX_API struct PluginInterfaceDep {
   std::string type;  // em, plugin, etc..
@@ -177,10 +134,10 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &GetContentBrowserItemCreators();
 
   // Logs & Metrics
-  VORTEX_API void LogInfo(const std::string &message);
+  VORTEX_API void log_info(const std::string &message);
   VORTEX_API void LogWarning(const std::string &message);
-  VORTEX_API void LogError(const std::string &message);
-  VORTEX_API void LogFatal(const std::string &message);
+  VORTEX_API void log_error(const std::string &message);
+  VORTEX_API void log_fatal(const std::string &message);
 
   // Credits
   VORTEX_API void SetCreditsFile(const std::string &file_path);
@@ -211,8 +168,8 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API void AddPluginFunction(const PluginFunction &event);
   std::vector<std::shared_ptr<PluginRenderInstance>> GetPluginRenderInstances();
 
-  VORTEX_API void CallOutputEvent(const std::string &event_name, ArgumentValues &args, ReturnValues &ret);
-  VORTEX_API void CallInputEvent(
+  VORTEX_API void call_output_event(const std::string &event_name, ArgumentValues &args, ReturnValues &ret);
+  VORTEX_API void call_input_event(
       const std::string &plugin_name,  // or module
       const std::string &event_name,
       ArgumentValues &args,

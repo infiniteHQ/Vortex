@@ -1,8 +1,8 @@
 #include <plugins/runtime.h>
 
-VORTEX_API void
-FinalStartPlugin(const std::string &plugin_name,
-                 std::shared_ptr<std::vector<std::string>> processed_plugins) {
+VORTEX_API void FinalStartPlugin(
+    const std::string &plugin_name,
+    std::shared_ptr<std::vector<std::string>> processed_plugins) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -10,15 +10,14 @@ FinalStartPlugin(const std::string &plugin_name,
   for (auto ep : ctx.IO.ep) {
     if (ep->m_name == plugin_name) {
       if (ep->m_state != "running" || ep->m_state != "waiting") {
-        vxe::LogInfo("Plugins", "Start \"" + ep->m_name + "\"");
+        vxe::log_info("Plugins", "Start \"" + ep->m_name + "\"");
         processed_plugins->push_back(ep->m_name);
 
         try {
           ep->Start();
         } catch (const std::exception &e) {
           // Log the error
-          vxe::LogError("Plugins", "Error starting plugin \"" + ep->m_name +
-                                       "\": " + e.what());
+          vxe::log_error("Plugins", "Error starting plugin \"" + ep->m_name + "\": " + e.what());
           // Continue to the next plugin
           continue;
         }
@@ -35,10 +34,9 @@ VORTEX_API void vxe::StartPlugin(const std::string &plugin_name) {
   for (auto ep : ctx.IO.ep) {
     if (ep->m_name == plugin_name) {
       if (ep->m_state != "running") {
-        vxe::LogInfo("Plugins", "Start \"" + ep->m_name + "\"");
+        vxe::log_info("Plugins", "Start \"" + ep->m_name + "\"");
 
-        std::shared_ptr<std::vector<std::string>> processed_plugins =
-            std::make_shared<std::vector<std::string>>();
+        std::shared_ptr<std::vector<std::string>> processed_plugins = std::make_shared<std::vector<std::string>>();
 
         // Start dependencies
         for (auto deps : ep->m_dependencies) {

@@ -60,21 +60,21 @@ namespace vxe {
   static std::vector<CommandDef> COMMAND_DEFINITIONS = {
     // Logs & Debug
     { "Log", "text", "Simple message to the logs", "Log(\"<cursor>\")" },
-    { "LogWarn", "text", "Warning message to the logs", "LogWarn(\"<cursor>\")" },
-    { "LogError", "text", "Error message to the logs", "LogError(\"<cursor>\")" },
-    { "LogFatal", "text", "Fatal message to the logs", "LogFatal(\"<cursor>\")" },
+    { "log_warn", "text", "Warning message to the logs", "log_warn(\"<cursor>\")" },
+    { "log_error", "text", "Error message to the logs", "log_error(\"<cursor>\")" },
+    { "log_fatal", "text", "Fatal message to the logs", "log_fatal(\"<cursor>\")" },
 
     // Modules/Plugins events
-    { "CallOutputEvent", "text", "Call a global output event", "CallOutputEvent(\"<cursor>\", {})" },
-    { "CallInputEvent", "text", "Call an input event on a module", "CallInputEvent(\"<cursor>\", \"eventName\", {})" },
+    { "call_output_event", "text", "Call a global output event", "call_output_event(\"<cursor>\", {})" },
+    { "call_input_event", "text", "Call an input event on a module", "call_input_event(\"<cursor>\", \"eventName\", {})" },
 
     // Cross platform
-    { "IsLinux", "text", "Returns true if running on Linux", "IsLinux()" },
-    { "IsNotLinux", "text", "Returns true if not running on Linux", "IsNotLinux()" },
-    { "IsWindows", "text", "Returns true if running on Windows", "IsWindows()" },
-    { "IsNotWindows", "text", "Returns true if not running on Windows", "IsNotWindows()" },
+    { "is_linux", "text", "Returns true if running on Linux", "is_linux()" },
+    { "is_not_linux", "text", "Returns true if not running on Linux", "is_not_linux()" },
+    { "is_windows", "text", "Returns true if running on Windows", "is_windows()" },
+    { "is_not_windows", "text", "Returns true if not running on Windows", "is_not_windows()" },
     { "IsMacOS", "text", "Returns true if running on macOS", "IsMacOS()" },
-    { "IsNotMacOS", "text", "Returns true if not running on macOS", "IsNotMacOS()" },
+    { "is_not_macos", "text", "Returns true if not running on macOS", "is_not_macos()" },
 
     // Information functions
     { "GetBuildDate", "text", "Returns the build date of Vortex", "GetBuildDate()" },

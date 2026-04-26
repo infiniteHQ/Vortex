@@ -1,38 +1,22 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-/**
- * @brief DumpJSON loads JSON data from a file.
- *
- * This function reads JSON data from the specified file and returns it as a
- * JSON object.
- *
- * @param file The path to the JSON file to load.
- * @return A JSON object containing the data from the file.
- * @throws std::runtime_error if the file cannot be opened.
- */
-VORTEX_API nlohmann::json vxe::DumpJSON(const std::string &file) {
+VORTEX_API nlohmann::json vxe::dump_json(const std::string &file) {
   if (!std::filesystem::exists(file)) {
-    vxe::LogError("Core", "File not found: " + file);
+    vxe::log_error("Core", "File not found: " + file);
     return "{}";
   }
 
-  // Open the file for reading
-  std::ifstream fichier(file);
+  std::ifstream opened_file(file);
 
-  // Check if the file is opened successfully
-  if (!fichier.is_open()) {
-    // Throw an exception if the file cannot be opened
-    vxe::LogError("Core", "Error while opening file " + file);
+  if (!opened_file.is_open()) {
+    vxe::log_error("Core", "Error while opening file " + file);
     return "{}";
   }
 
-  // JSON object to store the data read from the file
   nlohmann::json json_data;
 
-  // Read data from the file into the JSON object
-  fichier >> json_data;
+  opened_file >> json_data;
 
-  // Return the JSON object containing the data from the file
   return json_data;
 }

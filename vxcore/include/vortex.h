@@ -115,44 +115,7 @@ namespace vxe {
   VORTEX_API VxContext *get_current_context();
   VORTEX_API void set_current_context(VxContext *context);
 
-  // /vortex/logger.hpp
-  VORTEX_API void LogInfo(const std::string &scope, const std::string &message);
-#define VXINFO(scope, message) LogInfo(scope, message);
-
-  VORTEX_API void LogInfo(const std::string &pool_name, const std::string &scope, const std::string &message);
-#define VXPOOLINFO(pool_name, scope, message) LogInfo(pool_name, scope, message);
-
-  VORTEX_API void LogWarn(const std::string &scope, const std::string &message);
-#define VXWARN(scope, message) LogWarn(scope, message);
-
-  VORTEX_API void LogError(const std::string &scope, const std::string &message);
-#define VXERROR(scope, message) LogError(scope, message);
-
-  VORTEX_API void LogFatal(const std::string &scope, const std::string &message);
-#define VXFATAL(scope, message) LogFatal(scope, message);
-
   VORTEX_API void initialize();
-  VORTEX_API void InitProject(const nlohmann::json &main_config);
-
-  VORTEX_API void FinishProcess();
-
-  VORTEX_API void DeployEvent(const std::shared_ptr<hArgs> &args, const std::string &event_name);
-  VORTEX_API void DeployEvent(
-      const std::shared_ptr<hArgs> &args,
-      const std::string &event_name,
-      void (*callback)(std::shared_ptr<hArgs> _args));
-
-  VORTEX_API void CallOutputEvent(
-      const std::string &event_name,
-      ArgumentValues &args,
-      ReturnValues &ret,
-      const std::string &origin = "unknow");
-  VORTEX_API void CallInputEvent(
-      const std::string &module_name,
-      const std::string &event_name,
-      ArgumentValues &args,
-      ReturnValues &ret,
-      const std::string &origin = "unknow");
 
   VORTEX_API bool IsThemeNeedsRebuild();
   VORTEX_API void ThemeRebuilded();
@@ -179,27 +142,9 @@ namespace vxe {
   VORTEX_API void InstallPlugin(const std::string &plugin_name, const std::string &version, bool &restart_plugins);
   VORTEX_API void AddPluginToProject(const std::string &plugin_name);
 
-  VORTEX_API void CreateProject(const std::string &name, const std::string &path);
-  VORTEX_API void CreateProject(
-      const std::string &name,
-      const std::string &author,
-      const std::string &version,
-      const std::string &description,
-      const std::string &path,
-      const std::string &logo_path,
-      const std::string &template_name);
-  VORTEX_API void RefreshEnvironmentVortexVersionsPools();
-
-  VORTEX_API void DeleteProject(const std::string &path, const std::string &project_name);
   VORTEX_API void RemoveSystemProjectEntry(const std::string &project_name);
 
-  VORTEX_API void ImportProject(const std::string &path);
-  VORTEX_API std::vector<std::shared_ptr<EnvProject>> FindProjectInFolder(const std::string &path);
-
   VORTEX_API void InstallContentOnSystem(const std::string &directory);
-
-  VORTEX_API void UpdateProjectData(const std::string &old_name, const std::string &path);
-  VORTEX_API void InitEnvironment();
 
   VORTEX_API void ExecuteStartScript();
 
@@ -210,38 +155,9 @@ namespace vxe {
   VORTEX_API nlohmann::json GetLastModuleOfLastSession(const std::string &post_topic);
   VORTEX_API nlohmann::json GetLastSession(const std::string &post_topic);
 
-  VORTEX_API void RefreshEnvironmentProjects();
-  VORTEX_API void UpdateEnvironmentProject();
-  VORTEX_API void UpdateEnvironmentProject(
-      const std::string &name,
-      const std::string &author,
-      const std::string &version,
-      const std::string &compatibleWith,
-      const std::string &description,
-      const std::string &path,
-      const std::string &logo_path,
-      const std::string &template_name);
-  VORTEX_API void UpdateEnvironmentProject(const std::string &oldname);
-
   VORTEX_API std::string getCurrentTimeStamp();
-
-  VORTEX_API std::shared_ptr<spdlog::logger> CreateLogPool(const std::string &pool_name);
-  VORTEX_API std::shared_ptr<spdlog::logger> CreateGlobalLogger();
-  VORTEX_API std::shared_ptr<spdlog::logger> CreateConsoleLogger();
-  VORTEX_API void DropLoggers();
-
   VORTEX_API void OpenURL(const std::string &url);
 
-  VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename);
-  VORTEX_API std::vector<std::string> SearchFiles(const std::string &path, const std::string &filename, int recursions);
-  VORTEX_API std::vector<std::string> SearchSystemFiles(const std::string &path, const std::string &filename);
-  VORTEX_API void SearchFilesRecursive(const fs::path &path, const std::string &filename, std::vector<std::string> &file);
-  VORTEX_API std::string SearchFilesRecursive(
-      const fs::path &path,
-      const std::string &filename,
-      std::vector<std::string> &file,
-      int recursions,
-      int counter);
   bool DebugCheckVersionAndDataLayout(const char *version);
 
   VORTEX_API std::string CreateFile(const std::string &path);
@@ -252,35 +168,6 @@ namespace vxe {
 
   VORTEX_API std::string ConvertPathToWindowsStyle(const std::string &path);
   VORTEX_API void SubmitRename(const std::string &oldPathStr, const std::string &newName);
-
-  VORTEX_API void InitializePlatformVendor();
-  VORTEX_API bool IsLinux();
-  VORTEX_API bool IsNotLinux();
-  VORTEX_API bool IsWindows();
-  VORTEX_API bool IsNotWindows();
-  VORTEX_API bool IsMacOs();
-  VORTEX_API bool IsNotMacOS();
-  VORTEX_API void DetectPlatform();
-  VORTEX_API void DetectArch();
-
-  VORTEX_API void UpdateProjectName(const std::string &name);
-  VORTEX_API void UpdateProjectVersion(const std::string &version);
-  VORTEX_API void UpdateProjectAuthor(const std::string &author);
-  VORTEX_API void UpdateProjectDescription(const std::string &description);
-  VORTEX_API void UpdateProjectType(const std::string &type);
-  VORTEX_API void UpdateProjectLogoPath(const std::string &path);
-  VORTEX_API void UpdateProjectBannerPath(const std::string &path);
-  VORTEX_API void UpdateProjectTags(const std::string &tags);
-  VORTEX_API void UpdateProjectWebsite(const std::string &website);
-  VORTEX_API void UpdateProjectSupportContact(const std::string &contact);
-  VORTEX_API void UpdateProjectCopyrightFile(const std::string &path);
-  VORTEX_API void UpdateProjectLicenseFile(const std::string &path);
-  VORTEX_API void UpdateProjectReadmeFile(const std::string &path);
-  VORTEX_API void UpdateProjectRequirementsFile(const std::string &path);
-  VORTEX_API void UpdateProjectCodeOfConductFile(const std::string &path);
-  VORTEX_API void UpdateProjectSecurityFile(const std::string &path);
-  VORTEX_API void UpdateProjectRootContentPath(const std::string &root_path);
-  VORTEX_API void UpdateProjectStartupScript(const std::string &startup_script);
 
   VORTEX_API void AddCredits(const std::string &topic, const std::string &credit_file);
   VORTEX_API void SetCreditsFile(const std::string &topic, const std::string &credit_file);
@@ -313,11 +200,6 @@ namespace vxe {
 
   VORTEX_API void AddVortexDocumentation();
 
-  VORTEX_API void RefreshProjectInformations();
-
-  VORTEX_API nlohmann::json DumpJSON(const std::string &file);
-  VORTEX_API void PopulateJSON(const nlohmann::json &json_data, const std::string &file);
-
   VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
   VORTEX_API std::string replacePlaceholders(
       const std::string &command,
@@ -325,8 +207,6 @@ namespace vxe {
 
   VORTEX_API std::string gen_random(const int len);
   VORTEX_API std::string getHomeDirectory();
-  VORTEX_API void createFolderIfNotExists(const std::string &path);
-  VORTEX_API void createJsonFileIfNotExists(const std::string &filename, const nlohmann::json &defaultData);
 
   // Memory Allocators
   // - Those functions are not reliant on the current context.

@@ -1,24 +1,5 @@
-// The VortexMaker Project
-// [internal structures]
-
-// See licence in LICSENCE.md
-// (c) 2022-2026, Diego E. Moreno
-
-//_____________________________________________________________________________
-// Informations about this file
-//_____________________________________________________________________________
-// This file have all primitives types of vortex runtime & api.
-// There is the low level part of the project.
-// Please read introductions & informations on vortex.h before do anything.
-//_____________________________________________________________________________
 
 #pragma once
-#ifndef VORTEX_DISABLE
-
-//_____________________________________________________________________________
-// [SECTION] Header mess
-//_____________________________________________________________________________
-// Includes
 
 #ifndef VORTEX_VERSION
 #include "vortex.h"
@@ -29,39 +10,24 @@
 #include "./templates/install.h"
 #include "./templates/interface.h"
 #include "./utils/infos.hpp"
+#include "./vortex/environment/environment.hpp"
+#include "./vortex/events/events.hpp"
+#include "./vortex/filesystem/filesystem.hpp"
+#include "./vortex/json/json.hpp"
+#include "./vortex/logger/logger.hpp"
+#include "./vortex/project/project.hpp"
 #include "./vortex/scripting/scripting.hpp"
-//_____________________________________________________________________________
 
-//_____________________________________________________________________________
-// [SECTION] Forward declarations
-//_____________________________________________________________________________
-// Absolute basis
 struct VxContext;
 
-//_____________________________________________________________________________
-// [SECTION] Main runtime pointer
-// See implementation of this variable in imgui.cpp for comments and details.
-//_____________________________________________________________________________
+// context pointer
 #ifndef CVortexMaker
-extern VORTEX_API VxContext *CVortexMaker;  // Current implicit context pointer
+extern VORTEX_API VxContext *CVortexMaker;
 #endif
-//_____________________________________________________________________________
 
-//_____________________________________________________________________________
-// [SECTION]: Macros
-//_____________________________________________________________________________
-// Static Asserts
-#define Vx_STATIC_ASSERT(_COND) static_assert(_COND, "")
-//_____________________________________________________________________________
-
-//_____________________________________________________________________________
-// [SECTION]: Generic helpers & utils
-//_____________________________________________________________________________
-
+#define Vx_STATIC_ASSERT(_COND)          static_assert(_COND, "")
 #define Vx_BASE64ENCODE(_toencodebuffer) base64_encode(_toencodebuffer);
 #define Vx_BASE64DECODE(_todecodebuffer) base64_decode(_todecodebuffer);
-
-//_____________________________________________________________________________
 
 struct VortexMakerDebugAllocInfo {
   int TotalAllocCount;  // Number of call to MemAlloc().
@@ -70,10 +36,6 @@ struct VortexMakerDebugAllocInfo {
     memset(this, 0, sizeof(*this));
   }
 };
-
-//_____________________________________________________________________________
-// [SECTION]: Internal structures
-//_____________________________________________________________________________
 
 struct VxSystemLog {
   spdlog::level::level_enum m_level;
@@ -490,6 +452,3 @@ namespace vxe {
   VORTEX_API ImU32 HexToImU32(const std::string &hex);
   VORTEX_API std::string ImU32ToHex(ImU32 color);
 }  // namespace vxe
-//_____________________________________________________________________________
-
-#endif  // VORTEX_DISABLE

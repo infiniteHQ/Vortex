@@ -1,10 +1,9 @@
 #include <plugins/install.h>
 #include <plugins/load.h>
 #include <plugins/runtime.h>
+#include <vortex_internals.h>
 
-VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name,
-                                   const std::string &version,
-                                   bool &restart_plugins) {
+VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name, const std::string &version, bool &restart_plugins) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -15,7 +14,7 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name,
   std::string path = homeDir + "/.vx/plugins";
 
   // Search plugins registered
-  auto plugin_files = vxe::SearchFiles(path, "plugin.json");
+  auto plugin_files = vxe::search_files(path, "plugin.json");
 
   // Finded state
   bool finded = false;
@@ -24,7 +23,7 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name,
   for (const auto &file : plugin_files) {
     try {
       // Load JSON data from the plugin configuration file
-      auto json_data = vxe::DumpJSON(file);
+      auto json_data = vxe::dump_json(file);
 
       std::string plugin_path = file.substr(0, file.find_last_of("/"));
 
@@ -36,8 +35,7 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name,
 
         // Move the plugin into the project
         {
-          std::string cmd = "cp -r " + plugin_path + " " +
-                            ctx.projectPath.string() + "/.vx/plugins/";
+          std::string cmd = "cp -r " + plugin_path + " " + ctx.projectPath.string() + "/.vx/plugins/";
           system(cmd.c_str());
         }
 
@@ -52,8 +50,7 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name,
           ctx.IO.ep.clear();
 
           // Load plugins installed in the current project
-          vxe::LoadEditorPlugins(ctx.projectPath.string(), ctx.IO.ep_handles,
-                                 ctx.IO.ep);
+          vxe::LoadEditorPlugins(ctx.projectPath.string(), ctx.IO.ep_handles, ctx.IO.ep);
 
           // Finally, start all loaded plugins.
           vxe::StartAllPlugins();
@@ -62,14 +59,13 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name,
         return;
       }
     } catch (std::exception e) {
-      vxe::LogError("Core", e.what());
+      vxe::log_error("Core", e.what());
     }
   }
 
   if (!finded) {
-    vxe::LogError("Core", "Failed to find the plugin " + plugin_name +
-                              " with version " + version +
-                              ", this plugin is installed ?");
+    vxe::log_error(
+        "Core", "Failed to find the plugin " + plugin_name + " with version " + version + ", this plugin is installed ?");
   }
 
   // Search plugin registered by plugin_name in env
@@ -79,21 +75,19 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name,
   // Restart plugins
 }
 
-VORTEX_API std::shared_ptr<PluginInterface>
-vxe::FindPluginInDirectory(const std::string &directory) {
+VORTEX_API std::shared_ptr<PluginInterface> vxe::FindPluginInDirectory(const std::string &directory) {
   // Search plugins registered
-  auto plugin_files = vxe::SearchFiles(directory, "plugin.json");
+  auto plugin_files = vxe::search_files(directory, "plugin.json");
 
   // Iterate through each found plugin file
   for (const auto &file : plugin_files) {
     try {
       // Load JSON data from the plugin configuration file
-      auto json_data = vxe::DumpJSON(file);
+      auto json_data = vxe::dump_json(file);
 
       std::string plugin_path = file.substr(0, file.find_last_of("/"));
 
-      std::shared_ptr<PluginInterface> plugin_interface =
-          std::make_shared<PluginInterface>();
+      std::shared_ptr<PluginInterface> plugin_interface = std::make_shared<PluginInterface>();
 
       plugin_interface->m_name = json_data["name"].get<std::string>();
       plugin_interface->m_version = json_data["version"].get<std::string>();
@@ -101,19 +95,17 @@ vxe::FindPluginInDirectory(const std::string &directory) {
       return plugin_interface;
 
     } catch (std::exception e) {
-      vxe::LogError("Core", e.what());
+      vxe::log_error("Core", e.what());
     }
   }
 
-  vxe::LogError("Core", "Failed to find the plugin at " + directory +
-                            ", no plugins detected.");
+  vxe::log_error("Core", "Failed to find the plugin at " + directory + ", no plugins detected.");
   return nullptr;
 }
 
-VORTEX_API std::vector<std::shared_ptr<PluginInterface>>
-vxe::FindPluginsInDirectory(const std::string &directory) {
+VORTEX_API std::vector<std::shared_ptr<PluginInterface>> vxe::FindPluginsInDirectory(const std::string &directory) {
   // Search plugins registered
-  auto plugin_files = vxe::SearchFiles(directory, "plugin.json", 3);
+  auto plugin_files = vxe::search_files(directory, "plugin.json", 3);
 
   std::vector<std::shared_ptr<PluginInterface>> interfaces;
 
@@ -121,32 +113,26 @@ vxe::FindPluginsInDirectory(const std::string &directory) {
   for (const auto &file : plugin_files) {
     try {
       // Load JSON data from the plugin configuration file
-      auto json_data = vxe::DumpJSON(file);
+      auto json_data = vxe::dump_json(file);
 
       std::string plugin_path = file.substr(0, file.find_last_of("/"));
 
-      std::shared_ptr<PluginInterface> plugin_interface =
-          std::make_shared<PluginInterface>();
+      std::shared_ptr<PluginInterface> plugin_interface = std::make_shared<PluginInterface>();
       plugin_interface->m_name = json_data["name"].get<std::string>();
       plugin_interface->m_auto_exec = json_data["auto_exec"].get<bool>();
-      plugin_interface->m_proper_name =
-          json_data["proper_name"].get<std::string>();
+      plugin_interface->m_proper_name = json_data["proper_name"].get<std::string>();
       plugin_interface->m_type = json_data["type"].get<std::string>();
       plugin_interface->m_version = json_data["version"].get<std::string>();
-      plugin_interface->m_description =
-          json_data["description"].get<std::string>();
+      plugin_interface->m_description = json_data["description"].get<std::string>();
       plugin_interface->m_picture = json_data["picture"].get<std::string>();
-      plugin_interface->m_logo_path =
-          plugin_path + "/" + plugin_interface->m_picture;
+      plugin_interface->m_logo_path = plugin_path + "/" + plugin_interface->m_picture;
       plugin_interface->m_path = plugin_path + "/";
       plugin_interface->m_author = json_data["author"].get<std::string>();
       plugin_interface->m_group = json_data["group"].get<std::string>();
-      plugin_interface->m_contributors =
-          json_data["contributors"].get<std::vector<std::string>>();
+      plugin_interface->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
 
       for (auto dep : json_data["deps"]) {
-        std::shared_ptr<PluginInterfaceDep> dependence =
-            std::make_shared<PluginInterfaceDep>();
+        std::shared_ptr<PluginInterfaceDep> dependence = std::make_shared<PluginInterfaceDep>();
         dependence->name = dep["name"].get<std::string>();
         dependence->type = dep["type"].get<std::string>();
         for (auto version : dep["versions"]) {
@@ -155,15 +141,67 @@ vxe::FindPluginsInDirectory(const std::string &directory) {
         plugin_interface->m_dependencies.push_back(dependence);
       }
 
-      plugin_interface->m_supported_versions =
-          json_data["compatibility"].get<std::vector<std::string>>();
+      plugin_interface->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
 
       interfaces.push_back(plugin_interface);
 
     } catch (std::exception e) {
-      vxe::LogError("Core", e.what());
+      vxe::log_error("Core", e.what());
     }
   }
 
   return interfaces;
+}
+
+LuaItemHandler::LuaItemHandler(int ref, lua_State *state, std::shared_ptr<PluginInterface> p)
+    : lua_ref(ref),
+      L(state),
+      plugin(std::move(p)) {
+}
+
+LuaItemHandler::LuaItemHandler(LuaItemHandler &&other) noexcept
+    : lua_ref(other.lua_ref),
+      L(other.L),
+      plugin(std::move(other.plugin)) {
+  other.lua_ref = LUA_NOREF;
+  other.L = nullptr;
+}
+void LuaItemHandler::Call(const std::string &path) {
+  if (!L)
+    return;
+
+  lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+  lua_pushlightuserdata(L, (void *)&plugin);
+  lua_rawset(L, LUA_REGISTRYINDEX);
+
+  int type = lua_rawgeti(L, LUA_REGISTRYINDEX, lua_ref);
+  if (type != LUA_TFUNCTION) {
+    vxe::log_error(
+        "LuaHandler",
+        "Corrupted register : ID " + std::to_string(lua_ref) + " is type " + std::string(lua_typename(L, type)));
+    lua_pop(L, 1);
+
+    lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+    lua_pushnil(L);
+    lua_rawset(L, LUA_REGISTRYINDEX);
+    return;
+  }
+
+  lua_pushstring(L, path.c_str());
+
+  if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
+    std::string error = lua_tostring(L, -1);
+    vxe::log_error("LuaHandler", "Error while executing Lua : " + error);
+    lua_pop(L, 1);
+  }
+
+  lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
+  lua_pushnil(L);
+  lua_rawset(L, LUA_REGISTRYINDEX);
+}
+
+LuaItemHandler::~LuaItemHandler() {
+  if (L && lua_ref != LUA_NOREF && lua_ref != LUA_REFNIL) {
+    luaL_unref(L, LUA_REGISTRYINDEX, lua_ref);
+  }
 }

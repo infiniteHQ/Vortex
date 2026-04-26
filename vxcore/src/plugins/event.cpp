@@ -6,28 +6,28 @@
  * @param foo Pointer to the function taking a shared_ptr to hArgs as parameter.
  * @param name The name of the event.
  */
-PluginOutputEvent::PluginOutputEvent(
-    std::function<void(ArgumentValues &, ReturnValues &)> foo,
-    const std::string &name)
-    : m_function(foo), m_name(name) {}
+PluginOutputEvent::PluginOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
+    : m_function(foo),
+      m_name(name) {
+}
 
-PluginOutputEvent::PluginOutputEvent(std::function<void(ArgumentValues &)> foo,
-                                     const std::string &name)
+PluginOutputEvent::PluginOutputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
     : m_function([foo](ArgumentValues &args, ReturnValues &ret) {
         ret = ReturnValues();
         foo(args);
       }),
-      m_name(name) {}
+      m_name(name) {
+}
 
-PluginOutputEvent::PluginOutputEvent(std::function<void(ReturnValues &)> foo,
-                                     const std::string &name)
+PluginOutputEvent::PluginOutputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
-      m_name(name) {}
+      m_name(name) {
+}
 
-PluginOutputEvent::PluginOutputEvent(std::function<void()> foo,
-                                     const std::string &name)
+PluginOutputEvent::PluginOutputEvent(std::function<void()> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
-      m_name(name) {}
+      m_name(name) {
+}
 
 /**
  * @brief Add a new trigger happening for a current input event
@@ -37,24 +37,21 @@ PluginOutputEvent::PluginOutputEvent(std::function<void()> foo,
  * @param state The name of the event.
  * @param log The name of the event.
  */
-void PluginInputEvent::trigger_happening(const std::string &trigger_name,
-                                         HappeningState state,
-                                         const std::string &log) {
-  std::shared_ptr<PluginInputEventHappening> new_trigger =
-      std::make_shared<PluginInputEventHappening>();
+void PluginInputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
+  std::shared_ptr<PluginInputEventHappening> new_trigger = std::make_shared<PluginInputEventHappening>();
   new_trigger->m_trigger_name = trigger_name;
   new_trigger->m_state = state;
   new_trigger->m_log = log;
   new_trigger->m_timestamp = vxe::getCurrentTimeStamp();
 
   if (state == HappeningState::INFO) {
-    vxe::LogInfo("Plugins Events", log);
+    vxe::log_info("Plugins Events", log);
   } else if (state == HappeningState::WARNING) {
-    vxe::LogWarn("Plugins Events", log);
+    vxe::log_warn("Plugins Events", log);
   } else if (state == HappeningState::ERR) {
-    vxe::LogError("Plugins Events", log);
+    vxe::log_error("Plugins Events", log);
   } else if (state == HappeningState::FATAL) {
-    vxe::LogFatal("Plugins Events", log);
+    vxe::log_fatal("Plugins Events", log);
   }
 
   this->m_happenings.push_back(new_trigger);
@@ -68,48 +65,45 @@ void PluginInputEvent::trigger_happening(const std::string &trigger_name,
  * @param state The name of the event.
  * @param log The name of the event.
  */
-void PluginOutputEvent::trigger_happening(const std::string &trigger_name,
-                                          HappeningState state,
-                                          const std::string &log) {
-  std::shared_ptr<PluginOutputEventHappening> new_trigger =
-      std::make_shared<PluginOutputEventHappening>();
+void PluginOutputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
+  std::shared_ptr<PluginOutputEventHappening> new_trigger = std::make_shared<PluginOutputEventHappening>();
   new_trigger->m_trigger_name = trigger_name;
   new_trigger->m_state = state;
   new_trigger->m_log = log;
   new_trigger->m_timestamp = vxe::getCurrentTimeStamp();
 
   if (state == HappeningState::INFO) {
-    vxe::LogInfo("Plugins Events", log);
+    vxe::log_info("Plugins Events", log);
   } else if (state == HappeningState::WARNING) {
-    vxe::LogWarn("Plugins Events", log);
+    vxe::log_warn("Plugins Events", log);
   } else if (state == HappeningState::ERR) {
-    vxe::LogError("Plugins Events", log);
+    vxe::log_error("Plugins Events", log);
   } else if (state == HappeningState::FATAL) {
-    vxe::LogFatal("Plugins Events", log);
+    vxe::log_fatal("Plugins Events", log);
   }
 
   this->m_happenings.push_back(new_trigger);
 }
 
-PluginInputEvent::PluginInputEvent(
-    std::function<void(ArgumentValues &, ReturnValues &)> foo,
-    const std::string &name)
-    : m_function(foo), m_name(name) {}
+PluginInputEvent::PluginInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
+    : m_function(foo),
+      m_name(name) {
+}
 
-PluginInputEvent::PluginInputEvent(std::function<void(ArgumentValues &)> foo,
-                                   const std::string &name)
+PluginInputEvent::PluginInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
     : m_function([foo](ArgumentValues &args, ReturnValues &ret) {
         ret = ReturnValues();
         foo(args);
       }),
-      m_name(name) {}
+      m_name(name) {
+}
 
-PluginInputEvent::PluginInputEvent(std::function<void(ReturnValues &)> foo,
-                                   const std::string &name)
+PluginInputEvent::PluginInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
-      m_name(name) {}
+      m_name(name) {
+}
 
-PluginInputEvent::PluginInputEvent(std::function<void()> foo,
-                                   const std::string &name)
+PluginInputEvent::PluginInputEvent(std::function<void()> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
-      m_name(name) {}
+      m_name(name) {
+}

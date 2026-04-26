@@ -4,10 +4,9 @@
 /**
  * @brief
  */
-VORTEX_API std::vector<std::shared_ptr<EnvProject>>
-vxe::FindProjectInFolder(const std::string &path) {
+VORTEX_API std::vector<std::shared_ptr<EnvProject>> vxe::find_project_in_folder(const std::string &path) {
   // Search for module files recursively in the directory
-  auto module_files = vxe::SearchFiles(path, "vortex.config", 3);
+  auto module_files = vxe::search_files(path, "vortex.config", 3);
 
   // Init the array
   std::vector<std::shared_ptr<EnvProject>> projects;
@@ -15,7 +14,7 @@ vxe::FindProjectInFolder(const std::string &path) {
   // Iterate through each found module file
   for (const auto &file : module_files) {
     // Load JSON data from the module configuration file
-    auto json_data = vxe::DumpJSON(file);
+    auto json_data = vxe::dump_json(file);
 
     if (json_data.empty())
       continue;
@@ -38,9 +37,9 @@ vxe::FindProjectInFolder(const std::string &path) {
 /**
  * @brief
  */
-VORTEX_API void vxe::ImportProject(const std::string &path) {
+VORTEX_API void vxe::import_project(const std::string &path) {
   // Search for module files recursively in the directory
-  auto module_files = vxe::SearchSystemFiles(path, "vortex.config");
+  auto module_files = vxe::search_system_files(path, "vortex.config");
 
   // Iterate through each found module file
   for (const auto &file : module_files) {

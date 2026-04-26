@@ -1,24 +1,24 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-VORTEX_API void vxe::InitEnvironment() {
+VORTEX_API void vxe::init_environment() {
   {
     std::string path = vxe::getHomeDirectory() + "/.vx/data/";
-    vxe::createFolderIfNotExists(path);
+    vxe::create_folder_if_not_exists(path);
   }
   {
     std::string path = vxe::getHomeDirectory() + "/.vx/modules/";
-    vxe::createFolderIfNotExists(path);
+    vxe::create_folder_if_not_exists(path);
   }
 
   {
     std::string path = vxe::getHomeDirectory() + "/.vx/templates/";
-    vxe::createFolderIfNotExists(path);
+    vxe::create_folder_if_not_exists(path);
   }
 
   {
     std::string path = vxe::getHomeDirectory() + "/.vx/templates/vortex.templates.builtin.__blankproject/";
-    vxe::createFolderIfNotExists(path);
+    vxe::create_folder_if_not_exists(path);
   }
 
   {
@@ -27,11 +27,11 @@ VORTEX_API void vxe::InitEnvironment() {
 
     nlohmann::json default_data = { { "projects", nlohmann::json::array() } };
 
-    vxe::createJsonFileIfNotExists(file, default_data);
+    vxe::create_file_if_not_exists(file, default_data);
   }
 }
 
-VORTEX_API void vxe::RefreshEnvironmentProjects() {
+VORTEX_API void vxe::refresh_environment_projects() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -45,7 +45,7 @@ VORTEX_API void vxe::RefreshEnvironmentProjects() {
   // Verify if the project is valid
   try {
     // Load JSON data from the project configuration file
-    auto json_data = vxe::DumpJSON(json_file);
+    auto json_data = vxe::dump_json(json_file);
     for (auto project : json_data["projects"]) {
       std::shared_ptr<EnvProject> newproject = std::make_shared<EnvProject>();
 
@@ -61,11 +61,11 @@ VORTEX_API void vxe::RefreshEnvironmentProjects() {
     }
   } catch (const std::exception &e) {
     // Print error if an exception occurs
-    vxe::LogError("Error: ", e.what());
+    vxe::log_error("Error: ", e.what());
   }
 }
 
-VORTEX_API void vxe::InitializePlatformVendor() {
+VORTEX_API void vxe::initialize_platform_vendor() {
 #if defined(__linux__)
   vxe::get_current_context()->m_PlatformVendor = PlatformVendor::Linux;
 #elif defined(_WIN32) || defined(_WIN64)
@@ -77,31 +77,31 @@ VORTEX_API void vxe::InitializePlatformVendor() {
 #endif
 }
 
-VORTEX_API bool vxe::IsLinux() {
+VORTEX_API bool vxe::is_linux() {
   return vxe::get_current_context()->m_PlatformVendor == PlatformVendor::Linux;
 }
 
-VORTEX_API bool vxe::IsNotLinux() {
-  return !IsLinux();
+VORTEX_API bool vxe::is_not_linux() {
+  return !is_linux();
 }
 
-VORTEX_API bool vxe::IsWindows() {
+VORTEX_API bool vxe::is_windows() {
   return vxe::get_current_context()->m_PlatformVendor == PlatformVendor::Windows;
 }
 
-VORTEX_API bool vxe::IsNotWindows() {
-  return !IsWindows();
+VORTEX_API bool vxe::is_not_windows() {
+  return !is_windows();
 }
 
-VORTEX_API bool vxe::IsMacOs() {
+VORTEX_API bool vxe::is_macos() {
   return vxe::get_current_context()->m_PlatformVendor == PlatformVendor::Macos;
 }
 
-VORTEX_API bool vxe::IsNotMacOS() {
-  return !IsMacOs();
+VORTEX_API bool vxe::is_not_macos() {
+  return !is_macos();
 }
 
-VORTEX_API void vxe::RefreshEnvironmentVortexVersionsPools() {
+VORTEX_API void vxe::refresh_environment_vortex_versions_pools() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -115,17 +115,17 @@ VORTEX_API void vxe::RefreshEnvironmentVortexVersionsPools() {
   // Verify if the project is valid
   try {
     // Load JSON data from the project configuration file
-    auto json_data = vxe::DumpJSON(json_file);
+    auto json_data = vxe::dump_json(json_file);
     for (auto pool : json_data["vortex_versions_pools"]) {
       ctx.IO.sys_vortex_versions_pools.push_back(pool);
     }
   } catch (const std::exception &e) {
     // Print error if an exception occurs
-    vxe::LogError("Error: ", e.what());
+    vxe::log_error("Error: ", e.what());
   }
 }
 
-void vxe::DetectPlatform() {
+void vxe::detect_platform() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -142,7 +142,7 @@ void vxe::DetectPlatform() {
 #endif
 }
 
-void vxe::DetectArch() {
+void vxe::detect_arch() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -163,7 +163,7 @@ void vxe::DetectArch() {
 #endif
 }
 
-VORTEX_API void vxe::UpdateEnvironmentProject(
+VORTEX_API void vxe::update_environment_project(
     const std::string &name,
     const std::string &author,
     const std::string &version,
@@ -179,9 +179,9 @@ VORTEX_API void vxe::UpdateEnvironmentProject(
 
   // Verify if the project is valid
   // Load JSON data from the project configuration file
-  auto json_data = vxe::DumpJSON(json_file);
+  auto json_data = vxe::dump_json(json_file);
 
-  vxe::LogInfo("Core", "Verify if the new project \"" + name + "\" is not already existing.");
+  vxe::log_info("Core", "Verify if the new project \"" + name + "\" is not already existing.");
 
   // Check if a project with the given name exists
   bool projectExists = false;
@@ -192,7 +192,7 @@ VORTEX_API void vxe::UpdateEnvironmentProject(
     }
   }
 
-  vxe::LogInfo("Core", "Create a new entry in registered projects for \"" + name + "\".");
+  vxe::log_info("Core", "Create a new entry in registered projects for \"" + name + "\".");
 
   // If the project doesn't exist, create a new JSON object and add it to the
   // list
@@ -211,7 +211,7 @@ VORTEX_API void vxe::UpdateEnvironmentProject(
   output.close();
 }
 
-VORTEX_API void vxe::UpdateEnvironmentProject() {
+VORTEX_API void vxe::update_environment_project() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -221,7 +221,7 @@ VORTEX_API void vxe::UpdateEnvironmentProject() {
   // Verify if the project is valid
   try {
     // Load JSON data from the project configuration file
-    auto json_data = vxe::DumpJSON(json_file);
+    auto json_data = vxe::dump_json(json_file);
 
     std::string name = ctx.name;
 
@@ -260,11 +260,11 @@ VORTEX_API void vxe::UpdateEnvironmentProject() {
     output.close();
   } catch (const std::exception &e) {
     // Print error if an exception occurs
-    vxe::LogError("Error: ", e.what());
+    vxe::log_error("Error: ", e.what());
   }
 }
 
-VORTEX_API void vxe::UpdateEnvironmentProject(const std::string &oldname) {
+VORTEX_API void vxe::update_environment_project(const std::string &oldname) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -274,7 +274,7 @@ VORTEX_API void vxe::UpdateEnvironmentProject(const std::string &oldname) {
   // Verify if the project is valid
   try {
     // Load JSON data from the project configuration file
-    auto json_data = vxe::DumpJSON(json_file);
+    auto json_data = vxe::dump_json(json_file);
 
     // Check if a project with the old name exists
     bool projectExists = false;
@@ -308,6 +308,6 @@ VORTEX_API void vxe::UpdateEnvironmentProject(const std::string &oldname) {
     output.close();
   } catch (const std::exception &e) {
     // Print error if an exception occurs
-    vxe::LogError("Error: ", e.what());
+    vxe::log_error("Error: ", e.what());
   }
 }

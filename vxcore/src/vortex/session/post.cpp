@@ -24,21 +24,20 @@ VORTEX_API void vxe::PostSessionState(const std::string &post_topic) {
   std::string session_path = vxe::getHomeDirectory() + "/.vx/sessions";
 
   // Init the path of current session data folder.
-  std::string current_session_path =
-      session_path + "/.vx/sessions/" + post_topic;
+  std::string current_session_path = session_path + "/.vx/sessions/" + post_topic;
 
   // Create the session folder if not exist
-  vxe::createFolderIfNotExists(session_path);
+  vxe::create_folder_if_not_exists(session_path);
 
   // Create the current session folder if not exist
-  vxe::createFolderIfNotExists(current_session_path);
+  vxe::create_folder_if_not_exists(current_session_path);
 
   if (!ctx.state.master_initialized) {
     nlohmann::json json;
     json["version"] = ctx.version;
 
     // Store JSON into vortex.config file
-    vxe::createJsonFileIfNotExists(session_path + "/vortex.json", json);
+    vxe::create_file_if_not_exists(session_path + "/vortex.json", json);
 
     ctx.state.master_initialized = true;
   }
@@ -55,7 +54,7 @@ VORTEX_API void vxe::PostSessionState(const std::string &post_topic) {
     json["author"] = ctx.state.last_used_module->m_author;
 
     // Store JSON into vortex.config file
-    vxe::createJsonFileIfNotExists(session_path + "/last_module.json", json);
+    vxe::create_file_if_not_exists(session_path + "/last_module.json", json);
   }
 }
 
@@ -75,12 +74,11 @@ VORTEX_API void vxe::PostSessionCoreDump(const std::string &post_topic) {
   std::string session_path = vxe::getHomeDirectory() + "/.vx/sessions";
 
   // Init the path of current session data folder.
-  std::string current_session_path =
-      session_path + "/.vx/sessions/" + post_topic;
+  std::string current_session_path = session_path + "/.vx/sessions/" + post_topic;
 
   // Create the session folder if not exist
-  vxe::createFolderIfNotExists(session_path);
+  vxe::create_folder_if_not_exists(session_path);
 
   // Create the current session folder if not exist
-  vxe::createFolderIfNotExists(current_session_path);
+  vxe::create_folder_if_not_exists(current_session_path);
 }

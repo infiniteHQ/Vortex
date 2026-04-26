@@ -1,8 +1,10 @@
 #include "../../include/modules/runtime.h"
 
-VORTEX_API void
-FinalStartModule(const std::string &module_name,
-                 std::shared_ptr<std::vector<std::string>> processed_modules) {
+#include "../../include/vortex_internals.h"
+
+VORTEX_API void FinalStartModule(
+    const std::string &module_name,
+    std::shared_ptr<std::vector<std::string>> processed_modules) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -10,15 +12,14 @@ FinalStartModule(const std::string &module_name,
   for (auto em : ctx.IO.em) {
     if (em->m_name == module_name) {
       if (em->m_state != "running" || em->m_state != "waiting") {
-        vxe::LogInfo("Modules", "Start \"" + em->m_name + "\"");
+        vxe::log_info("Modules", "Start \"" + em->m_name + "\"");
         processed_modules->push_back(em->m_name);
 
         try {
           em->Start();
         } catch (const std::exception &e) {
           // Log the error
-          vxe::LogError("Modules", "Error starting module \"" + em->m_name +
-                                       "\": " + e.what());
+          vxe::log_error("Modules", "Error starting module \"" + em->m_name + "\": " + e.what());
           // Continue to the next module
           continue;
         }
@@ -35,10 +36,9 @@ VORTEX_API void vxe::StartModule(const std::string &module_name) {
   for (auto em : ctx.IO.em) {
     if (em->m_name == module_name) {
       if (em->m_state != "running") {
-        vxe::LogInfo("Modules", "Start \"" + em->m_name + "\"");
+        vxe::log_info("Modules", "Start \"" + em->m_name + "\"");
 
-        std::shared_ptr<std::vector<std::string>> processed_modules =
-            std::make_shared<std::vector<std::string>>();
+        std::shared_ptr<std::vector<std::string>> processed_modules = std::make_shared<std::vector<std::string>>();
 
         // Start dependencies
         for (auto deps : em->m_dependencies) {

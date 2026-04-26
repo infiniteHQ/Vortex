@@ -7,7 +7,7 @@ VORTEX_API void vxe::InstallTemplateOnSystem(const std::string &directory) {
   // Verify if the module is valid
   try {
     // Load JSON data from the module configuration file
-    auto json_data = vxe::DumpJSON(json_file);
+    auto json_data = vxe::dump_json(json_file);
     std::string name = json_data["name"].get<std::string>();
     std::string proper_name = json_data["proper_name"].get<std::string>();
     std::string type = json_data["type"].get<std::string>();
@@ -18,7 +18,7 @@ VORTEX_API void vxe::InstallTemplateOnSystem(const std::string &directory) {
     // std::string origin_path = path.substr(0, path.find_last_of("/"));
     templates_path += "/" + name + "." + version;
 
-    vxe::LogInfo("Core", "Installing the template " + name + "...");
+    vxe::log_info("Core", "Installing the template " + name + "...");
 
     // Create directory
     {
@@ -32,20 +32,17 @@ VORTEX_API void vxe::InstallTemplateOnSystem(const std::string &directory) {
       system(cmd.c_str());
     }
 
-    vxe::LogInfo("Core",
-                 "The template " + name + "is now installed on system !");
+    vxe::log_info("Core", "The template " + name + "is now installed on system !");
     return;
   } catch (const std::exception &e) {
     // Print error if an exception occurs
-    vxe::LogError("Core", e.what());
+    vxe::log_error("Core", e.what());
   }
 
-  vxe::LogError("Core",
-                "Cannot find template registered at" + directory + " !");
+  vxe::log_error("Core", "Cannot find template registered at" + directory + " !");
 }
 
-VORTEX_API void vxe::InstallTemplate(const std::string &name,
-                                     const std::string &path) {
+VORTEX_API void vxe::InstallTemplate(const std::string &name, const std::string &path) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
@@ -59,10 +56,9 @@ VORTEX_API void vxe::InstallTemplate(const std::string &name,
 
   for (auto tem : ctx.IO.sys_templates) {
     if (tem->m_name == name) {
-      vxe::LogInfo("Core", "Installing the template \"" + name + "\" ...");
+      vxe::log_info("Core", "Installing the template \"" + name + "\" ...");
 
-      std::string cmd = "tar -xvf " + tem->m_path + tem->m_tarball +
-                        " --strip-components=1 " + " -C " + path;
+      std::string cmd = "tar -xvf " + tem->m_path + tem->m_tarball + " --strip-components=1 " + " -C " + path;
       std::cout << cmd << std::endl;
       system(cmd.c_str());
 
@@ -81,7 +77,7 @@ VORTEX_API void vxe::InstallTemplate(const std::string &name,
       std::string path = homeDir + "/.vx/templates";
 
       // Search modules registered in system
-      auto module_files = vxe::SearchFiles(path, "template.json");
+      auto module_files = vxe::search_files(path, "template.json");
 
       // Iterate through each found module file
       for (const auto &file : module_files)
@@ -89,7 +85,7 @@ VORTEX_API void vxe::InstallTemplate(const std::string &name,
           try
           {
               // Load JSON data from the module configuration file
-              auto json_data = vxe::DumpJSON(file);
+              auto json_data = vxe::dump_json(file);
 
               std::string module_path = file.substr(0, file.find_last_of("/"));
 
@@ -99,7 +95,7 @@ VORTEX_API void vxe::InstallTemplate(const std::string &name,
               {
                   finded = true;
 
-                  vxe::LogInfo("Core", "Installing the template \"" +
+                  vxe::log_info("Core", "Installing the template \"" +
   name + "\" ...");
 
                   // TODO : Call Deploy function of the template
@@ -114,22 +110,21 @@ VORTEX_API void vxe::InstallTemplate(const std::string &name,
           }
           catch (std::exception e)
           {
-              vxe::LogError("Core", e.what());
+              vxe::log_error("Core", e.what());
           }
       }
   }
 
   if (!finded)
   {
-      vxe::LogError("Core", "Failed to find the template " + name + "
+      vxe::log_error("Core", "Failed to find the template " + name + "
   this template is installed ?");
   }*/
 }
 
-VORTEX_API std::vector<std::shared_ptr<TemplateInterface>>
-vxe::FindTemplatesInDirectory(const std::string &directory) {
+VORTEX_API std::vector<std::shared_ptr<TemplateInterface>> vxe::FindTemplatesInDirectory(const std::string &directory) {
   // Search modules registered
-  auto template_files = vxe::SearchFiles(directory, "template.json", 3);
+  auto template_files = vxe::search_files(directory, "template.json", 3);
 
   std::vector<std::shared_ptr<TemplateInterface>> interfaces;
 
@@ -137,12 +132,11 @@ vxe::FindTemplatesInDirectory(const std::string &directory) {
   for (const auto &file : template_files) {
     try {
       // Load JSON data from the module configuration file
-      auto json_data = vxe::DumpJSON(file);
+      auto json_data = vxe::dump_json(file);
 
       std::string module_path = file.substr(0, file.find_last_of("/"));
 
-      std::shared_ptr<TemplateInterface> new_template =
-          std::make_shared<TemplateInterface>();
+      std::shared_ptr<TemplateInterface> new_template = std::make_shared<TemplateInterface>();
 
       new_template->m_name = json_data["name"].get<std::string>();
       new_template->m_proper_name = json_data["proper_name"].get<std::string>();
@@ -154,12 +148,10 @@ vxe::FindTemplatesInDirectory(const std::string &directory) {
       new_template->m_author = json_data["author"].get<std::string>();
       new_template->m_group = json_data["group"].get<std::string>();
       new_template->m_tarball = json_data["tarball"].get<std::string>();
-      new_template->m_contributors =
-          json_data["contributors"].get<std::vector<std::string>>();
+      new_template->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
 
       for (auto dep : json_data["deps"]) {
-        std::shared_ptr<TemplateDep> dependence =
-            std::make_shared<TemplateDep>();
+        std::shared_ptr<TemplateDep> dependence = std::make_shared<TemplateDep>();
         dependence->name = dep["name"].get<std::string>();
         dependence->type = dep["type"].get<std::string>();
         for (auto version : dep["versions"]) {
@@ -170,7 +162,7 @@ vxe::FindTemplatesInDirectory(const std::string &directory) {
 
       interfaces.push_back(new_template);
     } catch (std::exception e) {
-      vxe::LogError("Core", e.what());
+      vxe::log_error("Core", e.what());
     }
   }
 

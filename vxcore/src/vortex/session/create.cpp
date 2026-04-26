@@ -3,24 +3,19 @@
 
 VORTEX_API void vxe::CreateSessionTopic(const std::string &post_topic) {
 #if defined(_WIN32) || defined(_WIN64)
-  std::string topic_path =
-      vxe::getHomeDirectory() + "\\.vx\\sessions\\" + post_topic;
+  std::string topic_path = vxe::getHomeDirectory() + "\\.vx\\sessions\\" + post_topic;
 #else
-  std::string topic_path =
-      vxe::getHomeDirectory() + "/.vx/sessions/" + post_topic;
+  std::string topic_path = vxe::getHomeDirectory() + "/.vx/sessions/" + post_topic;
 #endif
 
   try {
     if (fs::create_directories(topic_path)) {
-      vxe::LogInfo("Core",
-                   "Session \"" + post_topic + "\" is created with success!");
+      vxe::log_info("Core", "Session \"" + post_topic + "\" is created with success!");
     } else {
-      vxe::LogError("Core", "Session \"" + post_topic +
-                                "\" already exists or could not be created!");
+      vxe::log_error("Core", "Session \"" + post_topic + "\" already exists or could not be created!");
     }
   } catch (const std::exception &e) {
-    vxe::LogError("Core", "Failed to create session \"" + post_topic +
-                              "\": " + e.what());
+    vxe::log_error("Core", "Failed to create session \"" + post_topic + "\": " + e.what());
   }
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -31,15 +26,12 @@ VORTEX_API void vxe::CreateSessionTopic(const std::string &post_topic) {
 
   try {
     if (fs::create_directories(crash_path)) {
-      vxe::LogInfo("Core", "Session crash folder of \"" + post_topic +
-                               "\" is created with success!");
+      vxe::log_info("Core", "Session crash folder of \"" + post_topic + "\" is created with success!");
     } else {
-      vxe::LogError("Core", "Session crash folder of \"" + post_topic +
-                                "\" already exists or could not be created!");
+      vxe::log_error("Core", "Session crash folder of \"" + post_topic + "\" already exists or could not be created!");
     }
   } catch (const std::exception &e) {
-    vxe::LogError("Core", "Failed to create session crash folder of \"" +
-                              post_topic + "\": " + e.what());
+    vxe::log_error("Core", "Failed to create session crash folder of \"" + post_topic + "\": " + e.what());
   }
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -50,15 +42,12 @@ VORTEX_API void vxe::CreateSessionTopic(const std::string &post_topic) {
 
   try {
     if (fs::create_directories(log_path)) {
-      vxe::LogInfo("Core", "Session logs folder of \"" + post_topic +
-                               "\" is created with success!");
+      vxe::log_info("Core", "Session logs folder of \"" + post_topic + "\" is created with success!");
     } else {
-      vxe::LogError("Core", "Session logs folder of \"" + post_topic +
-                                "\" already exists or could not be created!");
+      vxe::log_error("Core", "Session logs folder of \"" + post_topic + "\" already exists or could not be created!");
     }
   } catch (const std::exception &e) {
-    vxe::LogError("Core", "Failed to create session logs folder of \"" +
-                              post_topic + "\": " + e.what());
+    vxe::log_error("Core", "Failed to create session logs folder of \"" + post_topic + "\": " + e.what());
   }
 
   {
@@ -71,11 +60,9 @@ VORTEX_API void vxe::CreateSessionTopic(const std::string &post_topic) {
     std::ofstream file(file_path);
     if (file.is_open()) {
       file.close();
-      vxe::LogInfo("Core", "Session crash folder of \"" + post_topic +
-                               "\" is created with success!");
+      vxe::log_info("Core", "Session crash folder of \"" + post_topic + "\" is created with success!");
     } else {
-      vxe::LogError("Core", "Failed to create session crash folder of \"" +
-                                post_topic + "\"!");
+      vxe::log_error("Core", "Failed to create session crash folder of \"" + post_topic + "\"!");
     }
   }
 
@@ -89,11 +76,9 @@ VORTEX_API void vxe::CreateSessionTopic(const std::string &post_topic) {
     std::ofstream file(file_path);
     if (file.is_open()) {
       file.close();
-      vxe::LogInfo("Core", "Session crash folder of \"" + post_topic +
-                               "\" is created with success!");
+      vxe::log_info("Core", "Session crash folder of \"" + post_topic + "\" is created with success!");
     } else {
-      vxe::LogError("Core", "Failed to create session crash folder of \"" +
-                                post_topic + "\"!");
+      vxe::log_error("Core", "Failed to create session crash folder of \"" + post_topic + "\"!");
     }
   }
 
@@ -107,11 +92,9 @@ VORTEX_API void vxe::CreateSessionTopic(const std::string &post_topic) {
     std::ofstream file(file_path);
     if (file.is_open()) {
       file.close();
-      vxe::LogInfo("Core", "Session topic files of \"" + post_topic +
-                               "\" is created with success!");
+      vxe::log_info("Core", "Session topic files of \"" + post_topic + "\" is created with success!");
     } else {
-      vxe::LogError("Core",
-                    "Failed to create topic files of \"" + post_topic + "\"!");
+      vxe::log_error("Core", "Failed to create topic files of \"" + post_topic + "\"!");
     }
   }
 }
