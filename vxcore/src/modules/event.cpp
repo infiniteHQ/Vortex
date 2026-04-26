@@ -44,7 +44,7 @@ void ModuleInputEvent::trigger_happening(const std::string &trigger_name, Happen
   new_trigger->m_trigger_name = trigger_name;
   new_trigger->m_state = state;
   new_trigger->m_log = log;
-  new_trigger->m_timestamp = vxe::getCurrentTimeStamp();
+  new_trigger->m_timestamp = vxe::get_current_timestamp();
 
   if (state == HappeningState::INFO) {
     vxe::log_info("Modules Events", log);
@@ -72,7 +72,7 @@ void ModuleOutputEvent::trigger_happening(const std::string &trigger_name, Happe
   new_trigger->m_trigger_name = trigger_name;
   new_trigger->m_state = state;
   new_trigger->m_log = log;
-  new_trigger->m_timestamp = vxe::getCurrentTimeStamp();
+  new_trigger->m_timestamp = vxe::get_current_timestamp();
 
   if (state == HappeningState::INFO) {
     vxe::log_info("Modules Events", log);

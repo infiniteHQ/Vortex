@@ -109,7 +109,7 @@ typedef void (*VortexMakerMemFreeFunc)(void *ptr, void *user_data);    // Functi
                                                                        // vxe::SetAllocatorFunctions()
 
 namespace vxe {
-  // TODO -> Only that on vortex.cpp (must be smart pointers)
+  // TODO (must be smart pointers)
   VORTEX_API VxContext *create_context();
   VORTEX_API void destroy_context(VxContext *context = NULL);
   VORTEX_API VxContext *get_current_context();
@@ -117,25 +117,7 @@ namespace vxe {
 
   VORTEX_API void initialize();
 
-  VORTEX_API bool IsThemeNeedsRebuild();
-  VORTEX_API void ThemeRebuilded();
-  VORTEX_API void RebuildTheme();
-  VORTEX_API void RefreshProjectThemes();
-  VORTEX_API void UpdateProjectTheme(const std::shared_ptr<Theme> &theme);
-  VORTEX_API void UpdateProjectThemesComfig();
-  VORTEX_API void VerifyAndPouplateThemes();
-
-  VORTEX_API void CreateNewTheme(const std::shared_ptr<Theme> &base_theme, const std::string &title);
-
-  VORTEX_API std::shared_ptr<Theme> GetTheme(const std::string &label);
-  VORTEX_API std::shared_ptr<Theme> GetSelectedTheme();
-
   VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> GetAllItemHandlersFor(const std::string &type);
-
-  VORTEX_API void InstallModuleToSystem(const std::string &path);
-
-  VORTEX_API void InstallModule(const std::string &module_name, const std::string &version, bool &restart_modules);
-  VORTEX_API void AddModuleToProject(const std::string &module_name);
 
   VORTEX_API void InstallPluginToSystem(const std::string &path);
 
@@ -144,12 +126,7 @@ namespace vxe {
 
   VORTEX_API void RemoveSystemProjectEntry(const std::string &project_name);
 
-  VORTEX_API void InstallContentOnSystem(const std::string &directory);
-
   VORTEX_API void ExecuteStartScript();
-
-  VORTEX_API std::string getCurrentTimeStamp();
-  VORTEX_API void OpenURL(const std::string &url);
 
   bool DebugCheckVersionAndDataLayout(const char *version);
 
@@ -159,27 +136,7 @@ namespace vxe {
   VORTEX_API void CopyAllContent();
   VORTEX_API void ExecuteCommand();
 
-  // utils
-  VORTEX_API std::string ConvertPathToWindowsStyle(const std::string &path);
-
   VORTEX_API void SubmitRename(const std::string &oldPathStr, const std::string &newName);
-
-  // credits
-  VORTEX_API void AddCredits(const std::string &topic, const std::string &credit_file);
-  VORTEX_API void SetCreditsFile(const std::string &topic, const std::string &credit_file);
-
-  // documentation
-  VORTEX_API void AddDocumentation(
-      const std::string &topic,
-      const std::string &section,
-      const std::string &title,
-      const std::string &md_file_path);
-  VORTEX_API std::vector<std::string> GetSections(const std::string &topic);
-  VORTEX_API std::vector<std::string> GetChapters(const std::string &topic, const std::string &section);
-  VORTEX_API std::string GetChapterFilePath(const std::string &topic, const std::string &section, const std::string &title);
-  VORTEX_API std::vector<std::string> GetTitlesFromTopic(const std::string &topic);
-  VORTEX_API std::vector<std::string> GetNamesFromTopicAndTitle(const std::string &topic, const std::string &title);
-  VORTEX_API void AddVortexDocumentation();
 
   VORTEX_API void PushEditMenuItem(
       const std::string &title,
@@ -192,11 +149,6 @@ namespace vxe {
   VORTEX_API void PushCustomMenu(const std::string &title, const std::function<void()> &render);
   VORTEX_API void PopCustomMenu(const int &count = 1);
   VORTEX_API void ClearCustomMenus();
-
-  VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
-  VORTEX_API std::string replacePlaceholders(
-      const std::string &command,
-      const std::unordered_map<std::string, std::string> &replacements);
 
   // Memory Allocators
   // - Those functions are not reliant on the current context.

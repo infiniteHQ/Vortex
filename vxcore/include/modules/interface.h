@@ -78,7 +78,7 @@ VORTEX_API class ModuleInterface {
   VORTEX_API std::string GetBinaryPath();
 
   // Documentation
-  VORTEX_API void AddDocumentation(const std::string &section, const std::string &title, const std::string &path);
+  VORTEX_API void add_documentation(const std::string &section, const std::string &title, const std::string &path);
 
   // Output Events
   // A output event is triggered via vxe::ExecuteOutputEvent() by the
@@ -123,7 +123,7 @@ VORTEX_API class ModuleInterface {
   VORTEX_API void log_fatal(const std::string &message);
 
   // Credits
-  VORTEX_API void SetCreditsFile(const std::string &file_path);
+  VORTEX_API void set_credits_file(const std::string &file_path);
 
   // TODO : AddParameterToFunction
   // TODO : AddParameterToInputEvent

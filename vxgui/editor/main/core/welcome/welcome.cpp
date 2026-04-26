@@ -75,21 +75,21 @@ namespace vxe {
     }
 
     if (CherryApp.GetComponentData(CherryID("taking_control"), "isClicked") == "true") {
-      vxe::OpenURL(
+      vxe::open_url(
           "https://vortex.infinite.si/"
           "docpage?version=1.0&content_name=take_vortex_editor&"
           "section=get_started&page_name=discover_interface");
     }
 
     if (CherryApp.GetComponentData(CherryID("learn_modules"), "isClicked") == "true") {
-      vxe::OpenURL(
+      vxe::open_url(
           "https://vortex.infinite.si/"
           "docpage?version=1.0&content_name=take_vortex_editor&"
           "section=get_started&page_name=handle_modules");
     }
 
     if (CherryApp.GetComponentData(CherryID("visit_website"), "isClicked") == "true") {
-      vxe::OpenURL("https://vortex.infinite.si/");
+      vxe::open_url("https://vortex.infinite.si/");
     }
   }
 

@@ -263,7 +263,7 @@ void Editor::toggle_project_settings() {
 
 // Frame task
 void RebuildCherryTheme() {
-  if (vxe::IsThemeNeedsRebuild()) {
+  if (vxe::is_theme_needs_rebuild()) {
     for (auto t : vxe::get_current_context()->IO.themes) {
       if (!t) {
         continue;
@@ -281,13 +281,13 @@ void RebuildCherryTheme() {
     CherryApp.m_Themes.clear();
 
     // set selected theme
-    auto selected_theme = vxe::GetSelectedTheme();
+    auto selected_theme = vxe::get_selected_theme();
     if (selected_theme) {
       CherryApp.SetTheme(selected_theme->label);
     }
 
     // set override themes
-    vxe::ThemeRebuilded();
+    vxe::theme_rebuilded();
   }
 }
 
@@ -413,7 +413,7 @@ void Editor::render_framebar() {
 }
 
 void Editor::render_menubar() {
-  if (vxe::IsThemeNeedsRebuild()) {
+  if (vxe::is_theme_needs_rebuild()) {
     CherryApp.m_Themes.clear();
     for (auto t : vxe::get_current_context()->IO.themes) {
       if (!t) {
@@ -430,13 +430,13 @@ void Editor::render_menubar() {
     }
 
     // set selected theme
-    auto selected_theme = vxe::GetSelectedTheme();
+    auto selected_theme = vxe::get_selected_theme();
     if (selected_theme) {
       CherryApp.SetTheme(selected_theme->label);
     }
 
     // set override themes
-    vxe::ThemeRebuilded();
+    vxe::theme_rebuilded();
   }
 
   ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);

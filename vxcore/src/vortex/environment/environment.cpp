@@ -201,7 +201,7 @@ VORTEX_API void vxe::update_environment_project(
         { "version", version },
         { "description", description },
         { "path", path },
-        { "lastOpened", vxe::getCurrentTimeStamp() },
+        { "lastOpened", vxe::get_current_timestamp() },
         { "compatibleWith", compatibleWith },
         { "logoPath", logo_path } });
 
@@ -234,7 +234,7 @@ VORTEX_API void vxe::update_environment_project() {
         project["description"] = ctx.description;
         project["path"] = ctx.projectPath;
         project["compatibleWith"] = ctx.compatibleWith;
-        project["lastOpened"] = vxe::getCurrentTimeStamp();
+        project["lastOpened"] = vxe::get_current_timestamp();
         project["logoPath"] = ctx.logoPath;
         projectExists = true;
         break;
@@ -249,7 +249,7 @@ VORTEX_API void vxe::update_environment_project() {
             { "version", ctx.project_version },
             { "description", ctx.description },
             { "path", ctx.projectPath },
-            { "lastOpened", vxe::getCurrentTimeStamp() },
+            { "lastOpened", vxe::get_current_timestamp() },
             { "compatibleWith", ctx.compatibleWith },
             { "logoPath", ctx.logoPath } });
     }

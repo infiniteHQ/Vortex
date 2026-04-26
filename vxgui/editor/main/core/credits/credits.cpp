@@ -83,7 +83,7 @@ namespace vxe {
     }
 
     auto RenderTopic = [&](const std::string &topic, bool is_main) {
-      std::vector<std::string> titles = vxe::GetTitlesFromTopic(topic);
+      std::vector<std::string> titles = vxe::get_titles_from_topic(topic);
       if (titles.empty())
         return;
 
@@ -103,7 +103,7 @@ namespace vxe {
         Cherry::SetNextComponentProperty("color_text", "#BBBBBB");
         CherryKit::TitleSix(title);
 
-        std::vector<std::string> names = vxe::GetNamesFromTopicAndTitle(topic, title);
+        std::vector<std::string> names = vxe::get_names_from_topic_and_title(topic, title);
         for (const auto &name : names) {
           Cherry::SetNextComponentProperty("color_text", "#878787");
           CherryKit::TextSimple(name);

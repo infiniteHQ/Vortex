@@ -63,9 +63,9 @@ VORTEX_API std::string PluginInterface::GetMainScriptPath() {
 }
 
 VORTEX_API void
-PluginInterface::AddDocumentation(const std::string &section, const std::string &title, const std::string &path) {
+PluginInterface::add_documentation(const std::string &section, const std::string &title, const std::string &path) {
   std::string topic = "plugin:" + this->m_name;
-  vxe::AddDocumentation(topic, section, title, path);
+  vxe::add_documentation(topic, section, title, path);
 }
 
 VORTEX_API void PluginInterface::RefreshMainWindow() {
@@ -674,6 +674,6 @@ VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &PluginInterface::
   return m_item_creators;
 }
 
-VORTEX_API void PluginInterface::SetCreditsFile(const std::string &file_path) {
-  vxe::SetCreditsFile(this->m_proper_name + "(" + this->m_name + ")", file_path);
+VORTEX_API void PluginInterface::set_credits_file(const std::string &file_path) {
+  vxe::set_credits_file(this->m_proper_name + "(" + this->m_name + ")", file_path);
 }

@@ -10,6 +10,8 @@
 #include "./templates/install.h"
 #include "./templates/interface.h"
 #include "./utils/infos.hpp"
+#include "./vortex/credits/credits.hpp"
+#include "./vortex/documentation/documentation.hpp"
 #include "./vortex/environment/environment.hpp"
 #include "./vortex/events/events.hpp"
 #include "./vortex/filesystem/filesystem.hpp"
@@ -19,6 +21,8 @@
 #include "./vortex/random/random.hpp"
 #include "./vortex/scripting/scripting.hpp"
 #include "./vortex/session/session.hpp"
+#include "./vortex/theme/theme.hpp"
+#include "./vortex/utilities/utilities.hpp"
 
 struct VxContext;
 

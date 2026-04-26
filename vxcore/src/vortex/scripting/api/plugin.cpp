@@ -104,7 +104,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin)
         return 0;
-      plugin->SetCreditsFile(path);
+      plugin->set_credits_file(path);
       return 0;
     }
 
@@ -171,7 +171,7 @@ namespace vxe {
       if (!plugin)
         return 0;
 
-      plugin->SetCreditsFile(path);
+      plugin->set_credits_file(path);
 
       return 0;
     }
@@ -731,7 +731,7 @@ namespace vxe {
 
       VXLUA_REGISTER_AS(L, GetPluginPath, "GetPath");
       VXLUA_REGISTER_AS(L, GetCookPath, "CookPath");
-      VXLUA_REGISTER_AS(L, PluginSetCreditsFile, "SetCreditsFile");
+      VXLUA_REGISTER_AS(L, PluginSetCreditsFile, "set_credits_file");
       VXLUA_REGISTER_AS(L, PluginAddContentBrowserItemHandler, "AddContentBrowserItemHandler");
       VXLUA_REGISTER_AS(L, PluginAddLogo, "AddLogo");
 

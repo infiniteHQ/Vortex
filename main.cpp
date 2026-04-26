@@ -148,7 +148,7 @@ VxContext *InitRuntime(bool logger) {
   VxContext *ctx = vxe::create_context();
 
   vxe::initialize_platform_vendor();
-  vxe::AddCredits("vx", Cherry::GetPath("CREDITS"));
+  vxe::add_credits("vx", Cherry::GetPath("CREDITS"));
 
   ctx->state.session_id = session_id;
 
@@ -189,7 +189,7 @@ VxContext *InitBlankRuntime(bool logger) {
   ctx->state.session_id = session_id;
 
   // Link credits file
-  vxe::AddCredits("vx", Cherry::GetPath("CREDITS"));
+  vxe::add_credits("vx", Cherry::GetPath("CREDITS"));
   vxe::initialize_platform_vendor();
   vxe::create_global_logger();
   vxe::create_console_logger();

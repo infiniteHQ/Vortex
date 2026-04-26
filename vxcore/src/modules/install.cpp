@@ -153,3 +153,37 @@ VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> vxe::FindModulesInDirec
 
   return interfaces;
 }
+VORTEX_API void vxe::InstallModuleToSystem(const std::string &path) {
+  std::string modules_path = "~/.vx/modules";
+  std::string json_file = path + "/module.json";
+
+  try {
+    auto json_data = vxe::dump_json(json_file);
+    std::string name = json_data["name"].get<std::string>();
+    std::string proper_name = json_data["proper_name"].get<std::string>();
+    std::string type = json_data["type"].get<std::string>();
+    std::string version = json_data["version"].get<std::string>();
+    std::string description = json_data["description"].get<std::string>();
+    std::string author = json_data["author"].get<std::string>();
+
+    // std::string origin_path = path.substr(0, path.find_last_of("/"));
+    modules_path += "/" + name + "." + version;
+
+    vxe::log_info("Core", "Installing the module " + name + "...");
+
+    {
+      std::string cmd = "mkdir " + modules_path;
+      system(cmd.c_str());
+    }
+
+    {
+      std::string cmd = "cp -r " + path + "/* " + modules_path;
+      system(cmd.c_str());
+    }
+  } catch (const std::exception &e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+  }
+}
+
+VORTEX_API void vxe::AddModuleToProject(const std::string &module_name) {
+}

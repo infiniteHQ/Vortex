@@ -242,7 +242,7 @@ namespace vxe {
                     CherryKit::KeyValCustom(
                         "Active theme ",
                         [this]() {
-                          auto theme_used = vxe::GetSelectedTheme();
+                          auto theme_used = vxe::get_selected_theme();
                           CherryNextComponent.SetProperty("size_x", 200.0f);
                           CherryKit::ComboText(CherryID("theme_selector"), "", &available_themes_, selected);
 
@@ -308,25 +308,25 @@ namespace vxe {
                         if (CherryKit::ButtonImageText(
                                 "create theme", Cherry::GetPath("resources/imgs/icons/misc/icon_add.png"))
                                 .GetData("isClicked") == "true") {
-                          auto theme = vxe::GetTheme(available_themes_[selected]);
+                          auto theme = vxe::get_theme(available_themes_[selected]);
                           if (theme) {
-                            vxe::CreateNewTheme(theme, new_theme_name_);
-                            vxe::RefreshProjectThemes();
+                            vxe::create_new_theme(theme, new_theme_name_);
+                            vxe::refresh_project_themes();
                             refresh_project_themes();
                           }
                         }
                       }),
               });
 
-          auto selected_theme = vxe::GetSelectedTheme();
-          auto theme = vxe::GetTheme(available_themes_[selected]);
+          auto selected_theme = vxe::get_selected_theme();
+          auto theme = vxe::get_theme(available_themes_[selected]);
 
           if (theme && selected_theme) {
             if (theme->label != selected_theme->label) {
               theme_changed = true;
               vxe::get_current_context()->IO.used_theme = theme->label;
-              vxe::UpdateProjectThemesComfig();
-              vxe::RebuildTheme();
+              vxe::update_project_themes_config();
+              vxe::rebuild_theme();
             }
           }
 
@@ -797,7 +797,7 @@ namespace vxe {
                   Cherry::GetPath("resources/imgs/icons/launcher/docs.png"),
                   Cherry::GetPath("resources/imgs/weblink.png"))
                   .GetData("isClicked") == "true") {
-            // vxe::OpenURL("https://vortex.infinite.si/learn");
+            // vxe::open_url("https://vortex.infinite.si/learn");
           }
         },
         Cherry::GetPath("resources/imgs/icons/misc/icon_help.png")));

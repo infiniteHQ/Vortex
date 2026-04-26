@@ -110,7 +110,7 @@ namespace vxe {
             Cherry::GetPath("resources/imgs/icons/editor/heart.png"),
             Cherry::GetPath("resources/imgs/weblink.png"))
             .GetData("isClicked") == "true") {
-      vxe::OpenURL("https://fund.infinite.si/");
+      vxe::open_url("https://fund.infinite.si/");
     }
 
     CherryNextProp("color_bg", "#00000000");
@@ -124,7 +124,7 @@ namespace vxe {
             Cherry::GetPath("resources/imgs/icons/misc/icon_people.png"),
             Cherry::GetPath("resources/imgs/weblink.png"))
             .GetData("isClicked") == "true") {
-      vxe::OpenURL("https://github.com/infiniteHQ/Vortex/graphs/contributors");
+      vxe::open_url("https://github.com/infiniteHQ/Vortex/graphs/contributors");
     }
 
     CherryNextProp("color_bg", "#00000000");
@@ -138,7 +138,7 @@ namespace vxe {
             Cherry::GetPath("resources/imgs/icons/editor/docs.png"),
             Cherry::GetPath("resources/imgs/weblink.png"))
             .GetData("isClicked") == "true") {
-      vxe::OpenURL("https://vortex.infinite.si/learn");
+      vxe::open_url("https://vortex.infinite.si/learn");
     }
 
     CherryKit::Space(1.0f);

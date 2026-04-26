@@ -62,7 +62,7 @@ VORTEX_API void vxe::log_info(const std::string &pool_name, const std::string &s
 
         if (ctx.logger_registering) {
           std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::info, scope, message);
-          log->m_timestamp = vxe::getCurrentTimeStamp();
+          log->m_timestamp = vxe::get_current_timestamp();
           ctx.registered_logs.push_back(log);
         }
 
@@ -99,7 +99,7 @@ VORTEX_API void vxe::log_info(const std::string &scope, const std::string &messa
 
     if (ctx.logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::info, scope, message);
-      log->m_timestamp = vxe::getCurrentTimeStamp();
+      log->m_timestamp = vxe::get_current_timestamp();
       ctx.registered_logs.push_back(log);
     }
   }
@@ -121,7 +121,7 @@ VORTEX_API void vxe::log_warn(const std::string &scope, const std::string &messa
 
     if (ctx.logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::warn, scope, message);
-      log->m_timestamp = vxe::getCurrentTimeStamp();
+      log->m_timestamp = vxe::get_current_timestamp();
       ctx.registered_logs.push_back(log);
     }
   }
@@ -143,7 +143,7 @@ VORTEX_API void vxe::log_error(const std::string &scope, const std::string &mess
 
     if (ctx.logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::err, scope, message);
-      log->m_timestamp = vxe::getCurrentTimeStamp();
+      log->m_timestamp = vxe::get_current_timestamp();
       ctx.registered_logs.push_back(log);
     }
   }
@@ -165,7 +165,7 @@ VORTEX_API void vxe::log_fatal(const std::string &scope, const std::string &mess
 
     if (ctx.logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::critical, scope, message);
-      log->m_timestamp = vxe::getCurrentTimeStamp();
+      log->m_timestamp = vxe::get_current_timestamp();
       ctx.registered_logs.push_back(log);
     }
   }

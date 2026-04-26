@@ -317,7 +317,7 @@ namespace vxe {
               Cherry::GetPath("resources/imgs/icons/misc/icon_net.png"),
               Cherry::GetPath("resources/imgs/icons/misc/icon_redirect.png"))
               .GetDataAs<bool>("isClicked")) {
-        vxe::OpenURL("https://garage.infinite.si");
+        vxe::open_url("https://garage.infinite.si");
       }
 
       CherryGUI::PopStyleVar();

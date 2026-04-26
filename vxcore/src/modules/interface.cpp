@@ -63,9 +63,9 @@ VORTEX_API std::string ModuleInterface::GetBinaryPath() {
 }
 
 VORTEX_API void
-ModuleInterface::AddDocumentation(const std::string &section, const std::string &title, const std::string &path) {
+ModuleInterface::add_documentation(const std::string &section, const std::string &title, const std::string &path) {
   std::string topic = "module:" + this->m_name;
-  vxe::AddDocumentation(topic, section, title, path);
+  vxe::add_documentation(topic, section, title, path);
 }
 
 VORTEX_API void ModuleInterface::RefreshMainWindow() {
@@ -671,6 +671,6 @@ VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &ModuleInterface::
   return m_item_creators;
 }
 
-VORTEX_API void ModuleInterface::SetCreditsFile(const std::string &file_path) {
-  vxe::SetCreditsFile(this->m_proper_name + "(" + this->m_name + ")", file_path);
+VORTEX_API void ModuleInterface::set_credits_file(const std::string &file_path) {
+  vxe::set_credits_file(this->m_proper_name + "(" + this->m_name + ")", file_path);
 }

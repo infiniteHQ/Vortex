@@ -141,9 +141,9 @@ VORTEX_API void vxe::init_project(const nlohmann::json &main_configs) {
   }
 
   // Refresh themes
-  vxe::VerifyAndPouplateThemes();
-  vxe::RefreshProjectThemes();
-  vxe::RebuildTheme();
+  vxe::verify_and_populate_themes();
+  vxe::refresh_project_themes();
+  vxe::rebuild_theme();
 
   // Startup features
   vxe::ExecuteStartScript();
@@ -153,5 +153,5 @@ VORTEX_API void vxe::init_project(const nlohmann::json &main_configs) {
   vxe::BootstrappAllPlugins();
 
   // Load local documentation
-  vxe::AddVortexDocumentation();
+  vxe::add_vortex_documentation();
 }
