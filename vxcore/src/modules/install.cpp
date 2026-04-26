@@ -9,7 +9,7 @@ VORTEX_API void vxe::InstallModule(const std::string &module_name, const std::st
   VxContext &ctx = *CVortexMaker;
 
   // Get the home directory
-  std::string homeDir = vxe::getHomeDirectory();
+  std::string homeDir = vxe::get_home_directory();
 
   // Module path on the system
   std::string path = homeDir + "/.vx/modules";

@@ -155,3 +155,26 @@ VORTEX_API std::vector<std::string> vxe::search_system_files(const std::string &
   // Return the vector containing the paths of found files
   return fichiersTest;
 }
+
+VORTEX_API std::string vxe::get_home_directory() {
+  if (vxe::is_linux() || vxe::is_macos()) {
+    const char *homePath = std::getenv("HOME");
+    if (homePath == nullptr) {
+      throw std::runtime_error("HOME environment variable not set");
+    }
+    return std::string(homePath);
+  } else if (vxe::is_windows()) {
+    const char *homePath = std::getenv("USERPROFILE");
+    if (homePath == nullptr) {
+      const char *homeDrive = std::getenv("HOMEDRIVE");
+      const char *homePathEnv = std::getenv("HOMEPATH");
+      if (homeDrive == nullptr || homePathEnv == nullptr) {
+        throw std::runtime_error("HOMEPATH environment variables not set");
+      }
+      return std::string(homeDrive) + std::string(homePathEnv);
+    }
+    return std::string(homePath);
+  }
+
+  throw std::runtime_error("Unknown platform: Unable to determine home directory");
+}

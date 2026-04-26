@@ -14,17 +14,15 @@
  *
  * @param post_topic The topic where post the state of context.
  */
-VORTEX_API nlohmann::json
-vxe::GetLastModuleOfLastSession(const std::string &post_topic) {
+VORTEX_API nlohmann::json vxe::get_last_module_of_last_session(const std::string &post_topic) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   // Init the path of the sessions data.
-  std::string session_path = vxe::getHomeDirectory() + "/.vx/sessions";
+  std::string session_path = vxe::get_home_directory() + "/.vx/sessions";
 
   // Init the path of current session data folder.
-  std::string current_session_path =
-      session_path + "/.vx/sessions/" + post_topic + "/last_module.json";
+  std::string current_session_path = session_path + "/.vx/sessions/" + post_topic + "/last_module.json";
 
   std::ifstream file(current_session_path);
 
@@ -45,16 +43,15 @@ vxe::GetLastModuleOfLastSession(const std::string &post_topic) {
  *
  * @param post_topic The topic where post the state of context.
  */
-VORTEX_API nlohmann::json vxe::GetLastSession(const std::string &post_topic) {
+VORTEX_API nlohmann::json vxe::get_last_session(const std::string &post_topic) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   // Init the path of the sessions data.
-  std::string session_path = vxe::getHomeDirectory() + "/.vx/sessions";
+  std::string session_path = vxe::get_home_directory() + "/.vx/sessions";
 
   // Init the path of current session data folder.
-  std::string current_session_path =
-      session_path + "/.vx/sessions/" + post_topic + "/master_session.json";
+  std::string current_session_path = session_path + "/.vx/sessions/" + post_topic + "/master_session.json";
 
   std::ifstream file(current_session_path);
 

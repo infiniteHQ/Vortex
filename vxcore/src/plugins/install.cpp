@@ -8,7 +8,7 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name, const std::st
   VxContext &ctx = *CVortexMaker;
 
   // Get the home directory
-  std::string homeDir = vxe::getHomeDirectory();
+  std::string homeDir = vxe::get_home_directory();
 
   // Plugin path on the system
   std::string path = homeDir + "/.vx/plugins";

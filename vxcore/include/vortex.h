@@ -148,13 +148,6 @@ namespace vxe {
 
   VORTEX_API void ExecuteStartScript();
 
-  VORTEX_API void CreateSessionTopic(const std::string &post_topic);
-  VORTEX_API void DeleteSessionTopic(const std::string &post_topic);
-  VORTEX_API void PostSessionState(const std::string &post_topic);
-  VORTEX_API void PostSessionCoreDump(const std::string &post_topic);
-  VORTEX_API nlohmann::json GetLastModuleOfLastSession(const std::string &post_topic);
-  VORTEX_API nlohmann::json GetLastSession(const std::string &post_topic);
-
   VORTEX_API std::string getCurrentTimeStamp();
   VORTEX_API void OpenURL(const std::string &url);
 
@@ -166,25 +159,27 @@ namespace vxe {
   VORTEX_API void CopyAllContent();
   VORTEX_API void ExecuteCommand();
 
+  // utils
   VORTEX_API std::string ConvertPathToWindowsStyle(const std::string &path);
+
   VORTEX_API void SubmitRename(const std::string &oldPathStr, const std::string &newName);
 
+  // credits
   VORTEX_API void AddCredits(const std::string &topic, const std::string &credit_file);
   VORTEX_API void SetCreditsFile(const std::string &topic, const std::string &credit_file);
 
+  // documentation
   VORTEX_API void AddDocumentation(
       const std::string &topic,
       const std::string &section,
       const std::string &title,
       const std::string &md_file_path);
-
   VORTEX_API std::vector<std::string> GetSections(const std::string &topic);
   VORTEX_API std::vector<std::string> GetChapters(const std::string &topic, const std::string &section);
   VORTEX_API std::string GetChapterFilePath(const std::string &topic, const std::string &section, const std::string &title);
-
   VORTEX_API std::vector<std::string> GetTitlesFromTopic(const std::string &topic);
-
   VORTEX_API std::vector<std::string> GetNamesFromTopicAndTitle(const std::string &topic, const std::string &title);
+  VORTEX_API void AddVortexDocumentation();
 
   VORTEX_API void PushEditMenuItem(
       const std::string &title,
@@ -198,15 +193,10 @@ namespace vxe {
   VORTEX_API void PopCustomMenu(const int &count = 1);
   VORTEX_API void ClearCustomMenus();
 
-  VORTEX_API void AddVortexDocumentation();
-
   VORTEX_API std::string ExtractPackageWithTar(const std::string &path, const std::string &tarballName);
   VORTEX_API std::string replacePlaceholders(
       const std::string &command,
       const std::unordered_map<std::string, std::string> &replacements);
-
-  VORTEX_API std::string gen_random(const int len);
-  VORTEX_API std::string getHomeDirectory();
 
   // Memory Allocators
   // - Those functions are not reliant on the current context.

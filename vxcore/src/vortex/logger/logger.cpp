@@ -11,9 +11,10 @@ VORTEX_API std::shared_ptr<spdlog::logger> vxe::create_log_pool(const std::strin
 
 #if defined(_WIN32) || defined(_WIN64)
   std::string file_path =
-      vxe::getHomeDirectory() + "\\.vx\\sessions\\" + ctx.state.session_id + "\\logs\\" + pool_name + ".log";
+      vxe::get_home_directory() + "\\.vx\\sessions\\" + ctx.state.session_id + "\\logs\\" + pool_name + ".log";
 #else
-  std::string file_path = vxe::getHomeDirectory() + "/.vx/sessions/" + ctx.state.session_id + "/logs/" + pool_name + ".log";
+  std::string file_path =
+      vxe::get_home_directory() + "/.vx/sessions/" + ctx.state.session_id + "/logs/" + pool_name + ".log";
 #endif
 
   std::shared_ptr<spdlog::logger> new_logger = spdlog::daily_logger_mt(pool_name, file_path, 0, 0);
@@ -28,9 +29,9 @@ VORTEX_API std::shared_ptr<spdlog::logger> vxe::create_global_logger() {
   VxContext &ctx = *vxe::get_current_context();
 
 #if defined(_WIN32) || defined(_WIN64)
-  std::string file_path = vxe::getHomeDirectory() + "\\.vx\\sessions\\" + ctx.state.session_id + "\\logs\\global.log";
+  std::string file_path = vxe::get_home_directory() + "\\.vx\\sessions\\" + ctx.state.session_id + "\\logs\\global.log";
 #else
-  std::string file_path = vxe::getHomeDirectory() + "/.vx/sessions/" + ctx.state.session_id + "/logs/global.log";
+  std::string file_path = vxe::get_home_directory() + "/.vx/sessions/" + ctx.state.session_id + "/logs/global.log";
 #endif
 
   ctx.global_logger = spdlog::basic_logger_mt("global_logger", file_path);

@@ -16,12 +16,12 @@
  *
  * @param post_topic The topic where post the state of context.
  */
-VORTEX_API void vxe::PostSessionState(const std::string &post_topic) {
+VORTEX_API void vxe::post_session_state(const std::string &post_topic) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   // Init the path of the sessions data.
-  std::string session_path = vxe::getHomeDirectory() + "/.vx/sessions";
+  std::string session_path = vxe::get_home_directory() + "/.vx/sessions";
 
   // Init the path of current session data folder.
   std::string current_session_path = session_path + "/.vx/sessions/" + post_topic;
@@ -66,12 +66,12 @@ VORTEX_API void vxe::PostSessionState(const std::string &post_topic) {
  *
  * @param post_topic The topic where post the state of context.
  */
-VORTEX_API void vxe::PostSessionCoreDump(const std::string &post_topic) {
+VORTEX_API void vxe::post_session_core_dump(const std::string &post_topic) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
   // Init the path of the sessions data.
-  std::string session_path = vxe::getHomeDirectory() + "/.vx/sessions";
+  std::string session_path = vxe::get_home_directory() + "/.vx/sessions";
 
   // Init the path of current session data folder.
   std::string current_session_path = session_path + "/.vx/sessions/" + post_topic;

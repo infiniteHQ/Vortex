@@ -166,7 +166,7 @@ namespace vxe {
 
   VORTEX_API void LoadSystemModules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules) {
     // Get the home directory
-    std::string homeDir = vxe::getHomeDirectory();
+    std::string homeDir = vxe::get_home_directory();
 
     // Module path on the system
     std::string path = homeDir + "/.vx/modules";

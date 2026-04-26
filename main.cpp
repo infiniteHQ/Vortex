@@ -156,7 +156,7 @@ VxContext *InitRuntime(bool logger) {
   vxe::create_console_logger();
   ctx->logger = logger;
 
-  vxe::CreateSessionTopic(ctx->state.session_id);
+  vxe::create_session_topic(ctx->state.session_id);
 
   // initialize environment
   vxe::init_environment();
@@ -195,7 +195,7 @@ VxContext *InitBlankRuntime(bool logger) {
   vxe::create_console_logger();
   vxe::log_info("Bootstrapp", "Initializing runtime...");
 
-  vxe::CreateSessionTopic(ctx->state.session_id);
+  vxe::create_session_topic(ctx->state.session_id);
 
   // initialize environment
   vxe::init_environment();

@@ -3,26 +3,26 @@
 
 VORTEX_API void vxe::init_environment() {
   {
-    std::string path = vxe::getHomeDirectory() + "/.vx/data/";
+    std::string path = vxe::get_home_directory() + "/.vx/data/";
     vxe::create_folder_if_not_exists(path);
   }
   {
-    std::string path = vxe::getHomeDirectory() + "/.vx/modules/";
-    vxe::create_folder_if_not_exists(path);
-  }
-
-  {
-    std::string path = vxe::getHomeDirectory() + "/.vx/templates/";
+    std::string path = vxe::get_home_directory() + "/.vx/modules/";
     vxe::create_folder_if_not_exists(path);
   }
 
   {
-    std::string path = vxe::getHomeDirectory() + "/.vx/templates/vortex.templates.builtin.__blankproject/";
+    std::string path = vxe::get_home_directory() + "/.vx/templates/";
     vxe::create_folder_if_not_exists(path);
   }
 
   {
-    std::string path = vxe::getHomeDirectory() + "/.vx/data/";
+    std::string path = vxe::get_home_directory() + "/.vx/templates/vortex.templates.builtin.__blankproject/";
+    vxe::create_folder_if_not_exists(path);
+  }
+
+  {
+    std::string path = vxe::get_home_directory() + "/.vx/data/";
     std::string file = path + "projects.json";
 
     nlohmann::json default_data = { { "projects", nlohmann::json::array() } };
@@ -35,7 +35,7 @@ VORTEX_API void vxe::refresh_environment_projects() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
-  std::string path = vxe::getHomeDirectory() + "/.vx/data/";
+  std::string path = vxe::get_home_directory() + "/.vx/data/";
 
   std::string json_file = path + "/projects.json";
 
@@ -105,7 +105,7 @@ VORTEX_API void vxe::refresh_environment_vortex_versions_pools() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
-  std::string path = vxe::getHomeDirectory() + "/.vx/configs/";
+  std::string path = vxe::get_home_directory() + "/.vx/configs/";
 
   std::string json_file = path + "/vortex_versions_pools.json";
 
@@ -174,7 +174,7 @@ VORTEX_API void vxe::update_environment_project(
     const std::string &template_name) {  // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
-  std::string sys_path = vxe::getHomeDirectory() + "/.vx/data/";
+  std::string sys_path = vxe::get_home_directory() + "/.vx/data/";
   std::string json_file = sys_path + "/projects.json";
 
   // Verify if the project is valid
@@ -215,7 +215,7 @@ VORTEX_API void vxe::update_environment_project() {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
-  std::string path = vxe::getHomeDirectory() + "/.vx/data/";
+  std::string path = vxe::get_home_directory() + "/.vx/data/";
   std::string json_file = path + "/projects.json";
 
   // Verify if the project is valid
@@ -268,7 +268,7 @@ VORTEX_API void vxe::update_environment_project(const std::string &oldname) {
   // Get reference to the Vortex context
   VxContext &ctx = *CVortexMaker;
 
-  std::string path = vxe::getHomeDirectory() + "/.vx/data/";
+  std::string path = vxe::get_home_directory() + "/.vx/data/";
   std::string json_file = path + "/projects.json";
 
   // Verify if the project is valid

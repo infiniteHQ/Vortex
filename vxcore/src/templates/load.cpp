@@ -6,7 +6,7 @@
 namespace vxe {
   VORTEX_API void LoadSystemTemplates(std::vector<std::shared_ptr<TemplateInterface>> &sys_templates) {
     // Get the home directory
-    std::string homeDir = vxe::getHomeDirectory();
+    std::string homeDir = vxe::get_home_directory();
 
     // Module path on the system
     std::string path = homeDir + "/.vx/templates";

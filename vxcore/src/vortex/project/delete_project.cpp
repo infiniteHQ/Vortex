@@ -51,7 +51,7 @@ VORTEX_API void vxe::delete_project(const std::string &path, const std::string &
 }
 
 VORTEX_API void vxe::RemoveSystemProjectEntry(const std::string &project_name) {
-  std::string dataPath = vxe::getHomeDirectory() + "/.vx/data/";
+  std::string dataPath = vxe::get_home_directory() + "/.vx/data/";
   std::string configFile = dataPath + "/projects.json";
 
   // Load JSON data from the module configuration file

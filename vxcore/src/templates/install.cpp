@@ -71,7 +71,7 @@ VORTEX_API void vxe::InstallTemplate(const std::string &name, const std::string 
   ctx.include_system_templates)
   {
       // Get the home directory
-      std::string homeDir = vxe::getHomeDirectory();
+      std::string homeDir = vxe::get_home_directory();
 
       // Module path on the system
       std::string path = homeDir + "/.vx/templates";

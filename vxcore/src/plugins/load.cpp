@@ -59,7 +59,7 @@ namespace vxe {
 
   VORTEX_API void LoadSystemPlugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins) {
     // Get the home directory
-    std::string homeDir = vxe::getHomeDirectory();
+    std::string homeDir = vxe::get_home_directory();
 
     // Plugin path on the system
     std::string path = homeDir + "/.vx/plugins";
