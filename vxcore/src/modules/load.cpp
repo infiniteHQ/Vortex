@@ -73,7 +73,7 @@ namespace vxe {
 
           handle = LoadLibraryW(wide_so_file.c_str());
           if (!handle) {
-            DWORD error_code = get_last_error();
+            DWORD error_code = GetLastError();
             LPVOID msg_buffer;
 
             FormatMessageW(
