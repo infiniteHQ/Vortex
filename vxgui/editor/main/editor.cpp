@@ -533,8 +533,6 @@ void Editor::render_menubar() {
   }
 
   if (CherryGUI::BeginMenu("Edit")) {
-    // TODO : General edit functions of vortex
-
     const auto &items = ctx->editMenuItems;
 
     if (items.empty()) {
@@ -729,32 +727,30 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   c_Editor = std::make_shared<Editor>();
   Cherry::ApplicationSpecification spec;
 
-  std::string name = "Vortex Editor";
-  spec.Name = name;
-  spec.MinHeight = 500;
-  spec.MinWidth = 500;
-  spec.Height = 900;
-  spec.Width = 1800;
-  spec.CustomTitlebar = true;
+  spec.SetName("Vortex Editor");
+  spec.SetMinimumHeight(500);
+  spec.SetMinimumWidth(500);
+  spec.SetDefaultHeight(900);
+  spec.SetDefaultWidth(1800);
+  spec.SetCustomTitlebar(true);
+  spec.SetRenderMode(Cherry::WindowRenderingMethod::DockingWindows);
   spec.DisableWindowManagerTitleBar = true;
-  spec.RenderMode = Cherry::WindowRenderingMethod::DockingWindows;
-
   spec.DisableTitle = true;
   spec.WindowSaves = false;
   spec.IconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
   spec.FavIconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
   spec.SetFramebarCallback([]() { c_Editor->render_framebar(); });
+
   Cherry::Application *app = new Cherry::Application(spec);
   app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/icon.png"));
   app->AddFont("Consola", Cherry::Application::CookPath("resources/fonts/consola.ttf"), 50.0f);
   app->AddFont("Clash", Cherry::Application::CookPath("resources/fonts/clash.ttf"), 70.0f);
-
   app->AddFont("JetBrainsMono", Cherry::Application::CookPath("resources/fonts/JetBrainsMono-Regular.ttf"), 40.0f);
 
   app->AddLocale("fr", Cherry::GetPath("resources/locales/fr.json"));
   app->AddLocale("en", Cherry::GetPath("resources/locales/en.json"));
-  app->SetDefaultLocale("en");
   app->SetLocale("en");
+  app->SetDefaultLocale("en");
 
   // Cherry INIT from mopdules
   for (auto mod : vxe::get_current_context()->IO.em) {
@@ -767,9 +763,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     modules->RefreshMainWindow();
   }
 
-  app->SetMenubarCallback([]() { c_Editor->render_menubar(); }
-
-  );
+  app->SetMenubarCallback([]() { c_Editor->render_menubar(); });
 
   return app;
 }

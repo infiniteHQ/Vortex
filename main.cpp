@@ -37,7 +37,7 @@ void PrintInfinite() {
             << std::endl;
 }
 
-void PrintHeader(const std::string &additions = "") {
+void print_header(const std::string &additions = "") {
   // Print this every time
   std::cout << std::endl;
   std::cout << "\033[38;2;177;255;49m";
@@ -144,7 +144,7 @@ bool CheckDirectory() {
   return true;
 }
 
-std::shared_ptr<VxContext> InitRuntime(bool logger) {
+std::shared_ptr<VxContext> init_runtime() {
   auto ctx = vxe::create_context();
 
   vxe::initialize_platform_vendor();
@@ -154,7 +154,7 @@ std::shared_ptr<VxContext> InitRuntime(bool logger) {
 
   vxe::create_global_logger();
   vxe::create_console_logger();
-  ctx->logger = logger;
+  ctx->logger = true;
 
   vxe::create_session_topic(ctx->state.session_id);
 
@@ -178,12 +178,8 @@ std::shared_ptr<VxContext> InitRuntime(bool logger) {
 
   return ctx;
 }
-// Project sys size== 0
 
-// Project creator,
-// Template deployment overrides (project, modules_content, etc...)
-
-std::shared_ptr<VxContext> InitBlankRuntime(bool logger) {
+std::shared_ptr<VxContext> init_blank_runtime() {
   auto ctx = vxe::create_context();
 
   ctx->state.session_id = session_id;
@@ -201,27 +197,21 @@ std::shared_ptr<VxContext> InitBlankRuntime(bool logger) {
   vxe::init_environment();
   vxe::detect_platform();
   vxe::detect_arch();
-
-  // Refresh environment registered projects
   vxe::refresh_environment_projects();
-
   vxe::LoadSystemTemplates(ctx->IO.sys_templates);
 
-  ctx->logger = logger;
+  ctx->logger = true;
   return ctx;
 }
 
-/**
- * @brief : Entry point of main Vortex runtime command.
- */
 int main(int argc, char *argv[]) {
   if (argc < 2) {
-    PrintHeader();
+    print_header();
   } else {
     if (std::string(argv[1]) == "-test") {
       return 0;
     } else if (std::string(argv[1]) == "--crash" || std::string(argv[1]) == "--get-last-crash") {
-      PrintHeader("(Crash handler)");
+      print_header("(Crash handler)");
 
       if (argc > 2) {
         std::string arg2 = argv[2];
@@ -234,11 +224,11 @@ int main(int argc, char *argv[]) {
         }
       }
 
-      InitBlankRuntime(true);
+      init_blank_runtime();
       vxe::log_info("Bootstrapp", "Opening the graphical interface...");
       vxe::VortexCrash(argc, argv);
     } else if (std::string(argv[1]) == "-e" || std::string(argv[1]) == "--editor") {
-      PrintHeader("(Editor)");
+      print_header("(Editor)");
       if (argc > 2) {
         std::string arg2 = argv[2];
         if (arg2.rfind("--session_id=", 0) == 0) {
@@ -250,7 +240,7 @@ int main(int argc, char *argv[]) {
         }
       }
 
-      InitRuntime(true);
+      auto ctx = init_runtime();
       vxe::log_info("Bootstrapp", "Opening the graphical interface...");
 
       vxe::VortexEditor(argc, argv);
