@@ -1121,7 +1121,7 @@ namespace vxe {
 
             if (draw_item_card({ .content = content, .style = style, .selected = selected })) {
               if (CherryGUI::IsMouseDoubleClicked(0)) {
-                // itemEntry.first->f_Execute(path);
+                // itemEntry.first->f_execute(path);
                 // VXERROR("te", "tyr");
               }
               if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) || CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
@@ -2192,7 +2192,7 @@ namespace vxe {
             if (draw_horizontal_draw_item_card(
                     { .content = content, .style = style, .selected = selected, .isFolder = false })) {
               if (CherryGUI::IsMouseDoubleClicked(0)) {
-                // itemEntry.first->f_Execute(path);
+                // itemEntry.first->f_execute(path);
                 // VXERROR("te", "tyr");
               }
               if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) || CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {

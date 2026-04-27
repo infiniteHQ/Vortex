@@ -75,19 +75,15 @@ VORTEX_API void vxe::start_all_plugins() {
 }
 
 VORTEX_API void vxe::bootstrapp_all_plugins() {
-  // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
-  // Start all plugins & create data environments
-  // TODO move to (start_plugin) function
   for (auto ep : ctx->IO.ep) {
     {
-      // Set the plugin data path
       std::string datapath = ctx->projectPath.string();
       datapath += "/.vx/data/" + ep->m_name;
       ep->m_datapath = datapath;
 
-      // Try to create the datapath folder (if not exist yet)
+      // TODO : Rework that with API
       std::string cmd = "sudo mkdir ";
       cmd += datapath.c_str();
       system(cmd.c_str());

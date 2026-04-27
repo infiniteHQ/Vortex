@@ -1,10 +1,20 @@
+//
+//  main.cpp
+//  Sources of the main vortex API for scripting (in LUA)
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include <plugins/interface.h>
 #include <vortex.h>
 
 #include <vortex/scripting/scripting.hpp>
 
 namespace vxe {
-  namespace Script {
+  namespace script {
 
     VXLUA_FUNC(Log) {
       std::string log = vxlua_getstring(L, 1);
@@ -159,7 +169,7 @@ namespace vxe {
       return 1;
     }
 
-    void RegisterMainAPI(lua_State *L) {
+    void register_main_api(lua_State *L) {
       // Logs & Debug
       VXLUA_REGISTER(L, -1, Log);
       VXLUA_REGISTER(L, -1, log_warn);
@@ -187,5 +197,5 @@ namespace vxe {
       VXLUA_REGISTER(L, -1, GetVortexEditorHash);
     }
 
-  }  // namespace Script
+  }  // namespace script
 }  // namespace vxe

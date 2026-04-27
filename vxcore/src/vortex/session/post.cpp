@@ -1,21 +1,16 @@
+//
+//  post.cpp
+//  Sources of the user session posting features
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-/**
- * Directory places :
- * Vortex session informations     | /[post_topic]/vortex.json
- * Master session informations     | /[post_topic]/master_session.json
- * Last module informations        | /[post_topic]/last_module.json
- */
-
-/**
- * @brief Post a session state of current context
- *
- * This function can post a state of the current context to prevent crashs & log
- * everything.
- *
- * @param post_topic The topic where post the state of context.
- */
 VORTEX_API void vxe::post_session_state(const std::string &post_topic) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
@@ -58,14 +53,6 @@ VORTEX_API void vxe::post_session_state(const std::string &post_topic) {
   }
 }
 
-/**
- * @brief Post a core dump of a Vortex process
- *
- * This function can post a state of the current context to prevent crashs & log
- * everything.
- *
- * @param post_topic The topic where post the state of context.
- */
 VORTEX_API void vxe::post_session_core_dump(const std::string &post_topic) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();

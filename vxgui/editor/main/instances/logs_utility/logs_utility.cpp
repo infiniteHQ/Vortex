@@ -74,7 +74,7 @@ namespace vxe {
     if (cmd.rfind("Vortex.", 0) != 0) {
       finalCmd = "Vortex." + cmd;
     }
-    vxe::Script::GetScriptingEngine().Execute(finalCmd);
+    vxe::script::get_scripting_engine().execute(finalCmd);
   }
 
   void LogsUtility::activate_topic_filter(const std::string &topic) {

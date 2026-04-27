@@ -1,15 +1,16 @@
+//
+//  delete_project.cpp
+//  Sources of features related to project deletion
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-/**
- * @brief create_project creates a new project with the specified name and path.
- *
- * This function creates a new project directory structure and initializes
- * necessary files such as 'vortex.config'.
- *
- * @param name The name of the project.
- * @param path The path where the project will be created.
- */
 VORTEX_API void vxe::delete_project(const std::string &path, const std::string &project_name) {
   // Vérifiez si le fichier existe avant de l'ouvrir
   if (!std::filesystem::exists(path + "/vortex.config")) {

@@ -583,8 +583,8 @@ VORTEX_API void PluginInterface::start() {
     return;
   }
 
-  auto &engine = vxe::Script::GetScriptingEngine();
-  engine.LoadFileForPlugin(this->m_mainscript_path, this->shared_from_this());
+  auto &engine = vxe::script::get_scripting_engine();
+  engine.load_file_for_plugin(this->m_mainscript_path, this->shared_from_this());
 
   this->m_state = "running";
 }

@@ -1,10 +1,20 @@
+//
+//  plugin.cpp
+//  Sources of the scripting API for plugins (in LUA)
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include <plugins/interface.h>
 #include <vortex.h>
 
 #include <vortex/scripting/scripting.hpp>
 
 namespace vxe {
-  namespace Script {
+  namespace script {
 
     static std::shared_ptr<PluginInterface> GetActivePlugin(lua_State *L) {
       lua_rawgetp(L, LUA_REGISTRYINDEX, (void *)&ACTIVE_PLUGIN_KEY);
@@ -721,7 +731,7 @@ namespace vxe {
     // TODO add_function
     // TODO execute_function (with support of args and return)
 
-    void RegisterPluginAPI(lua_State *L) {
+    void register_plugin_api(lua_State *L) {
       VXLUA_REGISTER_AS(L, PluginLog, "Log");
       VXLUA_REGISTER_AS(L, PluginLogWarn, "LogWarn");
       VXLUA_REGISTER_AS(L, PluginLogError, "LogError");
@@ -742,5 +752,5 @@ namespace vxe {
       VXLUA_REGISTER_AS(L, PluginCallInputEvent, "CallInputEvent");
     }
 
-  }  // namespace Script
+  }  // namespace script
 }  // namespace vxe

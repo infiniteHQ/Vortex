@@ -63,7 +63,7 @@ namespace vxe {
 
           handle = LoadLibraryW(wide_so_file.c_str());
           if (!handle) {
-            DWORD error_code = GetLastError();
+            DWORD error_code = get_last_error();
             LPVOID msg_buffer;
 
             FormatMessageW(
@@ -85,7 +85,7 @@ namespace vxe {
 
           auto create_em = reinterpret_cast<ModuleInterface *(*)()>(GetProcAddress((HMODULE)handle, "create_em"));
           if (!create_em) {
-            DWORD error_code = GetLastError();
+            DWORD error_code = get_last_error();
             LPVOID msg_buffer;
 
             FormatMessageW(

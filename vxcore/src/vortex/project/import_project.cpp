@@ -1,9 +1,16 @@
+//
+//  import_project.cpp
+//  Sources of features related to project importation
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-/**
- * @brief
- */
 VORTEX_API std::vector<std::shared_ptr<EnvProject>> vxe::find_project_in_folder(const std::string &path) {
   // Search for module files recursively in the directory
   auto module_files = vxe::search_files(path, "vortex.config", 3);
@@ -34,9 +41,6 @@ VORTEX_API std::vector<std::shared_ptr<EnvProject>> vxe::find_project_in_folder(
   return projects;
 }
 
-/**
- * @brief
- */
 VORTEX_API void vxe::import_project(const std::string &path) {
   // Search for module files recursively in the directory
   auto module_files = vxe::search_system_files(path, "vortex.config");

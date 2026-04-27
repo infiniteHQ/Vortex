@@ -1,15 +1,16 @@
+//
+//  populate.cpp
+//  Sources for populating a file with json values
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-/**
- * @brief populate_json writes JSON data to a file.
- *
- * This function writes the given JSON data to the specified file.
- *
- * @param json_data The JSON object containing the data to write.
- * @param file The path to the JSON file to write to.
- * @throws std::runtime_error if the file cannot be opened.
- */
 VORTEX_API void vxe::populate_json(const nlohmann::json &json_data, const std::string &file) {
   // Check if the directory of the file exists before opening it
   std::filesystem::path filePath(file);
