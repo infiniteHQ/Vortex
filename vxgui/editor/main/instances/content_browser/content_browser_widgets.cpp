@@ -382,15 +382,14 @@ namespace vxe {
       }
       selected_.clear();
     }
+
     item_context_menu_opened_ = false;
+
     if (CherryGUI::BeginPopupContextItem("ThumbmailsItemContextPopup")) {
       CherryGUI::GetFont()->Scale = 0.9;
       CherryGUI::PushFont(CherryGUI::GetFont());
 
       CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
-
-      ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-      ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
 
       item_context_menu_opened_ = true;
 
@@ -849,14 +848,12 @@ namespace vxe {
       }
       selected_.clear();
     }
+
     if (CherryGUI::BeginPopupContextItem(("context_" + p.content.path).c_str())) {
       CherryGUI::GetFont()->Scale = 0.9;
       CherryGUI::PushFont(CherryGUI::GetFont());
 
       CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
-
-      ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-      ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
 
       item_context_menu_opened_ = true;
 

@@ -208,9 +208,7 @@ VORTEX_API void vxe::fetch_custom_folders() {
 
   std::string file_path = path + "/customized_folders.json";
 
-  nlohmann::json json_data = { { "custom_folders", nlohmann::json::array() }
-
-  };
+  nlohmann::json json_data = { { "custom_folders", nlohmann::json::array() } };
 
   vxe::create_file_if_not_exists(file_path, json_data);
 
@@ -386,7 +384,7 @@ VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
   for (const auto &srcStr : ctx->IO.copy_selection) {
     fs::path srcPath(srcStr);
     if (!fs::exists(srcPath)) {
-      std::cerr << "Source path n'existe pas : " << srcStr << "\n";
+      vxe::log_error("Content browser", "Source doesn't exist : " + srcStr);
       continue;
     }
 
@@ -400,28 +398,29 @@ VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
       }
 
     } catch (const std::exception &e) {
-      std::cerr << "Erreur de copie : " << srcPath << " → " << destPath << " : " << e.what() << "\n";
+      vxe::log_error(
+          "Content browser", "Error while copying : " + srcPath.string() + " to " + destPath.string() + " : " + e.what());
     }
   }
 
   for (const auto &srcStr : ctx->IO.cut_selection) {
     fs::path srcPath(srcStr);
     if (!fs::exists(srcPath)) {
-      std::cerr << "Source path n'existe pas (cut) : " << srcStr << "\n";
       continue;
     }
 
     fs::path destPath = generateNonConflictingPath(targetPath, srcPath.filename());
 
     if (fs::is_directory(srcPath) && isStrictSubPath(destPath, srcPath)) {
-      std::cerr << "Déplacement récursif détecté, opération ignorée : " << srcPath << " → " << destPath << "\n";
       continue;
     }
 
     try {
       fs::rename(srcPath, destPath);
     } catch (const std::exception &e) {
-      std::cerr << "Erreur de déplacement : " << srcPath << " → " << destPath << " : " << e.what() << "\n";
+      vxe::log_error(
+          "Content browser",
+          "Error while paste action : " + srcPath.string() + " to " + destPath.string() + " : " + e.what());
     }
   }
 }

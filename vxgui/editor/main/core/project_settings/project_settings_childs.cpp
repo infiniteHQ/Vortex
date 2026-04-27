@@ -65,7 +65,6 @@ namespace vxe {
                       "Main informations",
                       true,
                       {
-
                           CherryKit::KeyValString("Name", &current_project_info_.name),
                           CherryKit::KeyValString("Description", &current_project_info_.description),
                           CherryKit::KeyValString("Version", &current_project_info_.version),
@@ -238,7 +237,6 @@ namespace vxe {
             CherryKit::TableSimple(
                 "General",
                 {
-
                     CherryKit::KeyValCustom(
                         "Active theme ",
                         [this]() {

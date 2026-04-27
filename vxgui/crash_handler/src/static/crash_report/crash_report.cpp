@@ -1,6 +1,16 @@
+//
+//  crash_report.cpp
+//  Sources for the CrashReport utility, displayed on the Vortex Crash Handler
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "crash_report.hpp"
 
-CrashAppWindow::CrashAppWindow(const std::string &name, const std::string &session_id) {
+CrashReport::CrashReport(const std::string &name, const std::string &session_id) {
   app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
   app_window_->SetIcon(Cherry::GetPath("ch_resources/imgs/icon_crash.png"));
   app_window_->SetClosable(false);
@@ -32,12 +42,12 @@ CrashAppWindow::CrashAppWindow(const std::string &name, const std::string &sessi
   app_window_->SetInternalPaddingX(10.0f);
   app_window_->SetInternalPaddingY(10.0f);
 
-  m_SessionID = session_id;
+  session_id_ = session_id;
 
   std::shared_ptr<Cherry::AppWindow> win = app_window_;
 }
 
-std::string CrashAppWindow::GetHomeDirectory() {
+std::string CrashReport::get_home_directory() {
 #if defined(__linux__) || defined(__APPLE__)
   const char *homePath = std::getenv("HOME");
   if (homePath == nullptr) {
@@ -87,26 +97,26 @@ bool loadFileToString(const std::string &filename, char *text, size_t maxSize) {
 
 static std::vector<std::tuple<std::string, std::string, std::string>> modifiable_values;
 
-std::shared_ptr<Cherry::AppWindow> &CrashAppWindow::GetAppWindow() {
+std::shared_ptr<Cherry::AppWindow> &CrashReport::get_app_window() {
   return app_window_;
 }
 
-std::shared_ptr<CrashAppWindow> CrashAppWindow::Create(const std::string &name, const std::string &id) {
-  auto instance = std::shared_ptr<CrashAppWindow>(new CrashAppWindow(name, id));
-  instance->SetupRenderCallback();
+std::shared_ptr<CrashReport> CrashReport::create(const std::string &name, const std::string &id) {
+  auto instance = std::shared_ptr<CrashReport>(new CrashReport(name, id));
+  instance->setup_render_callback();
   return instance;
 }
 
-void CrashAppWindow::SetupRenderCallback() {
+void CrashReport::setup_render_callback() {
   auto self = shared_from_this();
   app_window_->SetRenderCallback([self]() {
     if (self) {
-      self->Render();
+      self->render();
     }
   });
 }
 
-void CrashAppWindow::Render() {
+void CrashReport::render() {
   float oldsize = ImGui::GetFont()->Scale;
   ImGui::GetFont()->Scale *= 1.5;
   ImGui::PushFont(ImGui::GetFont());
@@ -131,7 +141,7 @@ void CrashAppWindow::Render() {
   ImGui::SameLine();
 
   ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
-  ImGui::TextWrapped(m_SessionID.c_str());
+  ImGui::TextWrapped(session_id_.c_str());
   ImGui::PopStyleColor(1);
 
   ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
@@ -254,7 +264,7 @@ void CrashAppWindow::Render() {
       static char text[bufferSize];
 
       // Load content from file into text variable
-      static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" + m_SessionID + "/logs/global.log";
+      static std::string log_file = get_home_directory() + "/.vx/sessions/" + session_id_ + "/logs/global.log";
       if (!loadFileToString(log_file, text, bufferSize)) {
         // Handle error opening or reading the file
         ImGui::Text("Failed to open or read file: %s", log_file.c_str());
@@ -281,7 +291,7 @@ void CrashAppWindow::Render() {
       static char text[bufferSize];
 
       // Load content from file into text variable
-      static std::string log_file = GetHomeDirectory() + "/.vx/sessions/" + m_SessionID + "/crash/core_dumped.txt";
+      static std::string log_file = get_home_directory() + "/.vx/sessions/" + session_id_ + "/crash/core_dumped.txt";
       if (!loadFileToString(log_file, text, bufferSize)) {
         // Handle error opening or reading the file
         ImGui::Text("Failed to open or read file: %s", log_file.c_str());
@@ -334,79 +344,3 @@ void CrashAppWindow::Render() {
   if (CherryKit::ButtonText("Start Launcher").GetData("isClicked") == "true") {
   }
 }
-
-static void handleRefresh() {
-  // Behavior
-}
-
-static void handleAddToProject(const std::string &name, const std::string &version) {
-  // Behavior
-}
-
-static void handleFilterBuildRebuild() {
-  // Behavior
-}
-
-static void handleGlobalBuild() {
-  // Behavior
-}
-
-static void handleCreateModule() {
-  // Behavior
-}
-
-static void handleSearch() {
-  // Behavior
-}
-
-void CrashAppWindow::addModuleModal() {
-}
-
-void CrashAppWindow::mainButtonsMenuItem() {
-}
-
-void CrashAppWindow::filterMenuItem() {
-  ImGui::Separator();
-  if (ImGui::BeginMenu("Filters")) {
-    if (ImGui::MenuItem("Build/Rebuild single parts")) {
-      handleFilterBuildRebuild();
-    }
-    if (ImGui::MenuItem("Global build")) {
-      handleGlobalBuild();
-    }
-    ImGui::EndMenu();
-  }
-}
-
-void CrashAppWindow::createMenuItem() {
-  if (ImGui::BeginMenu("Create a module")) {
-    if (ImGui::MenuItem("Build/Rebuild single parts")) {
-      handleCreateModule();
-    }
-    if (ImGui::MenuItem("Global build")) {
-      handleGlobalBuild();
-    }
-    ImGui::EndMenu();
-  }
-}
-
-void CrashAppWindow::searchMenuItem() {
-  if (ImGui::BeginMenu("Search")) {
-    if (ImGui::MenuItem("Build/Rebuild single parts")) {
-      handleSearch();
-    }
-    if (ImGui::MenuItem("Global build")) {
-      handleGlobalBuild();
-    }
-    ImGui::EndMenu();
-  }
-}
-
-void CrashAppWindow::menubar() {
-  if (ImGui::BeginMenuBar()) {
-    this->mainButtonsMenuItem();
-    ImGui::EndMenuBar();
-  }
-}
-
-void CrashAppWindow::Refresh() { };

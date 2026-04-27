@@ -1,3 +1,13 @@
+//
+//  crash_report.hpp
+//  Headers for the CrashReport utility, displayed on the Vortex Crash Handler
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #pragma once
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
@@ -5,38 +15,22 @@
 #ifndef CRASH_H
 #define CRASH_H
 
-class VORTEX_API CrashAppWindow : public std::enable_shared_from_this<CrashAppWindow> {
+class VORTEX_API CrashReport : public std::enable_shared_from_this<CrashReport> {
  public:
-  CrashAppWindow(const std::string &name, const std::string &session_id);
+  CrashReport(const std::string &name, const std::string &session_id);
 
-  void menubar();
-  void addModuleModal();
+  // window
+  std::shared_ptr<Cherry::AppWindow> &get_app_window();
+  static std::shared_ptr<CrashReport> create(const std::string &name, const std::string &id);
+  void setup_render_callback();
+  void render();
 
-  void Refresh();
-  void Update();
-
-  std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
-  static std::shared_ptr<CrashAppWindow> Create(const std::string &name, const std::string &id);
-  void SetupRenderCallback();
-  void Render();
-  std::string GetHomeDirectory();
-
-  /**
-   * @brief Menu items
-   */
-  void mainButtonsMenuItem();
-  void filterMenuItem();
-  void createMenuItem();
-  void searchMenuItem();
-
-  std::string m_SessionID;
+  // logic
+  std::string get_home_directory();
 
  private:
-  bool opened;
-
+  std::string session_id_;
   std::shared_ptr<Cherry::AppWindow> app_window_;
-
-  bool CollapseAll = false;
 };
 
 #endif  // CRASH_H

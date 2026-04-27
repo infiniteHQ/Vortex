@@ -142,7 +142,7 @@ void print_header(const std::string &additions = "") {
   std::cout << std::endl;
 }
 
-bool CheckDirectory() {
+bool check_directory() {
   std::ifstream mainconfig("vortex.config");
   if (!mainconfig.good()) {
     std::cout << "This directory does not contain a Vortex project. Please "
@@ -229,7 +229,7 @@ int main(int argc, char *argv[]) {
           session_id = arg2.substr(13);
           if (!session_id.empty() && session_id.front() == '"' && session_id.back() == '"') {
             session_id = session_id.substr(1, session_id.size() - 2);
-            g_SessionID = session_id;
+            global_session_id = session_id;
           }
         }
       }
@@ -245,7 +245,7 @@ int main(int argc, char *argv[]) {
           session_id = arg2.substr(13);
           if (!session_id.empty() && session_id.front() == '"' && session_id.back() == '"') {
             session_id = session_id.substr(1, session_id.size() - 2);
-            g_SessionID = session_id;
+            global_session_id = session_id;
           }
         }
       }

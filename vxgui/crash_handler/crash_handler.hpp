@@ -1,43 +1,41 @@
-#pragma once
-#define CHERRY_V1
-#include "../../lib/cherry/cherry.hpp"
+//
+//  crash_handler.hpp
+//  Headers, main classes for the crash handler GUI window
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
 
-#include "src/static/crash_report/crash_report.hpp"
+#pragma once
 #include <memory>
 #include <thread>
 
-static std::string g_SessionID = "unknow";
+#include "../../lib/cherry/cherry.hpp"
+#include "src/static/crash_report/crash_report.hpp"
+
+static std::string global_session_id = "unknow";
 
 namespace vxe {
-int VortexCrash(int argc, char **argv);
+  int VortexCrash(int argc, char **argv);
 }
 
-class CrashHandlerLayer : public Cherry::Layer {
-public:
-  CrashHandlerLayer() {};
-};
-
 class CrashHandler {
-public:
+ public:
   CrashHandler() {
-    // Render static windows
-    crash_handler = CrashAppWindow::Create("Crash report", g_SessionID);
-    Cherry::AddAppWindow(
-        crash_handler
-            ->GetAppWindow()); // Publish this window into the workspace
+    crash_handler = CrashReport::create("Crash report", global_session_id);
+    Cherry::AddAppWindow(crash_handler->get_app_window());
   };
 
-private:
-  std::shared_ptr<CrashAppWindow> crash_handler;
+ private:
+  std::shared_ptr<CrashReport> crash_handler;
 };
 
 static std::shared_ptr<CrashHandler> c_CrashHandler;
 
 Cherry::Application *CreateCrash(int argc, char **argv) {
   Cherry::ApplicationSpecification spec;
-  std::shared_ptr<CrashHandlerLayer> layer =
-      std::make_shared<CrashHandlerLayer>();
-
   std::string name = "Vortex Crash Reporter";
   spec.Name = name;
   spec.MinHeight = 500;
@@ -56,118 +54,13 @@ Cherry::Application *CreateCrash(int argc, char **argv) {
 
   Cherry::Application *app = new Cherry::Application(spec);
   app->SetFavIconPath(Cherry::GetPath("ch_resources/imgs/icon_crash.png"));
-  app->AddFont("Consola", Cherry::GetPath("ch_resources/fonts/consola.ttf"),
-               17.0f);
-
-  app->AddFont("JetBrainsMono",
-               Cherry::Application::CookPath(
-                   "resources/fonts/JetBrainsMono-Regular.ttf"),
-               40.0f);
+  app->AddFont("Consola", Cherry::GetPath("ch_resources/fonts/consola.ttf"), 17.0f);
+  app->AddFont("JetBrainsMono", Cherry::Application::CookPath("resources/fonts/JetBrainsMono-Regular.ttf"), 40.0f);
 
   app->AddLocale("fr", Cherry::GetPath("ch_resources/locales/fr.json"));
   app->AddLocale("en", Cherry::GetPath("ch_resources/locales/en.json"));
+  app->SetLocale("en");
   app->SetDefaultLocale("en");
-  app->SetLocale("fr");
-
-  app->PushLayer(layer);
-  app->SetMenubarCallback([app, layer]() {
-    ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-    ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
-    ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
-    ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-
-    ImGui::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
-
-    ImGui::PushStyleColor(ImGuiCol_Border, lightBorderColor);
-
-    ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
-
-    static bool t;
-
-    if (ImGui::BeginMenu("Options")) {
-      ImGui::GetFont()->Scale *= 0.8;
-      ImGui::PushFont(ImGui::GetFont());
-
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
-
-      ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-      ImGui::Text("Settings");
-      ImGui::PopStyleColor();
-
-      ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-      ImGui::Separator();
-      ImGui::PopStyleColor();
-
-      ImGui::GetFont()->Scale = 0.84;
-      ImGui::PopFont();
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-      if (ImGui::Button("Set en")) {
-        app->SetLocale("en");
-      }
-
-      if (ImGui::Button("Set fr")) {
-        app->SetLocale("fr");
-      }
-
-      if (ImGui::Button("Set es")) {
-        app->SetLocale("es");
-      }
-      ImGui::GetFont()->Scale *= 0.8;
-      ImGui::PushFont(ImGui::GetFont());
-
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
-
-      ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-      ImGui::Text("Main stuff");
-      ImGui::PopStyleColor();
-
-      ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-      ImGui::Separator();
-      ImGui::PopStyleColor();
-
-      ImGui::GetFont()->Scale = 0.84;
-      ImGui::PopFont();
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-      if (ImGui::MenuItem("Logs Utility", "Overview of all logs", &t)) {
-      }
-
-      ImGui::GetFont()->Scale *= 0.8;
-      ImGui::PushFont(ImGui::GetFont());
-
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5.0f);
-
-      ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-      ImGui::Text("Main stuff");
-      ImGui::PopStyleColor();
-
-      ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-      ImGui::Separator();
-      ImGui::PopStyleColor();
-
-      ImGui::GetFont()->Scale = 0.84;
-      ImGui::PopFont();
-      ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
-
-      if (ImGui::MenuItem("Manage plugins",
-                          "Add, remove, edit plugins of this project")) {
-      }
-
-      if (ImGui::MenuItem("Manage modules", "Manage modules loaded/registered",
-                          &t)) {
-      }
-
-      if (ImGui::MenuItem("Templates modules",
-                          "Create, add template in your project", &t)) {
-      }
-
-      ImGui::EndMenu();
-    }
-
-    ImGui::PopStyleVar();
-    ImGui::PopStyleColor(2);
-  });
 
   c_CrashHandler = std::make_shared<CrashHandler>();
   return app;

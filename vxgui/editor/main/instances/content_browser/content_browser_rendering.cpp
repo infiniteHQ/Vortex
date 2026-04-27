@@ -364,10 +364,7 @@ namespace vxe {
       CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
       CherryNextComponent.SetProperty("size_x", "15.0f");
       CherryNextComponent.SetProperty("size_y", "15.0f");
-      if (CherryKit::ButtonImage(GetPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"))
-              .GetDataAs<bool>("isClicked")) {
-        //
-      }
+      CherryKit::ButtonImage(GetPath("resources/imgs/icons/misc/icon_arrow_l_disabled.png"));
     } else {
       CherryNextComponent.SetProperty("color_border", "#00000000");
       CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
@@ -393,9 +390,7 @@ namespace vxe {
       CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
       CherryNextComponent.SetProperty("size_x", "15.0f");
       CherryNextComponent.SetProperty("size_y", "15.0f");
-      if (CherryKit::ButtonImage(GetPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"))
-              .GetDataAs<bool>("isClicked")) {
-      }
+      CherryKit::ButtonImage(GetPath("resources/imgs/icons/misc/icon_arrow_r_disabled.png"));
 
     } else {
       CherryNextComponent.SetProperty("color_border", "#00000000");
@@ -670,13 +665,13 @@ namespace vxe {
       }
     }
 
+    ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
+    ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
+    ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
+    ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+
     if (show_mode_ == ContentShowMode::Thumbmails) {
       CherryGUI::Columns(columnCount, 0, false);
-
-      ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-      ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
-      ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
-      ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
       CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
 
@@ -712,6 +707,7 @@ namespace vxe {
                 "Import a component",
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_import.png")),
                 NULL)) {
+          // TODO
         }
 
         CherryKit::SeparatorText("Create");
@@ -747,6 +743,7 @@ namespace vxe {
                 "Select eveything on this directory",
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
                 NULL)) {
+          // TODO
         }
 
         CherryGUI::GetFont()->Scale = oldfontsize;
@@ -829,11 +826,6 @@ namespace vxe {
             }
 
             float oldsize = CherryGUI::GetFont()->Scale;
-
-            ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-            ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
-            ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
-            ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
             CherryGUI::PopStyleVar(2);
             CherryGUI::PopStyleColor(3);
@@ -1357,9 +1349,6 @@ namespace vxe {
 
               CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
 
-              ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-              ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
-
               item_context_menu_opened_ = true;
 
               FileTypes fileType = detect_file(path.string());
@@ -1821,11 +1810,6 @@ namespace vxe {
     }
 
     if (show_mode_ == ContentShowMode::Objects) {
-      ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-      ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
-      ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
-      ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-
       CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
 
       CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
@@ -1860,6 +1844,7 @@ namespace vxe {
                 "Import a component",
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_import.png")),
                 NULL)) {
+          // TODO
         }
 
         CherryKit::SeparatorText("Create");
@@ -1895,6 +1880,7 @@ namespace vxe {
                 "Select eveything on this directory",
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
                 NULL)) {
+          // TODO
         }
 
         CherryGUI::GetFont()->Scale = oldfontsize;

@@ -368,22 +368,29 @@ void Editor::render_framebar() {
     if (CherryGUI::BeginPopup("circleMenu")) {
       CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), "Disconnected");
       if (CherryGUI::MenuItem("Logout")) {
+        // wip
       }
 
       CherryGUI::Separator();
       if (CherryGUI::MenuItem("Connect to Vortex community")) {
+        // wip
       }
       CherryGUI::Separator();
       if (CherryGUI::MenuItem("See my marketplace contents")) {
+        // wip
       }
       if (CherryGUI::MenuItem("See my marketplace plugins/modules")) {
+        // wip
       }
       if (CherryGUI::MenuItem("See my marketplace templates")) {
+        // wip
       }
       if (CherryGUI::MenuItem("See my VortexHub projects")) {
+        // wip
       }
       CherryGUI::Separator();
       if (CherryGUI::MenuItem("Upload content(s)")) {
+        // wip
       }
       CherryGUI::EndPopup();
     }

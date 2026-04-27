@@ -104,7 +104,6 @@ VORTEX_API std::shared_ptr<PluginInterface> vxe::find_plugin_in_directory(const 
       plugin_interface->version_ = json_data["version"].get<std::string>();
 
       return plugin_interface;
-
     } catch (std::exception e) {
       vxe::log_error("Core", e.what());
     }
@@ -155,7 +154,6 @@ VORTEX_API std::vector<std::shared_ptr<PluginInterface>> vxe::find_plugins_in_di
       plugin_interface->supported_versions_ = json_data["compatibility"].get<std::vector<std::string>>();
 
       interfaces.push_back(plugin_interface);
-
     } catch (std::exception e) {
       vxe::log_error("Core", e.what());
     }
