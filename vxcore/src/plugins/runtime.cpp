@@ -4,10 +4,10 @@ VORTEX_API void FinalStartPlugin(
     const std::string &plugin_name,
     std::shared_ptr<std::vector<std::string>> processed_plugins) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Start all plugins & create data environments
-  for (auto ep : ctx.IO.ep) {
+  for (auto ep : ctx->IO.ep) {
     if (ep->m_name == plugin_name) {
       if (ep->m_state != "running" || ep->m_state != "waiting") {
         vxe::log_info("Plugins", "Start \"" + ep->m_name + "\"");
@@ -28,10 +28,10 @@ VORTEX_API void FinalStartPlugin(
 
 VORTEX_API void vxe::StartPlugin(const std::string &plugin_name) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Start all plugins & create data environments
-  for (auto ep : ctx.IO.ep) {
+  for (auto ep : ctx->IO.ep) {
     if (ep->m_name == plugin_name) {
       if (ep->m_state != "running") {
         vxe::log_info("Plugins", "Start \"" + ep->m_name + "\"");
@@ -52,15 +52,15 @@ VORTEX_API void vxe::StartPlugin(const std::string &plugin_name) {
 
 VORTEX_API void vxe::StartAllPlugins() {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Start all plugins & create data environments
   // TODO create dist envs
   // TODO move to (StartPlugin) function
-  for (auto ep : ctx.IO.ep) {
+  for (auto ep : ctx->IO.ep) {
     {
       // Set the plugin data path
-      std::string datapath = ctx.projectPath.string();
+      std::string datapath = ctx->projectPath.string();
       datapath += "/.vx/data/" + ep->m_name;
       ep->m_datapath = datapath;
 
@@ -76,14 +76,14 @@ VORTEX_API void vxe::StartAllPlugins() {
 
 VORTEX_API void vxe::BootstrappAllPlugins() {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Start all plugins & create data environments
   // TODO move to (StartPlugin) function
-  for (auto ep : ctx.IO.ep) {
+  for (auto ep : ctx->IO.ep) {
     {
       // Set the plugin data path
-      std::string datapath = ctx.projectPath.string();
+      std::string datapath = ctx->projectPath.string();
       datapath += "/.vx/data/" + ep->m_name;
       ep->m_datapath = datapath;
 

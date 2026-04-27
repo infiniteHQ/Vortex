@@ -144,8 +144,8 @@ bool CheckDirectory() {
   return true;
 }
 
-VxContext *InitRuntime(bool logger) {
-  VxContext *ctx = vxe::create_context();
+std::shared_ptr<VxContext> InitRuntime(bool logger) {
+  auto ctx = vxe::create_context();
 
   vxe::initialize_platform_vendor();
   vxe::add_credits("vx", Cherry::GetPath("CREDITS"));
@@ -183,8 +183,8 @@ VxContext *InitRuntime(bool logger) {
 // Project creator,
 // Template deployment overrides (project, modules_content, etc...)
 
-VxContext *InitBlankRuntime(bool logger) {
-  VxContext *ctx = vxe::create_context();
+std::shared_ptr<VxContext> InitBlankRuntime(bool logger) {
+  auto ctx = vxe::create_context();
 
   ctx->state.session_id = session_id;
 

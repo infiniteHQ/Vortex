@@ -10,11 +10,11 @@
  */
 VORTEX_API void vxe::DeleteSystemTemplate(const std::string &name, const std::string &version) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   std::vector<std::string> ff;
 
-  for (auto sys_template : ctx.IO.sys_templates) {
+  for (auto sys_template : ctx->IO.sys_templates) {
     if (sys_template->m_name == name && sys_template->m_version == version) {
       {
         std::string cmd = "rm -rf " + sys_template->m_path;

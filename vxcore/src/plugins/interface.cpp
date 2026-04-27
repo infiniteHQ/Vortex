@@ -288,7 +288,7 @@ VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::GetInterface() {
  * @return A shared_ptr to the editor plugin if found, otherwise nullptr.
  */
 VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::GetEditorPluginByName(const std::string &name) {
-  VxContext *ctx = vxe::get_current_context();
+  auto ctx = vxe::get_current_context();
 
   for (auto ep : ctx->IO.ep) {
     if (name == ep->m_name) {
@@ -456,7 +456,7 @@ VORTEX_API void PluginInterface::log_fatal(const std::string &message) {
  */
 VORTEX_API void PluginInterface::CheckDependencies() {
   // Get the current Vortex context
-  VxContext *ctx = vxe::get_current_context();
+  auto ctx = vxe::get_current_context();
 
   // Iterate through each dependency
   for (auto dependency : this->m_dependencies) {
@@ -495,7 +495,7 @@ VORTEX_API void PluginInterface::CheckDependencies() {
  */
 VORTEX_API void PluginInterface::Start() {
   // Get the current Vortex context
-  VxContext *ctx = vxe::get_current_context();
+  auto ctx = vxe::get_current_context();
 
   // Update dependencies
   this->CheckDependencies();
@@ -597,7 +597,7 @@ VORTEX_API void PluginInterface::Start() {
  */
 VORTEX_API void PluginInterface::Stop() {
   // Get the current Vortex context
-  VxContext *ctx = vxe::get_current_context();
+  auto ctx = vxe::get_current_context();
 
   bool authorized = true;
   std::vector<std::pair<std::string, std::string>> deps;

@@ -30,12 +30,8 @@ struct VxContext;
 
 // context pointer
 #ifndef CVortexMaker
-extern VORTEX_API VxContext *CVortexMaker;
+extern VORTEX_API std::weak_ptr<VxContext> CVortexMaker;
 #endif
-
-#define Vx_STATIC_ASSERT(_COND)          static_assert(_COND, "")
-#define Vx_BASE64ENCODE(_toencodebuffer) base64_encode(_toencodebuffer);
-#define Vx_BASE64DECODE(_todecodebuffer) base64_decode(_todecodebuffer);
 
 struct VortexMakerDebugAllocInfo {
   int TotalAllocCount;  // Number of call to MemAlloc().

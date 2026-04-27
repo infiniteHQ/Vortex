@@ -1141,7 +1141,7 @@ namespace vxe {
     if (CherryGUI::Button("Done", ImVec2(75.0f, 0.0f))) {
       *color = ImColor(col[0], col[1], col[2]);
       vxe::publish_content_browser_custom_folder(
-          current_editing_folder_.first, vxe::ImU32ToHex(*color), current_editing_folder_is_favorite_);
+          current_editing_folder_.first, Cherry::ImU32ToHex(*color), current_editing_folder_is_favorite_);
     }
 
     CherryGUI::PopStyleColor(3);

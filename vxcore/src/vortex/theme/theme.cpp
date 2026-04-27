@@ -2,24 +2,24 @@
 #include "../../../include/vortex_internals.h"
 
 VORTEX_API void vxe::theme_rebuilded() {
-  VxContext &ctx = *CVortexMaker;
-  ctx.IO.theme_changed = false;
+  auto ctx = vxe::get_current_context();
+  ctx->IO.theme_changed = false;
 }
 
 VORTEX_API void vxe::rebuild_theme() {
-  VxContext &ctx = *CVortexMaker;
-  ctx.IO.theme_changed = true;
+  auto ctx = vxe::get_current_context();
+  ctx->IO.theme_changed = true;
 }
 
 VORTEX_API bool vxe::is_theme_needs_rebuild() {
-  VxContext &ctx = *CVortexMaker;
-  return ctx.IO.theme_changed;
+  auto ctx = vxe::get_current_context();
+  return ctx->IO.theme_changed;
 }
 
 VORTEX_API void vxe::refresh_project_themes() {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
-  std::string home = ctx.projectPath.string();
+  std::string home = ctx->projectPath.string();
   std::string themes_path = home + "/.vx/configs/themes/data";
   std::string config_path = home + "/.vx/configs/themes";
   std::string json_file = config_path + "/themes.json";
@@ -30,7 +30,7 @@ VORTEX_API void vxe::refresh_project_themes() {
   nlohmann::json defaultData = { { "used_theme", "dark" }, { "override_themes", nlohmann::json::array() } };
   vxe::create_file_if_not_exists(json_file, defaultData);
 
-  ctx.IO.themes.clear();
+  ctx->IO.themes.clear();
 
   for (const auto &entry : fs::directory_iterator(themes_path)) {
     if (entry.path().extension() == ".json") {
@@ -50,7 +50,7 @@ VORTEX_API void vxe::refresh_project_themes() {
             themeObj->theme[key] = value;
           }
 
-          ctx.IO.themes.push_back(themeObj);
+          ctx->IO.themes.push_back(themeObj);
         }
       } catch (const std::exception &e) {
         vxe::log_error("Core", "Failed to parse theme file: " + entry.path().string());
@@ -64,8 +64,8 @@ VORTEX_API void vxe::refresh_project_themes() {
     nlohmann::json configJson;
     configFile >> configJson;
 
-    ctx.IO.used_theme = configJson.value("used_theme", "dark");
-    ctx.IO.override_themes = configJson.value("override_themes", std::vector<std::string>());
+    ctx->IO.used_theme = configJson.value("used_theme", "dark");
+    ctx->IO.override_themes = configJson.value("override_themes", std::vector<std::string>());
   } catch (const std::exception &e) {
     vxe::log_error("Core", "Failed to load theme config: " + std::string(e.what()));
   }
@@ -102,8 +102,8 @@ VORTEX_API void update_project_theme(const std::shared_ptr<Theme> &theme, const 
 }
 
 VORTEX_API std::shared_ptr<Theme> vxe::get_theme(const std::string &label) {
-  VxContext &ctx = *CVortexMaker;
-  const auto &themes = ctx.IO.themes;
+  auto ctx = vxe::get_current_context();
+  const auto &themes = ctx->IO.themes;
 
   for (const auto &theme : themes) {
     if (theme) {
@@ -115,9 +115,9 @@ VORTEX_API std::shared_ptr<Theme> vxe::get_theme(const std::string &label) {
   return nullptr;
 }
 VORTEX_API std::shared_ptr<Theme> vxe::get_selected_theme() {
-  VxContext &ctx = *CVortexMaker;
-  const std::string &used = ctx.IO.used_theme;
-  const auto &themes = ctx.IO.themes;
+  auto ctx = vxe::get_current_context();
+  const std::string &used = ctx->IO.used_theme;
+  const auto &themes = ctx->IO.themes;
 
   for (const auto &theme : themes) {
     if (theme) {
@@ -511,13 +511,13 @@ VORTEX_API void vxe::verify_and_populate_themes() {
 }
 
 VORTEX_API void vxe::update_project_themes_config() {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
   std::string config_path = vxe::get_home_directory() + "/.vx/configs/themes";
   std::string json_file = config_path + "/themes.json";
 
   nlohmann::json configJson;
-  configJson["used_theme"] = ctx.IO.used_theme;
-  configJson["override_themes"] = ctx.IO.override_themes;
+  configJson["used_theme"] = ctx->IO.used_theme;
+  configJson["override_themes"] = ctx->IO.override_themes;
 
   try {
     std::ofstream out(json_file);

@@ -103,10 +103,10 @@ VORTEX_API void vxe::create_project(
     const std::string &logo_path,
     const std::string &template_name) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Verify the name
-  for (auto existing_project : ctx.IO.sys_projects) {
+  for (auto existing_project : ctx->IO.sys_projects) {
     if (existing_project->name == name) {
       vxe::log_error(
           "Core", "Cannot create a new project \"" + name + "\" because another project is already nammed like this !");

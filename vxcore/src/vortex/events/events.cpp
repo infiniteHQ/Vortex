@@ -4,10 +4,10 @@
 VORTEX_API void
 vxe::call_output_event(const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string &origin) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Iterate through each EventManager in the Vortex context
-  for (auto em : ctx.IO.em) {
+  for (auto em : ctx->IO.em) {
     // Iterate through each input event in the EventManager
     for (auto output_event : em->m_output_events) {
       // Check if the input event name matches the provided event name
@@ -43,7 +43,7 @@ vxe::call_output_event(const std::string &event_name, ArgumentValues &args, Retu
   }
 
   // Iterate through each plugins
-  for (auto ep : ctx.IO.ep) {
+  for (auto ep : ctx->IO.ep) {
     // Iterate through each input event in the EventManager
     for (auto output_event : ep->m_output_events) {
       // Check if the input event name matches the provided event name
@@ -86,12 +86,12 @@ VORTEX_API void vxe::call_input_event(
     ReturnValues &ret,
     const std::string &origin) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   bool event_hit = false;
 
   // Iterate through each EventManager in the Vortex context
-  for (auto em : ctx.IO.em) {
+  for (auto em : ctx->IO.em) {
     // Check if the EventManager corresponds to the specified module
     if (em->m_name == module_name) {
       // Iterate through each input event in the EventManager
@@ -131,7 +131,7 @@ VORTEX_API void vxe::call_input_event(
   }
 
   // Iterate through each plguins in the Vortex context
-  for (auto ep : ctx.IO.ep) {
+  for (auto ep : ctx->IO.ep) {
     // Check if the EventManager corresponds to the specified module
     if (ep->m_name == module_name) {
       // Iterate through each input event in the EventManager

@@ -6,10 +6,10 @@ VORTEX_API void FinalStartModule(
     const std::string &module_name,
     std::shared_ptr<std::vector<std::string>> processed_modules) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Start all modules & create data environments
-  for (auto em : ctx.IO.em) {
+  for (auto em : ctx->IO.em) {
     if (em->m_name == module_name) {
       if (em->m_state != "running" || em->m_state != "waiting") {
         vxe::log_info("Modules", "Start \"" + em->m_name + "\"");
@@ -30,10 +30,10 @@ VORTEX_API void FinalStartModule(
 
 VORTEX_API void vxe::StartModule(const std::string &module_name) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Start all modules & create data environments
-  for (auto em : ctx.IO.em) {
+  for (auto em : ctx->IO.em) {
     if (em->m_name == module_name) {
       if (em->m_state != "running") {
         vxe::log_info("Modules", "Start \"" + em->m_name + "\"");
@@ -54,15 +54,15 @@ VORTEX_API void vxe::StartModule(const std::string &module_name) {
 
 VORTEX_API void vxe::StartAllModules() {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Start all modules & create data environments
   // TODO create dist envs
   // TODO move to (StartModule) function
-  for (auto em : ctx.IO.em) {
+  for (auto em : ctx->IO.em) {
     {
       // Set the module data path
-      std::string datapath = ctx.projectPath.string();
+      std::string datapath = ctx->projectPath.string();
       datapath += "/.vx/data/" + em->m_name;
       em->m_datapath = datapath;
 
@@ -78,14 +78,14 @@ VORTEX_API void vxe::StartAllModules() {
 
 VORTEX_API void vxe::BootstrappAllModules() {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Start all modules & create data environments
   // TODO move to (StartModule) function
-  for (auto em : ctx.IO.em) {
+  for (auto em : ctx->IO.em) {
     {
       // Set the module data path
-      std::string datapath = ctx.projectPath.string();
+      std::string datapath = ctx->projectPath.string();
       datapath += "/.vx/data/" + em->m_name;
       em->m_datapath = datapath;
 

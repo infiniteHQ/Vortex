@@ -288,7 +288,7 @@ VORTEX_API std::shared_ptr<ModuleInterface> ModuleInterface::GetInterface() {
  * @return A shared_ptr to the editor module if found, otherwise nullptr.
  */
 VORTEX_API std::shared_ptr<ModuleInterface> ModuleInterface::GetEditorModuleByName(const std::string &name) {
-  VxContext *ctx = vxe::get_current_context();
+  auto ctx = vxe::get_current_context();
 
   for (auto em : ctx->IO.em) {
     if (name == em->m_name) {
@@ -456,7 +456,7 @@ VORTEX_API void ModuleInterface::log_fatal(const std::string &message) {
  */
 VORTEX_API void ModuleInterface::CheckDependencies() {
   // Get the current Vortex context
-  VxContext *ctx = vxe::get_current_context();
+  auto ctx = vxe::get_current_context();
 
   // Iterate through each dependency
   for (auto dependency : this->m_dependencies) {
@@ -495,7 +495,7 @@ VORTEX_API void ModuleInterface::CheckDependencies() {
  */
 VORTEX_API void ModuleInterface::Start() {
   // Get the current Vortex context
-  VxContext *ctx = vxe::get_current_context();
+  auto ctx = vxe::get_current_context();
 
   // Update dependencies
   this->CheckDependencies();
@@ -596,7 +596,7 @@ VORTEX_API void ModuleInterface::Start() {
  */
 VORTEX_API void ModuleInterface::Stop() {
   // Get the current Vortex context
-  VxContext *ctx = vxe::get_current_context();
+  auto ctx = vxe::get_current_context();
 
   bool authorized = true;
   std::vector<std::pair<std::string, std::string>> deps;

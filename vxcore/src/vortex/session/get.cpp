@@ -16,7 +16,7 @@
  */
 VORTEX_API nlohmann::json vxe::get_last_module_of_last_session(const std::string &post_topic) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Init the path of the sessions data.
   std::string session_path = vxe::get_home_directory() + "/.vx/sessions";
@@ -45,7 +45,7 @@ VORTEX_API nlohmann::json vxe::get_last_module_of_last_session(const std::string
  */
 VORTEX_API nlohmann::json vxe::get_last_session(const std::string &post_topic) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Init the path of the sessions data.
   std::string session_path = vxe::get_home_directory() + "/.vx/sessions";

@@ -234,7 +234,7 @@ namespace vxe {
 
   void ProjectSettings::refresh_project_informations() {
     vxe::refresh_project_informations();
-    auto *ctx = vxe::get_current_context();
+    auto ctx = vxe::get_current_context();
 
     initial_project_info_ = {
       .name = ctx->name,

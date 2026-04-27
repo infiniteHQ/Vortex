@@ -18,7 +18,7 @@
  */
 VORTEX_API void vxe::post_session_state(const std::string &post_topic) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Init the path of the sessions data.
   std::string session_path = vxe::get_home_directory() + "/.vx/sessions";
@@ -32,26 +32,26 @@ VORTEX_API void vxe::post_session_state(const std::string &post_topic) {
   // Create the current session folder if not exist
   vxe::create_folder_if_not_exists(current_session_path);
 
-  if (!ctx.state.master_initialized) {
+  if (!ctx->state.master_initialized) {
     nlohmann::json json;
-    json["version"] = ctx.version;
+    json["version"] = ctx->version;
 
     // Store JSON into vortex.config file
     vxe::create_file_if_not_exists(session_path + "/vortex.json", json);
 
-    ctx.state.master_initialized = true;
+    ctx->state.master_initialized = true;
   }
 
-  if (ctx.state.logs_modified) {
+  if (ctx->state.logs_modified) {
   }
 
-  if (ctx.state.last_used_module_modified) {
+  if (ctx->state.last_used_module_modified) {
     // Update logs metrics (logs journal are handle by spdlog)
 
     nlohmann::json json;
-    json["name"] = ctx.state.last_used_module->m_name;
-    json["version"] = ctx.state.last_used_module->m_version;
-    json["author"] = ctx.state.last_used_module->m_author;
+    json["name"] = ctx->state.last_used_module->m_name;
+    json["version"] = ctx->state.last_used_module->m_version;
+    json["author"] = ctx->state.last_used_module->m_author;
 
     // Store JSON into vortex.config file
     vxe::create_file_if_not_exists(session_path + "/last_module.json", json);
@@ -68,7 +68,7 @@ VORTEX_API void vxe::post_session_state(const std::string &post_topic) {
  */
 VORTEX_API void vxe::post_session_core_dump(const std::string &post_topic) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Init the path of the sessions data.
   std::string session_path = vxe::get_home_directory() + "/.vx/sessions";

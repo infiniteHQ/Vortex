@@ -37,9 +37,9 @@ VORTEX_API std::string vxe::create_folder(const std::string &path) {
 
 VORTEX_API void vxe::add_content_browser_item(const std::shared_ptr<ContenBrowserItem> &item) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
-  ctx.IO.contentbrowser_items.push_back(item);
+  ctx->IO.contentbrowser_items.push_back(item);
 }
 
 VORTEX_API void vxe::add_general_utility(const std::shared_ptr<ModuleInterfaceUtility> &utility) {
@@ -47,8 +47,8 @@ VORTEX_API void vxe::add_general_utility(const std::shared_ptr<ModuleInterfaceUt
 }
 
 VORTEX_API void vxe::post_custom_folder_to_json() {
-  VxContext &ctx = *CVortexMaker;
-  std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
+  auto ctx = vxe::get_current_context();
+  std::string path = ctx->projectPath.string() + "/.vx/configs/content_browser/";
   vxe::create_folder_if_not_exists(path);
 
   std::string file_path = path + "/customized_folders.json";
@@ -57,7 +57,7 @@ VORTEX_API void vxe::post_custom_folder_to_json() {
 
   json_data["custom_folders"] = nlohmann::json::array();
 
-  for (auto folder : ctx.IO.contentbrowser_customfolders) {
+  for (auto folder : ctx->IO.contentbrowser_customfolders) {
     nlohmann::json folder_data;
     folder_data["color"] = folder->m_Color;
     folder_data["isFav"] = folder->m_IsFav;
@@ -70,7 +70,7 @@ VORTEX_API void vxe::post_custom_folder_to_json() {
 }
 
 VORTEX_API void vxe::publish_pool(const std::string &absolute_pool_path, const std::string &name) {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   std::size_t endPos = absolute_pool_path.size() - 1;
 
@@ -78,22 +78,22 @@ VORTEX_API void vxe::publish_pool(const std::string &absolute_pool_path, const s
     endPos--;
   }
 
-  for (auto pool : ctx.IO.contentbrowser_pools) {
+  for (auto pool : ctx->IO.contentbrowser_pools) {
     if (pool.first == absolute_pool_path) {
       return;
     }
   }
 
-  ctx.IO.contentbrowser_pools.push_back({ absolute_pool_path, name });
+  ctx->IO.contentbrowser_pools.push_back({ absolute_pool_path, name });
 
   vxe::post_pools_to_json();
 }
 
 VORTEX_API void
 vxe::publish_content_browser_custom_folder(const std::string &path, const std::string &hex_color, const bool &isFav) {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
-  for (auto folder : ctx.IO.contentbrowser_customfolders) {
+  for (auto folder : ctx->IO.contentbrowser_customfolders) {
     if (folder->path == path) {
       folder->m_Color = hex_color;
       folder->m_IsFav = isFav;
@@ -108,15 +108,15 @@ vxe::publish_content_browser_custom_folder(const std::string &path, const std::s
   new_folder->m_IsFav = isFav;
   new_folder->path = path;
 
-  ctx.IO.contentbrowser_customfolders.push_back(new_folder);
+  ctx->IO.contentbrowser_customfolders.push_back(new_folder);
 
   vxe::post_custom_folder_to_json();
 }
 
 VORTEX_API bool vxe::content_browser_folder_is_fav(const std::string &path) {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
-  for (auto customized_folder : ctx.IO.contentbrowser_customfolders) {
+  for (auto customized_folder : ctx->IO.contentbrowser_customfolders) {
     if (customized_folder->path == path) {
       return customized_folder->m_IsFav;
     }
@@ -125,11 +125,11 @@ VORTEX_API bool vxe::content_browser_folder_is_fav(const std::string &path) {
 }
 
 VORTEX_API bool vxe::get_content_browser_folder_color(const std::string &path, ImU32 *color) {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
-  for (auto customized_folder : ctx.IO.contentbrowser_customfolders) {
+  for (auto customized_folder : ctx->IO.contentbrowser_customfolders) {
     if (customized_folder->path == path) {
-      *color = HexToImU32(customized_folder->m_Color);
+      *color = Cherry::HexToImU32(customized_folder->m_Color);
       return true;
     }
   }
@@ -137,14 +137,14 @@ VORTEX_API bool vxe::get_content_browser_folder_color(const std::string &path, I
 }
 
 VORTEX_API void vxe::fetch_pools() {
-  VxContext &ctx = *CVortexMaker;
-  std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
+  auto ctx = vxe::get_current_context();
+  std::string path = ctx->projectPath.string() + "/.vx/configs/content_browser/";
   vxe::create_folder_if_not_exists(path);
 
   std::string file_path = path + "/pools.json";
 
   nlohmann::json json_data;
-  json_data["main_pool"] = ctx.projectPath.string();
+  json_data["main_pool"] = ctx->projectPath.string();
   json_data["pools"] = nlohmann::json::array();
 
   vxe::create_file_if_not_exists(file_path, json_data);
@@ -154,23 +154,23 @@ VORTEX_API void vxe::fetch_pools() {
   file >> json_data;
 
   // From master pool relative path (from project path)
-  ctx.IO.contentbrowser_mainpool = json_data["main_pool"].get<std::string>();
+  ctx->IO.contentbrowser_mainpool = json_data["main_pool"].get<std::string>();
 
-  std::string projectPath = ctx.projectPath.string();
-  ctx.IO.contentbrowser_absolute_mainpool = projectPath + "/" + ctx.IO.contentbrowser_mainpool;
+  std::string projectPath = ctx->projectPath.string();
+  ctx->IO.contentbrowser_absolute_mainpool = projectPath + "/" + ctx->IO.contentbrowser_mainpool;
 
   // From other pool absolute paths
-  ctx.IO.contentbrowser_pools.clear();
+  ctx->IO.contentbrowser_pools.clear();
   for (auto directory : json_data["pools"]) {
     std::string path = directory["path"].get<std::string>();
     std::string name = directory["name"].get<std::string>();
-    ctx.IO.contentbrowser_pools.push_back({ path, name });
+    ctx->IO.contentbrowser_pools.push_back({ path, name });
   }
 }
 
 VORTEX_API void vxe::post_pools_to_json() {
-  VxContext &ctx = *CVortexMaker;
-  std::string path = ctx.projectPath.string() + "/.vx/configs/content_browser/";
+  auto ctx = vxe::get_current_context();
+  std::string path = ctx->projectPath.string() + "/.vx/configs/content_browser/";
   vxe::create_folder_if_not_exists(path);
 
   std::string file_path = path + "/pools.json";
@@ -178,9 +178,9 @@ VORTEX_API void vxe::post_pools_to_json() {
   nlohmann::json json_data;
 
   json_data["pools"] = nlohmann::json::array();
-  json_data["main_pool"] = ctx.IO.contentbrowser_mainpool;
+  json_data["main_pool"] = ctx->IO.contentbrowser_mainpool;
 
-  for (const auto &pool : ctx.IO.contentbrowser_pools) {
+  for (const auto &pool : ctx->IO.contentbrowser_pools) {
     nlohmann::json folder_data;
     folder_data["name"] = pool.second;
     folder_data["path"] = pool.first;
@@ -192,8 +192,8 @@ VORTEX_API void vxe::post_pools_to_json() {
 }
 
 VORTEX_API void vxe::fetch_custom_folders() {
-  VxContext &ctx = *CVortexMaker;
-  std::string path = (ctx.projectPath / ".vx/configs/content_browser").string();
+  auto ctx = vxe::get_current_context();
+  std::string path = (ctx->projectPath / ".vx/configs/content_browser").string();
   vxe::create_folder_if_not_exists(path);
 
   std::string file_path = path + "/customized_folders.json";
@@ -214,7 +214,7 @@ VORTEX_API void vxe::fetch_custom_folders() {
       throw std::ios_base::failure("Impossible d'ouvrir le fichier JSON");
     }
 
-    ctx.IO.contentbrowser_customfolders.clear();
+    ctx->IO.contentbrowser_customfolders.clear();
 
     for (auto &directory : json_data["custom_folders"]) {
       std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
@@ -224,7 +224,7 @@ VORTEX_API void vxe::fetch_custom_folders() {
 
       vxe::create_folder_if_not_exists(new_folder->path);
 
-      ctx.IO.contentbrowser_customfolders.push_back(new_folder);
+      ctx->IO.contentbrowser_customfolders.push_back(new_folder);
     }
   } catch (const std::exception &e) {
     std::cerr << "Erreur lors de la lecture ou du traitement du fichier JSON : " << e.what() << std::endl;
@@ -232,14 +232,14 @@ VORTEX_API void vxe::fetch_custom_folders() {
 }
 
 VORTEX_API void vxe::copy(std::vector<std::string> selection, bool in_addition) {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   if (!in_addition) {
-    ctx.IO.copy_selection.clear();
+    ctx->IO.copy_selection.clear();
   }
 
   for (auto selected : selection) {
-    ctx.IO.copy_selection.push_back(selected);
+    ctx->IO.copy_selection.push_back(selected);
   }
 }
 
@@ -284,14 +284,14 @@ VORTEX_API void vxe::submit_rename(const std::string &oldPathStr, const std::str
 }
 
 VORTEX_API void vxe::cut(std::vector<std::string> selection, bool in_addition) {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   if (!in_addition) {
-    ctx.IO.cut_selection.clear();
+    ctx->IO.cut_selection.clear();
   }
 
   for (auto selected : selection) {
-    ctx.IO.cut_selection.push_back(selected);
+    ctx->IO.cut_selection.push_back(selected);
   }
 }
 
@@ -301,15 +301,15 @@ static bool isStrictSubPath(const fs::path &potentialSub, const fs::path &base) 
 }
 
 VORTEX_API void vxe::clear_cut_selection() {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
-  ctx.IO.cut_selection.clear();
+  ctx->IO.cut_selection.clear();
 }
 
 VORTEX_API void vxe::clear_copy_selection() {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
-  ctx.IO.copy_selection.clear();
+  ctx->IO.copy_selection.clear();
 }
 
 void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest, const fs::path &destRoot) {
@@ -350,7 +350,7 @@ void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest, const f
 }
 
 VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
   fs::path targetPath(target_path_str);
 
   auto generateNonConflictingPath = [](const fs::path &targetDir, const fs::path &originalName) -> fs::path {
@@ -373,7 +373,7 @@ VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
     }
   };
 
-  for (const auto &srcStr : ctx.IO.copy_selection) {
+  for (const auto &srcStr : ctx->IO.copy_selection) {
     fs::path srcPath(srcStr);
     if (!fs::exists(srcPath)) {
       std::cerr << "Source path n'existe pas : " << srcStr << "\n";
@@ -394,7 +394,7 @@ VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
     }
   }
 
-  for (const auto &srcStr : ctx.IO.cut_selection) {
+  for (const auto &srcStr : ctx->IO.cut_selection) {
     fs::path srcPath(srcStr);
     if (!fs::exists(srcPath)) {
       std::cerr << "Source path n'existe pas (cut) : " << srcStr << "\n";

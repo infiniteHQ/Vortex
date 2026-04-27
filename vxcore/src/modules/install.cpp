@@ -6,7 +6,7 @@
 
 VORTEX_API void vxe::InstallModule(const std::string &module_name, const std::string &version, bool &restart_modules) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Get the home directory
   std::string homeDir = vxe::get_home_directory();
@@ -36,22 +36,22 @@ VORTEX_API void vxe::InstallModule(const std::string &module_name, const std::st
 
         // Move the module into the project
         {
-          std::string cmd = "cp -r " + module_path + " " + ctx.projectPath.string() + "/.vx/modules/";
+          std::string cmd = "cp -r " + module_path + " " + ctx->projectPath.string() + "/.vx/modules/";
           system(cmd.c_str());
         }
 
         // If restart_modules == true, restart all modules
         if (restart_modules) {
           // Stop all modules
-          for (auto em : ctx.IO.em) {
+          for (auto em : ctx->IO.em) {
             em->Stop();
           }
 
           // Clear closed modules
-          ctx.IO.em.clear();
+          ctx->IO.em.clear();
 
           // Load modules installed in the current project
-          vxe::LoadEditorModules(ctx.projectPath.string(), ctx.IO.em_handles, ctx.IO.em);
+          vxe::LoadEditorModules(ctx->projectPath.string(), ctx->IO.em_handles, ctx->IO.em);
 
           // Finally, start all loaded modules.
           vxe::StartAllModules();

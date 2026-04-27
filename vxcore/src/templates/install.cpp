@@ -44,7 +44,7 @@ VORTEX_API void vxe::InstallTemplateOnSystem(const std::string &directory) {
 
 VORTEX_API void vxe::InstallTemplate(const std::string &name, const std::string &path) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Finded state
   bool finded = false;
@@ -54,7 +54,7 @@ VORTEX_API void vxe::InstallTemplate(const std::string &name, const std::string 
   // first
   /*...*/
 
-  for (auto tem : ctx.IO.sys_templates) {
+  for (auto tem : ctx->IO.sys_templates) {
     if (tem->m_name == name) {
       vxe::log_info("Core", "Installing the template \"" + name + "\" ...");
 
@@ -68,7 +68,7 @@ VORTEX_API void vxe::InstallTemplate(const std::string &name, const std::string 
 
   /*// Search the template registered in the system environment (if not findeed
   in the system and if the project can see env template) if (!finded &&
-  ctx.include_system_templates)
+  ctx->include_system_templates)
   {
       // Get the home directory
       std::string homeDir = vxe::get_home_directory();

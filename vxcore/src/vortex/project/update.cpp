@@ -11,9 +11,9 @@
 
 #define UPDATE_PROJECT_FIELD(FUNC_NAME, JSON_FIELD)                                                     \
   VORTEX_API void vxe::FUNC_NAME(const std::string &value) {                                            \
-    VxContext &ctx = *CVortexMaker;                                                                     \
+    auto ctx = vxe::get_current_context();                                                              \
                                                                                                         \
-    const std::string project_file = (ctx.projectPath / "vortex.config").string();                      \
+    const std::string project_file = (ctx->projectPath / "vortex.config").string();                     \
                                                                                                         \
     std::ifstream input_file(project_file);                                                             \
     if (!input_file.is_open()) {                                                                        \

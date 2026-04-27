@@ -26,16 +26,16 @@ VORTEX_API void vxe::DeleteProjectPlugin(const std::string &name, const std::str
     return;
   }
 
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
-  if (ctx.projectPath.empty()) {
+  if (ctx->projectPath.empty()) {
     vxe::log_error("Core", "DeleteProjectPlugin: projectPath is not set in context.");
     return;
   }
 
   std::error_code ec;
 
-  const std::filesystem::path allowedBase = std::filesystem::canonical(ctx.projectPath / ".vx" / "plugins", ec);
+  const std::filesystem::path allowedBase = std::filesystem::canonical(ctx->projectPath / ".vx" / "plugins", ec);
 
   if (ec) {
     vxe::log_error("Core", "DeleteProjectPlugin: cannot resolve allowed base path: " + ec.message());
@@ -44,7 +44,7 @@ VORTEX_API void vxe::DeleteProjectPlugin(const std::string &name, const std::str
 
   bool found = false;
 
-  for (auto &plugin : ctx.IO.ep) {
+  for (auto &plugin : ctx->IO.ep) {
     if (plugin->m_name != name || plugin->m_version != version)
       continue;
 

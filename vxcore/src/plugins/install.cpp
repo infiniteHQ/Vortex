@@ -5,7 +5,7 @@
 
 VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name, const std::string &version, bool &restart_plugins) {
   // Get reference to the Vortex context
-  VxContext &ctx = *CVortexMaker;
+  auto ctx = vxe::get_current_context();
 
   // Get the home directory
   std::string homeDir = vxe::get_home_directory();
@@ -35,22 +35,22 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name, const std::st
 
         // Move the plugin into the project
         {
-          std::string cmd = "cp -r " + plugin_path + " " + ctx.projectPath.string() + "/.vx/plugins/";
+          std::string cmd = "cp -r " + plugin_path + " " + ctx->projectPath.string() + "/.vx/plugins/";
           system(cmd.c_str());
         }
 
         // If restart_plugins == true, restart all plugins
         if (restart_plugins) {
           // Stop all plugins
-          for (auto ep : ctx.IO.ep) {
+          for (auto ep : ctx->IO.ep) {
             ep->Stop();
           }
 
           // Clear closed plugins
-          ctx.IO.ep.clear();
+          ctx->IO.ep.clear();
 
           // Load plugins installed in the current project
-          vxe::LoadEditorPlugins(ctx.projectPath.string(), ctx.IO.ep_handles, ctx.IO.ep);
+          vxe::LoadEditorPlugins(ctx->projectPath.string(), ctx->IO.ep_handles, ctx->IO.ep);
 
           // Finally, start all loaded plugins.
           vxe::StartAllPlugins();
