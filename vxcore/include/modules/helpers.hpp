@@ -50,14 +50,14 @@ VORTEX_API struct ModuleInterfaceDep {
 
 struct ModuleInputEventHappening {
   std::string m_trigger_name;
-  HappeningState m_state;
+  HappeningState state_;
   std::string m_log;
   std::string m_timestamp;
 };
 
 struct ModuleOutputEventHappening {
   std::string m_trigger_name;
-  HappeningState m_state;
+  HappeningState state_;
   std::string m_log;
   std::string m_timestamp;
 };

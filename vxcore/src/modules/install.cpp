@@ -100,8 +100,8 @@ VORTEX_API std::shared_ptr<ModuleInterface> vxe::find_module_in_directory(const 
 
       std::shared_ptr<ModuleInterface> module_interface = std::make_shared<ModuleInterface>();
 
-      module_interface->m_name = json_data["name"].get<std::string>();
-      module_interface->m_version = json_data["version"].get<std::string>();
+      module_interface->name(json_data["name"].get<std::string>());
+      module_interface->version(json_data["version"].get<std::string>());
 
       return module_interface;
 
@@ -129,18 +129,18 @@ VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> vxe::find_modules_in_di
       std::string module_path = file.substr(0, file.find_last_of("/"));
 
       std::shared_ptr<ModuleInterface> module_interface = std::make_shared<ModuleInterface>();
-      module_interface->m_name = json_data["name"].get<std::string>();
-      module_interface->m_auto_exec = json_data["auto_exec"].get<bool>();
-      module_interface->m_proper_name = json_data["proper_name"].get<std::string>();
-      module_interface->m_type = json_data["type"].get<std::string>();
-      module_interface->m_version = json_data["version"].get<std::string>();
-      module_interface->m_description = json_data["description"].get<std::string>();
-      module_interface->m_picture = json_data["picture"].get<std::string>();
-      module_interface->m_logo_path = module_path + "/" + module_interface->m_picture;
-      module_interface->m_path = module_path + "/";
-      module_interface->m_author = json_data["author"].get<std::string>();
-      module_interface->m_group = json_data["group"].get<std::string>();
-      module_interface->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+      module_interface->name(json_data["name"].get<std::string>());
+      module_interface->auto_exec(json_data["auto_exec"].get<bool>());
+      module_interface->proper_name(json_data["proper_name"].get<std::string>());
+      module_interface->type(json_data["type"].get<std::string>());
+      module_interface->version(json_data["version"].get<std::string>());
+      module_interface->description(json_data["description"].get<std::string>());
+      module_interface->picture(json_data["picture"].get<std::string>());
+      module_interface->logo_path(module_path + "/" + module_interface->picture());
+      module_interface->path(module_path + "/");
+      module_interface->author(json_data["author"].get<std::string>());
+      module_interface->group(json_data["group"].get<std::string>());
+      module_interface->contributors(json_data["contributors"].get<std::vector<std::string>>());
 
       for (auto dep : json_data["deps"]) {
         std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
@@ -149,10 +149,10 @@ VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> vxe::find_modules_in_di
         for (auto version : dep["versions"]) {
           dependence->supported_versions.push_back(version);
         }
-        module_interface->m_dependencies.push_back(dependence);
+        module_interface->add_dependency(dependence);
       }
 
-      module_interface->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
+      module_interface->supported_versions(json_data["compatibility"].get<std::vector<std::string>>());
 
       interfaces.push_back(module_interface);
 

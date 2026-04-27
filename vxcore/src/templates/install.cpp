@@ -65,10 +65,10 @@ VORTEX_API void vxe::install_template(const std::string &name, const std::string
   /*...*/
 
   for (auto tem : ctx->IO.sys_templates) {
-    if (tem->m_name == name) {
+    if (tem->name_ == name) {
       vxe::log_info("Core", "Installing the template \"" + name + "\" ...");
 
-      std::string cmd = "tar -xvf " + tem->m_path + tem->m_tarball + " --strip-components=1 " + " -C " + path;
+      std::string cmd = "tar -xvf " + tem->path_ + tem->m_tarball + " --strip-components=1 " + " -C " + path;
       std::cout << cmd << std::endl;
       system(cmd.c_str());
 
@@ -148,17 +148,17 @@ VORTEX_API std::vector<std::shared_ptr<TemplateInterface>> vxe::find_templates_i
 
       std::shared_ptr<TemplateInterface> new_template = std::make_shared<TemplateInterface>();
 
-      new_template->m_name = json_data["name"].get<std::string>();
-      new_template->m_proper_name = json_data["proper_name"].get<std::string>();
-      new_template->m_type = json_data["type"].get<std::string>();
-      new_template->m_description = json_data["description"].get<std::string>();
-      new_template->m_picture = json_data["picture"].get<std::string>();
-      new_template->m_logo_path = module_path + "/" + new_template->m_picture;
-      new_template->m_path = module_path + "/";
-      new_template->m_author = json_data["author"].get<std::string>();
-      new_template->m_group = json_data["group"].get<std::string>();
+      new_template->name_ = json_data["name"].get<std::string>();
+      new_template->proper_name_ = json_data["proper_name"].get<std::string>();
+      new_template->type_ = json_data["type"].get<std::string>();
+      new_template->description_ = json_data["description"].get<std::string>();
+      new_template->picture_ = json_data["picture"].get<std::string>();
+      new_template->logo_path_ = module_path + "/" + new_template->picture_;
+      new_template->path_ = module_path + "/";
+      new_template->author_ = json_data["author"].get<std::string>();
+      new_template->group_ = json_data["group"].get<std::string>();
       new_template->m_tarball = json_data["tarball"].get<std::string>();
-      new_template->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+      new_template->contributors_ = json_data["contributors"].get<std::vector<std::string>>();
 
       for (auto dep : json_data["deps"]) {
         std::shared_ptr<TemplateDep> dependence = std::make_shared<TemplateDep>();
@@ -167,7 +167,7 @@ VORTEX_API std::vector<std::shared_ptr<TemplateInterface>> vxe::find_templates_i
         for (auto version : dep["versions"]) {
           dependence->supported_versions.push_back(version);
         }
-        new_template->m_dependencies.push_back(dependence);
+        new_template->dependencies_.push_back(dependence);
       }
 
       interfaces.push_back(new_template);

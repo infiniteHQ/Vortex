@@ -448,7 +448,7 @@ VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> vxe::get_all_item_
   std::vector<std::shared_ptr<ItemHandlerInterface>> list;
 
   for (auto mod : vxe::get_current_context()->IO.em) {
-    if (mod->m_state == "running") {
+    if (mod->state() == "running") {
       for (auto handlers : mod->get_content_browser_item_handlers()) {
         if (handlers->type == type)
           list.push_back(handlers);
@@ -457,7 +457,7 @@ VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> vxe::get_all_item_
   }
 
   for (auto plug : vxe::get_current_context()->IO.ep) {
-    if (plug->m_state == "running") {
+    if (plug->state_ == "running") {
       for (auto handlers : plug->get_content_browser_item_handlers()) {
         if (handlers->type == type)
           list.push_back(handlers);

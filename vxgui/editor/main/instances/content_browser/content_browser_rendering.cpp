@@ -1396,7 +1396,7 @@ namespace vxe {
                         Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_foldersearch.png")),
                         NULL)) {
                   change_directory(path);
-                  item_paths_.push_back({ path.string(), item_ident->m_LineColor });
+                  itepath_s_.push_back({ path.string(), item_ident->m_LineColor });
                   CherryGUI::CloseCurrentPopup();
                 }
               }

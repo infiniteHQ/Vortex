@@ -44,17 +44,17 @@ namespace vxe {
 
         // Try to fetch module informations from module.json
         try {
-          new_template->m_name = json_data["name"].get<std::string>();
-          new_template->m_proper_name = json_data["proper_name"].get<std::string>();
-          new_template->m_type = json_data["type"].get<std::string>();
-          new_template->m_description = json_data["description"].get<std::string>();
-          new_template->m_picture = json_data["picture"].get<std::string>();
-          new_template->m_logo_path = module_path + "/" + new_template->m_picture;
-          new_template->m_path = module_path + "/";
-          new_template->m_author = json_data["author"].get<std::string>();
-          new_template->m_group = json_data["group"].get<std::string>();
+          new_template->name_ = json_data["name"].get<std::string>();
+          new_template->proper_name_ = json_data["proper_name"].get<std::string>();
+          new_template->type_ = json_data["type"].get<std::string>();
+          new_template->description_ = json_data["description"].get<std::string>();
+          new_template->picture_ = json_data["picture"].get<std::string>();
+          new_template->logo_path_ = module_path + "/" + new_template->picture_;
+          new_template->path_ = module_path + "/";
+          new_template->author_ = json_data["author"].get<std::string>();
+          new_template->group_ = json_data["group"].get<std::string>();
           new_template->m_tarball = json_data["tarball"].get<std::string>();
-          new_template->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+          new_template->contributors_ = json_data["contributors"].get<std::vector<std::string>>();
 
           for (auto dep : json_data["deps"]) {
             std::shared_ptr<TemplateDep> dependence = std::make_shared<TemplateDep>();
@@ -63,13 +63,13 @@ namespace vxe {
             for (auto version : dep["versions"]) {
               dependence->supported_versions.push_back(version);
             }
-            new_template->m_dependencies.push_back(dependence);
+            new_template->dependencies_.push_back(dependence);
           }
         } catch (std::exception e) {
           vxe::log_error("Core", e.what());
         }
 
-        VXINFO("Template registered in system ", new_template->m_name + " loaded with success !")
+        VXINFO("Template registered in system ", new_template->name_ + " loaded with success !")
 
         // Store the module instance and handle
         sys_templates.push_back(new_template);

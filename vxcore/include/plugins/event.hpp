@@ -26,8 +26,8 @@ class PluginInputEvent {
   void trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log);
 
   std::function<void(ArgumentValues &, ReturnValues &)> m_function;
-  std::string m_name;
-  std::string m_description;
+  std::string name_;
+  std::string description_;
   std::vector<std::tuple<std::string, std::string, std::string>> m_params;
   bool m_can_callback;
   DevFlag m_devflag;
@@ -46,7 +46,7 @@ class PluginOutputEvent {
   virtual void execute() { };
 
   std::function<void(ArgumentValues &, ReturnValues &)> m_function;
-  std::string m_name;
+  std::string name_;
   std::vector<std::shared_ptr<PluginOutputEventHappening>> m_happenings;
 };
 

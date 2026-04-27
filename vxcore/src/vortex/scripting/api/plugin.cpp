@@ -8,9 +8,9 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <plugins/interface.hpp>
 #include <vortex.h>
 
+#include <plugins/interface.hpp>
 #include <vortex/scripting/scripting.hpp>
 
 namespace vxe {
@@ -79,7 +79,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin)
         return 0;
-      VXINFO(plugin->m_name, log);
+      VXINFO(plugin->name_, log);
       return 0;
     }
 
@@ -88,7 +88,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin)
         return 0;
-      VXWARN(plugin->m_name, log);
+      VXWARN(plugin->name_, log);
       return 0;
     }
 
@@ -97,7 +97,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin)
         return 0;
-      VXERROR(plugin->m_name, log);
+      VXERROR(plugin->name_, log);
       return 0;
     }
 
@@ -106,7 +106,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin)
         return 0;
-      VXFATAL(plugin->m_name, log);
+      VXFATAL(plugin->name_, log);
       return 0;
     }
     VXLUA_FUNC(PluginSetCreditsFile) {
@@ -128,7 +128,7 @@ namespace vxe {
       if (!plugin)
         return 0;
 
-      std::string final_path = plugin->get_path();
+      std::string final_path = plugin->path();
       if (!path.empty()) {
         final_path += "/" + path;
       }
@@ -230,7 +230,7 @@ namespace vxe {
 
       ReturnValues ret;
 
-      vxe::call_output_event(event_name, args, ret, plugin->m_name);
+      vxe::call_output_event(event_name, args, ret, plugin->name_);
 
       std::string ret_val = ret.get();
       if (ret_val.empty() || ret_val == "null") {
@@ -501,7 +501,7 @@ namespace vxe {
       }
 
       ReturnValues ret;
-      vxe::call_input_event(module_name, event_name, args, ret, plugin->m_name);
+      vxe::call_input_event(module_name, event_name, args, ret, plugin->name_);
 
       std::string ret_val = ret.get();
       if (ret_val.empty() || ret_val == "null") {

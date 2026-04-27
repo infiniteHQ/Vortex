@@ -120,12 +120,12 @@ namespace vxe {
 
         : Cherry::Component(identifier),
           m_plugin(plugin),
-          m_name(name),
-          m_path(path),
-          m_description(description),
+          name_(name),
+          path_(path),
+          description_(description),
           m_size(size),
           m_selected(selected),
-          m_logo(logo),
+          logo_(logo),
           m_bgColor(bgColor),
           m_borderColor(borderColor),
           m_lineColor(lineColor),
@@ -152,29 +152,29 @@ namespace vxe {
 
       ImVec2 squareSize(logoSize, logoSize);
 
-      const char *originalText = m_name.c_str();
-      std::string truncatedText = m_name;
+      const char *originalText = name_.c_str();
+      std::string truncatedText = name_;
 
       if (CherryGUI::CalcTextSize(originalText).x > m_maxTextWidth) {
-        size_t len = m_name.size();
+        size_t len = name_.size();
 
         size_t firstPart = std::min<size_t>(20, len);
-        truncatedText = m_name.substr(0, firstPart);
+        truncatedText = name_.substr(0, firstPart);
 
         if (CherryGUI::CalcTextSize(truncatedText.c_str()).x > m_maxTextWidth) {
           size_t firstLine = std::min<size_t>(10, len);
           size_t secondLine = (len > 10) ? std::min<size_t>(10, len - 10) : 0;
 
-          truncatedText = m_name.substr(0, firstLine);
+          truncatedText = name_.substr(0, firstLine);
           if (secondLine > 0) {
-            truncatedText += "\n" + m_name.substr(10, secondLine);
+            truncatedText += "\n" + name_.substr(10, secondLine);
           }
         }
       } else {
-        truncatedText = m_name + "\n";
+        truncatedText = name_ + "\n";
       }
 
-      std::string truncatedDesc = m_plugin->m_description;
+      std::string truncatedDesc = m_plugin->description_;
 
       if (truncatedDesc.length() > 100) {
         truncatedDesc = truncatedDesc.substr(0, 97) + "...";
@@ -182,22 +182,22 @@ namespace vxe {
       const char *originalDesc = truncatedDesc.c_str();
 
       if (CherryGUI::CalcTextSize(originalDesc).x > m_maxTextWidth) {
-        size_t len = m_plugin->m_description.size();
+        size_t len = m_plugin->description_.size();
 
         size_t firstPart = std::min<size_t>(90, len);
-        truncatedDesc = m_plugin->m_description.substr(0, firstPart);
+        truncatedDesc = m_plugin->description_.substr(0, firstPart);
 
         if (CherryGUI::CalcTextSize(truncatedDesc.c_str()).x > m_maxTextWidth) {
           size_t firstLine = std::min<size_t>(55, len);
           size_t secondLine = (len > 55) ? len - 55 : 0;
 
-          truncatedDesc = m_plugin->m_description.substr(0, firstLine);
+          truncatedDesc = m_plugin->description_.substr(0, firstLine);
           if (secondLine > 0) {
-            truncatedDesc += "\n" + m_plugin->m_description.substr(55, secondLine);
+            truncatedDesc += "\n" + m_plugin->description_.substr(55, secondLine);
           }
         }
       } else {
-        truncatedDesc = m_plugin->m_description + "\n";
+        truncatedDesc = m_plugin->description_ + "\n";
       }
 
       ImVec2 fixedSize(m_maxTextWidth + padding * 2 + 150.0f, logoSize + extraHeight + padding * 2);
@@ -244,7 +244,7 @@ namespace vxe {
       ImVec2 sizePos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY - 25 + textOffsetY);
       CherryGUI::SetCursorScreenPos(sizePos);
 
-      ImTextureID logotexture = Cherry::Application::GetCurrentRenderedWindow()->get_texture(m_logo);
+      ImTextureID logotexture = Cherry::Application::GetCurrentRenderedWindow()->get_texture(logo_);
       drawList->AddImage(logotexture, logoPos, ImVec2(logoPos.x + squareSize.x, logoPos.y + squareSize.y));
 
       CherryGUI::GetFont()->Scale = 0.7f;
@@ -291,7 +291,7 @@ namespace vxe {
 
       CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
       CherryGUI::PushItemWidth(m_maxTextWidth);
-      CherryGUI::TextWrapped(m_description.c_str());
+      CherryGUI::TextWrapped(description_.c_str());
       CherryGUI::PopItemWidth();
       CherryGUI::PopStyleColor();
 
@@ -327,13 +327,13 @@ namespace vxe {
       ImVec2 firstButtonPos = ImVec2(cursorPos.x + fixedSize.x - padding - buttonWidth - 10, cursorPos.y + padding);
       CherryGUI::SetCursorScreenPos(firstButtonPos);
 
-      if (m_plugin->m_state == "failed") {
+      if (m_plugin->state_ == "failed") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"))
                 .GetDataAs<bool>("isClicked")) {
           m_plugin->start();
         }
 
-      } else if (m_plugin->m_state == "unknow" || m_plugin->m_state == "stopped") {
+      } else if (m_plugin->state_ == "unknow" || m_plugin->state_ == "stopped") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_start.png"))
                 .GetDataAs<bool>("isClicked")) {
           m_plugin->start();
@@ -364,7 +364,7 @@ namespace vxe {
 
       /*
 
-         if (ctx->IO.ep[i]->m_state == "failed")
+         if (ctx->IO.ep[i]->state_ == "failed")
           {
               if (CherryGUI::ImageButtonWithText(listIcon, "Retry to launch",
          ImVec2(this->m_RefreshIcon->GetWidth(),
@@ -390,7 +390,7 @@ namespace vxe {
                   this->factory->SpawnInstance(instance);
               }
           }
-          if (ctx->IO.ep[i]->m_state == "unknow" || ctx->IO.ep[i]->m_state ==
+          if (ctx->IO.ep[i]->state_ == "unknow" || ctx->IO.ep[i]->state_ ==
          "stopped")
           {
               if (CherryGUI::ImageButtonWithText(startIcon, "Launch",
@@ -433,12 +433,12 @@ namespace vxe {
    private:
     std::function<void(const std::shared_ptr<PluginInterface> &mod)> plugin_deletion_callback_;
     std::shared_ptr<PluginInterface> m_plugin;
-    std::string m_name;
-    std::string m_path;
-    std::string m_description;
+    std::string name_;
+    std::string path_;
+    std::string description_;
     std::string m_size;
     bool m_selected;
-    std::string m_logo;
+    std::string logo_;
     ImU32 m_bgColor;
     ImU32 m_borderColor;
     ImU32 m_lineColor;

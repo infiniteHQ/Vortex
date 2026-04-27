@@ -55,12 +55,12 @@ VORTEX_API void vxe::delete_project_module(const std::string &name, const std::s
   bool found = false;
 
   for (auto &module : ctx->IO.em) {
-    if (module->m_name != name || module->m_version != version)
+    if (module->name() != name || module->version() != version)
       continue;
 
     found = true;
 
-    const std::filesystem::path modulePath = module->m_path;
+    const std::filesystem::path modulePath = module->path();
 
     if (!modulePath.is_absolute()) {
       vxe::log_error("Core", "delete_project_module: module path is not absolute: " + modulePath.string());

@@ -10,7 +10,7 @@
 
 #include <plugins/dummy_function.hpp>
 
-PluginDummyFunction::PluginDummyFunction(void (*foo)(), const std::string &name) : m_foo(foo), m_name(name) {
+PluginDummyFunction::PluginDummyFunction(void (*foo)(), const std::string &name) : m_foo(foo), name_(name) {
 }
 
 template<typename T>

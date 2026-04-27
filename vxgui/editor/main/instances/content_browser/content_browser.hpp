@@ -137,7 +137,7 @@ namespace vxe {
 
     // items
     std::vector<std::shared_ptr<ItemHandlerInterface>> item_handles_;
-    std::vector<std::pair<std::string, std::string>> item_paths_;
+    std::vector<std::pair<std::string, std::string>> itepath_s_;
     std::vector<std::pair<std::shared_ptr<ItemIdentifierInterface>, std::string>> recognized_modules_items_;
 
     // ui properties

@@ -20,16 +20,16 @@ VORTEX_API void vxe::final_start_modules(
 
   // Start all modules & create data environments
   for (auto em : ctx->IO.em) {
-    if (em->m_name == module_name) {
-      if (em->m_state != "running" || em->m_state != "waiting") {
-        vxe::log_info("Modules", "Start \"" + em->m_name + "\"");
-        processed_modules->push_back(em->m_name);
+    if (em->name() == module_name) {
+      if (em->state() != "running" || em->state() != "waiting") {
+        vxe::log_info("Modules", "Start \"" + em->name() + "\"");
+        processed_modules->push_back(em->name());
 
         try {
           em->start();
         } catch (const std::exception &e) {
           // Log the error
-          vxe::log_error("Modules", "Error starting module \"" + em->m_name + "\": " + e.what());
+          vxe::log_error("Modules", "Error starting module \"" + em->name() + "\": " + e.what());
           // Continue to the next module
           continue;
         }
@@ -44,14 +44,14 @@ VORTEX_API void vxe::start_module(const std::string &module_name) {
 
   // Start all modules & create data environments
   for (auto em : ctx->IO.em) {
-    if (em->m_name == module_name) {
-      if (em->m_state != "running") {
-        vxe::log_info("Modules", "Start \"" + em->m_name + "\"");
+    if (em->name() == module_name) {
+      if (em->state() != "running") {
+        vxe::log_info("Modules", "Start \"" + em->name() + "\"");
 
         std::shared_ptr<std::vector<std::string>> processed_modules = std::make_shared<std::vector<std::string>>();
 
         // Start dependencies
-        for (auto deps : em->m_dependencies) {
+        for (auto deps : em->dependencies()) {
           final_start_modules(deps->name, processed_modules);
         }
 
@@ -73,8 +73,8 @@ VORTEX_API void vxe::start_all_modules() {
     {
       // Set the module data path
       std::string datapath = ctx->projectPath.string();
-      datapath += "/.vx/data/" + em->m_name;
-      em->m_datapath = datapath;
+      datapath += "/.vx/data/" + em->name();
+      em->datapath(datapath);
 
       // Try to create the datapath folder (if not exist yet)
       std::string cmd = "sudo mkdir ";
@@ -82,7 +82,7 @@ VORTEX_API void vxe::start_all_modules() {
       system(cmd.c_str());
     }
 
-    start_module(em->m_name);
+    start_module(em->name());
   }
 }
 
@@ -96,8 +96,8 @@ VORTEX_API void vxe::bootstrapp_all_modules() {
     {
       // Set the module data path
       std::string datapath = ctx->projectPath.string();
-      datapath += "/.vx/data/" + em->m_name;
-      em->m_datapath = datapath;
+      datapath += "/.vx/data/" + em->name();
+      em->datapath(datapath);
 
       // Try to create the datapath folder (if not exist yet)
       std::string cmd = "sudo mkdir ";
@@ -105,8 +105,8 @@ VORTEX_API void vxe::bootstrapp_all_modules() {
       system(cmd.c_str());
     }
 
-    if (em->m_auto_exec) {
-      start_module(em->m_name);
+    if (em->auto_exec()) {
+      start_module(em->name());
     }
   }
 }

@@ -18,16 +18,16 @@ VORTEX_API void vxe::final_start_plugin(
 
   // Start all plugins & create data environments
   for (auto ep : ctx->IO.ep) {
-    if (ep->m_name == plugin_name) {
-      if (ep->m_state != "running" || ep->m_state != "waiting") {
-        vxe::log_info("Plugins", "Start \"" + ep->m_name + "\"");
-        processed_plugins->push_back(ep->m_name);
+    if (ep->name_ == plugin_name) {
+      if (ep->state_ != "running" || ep->state_ != "waiting") {
+        vxe::log_info("Plugins", "Start \"" + ep->name_ + "\"");
+        processed_plugins->push_back(ep->name_);
 
         try {
           ep->start();
         } catch (const std::exception &e) {
           // Log the error
-          vxe::log_error("Plugins", "Error starting plugin \"" + ep->m_name + "\": " + e.what());
+          vxe::log_error("Plugins", "Error starting plugin \"" + ep->name_ + "\": " + e.what());
           // Continue to the next plugin
           continue;
         }
@@ -42,14 +42,14 @@ VORTEX_API void vxe::start_plugin(const std::string &plugin_name) {
 
   // Start all plugins & create data environments
   for (auto ep : ctx->IO.ep) {
-    if (ep->m_name == plugin_name) {
-      if (ep->m_state != "running") {
-        vxe::log_info("Plugins", "Start \"" + ep->m_name + "\"");
+    if (ep->name_ == plugin_name) {
+      if (ep->state_ != "running") {
+        vxe::log_info("Plugins", "Start \"" + ep->name_ + "\"");
 
         std::shared_ptr<std::vector<std::string>> processed_plugins = std::make_shared<std::vector<std::string>>();
 
         // Start dependencies
-        for (auto deps : ep->m_dependencies) {
+        for (auto deps : ep->dependencies_) {
           final_start_plugin(deps->name, processed_plugins);
         }
 
@@ -71,8 +71,8 @@ VORTEX_API void vxe::start_all_plugins() {
     {
       // Set the plugin data path
       std::string datapath = ctx->projectPath.string();
-      datapath += "/.vx/data/" + ep->m_name;
-      ep->m_datapath = datapath;
+      datapath += "/.vx/data/" + ep->name_;
+      ep->datapath_ = datapath;
 
       // Try to create the datapath folder (if not exist yet)
       std::string cmd = "sudo mkdir ";
@@ -80,7 +80,7 @@ VORTEX_API void vxe::start_all_plugins() {
       system(cmd.c_str());
     }
 
-    start_plugin(ep->m_name);
+    start_plugin(ep->name_);
   }
 }
 
@@ -90,8 +90,8 @@ VORTEX_API void vxe::bootstrapp_all_plugins() {
   for (auto ep : ctx->IO.ep) {
     {
       std::string datapath = ctx->projectPath.string();
-      datapath += "/.vx/data/" + ep->m_name;
-      ep->m_datapath = datapath;
+      datapath += "/.vx/data/" + ep->name_;
+      ep->datapath_ = datapath;
 
       // TODO : Rework that with API
       std::string cmd = "sudo mkdir ";
@@ -99,8 +99,8 @@ VORTEX_API void vxe::bootstrapp_all_plugins() {
       system(cmd.c_str());
     }
 
-    if (ep->m_auto_exec) {
-      start_plugin(ep->m_name);
+    if (ep->auto_exec_) {
+      start_plugin(ep->name_);
     }
   }
 }

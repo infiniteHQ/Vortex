@@ -308,14 +308,14 @@ namespace vxe {
 
       if (prefix == "module") {
         for (const auto &mod : ctx->IO.em) {
-          if (mod && mod->m_name == name_to_find) {
-            return mod->m_proper_name;
+          if (mod && mod->name() == name_to_find) {
+            return mod->proper_name();
           }
         }
       } else if (prefix == "plugin") {
         for (const auto &plug : ctx->IO.ep) {
-          if (plug && plug->m_name == name_to_find) {
-            return plug->m_proper_name;
+          if (plug && plug->name() == name_to_find) {
+            return plug->proper_name();
           }
         }
       }

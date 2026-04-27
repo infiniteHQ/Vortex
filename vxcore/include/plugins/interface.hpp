@@ -102,8 +102,6 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API void execute_function(const std::string &name, ReturnValues &ret);
   VORTEX_API void execute_function(const std::string &name, ArgumentValues &args, ReturnValues &ret);
 
-  VORTEX_API std::string get_path();
-  VORTEX_API std::string cook_path(const std::string &path);
   VORTEX_API std::string GetMainScriptPath();
 
   // Documentation
@@ -188,49 +186,100 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
 
   VORTEX_API static std::shared_ptr<PluginInterface> get_editor_plugin_by_name(const std::string &name);
 
-  VORTEX_API void check_dependencies();
-  VORTEX_API void check_version();
-
   VORTEX_API void add_lua_handler(const std::shared_ptr<LuaItemHandler> &handler) {
     m_lua_handlers.push_back(handler);
   }
 
-  std::string m_datapath;
+  // utilities
+  VORTEX_API std::string cook_path(const std::string &path);
+  VORTEX_API void check_dependencies();
+  VORTEX_API void check_version();
+  VORTEX_API void add_contributor(std::string v);
+  VORTEX_API void clear_contributors() noexcept;
+  VORTEX_API void add_dependency(std::shared_ptr<PluginInterfaceDep> v);
+  VORTEX_API void clear_dependencies() noexcept;
+  VORTEX_API void add_supported_version(std::string v);
+  VORTEX_API void clear_supported_versions() noexcept;
+
+  // getters
+  VORTEX_API const std::string &state() const noexcept;
+  VORTEX_API const std::string &datapath() const noexcept;
+  VORTEX_API const std::string &type() const noexcept;
+  VORTEX_API const std::string &proper_name() const noexcept;
+  VORTEX_API const std::string &name() const noexcept;
+  VORTEX_API const std::string &version() const noexcept;
+  VORTEX_API const std::string &path() const noexcept;
+  VORTEX_API const std::string &author() const noexcept;
+  VORTEX_API const std::string &group() const noexcept;
+  VORTEX_API const std::string &picture() const noexcept;
+  VORTEX_API const std::string &logo_path() const noexcept;
+  VORTEX_API const std::string &description() const noexcept;
+  VORTEX_API bool auto_exec() const noexcept;
+  VORTEX_API const std::vector<std::string> &contributors() const noexcept;
+  VORTEX_API const std::vector<std::shared_ptr<PluginInterfaceDep>> &dependencies() const noexcept;
+  VORTEX_API const std::vector<std::string> &supported_versions() const noexcept;
+  VORTEX_API const std::vector<std::shared_ptr<PluginFunction>> &functions() const noexcept;
+  VORTEX_API const std::vector<std::shared_ptr<PluginOutputEvent>> &output_events() const noexcept;
+  VORTEX_API const std::vector<std::shared_ptr<PluginInputEvent>> &input_events() const noexcept;
+  VORTEX_API const std::vector<std::shared_ptr<ItemHandlerInterface>> &item_handlers() const noexcept;
+  VORTEX_API const std::vector<std::shared_ptr<ItemIdentifierInterface>> &item_identifiers() const noexcept;
+  VORTEX_API const std::vector<std::shared_ptr<ItemCreatorInterface>> &item_creators() const noexcept;
+  VORTEX_API const std::vector<std::shared_ptr<PluginDummyFunction>> &dummy_functions() const noexcept;
+  VORTEX_API const std::vector<std::shared_ptr<PluginRenderInstance>> &render_instances() const noexcept;
+
+  // setters
+  VORTEX_API void state(std::string v);
+  VORTEX_API void datapath(std::string v);
+  VORTEX_API void type(std::string v);
+  VORTEX_API void proper_name(std::string v);
+  VORTEX_API void name(std::string v);
+  VORTEX_API void version(std::string v);
+  VORTEX_API void path(std::string v);
+  VORTEX_API void author(std::string v);
+  VORTEX_API void group(std::string v);
+  VORTEX_API void picture(std::string v);
+  VORTEX_API void logo_path(std::string v);
+  VORTEX_API void description(std::string v);
+  VORTEX_API void auto_exec(bool v);
+  VORTEX_API void contributors(std::vector<std::string> v);
+  VORTEX_API void dependencies(std::vector<std::shared_ptr<PluginInterfaceDep>> v);
+  VORTEX_API void supported_versions(std::vector<std::string> v);
 
  public:
-  std::string m_type;
-  std::string m_proper_name;
-  std::string m_name;
-  std::string m_version;
-  std::string m_path;
+  std::string datapath_;
+  std::string type_;
+  std::string proper_name_;
+  std::string name_;
+  std::string version_;
+  std::string path_;
   std::string m_mainscript_path;
-  std::string m_author;
-  std::string m_group;
-  std::string m_picture;
-  std::string m_logo_path;
-  std::string m_description;
-  bool m_auto_exec;
-  std::vector<std::string> m_contributors;
-  std::vector<std::shared_ptr<PluginInterfaceDep>> m_dependencies;
-  std::vector<std::string> m_supported_versions;
-  const uint8_t *m_logo;
-  size_t m_logo_size;
+  std::string author_;
+  std::string group_;
+  std::string picture_;
+  std::string logo_path_;
+  std::string description_;
+  bool auto_exec_;
+  std::vector<std::string> contributors_;
+  std::vector<std::shared_ptr<PluginInterfaceDep>> dependencies_;
+  std::vector<std::string> supported_versions_;
+  const uint8_t *logo_;
+  size_t logo_size_;
 
-  std::string m_state = "unknow";
-  std::shared_ptr<Cherry::AppWindow> m_main_window;
+  std::string state_ = "unknow";
+  std::shared_ptr<Cherry::AppWindow> main_window_;
 
-  std::vector<std::shared_ptr<PluginFunction>> m_functions;
-  std::vector<std::shared_ptr<PluginOutputEvent>> m_output_events;
-  std::vector<std::shared_ptr<PluginInputEvent>> m_input_events;
-  std::vector<std::shared_ptr<ItemHandlerInterface>> m_item_handlers;
-  std::vector<std::shared_ptr<ItemIdentifierInterface>> m_item_identifiers;
-  std::vector<std::shared_ptr<ItemCreatorInterface>> m_item_creators;
+  std::vector<std::shared_ptr<PluginFunction>> functions_;
+  std::vector<std::shared_ptr<PluginOutputEvent>> output_events_;
+  std::vector<std::shared_ptr<PluginInputEvent>> input_events_;
+  std::vector<std::shared_ptr<ItemHandlerInterface>> item_handlers_;
+  std::vector<std::shared_ptr<ItemIdentifierInterface>> item_identifiers_;
+  std::vector<std::shared_ptr<ItemCreatorInterface>> item_creators_;
 
   std::vector<std::shared_ptr<LuaItemHandler>> m_lua_handlers;
 
  private:
-  std::vector<std::shared_ptr<PluginDummyFunction>> m_dummy_functions;
-  std::vector<std::shared_ptr<PluginRenderInstance>> m_render_instances;
+  std::vector<std::shared_ptr<PluginDummyFunction>> dummy_functions_;
+  std::vector<std::shared_ptr<PluginRenderInstance>> render_instances_;
 };
 
 #endif  // PLUGIN_INTERFACE_H

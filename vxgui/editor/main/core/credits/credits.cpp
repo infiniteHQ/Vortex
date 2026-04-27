@@ -198,7 +198,7 @@ namespace vxe {
       if (!vxe::get_current_context()->IO.em[i]) {
         continue;
       }
-      all_categories_[vxe::get_current_context()->IO.em[i]->m_group]++;
+      all_categories_[vxe::get_current_context()->IO.em[i]->group()]++;
     }
   }
 

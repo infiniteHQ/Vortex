@@ -20,7 +20,7 @@
  */
 ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
     : m_function(foo),
-      m_name(name) {
+      name_(name) {
 }
 
 /**
@@ -34,7 +34,7 @@ ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &)> foo, const 
         ret = ReturnValues();
         foo(args);
       }),
-      m_name(name) {
+      name_(name) {
 }
 /**
  * @brief Constructor for ModuleFunction.
@@ -44,7 +44,7 @@ ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &)> foo, const 
  */
 ModuleFunction::ModuleFunction(std::function<void(ReturnValues &)> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
-      m_name(name) {
+      name_(name) {
 }
 
 /**
@@ -55,5 +55,5 @@ ModuleFunction::ModuleFunction(std::function<void(ReturnValues &)> foo, const st
  */
 ModuleFunction::ModuleFunction(std::function<void()> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
-      m_name(name) {
+      name_(name) {
 }

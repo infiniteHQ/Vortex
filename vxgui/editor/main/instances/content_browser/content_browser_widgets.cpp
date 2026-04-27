@@ -139,7 +139,7 @@ namespace vxe {
               test_path += separator + elements[j];
           }
 
-          for (auto &item : item_paths_) {
+          for (auto &item : itepath_s_) {
             if (test_path == item.first) {
               ImVec2 min = CherryGUI::GetItemRectMin();
               ImVec2 max = CherryGUI::GetItemRectMax();
@@ -428,7 +428,7 @@ namespace vxe {
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_foldersearch.png")),
                 NULL)) {
           change_directory(p.content.path);
-          item_paths_.push_back({ p.content.path, p.content.item_ident->m_LineColor });
+          itepath_s_.push_back({ p.content.path, p.content.item_ident->m_LineColor });
           CherryGUI::CloseCurrentPopup();
         }
       }
@@ -894,7 +894,7 @@ namespace vxe {
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_foldersearch.png")),
                 NULL)) {
           change_directory(p.content.path);
-          item_paths_.push_back({ p.content.path, p.content.item_ident->m_LineColor });
+          itepath_s_.push_back({ p.content.path, p.content.item_ident->m_LineColor });
           CherryGUI::CloseCurrentPopup();
         }
       }

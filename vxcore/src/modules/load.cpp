@@ -135,20 +135,20 @@ namespace vxe {
 
           std::shared_ptr<ModuleInterface> new_module(create_em());
           try {
-            new_module->m_name = json_data["name"].get<std::string>();
-            new_module->m_auto_exec = json_data["auto_exec"].get<bool>();
-            new_module->m_proper_name = json_data["proper_name"].get<std::string>();
-            new_module->m_type = json_data["type"].get<std::string>();
-            new_module->m_version = json_data["version"].get<std::string>();
-            new_module->m_description = json_data["description"].get<std::string>();
-            new_module->m_picture = json_data["picture"].get<std::string>();
-            new_module->m_logo_path = (fs::path(path) / new_module->m_picture).string();
-            new_module->m_path = (fs::path(path)).string();
-            new_module->m_binary_path = (fs::path(so_file).parent_path()).string();
+            new_module->name(json_data["name"].get<std::string>());
+            new_module->auto_exec(json_data["auto_exec"].get<bool>());
+            new_module->proper_name(json_data["proper_name"].get<std::string>());
+            new_module->type(json_data["type"].get<std::string>());
+            new_module->version(json_data["version"].get<std::string>());
+            new_module->description(json_data["description"].get<std::string>());
+            new_module->picture(json_data["picture"].get<std::string>());
+            new_module->logo_path((fs::path(path) / new_module->picture()));
+            new_module->path((fs::path(path)).string());
+            new_module->binary_path((fs::path(so_file).parent_path()).string());
 
-            new_module->m_author = json_data["author"].get<std::string>();
-            new_module->m_group = json_data["group"].get<std::string>();
-            new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+            new_module->author(json_data["author"].get<std::string>());
+            new_module->group(json_data["group"].get<std::string>());
+            new_module->contributors(json_data["contributors"].get<std::vector<std::string>>());
 
             for (auto dep : json_data["deps"]) {
               std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
@@ -157,10 +157,10 @@ namespace vxe {
               for (auto version : dep["versions"]) {
                 dependence->supported_versions.push_back(version);
               }
-              new_module->m_dependencies.push_back(dependence);
+              new_module->add_dependency(dependence);
             }
 
-            new_module->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
+            new_module->supported_versions(json_data["compatibility"].get<std::vector<std::string>>());
           } catch (const std::exception &e) {
             vxe::log_error("Modules", "Failed to load module metadata: " + std::string(e.what()));
           }
@@ -199,18 +199,18 @@ namespace vxe {
 
         // Try to fetch module informations from module.json
         try {
-          new_module->m_name = json_data["name"].get<std::string>();
-          new_module->m_auto_exec = json_data["auto_exec"].get<bool>();
-          new_module->m_proper_name = json_data["proper_name"].get<std::string>();
-          new_module->m_type = json_data["type"].get<std::string>();
-          new_module->m_version = json_data["version"].get<std::string>();
-          new_module->m_description = json_data["description"].get<std::string>();
-          new_module->m_picture = json_data["picture"].get<std::string>();
-          new_module->m_logo_path = module_path + "/" + new_module->m_picture;
-          new_module->m_path = module_path + "/";
-          new_module->m_author = json_data["author"].get<std::string>();
-          new_module->m_group = json_data["group"].get<std::string>();
-          new_module->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+          new_module->name(json_data["name"].get<std::string>());
+          new_module->auto_exec(json_data["auto_exec"].get<bool>());
+          new_module->proper_name(json_data["proper_name"].get<std::string>());
+          new_module->type(json_data["type"].get<std::string>());
+          new_module->version(json_data["version"].get<std::string>());
+          new_module->description(json_data["description"].get<std::string>());
+          new_module->picture(json_data["picture"].get<std::string>());
+          new_module->logo_path(module_path + "/" + new_module->picture());
+          new_module->path(module_path + "/");
+          new_module->author(json_data["author"].get<std::string>());
+          new_module->group(json_data["group"].get<std::string>());
+          new_module->contributors(json_data["contributors"].get<std::vector<std::string>>());
 
           for (auto dep : json_data["deps"]) {
             std::shared_ptr<ModuleInterfaceDep> dependence = std::make_shared<ModuleInterfaceDep>();
@@ -219,15 +219,15 @@ namespace vxe {
             for (auto version : dep["versions"]) {
               dependence->supported_versions.push_back(version);
             }
-            new_module->m_dependencies.push_back(dependence);
+            new_module->add_dependency(dependence);
           }
 
-          new_module->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
+          new_module->supported_versions(json_data["compatibility"].get<std::vector<std::string>>());
         } catch (std::exception e) {
           std::cerr << e.what() << std::endl;
         }
 
-        VXINFO("Modules registered in system ", new_module->m_name + " loaded with success !")
+        vxe::log_info("Modules registered in system ", new_module->name() + " loaded with success !");
 
         // Store the module instance and handle
         sys_modules.push_back(new_module);

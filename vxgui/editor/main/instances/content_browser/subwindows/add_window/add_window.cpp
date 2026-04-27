@@ -255,7 +255,7 @@ namespace vxe {
           CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
           CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
           CherryKit::HeaderImageText(
-              m->m_proper_name,
+              m->proper_name(),
               Cherry::Application::CookPath("resources/imgs/icons/misc/icon_star.png"),  // module logo
               [&]() {
                 for (auto ic : item_creators) {

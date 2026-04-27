@@ -1,3 +1,13 @@
+//
+//  utils.cpp
+//  Entry point for Vortex utility program
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #define SDL_MAIN_HANDLED
 
 #include <fstream>
@@ -29,7 +39,7 @@ std::string get_home_directory() {
 #endif
 }
 
-void removeSessionFromJson(const std::string &session_id) {
+void remove_session_from_sson(const std::string &session_id) {
   // Set path depending on platform
   std::string json_path;
 #if defined(_WIN32) || defined(_WIN64)
@@ -60,9 +70,6 @@ void removeSessionFromJson(const std::string &session_id) {
   file_out << active_sessions.dump(4);  // Pretty print with indentation
 }
 
-/**
- * @brief : Entry point of main Vortex runtime command.
- */
 int main(int argc, char *argv[]) {
   if (argc < 2) {
     std::cout << "Usage : " << std::endl;
@@ -81,7 +88,7 @@ int main(int argc, char *argv[]) {
         }
       }
 
-      removeSessionFromJson(session_id);
+      remove_session_from_sson(session_id);
     }
   }
 

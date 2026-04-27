@@ -46,8 +46,8 @@ class ModuleFunction {
   ArgumentValues m_return_values;
   ModuleFunctionScope m_scope;
 
-  std::string m_name;
-  std::string m_description;
+  std::string name_;
+  std::string description_;
   bool m_can_callback;
   std::vector<std::tuple<std::string, std::string, std::string>> m_params_def;
 };

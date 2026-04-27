@@ -100,8 +100,8 @@ VORTEX_API std::shared_ptr<PluginInterface> vxe::find_plugin_in_directory(const 
 
       std::shared_ptr<PluginInterface> plugin_interface = std::make_shared<PluginInterface>();
 
-      plugin_interface->m_name = json_data["name"].get<std::string>();
-      plugin_interface->m_version = json_data["version"].get<std::string>();
+      plugin_interface->name_ = json_data["name"].get<std::string>();
+      plugin_interface->version_ = json_data["version"].get<std::string>();
 
       return plugin_interface;
 
@@ -129,18 +129,18 @@ VORTEX_API std::vector<std::shared_ptr<PluginInterface>> vxe::find_plugins_in_di
       std::string plugin_path = file.substr(0, file.find_last_of("/"));
 
       std::shared_ptr<PluginInterface> plugin_interface = std::make_shared<PluginInterface>();
-      plugin_interface->m_name = json_data["name"].get<std::string>();
-      plugin_interface->m_auto_exec = json_data["auto_exec"].get<bool>();
-      plugin_interface->m_proper_name = json_data["proper_name"].get<std::string>();
-      plugin_interface->m_type = json_data["type"].get<std::string>();
-      plugin_interface->m_version = json_data["version"].get<std::string>();
-      plugin_interface->m_description = json_data["description"].get<std::string>();
-      plugin_interface->m_picture = json_data["picture"].get<std::string>();
-      plugin_interface->m_logo_path = plugin_path + "/" + plugin_interface->m_picture;
-      plugin_interface->m_path = plugin_path + "/";
-      plugin_interface->m_author = json_data["author"].get<std::string>();
-      plugin_interface->m_group = json_data["group"].get<std::string>();
-      plugin_interface->m_contributors = json_data["contributors"].get<std::vector<std::string>>();
+      plugin_interface->name_ = json_data["name"].get<std::string>();
+      plugin_interface->auto_exec_ = json_data["auto_exec"].get<bool>();
+      plugin_interface->proper_name_ = json_data["proper_name"].get<std::string>();
+      plugin_interface->type_ = json_data["type"].get<std::string>();
+      plugin_interface->version_ = json_data["version"].get<std::string>();
+      plugin_interface->description_ = json_data["description"].get<std::string>();
+      plugin_interface->picture_ = json_data["picture"].get<std::string>();
+      plugin_interface->logo_path_ = plugin_path + "/" + plugin_interface->picture_;
+      plugin_interface->path_ = plugin_path + "/";
+      plugin_interface->author_ = json_data["author"].get<std::string>();
+      plugin_interface->group_ = json_data["group"].get<std::string>();
+      plugin_interface->contributors_ = json_data["contributors"].get<std::vector<std::string>>();
 
       for (auto dep : json_data["deps"]) {
         std::shared_ptr<PluginInterfaceDep> dependence = std::make_shared<PluginInterfaceDep>();
@@ -149,10 +149,10 @@ VORTEX_API std::vector<std::shared_ptr<PluginInterface>> vxe::find_plugins_in_di
         for (auto version : dep["versions"]) {
           dependence->supported_versions.push_back(version);
         }
-        plugin_interface->m_dependencies.push_back(dependence);
+        plugin_interface->dependencies_.push_back(dependence);
       }
 
-      plugin_interface->m_supported_versions = json_data["compatibility"].get<std::vector<std::string>>();
+      plugin_interface->supported_versions_ = json_data["compatibility"].get<std::vector<std::string>>();
 
       interfaces.push_back(plugin_interface);
 

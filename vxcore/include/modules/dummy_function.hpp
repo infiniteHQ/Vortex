@@ -22,7 +22,7 @@ class ModuleDummyFunction {
   template<typename T>
   std::string get_function_name(T* functionPtr);
 
-  std::string m_name;
+  std::string name_;
   void (*m_foo)();
 };
 

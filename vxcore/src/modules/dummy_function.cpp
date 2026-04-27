@@ -16,7 +16,7 @@
  * @param foo Pointer to the function.
  * @param name Name of the function.
  */
-ModuleDummyFunction::ModuleDummyFunction(void (*foo)(), const std::string& name) : m_foo(foo), m_name(name) {
+ModuleDummyFunction::ModuleDummyFunction(void (*foo)(), const std::string& name) : m_foo(foo), name_(name) {
 }
 
 /**

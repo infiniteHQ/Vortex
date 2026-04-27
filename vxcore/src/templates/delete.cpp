@@ -8,9 +8,10 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <templates/delete.hpp>
 #include <vortex.h>
 #include <vortex_internals.h>
+
+#include <templates/delete.hpp>
 
 VORTEX_API void vxe::delete_system_template(const std::string &name, const std::string &version) {
   auto ctx = vxe::get_current_context();
@@ -18,9 +19,9 @@ VORTEX_API void vxe::delete_system_template(const std::string &name, const std::
   std::vector<std::string> ff;
 
   for (auto sys_template : ctx->IO.sys_templates) {
-    if (sys_template->m_name == name && sys_template->m_version == version) {
+    if (sys_template->name_ == name && sys_template->version_ == version) {
       {
-        std::string cmd = "rm -rf " + sys_template->m_path;
+        std::string cmd = "rm -rf " + sys_template->path_;
         std::cout << cmd << std::endl;
         system(cmd.c_str());
       }

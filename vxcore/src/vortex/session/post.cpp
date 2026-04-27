@@ -44,9 +44,9 @@ VORTEX_API void vxe::post_session_state(const std::string &post_topic) {
     // Update logs metrics (logs journal are handle by spdlog)
 
     nlohmann::json json;
-    json["name"] = ctx->state.last_used_module->m_name;
-    json["version"] = ctx->state.last_used_module->m_version;
-    json["author"] = ctx->state.last_used_module->m_author;
+    json["name"] = ctx->state.last_used_module->name();
+    json["version"] = ctx->state.last_used_module->version();
+    json["author"] = ctx->state.last_used_module->author();
 
     // Store JSON into vortex.config file
     vxe::create_file_if_not_exists(session_path + "/last_module.json", json);

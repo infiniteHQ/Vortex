@@ -59,7 +59,7 @@ namespace vxe {
       if (!vxe::get_current_context()->IO.ep[i]) {
         continue;
       }
-      all_categories[vxe::get_current_context()->IO.ep[i]->m_group]++;
+      all_categories[vxe::get_current_context()->IO.ep[i]->group_]++;
     }
   }
 
@@ -73,11 +73,11 @@ namespace vxe {
   }
 
   void PluginsUtility::set_plugin_to_delete(const std::shared_ptr<PluginInterface> &mod) {
-    plugin_to_delete_name_ = mod->m_name;
-    plugin_to_delete_proper_name_ = mod->m_proper_name;
-    plugin_to_delete_description_ = mod->m_description;
-    plugin_to_delete_version_ = mod->m_version;
-    plugin_to_delete_logo_path_ = mod->m_logo_path;
+    plugin_to_delete_name_ = mod->name_;
+    plugin_to_delete_proper_name_ = mod->proper_name_;
+    plugin_to_delete_description_ = mod->description_;
+    plugin_to_delete_version_ = mod->version_;
+    plugin_to_delete_logo_path_ = mod->logo_path_;
     trigger_plugin_deletion_modal_ = true;
   }
 

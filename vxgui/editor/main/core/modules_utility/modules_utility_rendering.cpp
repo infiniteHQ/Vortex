@@ -590,7 +590,7 @@ namespace vxe {
           }
 
           if (!selected_category_.empty() && selected_category_ != "all") {
-            if (selected_category_ != vxe::get_current_context()->IO.em[i]->m_group) {
+            if (selected_category_ != vxe::get_current_context()->IO.em[i]->group()) {
               continue;
             }
           }
@@ -601,9 +601,9 @@ namespace vxe {
           }
 
           if (!modules_search_.empty()) {
-            if (!has_common_subsequence(vxe::get_current_context()->IO.em[i]->m_name, modules_search_) &&
-                !has_common_subsequence(vxe::get_current_context()->IO.em[i]->m_proper_name, modules_search_) &&
-                !has_common_subsequence(vxe::get_current_context()->IO.em[i]->m_description, modules_search_)) {
+            if (!has_common_subsequence(vxe::get_current_context()->IO.em[i]->name(), modules_search_) &&
+                !has_common_subsequence(vxe::get_current_context()->IO.em[i]->proper_name(), modules_search_) &&
+                !has_common_subsequence(vxe::get_current_context()->IO.em[i]->description(), modules_search_)) {
               continue;
             }
           }
@@ -611,12 +611,12 @@ namespace vxe {
           CherryNextComponent.SetRenderMode(Cherry::RenderMode::CreateOnly);
           auto item = ModuleCard(
               vxe::get_current_context()->IO.em[i],
-              vxe::get_current_context()->IO.em[i]->m_proper_name,
-              vxe::get_current_context()->IO.em[i]->m_path,
-              vxe::get_current_context()->IO.em[i]->m_name,
-              vxe::get_current_context()->IO.em[i]->m_version,
+              vxe::get_current_context()->IO.em[i]->proper_name(),
+              vxe::get_current_context()->IO.em[i]->path(),
+              vxe::get_current_context()->IO.em[i]->name(),
+              vxe::get_current_context()->IO.em[i]->version(),
               false,
-              vxe::get_current_context()->IO.em[i]->m_logo_path,
+              vxe::get_current_context()->IO.em[i]->logo_path(),
               IM_COL32(56, 56, 56, 150),
               IM_COL32(50, 50, 50, 255),
               Cherry::HexToImU32("#B1FF31FF"),

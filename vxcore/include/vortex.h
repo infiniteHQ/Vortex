@@ -88,7 +88,7 @@ namespace vxe {
 
 namespace vxe {
   /**
-   * @brief Data structure for modules & plugins functions, events and other
+   * Data structure for modules & plugins functions, events and other
    * stuff, oriented around JSON architecture to easely communicate complex types
    * or large amount of data. Formatted in std::string to increase the simplicity
    * of data transferts

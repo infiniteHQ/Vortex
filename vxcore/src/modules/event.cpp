@@ -14,7 +14,7 @@
 
 ModuleOutputEvent::ModuleOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
     : m_function(foo),
-      m_name(name) {
+      name_(name) {
 }
 
 ModuleOutputEvent::ModuleOutputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
@@ -22,17 +22,17 @@ ModuleOutputEvent::ModuleOutputEvent(std::function<void(ArgumentValues &)> foo, 
         ret = ReturnValues();
         foo(args);
       }),
-      m_name(name) {
+      name_(name) {
 }
 
 ModuleOutputEvent::ModuleOutputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
-      m_name(name) {
+      name_(name) {
 }
 
 ModuleOutputEvent::ModuleOutputEvent(std::function<void()> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
-      m_name(name) {
+      name_(name) {
 }
 
 /**
@@ -46,7 +46,7 @@ ModuleOutputEvent::ModuleOutputEvent(std::function<void()> foo, const std::strin
 void ModuleInputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
   std::shared_ptr<ModuleInputEventHappening> new_trigger = std::make_shared<ModuleInputEventHappening>();
   new_trigger->m_trigger_name = trigger_name;
-  new_trigger->m_state = state;
+  new_trigger->state_ = state;
   new_trigger->m_log = log;
   new_trigger->m_timestamp = vxe::get_current_timestamp();
 
@@ -74,7 +74,7 @@ void ModuleInputEvent::trigger_happening(const std::string &trigger_name, Happen
 void ModuleOutputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
   std::shared_ptr<ModuleOutputEventHappening> new_trigger = std::make_shared<ModuleOutputEventHappening>();
   new_trigger->m_trigger_name = trigger_name;
-  new_trigger->m_state = state;
+  new_trigger->state_ = state;
   new_trigger->m_log = log;
   new_trigger->m_timestamp = vxe::get_current_timestamp();
 
@@ -93,7 +93,7 @@ void ModuleOutputEvent::trigger_happening(const std::string &trigger_name, Happe
 
 ModuleInputEvent::ModuleInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
     : m_function(foo),
-      m_name(name) {
+      name_(name) {
 }
 
 ModuleInputEvent::ModuleInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
@@ -101,15 +101,15 @@ ModuleInputEvent::ModuleInputEvent(std::function<void(ArgumentValues &)> foo, co
         ret = ReturnValues();
         foo(args);
       }),
-      m_name(name) {
+      name_(name) {
 }
 
 ModuleInputEvent::ModuleInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
-      m_name(name) {
+      name_(name) {
 }
 
 ModuleInputEvent::ModuleInputEvent(std::function<void()> foo, const std::string &name)
     : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
-      m_name(name) {
+      name_(name) {
 }
