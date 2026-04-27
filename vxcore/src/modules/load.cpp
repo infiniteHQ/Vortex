@@ -95,7 +95,7 @@ namespace vxe {
 
           auto create_em = reinterpret_cast<ModuleInterface *(*)()>(GetProcAddress((HMODULE)handle, "create_em"));
           if (!create_em) {
-            DWORD error_code = get_last_error();
+            DWORD error_code = GetLastError();
             LPVOID msg_buffer;
 
             FormatMessageW(
@@ -142,7 +142,7 @@ namespace vxe {
             new_module->version(json_data["version"].get<std::string>());
             new_module->description(json_data["description"].get<std::string>());
             new_module->picture(json_data["picture"].get<std::string>());
-            new_module->logo_path((fs::path(path) / new_module->picture()));
+            new_module->logo_path((fs::path(path) / new_module->picture()).string());
             new_module->path((fs::path(path)).string());
             new_module->binary_path((fs::path(so_file).parent_path()).string());
 
