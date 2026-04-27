@@ -267,15 +267,15 @@ namespace vxe {
     favorite_folders_.clear();
     folder_colors_.clear();
     for (auto custom_folder : vxe::get_current_context()->IO.contentbrowser_customfolders) {
-      if (custom_folder->m_IsFav) {
+      if (custom_folder->is_fav) {
         favorite_folders_.push_back(custom_folder->path);
       }
 
-      if (custom_folder->m_Color != "#fdaa00" || custom_folder->m_Color != default_folder_color_) {
-        if (custom_folder->m_Color.size() <= 7) {
-          custom_folder->m_Color = custom_folder->m_Color + "ff";  // + ff to add a opaque bg if not provided
+      if (custom_folder->color != "#fdaa00" || custom_folder->color != default_folder_color_) {
+        if (custom_folder->color.size() <= 7) {
+          custom_folder->color = custom_folder->color + "ff";  // + ff to add a opaque bg if not provided
         }
-        folder_colors_.push_back({ custom_folder->path, custom_folder->m_Color });
+        folder_colors_.push_back({ custom_folder->path, custom_folder->color });
       }
     }
   }

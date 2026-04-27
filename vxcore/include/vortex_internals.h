@@ -42,24 +42,16 @@ struct VxContext;
 extern VORTEX_API std::weak_ptr<VxContext> CVortexMaker;
 #endif
 
-struct VortexMakerDebugAllocInfo {
-  int TotalAllocCount;  // Number of call to MemAlloc().
-  int TotalFreeCount;
-  VortexMakerDebugAllocInfo() {
-    memset(this, 0, sizeof(*this));
-  }
-};
-
 struct VxSystemLog {
-  spdlog::level::level_enum m_level;
-  std::string m_filter;
-  std::string m_message;
-  std::string m_timestamp;
+  spdlog::level::level_enum level;
+  std::string filter;
+  std::string message;
+  std::string timestamp;
 
   VxSystemLog(spdlog::level::level_enum level, std::string filter, std::string message)
-      : m_level(level),
-        m_filter(filter),
-        m_message(message) { };
+      : level(level),
+        filter(filter),
+        message(message) { };
 };
 
 struct EnvProject {
@@ -97,14 +89,14 @@ struct SessionState {
 
 struct ItemIdentifierInterface {
  public:
-  bool (*f_Detect)(const std::string &path);
+  bool (*detection_callback)(const std::string &path);
 
-  std::string m_Name;
+  std::string name;
 
-  std::string m_LogoPath;
-  std::string m_BackgroundImagePath;
-  std::string m_LineColor;
-  std::string m_Description;
+  std::string logo_path;
+  std::string background_image_path;
+  std::string line_color;
+  std::string description;
 
   ItemIdentifierInterface(
       bool (*detect_function)(const std::string &path),
@@ -113,12 +105,12 @@ struct ItemIdentifierInterface {
       const std::string &line_color,
       const std::string &logo_path = "",
       const std::string &bg_image_path = "")
-      : m_Name(name),
-        m_Description(description),
-        f_Detect(detect_function),
-        m_LineColor(line_color),
-        m_LogoPath(logo_path),
-        m_BackgroundImagePath(bg_image_path) { };
+      : name(name),
+        description(description),
+        detection_callback(detect_function),
+        line_color(line_color),
+        logo_path(logo_path),
+        background_image_path(bg_image_path) { };
 };
 
 struct ItemHandlerInterface {
@@ -144,12 +136,12 @@ struct ItemHandlerInterface {
 
 // Todo : Creation configurations (names, variantes, etc)
 struct ItemCreatorInterface {
-  std::function<void(const std::string &path)> f_CreateFunction;
-  std::string m_Name;
+  std::function<void(const std::string &path)> create_function;
+  std::string name;
 
-  std::string m_LogoPath;
-  std::string m_LineColor;
-  std::string m_Description;
+  std::string logo_path;
+  std::string line_color;
+  std::string description;
 
   ItemCreatorInterface(
       std::function<void(const std::string &path)> function,
@@ -157,11 +149,11 @@ struct ItemCreatorInterface {
       const std::string &description,
       const std::string &line_color = "#343434",
       const std::string &logo_path = "")
-      : m_Name(name),
-        m_Description(description),
-        f_CreateFunction(function),
-        m_LineColor(line_color),
-        m_LogoPath(logo_path) { };
+      : name(name),
+        description(description),
+        create_function(function),
+        line_color(line_color),
+        logo_path(logo_path) { };
 };
 
 enum class DevFlag {
@@ -180,8 +172,8 @@ enum class HandlerItemType { File, Item, Folder };
 
 struct ContentBrowserCustomFolder {
   std::string path;
-  std::string m_Color;
-  bool m_IsFav;
+  std::string color;
+  bool is_fav;
 };
 
 struct Theme {
@@ -298,12 +290,11 @@ struct VxContext {
   std::vector<std::pair<std::string, std::shared_ptr<spdlog::logger>>> pool_loggers;
 
   // Vendor
-  PlatformVendor m_PlatformVendor;
+  PlatformVendor platform_vendor;
 
   // Components
   VxIO IO;
   SessionState state;
-  VortexMakerDebugAllocInfo debugAllocInfo;
   std::vector<std::shared_ptr<VxSystemLog>> registered_logs;
   fs::path projectPath;
   fs::path projectDataPath;
@@ -355,13 +346,3 @@ struct VxContext {
   // Custom menus callabcks
   std::vector<CustomMenu> customMenus;
 };
-
-namespace vxe {
-
-  // Utils & Base
-  VORTEX_API void DebugAllocHook(
-      VortexMakerDebugAllocInfo *info,
-      void *ptr,
-      size_t size);  // size >= 0 : alloc, size = -1 : free
-
-}  // namespace vxe

@@ -275,7 +275,7 @@ void ModuleDetails::Render() {
 
     logs.clear();
     for (int i = 0; i < this->m_ctx->registered_logs.size(); i++) {
-      if (this->m_ctx->registered_logs[i]->m_filter == this->m_module->name()) {
+      if (this->m_ctx->registered_logs[i]->filter == this->m_module->name()) {
         logs.push_back(this->m_ctx->registered_logs[i]);
       }
     }
@@ -291,21 +291,21 @@ void ModuleDetails::Render() {
         for (int column = 0; column < 4; column++) {
           CherryGUI::TableSetColumnIndex(column);
           if (column == 0) {
-            if (logs[i]->m_level == spdlog::level::critical) {
+            if (logs[i]->level == spdlog::level::critical) {
               CherryGUI::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
-            } else if (logs[i]->m_level == spdlog::level::err) {
+            } else if (logs[i]->level == spdlog::level::err) {
               CherryGUI::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
-            } else if (logs[i]->m_level == spdlog::level::warn) {
+            } else if (logs[i]->level == spdlog::level::warn) {
               CherryGUI::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Warning");
-            } else if (logs[i]->m_level == spdlog::level::info) {
+            } else if (logs[i]->level == spdlog::level::info) {
               CherryGUI::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Information");
             }
           } else if (column == 1) {
-            CherryGUI::Text(logs[i]->m_timestamp.c_str());
+            CherryGUI::Text(logs[i]->timestamp.c_str());
           } else if (column == 2) {
-            CherryGUI::Text(logs[i]->m_filter.c_str());
+            CherryGUI::Text(logs[i]->filter.c_str());
           } else if (column == 3) {
-            CherryGUI::TextWrapped(logs[i]->m_message.c_str());
+            CherryGUI::TextWrapped(logs[i]->message.c_str());
           }
         }
       }

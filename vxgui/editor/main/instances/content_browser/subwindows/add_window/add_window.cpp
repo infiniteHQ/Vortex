@@ -269,22 +269,22 @@ namespace vxe {
                               [&]() {
                                 CherryNextComponent.SetProperty("size_x", "60.0f");
                                 CherryStyle::RemoveMarginY(6.0f);
-                                CherryKit::ImageLocal(ic->m_LogoPath, 60.0f, 60.0f);
+                                CherryKit::ImageLocal(ic->logo_path, 60.0f, 60.0f);
                               },
                               [&]() {
                                 CherryStyle::AddMarginY(6.0f);
                                 CherryGUI::BeginChild("test2", ImVec2(0, 0), false, ImGuiWindowFlags_NoScrollbar);
                                 CherryNextComponent.SetProperty("color_text", "#B1FF31");
-                                CherryKit::TitleSix(ic->m_Name);
+                                CherryKit::TitleSix(ic->name);
                                 CherryNextComponent.SetProperty("color_text", "#B1FF31");
-                                CherryKit::TextSimple(ic->m_Description);
+                                CherryKit::TextSimple(ic->description);
                                 CherryKit::TextSimple("from the module :");
                                 CherryGUI::EndChild();
                               },
                           })
                           .GetDataAs<bool>("isClicked")) {
-                    if (ic->f_CreateFunction && !creation_path_.empty()) {
-                      ic->f_CreateFunction(creation_path_);
+                    if (ic->create_function && !creation_path_.empty()) {
+                      ic->create_function(creation_path_);
                     }
                     Cherry::DeleteAppWindow(app_window_);
                   }

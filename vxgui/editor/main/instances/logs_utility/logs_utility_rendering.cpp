@@ -317,7 +317,7 @@ namespace vxe {
         topics_filter_states_.clear();
 
         for (auto log : vxe::get_current_context()->registered_logs) {
-          const std::string &topic = log->m_filter;
+          const std::string &topic = log->filter;
 
           if (oldFilterStates.find(topic) != oldFilterStates.end()) {
             topics_filter_states_[topic] = oldFilterStates[topic];
@@ -330,27 +330,27 @@ namespace vxe {
             topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto &pair) { return pair.second; });
 
         for (auto log : vxe::get_current_context()->registered_logs) {
-          if (oldFilterStates.find(log->m_filter) != oldFilterStates.end()) {
-            topics_filter_states_[log->m_filter] = oldFilterStates[log->m_filter];
+          if (oldFilterStates.find(log->filter) != oldFilterStates.end()) {
+            topics_filter_states_[log->filter] = oldFilterStates[log->filter];
           } else {
-            topics_filter_states_[log->m_filter] = false;
+            topics_filter_states_[log->filter] = false;
           }
 
           if (use_warning_filter_ || use_error_filter_ || use_fatal_filter_ || use_info_filter_) {
-            if ((log->m_level == spdlog::level::critical && !use_fatal_filter_) ||
-                (log->m_level == spdlog::level::err && !use_error_filter_) ||
-                (log->m_level == spdlog::level::warn && !use_warning_filter_) ||
-                (log->m_level == spdlog::level::info && !use_info_filter_)) {
+            if ((log->level == spdlog::level::critical && !use_fatal_filter_) ||
+                (log->level == spdlog::level::err && !use_error_filter_) ||
+                (log->level == spdlog::level::warn && !use_warning_filter_) ||
+                (log->level == spdlog::level::info && !use_info_filter_)) {
               continue;
             }
           }
 
-          if (hasActiveFilter && !topics_filter_states_[log->m_filter]) {
+          if (hasActiveFilter && !topics_filter_states_[log->filter]) {
             continue;
           }
 
           if (!project_search_.empty()) {
-            if (!has_common_subsequence(log->m_message, project_search_)) {
+            if (!has_common_subsequence(log->message, project_search_)) {
               continue;
             }
           }
@@ -363,7 +363,7 @@ namespace vxe {
           }
 
           if (CherryGUI::IsMouseClicked(0) && is_hovered) {
-            std::string content_to_copy = log->m_timestamp + " | " + log->m_filter + " | " + log->m_message;
+            std::string content_to_copy = log->timestamp + " | " + log->filter + " | " + log->message;
             CherryGUI::SetClipboardText(content_to_copy.c_str());
           }
 
@@ -371,7 +371,7 @@ namespace vxe {
             CherryGUI::TableSetColumnIndex(i);
             if (i == 0) {
               ImVec4 color;
-              switch (log->m_level)  // Add "User input" in blue
+              switch (log->level)  // Add "User input" in blue
               {
                 case spdlog::level::critical: color = ImVec4(1.0f, 0.0f, 0.0f, 1.0f); break;
                 case spdlog::level::err: color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f); break;
@@ -389,7 +389,7 @@ namespace vxe {
 
               CherryGUI::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, CherryGUI::GetColorU32(color), rounding);
 
-              switch (log->m_level) {
+              switch (log->level) {
                 case spdlog::level::critical:
                   CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 10.0f);
                   CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
@@ -414,26 +414,26 @@ namespace vxe {
               }
             } else if (i == 1) {
               float column_width = CherryGUI::GetColumnWidth();
-              float text_width = CherryGUI::CalcTextSize(log->m_filter.c_str()).x;
-              CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), log->m_filter.c_str());
+              float text_width = CherryGUI::CalcTextSize(log->filter.c_str()).x;
+              CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), log->filter.c_str());
             } else if (i == 2) {
               float column_width = CherryGUI::GetColumnWidth();
-              float text_width = CherryGUI::CalcTextSize(log->m_timestamp.c_str()).x;
-              CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), log->m_timestamp.c_str());
+              float text_width = CherryGUI::CalcTextSize(log->timestamp.c_str()).x;
+              CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), log->timestamp.c_str());
             } else if (i == 3) {
               ImVec4 message_color;
-              if (log->m_level == spdlog::level::critical) {
+              if (log->level == spdlog::level::critical) {
                 message_color = ImVec4(0.5f, 0.0f, 0.0f, 1.0f);
-              } else if (log->m_level == spdlog::level::err) {
+              } else if (log->level == spdlog::level::err) {
                 message_color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
-              } else if (log->m_level == spdlog::level::warn) {
+              } else if (log->level == spdlog::level::warn) {
                 message_color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
               } else {
                 message_color = ImVec4(1.0f, 1.0f, 1.0f, 0.8f);
               }
 
               CherryGUI::PushTextWrapPos(CherryGUI::GetCursorPosX() + CherryGUI::GetColumnWidth());
-              CherryGUI::TextColored(message_color, log->m_message.c_str());
+              CherryGUI::TextColored(message_color, log->message.c_str());
               CherryGUI::PopTextWrapPos();
             }
           }
@@ -478,7 +478,7 @@ namespace vxe {
         topics_filter_states_.clear();
 
         for (auto log : vxe::get_current_context()->registered_logs) {
-          const std::string &topic = log->m_filter;
+          const std::string &topic = log->filter;
 
           if (oldFilterStates.find(topic) != oldFilterStates.end()) {
             topics_filter_states_[topic] = oldFilterStates[topic];
@@ -491,27 +491,27 @@ namespace vxe {
             topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto &pair) { return pair.second; });
 
         for (auto log : vxe::get_current_context()->registered_logs) {
-          if (oldFilterStates.find(log->m_filter) != oldFilterStates.end()) {
-            topics_filter_states_[log->m_filter] = oldFilterStates[log->m_filter];
+          if (oldFilterStates.find(log->filter) != oldFilterStates.end()) {
+            topics_filter_states_[log->filter] = oldFilterStates[log->filter];
           } else {
-            topics_filter_states_[log->m_filter] = false;
+            topics_filter_states_[log->filter] = false;
           }
 
           if (use_warning_filter_ || use_error_filter_ || use_fatal_filter_ || use_info_filter_) {
-            if ((log->m_level == spdlog::level::critical && !use_fatal_filter_) ||
-                (log->m_level == spdlog::level::err && !use_error_filter_) ||
-                (log->m_level == spdlog::level::warn && !use_warning_filter_) ||
-                (log->m_level == spdlog::level::info && !use_info_filter_)) {
+            if ((log->level == spdlog::level::critical && !use_fatal_filter_) ||
+                (log->level == spdlog::level::err && !use_error_filter_) ||
+                (log->level == spdlog::level::warn && !use_warning_filter_) ||
+                (log->level == spdlog::level::info && !use_info_filter_)) {
               continue;
             }
           }
 
-          if (hasActiveFilter && !topics_filter_states_[log->m_filter]) {
+          if (hasActiveFilter && !topics_filter_states_[log->filter]) {
             continue;
           }
 
           if (!project_search_.empty()) {
-            if (!has_common_subsequence(log->m_message, project_search_)) {
+            if (!has_common_subsequence(log->message, project_search_)) {
               continue;
             }
           }
@@ -524,7 +524,7 @@ namespace vxe {
           }
 
           if (CherryGUI::IsMouseClicked(0) && is_hovered) {
-            std::string content_to_copy = log->m_timestamp + " | " + log->m_filter + " | " + log->m_message;
+            std::string content_to_copy = log->timestamp + " | " + log->filter + " | " + log->message;
             CherryGUI::SetClipboardText(content_to_copy.c_str());
           }
 
@@ -532,24 +532,24 @@ namespace vxe {
             CherryGUI::TableSetColumnIndex(i);
             if (i == 0) {
               ImVec4 message_color;
-              if (log->m_level == spdlog::level::critical) {
+              if (log->level == spdlog::level::critical) {
                 message_color = ImVec4(0.5f, 0.0f, 0.0f, 1.0f);
-              } else if (log->m_level == spdlog::level::err) {
+              } else if (log->level == spdlog::level::err) {
                 message_color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f);
-              } else if (log->m_level == spdlog::level::warn) {
+              } else if (log->level == spdlog::level::warn) {
                 message_color = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
               } else {
                 message_color = ImVec4(1.0f, 1.0f, 1.0f, 0.8f);
               }
 
               CherryGUI::PushTextWrapPos(CherryGUI::GetCursorPosX() + CherryGUI::GetColumnWidth());
-              CherryGUI::TextColored(message_color, log->m_message.c_str());
+              CherryGUI::TextColored(message_color, log->message.c_str());
               CherryGUI::PopTextWrapPos();
             }
             if (i == 1) {
               float column_width = CherryGUI::GetColumnWidth();
-              float text_width = CherryGUI::CalcTextSize(log->m_timestamp.c_str()).x;
-              CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), log->m_timestamp.c_str());
+              float text_width = CherryGUI::CalcTextSize(log->timestamp.c_str()).x;
+              CherryGUI::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 0.5f), log->timestamp.c_str());
             }
           }
 
@@ -577,7 +577,7 @@ namespace vxe {
         topics_filter_states_.clear();
 
         for (auto log : vxe::get_current_context()->registered_logs) {
-          const std::string &topic = log->m_filter;
+          const std::string &topic = log->filter;
 
           if (oldFilterStates.find(topic) != oldFilterStates.end()) {
             topics_filter_states_[topic] = oldFilterStates[topic];
@@ -591,7 +591,7 @@ namespace vxe {
 
         std::string logText;
         for (auto log : vxe::get_current_context()->registered_logs) {
-          std::string line = log->m_timestamp + " | " + log->m_filter + " | " + log->m_message + "\n";
+          std::string line = log->timestamp + " | " + log->filter + " | " + log->message + "\n";
           logText += line;
         }
 

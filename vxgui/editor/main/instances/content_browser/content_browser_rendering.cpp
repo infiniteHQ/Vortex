@@ -628,7 +628,7 @@ namespace vxe {
       for (auto em : vxe::get_current_context()->IO.em) {
         for (auto item : em->get_content_browser_item_identifiers()) {
           std::string path = directoryEntry.path().string();
-          if (item->f_Detect(path)) {
+          if (item->detection_callback(path)) {
             recognized_modules_items_.push_back({ item, path });
             isItem = true;
           }
@@ -638,7 +638,7 @@ namespace vxe {
       for (auto ep : vxe::get_current_context()->IO.ep) {
         for (auto item : ep->get_content_browser_item_identifiers()) {
           std::string path = directoryEntry.path().string();
-          if (item->f_Detect(path)) {
+          if (item->detection_callback(path)) {
             recognized_modules_items_.push_back({ item, path });
             isItem = true;
           }
@@ -1105,16 +1105,16 @@ namespace vxe {
             ItemCardContent content{
               .name = filenameString,
               .path = path,
-              .description = itemEntry.first->m_Description,
+              .description = itemEntry.first->description,
               .size = folderSizeString,
-              .logo = itemEntry.first->m_LogoPath,
+              .logo = itemEntry.first->logo_path,
               .item_ident = itemEntry.first,
             };
 
             ItemCardStyle style{
               .bg_color = IM_COL32(56, 56, 56, 150),
               .border_color = IM_COL32(50, 50, 50, 255),
-              .line_color = Cherry::HexToImU32(itemEntry.first->m_LineColor),
+              .line_color = Cherry::HexToImU32(itemEntry.first->line_color),
               .max_text_width = 100.0f,
               .border_radius = 5.0f,
             };
@@ -1366,7 +1366,7 @@ namespace vxe {
 
               if (item_handles_.empty()) {
                 if (item_ident) {
-                  item_handles_ = vxe::get_all_item_handlers_for(item_ident->m_Name);
+                  item_handles_ = vxe::get_all_item_handlers_for(item_ident->name);
                 } else {
                   item_handles_ = vxe::get_all_item_handlers_for(get_file_type_str(fileType));
                 }
@@ -1396,7 +1396,7 @@ namespace vxe {
                         Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_foldersearch.png")),
                         NULL)) {
                   change_directory(path);
-                  itepath_s_.push_back({ path.string(), item_ident->m_LineColor });
+                  itepath_s_.push_back({ path.string(), item_ident->line_color });
                   CherryGUI::CloseCurrentPopup();
                 }
               }
@@ -1569,7 +1569,7 @@ namespace vxe {
 
           if (!isFolder) {
             if (item_ident) {
-              tex = Cherry::GetTexture(item_ident->m_LogoPath);
+              tex = Cherry::GetTexture(item_ident->logo_path);
             } else {
               auto it = FILE_ICONS.find(fileType);
               if (it != FILE_ICONS.end()) {
@@ -1660,7 +1660,7 @@ namespace vxe {
 
           CherryGUI::TableSetColumnIndex(1);
           if (item_ident) {
-            CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), item_ident->m_Description.c_str());
+            CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), item_ident->description.c_str());
           } else {
             CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), isFolder ? "Folder" : "File");
           }
@@ -2175,16 +2175,16 @@ namespace vxe {
             ItemCardContent content{
               .name = filenameString,
               .path = path,
-              .description = itemEntry.first->m_Description,
+              .description = itemEntry.first->description,
               .size = folderSizeString,
-              .logo = itemEntry.first->m_LogoPath,
+              .logo = itemEntry.first->logo_path,
               .item_ident = itemEntry.first,
             };
 
             ItemCardStyle style{
               .bg_color = IM_COL32(56, 56, 56, 150),
               .border_color = IM_COL32(50, 50, 50, 255),
-              .line_color = Cherry::HexToImU32(itemEntry.first->m_LineColor),
+              .line_color = Cherry::HexToImU32(itemEntry.first->line_color),
               .max_text_width = 100.0f,
               .border_radius = 5.0f,
             };

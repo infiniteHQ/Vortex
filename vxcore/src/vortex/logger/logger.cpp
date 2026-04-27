@@ -12,11 +12,11 @@
 
 #include "../../../include/vortex_internals.h"
 
-VORTEX_API void vxe::drop_loggers() {
+void vxe::drop_loggers() {
   spdlog::drop_all();
 }
 
-VORTEX_API std::shared_ptr<spdlog::logger> vxe::create_log_pool(const std::string &pool_name) {
+std::shared_ptr<spdlog::logger> vxe::create_log_pool(const std::string &pool_name) {
   auto ctx = vxe::get_current_context();
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -35,7 +35,7 @@ VORTEX_API std::shared_ptr<spdlog::logger> vxe::create_log_pool(const std::strin
   return new_logger;
 }
 
-VORTEX_API std::shared_ptr<spdlog::logger> vxe::create_global_logger() {
+std::shared_ptr<spdlog::logger> vxe::create_global_logger() {
   auto ctx = vxe::get_current_context();
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -49,13 +49,13 @@ VORTEX_API std::shared_ptr<spdlog::logger> vxe::create_global_logger() {
   return ctx->global_logger;
 }
 
-VORTEX_API std::shared_ptr<spdlog::logger> vxe::create_console_logger() {
+std::shared_ptr<spdlog::logger> vxe::create_console_logger() {
   auto ctx = vxe::get_current_context();
   ctx->console_logger = spdlog::stdout_color_mt("console");
   return ctx->console_logger;
 }
 
-VORTEX_API void vxe::log_info(const std::string &pool_name, const std::string &scope, const std::string &message) {
+void vxe::log_info(const std::string &pool_name, const std::string &scope, const std::string &message) {
   auto ctx = vxe::get_current_context();
   if (ctx->logger) {
     bool finded = false;
@@ -72,7 +72,7 @@ VORTEX_API void vxe::log_info(const std::string &pool_name, const std::string &s
 
         if (ctx->logger_registering) {
           std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::info, scope, message);
-          log->m_timestamp = vxe::get_current_timestamp();
+          log->timestamp = vxe::get_current_timestamp();
           ctx->registered_logs.push_back(log);
         }
 
@@ -92,16 +92,7 @@ VORTEX_API void vxe::log_info(const std::string &pool_name, const std::string &s
   }
 }
 
-/**
- * @brief log_info logs an informational message.
- *
- * This function logs an informational message using the provided scope and
- * message strings.
- *
- * @param scope The scope of the log message.
- * @param message The message to be logged.
- */
-VORTEX_API void vxe::log_info(const std::string &scope, const std::string &message) {
+void vxe::log_info(const std::string &scope, const std::string &message) {
   auto ctx = vxe::get_current_context();
   if (ctx->logger) {
     ctx->global_logger->info("[{}] {}", "global", "[" + scope + "] : " + message);
@@ -109,73 +100,46 @@ VORTEX_API void vxe::log_info(const std::string &scope, const std::string &messa
 
     if (ctx->logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::info, scope, message);
-      log->m_timestamp = vxe::get_current_timestamp();
+      log->timestamp = vxe::get_current_timestamp();
       ctx->registered_logs.push_back(log);
     }
   }
 }
 
-/**
- * @brief log_warn logs a warning message.
- *
- * This function logs a warning message using the provided scope and message
- * strings.
- *
- * @param scope The scope of the log message.
- * @param message The message to be logged.
- */
-VORTEX_API void vxe::log_warn(const std::string &scope, const std::string &message) {
+void vxe::log_warn(const std::string &scope, const std::string &message) {
   auto ctx = vxe::get_current_context();
   if (ctx->logger) {
     spdlog::warn("[" + scope + "] : " + message);
 
     if (ctx->logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::warn, scope, message);
-      log->m_timestamp = vxe::get_current_timestamp();
+      log->timestamp = vxe::get_current_timestamp();
       ctx->registered_logs.push_back(log);
     }
   }
 }
 
-/**
- * @brief log_error logs an error message.
- *
- * This function logs an error message using the provided scope and message
- * strings.
- *
- * @param scope The scope of the log message.
- * @param message The message to be logged.
- */
-VORTEX_API void vxe::log_error(const std::string &scope, const std::string &message) {
+void vxe::log_error(const std::string &scope, const std::string &message) {
   auto ctx = vxe::get_current_context();
   if (ctx->logger) {
     spdlog::error("[" + scope + "] : " + message);
 
     if (ctx->logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::err, scope, message);
-      log->m_timestamp = vxe::get_current_timestamp();
+      log->timestamp = vxe::get_current_timestamp();
       ctx->registered_logs.push_back(log);
     }
   }
 }
 
-/**
- * @brief log_fatal logs a fatal error message.
- *
- * This function logs a fatal error message using the provided scope and message
- * strings.
- *
- * @param scope The scope of the log message.
- * @param message The message to be logged.
- */
-VORTEX_API void vxe::log_fatal(const std::string &scope, const std::string &message) {
+void vxe::log_fatal(const std::string &scope, const std::string &message) {
   auto ctx = vxe::get_current_context();
   if (ctx->logger) {
     spdlog::critical("[" + scope + "] : " + message);
 
     if (ctx->logger_registering) {
       std::shared_ptr<VxSystemLog> log = std::make_shared<VxSystemLog>(spdlog::level::level_enum::critical, scope, message);
-      log->m_timestamp = vxe::get_current_timestamp();
+      log->timestamp = vxe::get_current_timestamp();
       ctx->registered_logs.push_back(log);
     }
   }

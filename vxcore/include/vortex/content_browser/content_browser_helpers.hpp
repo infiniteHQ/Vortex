@@ -19,13 +19,13 @@
 
 class ContenBrowserItem {
  public:
-  bool (*f_Detect)(const std::string &path);
+  bool (*detection_callback)(const std::string &path);
 
   std::string m_Name;
 
   ImTextureID m_Logo;
-  ImVec4 m_LineColor;
-  std::string m_Description;
+  ImVec4 line_color;
+  std::string description;
 
   ContenBrowserItem(
       bool (*detect_function)(const std::string &path),
@@ -33,9 +33,9 @@ class ContenBrowserItem {
       const std::string &description,
       const ImVec4 &line_color)
       : m_Name(name),
-        m_Description(description),
-        f_Detect(detect_function),
-        m_LineColor(line_color) { };
+        description(description),
+        detection_callback(detect_function),
+        line_color(line_color) { };
 };
 
 class ContenBrowserHandler {
@@ -45,8 +45,8 @@ class ContenBrowserHandler {
   std::string m_Name;
 
   ImTextureID m_Logo;
-  ImVec4 m_LineColor;
-  std::string m_Description;
+  ImVec4 line_color;
+  std::string description;
 };
 
 // All custom pinned folder.
@@ -63,7 +63,7 @@ class ContenBrowserCustomFolder {
  public:
   std::string m_Name;
   ImTextureID m_Logo;
-  ImVec4 m_LineColor;
+  ImVec4 line_color;
   bool m_IsFavorite;
 };
 

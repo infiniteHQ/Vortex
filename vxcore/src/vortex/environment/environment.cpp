@@ -77,18 +77,18 @@ VORTEX_API void vxe::refresh_environment_projects() {
 
 VORTEX_API void vxe::initialize_platform_vendor() {
 #if defined(__linux__)
-  vxe::get_current_context()->m_PlatformVendor = PlatformVendor::Linux;
+  vxe::get_current_context()->platform_vendor = PlatformVendor::Linux;
 #elif defined(_WIN32) || defined(_WIN64)
-  vxe::get_current_context()->m_PlatformVendor = PlatformVendor::Windows;
+  vxe::get_current_context()->platform_vendor = PlatformVendor::Windows;
 #elif defined(__APPLE__)
-  vxe::get_current_context()->m_PlatformVendor = PlatformVendor::Macos;
+  vxe::get_current_context()->platform_vendor = PlatformVendor::Macos;
 #else
   //
 #endif
 }
 
 VORTEX_API bool vxe::is_linux() {
-  return vxe::get_current_context()->m_PlatformVendor == PlatformVendor::Linux;
+  return vxe::get_current_context()->platform_vendor == PlatformVendor::Linux;
 }
 
 VORTEX_API bool vxe::is_not_linux() {
@@ -96,7 +96,7 @@ VORTEX_API bool vxe::is_not_linux() {
 }
 
 VORTEX_API bool vxe::is_windows() {
-  return vxe::get_current_context()->m_PlatformVendor == PlatformVendor::Windows;
+  return vxe::get_current_context()->platform_vendor == PlatformVendor::Windows;
 }
 
 VORTEX_API bool vxe::is_not_windows() {
@@ -104,7 +104,7 @@ VORTEX_API bool vxe::is_not_windows() {
 }
 
 VORTEX_API bool vxe::is_macos() {
-  return vxe::get_current_context()->m_PlatformVendor == PlatformVendor::Macos;
+  return vxe::get_current_context()->platform_vendor == PlatformVendor::Macos;
 }
 
 VORTEX_API bool vxe::is_not_macos() {

@@ -69,8 +69,8 @@ VORTEX_API void vxe::post_custom_folder_to_json() {
 
   for (auto folder : ctx->IO.contentbrowser_customfolders) {
     nlohmann::json folder_data;
-    folder_data["color"] = folder->m_Color;
-    folder_data["isFav"] = folder->m_IsFav;
+    folder_data["color"] = folder->color;
+    folder_data["isFav"] = folder->is_fav;
     folder_data["path"] = folder->path;
 
     json_data["custom_folders"].push_back(folder_data);
@@ -105,8 +105,8 @@ vxe::publish_content_browser_custom_folder(const std::string &path, const std::s
 
   for (auto folder : ctx->IO.contentbrowser_customfolders) {
     if (folder->path == path) {
-      folder->m_Color = hex_color;
-      folder->m_IsFav = isFav;
+      folder->color = hex_color;
+      folder->is_fav = isFav;
       folder->path = path;
       vxe::post_custom_folder_to_json();
       return;
@@ -114,8 +114,8 @@ vxe::publish_content_browser_custom_folder(const std::string &path, const std::s
   }
 
   std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
-  new_folder->m_Color = hex_color;
-  new_folder->m_IsFav = isFav;
+  new_folder->color = hex_color;
+  new_folder->is_fav = isFav;
   new_folder->path = path;
 
   ctx->IO.contentbrowser_customfolders.push_back(new_folder);
@@ -128,7 +128,7 @@ VORTEX_API bool vxe::content_browser_folder_is_fav(const std::string &path) {
 
   for (auto customized_folder : ctx->IO.contentbrowser_customfolders) {
     if (customized_folder->path == path) {
-      return customized_folder->m_IsFav;
+      return customized_folder->is_fav;
     }
   }
   return false;
@@ -139,7 +139,7 @@ VORTEX_API bool vxe::get_content_browser_folder_color(const std::string &path, I
 
   for (auto customized_folder : ctx->IO.contentbrowser_customfolders) {
     if (customized_folder->path == path) {
-      *color = Cherry::HexToImU32(customized_folder->m_Color);
+      *color = Cherry::HexToImU32(customized_folder->color);
       return true;
     }
   }
@@ -228,8 +228,8 @@ VORTEX_API void vxe::fetch_custom_folders() {
 
     for (auto &directory : json_data["custom_folders"]) {
       std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
-      new_folder->m_Color = directory["color"].get<std::string>();
-      new_folder->m_IsFav = directory["isFav"].get<bool>();
+      new_folder->color = directory["color"].get<std::string>();
+      new_folder->is_fav = directory["isFav"].get<bool>();
       new_folder->path = directory["path"].get<std::string>();
 
       vxe::create_folder_if_not_exists(new_folder->path);

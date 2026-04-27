@@ -398,7 +398,7 @@ namespace vxe {
 
       if (item_handles_.empty()) {
         if (p.content.item_ident) {
-          item_handles_ = vxe::get_all_item_handlers_for(p.content.item_ident->m_Name);
+          item_handles_ = vxe::get_all_item_handlers_for(p.content.item_ident->name);
         } else {
           item_handles_ = vxe::get_all_item_handlers_for(get_file_type_str(fileType));
         }
@@ -428,7 +428,7 @@ namespace vxe {
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_foldersearch.png")),
                 NULL)) {
           change_directory(p.content.path);
-          itepath_s_.push_back({ p.content.path, p.content.item_ident->m_LineColor });
+          itepath_s_.push_back({ p.content.path, p.content.item_ident->line_color });
           CherryGUI::CloseCurrentPopup();
         }
       }
@@ -864,7 +864,7 @@ namespace vxe {
 
       if (item_handles_.empty()) {
         if (p.content.item_ident) {
-          item_handles_ = vxe::get_all_item_handlers_for(p.content.item_ident->m_Name);
+          item_handles_ = vxe::get_all_item_handlers_for(p.content.item_ident->name);
         } else {
           item_handles_ = vxe::get_all_item_handlers_for(get_file_type_str(fileType));
         }
@@ -894,7 +894,7 @@ namespace vxe {
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_foldersearch.png")),
                 NULL)) {
           change_directory(p.content.path);
-          itepath_s_.push_back({ p.content.path, p.content.item_ident->m_LineColor });
+          itepath_s_.push_back({ p.content.path, p.content.item_ident->line_color });
           CherryGUI::CloseCurrentPopup();
         }
       }
