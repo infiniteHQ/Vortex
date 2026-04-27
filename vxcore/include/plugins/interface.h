@@ -158,8 +158,8 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API void ExecuteInputEvent(const std::string &name, ArgumentValues &args, ReturnValues &ret);
 
   // Trigger all output events for every modules/plugins
-  VORTEX_API void DeployOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
-  VORTEX_API void ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
+  // VORTEX_API void DeployOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
+  // VORTEX_API void ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
 
   template<typename T>
   VORTEX_API void AddPluginItemParam(const void *item, std::pair<std::string, T> parameter);
@@ -184,7 +184,6 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
     m_lua_handlers.push_back(handler);
   }
 
-  std::shared_ptr<hArgs> m_args;
   std::string m_datapath;
 
  public:

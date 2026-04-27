@@ -6,12 +6,11 @@
 #define PLUGIN_LOAD_H
 
 namespace vxe {
-VORTEX_API void
-LoadSystemPlugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins);
-VORTEX_API void
-LoadEditorPlugins(const std::string &directory,
-                  std::vector<void *> &plugin_handles,
-                  std::vector<std::shared_ptr<PluginInterface>> &plugins);
-} // namespace vxe
+  VORTEX_API void LoadSystemPlugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins);
+  VORTEX_API void LoadEditorPlugins(
+      const std::string &directory,
+      std::vector<void *> &plugin_handles,
+      std::vector<std::shared_ptr<PluginInterface>> &plugins);
+}  // namespace vxe
 
 #endif

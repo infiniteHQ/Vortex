@@ -186,4 +186,5 @@ VORTEX_API void vxe::InstallModuleToSystem(const std::string &path) {
 }
 
 VORTEX_API void vxe::AddModuleToProject(const std::string &module_name) {
+  // TODO
 }

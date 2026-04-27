@@ -141,8 +141,8 @@ VORTEX_API class ModuleInterface {
   VORTEX_API void ExecuteInputEvent(const std::string &name, ArgumentValues &args, ReturnValues &ret);
 
   // Trigger all output events for every modules/plugins
-  VORTEX_API void DeployOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
-  VORTEX_API void ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
+  // VORTEX_API void DeployOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
+  // VORTEX_API void ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
 
   template<typename T>
   VORTEX_API void AddModuleItemParam(const void *item, std::pair<std::string, T> parameter);
@@ -160,7 +160,7 @@ VORTEX_API class ModuleInterface {
   VORTEX_API void CheckDependencies();
   VORTEX_API void CheckVersion();
 
-  std::shared_ptr<hArgs> m_args;
+  // std::shared_ptr<hArgs> m_args;
   std::string m_datapath;
 
  public:

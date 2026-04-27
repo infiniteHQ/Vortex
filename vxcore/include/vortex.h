@@ -114,25 +114,7 @@ namespace vxe {
   VORTEX_API void destroy_context(VxContext *context = NULL);
   VORTEX_API VxContext *get_current_context();
   VORTEX_API void set_current_context(VxContext *context);
-
   VORTEX_API void initialize();
-
-  // to install plugin
-  VORTEX_API void InstallPluginToSystem(const std::string &path);
-  VORTEX_API void InstallPlugin(const std::string &plugin_name, const std::string &version, bool &restart_plugins);
-  VORTEX_API void AddPluginToProject(const std::string &plugin_name);
-
-  // to menubar
-  VORTEX_API void PushEditMenuItem(
-      const std::string &title,
-      const std::function<void()> &action,
-      const std::string &logo = "",
-      const std::string &section = "");
-  VORTEX_API void PopEditMenuItem(const int &count = 1);
-  VORTEX_API void ClearEditMenuItem();
-  VORTEX_API void PushCustomMenu(const std::string &title, const std::function<void()> &render);
-  VORTEX_API void PopCustomMenu(const int &count = 1);
-  VORTEX_API void ClearCustomMenus();
 
   // Memory Allocators
   // - Those functions are not reliant on the current context.

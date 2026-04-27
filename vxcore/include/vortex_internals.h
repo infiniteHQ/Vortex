@@ -12,6 +12,7 @@
 #include "./utils/infos.hpp"
 #include "./vortex/content_browser/content_browser.hpp"
 #include "./vortex/credits/credits.hpp"
+#include "./vortex/customizations/customizations.hpp"
 #include "./vortex/documentation/documentation.hpp"
 #include "./vortex/environment/environment.hpp"
 #include "./vortex/events/events.hpp"

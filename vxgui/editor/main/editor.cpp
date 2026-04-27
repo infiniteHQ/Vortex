@@ -719,10 +719,10 @@ void Editor::render_menubar() {
   CherryGUI::PopStyleColor(2);
 
   // Clear edits menuitems from previous render.
-  vxe::ClearEditMenuItem();
+  vxe::clear_edit_menu_item();
 
   // Clear custom menus from previous render.
-  vxe::ClearCustomMenus();
+  vxe::clear_custom_menus();
 }
 
 Cherry::Application *CreateEditor(int argc, char **argv) {

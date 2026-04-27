@@ -153,6 +153,42 @@ VORTEX_API std::vector<std::shared_ptr<PluginInterface>> vxe::FindPluginsInDirec
   return interfaces;
 }
 
+VORTEX_API void vxe::InstallPluginToSystem(const std::string &path) {
+  std::string plugins_path = "~/.vx/plugins";
+  std::string json_file = path + "/plugin.json";
+
+  try {
+    auto json_data = vxe::dump_json(json_file);
+    std::string name = json_data["name"].get<std::string>();
+    std::string proper_name = json_data["proper_name"].get<std::string>();
+    std::string type = json_data["type"].get<std::string>();
+    std::string version = json_data["version"].get<std::string>();
+    std::string description = json_data["description"].get<std::string>();
+    std::string author = json_data["author"].get<std::string>();
+
+    // std::string origin_path = path.substr(0, path.find_last_of("/"));
+    plugins_path += "/" + name + "." + version;
+
+    vxe::log_info("Core", "Installing the plugin " + name + "...");
+
+    {
+      std::string cmd = "mkdir " + plugins_path;
+      system(cmd.c_str());
+    }
+
+    {
+      std::string cmd = "cp -r " + path + "/* " + plugins_path;
+      system(cmd.c_str());
+    }
+  } catch (const std::exception &e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+  }
+}
+
+VORTEX_API void vxe::AddPluginToProject(const std::string &plugin_name) {
+  // TODO
+}
+
 LuaItemHandler::LuaItemHandler(int ref, lua_State *state, std::shared_ptr<PluginInterface> p)
     : lua_ref(ref),
       L(state),
