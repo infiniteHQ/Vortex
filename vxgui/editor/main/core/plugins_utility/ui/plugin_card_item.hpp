@@ -119,18 +119,18 @@ namespace vxe {
         std::string *search_ptr)
 
         : Cherry::Component(identifier),
-          m_plugin(plugin),
+          plugin_(plugin),
           name_(name),
           path_(path),
           description_(description),
-          m_size(size),
-          m_selected(selected),
+          size_(size),
+          selected_(selected),
           logo_(logo),
-          m_bgColor(bgColor),
-          m_borderColor(borderColor),
-          m_lineColor(lineColor),
-          m_maxTextWidth(maxTextWidth),
-          m_borderRadius(borderRadius),
+          bg_color_(bgColor),
+          border_color_(borderColor),
+          line_color_(lineColor),
+          max_text_width_(maxTextWidth),
+          border_radius_(borderRadius),
           plugin_deletion_callback_(deletion_callback),
           search_ptr_(search_ptr) {
     }
@@ -155,13 +155,13 @@ namespace vxe {
       const char *originalText = name_.c_str();
       std::string truncatedText = name_;
 
-      if (CherryGUI::CalcTextSize(originalText).x > m_maxTextWidth) {
+      if (CherryGUI::CalcTextSize(originalText).x > max_text_width_) {
         size_t len = name_.size();
 
         size_t firstPart = std::min<size_t>(20, len);
         truncatedText = name_.substr(0, firstPart);
 
-        if (CherryGUI::CalcTextSize(truncatedText.c_str()).x > m_maxTextWidth) {
+        if (CherryGUI::CalcTextSize(truncatedText.c_str()).x > max_text_width_) {
           size_t firstLine = std::min<size_t>(10, len);
           size_t secondLine = (len > 10) ? std::min<size_t>(10, len - 10) : 0;
 
@@ -174,33 +174,33 @@ namespace vxe {
         truncatedText = name_ + "\n";
       }
 
-      std::string truncatedDesc = m_plugin->description_;
+      std::string truncatedDesc = plugin_->description_;
 
       if (truncatedDesc.length() > 100) {
         truncatedDesc = truncatedDesc.substr(0, 97) + "...";
       }
       const char *originalDesc = truncatedDesc.c_str();
 
-      if (CherryGUI::CalcTextSize(originalDesc).x > m_maxTextWidth) {
-        size_t len = m_plugin->description_.size();
+      if (CherryGUI::CalcTextSize(originalDesc).x > max_text_width_) {
+        size_t len = plugin_->description_.size();
 
         size_t firstPart = std::min<size_t>(90, len);
-        truncatedDesc = m_plugin->description_.substr(0, firstPart);
+        truncatedDesc = plugin_->description_.substr(0, firstPart);
 
-        if (CherryGUI::CalcTextSize(truncatedDesc.c_str()).x > m_maxTextWidth) {
+        if (CherryGUI::CalcTextSize(truncatedDesc.c_str()).x > max_text_width_) {
           size_t firstLine = std::min<size_t>(55, len);
           size_t secondLine = (len > 55) ? len - 55 : 0;
 
-          truncatedDesc = m_plugin->description_.substr(0, firstLine);
+          truncatedDesc = plugin_->description_.substr(0, firstLine);
           if (secondLine > 0) {
-            truncatedDesc += "\n" + m_plugin->description_.substr(55, secondLine);
+            truncatedDesc += "\n" + plugin_->description_.substr(55, secondLine);
           }
         }
       } else {
-        truncatedDesc = m_plugin->description_ + "\n";
+        truncatedDesc = plugin_->description_ + "\n";
       }
 
-      ImVec2 fixedSize(m_maxTextWidth + padding * 2 + 150.0f, logoSize + extraHeight + padding * 2);
+      ImVec2 fixedSize(max_text_width_ + padding * 2 + 150.0f, logoSize + extraHeight + padding * 2);
 
       ImVec2 cursorPos = CherryGUI::GetCursorScreenPos();
 
@@ -229,15 +229,15 @@ namespace vxe {
       ImDrawList *drawList = CherryGUI::GetWindowDrawList();
 
       drawList->AddRectFilled(
-          cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y), m_bgColor, m_borderRadius);
+          cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y), bg_color_, border_radius_);
       drawList->AddRectFilled(
           cursorPos,
           ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + thumbnailIconOffsetY + squareSize.y),
           IM_COL32(26, 26, 26, 255),
-          m_borderRadius,
+          border_radius_,
           ImDrawFlags_RoundCornersTop);
       drawList->AddRect(
-          cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y), m_borderColor, m_borderRadius, 0, 1.0f);
+          cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y), border_color_, border_radius_, 0, 1.0f);
 
       ImVec2 logoPos = ImVec2(cursorPos.x + (fixedSize.x - squareSize.x) / 2, cursorPos.y + padding);
 
@@ -251,8 +251,8 @@ namespace vxe {
       CherryGUI::PushFont(CherryGUI::GetFont());
 
       CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-      CherryGUI::PushItemWidth(m_maxTextWidth);
-      CherryGUI::TextWrapped(m_size.c_str());
+      CherryGUI::PushItemWidth(max_text_width_);
+      CherryGUI::TextWrapped(size_.c_str());
       CherryGUI::PopItemWidth();
       CherryGUI::PopStyleColor();
 
@@ -262,14 +262,14 @@ namespace vxe {
       ImVec2 lineStart = ImVec2(cursorPos.x, cursorPos.y + squareSize.y + thumbnailIconOffsetY + separatorHeight);
       ImVec2 lineEnd =
           ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + squareSize.y + thumbnailIconOffsetY + separatorHeight);
-      drawList->AddLine(lineStart, lineEnd, m_lineColor, separatorHeight);
+      drawList->AddLine(lineStart, lineEnd, line_color_, separatorHeight);
 
       CherryGUI::GetFont()->Scale = 0.9f;
       CherryGUI::PushFont(CherryGUI::GetFont());
 
       ImVec2 textPos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY + textOffsetY);
       CherryGUI::SetCursorScreenPos(textPos);
-      CherryGUI::PushItemWidth(m_maxTextWidth);
+      CherryGUI::PushItemWidth(max_text_width_);
       ImU32 textColor = IM_COL32(255, 255, 255, 255);
       ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
       ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
@@ -290,7 +290,7 @@ namespace vxe {
       CherryGUI::PushFont(CherryGUI::GetFont());
 
       CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-      CherryGUI::PushItemWidth(m_maxTextWidth);
+      CherryGUI::PushItemWidth(max_text_width_);
       CherryGUI::TextWrapped(description_.c_str());
       CherryGUI::PopItemWidth();
       CherryGUI::PopStyleColor();
@@ -327,22 +327,22 @@ namespace vxe {
       ImVec2 firstButtonPos = ImVec2(cursorPos.x + fixedSize.x - padding - buttonWidth - 10, cursorPos.y + padding);
       CherryGUI::SetCursorScreenPos(firstButtonPos);
 
-      if (m_plugin->state_ == "failed") {
+      if (plugin_->state_ == "failed") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"))
                 .GetDataAs<bool>("isClicked")) {
-          m_plugin->start();
+          plugin_->start();
         }
 
-      } else if (m_plugin->state_ == "unknow" || m_plugin->state_ == "stopped") {
+      } else if (plugin_->state_ == "unknow" || plugin_->state_ == "stopped") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_start.png"))
                 .GetDataAs<bool>("isClicked")) {
-          m_plugin->start();
+          plugin_->start();
         }
 
       } else {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_stop.png"))
                 .GetDataAs<bool>("isClicked")) {
-          m_plugin->stop();
+          plugin_->stop();
         }
       }
 
@@ -350,9 +350,9 @@ namespace vxe {
       CherryGUI::SetCursorScreenPos(secondButtonPos);
 
       if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png")).GetDataAs<bool>("isClicked")) {
-        m_plugin->stop();
+        plugin_->stop();
         if (plugin_deletion_callback_) {
-          plugin_deletion_callback_(m_plugin);
+          plugin_deletion_callback_(plugin_);
         }
       }
 
@@ -432,19 +432,18 @@ namespace vxe {
 
    private:
     std::function<void(const std::shared_ptr<PluginInterface> &mod)> plugin_deletion_callback_;
-    std::shared_ptr<PluginInterface> m_plugin;
+    std::shared_ptr<PluginInterface> plugin_;
     std::string name_;
     std::string path_;
     std::string description_;
-    std::string m_size;
-    bool m_selected;
+    std::string size_;
     std::string logo_;
-    ImU32 m_bgColor;
-    ImU32 m_borderColor;
-    ImU32 m_lineColor;
-    float m_maxTextWidth;
-    float m_borderRadius;
-
+    ImU32 bg_color_;
+    ImU32 border_color_;
+    ImU32 line_color_;
+    bool selected_;
+    float max_text_width_;
+    float border_radius_;
     std::string *search_ptr_;
   };
 
