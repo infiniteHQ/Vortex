@@ -1,19 +1,16 @@
+//
+//  create.cpp
+//  Sources for search folders and files on a filesystem
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-/**
- * @brief search_files_recursive searches for files recursively in a directory.
- *
- * This function recursively searches for files in the specified directory and
- * its subdirectories. If a file with the specified filename is found, its path
- * is added to the provided vector of filenames.
- *
- * @param path The path of the directory to search in.
- * @param filename The name of the file to search for.
- * @param file A vector to store the paths of the found files.
- * @return The path of the first found file matching the filename, or "null" if
- * no file is found.
- */
 VORTEX_API void
 vxe::search_files_recursive(const fs::path &path, const std::string &filename, std::vector<std::string> &file) {
   try {
@@ -30,19 +27,6 @@ vxe::search_files_recursive(const fs::path &path, const std::string &filename, s
   }
 }
 
-/**
- * @brief search_files_recursive searches for files recursively in a directory.
- *
- * This function recursively searches for files in the specified directory and
- * its subdirectories. If a file with the specified filename is found, its path
- * is added to the provided vector of filenames.
- *
- * @param path The path of the directory to search in.
- * @param filename The name of the file to search for.
- * @param file A vector to store the paths of the found files.
- * @return The path of the first found file matching the filename, or "null" if
- * no file is found.
- */
 VORTEX_API std::string vxe::search_files_recursive(
     const fs::path &path,
     const std::string &filename,
@@ -72,18 +56,6 @@ VORTEX_API std::string vxe::search_files_recursive(
   return "null";
 }
 
-/**
- * @brief search_files searches for files in a directory.
- *
- * This function searches for files in the specified directory and its
- * subdirectories. It returns a vector containing the paths of all files found
- * matching the specified filename.
- *
- * @param path The relative path of the directory to search in.
- * @param filename The name of the file to search for.
- * @return A vector containing the paths of all files found matching the
- * filename.
- */
 VORTEX_API std::vector<std::string> vxe::search_files(const std::string &path, const std::string &filename) {
   std::vector<std::string> foundFiles;
   fs::path fullPath(path);
@@ -110,18 +82,6 @@ VORTEX_API std::vector<std::string> vxe::search_files(const std::string &path, c
   return foundFiles;
 }
 
-/**
- * @brief search_files searches for files in a directory.
- *
- * This function searches for files in the specified directory and its
- * subdirectories. It returns a vector containing the paths of all files found
- * matching the specified filename.
- *
- * @param path The relative path of the directory to search in.
- * @param filename The name of the file to search for.
- * @return A vector containing the paths of all files found matching the
- * filename.
- */
 VORTEX_API std::vector<std::string> vxe::search_files(const std::string &path, const std::string &filename, int recursions) {
   // Initialize a vector to store the paths of found files
   std::vector<std::string> fichiersTest;
@@ -133,18 +93,6 @@ VORTEX_API std::vector<std::string> vxe::search_files(const std::string &path, c
   return fichiersTest;
 }
 
-/**
- * @brief search_files searches for files in a directory.
- *
- * This function searches for files in the specified directory and its
- * subdirectories (in system variant). It returns a vector containing the paths
- * of all files found matching the specified filename.
- *
- * @param path The relative path of the directory to search in.
- * @param filename The name of the file to search for.
- * @return A vector containing the paths of all files found matching the
- * filename.
- */
 VORTEX_API std::vector<std::string> vxe::search_system_files(const std::string &path, const std::string &filename) {
   // Initialize a vector to store the paths of found files
   std::vector<std::string> fichiersTest;
