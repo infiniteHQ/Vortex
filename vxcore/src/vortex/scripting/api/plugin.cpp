@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <plugins/interface.h>
+#include <plugins/interface.hpp>
 #include <vortex.h>
 
 #include <vortex/scripting/scripting.hpp>

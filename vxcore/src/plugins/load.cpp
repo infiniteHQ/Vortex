@@ -8,9 +8,10 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <plugins/load.h>
 #include <vortex.h>
 #include <vortex_internals.h>
+
+#include <plugins/load.hpp>
 
 namespace vxe {
 

@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <templates/delete.h>
+#include <templates/delete.hpp>
 #include <vortex.h>
 #include <vortex_internals.h>
 

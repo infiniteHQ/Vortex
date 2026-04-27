@@ -1,3 +1,13 @@
+//
+//  lua_helpers.hpp
+//  Helpers and utilities for LUA scripting features of Vortex
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #pragma once
 #include <vortex.h>
 
@@ -20,7 +30,7 @@ inline const char ACTIVE_PLUGIN_KEY = 0;
 
 #define VXLUA_REGISTER_GLOBAL_FUNC(global, name)                       \
   do {                                                                 \
-    lua_State *L = Cherry::script::get_scripting_engine().get_state(); \
+    lua_State *L = Cherry::Script::get_scripting_engine().get_state(); \
                                                                        \
     lua_getglobal(L, global);                                          \
     if (lua_isnil(L, -1)) {                                            \
@@ -71,7 +81,7 @@ namespace vxe {
     lua_pushboolean(L, val);
   }
 
-  static nlohmann::json LuaTableToJson(lua_State *L, int index) {
+  static nlohmann::json lua_table_to_json(lua_State *L, int index) {
     nlohmann::json j = nlohmann::json::object();
 
     lua_pushnil(L);
@@ -92,7 +102,7 @@ namespace vxe {
 
     return j;
   }
-  static void JsonToLuaTable(lua_State *L, const nlohmann::json &j) {
+  static void json_to_lua_table(lua_State *L, const nlohmann::json &j) {
     lua_newtable(L);
 
     for (auto &[key, value] : j.items()) {

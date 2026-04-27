@@ -1,8 +1,18 @@
+//
+//  content_browser.hpp
+//  Headers for all content browser backends and manipulation features.
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #pragma once
 #include <vortex.h>
 
-#include "./modules/interface.h"
-#include "./plugins/interface.h"
+#include "./modules/interface.hpp"
+#include "./plugins/interface.hpp"
 
 #ifndef VORTEX_CONTENT_BROWSER_HPP
 #define VORTEX_CONTENT_BROWSER_HPP

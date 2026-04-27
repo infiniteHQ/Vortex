@@ -1,0 +1,22 @@
+//
+//  render_instances.hpp
+//  Headers for modules render instances
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
+#include "../vortex.h"
+#include "../vortex_internals.h"
+
+#ifndef MODULE_RENDERINSTANCE_H
+#define MODULE_RENDERINSTANCE_H
+
+class ModuleRenderInstance {
+ public:
+  virtual void render() { };
+};
+
+#endif

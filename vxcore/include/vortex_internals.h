@@ -1,3 +1,12 @@
+//
+//  vortex_internals.h
+//  Includes, structures and context pointer for the internal API of vortex.
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
 
 #pragma once
 
@@ -5,10 +14,10 @@
 #include "vortex.h"
 #endif
 
-#include "./modules/interface.h"
-#include "./plugins/interface.h"
-#include "./templates/install.h"
-#include "./templates/interface.h"
+#include "./modules/interface.hpp"
+#include "./plugins/interface.hpp"
+#include "./templates/install.hpp"
+#include "./templates/interface.hpp"
 #include "./utils/infos.hpp"
 #include "./vortex/content_browser/content_browser.hpp"
 #include "./vortex/credits/credits.hpp"

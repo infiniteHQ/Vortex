@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include "../../include/modules/event.h"
+#include "../../include/modules/event.hpp"
 
 #include "../../include/vortex_internals.h"
 

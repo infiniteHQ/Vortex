@@ -8,10 +8,10 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include "../../include/modules/install.h"
+#include "../../include/modules/install.hpp"
 
-#include "../../include/modules/load.h"
-#include "../../include/modules/runtime.h"
+#include "../../include/modules/load.hpp"
+#include "../../include/modules/runtime.hpp"
 #include "../../include/vortex_internals.h"
 
 VORTEX_API void vxe::install_module(const std::string &module_name, const std::string &version, bool &restart_modules) {

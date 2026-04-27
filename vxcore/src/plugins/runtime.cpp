@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <plugins/runtime.h>
+#include <plugins/runtime.hpp>
 
 VORTEX_API void vxe::final_start_plugin(
     const std::string &plugin_name,

@@ -8,10 +8,11 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <plugins/install.h>
-#include <plugins/load.h>
-#include <plugins/runtime.h>
 #include <vortex_internals.h>
+
+#include <plugins/install.hpp>
+#include <plugins/load.hpp>
+#include <plugins/runtime.hpp>
 
 VORTEX_API void vxe::install_plugin(const std::string &plugin_name, const std::string &version, bool &restart_plugins) {
   // Get reference to the Vortex context

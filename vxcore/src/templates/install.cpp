@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <templates/install.h>
+#include <templates/install.hpp>
 
 VORTEX_API void vxe::install_template_on_system(const std::string &directory) {
   std::string templates_path = "~/.vx/templates";

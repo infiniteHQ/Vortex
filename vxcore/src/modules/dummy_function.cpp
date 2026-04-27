@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include "../../include/modules/dummy_function.h"
+#include "../../include/modules/dummy_function.hpp"
 
 /**
  * @brief Constructor for ModuleDummyFunction.

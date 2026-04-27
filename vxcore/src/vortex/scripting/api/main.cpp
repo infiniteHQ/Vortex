@@ -8,9 +8,9 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <plugins/interface.h>
 #include <vortex.h>
 
+#include <plugins/interface.hpp>
 #include <vortex/scripting/scripting.hpp>
 
 namespace vxe {
@@ -52,14 +52,14 @@ namespace vxe {
 
       std::string origin = (lua_gettop(L) >= 3) ? vxlua_getstring(L, 3) : "unknow";
 
-      nlohmann::json j = LuaTableToJson(L, 2);
+      nlohmann::json j = lua_table_to_json(L, 2);
       ArgumentValues args(j.dump());
       ReturnValues ret;
 
       vxe::call_output_event(eventName, args, ret, origin);
 
       if (ret.get() != "null") {
-        JsonToLuaTable(L, ret.get_json());
+        json_to_lua_table(L, ret.get_json());
         return 1;
       }
 
@@ -75,13 +75,13 @@ namespace vxe {
 
       std::string origin = (lua_gettop(L) >= 4) ? vxlua_getstring(L, 4) : "unknow";
 
-      nlohmann::json j = LuaTableToJson(L, 3);
+      nlohmann::json j = lua_table_to_json(L, 3);
       ArgumentValues args(j.dump());
       ReturnValues ret;
 
       vxe::call_input_event(moduleName, eventName, args, ret, origin);
 
-      JsonToLuaTable(L, ret.get_json());
+      json_to_lua_table(L, ret.get_json());
       return 1;
     }
 

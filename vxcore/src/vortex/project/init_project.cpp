@@ -8,11 +8,11 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include "../../../include/modules/load.h"
-#include "../../../include/modules/runtime.h"
-#include "../../../include/plugins/load.h"
-#include "../../../include/plugins/runtime.h"
-#include "../../../include/templates/load.h"
+#include "../../../include/modules/load.hpp"
+#include "../../../include/modules/runtime.hpp"
+#include "../../../include/plugins/load.hpp"
+#include "../../../include/plugins/runtime.hpp"
+#include "../../../include/templates/load.hpp"
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 

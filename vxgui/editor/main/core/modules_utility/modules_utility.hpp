@@ -12,8 +12,8 @@
 
 #include <unordered_set>
 
-#include "../../../../../vxcore/include/modules/delete.h"
-#include "../../../../../vxcore/include/modules/load.h"
+#include "../../../../../vxcore/include/modules/delete.hpp"
+#include "../../../../../vxcore/include/modules/load.hpp"
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
 #include "../../instances/modules_details/modules_details.hpp"

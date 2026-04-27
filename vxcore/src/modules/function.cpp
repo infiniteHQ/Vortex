@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include "../../include/modules/function.h"
+#include "../../include/modules/function.hpp"
 
 #include "../../include/vortex_internals.h"
 

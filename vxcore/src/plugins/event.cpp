@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <plugins/event.h>
+#include <plugins/event.hpp>
 
 PluginOutputEvent::PluginOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
     : m_function(foo),

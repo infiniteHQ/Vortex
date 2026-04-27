@@ -10,8 +10,8 @@
 //
 
 #include "../../../../../../lib/cherry/cherry.hpp"
-#include "../../../../../../vxcore/include/plugins/delete.h"
-#include "../../../../../../vxcore/include/plugins/load.h"
+#include "../../../../../../vxcore/include/plugins/delete.hpp"
+#include "../../../../../../vxcore/include/plugins/load.hpp"
 #include "../../../../../../vxcore/include/vortex.h"
 #include "../../../../../../vxcore/include/vortex_internals.h"
 #include "../../../instances/modules_details/modules_details.hpp"

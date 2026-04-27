@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <plugins/function.h>
+#include <plugins/function.hpp>
 
 PluginFunction::PluginFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
     : m_function(foo),

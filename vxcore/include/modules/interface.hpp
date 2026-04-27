@@ -1,71 +1,33 @@
+//
+//  interface.hpp
+//  Headers, structures and utilities for modules interfaces
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include <vortex_internals.h>
 
-#include <cstddef>
-#include <cstdint>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <variant>
-#include <vector>
+#include "dummy_function.hpp"
+#include "event.hpp"
+#include "function.hpp"
+#include "helpers.hpp"
+#include "render_instance.hpp"
 
-#if defined(__linux__)
-#include <cxxabi.h>
-#elif defined(_WIN32) || defined(_WIN64)
-//
-#elif defined(__APPLE__)
-//
-#else
-//
-#endif
+#ifndef MODULE_INTERFACE_H
+#define MODULE_INTERFACE_H
 
-#include "../vortex/scripting/lua_helpers.hpp"
-#include "../vortex/scripting/scripting.hpp"
-#include "dummy_function.h"
-#include "event.h"
-#include "function.h"
-#include "render_instance.h"
-
-#ifndef PLUGIN_INTERFACE_H
-#define PLUGIN_INTERFACE_H
-
-// Forward declarations
-struct ItemHandlerInterface;
-struct ItemIdentifierInterface;
-struct ItemCreatorInterface;
-class PluginInterface;
-
-VORTEX_API struct LuaItemHandler {
-  int lua_ref;
-  lua_State *L;
-  std::shared_ptr<PluginInterface> plugin;
-
-  LuaItemHandler(int ref, lua_State *state, std::shared_ptr<PluginInterface> p);
-
-  LuaItemHandler(const LuaItemHandler &) = delete;
-  LuaItemHandler &operator=(const LuaItemHandler &) = delete;
-
-  LuaItemHandler(LuaItemHandler &&other) noexcept;
-
-  void Call(const std::string &path);
-
-  ~LuaItemHandler();
-};
-VORTEX_API struct PluginInterfaceDep {
-  std::string type;  // em, plugin, etc..
-  std::string name;
-  std::vector<std::string> supported_versions;
-  bool satisfied;
-};
-
-VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInterface> {
+VORTEX_API class ModuleInterface {
  public:
-  virtual ~PluginInterface() {
+  virtual ~ModuleInterface() {
   }
 
   // Main functions
   virtual void execute() { };
+  virtual void init_ui() { };
+  virtual void init_runtime() { };
   virtual void destroy() { };
   virtual void render() { };
 
@@ -79,9 +41,9 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   // Misc
   VORTEX_API void add_logo(const uint8_t *hexa, size_t size);
   VORTEX_API void add_logo(const std::string &relative_path);
-  VORTEX_API void ResetPlugin();
+  VORTEX_API void reset_module();
 
-  // Functions of the plugins (gives the Vortex abstraction/features)
+  // Functions of the modules (gives the Vortex abstraction/features)
   VORTEX_API void add_function(std::function<void()> foo, const std::string &name);
   VORTEX_API void add_function(std::function<void(ArgumentValues &)> foo, const std::string &name);
   VORTEX_API void add_function(std::function<void(ReturnValues &)> foo, const std::string &name);
@@ -93,10 +55,11 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
 
   VORTEX_API std::string get_path();
   VORTEX_API std::string cook_path(const std::string &path);
-  VORTEX_API std::string GetMainScriptPath();
+  VORTEX_API std::string get_binary_path();
 
   // Documentation
   VORTEX_API void add_documentation(const std::string &section, const std::string &title, const std::string &path);
+
   // Output Events
   // A output event is triggered via vxe::execute_output_event() by the
   // current component to all concerned extern components with the output event
@@ -105,7 +68,7 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API void add_output_event(std::function<void(ArgumentValues &)> foo, const std::string &name);
   VORTEX_API void add_output_event(std::function<void(ReturnValues &)> foo, const std::string &name);
   VORTEX_API void add_output_event(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
-  VORTEX_API void add_output_event(const PluginOutputEvent &event);
+  VORTEX_API void add_output_event(const ModuleOutputEvent &event);
 
   // Input Events
   // A input event is triggered via vxe::execute_input_event() by a extern
@@ -114,7 +77,7 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API void add_input_event(std::function<void(ArgumentValues &)> foo, const std::string &name);
   VORTEX_API void add_input_event(std::function<void(ReturnValues &)> foo, const std::string &name);
   VORTEX_API void add_input_event(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
-  VORTEX_API void add_input_event(const PluginInputEvent &event);
+  VORTEX_API void add_input_event(const ModuleInputEvent &event);
 
   // GUI stuffs
   VORTEX_API void refresh_main_window();
@@ -152,7 +115,7 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
 
   // void add_function(void (*item)(), const std::string& name, Parameters
   // params);
-  VORTEX_API std::shared_ptr<PluginInterface> get_interface();
+  VORTEX_API std::shared_ptr<ModuleInterface> get_interface();
 
   VORTEX_API void execute_output_event(const std::string &name, ArgumentValues &args, ReturnValues &ret);
   VORTEX_API void execute_input_event(const std::string &name, ArgumentValues &args, ReturnValues &ret);
@@ -162,28 +125,22 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   // VORTEX_API void ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
 
   template<typename T>
-  VORTEX_API void add_plugin_item_param(const void *item, std::pair<std::string, T> parameter);
+  VORTEX_API void add_module_item_param(const void *item, std::pair<std::string, T> parameter);
 
-  VORTEX_API void add_plugin_render_instance(const std::shared_ptr<PluginRenderInstance> &event);
-  VORTEX_API void add_plugin_function(const PluginFunction &event);
-  std::vector<std::shared_ptr<PluginRenderInstance>> get_plugin_render_instances();
+  VORTEX_API void add_module_render_instance(const std::shared_ptr<ModuleRenderInstance> &event);
+  VORTEX_API void add_module_function(const ModuleFunction &event);
+  std::vector<std::shared_ptr<ModuleRenderInstance>> get_module_render_instances();
 
   VORTEX_API void call_output_event(const std::string &event_name, ArgumentValues &args, ReturnValues &ret);
-  VORTEX_API void call_input_event(
-      const std::string &plugin_name,  // or module
-      const std::string &event_name,
-      ArgumentValues &args,
-      ReturnValues &ret);
+  VORTEX_API void
+  call_input_event(const std::string &module_name, const std::string &event_name, ArgumentValues &args, ReturnValues &ret);
 
-  VORTEX_API static std::shared_ptr<PluginInterface> get_editor_plugin_by_name(const std::string &name);
+  VORTEX_API static std::shared_ptr<ModuleInterface> get_editor_module_by_name(const std::string &name);
 
   VORTEX_API void check_dependencies();
   VORTEX_API void check_version();
 
-  VORTEX_API void add_lua_handler(const std::shared_ptr<LuaItemHandler> &handler) {
-    m_lua_handlers.push_back(handler);
-  }
-
+  // std::shared_ptr<hArgs> m_args;
   std::string m_datapath;
 
  public:
@@ -192,7 +149,7 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   std::string m_name;
   std::string m_version;
   std::string m_path;
-  std::string m_mainscript_path;
+  std::string m_binary_path;
   std::string m_author;
   std::string m_group;
   std::string m_picture;
@@ -200,7 +157,7 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   std::string m_description;
   bool m_auto_exec;
   std::vector<std::string> m_contributors;
-  std::vector<std::shared_ptr<PluginInterfaceDep>> m_dependencies;
+  std::vector<std::shared_ptr<ModuleInterfaceDep>> m_dependencies;
   std::vector<std::string> m_supported_versions;
   const uint8_t *m_logo;
   size_t m_logo_size;
@@ -208,18 +165,16 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   std::string m_state = "unknow";
   std::shared_ptr<Cherry::AppWindow> m_main_window;
 
-  std::vector<std::shared_ptr<PluginFunction>> m_functions;
-  std::vector<std::shared_ptr<PluginOutputEvent>> m_output_events;
-  std::vector<std::shared_ptr<PluginInputEvent>> m_input_events;
+  std::vector<std::shared_ptr<ModuleFunction>> m_functions;
+  std::vector<std::shared_ptr<ModuleOutputEvent>> m_output_events;
+  std::vector<std::shared_ptr<ModuleInputEvent>> m_input_events;
   std::vector<std::shared_ptr<ItemHandlerInterface>> m_item_handlers;
   std::vector<std::shared_ptr<ItemIdentifierInterface>> m_item_identifiers;
   std::vector<std::shared_ptr<ItemCreatorInterface>> m_item_creators;
 
-  std::vector<std::shared_ptr<LuaItemHandler>> m_lua_handlers;
-
  private:
-  std::vector<std::shared_ptr<PluginDummyFunction>> m_dummy_functions;
-  std::vector<std::shared_ptr<PluginRenderInstance>> m_render_instances;
+  std::vector<std::shared_ptr<ModuleDummyFunction>> m_dummy_functions;
+  std::vector<std::shared_ptr<ModuleRenderInstance>> m_render_instances;
 };
 
-#endif  // PLUGIN_INTERFACE_H
+#endif  // MODULE_INTERFACE_H

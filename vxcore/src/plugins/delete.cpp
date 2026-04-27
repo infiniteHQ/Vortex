@@ -8,9 +8,9 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include "../../include/plugins/delete.h"
+#include "../../include/plugins/delete.hpp"
 
-#include "../../include/plugins/load.h"
+#include "../../include/plugins/load.hpp"
 #include "../../include/vortex.h"
 #include "../../include/vortex_internals.h"
 

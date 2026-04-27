@@ -8,7 +8,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <plugins/dummy_function.h>
+#include <plugins/dummy_function.hpp>
 
 PluginDummyFunction::PluginDummyFunction(void (*foo)(), const std::string &name) : m_foo(foo), m_name(name) {
 }

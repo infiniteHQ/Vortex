@@ -6,7 +6,7 @@
 
 // UI instances
 #include "./lib/cherry/cherry.hpp"
-#include "./vxcore/include/templates/load.h"
+#include "./vxcore/include/templates/load.hpp"
 #include "./vxcore/include/vortex.h"
 #include "./vxgui/crash_handler/crash_handler.hpp"
 #include "./vxgui/editor/main/editor.hpp"

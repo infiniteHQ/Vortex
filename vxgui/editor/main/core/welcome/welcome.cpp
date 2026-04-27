@@ -45,7 +45,7 @@ namespace vxe {
   }
 
   void Welcome::render() {
-    Cherry::script::render_lua_fresh_script(Cherry::GetPath("ui/windows/welcome/main.lua"));
+    Cherry::Script::RenderLuaFreshScript(Cherry::GetPath("ui/windows/welcome/main.lua"));
 
     // If Browser Clicked
     if (CherryApp.GetComponentData(CherryID("welcome_browser"), "isClicked") == "true") {
