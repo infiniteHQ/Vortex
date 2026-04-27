@@ -42,6 +42,22 @@ struct VxContext;
 extern VORTEX_API std::weak_ptr<VxContext> CVortexMaker;
 #endif
 
+enum class PlatformVendor { Linux, Windows, Macos };
+
+enum class DevFlag {
+  DEPRECIATED,
+  READY,
+};
+
+enum class HappeningState {
+  INFO,
+  WARNING,
+  ERR,
+  FATAL,
+};
+
+enum class HandlerItemType { File, Item, Folder };
+
 struct VxSystemLog {
   spdlog::level::level_enum level;
   std::string filter;
@@ -65,10 +81,8 @@ struct EnvProject {
   std::string lastOpened;
 };
 
-enum class PlatformVendor { Linux, Windows, Macos };
-
 struct SessionState {
-  //
+  // Main ID
   std::string session_id;
 
   // Master
@@ -88,7 +102,6 @@ struct SessionState {
 };
 
 struct ItemIdentifierInterface {
- public:
   bool (*detection_callback)(const std::string &path);
 
   std::string name;
@@ -156,20 +169,6 @@ struct ItemCreatorInterface {
         logo_path(logo_path) { };
 };
 
-enum class DevFlag {
-  DEPRECIATED,
-  READY,
-};
-
-enum class HappeningState {
-  INFO,
-  WARNING,
-  ERR,
-  FATAL,
-};
-
-enum class HandlerItemType { File, Item, Folder };
-
 struct ContentBrowserCustomFolder {
   std::string path;
   std::string color;
@@ -233,11 +232,6 @@ struct VxIO {
   std::vector<std::shared_ptr<ModuleInterfaceUtility>> em_utilities;
 };
 
-struct VxPaths {
-  std::string toolchainDistFolder;
-  std::string hostDistFolder;
-};
-
 struct CreditEntry {
   std::string name;
   std::string contact;
@@ -255,6 +249,7 @@ struct DocumentationSection {
 struct DocumentationTopic {
   std::map<std::string, DocumentationSection> sections;
 };
+
 struct TopicCredits {
   std::vector<std::string> title_order;
   std::map<std::string, std::vector<CreditEntry>> sections;
@@ -272,12 +267,6 @@ struct CustomMenu {
   std::function<void()> render;
 };
 
-//-----------------------------------------------------------------------------
-// (Context) VortexMakerContext => Main VortexMaker context.
-//-----------------------------------------------------------------------------
-// This context contain all user data about VortexMaker functionnal interfaces &
-// all instances of custom contents.
-//-----------------------------------------------------------------------------
 struct VxContext {
   // Master flags
   bool initialized;
@@ -299,7 +288,6 @@ struct VxContext {
   fs::path projectPath;
   fs::path projectDataPath;
   fs::path logoPath;
-  VxPaths paths;
   std::string configFilePath;
   std::string author;
   std::string compatibleWith;
