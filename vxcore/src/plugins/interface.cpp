@@ -11,7 +11,7 @@
  *
  * @param function The PluginFunction to add.
  */
-VORTEX_API void PluginInterface::AddPluginFunction(const PluginFunction &function) {
+VORTEX_API void PluginInterface::add_plugin_function(const PluginFunction &function) {
   // Create a shared_ptr to the PluginFunction
   std::shared_ptr<PluginFunction> p_function = std::make_shared<PluginFunction>(function);
 
@@ -104,7 +104,7 @@ VORTEX_API void PluginInterface::set_main_window(const std::shared_ptr<Cherry::A
  *
  * @param renderInstance The shared_ptr to the PluginRenderInstance to add.
  */
-VORTEX_API void PluginInterface::AddPluginRenderInstance(const std::shared_ptr<PluginRenderInstance> &renderInstance) {
+VORTEX_API void PluginInterface::add_plugin_render_instance(const std::shared_ptr<PluginRenderInstance> &renderInstance) {
   // Add the shared_ptr to the list of render instances
   this->m_render_instances.push_back(renderInstance);
 }
@@ -287,7 +287,7 @@ VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::get_interface() {
  * @param name The name of the editor plugin to search for.
  * @return A shared_ptr to the editor plugin if found, otherwise nullptr.
  */
-VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::GetEditorPluginByName(const std::string &name) {
+VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::get_editor_plugin_by_name(const std::string &name) {
   auto ctx = vxe::get_current_context();
 
   for (auto ep : ctx->IO.ep) {
@@ -654,7 +654,7 @@ VORTEX_API void PluginInterface::call_input_event(
 VORTEX_API void PluginInterface::check_version() {
 }
 
-std::vector<std::shared_ptr<PluginRenderInstance>> PluginInterface::GetPluginRenderInstances() {
+std::vector<std::shared_ptr<PluginRenderInstance>> PluginInterface::get_plugin_render_instances() {
   return this->m_render_instances;
 };
 

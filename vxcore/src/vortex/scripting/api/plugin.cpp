@@ -47,7 +47,7 @@ namespace vxe {
 
       auto handler = std::make_shared<LuaItemHandler>(ref, L, plugin);
 
-      plugin->AddLuaHandler(handler);
+      plugin->add_lua_handler(handler);
 
       std::weak_ptr<LuaItemHandler> weak_handler = handler;
 
@@ -273,7 +273,7 @@ namespace vxe {
       }
 
       auto handler = std::make_shared<LuaItemHandler>(ref, L, plugin);
-      plugin->AddLuaHandler(handler);
+      plugin->add_lua_handler(handler);
       std::weak_ptr<LuaItemHandler> weak_handler = handler;
 
       // Helper: push args table onto Lua stack
@@ -544,7 +544,7 @@ namespace vxe {
       }
 
       auto handler = std::make_shared<LuaItemHandler>(ref, L, plugin);
-      plugin->AddLuaHandler(handler);
+      plugin->add_lua_handler(handler);
       std::weak_ptr<LuaItemHandler> weak_handler = handler;
 
       // Helper: push args table onto Lua stack

@@ -6,9 +6,9 @@
 #define MODULE_RUNTIME_H
 
 namespace vxe {
-VORTEX_API void StartModule(const std::string &module_name);
-VORTEX_API void StartAllModules();
-VORTEX_API void BootstrappAllModules();
-} // namespace vxe
+  VORTEX_API void start_module(const std::string &module_name);
+  VORTEX_API void start_all_modules();
+  VORTEX_API void bootstrapp_all_modules();
+}  // namespace vxe
 
 #endif

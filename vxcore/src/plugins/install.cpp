@@ -3,7 +3,7 @@
 #include <plugins/runtime.h>
 #include <vortex_internals.h>
 
-VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name, const std::string &version, bool &restart_plugins) {
+VORTEX_API void vxe::install_plugin(const std::string &plugin_name, const std::string &version, bool &restart_plugins) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -50,10 +50,10 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name, const std::st
           ctx->IO.ep.clear();
 
           // Load plugins installed in the current project
-          vxe::LoadEditorPlugins(ctx->projectPath.string(), ctx->IO.ep_handles, ctx->IO.ep);
+          vxe::load_editor_plugins(ctx->projectPath.string(), ctx->IO.ep_handles, ctx->IO.ep);
 
           // Finally, start all loaded plugins.
-          vxe::StartAllPlugins();
+          vxe::start_all_plugins();
         }
 
         return;
@@ -75,7 +75,7 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name, const std::st
   // Restart plugins
 }
 
-VORTEX_API std::shared_ptr<PluginInterface> vxe::FindPluginInDirectory(const std::string &directory) {
+VORTEX_API std::shared_ptr<PluginInterface> vxe::find_plugin_in_directory(const std::string &directory) {
   // Search plugins registered
   auto plugin_files = vxe::search_files(directory, "plugin.json");
 
@@ -103,7 +103,7 @@ VORTEX_API std::shared_ptr<PluginInterface> vxe::FindPluginInDirectory(const std
   return nullptr;
 }
 
-VORTEX_API std::vector<std::shared_ptr<PluginInterface>> vxe::FindPluginsInDirectory(const std::string &directory) {
+VORTEX_API std::vector<std::shared_ptr<PluginInterface>> vxe::find_plugins_in_directory(const std::string &directory) {
   // Search plugins registered
   auto plugin_files = vxe::search_files(directory, "plugin.json", 3);
 
@@ -153,7 +153,7 @@ VORTEX_API std::vector<std::shared_ptr<PluginInterface>> vxe::FindPluginsInDirec
   return interfaces;
 }
 
-VORTEX_API void vxe::InstallPluginToSystem(const std::string &path) {
+VORTEX_API void vxe::install_plugin_to_system(const std::string &path) {
   std::string plugins_path = "~/.vx/plugins";
   std::string json_file = path + "/plugin.json";
 
@@ -185,7 +185,7 @@ VORTEX_API void vxe::InstallPluginToSystem(const std::string &path) {
   }
 }
 
-VORTEX_API void vxe::AddPluginToProject(const std::string &plugin_name) {
+VORTEX_API void vxe::add_plugin_to_project(const std::string &plugin_name) {
   // TODO
 }
 

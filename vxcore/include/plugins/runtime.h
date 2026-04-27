@@ -6,9 +6,9 @@
 #define PLUGIN_RUNTIME_H
 
 namespace vxe {
-  VORTEX_API void StartPlugin(const std::string &plugin_name);
-  VORTEX_API void StartAllPlugins();
-  VORTEX_API void BootstrappAllPlugins();
+  VORTEX_API void start_plugin(const std::string &plugin_name);
+  VORTEX_API void start_all_plugins();
+  VORTEX_API void bootstrapp_all_plugins();
 }  // namespace vxe
 
 #endif

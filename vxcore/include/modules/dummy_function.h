@@ -4,17 +4,16 @@
 #ifndef MODULE_DUMMYFUNCTION_H
 #define MODULE_DUMMYFUNCTION_H
 
-class ModuleDummyFunction
-{
-public:
-    ModuleDummyFunction(void(*foo)(), const std::string& name);
-    virtual void execute() {};
+class ModuleDummyFunction {
+ public:
+  ModuleDummyFunction(void (*foo)(), const std::string& name);
+  virtual void execute() { };
 
-    template<typename T>
-    std::string GetFunctionName(T* functionPtr);
+  template<typename T>
+  std::string get_function_name(T* functionPtr);
 
-    std::string m_name;
-    void(*m_foo)();
+  std::string m_name;
+  void (*m_foo)();
 };
 
 #endif

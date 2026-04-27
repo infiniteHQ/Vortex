@@ -2,7 +2,7 @@
 
 #include "../../include/vortex_internals.h"
 
-VORTEX_API void FinalStartModule(
+VORTEX_API void Finalstart_module(
     const std::string &module_name,
     std::shared_ptr<std::vector<std::string>> processed_modules) {
   // Get reference to the Vortex context
@@ -28,7 +28,7 @@ VORTEX_API void FinalStartModule(
   }
 }
 
-VORTEX_API void vxe::StartModule(const std::string &module_name) {
+VORTEX_API void vxe::start_module(const std::string &module_name) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -42,7 +42,7 @@ VORTEX_API void vxe::StartModule(const std::string &module_name) {
 
         // Start dependencies
         for (auto deps : em->m_dependencies) {
-          FinalStartModule(deps->name, processed_modules);
+          Finalstart_module(deps->name, processed_modules);
         }
 
         // Finally start the module
@@ -52,13 +52,13 @@ VORTEX_API void vxe::StartModule(const std::string &module_name) {
   }
 }
 
-VORTEX_API void vxe::StartAllModules() {
+VORTEX_API void vxe::start_all_modules() {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
   // Start all modules & create data environments
   // TODO create dist envs
-  // TODO move to (StartModule) function
+  // TODO move to (start_module) function
   for (auto em : ctx->IO.em) {
     {
       // Set the module data path
@@ -72,16 +72,16 @@ VORTEX_API void vxe::StartAllModules() {
       system(cmd.c_str());
     }
 
-    StartModule(em->m_name);
+    start_module(em->m_name);
   }
 }
 
-VORTEX_API void vxe::BootstrappAllModules() {
+VORTEX_API void vxe::bootstrapp_all_modules() {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
   // Start all modules & create data environments
-  // TODO move to (StartModule) function
+  // TODO move to (start_module) function
   for (auto em : ctx->IO.em) {
     {
       // Set the module data path
@@ -96,7 +96,7 @@ VORTEX_API void vxe::BootstrappAllModules() {
     }
 
     if (em->m_auto_exec) {
-      StartModule(em->m_name);
+      start_module(em->m_name);
     }
   }
 }

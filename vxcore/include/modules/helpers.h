@@ -27,11 +27,29 @@ struct ItemHandlerInterface;
 struct ItemIdentifierInterface;
 struct ItemCreatorInterface;
 
+enum class HappeningState;
+enum class DevFlag;
+enum class HandlerItemType;
+
 VORTEX_API struct ModuleInterfaceDep {
   std::string type;  // em, plugin, etc..
   std::string name;
   std::vector<std::string> supported_versions;
   bool satisfied;
+};
+
+struct ModuleInputEventHappening {
+  std::string m_trigger_name;
+  HappeningState m_state;
+  std::string m_log;
+  std::string m_timestamp;
+};
+
+struct ModuleOutputEventHappening {
+  std::string m_trigger_name;
+  HappeningState m_state;
+  std::string m_log;
+  std::string m_timestamp;
 };
 
 #endif  // MODULE_HELPERS_H

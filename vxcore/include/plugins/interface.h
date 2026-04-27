@@ -162,11 +162,11 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   // VORTEX_API void ExecOutputEvent(const std::string &name, std::shared_ptr<hArgs> args);
 
   template<typename T>
-  VORTEX_API void AddPluginItemParam(const void *item, std::pair<std::string, T> parameter);
+  VORTEX_API void add_plugin_item_param(const void *item, std::pair<std::string, T> parameter);
 
-  VORTEX_API void AddPluginRenderInstance(const std::shared_ptr<PluginRenderInstance> &event);
-  VORTEX_API void AddPluginFunction(const PluginFunction &event);
-  std::vector<std::shared_ptr<PluginRenderInstance>> GetPluginRenderInstances();
+  VORTEX_API void add_plugin_render_instance(const std::shared_ptr<PluginRenderInstance> &event);
+  VORTEX_API void add_plugin_function(const PluginFunction &event);
+  std::vector<std::shared_ptr<PluginRenderInstance>> get_plugin_render_instances();
 
   VORTEX_API void call_output_event(const std::string &event_name, ArgumentValues &args, ReturnValues &ret);
   VORTEX_API void call_input_event(
@@ -175,12 +175,12 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
       ArgumentValues &args,
       ReturnValues &ret);
 
-  VORTEX_API static std::shared_ptr<PluginInterface> GetEditorPluginByName(const std::string &name);
+  VORTEX_API static std::shared_ptr<PluginInterface> get_editor_plugin_by_name(const std::string &name);
 
   VORTEX_API void check_dependencies();
   VORTEX_API void check_version();
 
-  VORTEX_API void AddLuaHandler(const std::shared_ptr<LuaItemHandler> &handler) {
+  VORTEX_API void add_lua_handler(const std::shared_ptr<LuaItemHandler> &handler) {
     m_lua_handlers.push_back(handler);
   }
 

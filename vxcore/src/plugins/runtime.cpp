@@ -1,6 +1,6 @@
 #include <plugins/runtime.h>
 
-VORTEX_API void FinalStartPlugin(
+VORTEX_API void Finalstart_plugin(
     const std::string &plugin_name,
     std::shared_ptr<std::vector<std::string>> processed_plugins) {
   // Get reference to the Vortex context
@@ -26,7 +26,7 @@ VORTEX_API void FinalStartPlugin(
   }
 }
 
-VORTEX_API void vxe::StartPlugin(const std::string &plugin_name) {
+VORTEX_API void vxe::start_plugin(const std::string &plugin_name) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -40,7 +40,7 @@ VORTEX_API void vxe::StartPlugin(const std::string &plugin_name) {
 
         // Start dependencies
         for (auto deps : ep->m_dependencies) {
-          FinalStartPlugin(deps->name, processed_plugins);
+          Finalstart_plugin(deps->name, processed_plugins);
         }
 
         // Finally start the plugin
@@ -50,13 +50,13 @@ VORTEX_API void vxe::StartPlugin(const std::string &plugin_name) {
   }
 }
 
-VORTEX_API void vxe::StartAllPlugins() {
+VORTEX_API void vxe::start_all_plugins() {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
   // Start all plugins & create data environments
   // TODO create dist envs
-  // TODO move to (StartPlugin) function
+  // TODO move to (start_plugin) function
   for (auto ep : ctx->IO.ep) {
     {
       // Set the plugin data path
@@ -70,16 +70,16 @@ VORTEX_API void vxe::StartAllPlugins() {
       system(cmd.c_str());
     }
 
-    StartPlugin(ep->m_name);
+    start_plugin(ep->m_name);
   }
 }
 
-VORTEX_API void vxe::BootstrappAllPlugins() {
+VORTEX_API void vxe::bootstrapp_all_plugins() {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
   // Start all plugins & create data environments
-  // TODO move to (StartPlugin) function
+  // TODO move to (start_plugin) function
   for (auto ep : ctx->IO.ep) {
     {
       // Set the plugin data path
@@ -94,7 +94,7 @@ VORTEX_API void vxe::BootstrappAllPlugins() {
     }
 
     if (ep->m_auto_exec) {
-      StartPlugin(ep->m_name);
+      start_plugin(ep->m_name);
     }
   }
 }

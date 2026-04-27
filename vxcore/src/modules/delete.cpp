@@ -10,9 +10,9 @@
  * @param name Name of the system module.
  * @param version Version of the system module.
  */
-VORTEX_API void vxe::DeleteProjectModule(const std::string &name, const std::string &version) {
+VORTEX_API void vxe::delete_project_module(const std::string &name, const std::string &version) {
   if (name.empty() || version.empty()) {
-    vxe::log_error("Core", "DeleteProjectModule: name and version must not be empty.");
+    vxe::log_error("Core", "delete_project_module: name and version must not be empty.");
     return;
   }
 
@@ -22,14 +22,14 @@ VORTEX_API void vxe::DeleteProjectModule(const std::string &name, const std::str
   };
 
   if (containsDangerousChars(name) || containsDangerousChars(version)) {
-    vxe::log_error("Core", "DeleteProjectModule: name or version contains forbidden characters.");
+    vxe::log_error("Core", "delete_project_module: name or version contains forbidden characters.");
     return;
   }
 
   auto ctx = vxe::get_current_context();
 
   if (ctx->projectPath.empty()) {
-    vxe::log_error("Core", "DeleteProjectModule: projectPath is not set in context.");
+    vxe::log_error("Core", "delete_project_module: projectPath is not set in context.");
     return;
   }
 
@@ -38,7 +38,7 @@ VORTEX_API void vxe::DeleteProjectModule(const std::string &name, const std::str
   const std::filesystem::path allowedBase = std::filesystem::canonical(ctx->projectPath / ".vx" / "modules", ec);
 
   if (ec) {
-    vxe::log_error("Core", "DeleteProjectModule: cannot resolve allowed base path: " + ec.message());
+    vxe::log_error("Core", "delete_project_module: cannot resolve allowed base path: " + ec.message());
     return;
   }
 
@@ -53,22 +53,22 @@ VORTEX_API void vxe::DeleteProjectModule(const std::string &name, const std::str
     const std::filesystem::path modulePath = module->m_path;
 
     if (!modulePath.is_absolute()) {
-      vxe::log_error("Core", "DeleteProjectModule: module path is not absolute: " + modulePath.string());
+      vxe::log_error("Core", "delete_project_module: module path is not absolute: " + modulePath.string());
       return;
     }
 
     if (!std::filesystem::exists(modulePath, ec) || ec) {
-      vxe::log_error("Core", "DeleteProjectModule: module path does not exist: " + modulePath.string());
+      vxe::log_error("Core", "delete_project_module: module path does not exist: " + modulePath.string());
       return;
     }
     if (!std::filesystem::is_directory(modulePath, ec) || ec) {
-      vxe::log_error("Core", "DeleteProjectModule: module path is not a directory: " + modulePath.string());
+      vxe::log_error("Core", "delete_project_module: module path is not a directory: " + modulePath.string());
       return;
     }
 
     const std::filesystem::path canonical = std::filesystem::canonical(modulePath, ec);
     if (ec) {
-      vxe::log_error("Core", "DeleteProjectModule: cannot canonicalize module path: " + modulePath.string());
+      vxe::log_error("Core", "delete_project_module: cannot canonicalize module path: " + modulePath.string());
       return;
     }
 
@@ -76,7 +76,7 @@ VORTEX_API void vxe::DeleteProjectModule(const std::string &name, const std::str
     if (a != allowedBase.end() || canonical == allowedBase) {
       vxe::log_error(
           "Core",
-          "DeleteProjectModule: refusing to delete "
+          "delete_project_module: refusing to delete "
           "path outside of .vx/modules/: " +
               canonical.string());
       return;
@@ -84,14 +84,14 @@ VORTEX_API void vxe::DeleteProjectModule(const std::string &name, const std::str
 
     const std::filesystem::path relative = std::filesystem::relative(canonical, allowedBase, ec);
     if (ec || relative.empty() || relative.begin() == relative.end()) {
-      vxe::log_error("Core", "DeleteProjectModule: cannot compute relative path for: " + canonical.string());
+      vxe::log_error("Core", "delete_project_module: cannot compute relative path for: " + canonical.string());
       return;
     }
 
     if (std::distance(relative.begin(), relative.end()) != 1) {
       vxe::log_error(
           "Core",
-          "DeleteProjectModule: module path is not a "
+          "delete_project_module: module path is not a "
           "direct child of .vx/modules/: " +
               canonical.string());
       return;
@@ -99,7 +99,8 @@ VORTEX_API void vxe::DeleteProjectModule(const std::string &name, const std::str
 
     const std::uintmax_t removed = std::filesystem::remove_all(canonical, ec);
     if (ec || removed == static_cast<std::uintmax_t>(-1)) {
-      vxe::log_error("Core", "DeleteProjectModule: deletion failed for \"" + name + "\" v" + version + " — " + ec.message());
+      vxe::log_error(
+          "Core", "delete_project_module: deletion failed for \"" + name + "\" v" + version + " — " + ec.message());
       return;
     }
 
@@ -111,6 +112,6 @@ VORTEX_API void vxe::DeleteProjectModule(const std::string &name, const std::str
   }
 
   if (!found) {
-    vxe::log_error("Core", "DeleteProjectModule: no module named \"" + name + "\" v" + version + " found.");
+    vxe::log_error("Core", "delete_project_module: no module named \"" + name + "\" v" + version + " found.");
   }
 }

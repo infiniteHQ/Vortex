@@ -30,7 +30,7 @@ std::string ConvertToString(const std::wstring &wstr) {
 
 namespace vxe {
 
-  VORTEX_API void LoadEditorModules(
+  VORTEX_API void load_editor_modules(
       const std::string &directory,
       std::vector<void *> &modules_handlers,
       std::vector<std::shared_ptr<ModuleInterface>> &modules) {
@@ -164,7 +164,7 @@ namespace vxe {
     }
   }
 
-  VORTEX_API void LoadSystemModules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules) {
+  VORTEX_API void load_system_modules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules) {
     // Get the home directory
     std::string homeDir = vxe::get_home_directory();
 

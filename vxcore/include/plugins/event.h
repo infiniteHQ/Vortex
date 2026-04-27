@@ -4,44 +4,18 @@
 #ifndef PLUGIN_EVENT_H
 #define PLUGIN_EVENT_H
 
-// Forward declarations
-enum class HappeningState;
-enum class DevFlag;
-enum class HandlerItemType;
+#include "helpers.h"
 
-// TODO : Replace all args by json values (input and output)
-
-struct PluginInputEventHappening {
-  std::string m_trigger_name;
-  HappeningState m_state;
-  std::string m_log;
-  std::string m_timestamp;
-};
-
-struct PluginOutputEventHappening {
-  std::string m_trigger_name;
-  HappeningState m_state;
-  std::string m_log;
-  std::string m_timestamp;
-};
-
-/**
- * @brief Executed by other with custom parameters
- */
 class PluginInputEvent {
-public:
-  PluginInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo,
-                   const std::string &name);
-  PluginInputEvent(std::function<void(ArgumentValues &)> foo,
-                   const std::string &name);
-  PluginInputEvent(std::function<void(ReturnValues &)> foo,
-                   const std::string &name);
+ public:
+  PluginInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
+  PluginInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name);
+  PluginInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name);
   PluginInputEvent(std::function<void()> foo, const std::string &name);
 
-  std::function<void(ArgumentValues &, ReturnValues &)> m_function;
-  void trigger_happening(const std::string &trigger_name, HappeningState state,
-                         const std::string &log);
+  void trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log);
 
+  std::function<void(ArgumentValues &, ReturnValues &)> m_function;
   std::string m_name;
   std::string m_description;
   std::vector<std::tuple<std::string, std::string, std::string>> m_params;
@@ -50,26 +24,18 @@ public:
   std::vector<std::shared_ptr<PluginInputEventHappening>> m_happenings;
 };
 
-/**
- * @brief Emmiting this even with custom parameters.
- */
 class PluginOutputEvent {
-public:
-  PluginOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo,
-                    const std::string &name);
-  PluginOutputEvent(std::function<void(ArgumentValues &)> foo,
-                    const std::string &name);
-  PluginOutputEvent(std::function<void(ReturnValues &)> foo,
-                    const std::string &name);
+ public:
+  PluginOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
+  PluginOutputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name);
+  PluginOutputEvent(std::function<void(ReturnValues &)> foo, const std::string &name);
   PluginOutputEvent(std::function<void()> foo, const std::string &name);
 
+  void trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log);
+
+  virtual void execute() { };
+
   std::function<void(ArgumentValues &, ReturnValues &)> m_function;
-
-  void trigger_happening(const std::string &trigger_name, HappeningState state,
-                         const std::string &log);
-
-  virtual void execute() {};
-
   std::string m_name;
   std::vector<std::shared_ptr<PluginOutputEventHappening>> m_happenings;
 };

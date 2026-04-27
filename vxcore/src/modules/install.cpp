@@ -4,7 +4,7 @@
 #include "../../include/modules/runtime.h"
 #include "../../include/vortex_internals.h"
 
-VORTEX_API void vxe::InstallModule(const std::string &module_name, const std::string &version, bool &restart_modules) {
+VORTEX_API void vxe::install_module(const std::string &module_name, const std::string &version, bool &restart_modules) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -51,10 +51,10 @@ VORTEX_API void vxe::InstallModule(const std::string &module_name, const std::st
           ctx->IO.em.clear();
 
           // Load modules installed in the current project
-          vxe::LoadEditorModules(ctx->projectPath.string(), ctx->IO.em_handles, ctx->IO.em);
+          vxe::load_editor_modules(ctx->projectPath.string(), ctx->IO.em_handles, ctx->IO.em);
 
           // Finally, start all loaded modules.
-          vxe::StartAllModules();
+          vxe::start_all_modules();
         }
 
         return;
@@ -76,7 +76,7 @@ VORTEX_API void vxe::InstallModule(const std::string &module_name, const std::st
   // Restart modules
 }
 
-VORTEX_API std::shared_ptr<ModuleInterface> vxe::FindModuleInDirectory(const std::string &directory) {
+VORTEX_API std::shared_ptr<ModuleInterface> vxe::find_module_in_directory(const std::string &directory) {
   // Search modules registered
   auto module_files = vxe::search_files(directory, "module.json");
 
@@ -104,7 +104,7 @@ VORTEX_API std::shared_ptr<ModuleInterface> vxe::FindModuleInDirectory(const std
   return nullptr;
 }
 
-VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> vxe::FindModulesInDirectory(const std::string &directory) {
+VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> vxe::find_modules_in_directory(const std::string &directory) {
   // Search modules registered
   auto module_files = vxe::search_files(directory, "module.json", 3);
 
@@ -153,7 +153,7 @@ VORTEX_API std::vector<std::shared_ptr<ModuleInterface>> vxe::FindModulesInDirec
 
   return interfaces;
 }
-VORTEX_API void vxe::InstallModuleToSystem(const std::string &path) {
+VORTEX_API void vxe::install_module_to_system(const std::string &path) {
   std::string modules_path = "~/.vx/modules";
   std::string json_file = path + "/module.json";
 
@@ -185,6 +185,6 @@ VORTEX_API void vxe::InstallModuleToSystem(const std::string &path) {
   }
 }
 
-VORTEX_API void vxe::AddModuleToProject(const std::string &module_name) {
+VORTEX_API void vxe::add_module_to_project(const std::string &module_name) {
   // TODO
 }

@@ -5,11 +5,12 @@
 #define PLUGIN_DUMMYFUNCTION_H
 
 class PluginDummyFunction {
-public:
+ public:
   PluginDummyFunction(void (*foo)(), const std::string &name);
-  virtual void execute() {};
+  virtual void execute() { };
 
-  template <typename T> std::string GetFunctionName(T *functionPtr);
+  template<typename T>
+  std::string get_function_name(T *functionPtr);
 
   std::string m_name;
   void (*m_foo)();

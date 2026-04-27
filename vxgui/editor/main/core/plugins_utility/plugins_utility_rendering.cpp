@@ -173,8 +173,8 @@ namespace vxe {
         CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 
         if (CherryGUI::Button("Delete plugin", ImVec2(BTN_W, BTN_H))) {
-          vxe::DeleteProjectPlugin(plugin_to_delete_name_, plugin_to_delete_version_);
-          vxe::LoadEditorPlugins(
+          vxe::delete_project_plugin(plugin_to_delete_name_, plugin_to_delete_version_);
+          vxe::load_editor_plugins(
               vxe::get_current_context()->projectPath.string(),
               vxe::get_current_context()->IO.ep_handles,
               vxe::get_current_context()->IO.ep);

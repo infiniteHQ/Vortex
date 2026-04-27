@@ -4,7 +4,7 @@
 
 namespace vxe {
 
-  VORTEX_API void LoadEditorPlugins(
+  VORTEX_API void load_editor_plugins(
       const std::string &directory,
       std::vector<void *> &plugins_handlers,
       std::vector<std::shared_ptr<PluginInterface>> &plugins) {
@@ -57,7 +57,7 @@ namespace vxe {
     }
   }
 
-  VORTEX_API void LoadSystemPlugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins) {
+  VORTEX_API void load_system_plugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins) {
     // Get the home directory
     std::string homeDir = vxe::get_home_directory();
 

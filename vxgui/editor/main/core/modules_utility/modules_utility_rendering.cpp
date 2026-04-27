@@ -173,8 +173,8 @@ namespace vxe {
         CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 
         if (CherryGUI::Button("Delete module", ImVec2(BTN_W, BTN_H))) {
-          vxe::DeleteProjectModule(module_to_delete_name_, module_to_delete_version_);
-          vxe::LoadEditorModules(
+          vxe::delete_project_module(module_to_delete_name_, module_to_delete_version_);
+          vxe::load_editor_modules(
               vxe::get_current_context()->projectPath.string(),
               vxe::get_current_context()->IO.em_handles,
               vxe::get_current_context()->IO.em);

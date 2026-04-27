@@ -5,8 +5,7 @@
 #define PLUGIN_DELETE_H
 
 namespace vxe {
-VORTEX_API void DeleteProjectPlugin(const std::string &name,
-                                    const std::string &version);
+  VORTEX_API void delete_project_plugin(const std::string &name, const std::string &version);
 }
 
 #endif

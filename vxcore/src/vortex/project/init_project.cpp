@@ -118,20 +118,20 @@ VORTEX_API void vxe::init_project(const nlohmann::json &main_configs) {
   vxe::update_environment_project();
 
   // Load modules installed in the current project
-  vxe::LoadEditorModules(ctx->projectPath.string(), ctx->IO.em_handles, ctx->IO.em);
+  vxe::load_editor_modules(ctx->projectPath.string(), ctx->IO.em_handles, ctx->IO.em);
 
   // Load plugins installed in the current project
-  vxe::LoadEditorPlugins(ctx->projectPath.string(), ctx->IO.ep_handles, ctx->IO.ep);
+  vxe::load_editor_plugins(ctx->projectPath.string(), ctx->IO.ep_handles, ctx->IO.ep);
 
   // Load modules installed in the system
   // Note: These modules are simply initialized in the project, not loaded, but
   // we can add these in CLI/GUI
-  vxe::LoadSystemModules(ctx->IO.sys_em);
+  vxe::load_system_modules(ctx->IO.sys_em);
 
   // Load plugins installed in the system
   // Note: These modules are simply initialized in the project, not loaded, but
   // we can add these in CLI/GUI
-  vxe::LoadSystemPlugins(ctx->IO.sys_ep);
+  vxe::load_system_plugins(ctx->IO.sys_ep);
 
   // Load templates installed in the system if the configuration allow it
   // Note: These templates are simply initialized in the project, not included,
@@ -149,8 +149,8 @@ VORTEX_API void vxe::init_project(const nlohmann::json &main_configs) {
   vxe::ExecuteStartScript();
 
   // Finally, start all loaded modules/plugins.
-  vxe::BootstrappAllModules();
-  vxe::BootstrappAllPlugins();
+  vxe::bootstrapp_all_modules();
+  vxe::bootstrapp_all_plugins();
 
   // Load local documentation
   vxe::add_vortex_documentation();
