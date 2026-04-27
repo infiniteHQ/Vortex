@@ -51,7 +51,7 @@ namespace vxe {
 
       std::weak_ptr<LuaItemHandler> weak_handler = handler;
 
-      plugin->AddContentBrowserItemHandler(ItemHandlerInterface(
+      plugin->add_content_browser_item_handler(ItemHandlerInterface(
           type,
           [weak_handler](const std::string &path) {
             if (auto h = weak_handler.lock()) {
@@ -118,7 +118,7 @@ namespace vxe {
       if (!plugin)
         return 0;
 
-      std::string final_path = plugin->GetPath();
+      std::string final_path = plugin->get_path();
       if (!path.empty()) {
         final_path += "/" + path;
       }
@@ -137,7 +137,7 @@ namespace vxe {
       if (!plugin)
         return 0;
 
-      std::string final_path = plugin->CookPath(path);
+      std::string final_path = plugin->cook_path(path);
       if (!path.empty()) {
         final_path += "/" + path;
       }
@@ -156,7 +156,7 @@ namespace vxe {
       if (!plugin)
         return 0;
 
-      plugin->AddLogo(path);
+      plugin->add_logo(path);
 
       return 0;
     }
@@ -187,7 +187,7 @@ namespace vxe {
       ArgumentValues args;
       if (lua_gettop(L) >= 2 && !lua_isnil(L, 2)) {
         if (lua_isstring(L, 2)) {
-          args.SetValue(lua_tostring(L, 2));
+          args.set(lua_tostring(L, 2));
         } else if (lua_istable(L, 2)) {
           nlohmann::json j;
           lua_pushnil(L);
@@ -214,7 +214,7 @@ namespace vxe {
               j[key] = nullptr;
             lua_pop(L, 1);
           }
-          args.SetValue(j.dump());
+          args.set(j.dump());
         }
       }
 
@@ -222,7 +222,7 @@ namespace vxe {
 
       vxe::call_output_event(event_name, args, ret, plugin->m_name);
 
-      std::string ret_val = ret.GetValue();
+      std::string ret_val = ret.get();
       if (ret_val.empty() || ret_val == "null") {
         lua_pushnil(L);
         return 1;
@@ -269,7 +269,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin) {
         luaL_unref(L, LUA_REGISTRYINDEX, ref);
-        return luaL_error(L, "AddOutputEvent called outside of plugin context");
+        return luaL_error(L, "add_output_event called outside of plugin context");
       }
 
       auto handler = std::make_shared<LuaItemHandler>(ref, L, plugin);
@@ -278,7 +278,7 @@ namespace vxe {
 
       // Helper: push args table onto Lua stack
       auto push_args_table = [](lua_State *L, ArgumentValues &args) {
-        std::string args_str = args.GetValue();
+        std::string args_str = args.get();
         try {
           nlohmann::json j = nlohmann::json::parse(args_str);
           if (j.is_object()) {
@@ -309,7 +309,7 @@ namespace vxe {
         if (lua_isnil(L, -1)) {
           // no return
         } else if (lua_isstring(L, -1)) {
-          ret.SetValue(lua_tostring(L, -1));
+          ret.set(lua_tostring(L, -1));
         } else if (lua_istable(L, -1)) {
           nlohmann::json result;
           lua_pushnil(L);
@@ -336,7 +336,7 @@ namespace vxe {
               result[key] = nullptr;
             lua_pop(L, 1);
           }
-          ret.SetJsonValue(result);
+          ret.set_json(result);
         }
         lua_pop(L, 1);
       };
@@ -346,7 +346,7 @@ namespace vxe {
         mode = lua_tostring(L, 3);
       }
       if (mode == "none") {
-        plugin->AddOutputEvent(
+        plugin->add_output_event(
             [weak_handler, L]() {
               auto h = weak_handler.lock();
               if (!h)
@@ -369,7 +369,7 @@ namespace vxe {
             event_name);
 
       } else if (mode == "args") {
-        plugin->AddOutputEvent(
+        plugin->add_output_event(
             [weak_handler, L, push_args_table](ArgumentValues &args) {
               auto h = weak_handler.lock();
               if (!h)
@@ -391,7 +391,7 @@ namespace vxe {
             event_name);
 
       } else if (mode == "ret") {
-        plugin->AddOutputEvent(
+        plugin->add_output_event(
             [weak_handler, L, read_ret](ReturnValues &ret) {
               auto h = weak_handler.lock();
               if (!h)
@@ -417,7 +417,7 @@ namespace vxe {
             event_name);
 
       } else {  // "both" (default)
-        plugin->AddOutputEvent(
+        plugin->add_output_event(
             [weak_handler, L, push_args_table, read_ret](ArgumentValues &args, ReturnValues &ret) {
               auto h = weak_handler.lock();
               if (!h)
@@ -459,7 +459,7 @@ namespace vxe {
       ArgumentValues args;
       if (lua_gettop(L) >= 3 && !lua_isnil(L, 3)) {
         if (lua_isstring(L, 3)) {
-          args.SetValue(lua_tostring(L, 3));
+          args.set(lua_tostring(L, 3));
         } else if (lua_istable(L, 3)) {
           nlohmann::json j;
           lua_pushnil(L);
@@ -486,14 +486,14 @@ namespace vxe {
               j[key] = nullptr;
             lua_pop(L, 1);
           }
-          args.SetValue(j.dump());
+          args.set(j.dump());
         }
       }
 
       ReturnValues ret;
       vxe::call_input_event(module_name, event_name, args, ret, plugin->m_name);
 
-      std::string ret_val = ret.GetValue();
+      std::string ret_val = ret.get();
       if (ret_val.empty() || ret_val == "null") {
         lua_pushnil(L);
         return 1;
@@ -540,7 +540,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin) {
         luaL_unref(L, LUA_REGISTRYINDEX, ref);
-        return luaL_error(L, "AddInputEvent called outside of plugin context");
+        return luaL_error(L, "add_input_event called outside of plugin context");
       }
 
       auto handler = std::make_shared<LuaItemHandler>(ref, L, plugin);
@@ -549,7 +549,7 @@ namespace vxe {
 
       // Helper: push args table onto Lua stack
       auto push_args_table = [](lua_State *L, ArgumentValues &args) {
-        std::string args_str = args.GetValue();
+        std::string args_str = args.get();
         try {
           nlohmann::json j = nlohmann::json::parse(args_str);
           if (j.is_object()) {
@@ -580,7 +580,7 @@ namespace vxe {
         if (lua_isnil(L, -1)) {
           // no return
         } else if (lua_isstring(L, -1)) {
-          ret.SetValue(lua_tostring(L, -1));
+          ret.set(lua_tostring(L, -1));
         } else if (lua_istable(L, -1)) {
           nlohmann::json result;
           lua_pushnil(L);
@@ -607,7 +607,7 @@ namespace vxe {
               result[key] = nullptr;
             lua_pop(L, 1);
           }
-          ret.SetJsonValue(result);
+          ret.set_json(result);
         }
         lua_pop(L, 1);
       };
@@ -617,7 +617,7 @@ namespace vxe {
         mode = lua_tostring(L, 3);
       }
       if (mode == "none") {
-        plugin->AddInputEvent(
+        plugin->add_input_event(
             [weak_handler, L]() {
               auto h = weak_handler.lock();
               if (!h)
@@ -640,7 +640,7 @@ namespace vxe {
             event_name);
 
       } else if (mode == "args") {
-        plugin->AddInputEvent(
+        plugin->add_input_event(
             [weak_handler, L, push_args_table](ArgumentValues &args) {
               auto h = weak_handler.lock();
               if (!h)
@@ -662,7 +662,7 @@ namespace vxe {
             event_name);
 
       } else if (mode == "ret") {
-        plugin->AddInputEvent(
+        plugin->add_input_event(
             [weak_handler, L, read_ret](ReturnValues &ret) {
               auto h = weak_handler.lock();
               if (!h)
@@ -688,7 +688,7 @@ namespace vxe {
             event_name);
 
       } else {  // "both" (default)
-        plugin->AddInputEvent(
+        plugin->add_input_event(
             [weak_handler, L, push_args_table, read_ret](ArgumentValues &args, ReturnValues &ret) {
               auto h = weak_handler.lock();
               if (!h)
@@ -718,28 +718,28 @@ namespace vxe {
       return 0;
     }
 
-    // TODO AddFunction
-    // TODO ExecuteFunction (with support of args and return)
+    // TODO add_function
+    // TODO execute_function (with support of args and return)
 
     void RegisterPluginAPI(lua_State *L) {
       VXLUA_REGISTER_AS(L, PluginLog, "Log");
-      VXLUA_REGISTER_AS(L, PluginLogWarn, "log_warn");
-      VXLUA_REGISTER_AS(L, PluginLogError, "log_error");
-      VXLUA_REGISTER_AS(L, PluginLogFatal, "log_fatal");
+      VXLUA_REGISTER_AS(L, PluginLogWarn, "LogWarn");
+      VXLUA_REGISTER_AS(L, PluginLogError, "LogError");
+      VXLUA_REGISTER_AS(L, PluginLogFatal, "LogFatal");
 
       VXLUA_REGISTER_AS(L, PluginSetCreditsFiles, "SetCreditsFiles");
 
       VXLUA_REGISTER_AS(L, GetPluginPath, "GetPath");
       VXLUA_REGISTER_AS(L, GetCookPath, "CookPath");
-      VXLUA_REGISTER_AS(L, PluginSetCreditsFile, "set_credits_file");
+      VXLUA_REGISTER_AS(L, PluginSetCreditsFile, "SetCreditsFile");
       VXLUA_REGISTER_AS(L, PluginAddContentBrowserItemHandler, "AddContentBrowserItemHandler");
       VXLUA_REGISTER_AS(L, PluginAddLogo, "AddLogo");
 
       VXLUA_REGISTER_AS(L, PluginAddOutputEvent, "AddOutputEvent");
-      VXLUA_REGISTER_AS(L, PluginCallOutputEvent, "call_output_event");
+      VXLUA_REGISTER_AS(L, PluginCallOutputEvent, "CallOutputEvent");
 
       VXLUA_REGISTER_AS(L, PluginAddInputEvent, "AddInputEvent");
-      VXLUA_REGISTER_AS(L, PluginCallInputEvent, "call_input_event");
+      VXLUA_REGISTER_AS(L, PluginCallInputEvent, "CallInputEvent");
     }
 
   }  // namespace Script

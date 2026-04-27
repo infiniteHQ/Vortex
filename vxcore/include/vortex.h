@@ -97,22 +97,22 @@ namespace vxe {
    public:
     Values() { };
     Values(const std::string &val) : value(val) { };
-    std::string GetValue() {
+    std::string get() {
       return value;
     };
-    nlohmann::json GetJsonValue() {
+    nlohmann::json get_json() {
       return nlohmann::json::parse(value);
     };
 
     template<typename T>
-    T GetJsonValue(const std::string &val) {
+    T get_json(const std::string &val) {
       return nlohmann::json::parse(val).get<T>();
     };
 
-    void SetValue(const std::string &val) {
+    void set(const std::string &val) {
       value = val;
     };
-    void SetJsonValue(const nlohmann::json &val) {
+    void set_json(const nlohmann::json &val) {
       value = val.dump();
     };
 

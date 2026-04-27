@@ -626,7 +626,7 @@ namespace vxe {
     for (auto &directoryEntry : std::filesystem::directory_iterator(current_directory_)) {
       bool isItem = false;
       for (auto em : vxe::get_current_context()->IO.em) {
-        for (auto item : em->GetContentBrowserItemIdentifiers()) {
+        for (auto item : em->get_content_browser_item_identifiers()) {
           std::string path = directoryEntry.path().string();
           if (item->f_Detect(path)) {
             recognized_modules_items_.push_back({ item, path });
@@ -636,7 +636,7 @@ namespace vxe {
       }
 
       for (auto ep : vxe::get_current_context()->IO.ep) {
-        for (auto item : ep->GetContentBrowserItemIdentifiers()) {
+        for (auto item : ep->get_content_browser_item_identifiers()) {
           std::string path = directoryEntry.path().string();
           if (item->f_Detect(path)) {
             recognized_modules_items_.push_back({ item, path });

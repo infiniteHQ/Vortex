@@ -29,7 +29,7 @@ namespace vxe {
    public:
     Editor();
 
-    // window getter/setter
+    // windows
     bool get_credits_visibility();
     bool get_about_visibility();
     bool get_about_project_visibility();
@@ -49,7 +49,7 @@ namespace vxe {
     void set_welcome_visibility(const bool &visibility);
 
     std::string spawn_content_browser();
-    std::string SpawnDocViewer();
+    std::string spawn_doc_viewer();
     void spawn_content_browser_on_bottom();
     void spawn_logs_utility();
     void toggle_project_settings();

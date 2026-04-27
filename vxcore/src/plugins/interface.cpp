@@ -27,7 +27,7 @@ VORTEX_API void PluginInterface::AddPluginFunction(const PluginFunction &functio
  *
  * @param event The PluginOutputEvent to add.
  */
-VORTEX_API void PluginInterface::AddOutputEvent(const PluginOutputEvent &event) {
+VORTEX_API void PluginInterface::add_output_event(const PluginOutputEvent &event) {
   // Create a shared_ptr to the PluginOutputEvent
   std::shared_ptr<PluginOutputEvent> p_event = std::make_shared<PluginOutputEvent>(event);
 
@@ -35,7 +35,7 @@ VORTEX_API void PluginInterface::AddOutputEvent(const PluginOutputEvent &event) 
   this->m_output_events.push_back(p_event);
 }
 
-VORTEX_API void PluginInterface::AddInputEvent(const PluginInputEvent &event) {
+VORTEX_API void PluginInterface::add_input_event(const PluginInputEvent &event) {
   // Create a shared_ptr to the PluginOutputEvent
   std::shared_ptr<PluginInputEvent> p_event = std::make_shared<PluginInputEvent>(event);
 
@@ -43,19 +43,19 @@ VORTEX_API void PluginInterface::AddInputEvent(const PluginInputEvent &event) {
   this->m_input_events.push_back(p_event);
 }
 
-VORTEX_API void PluginInterface::AddContentBrowserItemHandler(const ItemHandlerInterface &handler) {
+VORTEX_API void PluginInterface::add_content_browser_item_handler(const ItemHandlerInterface &handler) {
   m_item_handlers.push_back(std::make_shared<ItemHandlerInterface>(handler));
 }
 
-VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> PluginInterface::GetContentBrowserItemHandler() {
+VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> PluginInterface::get_content_browser_item_handlers() {
   return m_item_handlers;
 }
 
-VORTEX_API std::string PluginInterface::CookPath(const std::string &path) {
-  return this->GetPath() + "/" + path;
+VORTEX_API std::string PluginInterface::cook_path(const std::string &path) {
+  return this->get_path() + "/" + path;
 }
 
-VORTEX_API std::string PluginInterface::GetPath() {
+VORTEX_API std::string PluginInterface::get_path() {
   return m_path;
 }
 VORTEX_API std::string PluginInterface::GetMainScriptPath() {
@@ -68,7 +68,7 @@ PluginInterface::add_documentation(const std::string &section, const std::string
   vxe::add_documentation(topic, section, title, path);
 }
 
-VORTEX_API void PluginInterface::RefreshMainWindow() {
+VORTEX_API void PluginInterface::refresh_main_window() {
   if (!&Cherry::Application::Get()) {
     return;
   }
@@ -88,11 +88,11 @@ VORTEX_API void PluginInterface::RefreshMainWindow() {
   }
 }
 
-VORTEX_API void PluginInterface::SetMainWindow(const std::shared_ptr<Cherry::AppWindow> &win) {
+VORTEX_API void PluginInterface::set_main_window(const std::shared_ptr<Cherry::AppWindow> &win) {
   m_main_window = win;
 
   if (&Cherry::Application::Get()) {
-    RefreshMainWindow();
+    refresh_main_window();
   }
 }
 
@@ -117,16 +117,16 @@ VORTEX_API void PluginInterface::AddPluginRenderInstance(const std::shared_ptr<P
  * @param hexa Pointer to the logo data as an array of uint8_t.
  * @param size Size of the logo data in bytes.
  */
-VORTEX_API void PluginInterface::AddLogo(const uint8_t *hexa, size_t size) {
+VORTEX_API void PluginInterface::add_logo(const uint8_t *hexa, size_t size) {
   // Set the logo data and size
   this->m_logo = hexa;
   this->m_logo_size = size;
 }
 
-VORTEX_API void PluginInterface::AddLogo(const std::string &relative_path) {
+VORTEX_API void PluginInterface::add_logo(const std::string &relative_path) {
 }
 
-VORTEX_API void PluginInterface::AddOutputEvent(std::function<void()> foo, const std::string &name) {
+VORTEX_API void PluginInterface::add_output_event(std::function<void()> foo, const std::string &name) {
   // Create a shared_ptr to the PluginOutputEvent
   std::shared_ptr<PluginOutputEvent> p_event = std::make_shared<PluginOutputEvent>(foo, name);
 
@@ -134,7 +134,7 @@ VORTEX_API void PluginInterface::AddOutputEvent(std::function<void()> foo, const
   this->m_output_events.push_back(p_event);
 }
 
-VORTEX_API void PluginInterface::AddOutputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name) {
+VORTEX_API void PluginInterface::add_output_event(std::function<void(ArgumentValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the PluginOutputEvent
   std::shared_ptr<PluginOutputEvent> p_event = std::make_shared<PluginOutputEvent>(foo, name);
 
@@ -142,7 +142,7 @@ VORTEX_API void PluginInterface::AddOutputEvent(std::function<void(ArgumentValue
   this->m_output_events.push_back(p_event);
 }
 
-VORTEX_API void PluginInterface::AddOutputEvent(std::function<void(ReturnValues &)> foo, const std::string &name) {
+VORTEX_API void PluginInterface::add_output_event(std::function<void(ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the PluginOutputEvent
   std::shared_ptr<PluginOutputEvent> p_event = std::make_shared<PluginOutputEvent>(foo, name);
 
@@ -150,7 +150,7 @@ VORTEX_API void PluginInterface::AddOutputEvent(std::function<void(ReturnValues 
   this->m_output_events.push_back(p_event);
 }
 
-VORTEX_API void PluginInterface::AddOutputEvent(
+VORTEX_API void PluginInterface::add_output_event(
     std::function<void(ArgumentValues &, ReturnValues &)> foo,
     const std::string &name) {
   // Create a shared_ptr to the PluginOutputEvent
@@ -160,7 +160,7 @@ VORTEX_API void PluginInterface::AddOutputEvent(
   this->m_output_events.push_back(p_event);
 }
 
-VORTEX_API void PluginInterface::AddInputEvent(std::function<void()> foo, const std::string &name) {
+VORTEX_API void PluginInterface::add_input_event(std::function<void()> foo, const std::string &name) {
   // Create a shared_ptr to the PluginOutputEvent
   std::shared_ptr<PluginInputEvent> p_event = std::make_shared<PluginInputEvent>(foo, name);
 
@@ -168,7 +168,7 @@ VORTEX_API void PluginInterface::AddInputEvent(std::function<void()> foo, const 
   this->m_input_events.push_back(p_event);
 }
 
-VORTEX_API void PluginInterface::AddInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name) {
+VORTEX_API void PluginInterface::add_input_event(std::function<void(ArgumentValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the PluginOutputEvent
   std::shared_ptr<PluginInputEvent> p_event = std::make_shared<PluginInputEvent>(foo, name);
 
@@ -176,7 +176,7 @@ VORTEX_API void PluginInterface::AddInputEvent(std::function<void(ArgumentValues
   this->m_input_events.push_back(p_event);
 }
 
-VORTEX_API void PluginInterface::AddInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name) {
+VORTEX_API void PluginInterface::add_input_event(std::function<void(ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the PluginOutputEvent
   std::shared_ptr<PluginInputEvent> p_event = std::make_shared<PluginInputEvent>(foo, name);
 
@@ -184,7 +184,7 @@ VORTEX_API void PluginInterface::AddInputEvent(std::function<void(ReturnValues &
   this->m_input_events.push_back(p_event);
 }
 
-VORTEX_API void PluginInterface::AddInputEvent(
+VORTEX_API void PluginInterface::add_input_event(
     std::function<void(ArgumentValues &, ReturnValues &)> foo,
     const std::string &name) {
   // Create a shared_ptr to the PluginOutputEvent
@@ -203,7 +203,7 @@ VORTEX_API void PluginInterface::AddInputEvent(
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-VORTEX_API void PluginInterface::AddFunction(std::function<void()> foo, const std::string &name) {
+VORTEX_API void PluginInterface::add_function(std::function<void()> foo, const std::string &name) {
   // Create a shared_ptr to the PluginFunction
   std::shared_ptr<PluginFunction> p_function = std::make_shared<PluginFunction>(foo, name);
 
@@ -220,7 +220,7 @@ VORTEX_API void PluginInterface::AddFunction(std::function<void()> foo, const st
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-VORTEX_API void PluginInterface::AddFunction(std::function<void(ArgumentValues &)> foo, const std::string &name) {
+VORTEX_API void PluginInterface::add_function(std::function<void(ArgumentValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the PluginFunction
   std::shared_ptr<PluginFunction> p_function = std::make_shared<PluginFunction>(foo, name);
 
@@ -237,7 +237,7 @@ VORTEX_API void PluginInterface::AddFunction(std::function<void(ArgumentValues &
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-VORTEX_API void PluginInterface::AddFunction(std::function<void(ReturnValues &)> foo, const std::string &name) {
+VORTEX_API void PluginInterface::add_function(std::function<void(ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the PluginFunction
   std::shared_ptr<PluginFunction> p_function = std::make_shared<PluginFunction>(foo, name);
 
@@ -254,7 +254,7 @@ VORTEX_API void PluginInterface::AddFunction(std::function<void(ReturnValues &)>
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-VORTEX_API void PluginInterface::AddFunction(
+VORTEX_API void PluginInterface::add_function(
     std::function<void(ArgumentValues &, ReturnValues &)> foo,
     const std::string &name) {
   // Create a shared_ptr to the PluginFunction
@@ -272,7 +272,7 @@ VORTEX_API void PluginInterface::AddFunction(
  *
  * @return A shared_ptr to a copy of the PluginInterface.
  */
-VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::GetInterface() {
+VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::get_interface() {
   // Create a shared_ptr to a new PluginInterface object, copying the current
   // instance
   return std::make_shared<PluginInterface>(*this);
@@ -309,7 +309,7 @@ VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::GetEditorPluginByNa
  *
  * @param name The name of the function to execute.
  */
-VORTEX_API void PluginInterface::ExecuteFunction(const std::string &name) {
+VORTEX_API void PluginInterface::execute_function(const std::string &name) {
   for (auto foo : this->m_functions) {
     if (foo->m_name == name) {
       ArgumentValues empty_args;
@@ -328,7 +328,7 @@ VORTEX_API void PluginInterface::ExecuteFunction(const std::string &name) {
  *
  * @param name The name of the function to execute.
  */
-VORTEX_API void PluginInterface::ExecuteFunction(const std::string &name, ReturnValues &ret) {
+VORTEX_API void PluginInterface::execute_function(const std::string &name, ReturnValues &ret) {
   for (auto foo : this->m_functions) {
     if (foo->m_name == name) {
       ArgumentValues empty_args;
@@ -346,7 +346,7 @@ VORTEX_API void PluginInterface::ExecuteFunction(const std::string &name, Return
  *
  * @param name The name of the function to execute.
  */
-VORTEX_API void PluginInterface::ExecuteFunction(const std::string &name, ArgumentValues &args) {
+VORTEX_API void PluginInterface::execute_function(const std::string &name, ArgumentValues &args) {
   for (auto foo : this->m_functions) {
     if (foo->m_name == name) {
       ReturnValues empty_ret;
@@ -364,7 +364,7 @@ VORTEX_API void PluginInterface::ExecuteFunction(const std::string &name, Argume
  *
  * @param name The name of the function to execute.
  */
-VORTEX_API void PluginInterface::ExecuteFunction(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
+VORTEX_API void PluginInterface::execute_function(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto foo : this->m_functions) {
     if (foo->m_name == name) {
       foo->m_function(args, ret);
@@ -380,7 +380,7 @@ VORTEX_API void PluginInterface::ExecuteFunction(const std::string &name, Argume
  * and executes its associated function with the provided arguments if found.
  *
  */
-VORTEX_API void PluginInterface::ExecuteInputEvent(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
+VORTEX_API void PluginInterface::execute_input_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->m_input_events) {
     if (event->m_name == name) {
       event->m_function(args, ret);
@@ -395,7 +395,7 @@ VORTEX_API void PluginInterface::ExecuteInputEvent(const std::string &name, Argu
  * and executes its associated function with the provided arguments if found.
  *
  */
-VORTEX_API void PluginInterface::ExecuteOutputEvent(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
+VORTEX_API void PluginInterface::execute_output_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->m_output_events) {
     if (event->m_name == name) {
       event->m_function(args, ret);
@@ -422,7 +422,7 @@ VORTEX_API void PluginInterface::log_info(const std::string &message) {
  *
  * @param message The warning message to log.
  */
-VORTEX_API void PluginInterface::LogWarning(const std::string &message) {
+VORTEX_API void PluginInterface::log_warning(const std::string &message) {
   vxe::log_warn(this->m_name, message);
 }
 
@@ -454,7 +454,7 @@ VORTEX_API void PluginInterface::log_fatal(const std::string &message) {
  * This function checks if the dependencies specified for the plugin interface
  * are satisfied based on the current context.
  */
-VORTEX_API void PluginInterface::CheckDependencies() {
+VORTEX_API void PluginInterface::check_dependencies() {
   // Get the current Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -493,12 +493,12 @@ VORTEX_API void PluginInterface::CheckDependencies() {
  * dependencies, and sets the state to "failed". If all dependencies are
  * satisfied, executes the main function and sets the state to "running".
  */
-VORTEX_API void PluginInterface::Start() {
+VORTEX_API void PluginInterface::start() {
   // Get the current Vortex context
   auto ctx = vxe::get_current_context();
 
   // Update dependencies
-  this->CheckDependencies();
+  this->check_dependencies();
 
   // Get current vortex version
   std::string version = VORTEX_VERSION;
@@ -595,7 +595,7 @@ VORTEX_API void PluginInterface::Start() {
  * Calls the destroy function to clean up resources and sets the state to
  * "stopped".
  */
-VORTEX_API void PluginInterface::Stop() {
+VORTEX_API void PluginInterface::stop() {
   // Get the current Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -651,26 +651,26 @@ VORTEX_API void PluginInterface::call_input_event(
   vxe::call_input_event(plugin_name, event_name, args, ret, this->m_name);
 }
 
-VORTEX_API void PluginInterface::CheckVersion() {
+VORTEX_API void PluginInterface::check_version() {
 }
 
 std::vector<std::shared_ptr<PluginRenderInstance>> PluginInterface::GetPluginRenderInstances() {
   return this->m_render_instances;
 };
 
-VORTEX_API void PluginInterface::AddContentBrowserItemIdentifier(const ItemIdentifierInterface &item) {
+VORTEX_API void PluginInterface::add_content_browser_item_identifier(const ItemIdentifierInterface &item) {
   m_item_identifiers.push_back(std::make_shared<ItemIdentifierInterface>(item));
 }
 
-VORTEX_API std::vector<std::shared_ptr<ItemIdentifierInterface>> &PluginInterface::GetContentBrowserItemIdentifiers() {
+VORTEX_API std::vector<std::shared_ptr<ItemIdentifierInterface>> &PluginInterface::get_content_browser_item_identifiers() {
   return m_item_identifiers;
 }
 
-VORTEX_API void PluginInterface::AddContentBrowserItemCreator(const ItemCreatorInterface &item) {
+VORTEX_API void PluginInterface::add_content_browser_item_creator(const ItemCreatorInterface &item) {
   m_item_creators.push_back(std::make_shared<ItemCreatorInterface>(item));
 }
 
-VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &PluginInterface::GetContentBrowserItemCreators() {
+VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &PluginInterface::get_content_browser_item_creators() {
   return m_item_creators;
 }
 

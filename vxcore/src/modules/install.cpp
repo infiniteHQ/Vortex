@@ -44,7 +44,7 @@ VORTEX_API void vxe::InstallModule(const std::string &module_name, const std::st
         if (restart_modules) {
           // Stop all modules
           for (auto em : ctx->IO.em) {
-            em->Stop();
+            em->stop();
           }
 
           // Clear closed modules

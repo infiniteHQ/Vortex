@@ -330,19 +330,19 @@ namespace vxe {
       if (m_plugin->m_state == "failed") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"))
                 .GetDataAs<bool>("isClicked")) {
-          m_plugin->Start();
+          m_plugin->start();
         }
 
       } else if (m_plugin->m_state == "unknow" || m_plugin->m_state == "stopped") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_start.png"))
                 .GetDataAs<bool>("isClicked")) {
-          m_plugin->Start();
+          m_plugin->start();
         }
 
       } else {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_stop.png"))
                 .GetDataAs<bool>("isClicked")) {
-          m_plugin->Stop();
+          m_plugin->stop();
         }
       }
 
@@ -350,7 +350,7 @@ namespace vxe {
       CherryGUI::SetCursorScreenPos(secondButtonPos);
 
       if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png")).GetDataAs<bool>("isClicked")) {
-        m_plugin->Stop();
+        m_plugin->stop();
         if (plugin_deletion_callback_) {
           plugin_deletion_callback_(m_plugin);
         }
@@ -370,7 +370,7 @@ namespace vxe {
          ImVec2(this->m_RefreshIcon->GetWidth(),
          this->m_RefreshIcon->GetHeight())))
               {
-                  ctx->IO.ep[i]->Start();
+                  ctx->IO.ep[i]->start();
               }
               CherryGUI::SameLine();
               if (CherryGUI::ImageButtonWithText(trashIcon, "Delete",
@@ -397,7 +397,7 @@ namespace vxe {
          ImVec2(this->m_RefreshIcon->GetWidth(),
          this->m_RefreshIcon->GetHeight())))
               {
-                  ctx->IO.ep[i]->Start();
+                  ctx->IO.ep[i]->start();
               }
               CherryGUI::SameLine();
               if (CherryGUI::ImageButtonWithText(trashIcon, "Delete",

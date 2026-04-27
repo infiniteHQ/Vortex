@@ -14,7 +14,7 @@ VORTEX_API void FinalStartPlugin(
         processed_plugins->push_back(ep->m_name);
 
         try {
-          ep->Start();
+          ep->start();
         } catch (const std::exception &e) {
           // Log the error
           vxe::log_error("Plugins", "Error starting plugin \"" + ep->m_name + "\": " + e.what());
@@ -44,7 +44,7 @@ VORTEX_API void vxe::StartPlugin(const std::string &plugin_name) {
         }
 
         // Finally start the plugin
-        ep->Start();
+        ep->start();
       }
     }
   }

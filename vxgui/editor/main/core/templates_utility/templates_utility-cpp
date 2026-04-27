@@ -26,7 +26,7 @@ namespace vxe
     {
         /*for (int i = 0; i < vxe::get_current_context()->IO.em.size(); i++)
                 {
-                    resetValue(vxe::get_current_context()->IO.em[i]->m_group);
+                    reset(vxe::get_current_context()->IO.em[i]->m_group);
                 }*/
 
         for (int i = 0; i < vxe::get_current_context()->IO.em.size(); i++)
@@ -129,7 +129,7 @@ namespace vxe
                 {
                     if (ImGui::Button("Stop"))
                     {
-                        vxe::get_current_context()->IO.em[i]->Stop();
+                        vxe::get_current_context()->IO.em[i]->stop();
                     }
                     ImGui::SameLine();
                     if (ImGui::Button("Details"))
@@ -144,7 +144,7 @@ namespace vxe
                 {
                     /*if (ImGui::ImageButtonWithText(listIcon, "Retry to launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
-                        vxe::get_current_context()->IO.em[i]->Start();
+                        vxe::get_current_context()->IO.em[i]->start();
                     }
                     ImGui::SameLine();
                     if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
@@ -163,7 +163,7 @@ namespace vxe
                 {
                     /*if (ImGui::ImageButtonWithText(startIcon, "Launch", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))
                     {
-                        vxe::get_current_context()->IO.em[i]->Start();
+                        vxe::get_current_context()->IO.em[i]->start();
                     }
                     ImGui::SameLine();
                     if (ImGui::ImageButtonWithText(trashIcon, "Delete", ImVec2(this->m_RefreshIcon->GetWidth(), this->m_RefreshIcon->GetHeight())))

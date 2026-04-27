@@ -48,8 +48,8 @@ namespace vxe {
 
       vxe::call_output_event(eventName, args, ret, origin);
 
-      if (ret.GetValue() != "null") {
-        JsonToLuaTable(L, ret.GetJsonValue());
+      if (ret.get() != "null") {
+        JsonToLuaTable(L, ret.get_json());
         return 1;
       }
 
@@ -71,7 +71,7 @@ namespace vxe {
 
       vxe::call_input_event(moduleName, eventName, args, ret, origin);
 
-      JsonToLuaTable(L, ret.GetJsonValue());
+      JsonToLuaTable(L, ret.get_json());
       return 1;
     }
 

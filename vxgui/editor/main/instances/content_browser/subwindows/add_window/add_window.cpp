@@ -243,7 +243,7 @@ namespace vxe {
 
     for (auto m : vxe::get_current_context()->IO.em) {
       if (m) {
-        auto item_creators = m->GetContentBrowserItemCreators();
+        auto item_creators = m->get_content_browser_item_creators();
         if (!item_creators.empty()) {
           float window_width = CherryGUI::GetWindowSize().x;
           float header_width = window_width - 17.0f;

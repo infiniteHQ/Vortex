@@ -43,7 +43,7 @@ VORTEX_API void vxe::InstallPlugin(const std::string &plugin_name, const std::st
         if (restart_plugins) {
           // Stop all plugins
           for (auto ep : ctx->IO.ep) {
-            ep->Stop();
+            ep->stop();
           }
 
           // Clear closed plugins

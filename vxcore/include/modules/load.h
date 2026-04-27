@@ -6,13 +6,12 @@
 #define MODULE_LOAD_H
 
 namespace vxe {
-VORTEX_API void
-LoadSystemModules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules);
-VORTEX_API void
-LoadEditorModules(const std::string &directory,
-                  std::vector<void *> &plugin_handles,
-                  std::vector<std::shared_ptr<ModuleInterface>> &plugins);
-} // namespace vxe
+  VORTEX_API void LoadSystemModules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules);
+  VORTEX_API void LoadEditorModules(
+      const std::string &directory,
+      std::vector<void *> &plugin_handles,
+      std::vector<std::shared_ptr<ModuleInterface>> &plugins);
+}  // namespace vxe
 
 #endif
 
@@ -26,6 +25,6 @@ For funtions interface :
 Faire des fonctions pour ajouter le contenu dans le init ?
 AddModuleInputEvent()
 AddModuleOuputEvent()
-AddModuleFunction(ModuleFunction(with all metrics))
+add_module_function(ModuleFunction(with all metrics))
 AddModuleLogo(logopath)
 */

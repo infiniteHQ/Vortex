@@ -16,7 +16,7 @@ VORTEX_API void FinalStartModule(
         processed_modules->push_back(em->m_name);
 
         try {
-          em->Start();
+          em->start();
         } catch (const std::exception &e) {
           // Log the error
           vxe::log_error("Modules", "Error starting module \"" + em->m_name + "\": " + e.what());
@@ -46,7 +46,7 @@ VORTEX_API void vxe::StartModule(const std::string &module_name) {
         }
 
         // Finally start the module
-        em->Start();
+        em->start();
       }
     }
   }
