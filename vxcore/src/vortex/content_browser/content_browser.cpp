@@ -456,7 +456,7 @@ VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> vxe::get_all_item_
   }
 
   for (auto plug : vxe::get_current_context()->IO.ep) {
-    if (plug->state_ == "running") {
+    if (plug->state() == "running") {
       for (auto handlers : plug->get_content_browser_item_handlers()) {
         if (handlers->type == type)
           list.push_back(handlers);

@@ -174,7 +174,7 @@ namespace vxe {
         truncatedText = name_ + "\n";
       }
 
-      std::string truncatedDesc = plugin_->description_;
+      std::string truncatedDesc = plugin_->description();
 
       if (truncatedDesc.length() > 100) {
         truncatedDesc = truncatedDesc.substr(0, 97) + "...";
@@ -182,22 +182,22 @@ namespace vxe {
       const char *originalDesc = truncatedDesc.c_str();
 
       if (CherryGUI::CalcTextSize(originalDesc).x > max_text_width_) {
-        size_t len = plugin_->description_.size();
+        size_t len = plugin_->description().size();
 
         size_t firstPart = std::min<size_t>(90, len);
-        truncatedDesc = plugin_->description_.substr(0, firstPart);
+        truncatedDesc = plugin_->description().substr(0, firstPart);
 
         if (CherryGUI::CalcTextSize(truncatedDesc.c_str()).x > max_text_width_) {
           size_t firstLine = std::min<size_t>(55, len);
           size_t secondLine = (len > 55) ? len - 55 : 0;
 
-          truncatedDesc = plugin_->description_.substr(0, firstLine);
+          truncatedDesc = plugin_->description().substr(0, firstLine);
           if (secondLine > 0) {
-            truncatedDesc += "\n" + plugin_->description_.substr(55, secondLine);
+            truncatedDesc += "\n" + plugin_->description().substr(55, secondLine);
           }
         }
       } else {
-        truncatedDesc = plugin_->description_ + "\n";
+        truncatedDesc = plugin_->description() + "\n";
       }
 
       ImVec2 fixedSize(max_text_width_ + padding * 2 + 150.0f, logoSize + extraHeight + padding * 2);
@@ -327,13 +327,13 @@ namespace vxe {
       ImVec2 firstButtonPos = ImVec2(cursorPos.x + fixedSize.x - padding - buttonWidth - 10, cursorPos.y + padding);
       CherryGUI::SetCursorScreenPos(firstButtonPos);
 
-      if (plugin_->state_ == "failed") {
+      if (plugin_->state() == "failed") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"))
                 .GetDataAs<bool>("isClicked")) {
           plugin_->start();
         }
 
-      } else if (plugin_->state_ == "unknow" || plugin_->state_ == "stopped") {
+      } else if (plugin_->state() == "unknow" || plugin_->state() == "stopped") {
         if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_start.png"))
                 .GetDataAs<bool>("isClicked")) {
           plugin_->start();

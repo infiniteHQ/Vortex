@@ -25,7 +25,7 @@ class ModuleInputEvent {
 
   void trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log);
 
-  std::function<void(ArgumentValues &, ReturnValues &)> m_function;
+  std::function<void(ArgumentValues &, ReturnValues &)> function_;
   std::string name_;
   std::string description_;
   std::vector<std::tuple<std::string, std::string, std::string>> m_params;
@@ -48,7 +48,7 @@ class ModuleOutputEvent {
 
   virtual void execute() { };
 
-  std::function<void(ArgumentValues &, ReturnValues &)> m_function;
+  std::function<void(ArgumentValues &, ReturnValues &)> function_;
   std::string name_;
   std::vector<std::shared_ptr<ModuleOutputEventHappening>> m_happenings;
 };

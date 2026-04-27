@@ -79,7 +79,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin)
         return 0;
-      VXINFO(plugin->name_, log);
+      vxe::log_info(plugin->name(), log);
       return 0;
     }
 
@@ -88,7 +88,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin)
         return 0;
-      VXWARN(plugin->name_, log);
+      vxe::log_warn(plugin->name(), log);
       return 0;
     }
 
@@ -97,7 +97,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin)
         return 0;
-      VXERROR(plugin->name_, log);
+      vxe::log_error(plugin->name(), log);
       return 0;
     }
 
@@ -106,7 +106,7 @@ namespace vxe {
       auto plugin = GetActivePlugin(L);
       if (!plugin)
         return 0;
-      VXFATAL(plugin->name_, log);
+      VXFATAL(plugin->name(), log);
       return 0;
     }
     VXLUA_FUNC(PluginSetCreditsFile) {
@@ -230,7 +230,7 @@ namespace vxe {
 
       ReturnValues ret;
 
-      vxe::call_output_event(event_name, args, ret, plugin->name_);
+      vxe::call_output_event(event_name, args, ret, plugin->name());
 
       std::string ret_val = ret.get();
       if (ret_val.empty() || ret_val == "null") {
@@ -368,7 +368,7 @@ namespace vxe {
 
               lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
               if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
-                VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+                vxe::log_error("LuaOutputEvent", lua_tostring(L, -1));
                 lua_pop(L, 1);
               }
               // Clear active plugin context
@@ -391,7 +391,7 @@ namespace vxe {
               lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
               push_args_table(L, args);
               if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
-                VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+                vxe::log_error("LuaOutputEvent", lua_tostring(L, -1));
                 lua_pop(L, 1);
               }
               lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
@@ -412,7 +412,7 @@ namespace vxe {
 
               lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
               if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
-                VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+                vxe::log_error("LuaOutputEvent", lua_tostring(L, -1));
                 lua_pop(L, 1);
                 lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
                 lua_pushnil(L);
@@ -439,7 +439,7 @@ namespace vxe {
               lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
               push_args_table(L, args);
               if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
-                VXERROR("LuaOutputEvent", lua_tostring(L, -1));
+                vxe::log_error("LuaOutputEvent", lua_tostring(L, -1));
                 lua_pop(L, 1);
                 lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
                 lua_pushnil(L);
@@ -501,7 +501,7 @@ namespace vxe {
       }
 
       ReturnValues ret;
-      vxe::call_input_event(module_name, event_name, args, ret, plugin->name_);
+      vxe::call_input_event(module_name, event_name, args, ret, plugin->name());
 
       std::string ret_val = ret.get();
       if (ret_val.empty() || ret_val == "null") {
@@ -639,7 +639,7 @@ namespace vxe {
 
               lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
               if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
-                VXERROR("LuaInputEvent", lua_tostring(L, -1));
+                vxe::log_error("LuaInputEvent", lua_tostring(L, -1));
                 lua_pop(L, 1);
               }
               // Clear active plugin context
@@ -662,7 +662,7 @@ namespace vxe {
               lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
               push_args_table(L, args);
               if (lua_pcall(L, 1, 0, 0) != LUA_OK) {
-                VXERROR("LuaInputEvent", lua_tostring(L, -1));
+                vxe::log_error("LuaInputEvent", lua_tostring(L, -1));
                 lua_pop(L, 1);
               }
               lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
@@ -683,7 +683,7 @@ namespace vxe {
 
               lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
               if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
-                VXERROR("LuaInputEvent", lua_tostring(L, -1));
+                vxe::log_error("LuaInputEvent", lua_tostring(L, -1));
                 lua_pop(L, 1);
                 lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
                 lua_pushnil(L);
@@ -710,7 +710,7 @@ namespace vxe {
               lua_rawgeti(L, LUA_REGISTRYINDEX, h->lua_ref);
               push_args_table(L, args);
               if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
-                VXERROR("LuaInputEvent", lua_tostring(L, -1));
+                vxe::log_error("LuaInputEvent", lua_tostring(L, -1));
                 lua_pop(L, 1);
                 lua_pushlightuserdata(L, (void *)&ACTIVE_PLUGIN_KEY);
                 lua_pushnil(L);

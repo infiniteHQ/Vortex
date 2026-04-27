@@ -317,7 +317,7 @@ VORTEX_API void ModuleInterface::execute_function(const std::string &name) {
     if (foo->name_ == name) {
       ArgumentValues empty_args;
       ReturnValues empty_ret;
-      foo->m_function(empty_args, empty_ret);
+      foo->function_(empty_args, empty_ret);
       return;  // Exit after executing the function
     }
   }
@@ -335,7 +335,7 @@ VORTEX_API void ModuleInterface::execute_function(const std::string &name, Retur
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
       ArgumentValues empty_args;
-      foo->m_function(empty_args, ret);
+      foo->function_(empty_args, ret);
       return;  // Exit after executing the function
     }
   }
@@ -353,7 +353,7 @@ VORTEX_API void ModuleInterface::execute_function(const std::string &name, Argum
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
       ReturnValues empty_ret;
-      foo->m_function(args, empty_ret);
+      foo->function_(args, empty_ret);
       return;  // Exit after executing the function
     }
   }
@@ -370,7 +370,7 @@ VORTEX_API void ModuleInterface::execute_function(const std::string &name, Argum
 VORTEX_API void ModuleInterface::execute_function(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
-      foo->m_function(args, ret);
+      foo->function_(args, ret);
       return;  // Exit after executing the function
     }
   }
@@ -386,7 +386,7 @@ VORTEX_API void ModuleInterface::execute_function(const std::string &name, Argum
 VORTEX_API void ModuleInterface::execute_input_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->input_events_) {
     if (event->name_ == name) {
-      event->m_function(args, ret);
+      event->function_(args, ret);
       return;  // Exit after executing the input event
     }
   }
@@ -401,7 +401,7 @@ VORTEX_API void ModuleInterface::execute_input_event(const std::string &name, Ar
 VORTEX_API void ModuleInterface::execute_output_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->output_events_) {
     if (event->name_ == name) {
-      event->m_function(args, ret);
+      event->function_(args, ret);
       return;  // Exit after executing the output event
     }
   }

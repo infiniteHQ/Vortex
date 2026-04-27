@@ -20,17 +20,17 @@ enum class DevFlag;
 enum class HandlerItemType;
 
 struct PluginInputEventHappening {
-  std::string m_trigger_name;
+  std::string trigger_name_;
   HappeningState state_;
-  std::string m_log;
-  std::string m_timestamp;
+  std::string log_;
+  std::string timestamp_;
 };
 
 struct PluginOutputEventHappening {
-  std::string m_trigger_name;
+  std::string trigger_name_;
   HappeningState state_;
-  std::string m_log;
-  std::string m_timestamp;
+  std::string log_;
+  std::string timestamp_;
 };
 
 #endif

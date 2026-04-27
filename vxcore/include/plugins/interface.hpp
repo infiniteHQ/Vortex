@@ -90,7 +90,7 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   // Misc
   VORTEX_API void add_logo(const uint8_t *hexa, size_t size);
   VORTEX_API void add_logo(const std::string &relative_path);
-  VORTEX_API void ResetPlugin();
+  VORTEX_API void reset_plugin();
 
   // Functions of the plugins (gives the Vortex abstraction/features)
   VORTEX_API void add_function(std::function<void()> foo, const std::string &name);
@@ -102,7 +102,7 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API void execute_function(const std::string &name, ReturnValues &ret);
   VORTEX_API void execute_function(const std::string &name, ArgumentValues &args, ReturnValues &ret);
 
-  VORTEX_API std::string GetMainScriptPath();
+  VORTEX_API std::string get_main_script_path();
 
   // Documentation
   VORTEX_API void add_documentation(const std::string &section, const std::string &title, const std::string &path);
@@ -187,7 +187,7 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API static std::shared_ptr<PluginInterface> get_editor_plugin_by_name(const std::string &name);
 
   VORTEX_API void add_lua_handler(const std::shared_ptr<LuaItemHandler> &handler) {
-    m_lua_handlers.push_back(handler);
+    lua_handlers_.push_back(handler);
   }
 
   // utilities
@@ -214,6 +214,7 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API const std::string &picture() const noexcept;
   VORTEX_API const std::string &logo_path() const noexcept;
   VORTEX_API const std::string &description() const noexcept;
+  VORTEX_API const std::string &mainscript_path() const noexcept;
   VORTEX_API bool auto_exec() const noexcept;
   VORTEX_API const std::vector<std::string> &contributors() const noexcept;
   VORTEX_API const std::vector<std::shared_ptr<PluginInterfaceDep>> &dependencies() const noexcept;
@@ -240,19 +241,20 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   VORTEX_API void picture(std::string v);
   VORTEX_API void logo_path(std::string v);
   VORTEX_API void description(std::string v);
+  VORTEX_API void mainscript_path(std::string v);
   VORTEX_API void auto_exec(bool v);
   VORTEX_API void contributors(std::vector<std::string> v);
   VORTEX_API void dependencies(std::vector<std::shared_ptr<PluginInterfaceDep>> v);
   VORTEX_API void supported_versions(std::vector<std::string> v);
 
- public:
+ private:
   std::string datapath_;
   std::string type_;
   std::string proper_name_;
   std::string name_;
   std::string version_;
   std::string path_;
-  std::string m_mainscript_path;
+  std::string mainscript_path_;
   std::string author_;
   std::string group_;
   std::string picture_;
@@ -275,9 +277,8 @@ VORTEX_API class PluginInterface : public std::enable_shared_from_this<PluginInt
   std::vector<std::shared_ptr<ItemIdentifierInterface>> item_identifiers_;
   std::vector<std::shared_ptr<ItemCreatorInterface>> item_creators_;
 
-  std::vector<std::shared_ptr<LuaItemHandler>> m_lua_handlers;
+  std::vector<std::shared_ptr<LuaItemHandler>> lua_handlers_;
 
- private:
   std::vector<std::shared_ptr<PluginDummyFunction>> dummy_functions_;
   std::vector<std::shared_ptr<PluginRenderInstance>> render_instances_;
 };

@@ -49,8 +49,8 @@ VORTEX_API std::string PluginInterface::cook_path(const std::string &path) {
   return this->path() + "/" + path;
 }
 
-VORTEX_API std::string PluginInterface::GetMainScriptPath() {
-  return m_mainscript_path;
+VORTEX_API std::string PluginInterface::get_main_script_path() {
+  return mainscript_path_;
 }
 
 VORTEX_API void
@@ -228,7 +228,7 @@ VORTEX_API void PluginInterface::execute_function(const std::string &name) {
     if (foo->name_ == name) {
       ArgumentValues empty_args;
       ReturnValues empty_ret;
-      foo->m_function(empty_args, empty_ret);
+      foo->function_(empty_args, empty_ret);
       return;
     }
   }
@@ -238,7 +238,7 @@ VORTEX_API void PluginInterface::execute_function(const std::string &name, Retur
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
       ArgumentValues empty_args;
-      foo->m_function(empty_args, ret);
+      foo->function_(empty_args, ret);
       return;
     }
   }
@@ -248,7 +248,7 @@ VORTEX_API void PluginInterface::execute_function(const std::string &name, Argum
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
       ReturnValues empty_ret;
-      foo->m_function(args, empty_ret);
+      foo->function_(args, empty_ret);
       return;
     }
   }
@@ -257,7 +257,7 @@ VORTEX_API void PluginInterface::execute_function(const std::string &name, Argum
 VORTEX_API void PluginInterface::execute_function(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
-      foo->m_function(args, ret);
+      foo->function_(args, ret);
       return;
     }
   }
@@ -266,7 +266,7 @@ VORTEX_API void PluginInterface::execute_function(const std::string &name, Argum
 VORTEX_API void PluginInterface::execute_input_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->input_events_) {
     if (event->name_ == name) {
-      event->m_function(args, ret);
+      event->function_(args, ret);
       return;
     }
   }
@@ -275,7 +275,7 @@ VORTEX_API void PluginInterface::execute_input_event(const std::string &name, Ar
 VORTEX_API void PluginInterface::execute_output_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->output_events_) {
     if (event->name_ == name) {
-      event->m_function(args, ret);
+      event->function_(args, ret);
       return;  // Exit after executing the output event
     }
   }
@@ -433,7 +433,7 @@ VORTEX_API void PluginInterface::start() {
   }
 
   auto &engine = vxe::script::get_scripting_engine();
-  engine.load_file_for_plugin(this->m_mainscript_path, this->shared_from_this());
+  engine.load_file_for_plugin(this->mainscript_path_, this->shared_from_this());
 
   this->state_ = "running";
 }
@@ -478,13 +478,13 @@ VORTEX_API void PluginInterface::stop() {
     }
   } else {
     item_handlers_.clear();
-    m_lua_handlers.clear();
+    lua_handlers_.clear();
     this->destroy();
     this->state_ = "stopped";
   }
 }
 
-VORTEX_API void PluginInterface::ResetPlugin() {
+VORTEX_API void PluginInterface::reset_plugin() {
   item_handlers_.clear();
 }
 
@@ -575,6 +575,10 @@ const std::string &PluginInterface::description() const noexcept {
   return description_;
 }
 
+const std::string &PluginInterface::mainscript_path() const noexcept {
+  return mainscript_path_;
+}
+
 const std::vector<std::shared_ptr<PluginFunction>> &PluginInterface::functions() const noexcept {
   return functions_;
 }
@@ -653,6 +657,10 @@ void PluginInterface::logo_path(std::string v) {
 
 void PluginInterface::description(std::string v) {
   description_ = std::move(v);
+}
+
+void PluginInterface::mainscript_path(std::string v) {
+  mainscript_path_ = std::move(v);
 }
 
 void PluginInterface::auto_exec(bool v) {

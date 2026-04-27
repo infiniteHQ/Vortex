@@ -13,12 +13,12 @@
 #include "../../include/vortex_internals.h"
 
 ModuleOutputEvent::ModuleOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
-    : m_function(foo),
+    : function_(foo),
       name_(name) {
 }
 
 ModuleOutputEvent::ModuleOutputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &args, ReturnValues &ret) {
+    : function_([foo](ArgumentValues &args, ReturnValues &ret) {
         ret = ReturnValues();
         foo(args);
       }),
@@ -26,12 +26,12 @@ ModuleOutputEvent::ModuleOutputEvent(std::function<void(ArgumentValues &)> foo, 
 }
 
 ModuleOutputEvent::ModuleOutputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
+    : function_([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
       name_(name) {
 }
 
 ModuleOutputEvent::ModuleOutputEvent(std::function<void()> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
+    : function_([foo](ArgumentValues &, ReturnValues &) { foo(); }),
       name_(name) {
 }
 
@@ -92,12 +92,12 @@ void ModuleOutputEvent::trigger_happening(const std::string &trigger_name, Happe
 }
 
 ModuleInputEvent::ModuleInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
-    : m_function(foo),
+    : function_(foo),
       name_(name) {
 }
 
 ModuleInputEvent::ModuleInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &args, ReturnValues &ret) {
+    : function_([foo](ArgumentValues &args, ReturnValues &ret) {
         ret = ReturnValues();
         foo(args);
       }),
@@ -105,11 +105,11 @@ ModuleInputEvent::ModuleInputEvent(std::function<void(ArgumentValues &)> foo, co
 }
 
 ModuleInputEvent::ModuleInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
+    : function_([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
       name_(name) {
 }
 
 ModuleInputEvent::ModuleInputEvent(std::function<void()> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
+    : function_([foo](ArgumentValues &, ReturnValues &) { foo(); }),
       name_(name) {
 }

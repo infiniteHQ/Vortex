@@ -35,20 +35,20 @@ namespace vxe {
 
         std::shared_ptr<PluginInterface> new_plugin = std::make_shared<PluginInterface>();
 
-        new_plugin->name_ = json_data["name"].get<std::string>();
-        new_plugin->auto_exec_ = json_data["auto_exec"].get<bool>();
-        new_plugin->proper_name_ = json_data["proper_name"].get<std::string>();
-        new_plugin->type_ = json_data["type"].get<std::string>();
-        new_plugin->version_ = json_data["version"].get<std::string>();
-        new_plugin->description_ = json_data["description"].get<std::string>();
-        new_plugin->picture_ = json_data["picture"].get<std::string>();
-        new_plugin->logo_path_ = (fs::path(path) / new_plugin->picture_).string();
-        new_plugin->path_ = (fs::path(path)).string();
-        new_plugin->m_mainscript_path = new_plugin->path_ + "/" + json_data["path"].get<std::string>();
+        new_plugin->name(json_data["name"].get<std::string>());
+        new_plugin->auto_exec(json_data["auto_exec"].get<bool>());
+        new_plugin->proper_name(json_data["proper_name"].get<std::string>());
+        new_plugin->type(json_data["type"].get<std::string>());
+        new_plugin->version(json_data["version"].get<std::string>());
+        new_plugin->description(json_data["description"].get<std::string>());
+        new_plugin->picture(json_data["picture"].get<std::string>());
+        new_plugin->logo_path((fs::path(path) / new_plugin->picture()).string());
+        new_plugin->path((fs::path(path)).string());
+        new_plugin->mainscript_path(new_plugin->path() + "/" + json_data["path"].get<std::string>());
 
-        new_plugin->author_ = json_data["author"].get<std::string>();
-        new_plugin->group_ = json_data["group"].get<std::string>();
-        new_plugin->contributors_ = json_data["contributors"].get<std::vector<std::string>>();
+        new_plugin->author(json_data["author"].get<std::string>());
+        new_plugin->group(json_data["group"].get<std::string>());
+        new_plugin->contributors(json_data["contributors"].get<std::vector<std::string>>());
 
         for (auto dep : json_data["deps"]) {
           std::shared_ptr<PluginInterfaceDep> dependence = std::make_shared<PluginInterfaceDep>();
@@ -57,10 +57,10 @@ namespace vxe {
           for (auto version : dep["versions"]) {
             dependence->supported_versions.push_back(version);
           }
-          new_plugin->dependencies_.push_back(dependence);
+          new_plugin->add_dependency(dependence);
         }
 
-        new_plugin->supported_versions_ = json_data["compatibility"].get<std::vector<std::string>>();
+        new_plugin->supported_versions(json_data["compatibility"].get<std::vector<std::string>>());
         plugins.push_back(new_plugin);
       } catch (const std::exception &e) {
         vxe::log_error("Plugins", "Failed to load plugin metadata: " + std::string(e.what()));
@@ -93,19 +93,19 @@ namespace vxe {
 
         // Try to fetch plugin informations from plugin.json
         try {
-          new_plugin->name_ = json_data["name"].get<std::string>();
-          new_plugin->auto_exec_ = json_data["auto_exec"].get<bool>();
-          new_plugin->proper_name_ = json_data["proper_name"].get<std::string>();
-          new_plugin->type_ = json_data["type"].get<std::string>();
-          new_plugin->version_ = json_data["version"].get<std::string>();
-          new_plugin->description_ = json_data["description"].get<std::string>();
-          new_plugin->picture_ = json_data["picture"].get<std::string>();
-          new_plugin->logo_path_ = plugin_path + "/" + new_plugin->picture_;
-          new_plugin->path_ = plugin_path + "/";
-          new_plugin->m_mainscript_path = new_plugin->path_ + "/" + json_data["path"].get<std::string>();
-          new_plugin->author_ = json_data["author"].get<std::string>();
-          new_plugin->group_ = json_data["group"].get<std::string>();
-          new_plugin->contributors_ = json_data["contributors"].get<std::vector<std::string>>();
+          new_plugin->name(json_data["name"].get<std::string>());
+          new_plugin->auto_exec(json_data["auto_exec"].get<bool>());
+          new_plugin->proper_name(json_data["proper_name"].get<std::string>());
+          new_plugin->type(json_data["type"].get<std::string>());
+          new_plugin->version(json_data["version"].get<std::string>());
+          new_plugin->description(json_data["description"].get<std::string>());
+          new_plugin->picture(json_data["picture"].get<std::string>());
+          new_plugin->logo_path(plugin_path + "/" + new_plugin->picture());
+          new_plugin->path(plugin_path + "/");
+          new_plugin->mainscript_path(new_plugin->path() + "/" + json_data["path"].get<std::string>());
+          new_plugin->author(json_data["author"].get<std::string>());
+          new_plugin->group(json_data["group"].get<std::string>());
+          new_plugin->contributors(json_data["contributors"].get<std::vector<std::string>>());
 
           for (auto dep : json_data["deps"]) {
             std::shared_ptr<PluginInterfaceDep> dependence = std::make_shared<PluginInterfaceDep>();
@@ -114,15 +114,15 @@ namespace vxe {
             for (auto version : dep["versions"]) {
               dependence->supported_versions.push_back(version);
             }
-            new_plugin->dependencies_.push_back(dependence);
+            new_plugin->add_dependency(dependence);
           }
 
-          new_plugin->supported_versions_ = json_data["compatibility"].get<std::vector<std::string>>();
+          new_plugin->supported_versions(json_data["compatibility"].get<std::vector<std::string>>());
         } catch (std::exception e) {
           std::cerr << e.what() << std::endl;
         }
 
-        VXINFO("Plugins registered in system ", new_plugin->name_ + " loaded with success !")
+        vxe::log_info("Plugins registered in system ", new_plugin->name() + " loaded with success !");
 
         // Store the plugin instance and handle
         sys_plugins.push_back(new_plugin);

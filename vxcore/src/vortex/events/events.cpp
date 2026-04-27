@@ -11,8 +11,11 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-void
-vxe::call_output_event(const std::string &event_name, ArgumentValues &args, ReturnValues &ret, const std::string &origin) {
+void vxe::call_output_event(
+    const std::string &event_name,
+    ArgumentValues &args,
+    ReturnValues &ret,
+    const std::string &origin) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -23,7 +26,7 @@ vxe::call_output_event(const std::string &event_name, ArgumentValues &args, Retu
       // Check if the input event name matches the provided event name
       if (output_event->name_ == event_name) {
         // Check if the event function pointer is valid
-        if (output_event->m_function) {
+        if (output_event->function_) {
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
               origin + ":call_output_event",
@@ -32,7 +35,7 @@ vxe::call_output_event(const std::string &event_name, ArgumentValues &args, Retu
                   origin + "\"");
 
           // Call the corresponding event function with the provided arguments
-          output_event->m_function(args, ret);
+          output_event->function_(args, ret);
 
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
@@ -55,11 +58,11 @@ vxe::call_output_event(const std::string &event_name, ArgumentValues &args, Retu
   // Iterate through each plugins
   for (auto ep : ctx->IO.ep) {
     // Iterate through each input event in the EventManager
-    for (auto output_event : ep->output_events_) {
+    for (auto output_event : ep->output_events()) {
       // Check if the input event name matches the provided event name
       if (output_event->name_ == event_name) {
         // Check if the event function pointer is valid
-        if (output_event->m_function) {
+        if (output_event->function_) {
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
               origin + ":call_output_event",
@@ -68,7 +71,7 @@ vxe::call_output_event(const std::string &event_name, ArgumentValues &args, Retu
                   origin + "\"");
 
           // Call the corresponding event function with the provided arguments
-          output_event->m_function(args, ret);
+          output_event->function_(args, ret);
 
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
@@ -104,7 +107,7 @@ void vxe::call_input_event(
     if (em->name() == module_name) {
       for (auto input_event : em->input_events()) {
         if (input_event->name_ == event_name) {
-          if (input_event->m_function) {
+          if (input_event->function_) {
             // Trigger a information trigger in the input event
             input_event->trigger_happening(
                 origin + ":call_input_event",
@@ -113,7 +116,7 @@ void vxe::call_input_event(
                     origin + "\"");
 
             // Call the corresponding event function with the provided arguments
-            input_event->m_function(args, ret);
+            input_event->function_(args, ret);
 
             // Trigger a information trigger in the input event
             input_event->trigger_happening(
@@ -138,34 +141,34 @@ void vxe::call_input_event(
   // Iterate through each plguins in the Vortex context
   for (auto ep : ctx->IO.ep) {
     // Check if the EventManager corresponds to the specified module
-    if (ep->name_ == module_name) {
+    if (ep->name() == module_name) {
       // Iterate through each input event in the EventManager
-      for (auto input_event : ep->input_events_) {
+      for (auto input_event : ep->input_events()) {
         // Check if the input event name matches the provided event name
         if (input_event->name_ == event_name) {
           // Check if the event function pointer is valid
-          if (input_event->m_function) {
+          if (input_event->function_) {
             // Trigger a information trigger in the input event
             input_event->trigger_happening(
                 origin + ":call_input_event",
                 HappeningState::INFO,
-                "Calling module input event \"" + input_event->name_ + "\" of module \"" + ep->name_ + "\" from \"" +
+                "Calling module input event \"" + input_event->name_ + "\" of module \"" + ep->name() + "\" from \"" +
                     origin + "\"");
 
             // Call the corresponding event function with the provided arguments
-            input_event->m_function(args, ret);
+            input_event->function_(args, ret);
 
             // Trigger a information trigger in the input event
             input_event->trigger_happening(
                 origin + ":call_input_event",
                 HappeningState::INFO,
-                "Input event \"" + input_event->name_ + "\" of module \"" + ep->name_ + "\" called succefully from \"" +
+                "Input event \"" + input_event->name_ + "\" of module \"" + ep->name() + "\" called succefully from \"" +
                     origin + "\" !");
           } else {
             input_event->trigger_happening(
                 origin + ":call_input_event",
                 HappeningState::INFO,
-                "Trying to call \"" + input_event->name_ + "\" of module \"" + ep->name_ + "\" from \"" + origin +
+                "Trying to call \"" + input_event->name_ + "\" of module \"" + ep->name() + "\" from \"" + origin +
                     "\" but it not exist !");
           }
 

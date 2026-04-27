@@ -19,7 +19,7 @@
  * @param name The name of the function.
  */
 ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
-    : m_function(foo),
+    : function_(foo),
       name_(name) {
 }
 
@@ -30,7 +30,7 @@ ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &, ReturnValues
  * @param name The name of the function.
  */
 ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &args, ReturnValues &ret) {
+    : function_([foo](ArgumentValues &args, ReturnValues &ret) {
         ret = ReturnValues();
         foo(args);
       }),
@@ -43,7 +43,7 @@ ModuleFunction::ModuleFunction(std::function<void(ArgumentValues &)> foo, const 
  * @param name The name of the function.
  */
 ModuleFunction::ModuleFunction(std::function<void(ReturnValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
+    : function_([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
       name_(name) {
 }
 
@@ -54,6 +54,6 @@ ModuleFunction::ModuleFunction(std::function<void(ReturnValues &)> foo, const st
  * @param name The name of the function.
  */
 ModuleFunction::ModuleFunction(std::function<void()> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
+    : function_([foo](ArgumentValues &, ReturnValues &) { foo(); }),
       name_(name) {
 }

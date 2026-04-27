@@ -21,6 +21,8 @@
 
 > *Important: Vortex is part of [Infinite](https://infinite.si/)'s initiative to create free, independent, and ethical technology and computing. Vortex is a library powering many parts of this project, but maintaining projects like Vortex is a time-consuming and costly process. If you appreciate Vortex, you can support us [on our funding page](https://fund.infinite.si/) if you can.*
 
+> *Important: Are you currently developing modules or plugins for Vortex Editor 1.0? This initial release may exceptionally include breaking changes, as it is the very first version. Please join our Discord if you need any help.*
+
 ## What is *Vortex* ?
 Vortex is a playground built by the Infinite community. It includes an editor, a launcher, and a content platform. It’s all about giving hackers the tools to hack, creators the freedom to create, and makers the space to build wild projects, mods, and services at the edge of cybersecurity, systems, apps, and the future of open technology!
 

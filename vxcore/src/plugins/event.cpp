@@ -11,12 +11,12 @@
 #include <plugins/event.hpp>
 
 PluginOutputEvent::PluginOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
-    : m_function(foo),
+    : function_(foo),
       name_(name) {
 }
 
 PluginOutputEvent::PluginOutputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &args, ReturnValues &ret) {
+    : function_([foo](ArgumentValues &args, ReturnValues &ret) {
         ret = ReturnValues();
         foo(args);
       }),
@@ -24,21 +24,21 @@ PluginOutputEvent::PluginOutputEvent(std::function<void(ArgumentValues &)> foo, 
 }
 
 PluginOutputEvent::PluginOutputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
+    : function_([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
       name_(name) {
 }
 
 PluginOutputEvent::PluginOutputEvent(std::function<void()> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
+    : function_([foo](ArgumentValues &, ReturnValues &) { foo(); }),
       name_(name) {
 }
 
 void PluginInputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
   std::shared_ptr<PluginInputEventHappening> new_trigger = std::make_shared<PluginInputEventHappening>();
-  new_trigger->m_trigger_name = trigger_name;
+  new_trigger->trigger_name_ = trigger_name;
   new_trigger->state_ = state;
-  new_trigger->m_log = log;
-  new_trigger->m_timestamp = vxe::get_current_timestamp();
+  new_trigger->log_ = log;
+  new_trigger->timestamp_ = vxe::get_current_timestamp();
 
   if (state == HappeningState::INFO) {
     vxe::log_info("Plugins Events", log);
@@ -55,10 +55,10 @@ void PluginInputEvent::trigger_happening(const std::string &trigger_name, Happen
 
 void PluginOutputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
   std::shared_ptr<PluginOutputEventHappening> new_trigger = std::make_shared<PluginOutputEventHappening>();
-  new_trigger->m_trigger_name = trigger_name;
+  new_trigger->trigger_name_ = trigger_name;
   new_trigger->state_ = state;
-  new_trigger->m_log = log;
-  new_trigger->m_timestamp = vxe::get_current_timestamp();
+  new_trigger->log_ = log;
+  new_trigger->timestamp_ = vxe::get_current_timestamp();
 
   if (state == HappeningState::INFO) {
     vxe::log_info("Plugins Events", log);
@@ -74,12 +74,12 @@ void PluginOutputEvent::trigger_happening(const std::string &trigger_name, Happe
 }
 
 PluginInputEvent::PluginInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
-    : m_function(foo),
+    : function_(foo),
       name_(name) {
 }
 
 PluginInputEvent::PluginInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &args, ReturnValues &ret) {
+    : function_([foo](ArgumentValues &args, ReturnValues &ret) {
         ret = ReturnValues();
         foo(args);
       }),
@@ -87,11 +87,11 @@ PluginInputEvent::PluginInputEvent(std::function<void(ArgumentValues &)> foo, co
 }
 
 PluginInputEvent::PluginInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
+    : function_([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
       name_(name) {
 }
 
 PluginInputEvent::PluginInputEvent(std::function<void()> foo, const std::string &name)
-    : m_function([foo](ArgumentValues &, ReturnValues &) { foo(); }),
+    : function_([foo](ArgumentValues &, ReturnValues &) { foo(); }),
       name_(name) {
 }

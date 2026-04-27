@@ -42,7 +42,7 @@ class ModuleFunction {
 
   virtual void execute() { };
 
-  std::function<void(ArgumentValues&, ReturnValues&)> m_function;
+  std::function<void(ArgumentValues&, ReturnValues&)> function_;
   ArgumentValues m_return_values;
   ModuleFunctionScope m_scope;
 
