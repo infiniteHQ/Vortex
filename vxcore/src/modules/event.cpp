@@ -1,13 +1,17 @@
+//
+//  event.cpp
+//  Sources for modules events features
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../include/modules/event.h"
 
 #include "../../include/vortex_internals.h"
 
-/**
- * @brief Constructor for ModuleInputEvent.
- *
- * @param foo Pointer to the function taking a shared_ptr to hArgs as parameter.
- * @param name The name of the event.
- */
 ModuleOutputEvent::ModuleOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
     : m_function(foo),
       m_name(name) {

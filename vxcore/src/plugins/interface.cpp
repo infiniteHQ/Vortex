@@ -1,16 +1,18 @@
+//
+//  interface.cpp
+//  Sources for plugins interfaces features
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../include/plugins/interface.h"
 
 #include "../../include/vortex.h"
 #include "../../include/vortex_internals.h"
 
-/**
- * @brief Adds a PluginFunction to the PluginInterface.
- *
- * This function creates a shared_ptr to the provided PluginFunction and adds it
- * to the PluginInterface's list of functions.
- *
- * @param function The PluginFunction to add.
- */
 VORTEX_API void PluginInterface::add_plugin_function(const PluginFunction &function) {
   // Create a shared_ptr to the PluginFunction
   std::shared_ptr<PluginFunction> p_function = std::make_shared<PluginFunction>(function);
@@ -19,14 +21,6 @@ VORTEX_API void PluginInterface::add_plugin_function(const PluginFunction &funct
   this->m_functions.push_back(p_function);
 }
 
-/**
- * @brief Adds a PluginOutputEvent to the PluginInterface.
- *
- * This function creates a shared_ptr to the provided PluginOutputEvent and adds
- * it to the PluginInterface's list of output events.
- *
- * @param event The PluginOutputEvent to add.
- */
 VORTEX_API void PluginInterface::add_output_event(const PluginOutputEvent &event) {
   // Create a shared_ptr to the PluginOutputEvent
   std::shared_ptr<PluginOutputEvent> p_event = std::make_shared<PluginOutputEvent>(event);
@@ -96,27 +90,11 @@ VORTEX_API void PluginInterface::set_main_window(const std::shared_ptr<Cherry::A
   }
 }
 
-/**
- * @brief Adds a PluginRenderInstance to the PluginInterface.
- *
- * This function adds the provided shared_ptr to a PluginRenderInstance to the
- * PluginInterface's list of render instances.
- *
- * @param renderInstance The shared_ptr to the PluginRenderInstance to add.
- */
 VORTEX_API void PluginInterface::add_plugin_render_instance(const std::shared_ptr<PluginRenderInstance> &renderInstance) {
   // Add the shared_ptr to the list of render instances
   this->m_render_instances.push_back(renderInstance);
 }
 
-/**
- * @brief Sets the logo for the PluginInterface.
- *
- * This function sets the logo data and size for the PluginInterface.
- *
- * @param hexa Pointer to the logo data as an array of uint8_t.
- * @param size Size of the logo data in bytes.
- */
 VORTEX_API void PluginInterface::add_logo(const uint8_t *hexa, size_t size) {
   // Set the logo data and size
   this->m_logo = hexa;
@@ -194,15 +172,6 @@ VORTEX_API void PluginInterface::add_input_event(
   this->m_input_events.push_back(p_event);
 }
 
-/**
- * @brief Adds a function to the PluginInterface.
- *
- * This function creates a shared_ptr to a PluginFunction and adds it to the
- * PluginInterface's list of functions.
- *
- * @param item Pointer to the function.
- * @param name Name of the function.
- */
 VORTEX_API void PluginInterface::add_function(std::function<void()> foo, const std::string &name) {
   // Create a shared_ptr to the PluginFunction
   std::shared_ptr<PluginFunction> p_function = std::make_shared<PluginFunction>(foo, name);
@@ -211,15 +180,6 @@ VORTEX_API void PluginInterface::add_function(std::function<void()> foo, const s
   this->m_functions.push_back(p_function);
 }
 
-/**
- * @brief Adds a function to the PluginInterface.
- *
- * This function creates a shared_ptr to a PluginFunction and adds it to the
- * PluginInterface's list of functions.
- *
- * @param item Pointer to the function.
- * @param name Name of the function.
- */
 VORTEX_API void PluginInterface::add_function(std::function<void(ArgumentValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the PluginFunction
   std::shared_ptr<PluginFunction> p_function = std::make_shared<PluginFunction>(foo, name);
@@ -228,15 +188,6 @@ VORTEX_API void PluginInterface::add_function(std::function<void(ArgumentValues 
   this->m_functions.push_back(p_function);
 }
 
-/**
- * @brief Adds a function to the PluginInterface.
- *
- * This function creates a shared_ptr to a PluginFunction and adds it to the
- * PluginInterface's list of functions.
- *
- * @param item Pointer to the function.
- * @param name Name of the function.
- */
 VORTEX_API void PluginInterface::add_function(std::function<void(ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the PluginFunction
   std::shared_ptr<PluginFunction> p_function = std::make_shared<PluginFunction>(foo, name);
@@ -245,15 +196,6 @@ VORTEX_API void PluginInterface::add_function(std::function<void(ReturnValues &)
   this->m_functions.push_back(p_function);
 }
 
-/**
- * @brief Adds a function to the PluginInterface.
- *
- * This function creates a shared_ptr to a PluginFunction and adds it to the
- * PluginInterface's list of functions.
- *
- * @param item Pointer to the function.
- * @param name Name of the function.
- */
 VORTEX_API void PluginInterface::add_function(
     std::function<void(ArgumentValues &, ReturnValues &)> foo,
     const std::string &name) {
@@ -264,29 +206,12 @@ VORTEX_API void PluginInterface::add_function(
   this->m_functions.push_back(p_function);
 }
 
-/**
- * @brief Gets a shared_ptr to a copy of the PluginInterface.
- *
- * This function creates a shared_ptr to a new PluginInterface object, copying
- * the contents of the current PluginInterface instance.
- *
- * @return A shared_ptr to a copy of the PluginInterface.
- */
 VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::get_interface() {
   // Create a shared_ptr to a new PluginInterface object, copying the current
   // instance
   return std::make_shared<PluginInterface>(*this);
 }
 
-/**
- * @brief Gets an editor plugin by name.
- *
- * This function searches for an editor plugin with the specified name
- * and returns a shared_ptr to it if found.
- *
- * @param name The name of the editor plugin to search for.
- * @return A shared_ptr to the editor plugin if found, otherwise nullptr.
- */
 VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::get_editor_plugin_by_name(const std::string &name) {
   auto ctx = vxe::get_current_context();
 
@@ -301,100 +226,55 @@ VORTEX_API std::shared_ptr<PluginInterface> PluginInterface::get_editor_plugin_b
   return nullptr;
 }
 
-/**
- * @brief Executes a function by name.
- *
- * This function searches for a PluginFunction with the specified name
- * and executes its associated function if found.
- *
- * @param name The name of the function to execute.
- */
 VORTEX_API void PluginInterface::execute_function(const std::string &name) {
   for (auto foo : this->m_functions) {
     if (foo->m_name == name) {
       ArgumentValues empty_args;
       ReturnValues empty_ret;
       foo->m_function(empty_args, empty_ret);
-      return;  // Exit after executing the function
+      return;
     }
   }
 }
 
-/**
- * @brief Executes a function by name with arguments.
- *
- * This function searches for a PluginFunction with the specified name
- * and executes its associated function if found.
- *
- * @param name The name of the function to execute.
- */
 VORTEX_API void PluginInterface::execute_function(const std::string &name, ReturnValues &ret) {
   for (auto foo : this->m_functions) {
     if (foo->m_name == name) {
       ArgumentValues empty_args;
       foo->m_function(empty_args, ret);
-      return;  // Exit after executing the function
+      return;
     }
   }
 }
 
-/**
- * @brief Executes a function by name with arguments.
- *
- * This function searches for a PluginFunction with the specified name
- * and executes its associated function if found.
- *
- * @param name The name of the function to execute.
- */
 VORTEX_API void PluginInterface::execute_function(const std::string &name, ArgumentValues &args) {
   for (auto foo : this->m_functions) {
     if (foo->m_name == name) {
       ReturnValues empty_ret;
       foo->m_function(args, empty_ret);
-      return;  // Exit after executing the function
+      return;
     }
   }
 }
 
-/**
- * @brief Executes a function by name with arguments.
- *
- * This function searches for a PluginFunction with the specified name
- * and executes its associated function if found.
- *
- * @param name The name of the function to execute.
- */
 VORTEX_API void PluginInterface::execute_function(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto foo : this->m_functions) {
     if (foo->m_name == name) {
       foo->m_function(args, ret);
-      return;  // Exit after executing the function
+      return;
     }
   }
 }
 
-/**
- * @brief Executes an input event by name.
- *
- * This function searches for a PluginInputEvent with the specified name
- * and executes its associated function with the provided arguments if found.
- *
- */
 VORTEX_API void PluginInterface::execute_input_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->m_input_events) {
     if (event->m_name == name) {
       event->m_function(args, ret);
-      return;  // Exit after executing the input event
+      return;
     }
   }
 }
-/**
- * @brief Executes an input event by name.
- *
- * This function searches for a PluginInputEvent with the specified name
- * and executes its associated function with the provided arguments if found.
- *
- */
+
 VORTEX_API void PluginInterface::execute_output_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->m_output_events) {
     if (event->m_name == name) {
@@ -404,46 +284,18 @@ VORTEX_API void PluginInterface::execute_output_event(const std::string &name, A
   }
 }
 
-/**
- * @brief Logs an informational message.
- *
- * Logs an informational message associated with this plugin interface.
- *
- * @param message The message to log.
- */
 VORTEX_API void PluginInterface::log_info(const std::string &message) {
   vxe::log_info(this->m_name, message);
 }
 
-/**
- * @brief Logs a warning message.
- *
- * Logs a warning message associated with this plugin interface.
- *
- * @param message The warning message to log.
- */
 VORTEX_API void PluginInterface::log_warning(const std::string &message) {
   vxe::log_warn(this->m_name, message);
 }
 
-/**
- * @brief Logs an error message.
- *
- * Logs an error message associated with this plugin interface.
- *
- * @param message The error message to log.
- */
 VORTEX_API void PluginInterface::log_error(const std::string &message) {
   vxe::log_error(this->m_name, message);
 }
 
-/**
- * @brief Logs a fatal error message.
- *
- * Logs a fatal error message associated with this plugin interface.
- *
- * @param message The fatal error message to log.
- */
 VORTEX_API void PluginInterface::log_fatal(const std::string &message) {
   vxe::log_fatal(this->m_name, message);
 }

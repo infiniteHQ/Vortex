@@ -1,8 +1,18 @@
+//
+//  runtime.cpp
+//  Sources for modules runtime functions (ignition and starting)
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../include/modules/runtime.h"
 
 #include "../../include/vortex_internals.h"
 
-VORTEX_API void Finalstart_module(
+VORTEX_API void vxe::final_start_modules(
     const std::string &module_name,
     std::shared_ptr<std::vector<std::string>> processed_modules) {
   // Get reference to the Vortex context
@@ -42,7 +52,7 @@ VORTEX_API void vxe::start_module(const std::string &module_name) {
 
         // Start dependencies
         for (auto deps : em->m_dependencies) {
-          Finalstart_module(deps->name, processed_modules);
+          final_start_modules(deps->name, processed_modules);
         }
 
         // Finally start the module

@@ -1,15 +1,18 @@
+//
+//  delete.cpp
+//  Sources for template deletions features
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include <templates/delete.h>
 #include <vortex.h>
 #include <vortex_internals.h>
 
-/**
- * @brief Delete a module of the system
- *
- * @param name Name of the system module.
- * @param version Version of the system module.
- */
-VORTEX_API void vxe::DeleteSystemTemplate(const std::string &name, const std::string &version) {
-  // Get reference to the Vortex context
+VORTEX_API void vxe::delete_system_template(const std::string &name, const std::string &version) {
   auto ctx = vxe::get_current_context();
 
   std::vector<std::string> ff;

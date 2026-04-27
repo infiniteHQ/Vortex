@@ -10,12 +10,13 @@
 #endif
 
 namespace vxe {
-std::string GetBuildDate();
-std::string GetGitCommit();
-std::string GetVortexEditorDist();
-std::string GetVortexBuildID();
-std::string GetVortexBuildName();
-} // namespace vxe
+  std::string get_build_date();
+  std::string get_git_commit();
+  std::string get_vortex_editor_dist();
+  std::string get_vortex_build_id();
+  std::string get_vortex_build_name();
+  std::string get_vortex_build_type();
+}  // namespace vxe
 
 #ifdef _WIN32
 #define VORTEX_EXECUTABLE "vortex_launcher.exe"
@@ -27,45 +28,46 @@ static std::string vxl_exehash = "undefined";
 static std::string system_desktop = "undefined";
 
 #ifdef _WIN32
+#include <wincrypt.h>
+#include <windows.h>
+
 #include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <wincrypt.h>
-#include <windows.h>
 
 #pragma comment(lib, "advapi32.lib")
 
 namespace vxe {
-std::string ComputeSHA256Short(const std::string &filepath, size_t length = 10);
+  std::string compute_sha256_short(const std::string &filepath, size_t length = 10);
 }
 #else
 
 namespace vxe {
-std::string ComputeSHA256Short(const std::string &filepath, size_t length = 10);
-} // namespace vxe
+  std::string compute_sha256_short(const std::string &filepath, size_t length = 10);
+}  // namespace vxe
 #endif
 
 namespace vxe {
-std::string GetVortexEditorHash();
+  std::string get_vortex_editor_hash();
 }
 
 #if defined(_WIN32)
 
 namespace vxe {
-std::string GetWindowsVersion();
-} // namespace vxe
+  std::string get_windows_version();
+}  // namespace vxe
 
-#define OS_NAME vxe::GetWindowsVersion().c_str()
+#define OS_NAME vxe::get_windows_version().c_str()
 #elif defined(__APPLE__) && defined(__MACH__)
 #define OS_NAME "macOS"
 #elif defined(__linux__)
 namespace vxe {
-std::string GetLinuxDistroName();
-std::string GetLinuxDesktopEnvAndDisplayServer();
-} // namespace vxe
-#define OS_NAME vxe::GetLinuxDistroName().c_str()
+  std::string get_linux_distro_name();
+  std::string get_linux_desktop_env_and_display_server();
+}  // namespace vxe
+#define OS_NAME vxe::get_linux_distro_name().c_str()
 #else
 #define OS_NAME "Unknown OS"
 #endif
@@ -80,4 +82,4 @@ std::string GetLinuxDesktopEnvAndDisplayServer();
 #define ARCH_NAME "Unknown Arch"
 #endif
 
-#endif // VORTEX_INFOS_HPP
+#endif  // VORTEX_INFOS_HPP

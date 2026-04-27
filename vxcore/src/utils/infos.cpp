@@ -1,18 +1,42 @@
+//
+//  credits.cpp
+//  Sources for utilities related to take informations and specifications
+//  about current environment or build.
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../include/utils/infos.hpp"
 
-std::string vxe::GetBuildDate() { return BUILD_DATE_STR; }
+std::string vxe::get_build_date() {
+  return BUILD_DATE_STR;
+}
 
-std::string vxe::GetGitCommit() { return GIT_COMMIT_HASH; }
+std::string vxe::get_git_commit() {
+  return GIT_COMMIT_HASH;
+}
 
-std::string vxe::GetVortexEditorDist() { return BUILD_DIST; }
+std::string vxe::get_vortex_editor_dist() {
+  return BUILD_DIST;
+}
 
-std::string vxe::GetVortexBuildID() { return VORTEX_BUILDID; }
+std::string vxe::get_vortex_build_id() {
+  return VORTEX_BUILDID;
+}
 
-std::string vxe::GetVortexBuildName() { return VORTEX_BUILDNAME; }
+std::string vxe::get_vortex_build_name() {
+  return VORTEX_BUILDNAME;
+}
+
+std::string vxe::get_vortex_build_type() {
+  return VORTEX_BUILD;
+}
 
 #ifdef _WIN32
-std::string vxe::ComputeSHA256Short(const std::string &filepath,
-                                    size_t length) {
+std::string vxe::compute_sha256_short(const std::string &filepath, size_t length) {
   std::ifstream file(filepath, std::ios::binary);
   if (!file)
     return "undefined";
@@ -20,11 +44,10 @@ std::string vxe::ComputeSHA256Short(const std::string &filepath,
   std::vector<char> buffer(8192);
   HCRYPTPROV hProv = 0;
   HCRYPTHASH hHash = 0;
-  BYTE hash[32]; // SHA-256 produces 32-byte hash
+  BYTE hash[32];  // SHA-256 produces 32-byte hash
   DWORD hashLen = sizeof(hash);
 
-  if (!CryptAcquireContext(&hProv, nullptr, nullptr, PROV_RSA_AES,
-                           CRYPT_VERIFYCONTEXT)) {
+  if (!CryptAcquireContext(&hProv, nullptr, nullptr, PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
     return "undefined";
   }
 
@@ -34,8 +57,7 @@ std::string vxe::ComputeSHA256Short(const std::string &filepath,
   }
 
   while (file.read(buffer.data(), buffer.size()) || file.gcount()) {
-    if (!CryptHashData(hHash, reinterpret_cast<BYTE *>(buffer.data()),
-                       static_cast<DWORD>(file.gcount()), 0)) {
+    if (!CryptHashData(hHash, reinterpret_cast<BYTE *>(buffer.data()), static_cast<DWORD>(file.gcount()), 0)) {
       CryptDestroyHash(hHash);
       CryptReleaseContext(hProv, 0);
       return "undefined";
@@ -52,8 +74,7 @@ std::string vxe::ComputeSHA256Short(const std::string &filepath,
   CryptReleaseContext(hProv, 0);
 
   std::ostringstream oss;
-  for (DWORD i = 0; i < hashLen && oss.tellp() < (std::streampos)length * 2;
-       ++i) {
+  for (DWORD i = 0; i < hashLen && oss.tellp() < (std::streampos)length * 2; ++i) {
     oss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
   }
 
@@ -61,8 +82,7 @@ std::string vxe::ComputeSHA256Short(const std::string &filepath,
   return result.substr(0, length);
 }
 #else
-std::string vxe::ComputeSHA256Short(const std::string &filepath,
-                                    size_t length) {
+std::string vxe::compute_sha256_short(const std::string &filepath, size_t length) {
   std::ifstream file(filepath, std::ios::binary);
   if (!file)
     return "undefined";
@@ -88,23 +108,21 @@ std::string vxe::ComputeSHA256Short(const std::string &filepath,
 }
 #endif
 
-std::string vxe::GetVortexEditorHash() {
+std::string vxe::get_vortex_editor_hash() {
   if (vxl_exehash.empty()) {
     std::string exename = VORTEX_EXECUTABLE;
     std::string exepath = Cherry::GetPath(exename);
     if (std::filesystem::exists(exepath)) {
-      vxl_exehash = ComputeSHA256Short(exepath);
+      vxl_exehash = compute_sha256_short(exepath);
     }
   }
   return vxl_exehash;
 }
 
 #if defined(_WIN32)
-std::string vxe::GetWindowsVersion() {
+std::string vxe::get_windows_version() {
   HKEY hKey;
-  LONG lRes = RegOpenKeyExA(HKEY_LOCAL_MACHINE,
-                            "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
-                            0, KEY_READ, &hKey);
+  LONG lRes = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_READ, &hKey);
 
   if (lRes != ERROR_SUCCESS)
     return "Unknown Windows version";
@@ -115,34 +133,30 @@ std::string vxe::GetWindowsVersion() {
 
   DWORD buildNumber = 0;
   size = sizeof(buildNumber);
-  RegQueryValueExA(hKey, "CurrentBuildNumber", NULL, NULL, (LPBYTE)&buildNumber,
-                   &size);
+  RegQueryValueExA(hKey, "CurrentBuildNumber", NULL, NULL, (LPBYTE)&buildNumber, &size);
 
-  char releaseId[256] = {0};
+  char releaseId[256] = { 0 };
   size = sizeof(releaseId);
-  RegQueryValueExA(hKey, "DisplayVersion", NULL, NULL, (LPBYTE)releaseId,
-                   &size);
+  RegQueryValueExA(hKey, "DisplayVersion", NULL, NULL, (LPBYTE)releaseId, &size);
 
   RegCloseKey(hKey);
 
-  std::string versionStr =
-      std::string(productName) + " " + std::string(releaseId);
+  std::string versionStr = std::string(productName) + " " + std::string(releaseId);
   return versionStr;
 }
 
-#define OS_NAME GetWindowsVersion().c_str()
+#define OS_NAME get_windows_version().c_str()
 #elif defined(__APPLE__) && defined(__MACH__)
 #define OS_NAME "macOS"
 #elif defined(__linux__)
-std::string vxe::GetLinuxDistroName() {
+std::string vxe::get_linux_distro_name() {
   std::ifstream file("/etc/os-release");
   std::string line;
   std::string distro = "Linux";
 
   while (std::getline(file, line)) {
     if (line.rfind("PRETTY_NAME=", 0) == 0) {
-      std::string value = line.substr(
-          13, line.size() - 14); // remove PRETTY_NAME=" and ending "
+      std::string value = line.substr(13, line.size() - 14);  // remove PRETTY_NAME=" and ending "
       distro = "Linux (" + value + ")";
       break;
     }
@@ -150,7 +164,7 @@ std::string vxe::GetLinuxDistroName() {
 
   return distro;
 }
-std::string vxe::GetLinuxDesktopEnvAndDisplayServer() {
+std::string vxe::get_linux_desktop_env_and_display_server() {
   const char *xdgDesktop = std::getenv("XDG_CURRENT_DESKTOP");
   const char *desktopSession = std::getenv("DESKTOP_SESSION");
   const char *waylandDisplay = std::getenv("WAYLAND_DISPLAY");

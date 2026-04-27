@@ -1,3 +1,13 @@
+//
+//  load.cpp
+//  Sources for modules loading functions
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../include/modules/load.h"
 
 #include "../../include/vortex.h"
@@ -7,7 +17,7 @@
 #include <stringapiset.h>
 #include <windows.h>
 
-std::wstring ConvertToWideString(const std::string &str) {
+std::wstring convert_to_wide_string(const std::string &str) {
   int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
   if (size_needed == 0) {
     throw std::runtime_error("Error converting string to wide string");
@@ -17,7 +27,7 @@ std::wstring ConvertToWideString(const std::string &str) {
   return wide_string;
 }
 
-std::string ConvertToString(const std::wstring &wstr) {
+std::string convert_to_string(const std::wstring &wstr) {
   int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
   if (size_needed == 0) {
     throw std::runtime_error("Error converting wide string to string");
@@ -59,7 +69,7 @@ namespace vxe {
           void *handle = nullptr;
 
 #ifdef _WIN32
-          std::wstring wide_so_file = ConvertToWideString(so_file);
+          std::wstring wide_so_file = convert_to_wide_string(so_file);
 
           handle = LoadLibraryW(wide_so_file.c_str());
           if (!handle) {
@@ -78,7 +88,7 @@ namespace vxe {
             std::wstring wide_error_msg = (LPWSTR)msg_buffer;
             LocalFree(msg_buffer);
 
-            std::string error_msg = ConvertToString(wide_error_msg);
+            std::string error_msg = convert_to_string(wide_error_msg);
             vxe::log_fatal("Modules", "Failed to load module: " + error_msg);
             continue;
           }
@@ -100,7 +110,7 @@ namespace vxe {
             std::wstring wide_error_msg = (LPWSTR)msg_buffer;
             LocalFree(msg_buffer);
 
-            std::string error_msg = ConvertToString(wide_error_msg);
+            std::string error_msg = convert_to_string(wide_error_msg);
             vxe::log_fatal("Modules", "Failed to load symbol: " + error_msg);
             FreeLibrary((HMODULE)handle);
             continue;

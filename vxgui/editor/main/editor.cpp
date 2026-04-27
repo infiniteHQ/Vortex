@@ -1,9 +1,5 @@
 #include "./editor.hpp"
 
-std::string GetVortexBuildType() {
-  return VORTEX_BUILD;
-}
-
 Editor::Editor() {
   welcome_window_ = vxe::Welcome::create("?loc:loc.window_names.welcome");
   welcome_window_->get_app_window()->SetVisibility(true);
@@ -327,7 +323,7 @@ void Editor::render_framebar() {
     drawList->AddRectFilled(rectMin, rectMax, IM_COL32(15, 15, 15, 255));
   }
 
-  if (GetVortexBuildType() == "dev") {
+  if (vxe::get_vortex_build_type() == "dev") {
     CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() - CherryGUI::CalcTextSize("DEV").x - 20.0f);
 
     if (ShowProjectType) {

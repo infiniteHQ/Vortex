@@ -1,15 +1,19 @@
+//
+//  delete.cpp
+//  Sources for plugins deleting functions
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../include/plugins/delete.h"
 
 #include "../../include/plugins/load.h"
 #include "../../include/vortex.h"
 #include "../../include/vortex_internals.h"
 
-/**
- * @brief Delete a plugin of the system
- *
- * @param name Name of the system plugin.
- * @param version Version of the system plugin.
- */
 VORTEX_API void vxe::delete_project_plugin(const std::string &name, const std::string &version) {
   if (name.empty() || version.empty()) {
     vxe::log_error("Core", "delete_project_plugin: name and version must not be empty.");

@@ -1,6 +1,16 @@
+//
+//  install.cpp
+//  Sources for template installation features
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include <templates/install.h>
 
-VORTEX_API void vxe::InstallTemplateOnSystem(const std::string &directory) {
+VORTEX_API void vxe::install_template_on_system(const std::string &directory) {
   std::string templates_path = "~/.vx/templates";
   std::string json_file = directory + "/template.json";
 
@@ -42,7 +52,7 @@ VORTEX_API void vxe::InstallTemplateOnSystem(const std::string &directory) {
   vxe::log_error("Core", "Cannot find template registered at" + directory + " !");
 }
 
-VORTEX_API void vxe::InstallTemplate(const std::string &name, const std::string &path) {
+VORTEX_API void vxe::install_template(const std::string &name, const std::string &path) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -122,7 +132,7 @@ VORTEX_API void vxe::InstallTemplate(const std::string &name, const std::string 
   }*/
 }
 
-VORTEX_API std::vector<std::shared_ptr<TemplateInterface>> vxe::FindTemplatesInDirectory(const std::string &directory) {
+VORTEX_API std::vector<std::shared_ptr<TemplateInterface>> vxe::find_templates_in_directory(const std::string &directory) {
   // Search modules registered
   auto template_files = vxe::search_files(directory, "template.json", 3);
 

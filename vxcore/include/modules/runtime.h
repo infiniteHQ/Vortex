@@ -9,6 +9,9 @@ namespace vxe {
   VORTEX_API void start_module(const std::string &module_name);
   VORTEX_API void start_all_modules();
   VORTEX_API void bootstrapp_all_modules();
+  VORTEX_API void final_start_modules(
+      const std::string &module_name,
+      std::shared_ptr<std::vector<std::string>> processed_modules);
 }  // namespace vxe
 
 #endif

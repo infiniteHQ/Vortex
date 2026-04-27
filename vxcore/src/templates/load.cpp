@@ -1,10 +1,20 @@
+//
+//  load.cpp
+//  Sources for template loading features
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include "../../include/templates/load.h"
 
 #include "../../include/vortex.h"
 #include "../../include/vortex_internals.h"
 
 namespace vxe {
-  VORTEX_API void LoadSystemTemplates(std::vector<std::shared_ptr<TemplateInterface>> &sys_templates) {
+  VORTEX_API void load_system_templates(std::vector<std::shared_ptr<TemplateInterface>> &sys_templates) {
     // Get the home directory
     std::string homeDir = vxe::get_home_directory();
 

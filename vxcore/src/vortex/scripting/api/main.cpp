@@ -127,43 +127,43 @@ namespace vxe {
       return 1;
     }
 
-    VXLUA_FUNC(GetBuildDate) {
-      auto res = vxe::GetBuildDate();
+    VXLUA_FUNC(get_build_date) {
+      auto res = vxe::get_build_date();
 
       lua_pushstring(L, res.c_str());
       return 1;
     }
 
-    VXLUA_FUNC(GetGitCommit) {
-      auto res = vxe::GetGitCommit();
+    VXLUA_FUNC(get_git_commit) {
+      auto res = vxe::get_git_commit();
 
       lua_pushstring(L, res.c_str());
       return 1;
     }
 
-    VXLUA_FUNC(GetVortexEditorDist) {
-      auto res = vxe::GetVortexEditorDist();
+    VXLUA_FUNC(get_vortex_editor_dist) {
+      auto res = vxe::get_vortex_editor_dist();
 
       lua_pushstring(L, res.c_str());
       return 1;
     }
 
-    VXLUA_FUNC(GetVortexBuildID) {
-      auto res = vxe::GetVortexBuildID();
+    VXLUA_FUNC(get_vortex_build_id) {
+      auto res = vxe::get_vortex_build_id();
 
       lua_pushstring(L, res.c_str());
       return 1;
     }
 
-    VXLUA_FUNC(GetVortexBuildName) {
-      auto res = vxe::GetVortexBuildName();
+    VXLUA_FUNC(get_vortex_build_name) {
+      auto res = vxe::get_vortex_build_name();
 
       lua_pushstring(L, res.c_str());
       return 1;
     }
 
-    VXLUA_FUNC(GetVortexEditorHash) {
-      auto res = vxe::GetVortexEditorHash();
+    VXLUA_FUNC(get_vortex_editor_hash) {
+      auto res = vxe::get_vortex_editor_hash();
 
       lua_pushstring(L, res.c_str());
       return 1;
@@ -189,12 +189,12 @@ namespace vxe {
       VXLUA_REGISTER(L, -1, is_not_macos);
 
       // Information functions
-      VXLUA_REGISTER(L, -1, GetBuildDate);
-      VXLUA_REGISTER(L, -1, GetGitCommit);
-      VXLUA_REGISTER(L, -1, GetVortexEditorDist);
-      VXLUA_REGISTER(L, -1, GetVortexBuildID);
-      VXLUA_REGISTER(L, -1, GetVortexBuildName);
-      VXLUA_REGISTER(L, -1, GetVortexEditorHash);
+      VXLUA_REGISTER(L, -1, get_build_date);
+      VXLUA_REGISTER(L, -1, get_git_commit);
+      VXLUA_REGISTER(L, -1, get_vortex_editor_dist);
+      VXLUA_REGISTER(L, -1, get_vortex_build_id);
+      VXLUA_REGISTER(L, -1, get_vortex_build_name);
+      VXLUA_REGISTER(L, -1, get_vortex_editor_hash);
     }
 
   }  // namespace script

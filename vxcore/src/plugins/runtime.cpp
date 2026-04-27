@@ -1,6 +1,16 @@
+//
+//  runtime.cpp
+//  Sources for plugins runtime (loading and ignition)
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include <plugins/runtime.h>
 
-VORTEX_API void Finalstart_plugin(
+VORTEX_API void vxe::final_start_plugin(
     const std::string &plugin_name,
     std::shared_ptr<std::vector<std::string>> processed_plugins) {
   // Get reference to the Vortex context
@@ -40,7 +50,7 @@ VORTEX_API void vxe::start_plugin(const std::string &plugin_name) {
 
         // Start dependencies
         for (auto deps : ep->m_dependencies) {
-          Finalstart_plugin(deps->name, processed_plugins);
+          final_start_plugin(deps->name, processed_plugins);
         }
 
         // Finally start the plugin

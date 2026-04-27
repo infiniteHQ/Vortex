@@ -1,11 +1,15 @@
+//
+//  event.cpp
+//  Sources for plugins event system
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include <plugins/event.h>
 
-/**
- * @brief Constructor for PluginInputEvent.
- *
- * @param foo Pointer to the function taking a shared_ptr to hArgs as parameter.
- * @param name The name of the event.
- */
 PluginOutputEvent::PluginOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
     : m_function(foo),
       m_name(name) {
@@ -29,14 +33,6 @@ PluginOutputEvent::PluginOutputEvent(std::function<void()> foo, const std::strin
       m_name(name) {
 }
 
-/**
- * @brief Add a new trigger happening for a current input event
- *
- * @param trigger_name Pointer to the function taking a shared_ptr to hArgs as
- * parameter.
- * @param state The name of the event.
- * @param log The name of the event.
- */
 void PluginInputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
   std::shared_ptr<PluginInputEventHappening> new_trigger = std::make_shared<PluginInputEventHappening>();
   new_trigger->m_trigger_name = trigger_name;
@@ -57,14 +53,6 @@ void PluginInputEvent::trigger_happening(const std::string &trigger_name, Happen
   this->m_happenings.push_back(new_trigger);
 }
 
-/**
- * @brief Add a new trigger happening for a current input event
- *
- * @param trigger_name Pointer to the function taking a shared_ptr to hArgs as
- * parameter.
- * @param state The name of the event.
- * @param log The name of the event.
- */
 void PluginOutputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
   std::shared_ptr<PluginOutputEventHappening> new_trigger = std::make_shared<PluginOutputEventHappening>();
   new_trigger->m_trigger_name = trigger_name;

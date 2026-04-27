@@ -77,12 +77,12 @@ namespace vxe {
     { "is_not_macos", "text", "Returns true if not running on macOS", "is_not_macos()" },
 
     // Information functions
-    { "GetBuildDate", "text", "Returns the build date of Vortex", "GetBuildDate()" },
-    { "GetGitCommit", "text", "Returns the git commit hash of this build", "GetGitCommit()" },
-    { "GetVortexEditorDist", "text", "Returns the editor distribution name", "GetVortexEditorDist()" },
-    { "GetVortexBuildID", "text", "Returns the unique build ID", "GetVortexBuildID()" },
-    { "GetVortexBuildName", "text", "Returns the readable build name", "GetVortexBuildName()" },
-    { "GetVortexEditorHash", "text", "Returns the editor hash for this build", "GetVortexEditorHash()" },
+    { "get_build_date", "text", "Returns the build date of Vortex", "get_build_date()" },
+    { "get_git_commit", "text", "Returns the git commit hash of this build", "get_git_commit()" },
+    { "get_vortex_editor_dist", "text", "Returns the editor distribution name", "get_vortex_editor_dist()" },
+    { "get_vortex_build_id", "text", "Returns the unique build ID", "get_vortex_build_id()" },
+    { "get_vortex_build_name", "text", "Returns the readable build name", "get_vortex_build_name()" },
+    { "get_vortex_editor_hash", "text", "Returns the editor hash for this build", "get_vortex_editor_hash()" },
   };
 
 }  // namespace vxe

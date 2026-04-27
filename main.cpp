@@ -166,7 +166,7 @@ std::shared_ptr<VxContext> init_runtime() {
   // Refresh environment registered projects
   vxe::refresh_environment_projects();
 
-  vxe::LoadSystemTemplates(ctx->IO.sys_templates);
+  vxe::load_system_templates(ctx->IO.sys_templates);
 
   std::ifstream file("vortex.config");
 
@@ -198,7 +198,7 @@ std::shared_ptr<VxContext> init_blank_runtime() {
   vxe::detect_platform();
   vxe::detect_arch();
   vxe::refresh_environment_projects();
-  vxe::LoadSystemTemplates(ctx->IO.sys_templates);
+  vxe::load_system_templates(ctx->IO.sys_templates);
 
   ctx->logger = true;
   return ctx;

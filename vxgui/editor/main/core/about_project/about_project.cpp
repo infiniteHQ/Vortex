@@ -22,7 +22,7 @@ namespace vxe {
     app_window_->SetInternalPaddingY(8.0f);
 
 #if defined(__linux__)
-    system_desktop = " - " + vxe::GetLinuxDesktopEnvAndDisplayServer();
+    system_desktop = " - " + vxe::get_linux_desktop_env_and_display_server();
 #endif
 
     std::shared_ptr<Cherry::AppWindow> win = app_window_;

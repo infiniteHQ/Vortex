@@ -222,15 +222,15 @@ void CrashAppWindow::Render() {
               if (column == 0) {
                 ImGui::Text("Build");
               } else if (column == 1) {
-                const std::string build = "Build: " + vxe::GetVortexBuildID() + " ; " + vxe::GetBuildDate() + " (" +
-                                          vxe::GetVortexEditorDist() + ")";
+                const std::string build = "Build: " + vxe::get_vortex_build_id() + " ; " + vxe::get_build_date() + " (" +
+                                          vxe::get_vortex_editor_dist() + ")";
                 ImGui::Text(build.c_str());
               }
             } else if (i == 2) {
               if (column == 0) {
                 ImGui::Text("Hash");
               } else if (column == 1) {
-                const std::string hash = " exe(" + vxe::GetVortexEditorHash() + ") git(" + vxe::GetGitCommit() + ")";
+                const std::string hash = " exe(" + vxe::get_vortex_editor_hash() + ") git(" + vxe::get_git_commit() + ")";
                 ImGui::Text(hash.c_str());
               }
             } else if (i == 3) {

@@ -22,7 +22,7 @@ namespace vxe {
     app_window_->SetInternalPaddingY(8.0f);
 
 #if defined(__linux__)
-    system_desktop = " - " + vxe::GetLinuxDesktopEnvAndDisplayServer();
+    system_desktop = " - " + vxe::get_linux_desktop_env_and_display_server();
 #endif
 
     std::shared_ptr<Cherry::AppWindow> win = app_window_;
@@ -75,7 +75,7 @@ namespace vxe {
 
     CherryGUI::SameLine();
     Cherry::SetNextComponentProperty("color_text", "#565656");
-    CherryKit::TextSimple(vxe::GetVortexBuildName());
+    CherryKit::TextSimple(vxe::get_vortex_build_name());
 
     CherryKit::Space(12.0f);
 
@@ -83,12 +83,12 @@ namespace vxe {
     CherryKit::TextSimple("Cherry version: " + cherry_version);
     Cherry::SetNextComponentProperty("color_text", "#878787");
     CherryKit::TextSimple(
-        "Build: " + vxe::GetVortexBuildID() + " ; " + vxe::GetBuildDate() + " (" + vxe::GetVortexEditorDist() + ")");
+        "Build: " + vxe::get_vortex_build_id() + " ; " + vxe::get_build_date() + " (" + vxe::get_vortex_editor_dist() + ")");
     Cherry::SetNextComponentProperty("color_text", "#878787");
     CherryKit::TextSimple(
         "Hash: "
         " exe(" +
-        vxe::GetVortexEditorHash() + ") git(" + vxe::GetGitCommit() + ")");
+        vxe::get_vortex_editor_hash() + ") git(" + vxe::get_git_commit() + ")");
 
     Cherry::SetNextComponentProperty("color_text", "#878787");
     CherryKit::TextSimple("System: " + os_name + " " + os_arch + system_desktop);

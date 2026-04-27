@@ -5,8 +5,7 @@
 #define TEMPLATE_DELETE_H
 
 namespace vxe {
-VORTEX_API void DeleteSystemTemplate(const std::string &name,
-                                     const std::string &version);
+  VORTEX_API void delete_system_template(const std::string &name, const std::string &version);
 }
 
 #endif

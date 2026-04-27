@@ -116,7 +116,7 @@ VORTEX_API void vxe::create_project(
   }
 
   vxe::create_folder_if_not_exists(path);
-  vxe::InstallTemplate(template_name, path);
+  vxe::install_template(template_name, path);
 
   std::string vortex_version = VORTEX_VERSION;
 

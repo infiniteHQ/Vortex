@@ -147,7 +147,7 @@ VORTEX_API void vxe::init_project(const nlohmann::json &main_configs) {
   // Note: These templates are simply initialized in the project, not included,
   // but we can add these in CLI/GUI
   if (ctx->include_system_templates) {
-    vxe::LoadSystemTemplates(ctx->IO.sys_templates);
+    vxe::load_system_templates(ctx->IO.sys_templates);
   }
 
   // Refresh themes

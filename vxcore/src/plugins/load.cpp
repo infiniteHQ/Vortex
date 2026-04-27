@@ -1,3 +1,13 @@
+//
+//  load.cpp
+//  Sources for plugins information loading features
+//
+//	Copyright (c) 2026 Infinite
+//
+//	This work is licensed under the terms of the Apache-2.0 license.
+//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//
+
 #include <plugins/load.h>
 #include <vortex.h>
 #include <vortex_internals.h>
