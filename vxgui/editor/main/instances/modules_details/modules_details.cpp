@@ -245,21 +245,21 @@ void ModuleDetails::Render() {
             CherryGUI::TableSetColumnIndex(column);
 
             if (column == 0) {
-              CherryGUI::Text(this->m_module->input_events()[i]->m_happenings[row]->m_trigger_name.c_str());
+              CherryGUI::Text(this->m_module->input_events()[i]->m_happenings[row]->trigger_name.c_str());
             } else if (column == 1) {
-              if (this->m_module->input_events()[i]->m_happenings[row]->state_ == HappeningState::FATAL) {
+              if (this->m_module->input_events()[i]->m_happenings[row]->state == HappeningState::FATAL) {
                 CherryGUI::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
-              } else if (this->m_module->input_events()[i]->m_happenings[row]->state_ == HappeningState::ERR) {
+              } else if (this->m_module->input_events()[i]->m_happenings[row]->state == HappeningState::ERR) {
                 CherryGUI::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
-              } else if (this->m_module->input_events()[i]->m_happenings[row]->state_ == HappeningState::WARNING) {
+              } else if (this->m_module->input_events()[i]->m_happenings[row]->state == HappeningState::WARNING) {
                 CherryGUI::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Warning");
-              } else if (this->m_module->input_events()[i]->m_happenings[row]->state_ == HappeningState::INFO) {
+              } else if (this->m_module->input_events()[i]->m_happenings[row]->state == HappeningState::INFO) {
                 CherryGUI::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Information");
               }
             } else if (column == 2) {
-              CherryGUI::Text(this->m_module->input_events()[i]->m_happenings[row]->m_timestamp.c_str());
+              CherryGUI::Text(this->m_module->input_events()[i]->m_happenings[row]->timestamp.c_str());
             } else if (column == 2) {
-              CherryGUI::Text(this->m_module->input_events()[i]->m_happenings[row]->m_log.c_str());
+              CherryGUI::Text(this->m_module->input_events()[i]->m_happenings[row]->log.c_str());
             }
           }
         }

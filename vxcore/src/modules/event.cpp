@@ -45,10 +45,10 @@ ModuleOutputEvent::ModuleOutputEvent(std::function<void()> foo, const std::strin
  */
 void ModuleInputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
   std::shared_ptr<ModuleInputEventHappening> new_trigger = std::make_shared<ModuleInputEventHappening>();
-  new_trigger->m_trigger_name = trigger_name;
-  new_trigger->state_ = state;
-  new_trigger->m_log = log;
-  new_trigger->m_timestamp = vxe::get_current_timestamp();
+  new_trigger->timestamp = trigger_name;
+  new_trigger->state = state;
+  new_trigger->log = log;
+  new_trigger->timestamp = vxe::get_current_timestamp();
 
   if (state == HappeningState::INFO) {
     vxe::log_info("Modules Events", log);
@@ -73,10 +73,10 @@ void ModuleInputEvent::trigger_happening(const std::string &trigger_name, Happen
  */
 void ModuleOutputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
   std::shared_ptr<ModuleOutputEventHappening> new_trigger = std::make_shared<ModuleOutputEventHappening>();
-  new_trigger->m_trigger_name = trigger_name;
-  new_trigger->state_ = state;
-  new_trigger->m_log = log;
-  new_trigger->m_timestamp = vxe::get_current_timestamp();
+  new_trigger->trigger_name = trigger_name;
+  new_trigger->state = state;
+  new_trigger->log = log;
+  new_trigger->timestamp = vxe::get_current_timestamp();
 
   if (state == HappeningState::INFO) {
     vxe::log_info("Modules Events", log);
