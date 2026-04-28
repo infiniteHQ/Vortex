@@ -60,7 +60,7 @@ void ModuleInputEvent::trigger_happening(const std::string &trigger_name, Happen
     vxe::log_fatal("Modules Events", log);
   }
 
-  this->m_happenings.push_back(new_trigger);
+  this->happenings_.push_back(new_trigger);
 }
 
 /**
@@ -88,7 +88,7 @@ void ModuleOutputEvent::trigger_happening(const std::string &trigger_name, Happe
     vxe::log_fatal("Modules Events", log);
   }
 
-  this->m_happenings.push_back(new_trigger);
+  this->happenings_.push_back(new_trigger);
 }
 
 ModuleInputEvent::ModuleInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)

@@ -28,10 +28,10 @@ class ModuleInputEvent {
   std::function<void(ArgumentValues &, ReturnValues &)> function_;
   std::string name_;
   std::string description_;
-  std::vector<std::tuple<std::string, std::string, std::string>> m_params;
-  bool m_can_callback;
-  DevFlag m_devflag;
-  std::vector<std::shared_ptr<ModuleInputEventHappening>> m_happenings;
+  std::vector<std::tuple<std::string, std::string, std::string>> params_;
+  bool can_callback_;
+  DevFlag devflag_;
+  std::vector<std::shared_ptr<ModuleInputEventHappening>> happenings_;
 };
 
 /**
@@ -50,7 +50,7 @@ class ModuleOutputEvent {
 
   std::function<void(ArgumentValues &, ReturnValues &)> function_;
   std::string name_;
-  std::vector<std::shared_ptr<ModuleOutputEventHappening>> m_happenings;
+  std::vector<std::shared_ptr<ModuleOutputEventHappening>> happenings_;
 };
 
 #endif

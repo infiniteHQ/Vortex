@@ -50,7 +50,7 @@ void PluginInputEvent::trigger_happening(const std::string &trigger_name, Happen
     vxe::log_fatal("Plugins Events", log);
   }
 
-  this->m_happenings.push_back(new_trigger);
+  this->happenings_.push_back(new_trigger);
 }
 
 void PluginOutputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
@@ -70,7 +70,7 @@ void PluginOutputEvent::trigger_happening(const std::string &trigger_name, Happe
     vxe::log_fatal("Plugins Events", log);
   }
 
-  this->m_happenings.push_back(new_trigger);
+  this->happenings_.push_back(new_trigger);
 }
 
 PluginInputEvent::PluginInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)

@@ -45,13 +45,13 @@ class PluginFunction {
   virtual void execute() { };
 
   std::function<void(ArgumentValues &, ReturnValues &)> function_;
-  ArgumentValues m_return_values;
-  PluginFunctionScope m_scope;
+  ArgumentValues return_values_;
+  PluginFunctionScope scope_;
 
   std::string name_;
   std::string description_;
-  bool m_can_callback;
-  std::vector<std::tuple<std::string, std::string, std::string>> m_params_def;
+  bool can_callback_;
+  std::vector<std::tuple<std::string, std::string, std::string>> params_def_;
 };
 
 #endif

@@ -135,9 +135,9 @@ void ModuleDetails::Render() {
         CherryGUI::SameLine();
         CherryGUI::Text(this->m_module->input_events()[row]->description_.c_str());
 
-        if (this->m_module->input_events()[row]->m_devflag == DevFlag::READY) {
+        if (this->m_module->input_events()[row]->devflag_ == DevFlag::READY) {
           CherryGUI::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Ready to use");
-        } else if (this->m_module->input_events()[row]->m_devflag == DevFlag::DEPRECIATED) {
+        } else if (this->m_module->input_events()[row]->devflag_ == DevFlag::DEPRECIATED) {
           CherryGUI::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Depreciated");
         }
 
@@ -149,19 +149,19 @@ void ModuleDetails::Render() {
           CherryGUI::TableSetupColumn("C++ type", ImGuiTableColumnFlags_WidthFixed);
           CherryGUI::TableSetupColumn("Description", ImGuiTableColumnFlags_WidthFixed);
           CherryGUI::TableHeadersRow();
-          for (int param = 0; param < this->m_module->input_events()[row]->m_params.size(); param++) {
+          for (int param = 0; param < this->m_module->input_events()[row]->params_.size(); param++) {
             CherryGUI::TableNextRow();
             for (int column = 0; column < 3; column++) {
               CherryGUI::TableSetColumnIndex(column);
 
               if (column == 0) {
-                CherryGUI::Text(std::get<0>(this->m_module->input_events()[row]->m_params[param]).c_str());
+                CherryGUI::Text(std::get<0>(this->m_module->input_events()[row]->params_[param]).c_str());
               }
               if (column == 1) {
-                CherryGUI::Text(std::get<1>(this->m_module->input_events()[row]->m_params[param]).c_str());
+                CherryGUI::Text(std::get<1>(this->m_module->input_events()[row]->params_[param]).c_str());
               }
               if (column == 2) {
-                CherryGUI::Text(std::get<2>(this->m_module->input_events()[row]->m_params[param]).c_str());
+                CherryGUI::Text(std::get<2>(this->m_module->input_events()[row]->params_[param]).c_str());
               }
             }
           }
@@ -186,11 +186,11 @@ void ModuleDetails::Render() {
         CherryGUI::SameLine();
         CherryGUI::Text(this->m_module->functions()[row]->description_.c_str());
 
-        /*if (this->m_module->functions()[row]->m_devflag == DevFlag::READY)
+        /*if (this->m_module->functions()[row]->devflag_ == DevFlag::READY)
         {
             CherryGUI::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Ready to use");
         }
-        else if (this->m_module->functions()[row]->m_devflag == DevFlag::DEPRECIATED)
+        else if (this->m_module->functions()[row]->devflag_ == DevFlag::DEPRECIATED)
         {
             CherryGUI::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Depreciated");
         }*/
@@ -203,19 +203,19 @@ void ModuleDetails::Render() {
           CherryGUI::TableSetupColumn("C++ type", ImGuiTableColumnFlags_WidthFixed);
           CherryGUI::TableSetupColumn("Description", ImGuiTableColumnFlags_WidthFixed);
           CherryGUI::TableHeadersRow();
-          for (int param = 0; param < this->m_module->functions()[row]->m_params_def.size(); param++) {
+          for (int param = 0; param < this->m_module->functions()[row]->params_def_.size(); param++) {
             CherryGUI::TableNextRow();
             for (int column = 0; column < 3; column++) {
               CherryGUI::TableSetColumnIndex(column);
 
               if (column == 0) {
-                CherryGUI::Text(std::get<0>(this->m_module->functions()[row]->m_params_def[param]).c_str());
+                CherryGUI::Text(std::get<0>(this->m_module->functions()[row]->params_def_[param]).c_str());
               }
               if (column == 1) {
-                CherryGUI::Text(std::get<1>(this->m_module->functions()[row]->m_params_def[param]).c_str());
+                CherryGUI::Text(std::get<1>(this->m_module->functions()[row]->params_def_[param]).c_str());
               }
               if (column == 2) {
-                CherryGUI::Text(std::get<2>(this->m_module->functions()[row]->m_params_def[param]).c_str());
+                CherryGUI::Text(std::get<2>(this->m_module->functions()[row]->params_def_[param]).c_str());
               }
             }
           }
@@ -239,27 +239,27 @@ void ModuleDetails::Render() {
       CherryGUI::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
       CherryGUI::TableHeadersRow();
       for (int i = 0; i < this->m_module->input_events().size(); i++) {
-        for (int row = 0; row < this->m_module->input_events()[i]->m_happenings.size(); row++) {
+        for (int row = 0; row < this->m_module->input_events()[i]->happenings_.size(); row++) {
           CherryGUI::TableNextRow();
           for (int column = 0; column < 4; column++) {
             CherryGUI::TableSetColumnIndex(column);
 
             if (column == 0) {
-              CherryGUI::Text(this->m_module->input_events()[i]->m_happenings[row]->trigger_name.c_str());
+              CherryGUI::Text(this->m_module->input_events()[i]->happenings_[row]->trigger_name.c_str());
             } else if (column == 1) {
-              if (this->m_module->input_events()[i]->m_happenings[row]->state == HappeningState::FATAL) {
+              if (this->m_module->input_events()[i]->happenings_[row]->state == HappeningState::FATAL) {
                 CherryGUI::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
-              } else if (this->m_module->input_events()[i]->m_happenings[row]->state == HappeningState::ERR) {
+              } else if (this->m_module->input_events()[i]->happenings_[row]->state == HappeningState::ERR) {
                 CherryGUI::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
-              } else if (this->m_module->input_events()[i]->m_happenings[row]->state == HappeningState::WARNING) {
+              } else if (this->m_module->input_events()[i]->happenings_[row]->state == HappeningState::WARNING) {
                 CherryGUI::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Warning");
-              } else if (this->m_module->input_events()[i]->m_happenings[row]->state == HappeningState::INFO) {
+              } else if (this->m_module->input_events()[i]->happenings_[row]->state == HappeningState::INFO) {
                 CherryGUI::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Information");
               }
             } else if (column == 2) {
-              CherryGUI::Text(this->m_module->input_events()[i]->m_happenings[row]->timestamp.c_str());
+              CherryGUI::Text(this->m_module->input_events()[i]->happenings_[row]->timestamp.c_str());
             } else if (column == 2) {
-              CherryGUI::Text(this->m_module->input_events()[i]->m_happenings[row]->log.c_str());
+              CherryGUI::Text(this->m_module->input_events()[i]->happenings_[row]->log.c_str());
             }
           }
         }
