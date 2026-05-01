@@ -65,7 +65,7 @@ VORTEX_API void PluginInterface::refresh_main_window() {
   }
 
   // Remove potential old main window
-  for (auto &window : Cherry::Application::Get().m_AppWindows) {
+  for (auto &window : Cherry::Application::Get().GetAppWindows()) {
     if (main_window_ && window) {
       if (main_window_->m_IdName == window->m_IdName) {
         Cherry::DeleteAppWindow(window);

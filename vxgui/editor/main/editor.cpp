@@ -235,8 +235,8 @@ void Editor::spawn_content_browser_on_bottom() {
 
   dragdropstate->LastDraggingPlace = Cherry::DockEmplacement::DockDown;
 
-  dragdropstate->LastDraggingWindow = CherryApp.m_Windows[0]->GetName();
-  dragdropstate->DragOwner = CherryApp.m_Windows[0]->GetName();
+  dragdropstate->LastDraggingWindow = CherryApp.GetWindows()[0]->GetName();
+  dragdropstate->DragOwner = CherryApp.GetWindows()[0]->GetName();
   dragdropstate->LastDraggingAppWindow = new_browser;
   dragdropstate->LastDraggingAppWindowHost = "?loc:loc.window_names.welcome";
 
@@ -274,7 +274,7 @@ void RebuildCherryTheme() {
       CherryApp.AddTheme(theme);
     }
 
-    CherryApp.m_Themes.clear();
+    CherryApp.ClearThemes();
 
     // set selected theme
     auto selected_theme = vxe::get_selected_theme();
@@ -417,7 +417,7 @@ void Editor::render_framebar() {
 
 void Editor::render_menubar() {
   if (vxe::is_theme_needs_rebuild()) {
-    CherryApp.m_Themes.clear();
+    CherryApp.ClearThemes();
     for (auto t : vxe::get_current_context()->IO.themes) {
       if (!t) {
         continue;

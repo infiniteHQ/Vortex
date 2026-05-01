@@ -90,6 +90,7 @@ target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/vxgui/editor/app/src
     ${CMAKE_CURRENT_SOURCE_DIR}/vxgui/crash_handler/src
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/cherry
 )
 
 target_link_libraries(vortex_shared PUBLIC cherry)
