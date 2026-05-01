@@ -244,7 +244,7 @@ namespace vxe {
       ImVec2 sizePos = ImVec2(cursorPos.x + padding, cursorPos.y + squareSize.y + thumbnailIconOffsetY - 25 + textOffsetY);
       CherryGUI::SetCursorScreenPos(sizePos);
 
-      ImTextureID logotexture = Cherry::Application::GetCurrentRenderedWindow()->get_texture(logo_);
+      ImTextureID logotexture = Cherry::Application::GetCurrentRenderedWindow()->GetTexture(logo_);
       drawList->AddImage(logotexture, logoPos, ImVec2(logoPos.x + squareSize.x, logoPos.y + squareSize.y));
 
       CherryGUI::GetFont()->Scale = 0.7f;

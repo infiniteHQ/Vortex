@@ -770,7 +770,7 @@ namespace vxe {
       CherryGUI::PopStyleColor();
     }
 
-    ImTextureID logo = Cherry::Application::Get().GetCurrentRenderedWindow()->get_texture(
+    ImTextureID logo = Cherry::Application::Get().GetCurrentRenderedWindow()->GetTexture(
         Cherry::GetPath("resources/imgs/icons/misc/icon_cmd.png"));
 
     float inputWidth = 400.0f;

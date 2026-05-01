@@ -1690,11 +1690,11 @@ namespace vxe {
             FileTypes type = detect_file(path.string());
             switch (type) {
               case FileTypes::File_PICTURE:
-                tex = Application::GetCurrentRenderedWindow()->get_texture(
+                tex = Application::GetCurrentRenderedWindow()->GetTexture(
                     Cherry::GetPath("resources/imgs/icons/files/icon_picture_file.png"));
                 break;
               default:
-                tex = Application::GetCurrentRenderedWindow()->get_texture(
+                tex = Application::GetCurrentRenderedWindow()->GetTexture(
                     Cherry::GetPath("resources/imgs/icons/files/icon_default_file.png"));
                 break;
             }
@@ -1745,7 +1745,7 @@ namespace vxe {
             std::string folderSizeString = format_file_size(folderSize);
             CherryGUI::PushID(filenameString.c_str());
 
-            ImTextureID tex = Application::GetCurrentRenderedWindow()->get_texture(
+            ImTextureID tex = Application::GetCurrentRenderedWindow()->GetTexture(
                 Cherry::GetPath("resources/imgs/icons/files/icon_default_file.png"));
 
             std::error_code ec;
@@ -1789,7 +1789,7 @@ namespace vxe {
                 !is_only_spaces_or_empty(project_search_.c_str()))
               continue;
 
-            ImTextureID tex = Application::GetCurrentRenderedWindow()->get_texture(
+            ImTextureID tex = Application::GetCurrentRenderedWindow()->GetTexture(
                 Cherry::GetPath("resources/imgs/icons/files/icon_default_file.png"));
             FileTypes type = detect_file(path.string());
             std::error_code ec;

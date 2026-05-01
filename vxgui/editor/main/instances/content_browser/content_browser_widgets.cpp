@@ -625,7 +625,7 @@ namespace vxe {
     CherryGUI::SetCursorScreenPos(sizePos);
 
     drawList->AddImage(
-        Application::GetCurrentRenderedWindow()->get_texture(p.content.logo),
+        Application::GetCurrentRenderedWindow()->GetTexture(p.content.logo),
         logoPos,
         ImVec2(logoPos.x + squareSize.x, logoPos.y + squareSize.y));
 
@@ -963,7 +963,7 @@ namespace vxe {
 
     ImVec2 logoPos(cursorPos.x + padding, cursorPos.y + padding);
     ImVec2 logoEnd(logoPos.x + logoSize, logoPos.y + logoSize);
-    static ImTextureID logotexture = Application::GetCurrentRenderedWindow()->get_texture(p.content.logo);
+    static ImTextureID logotexture = Application::GetCurrentRenderedWindow()->GetTexture(p.content.logo);
     drawList->AddImage(logotexture, logoPos, logoEnd);
 
     ImVec2 textPos(logoEnd.x + padding, cursorPos.y + padding);

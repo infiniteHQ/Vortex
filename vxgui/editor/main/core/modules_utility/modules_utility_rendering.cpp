@@ -210,7 +210,7 @@ namespace vxe {
     float centerX = windowPos.x + windowSize.x * 0.5f;
     float centerY = windowPos.y + windowSize.y * 0.5f;
 
-    ImTextureID logo = Cherry::Application::Get().GetCurrentRenderedWindow()->get_texture(
+    ImTextureID logo = Cherry::Application::Get().GetCurrentRenderedWindow()->GetTexture(
         Cherry::GetPath("resources/imgs/infinite_garage.png"));
 
     float logoWidth = 214.0f;
