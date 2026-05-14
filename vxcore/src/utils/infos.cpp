@@ -109,14 +109,14 @@ std::string vxe::compute_sha256_short(const std::string &filepath, size_t length
 #endif
 
 std::string vxe::get_vortex_editor_hash() {
-  if (vxl_exehash.empty()) {
+  if (vx_exehash.empty()) {
     std::string exename = VORTEX_EXECUTABLE;
     std::string exepath = Cherry::GetPath(exename);
     if (std::filesystem::exists(exepath)) {
-      vxl_exehash = compute_sha256_short(exepath);
+      vx_exehash = compute_sha256_short(exepath);
     }
   }
-  return vxl_exehash;
+  return vx_exehash;
 }
 
 #if defined(_WIN32)

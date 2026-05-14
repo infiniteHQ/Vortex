@@ -34,7 +34,7 @@ namespace vxe {
 #define VORTEX_EXECUTABLE "vortex"
 #endif
 
-static std::string vxl_exehash = "undefined";
+static std::string vx_exehash;
 static std::string system_desktop = "undefined";
 
 #ifdef _WIN32
