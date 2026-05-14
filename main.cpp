@@ -194,12 +194,13 @@ std::shared_ptr<VxContext> init_blank_runtime() {
 
   ctx->state.session_id = session_id;
 
+  vxe::create_global_logger();
+  vxe::create_console_logger();
+  ctx->logger = true;
+
   // Link credits file
   vxe::add_credits("vx", Cherry::GetPath("CREDITS"));
   vxe::initialize_platform_vendor();
-  vxe::create_global_logger();
-  vxe::create_console_logger();
-  vxe::log_info("Bootstrapp", "Initializing runtime...");
 
   vxe::create_session_topic(ctx->state.session_id);
 
@@ -210,7 +211,6 @@ std::shared_ptr<VxContext> init_blank_runtime() {
   vxe::refresh_environment_projects();
   vxe::load_system_templates(ctx->IO.sys_templates);
 
-  ctx->logger = true;
   return ctx;
 }
 
@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
         }
       }
 
-      init_blank_runtime();
+      auto ctx = init_blank_runtime();
       vxe::log_info("Bootstrapp", "Opening the graphical interface...");
       vxe::VortexCrash(argc, argv);
     } else if (std::string(argv[1]) == "-e" || std::string(argv[1]) == "--editor") {

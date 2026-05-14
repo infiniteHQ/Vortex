@@ -29,9 +29,9 @@ namespace vxe {
 }  // namespace vxe
 
 #ifdef _WIN32
-#define VORTEX_EXECUTABLE "vortex_launcher.exe"
+#define VORTEX_EXECUTABLE "vortex.exe"
 #else
-#define VORTEX_EXECUTABLE "vortex_launcher"
+#define VORTEX_EXECUTABLE "vortex"
 #endif
 
 static std::string vxl_exehash = "undefined";

@@ -83,7 +83,7 @@ namespace vxe {
     CherryKit::TextSimple("Cherry version: " + cherry_version);
     Cherry::SetNextComponentProperty("color_text", "#878787");
     CherryKit::TextSimple(
-        "Build: " + vxe::get_vortex_build_id() + " ; " + vxe::get_build_date() + " (" + vxe::get_vortex_editor_dist() + ")");
+        "Build: " + vxe::get_vortex_build_id() + " - " + vxe::get_build_date() + " (" + vxe::get_vortex_editor_dist() + ")");
     Cherry::SetNextComponentProperty("color_text", "#878787");
     CherryKit::TextSimple(
         "Hash: "
