@@ -1,5 +1,5 @@
 @echo off
-setlocal EnableExtensions
+setlocal EnableExtensions EnableDelayedExpansion
 
 if "%~1"=="" exit /b 1
 
@@ -14,28 +14,39 @@ if "%~1"=="__END__" shift
 set "END_CMD=%~1"
 shift
 
-:run_main
+echo.
 echo Executing: %MAIN_CMD%
+echo.
+
 call %MAIN_CMD%
 set "EXIT_CODE=%ERRORLEVEL%"
 
 if not "%EXIT_CODE%"=="0" (
-    echo Command failed with exit code %EXIT_CODE%.
 
-    if exist "%SystemRoot%\MEMORY.DMP" (
-        echo ==== DUMP ANALYSIS BEGIN ==== >> "%OUTPUT_FILE%"
-        dumpchk "%SystemRoot%\MEMORY.DMP" >> "%OUTPUT_FILE%" 2>&1
-        echo ==== DUMP ANALYSIS END ==== >> "%OUTPUT_FILE%"
-        del /F /Q "%SystemRoot%\MEMORY.DMP"
+    echo.
+    echo Command failed with exit code %EXIT_CODE%.
+    echo.
+
+    if exist "%OUTPUT_FILE%" (
+        echo ==== CRASH REPORT ====
+        type "%OUTPUT_FILE%"
+        echo ======================
     ) else (
-        echo No crash dump file found.
+        echo WARNING: No crash report found.
+        echo Expected:
+        echo %OUTPUT_FILE%
     )
 
     if not "%END_CMD%"=="" (
-        echo Executing end command: %END_CMD%
+        echo.
+        echo Launching crash handler UI...
+        echo.
+
         call %END_CMD%
     )
+
 ) else (
+    echo.
     echo Command executed successfully.
 )
 

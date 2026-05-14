@@ -20,6 +20,7 @@
 #include "./vxcore/include/vortex.h"
 #include "./vxgui/crash_handler/crash_handler.hpp"
 #include "./vxgui/editor/main/editor.hpp"
+#include "./vxcore/include/crash/crash_writer.hpp" 
 
 static std::string session_id = "unknow";
 
@@ -238,6 +239,7 @@ int main(int argc, char *argv[]) {
         }
       }
 
+      vxe::crash::install(session_id); 
       auto ctx = init_runtime();
       vxe::log_info("Bootstrapp", "Opening the graphical interface...");
 

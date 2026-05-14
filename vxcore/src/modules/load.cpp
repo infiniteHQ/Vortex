@@ -16,6 +16,7 @@
 #ifdef _WIN32
 #include <stringapiset.h>
 #include <windows.h>
+#include "../../include/crash/crash_writer.hpp"
 
 std::wstring convert_to_wide_string(const std::string &str) {
   int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
@@ -93,7 +94,11 @@ namespace vxe {
             continue;
           }
 
-          auto create_em = reinterpret_cast<ModuleInterface *(*)()>(GetProcAddress((HMODULE)handle, "create_em"));
+          auto hmod = (HMODULE)handle;
+
+          vxe::crash::detail::register_module(hmod);
+
+          auto create_em = reinterpret_cast<ModuleInterface *(*)()>(GetProcAddress(hmod, "create_em"));
           if (!create_em) {
             DWORD error_code = GetLastError();
             LPVOID msg_buffer;
@@ -112,7 +117,7 @@ namespace vxe {
 
             std::string error_msg = convert_to_string(wide_error_msg);
             vxe::log_fatal("Modules", "Failed to load symbol: " + error_msg);
-            FreeLibrary((HMODULE)handle);
+            FreeLibrary(hmod);
             continue;
           }
 #else
@@ -175,29 +180,20 @@ namespace vxe {
   }
 
   VORTEX_API void load_system_modules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules) {
-    // Get the home directory
     std::string homeDir = vxe::get_home_directory();
-
-    // Module path on the system
     std::string path = homeDir + "/.vx/modules";
-
-    // Search for module files recursively in the directory
     auto module_files = vxe::search_system_files(path, "module.json");
 
-    // Clear system modules vector
     sys_modules.clear();
 
-    // Iterate through each found module file
     for (const auto &file : module_files) {
       try {
-        // Load JSON data from the module configuration file
         auto json_data = vxe::dump_json(file);
 
         std::string module_path = file.substr(0, file.find_last_of("/"));
 
         std::shared_ptr<ModuleInterface> new_module = std::make_shared<ModuleInterface>();
 
-        // Try to fetch module informations from module.json
         try {
           new_module->name(json_data["name"].get<std::string>());
           new_module->auto_exec(json_data["auto_exec"].get<bool>());
@@ -228,11 +224,8 @@ namespace vxe {
         }
 
         vxe::log_info("Modules registered in system ", new_module->name() + " loaded with success !");
-
-        // Store the module instance and handle
         sys_modules.push_back(new_module);
       } catch (const std::exception &e) {
-        // Print error if an exception occurs
         vxe::log_error("Core", std::string("Error: ") + e.what());
       }
     }

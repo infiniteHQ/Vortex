@@ -99,6 +99,7 @@ if(UNIX AND NOT APPLE)
     target_link_libraries(vortex_shared PRIVATE crypto)
 endif()
 
+
 # ---------------------------------------------------------------------------
 # Executables
 # ---------------------------------------------------------------------------
@@ -113,6 +114,18 @@ if(UNIX AND NOT APPLE)
     find_package(CURL REQUIRED)
     target_link_libraries(vortex PRIVATE CURL::libcurl)
 endif()
+
+
+if(WIN32)
+    target_link_libraries(vortex_shared PRIVATE dbghelp psapi)
+
+    target_compile_options(vortex_shared PRIVATE /Zi)
+    target_compile_options(vortex        PRIVATE /Zi)
+    target_link_options(vortex_shared    PRIVATE /DEBUG)
+    target_link_options(vortex           PRIVATE /DEBUG)
+endif()
+ 
+
 
 target_compile_definitions(vortex_shared
     PUBLIC CHERRY_MULTIAPP
