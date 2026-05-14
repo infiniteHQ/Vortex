@@ -16,6 +16,7 @@ cd ..
 cp -r ./build/bin/* dist/${VERSION}/bin
 cp -r ./build/bin/* dist/${VERSION}/bin
 cp -r ./handle_crash.sh dist/${VERSION}/bin
+cp -r ./vx.sh dist/${VERSION}/bin
 cp -r ../docs dist/${VERSION}/bin
 cp ../CREDITS dist/${VERSION}/bin
 cp ../manifest.json dist/${VERSION}/bin
