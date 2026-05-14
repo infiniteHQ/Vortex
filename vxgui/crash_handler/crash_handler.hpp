@@ -15,7 +15,7 @@
 #include "../../lib/cherry/cherry.hpp"
 #include "src/static/crash_report/crash_report.hpp"
 
-static std::string global_session_id = "unknow";
+inline std::string global_session_id = "unknow";
 
 namespace vxe {
   int VortexCrash(int argc, char **argv);

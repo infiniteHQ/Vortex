@@ -194,22 +194,11 @@ std::shared_ptr<VxContext> init_blank_runtime() {
 
   ctx->state.session_id = session_id;
 
-  vxe::create_global_logger();
-  vxe::create_console_logger();
-  ctx->logger = true;
-
   // Link credits file
   vxe::add_credits("vx", Cherry::GetPath("CREDITS"));
   vxe::initialize_platform_vendor();
 
   vxe::create_session_topic(ctx->state.session_id);
-
-  // initialize environment
-  vxe::init_environment();
-  vxe::detect_platform();
-  vxe::detect_arch();
-  vxe::refresh_environment_projects();
-  vxe::load_system_templates(ctx->IO.sys_templates);
 
   return ctx;
 }
@@ -229,13 +218,12 @@ int main(int argc, char *argv[]) {
           session_id = arg2.substr(13);
           if (!session_id.empty() && session_id.front() == '"' && session_id.back() == '"') {
             session_id = session_id.substr(1, session_id.size() - 2);
-            global_session_id = session_id;
           }
+          global_session_id = session_id;
         }
       }
 
       auto ctx = init_blank_runtime();
-      vxe::log_info("Bootstrapp", "Opening the graphical interface...");
       vxe::VortexCrash(argc, argv);
     } else if (std::string(argv[1]) == "-e" || std::string(argv[1]) == "--editor") {
       print_header("(Editor)");

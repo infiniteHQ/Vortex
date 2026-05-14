@@ -20,22 +20,22 @@ CrashReport::CrashReport(const std::string &name, const std::string &session_id)
     ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
     ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
     ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
-    if (ImGui::BeginMenu("Edit")) {
-      ImGui::PushStyleColor(ImGuiCol_Text, grayColor);
-      ImGui::Text("Main stuff");
-      ImGui::PopStyleColor();
+    if (CherryGUI::BeginMenu("Edit")) {
+      CherryGUI::PushStyleColor(ImGuiCol_Text, grayColor);
+      CherryGUI::Text("Main stuff");
+      CherryGUI::PopStyleColor();
 
-      ImGui::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
-      ImGui::Separator();
-      ImGui::PopStyleColor();
+      CherryGUI::PushStyleColor(ImGuiCol_Separator, graySeparatorColor);
+      CherryGUI::Separator();
+      CherryGUI::PopStyleColor();
 
-      if (ImGui::MenuItem("Logs Utility", "Overview of all logs")) {
+      if (CherryGUI::MenuItem("Logs Utility", "Overview of all logs")) {
       }
 
-      if (ImGui::MenuItem("Logs2 Utility", "Overview of all logs")) {
+      if (CherryGUI::MenuItem("Logs2 Utility", "Overview of all logs")) {
       }
 
-      ImGui::EndMenu();
+      CherryGUI::EndMenu();
     }
   };
 
@@ -117,99 +117,99 @@ void CrashReport::setup_render_callback() {
 }
 
 void CrashReport::render() {
-  float oldsize = ImGui::GetFont()->Scale;
-  ImGui::GetFont()->Scale *= 1.5;
-  ImGui::PushFont(ImGui::GetFont());
+  float oldsize = CherryGUI::GetFont()->Scale;
+  CherryGUI::GetFont()->Scale *= 1.5;
+  CherryGUI::PushFont(CherryGUI::GetFont());
 
-  ImGui::Text("Oups, Vortex crashed :(");
+  CherryGUI::Text("Oups, Vortex crashed :(");
 
-  ImGui::GetFont()->Scale = oldsize;
-  ImGui::PopFont();
+  CherryGUI::GetFont()->Scale = oldsize;
+  CherryGUI::PopFont();
 
-  ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
-  ImGui::TextWrapped(
+  CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
+  CherryGUI::TextWrapped(
       "A Vortex process has encountered a fatal error or produced a bad "
       "output. This could be due to a faulty module, plugins, or a malfunction "
       "in the Vortex process itself. You can now review the last states and "
       "investigate what happened. However, it is safe to close this window.");
-  ImGui::PopStyleColor(1);
+  CherryGUI::PopStyleColor(1);
 
-  ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 50));
-  ImGui::TextWrapped("Error topic ID : ");
-  ImGui::PopStyleColor(1);
+  CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 50));
+  CherryGUI::TextWrapped("Error topic ID : ");
+  CherryGUI::PopStyleColor(1);
 
-  ImGui::SameLine();
+  CherryGUI::SameLine();
 
-  ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
-  ImGui::TextWrapped(session_id_.c_str());
-  ImGui::PopStyleColor(1);
+  CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 105));
+  CherryGUI::TextWrapped(session_id_.c_str());
+  CherryGUI::PopStyleColor(1);
 
   ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
-  if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
-    if (ImGui::BeginTabItem("Summary")) {
-      float oldsize = ImGui::GetFont()->Scale;
-      ImGui::GetFont()->Scale *= 1.3;
-      ImGui::PushFont(ImGui::GetFont());
-      ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 100));
-      ImGui::TextWrapped("Latest informations");
-      ImGui::PopStyleColor(1);
-      ImGui::GetFont()->Scale = oldsize;
-      ImGui::PopFont();
+  if (CherryGUI::BeginTabBar("MyTabBar", tab_bar_flags)) {
+    if (CherryGUI::BeginTabItem("Summary")) {
+      float oldsize = CherryGUI::GetFont()->Scale;
+      CherryGUI::GetFont()->Scale *= 1.3;
+      CherryGUI::PushFont(CherryGUI::GetFont());
+      CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 100));
+      CherryGUI::TextWrapped("Latest informations");
+      CherryGUI::PopStyleColor(1);
+      CherryGUI::GetFont()->Scale = oldsize;
+      CherryGUI::PopFont();
 
       static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders |
                                      ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
-      if (ImGui::BeginTable("table_deps", 2, flags)) {
-        ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableHeadersRow();
+      if (CherryGUI::BeginTable("table_deps", 2, flags)) {
+        CherryGUI::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
+        CherryGUI::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+        CherryGUI::TableHeadersRow();
         for (int i = 0; i < 4; i++) {
-          ImGui::TableNextRow();
+          CherryGUI::TableNextRow();
           for (int column = 0; column < 2; column++) {
-            ImGui::TableSetColumnIndex(column);
+            CherryGUI::TableSetColumnIndex(column);
 
             if (i == 0) {
               if (column == 0) {
-                ImGui::Text("Latest fatal error");
+                CherryGUI::Text("Latest fatal error");
               } else if (column == 1) {
-                ImGui::Text("The current path doesn't exist !");
+                CherryGUI::Text("The current path doesn't exist !");
               }
             } else if (i == 1) {
               if (column == 0) {
-                ImGui::Text("Latest error");
+                CherryGUI::Text("Latest error");
               } else if (column == 1) {
-                ImGui::Text("My big project");
+                CherryGUI::Text("My big project");
               }
             } else if (i == 2) {
               if (column == 0) {
-                ImGui::Text("Latest warning");
+                CherryGUI::Text("Latest warning");
               } else if (column == 1) {
-                ImGui::Text("4qsfdsgsd");
+                CherryGUI::Text("4qsfdsgsd");
               }
             } else if (i == 3) {
               if (column == 0) {
-                ImGui::Text("Latest information");
+                CherryGUI::Text("Latest information");
               } else if (column == 1) {
-                ImGui::Text("4fhdgfhdfgg");
+                CherryGUI::Text("4fhdgfhdfgg");
               }
             }
           }
         }
-        ImGui::EndTable();
+        CherryGUI::EndTable();
       }
 
-      ImGui::GetFont()->Scale *= 1.3;
-      ImGui::PushFont(ImGui::GetFont());
-      ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 100));
-      ImGui::TextWrapped("Master context");
-      ImGui::PopStyleColor(1);
-      ImGui::GetFont()->Scale = oldsize;
-      ImGui::PopFont();
+      CherryGUI::GetFont()->Scale *= 1.3;
+      CherryGUI::PushFont(CherryGUI::GetFont());
+      CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 100));
+      CherryGUI::TextWrapped("Master context");
+      CherryGUI::PopStyleColor(1);
+      CherryGUI::GetFont()->Scale = oldsize;
+      CherryGUI::PopFont();
 
-      if (ImGui::BeginTable("table_deps", 2, flags)) {
-        ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
-        ImGui::TableHeadersRow();
+      if (CherryGUI::BeginTable("table_deps", 2, flags)) {
+        CherryGUI::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed);
+        CherryGUI::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed);
+        CherryGUI::TableHeadersRow();
 
         std::string vortex_launcher_version = VORTEX_VERSION;
         std::string cherry_version = CHERRY_VERSION;
@@ -217,48 +217,48 @@ void CrashReport::render() {
         std::string os_arch = ARCH_NAME;
 
         for (int i = 0; i < 8; i++) {
-          ImGui::TableNextRow();
+          CherryGUI::TableNextRow();
           for (int column = 0; column < 2; column++) {
-            ImGui::TableSetColumnIndex(column);
+            CherryGUI::TableSetColumnIndex(column);
 
             if (i == 0) {
               if (column == 0) {
-                ImGui::Text("Vortex Version");
+                CherryGUI::Text("Vortex Version");
               } else if (column == 1) {
                 const std::string version = VORTEX_VERSION;
-                ImGui::Text(vortex_launcher_version.c_str());
+                CherryGUI::Text(vortex_launcher_version.c_str());
               }
             } else if (i == 1) {
               if (column == 0) {
-                ImGui::Text("Build");
+                CherryGUI::Text("Build");
               } else if (column == 1) {
                 const std::string build = "Build: " + vxe::get_vortex_build_id() + " ; " + vxe::get_build_date() + " (" +
                                           vxe::get_vortex_editor_dist() + ")";
-                ImGui::Text(build.c_str());
+                CherryGUI::Text(build.c_str());
               }
             } else if (i == 2) {
               if (column == 0) {
-                ImGui::Text("Hash");
+                CherryGUI::Text("Hash");
               } else if (column == 1) {
                 const std::string hash = " exe(" + vxe::get_vortex_editor_hash() + ") git(" + vxe::get_git_commit() + ")";
-                ImGui::Text(hash.c_str());
+                CherryGUI::Text(hash.c_str());
               }
             } else if (i == 3) {
               if (column == 0) {
-                ImGui::Text("System");
+                CherryGUI::Text("System");
               } else if (column == 1) {
                 const std::string system = os_name + " " + os_arch + system_desktop;
-                ImGui::Text(system.c_str());
+                CherryGUI::Text(system.c_str());
               }
             }
           }
         }
-        ImGui::EndTable();
+        CherryGUI::EndTable();
       }
 
-      ImGui::EndTabItem();
+      CherryGUI::EndTabItem();
     }
-    if (ImGui::BeginTabItem("Informations")) {
+    if (CherryGUI::BeginTabItem("Informations")) {
       static const int bufferSize = 1024 * 16;
       // Declare the text buffer
       static char text[bufferSize];
@@ -267,7 +267,7 @@ void CrashReport::render() {
       static std::string log_file = get_home_directory() + "/.vx/sessions/" + session_id_ + "/logs/global.log";
       if (!loadFileToString(log_file, text, bufferSize)) {
         // Handle error opening or reading the file
-        ImGui::Text("Failed to open or read file: %s", log_file.c_str());
+        CherryGUI::Text("Failed to open or read file: %s", log_file.c_str());
       }
 
       Cherry::PushFont("JetBrainsMono");
@@ -276,16 +276,16 @@ void CrashReport::render() {
       CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
       CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
       static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
-      ImGui::InputTextMultiline("##logs_source", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
+      CherryGUI::InputTextMultiline("##logs_source", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
       CherryGUI::PopStyleVar(2);
       CherryGUI::PopStyleColor();
       CherryStyle::PopFontSize();
       Cherry::PopFont();
 
-      ImGui::EndTabItem();
+      CherryGUI::EndTabItem();
     }
 
-    if (ImGui::BeginTabItem("Processus report")) {
+    if (CherryGUI::BeginTabItem("Processus report")) {
       static const int bufferSize = 1024 * 16;
       // Declare the text buffer
       static char text[bufferSize];
@@ -294,7 +294,7 @@ void CrashReport::render() {
       static std::string log_file = get_home_directory() + "/.vx/sessions/" + session_id_ + "/crash/core_dumped.txt";
       if (!loadFileToString(log_file, text, bufferSize)) {
         // Handle error opening or reading the file
-        ImGui::Text("Failed to open or read file: %s", log_file.c_str());
+        CherryGUI::Text("Failed to open or read file: %s", log_file.c_str());
       }
 
       Cherry::PushFont("JetBrainsMono");
@@ -304,16 +304,16 @@ void CrashReport::render() {
       CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
       static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_ReadOnly;
-      ImGui::InputTextMultiline("##processus_source", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
+      CherryGUI::InputTextMultiline("##processus_source", text, IM_ARRAYSIZE(text), ImVec2(-FLT_MIN, -FLT_MIN - 35.0f), flags);
 
       CherryStyle::PopFontSize();
       CherryGUI::PopStyleVar(2);
       CherryGUI::PopStyleColor();
       Cherry::PopFont();
-      ImGui::EndTabItem();
+      CherryGUI::EndTabItem();
     }
 
-    ImGui::EndTabBar();
+    CherryGUI::EndTabBar();
   }
 
   std::string text = CherryApp.GetLocale("loc.continue") + CherryApp.GetLocale("loc.close");
