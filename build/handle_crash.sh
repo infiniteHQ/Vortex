@@ -31,6 +31,7 @@ done
 # Resolve vortex_utils path (same directory as this script)
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 VORTEX_UTILS="$SCRIPT_DIR/vortex_utils"
+MANIFEST="$SCRIPT_DIR/manifest.json"
 
 # Extract session_id from the main command arguments (--session_id="...")
 SESSION_ID=""
@@ -41,6 +42,34 @@ for arg in "${COMMAND[@]}"; do
     break
   fi
 done
+
+# Extract project_path from the main command arguments (--project_path="...")
+PROJECT_PATH=""
+for arg in "${COMMAND[@]}"; do
+  if [[ "$arg" == --project_path=* ]]; then
+    PROJECT_PATH="${arg#--project_path=}"
+    PROJECT_PATH="${PROJECT_PATH//\"/}"
+    break
+  fi
+done
+
+# Read version from manifest.json
+VERSION=""
+if [ -f "$MANIFEST" ]; then
+  VERSION=$(grep -o '"version"\s*:\s*"[^"]*"' "$MANIFEST" | grep -o '[^"]*"$' | tr -d '"')
+fi
+
+# Get current user
+USER=$(whoami)
+
+# Register session in active_sessions.json before launching
+if [ -n "$SESSION_ID" ] && [ -x "$VORTEX_UTILS" ]; then
+  "$VORTEX_UTILS" -astj \
+    --session_id="$SESSION_ID" \
+    --version="$VERSION" \
+    --user="$USER" \
+    --project_path="$PROJECT_PATH"
+fi
 
 # Configure core dump pattern
 echo "kernel.core_pattern = /tmp/core.%e.%p" > /etc/sysctl.d/99-core-pattern.conf

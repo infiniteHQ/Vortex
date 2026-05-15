@@ -70,6 +70,38 @@ void remove_session_from_json(const std::string &session_id) {
   file_out << active_sessions.dump(4);  // Pretty print with indentation
 }
 
+void add_session_to_json(
+    const std::string &session_id,
+    const std::string &version,
+    const std::string &user,
+    const std::string &project_path) {
+#if defined(_WIN32) || defined(_WIN64)
+  std::string json_path = get_home_directory() + "\\.vx\\sessions\\active_sessions.json";
+#else
+  std::string json_path = get_home_directory() + "/.vx/sessions/active_sessions.json";
+#endif
+
+  std::ifstream file_in(json_path);
+  nlohmann::json active_sessions;
+
+  if (file_in.is_open()) {
+    file_in >> active_sessions;
+    file_in.close();
+  }
+
+  nlohmann::json new_session = { { "session_path", project_path },
+                                 { "session_id", session_id },
+                                 { "session_start_at", std::time(nullptr) },
+                                 { "session_owner", user },
+                                 { "vortex_version", version },
+                                 { "vortex_exec_path", "/opt/Vortex/" + version + "/bin/vortex" } };
+
+  active_sessions["sessions"].push_back(new_session);
+
+  std::ofstream file_out(json_path);
+  file_out << active_sessions.dump(4);
+}
+
 // Called by handle_crash executions scripts to write the finality of the session
 void write_session_end_state(const std::string &session_id, const std::string &state) {
   if (session_id.empty()) {
@@ -149,6 +181,32 @@ int main(int argc, char *argv[]) {
         session_state = parse_arg(argv[3], "--state=");
 
       write_session_end_state(session_id, session_state);
+      remove_session_from_json(session_id);
+    } else if (std::string(argv[1]) == "-astj" || std::string(argv[1]) == "--add_session_to_json") {
+      std::string session_id;
+      std::string version;
+      std::string user;
+      std::string project_path;
+
+      auto parse_arg = [](const std::string &arg, const std::string &prefix) -> std::string {
+        std::string with_quotes = prefix + "\"";
+        if (arg.rfind(with_quotes, 0) == 0 && arg.back() == '\"')
+          return arg.substr(with_quotes.size(), arg.length() - with_quotes.size() - 1);
+        if (arg.rfind(prefix, 0) == 0)
+          return arg.substr(prefix.size());
+        return "";
+      };
+
+      if (argc > 2)
+        session_id = parse_arg(argv[2], "--session_id=");
+      if (argc > 3)
+        version = parse_arg(argv[3], "--version=");
+      if (argc > 4)
+        user = parse_arg(argv[4], "--user=");
+      if (argc > 5)
+        project_path = parse_arg(argv[5], "--project_path=");
+
+      add_session_to_json(session_id, version, user, project_path);
     }
   }
 
