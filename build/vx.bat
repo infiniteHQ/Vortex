@@ -1,20 +1,21 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
+
 set /p VERSION=<"..\version.conf"
 set "SCRIPT_DIR=%~dp0"
 set "VORTEX_PATH=%SCRIPT_DIR%"
 
 if "%~1"=="" (
-    echo [ERROR] You need to specify your project path !
-    echo Usage: %~nx0 "C:\path\to\projet"
-    exit /b 1
+  echo [ERROR] You need to specify your project path !
+  echo Usage: %~nx0 "C:\path\to\projet"
+  exit /b 1
 )
 
 set "PROJECT_PATH=%~1"
 
 if not exist "%PROJECT_PATH%" (
-    echo [ERROR] The path does not exist : "%PROJECT_PATH%"
-    exit /b 1
+  echo [ERROR] The path does not exist : "%PROJECT_PATH%"
+  exit /b 1
 )
 
 set "datestr=%date:~3,2%-%date:~0,2%-%date:~6,4%"
@@ -22,12 +23,18 @@ set "timestr=%time:~0,2%-%time:~3,2%-%time:~6,2%"
 set "timestr=%timestr: =0%"
 set /a "random_num=%random% %% 9000 + 1000"
 set "SESSION_ID=editor-%datestr%-%timestr%-%random_num%"
-set "SESSION_ARG=--session_id="%SESSION_ID%""
+
 echo SESSION_ID=%SESSION_ID%
-echo SESSION_ARG=%SESSION_ARG%
+
 cd /d "%PROJECT_PATH%"
-call "%VORTEX_PATH%\handle_crash.bat" ^
+
+call "%VORTEX_PATH%handle_crash.bat" ^
   "%USERPROFILE%\.vx\sessions\%SESSION_ID%\crash\core_dumped.txt" ^
-  "%VORTEX_PATH%\vortex.exe --editor %SESSION_ARG%" ^
+  "%VORTEX_PATH%vortex.exe" ^
+  "--editor" ^
+  "--session_id=%SESSION_ID%" ^
+  "--project_path=%PROJECT_PATH%" ^
   __END__ ^
-  "%VORTEX_PATH%\vortex.exe --crash %SESSION_ARG%"
+  "%VORTEX_PATH%vortex.exe" ^
+  "--crash" ^
+  "--session_id=%SESSION_ID%"
