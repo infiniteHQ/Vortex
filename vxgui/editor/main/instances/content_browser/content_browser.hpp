@@ -169,8 +169,8 @@ namespace vxe {
     bool will_show_filter_pannel_ = false;
     bool previous_filter_pannel_state_ = false;
     bool previous_thumbnail_visualizer_state_ = false;
-    char pool_add_path_[512];
-    char pool_add_name_[512];
+    std::string pool_add_path_;
+    std::string pool_add_name_;
 
     // hosted
     std::vector<ContentBrowserChild> childs_;

@@ -236,14 +236,13 @@ namespace vxe {
             }
           } else {
             CherryGUI::Text("Please enter a path");
-            CherryGUI::SetNextItemWidth(-FLT_MIN);
-            CherryGUI::Text("Name ");
-            CherryGUI::SameLine();
-            CherryGUI::InputText("###AddPoolName", pool_add_name_, sizeof(pool_add_name_));
 
-            CherryGUI::Text("Path ");
-            CherryGUI::SameLine();
-            CherryGUI::InputText("###AddPoolPath", pool_add_path_, sizeof(pool_add_path_));
+            CherryNextComponent.SetProperty("size_x", "150");
+            CherryKit::InputString("Name", &pool_add_name_);
+
+            CherryNextComponent.SetProperty("size_x", "150");
+            CherryKit::InputString("Path", &pool_add_path_);
+
             if (CherryGUI::ImageButtonWithText(
                     Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_add.png")),
                     "Add",
