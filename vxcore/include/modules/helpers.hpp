@@ -33,6 +33,7 @@
 #define MODULE_HELPERS_H
 
 // Forward declarations
+struct ToolbarHandlerInterface;
 struct ItemHandlerInterface;
 struct ItemIdentifierInterface;
 struct ItemCreatorInterface;

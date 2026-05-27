@@ -25,6 +25,8 @@ namespace vxe {
   VORTEX_API void push_custom_menu(const std::string &title, const std::function<void()> &render);
   VORTEX_API void pop_custom_menu(const int &count = 1);
   VORTEX_API void clear_custom_menus();
+  VORTEX_API void enable_modules_section_on_toolbar();
+  VORTEX_API void disable_modules_section_on_toolbar();
 }  // namespace vxe
 
 #endif  // VORTEX_CUSTOMIZATIONS_HPP

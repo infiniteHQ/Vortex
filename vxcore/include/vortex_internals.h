@@ -147,6 +147,27 @@ struct ItemHandlerInterface {
   }
 };
 
+struct ToolbarHandlerInterface {
+  std::function<void()> handler;
+  std::string title;
+  std::string description;
+  std::string topic;
+  std::string logo;
+
+  ToolbarHandlerInterface(
+      std::function<void()> h,
+      const std::string &ti,
+      const std::string &d = "",
+      const std::string &t = "",
+      const std::string &l = "")
+      : handler(std::move(h)),
+        title(ti),
+        description(d),
+        topic(t),
+        logo(l) {
+  }
+};
+
 // Todo : Creation configurations (names, variantes, etc)
 struct ItemCreatorInterface {
   std::function<void(const std::string &path)> create_function;
@@ -333,4 +354,5 @@ struct VxContext {
 
   // Custom menus callabcks
   std::vector<CustomMenu> customMenus;
+  bool modules_section_on_toolbar = false;
 };

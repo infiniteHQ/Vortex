@@ -53,11 +53,30 @@ VORTEX_API void ModuleInterface::add_input_event(const ModuleInputEvent &event) 
   this->input_events_.push_back(p_event);
 }
 
+VORTEX_API void ModuleInterface::add_toolbar_handler(
+    const ToolbarHandlerInterface &handler,
+    const std::vector<std::string> &topic) {
+  vxe::enable_modules_section_on_toolbar();
+  toolbar_handlers_.push_back(std::make_shared<ToolbarHandlerInterface>(handler));
+}
+
+VORTEX_API std::vector<std::shared_ptr<ToolbarHandlerInterface>> &ModuleInterface::get_toolbar_handlers() {
+  return toolbar_handlers_;
+}
+
+const std::string &ModuleInterface::get_toolbar_main_title() const noexcept {
+  return toolbar_main_title_;
+}
+
+void ModuleInterface::set_toolbar_main_title(std::string v) {
+  toolbar_main_title_ = std::move(v);
+}
+
 VORTEX_API void ModuleInterface::add_content_browser_item_handler(const ItemHandlerInterface &handler) {
   item_handlers_.push_back(std::make_shared<ItemHandlerInterface>(handler));
 }
 
-VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> ModuleInterface::get_content_browser_item_handlers() {
+VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> &ModuleInterface::get_content_browser_item_handlers() {
   return item_handlers_;
 }
 

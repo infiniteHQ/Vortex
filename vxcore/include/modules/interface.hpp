@@ -75,9 +75,16 @@ VORTEX_API class ModuleInterface {
   VORTEX_API void set_main_window(const std::shared_ptr<Cherry::AppWindow> &win);
   VORTEX_API void add_window(const std::shared_ptr<Cherry::AppWindow> &win);
 
+  // Main tools menubar handlers
+  // TODO add basic handlers (outside of the "from modules" section)
+  VORTEX_API void add_toolbar_handler(const ToolbarHandlerInterface &handler, const std::vector<std::string> &topic = {});
+  VORTEX_API std::vector<std::shared_ptr<ToolbarHandlerInterface>> &get_toolbar_handlers();
+  VORTEX_API const std::string &get_toolbar_main_title() const noexcept;
+  VORTEX_API void set_toolbar_main_title(std::string v);
+
   // Content Browser item handler
   VORTEX_API void add_content_browser_item_handler(const ItemHandlerInterface &handler);
-  VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> get_content_browser_item_handlers();
+  VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> &get_content_browser_item_handlers();
 
   // Content Browser item identifier
   VORTEX_API void add_content_browser_item_identifier(const ItemIdentifierInterface &item);
@@ -198,12 +205,14 @@ VORTEX_API class ModuleInterface {
   std::shared_ptr<Cherry::AppWindow> main_window_;
 
   // IO, functions, events
+  std::string toolbar_main_title_;
   std::vector<std::shared_ptr<ModuleFunction>> functions_;
   std::vector<std::shared_ptr<ModuleOutputEvent>> output_events_;
   std::vector<std::shared_ptr<ModuleInputEvent>> input_events_;
   std::vector<std::shared_ptr<ItemHandlerInterface>> item_handlers_;
   std::vector<std::shared_ptr<ItemIdentifierInterface>> item_identifiers_;
   std::vector<std::shared_ptr<ItemCreatorInterface>> item_creators_;
+  std::vector<std::shared_ptr<ToolbarHandlerInterface>> toolbar_handlers_;
   std::vector<std::shared_ptr<ModuleDummyFunction>> dummy_functions_;
   std::vector<std::shared_ptr<ModuleRenderInstance>> render_instances_;
 };

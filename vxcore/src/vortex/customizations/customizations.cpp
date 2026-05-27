@@ -52,3 +52,12 @@ void vxe::clear_custom_menus() {
   auto ctx = vxe::get_current_context();
   ctx->customMenus.clear();
 }
+
+void vxe::enable_modules_section_on_toolbar() {
+  auto ctx = vxe::get_current_context();
+  ctx->modules_section_on_toolbar = true;
+}
+void vxe::disable_modules_section_on_toolbar() {
+  auto ctx = vxe::get_current_context();
+  ctx->modules_section_on_toolbar = false;
+}

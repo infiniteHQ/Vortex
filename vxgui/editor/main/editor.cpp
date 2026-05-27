@@ -629,6 +629,42 @@ void Editor::render_menubar() {
       spawn_logs_utility();
     }
 
+    if (ctx->modules_section_on_toolbar) {
+      CherryKit::SeparatorText("From modules");
+      for (auto &m : ctx->IO.em) {
+        auto handlers = m->get_toolbar_handlers();
+        if (handlers.empty()) {
+          continue;
+        }
+
+        const std::string name = m->get_toolbar_main_title().empty() ? m->proper_name() : m->get_toolbar_main_title();
+
+        // TODO: Implement logo of the module into the menu (in our ImGui implementation)
+        if (CherryGUI::BeginMenu(name.c_str())) {
+          for (auto &h : handlers) {
+            if (!h->topic.empty()) {
+              continue;
+            }
+
+            if (h->logo.empty()) {
+              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), false)) {
+                if (h->handler) {
+                  h->handler();
+                }
+              }
+            } else {
+              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), h->logo.c_str(), false)) {
+                if (h->handler) {
+                  h->handler();
+                }
+              }
+            }
+          }
+          CherryGUI::EndMenu();
+        }
+      }
+    }
+
     CherryGUI::EndMenu();
   }
 
