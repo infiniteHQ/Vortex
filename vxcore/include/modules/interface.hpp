@@ -79,8 +79,10 @@ VORTEX_API class ModuleInterface {
   // TODO add basic handlers (outside of the "from modules" section)
   VORTEX_API void add_toolbar_handler(const ToolbarHandlerInterface &handler, const std::vector<std::string> &topic = {});
   VORTEX_API std::vector<std::shared_ptr<ToolbarHandlerInterface>> &get_toolbar_handlers();
-  VORTEX_API const std::string &get_toolbar_main_title() const noexcept;
-  VORTEX_API void set_toolbar_main_title(std::string v);
+  VORTEX_API const std::string &toolbar_main_title() const noexcept;
+  VORTEX_API void toolbar_main_title(std::string v);
+  VORTEX_API const std::string &toolbar_main_logo_path() const noexcept;
+  VORTEX_API void toolbar_main_logo_path(std::string v);
 
   // Content Browser item handler
   VORTEX_API void add_content_browser_item_handler(const ItemHandlerInterface &handler);
@@ -206,6 +208,7 @@ VORTEX_API class ModuleInterface {
 
   // IO, functions, events
   std::string toolbar_main_title_;
+  std::string toolbar_main_logo_path_;
   std::vector<std::shared_ptr<ModuleFunction>> functions_;
   std::vector<std::shared_ptr<ModuleOutputEvent>> output_events_;
   std::vector<std::shared_ptr<ModuleInputEvent>> input_events_;

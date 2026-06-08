@@ -64,12 +64,20 @@ VORTEX_API std::vector<std::shared_ptr<ToolbarHandlerInterface>> &ModuleInterfac
   return toolbar_handlers_;
 }
 
-const std::string &ModuleInterface::get_toolbar_main_title() const noexcept {
+const std::string &ModuleInterface::toolbar_main_title() const noexcept {
   return toolbar_main_title_;
 }
 
-void ModuleInterface::set_toolbar_main_title(std::string v) {
+void ModuleInterface::toolbar_main_title(std::string v) {
   toolbar_main_title_ = std::move(v);
+}
+
+const std::string &ModuleInterface::toolbar_main_logo_path() const noexcept {
+  return toolbar_main_logo_path_;
+}
+
+void ModuleInterface::toolbar_main_logo_path(std::string v) {
+  toolbar_main_logo_path_ = std::move(v);
 }
 
 VORTEX_API void ModuleInterface::add_content_browser_item_handler(const ItemHandlerInterface &handler) {
