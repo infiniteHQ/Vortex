@@ -633,66 +633,46 @@ void Editor::render_menubar() {
       CherryKit::SeparatorText("From modules");
       for (auto &m : ctx->IO.em) {
         auto handlers = m->get_toolbar_handlers();
-        if (handlers.empty()) {
+        if (handlers.empty())
           continue;
-        }
 
         const std::string name = m->toolbar_main_title().empty() ? m->proper_name() : m->toolbar_main_title();
         const std::string logo = m->toolbar_main_logo_path();
 
-        // TODO: Implement logo of the module into the menu (in our ImGui implementation)
-        if (logo.empty()) {
-          if (CherryGUI::BeginMenu(name.c_str())) {
-            for (auto &h : handlers) {
-              if (!h->topic.empty()) {
-                continue;
-              }
+        auto renderMenuItems = [&]() {
+          for (auto &h : handlers) {
+            if (!h->topic.empty())
+              continue;
 
-              if (h->logo.empty()) {
-                if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), false)) {
-                  if (h->handler) {
-                    h->handler();
-                  }
-                }
-              } else {
-                if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), h->logo.c_str(), false)) {
-                  if (h->handler) {
-                    h->handler();
-                  }
-                }
+            if (h->logo.empty()) {
+              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), ImTextureID(), false)) {
+                if (h->handler)
+                  h->handler();
+              }
+            } else {
+              auto text = Cherry::GetTexture(h->logo);
+              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), text, false)) {
+                if (h->handler)
+                  h->handler();
               }
             }
+          }
+        };
+
+        if (logo.empty()) {
+          if (CherryGUI::BeginMenu(name.c_str())) {
+            renderMenuItems();
             CherryGUI::EndMenu();
           }
         } else {
           auto text = Cherry::GetTexture(logo);
-
           if (CherryGUI::BeginMenuImage(name.c_str(), &text)) {
-            for (auto &h : handlers) {
-              if (!h->topic.empty()) {
-                continue;
-              }
-
-              if (h->logo.empty()) {
-                if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), false)) {
-                  if (h->handler) {
-                    h->handler();
-                  }
-                }
-              } else {
-                if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), h->logo.c_str(), false)) {
-                  if (h->handler) {
-                    h->handler();
-                  }
-                }
-              }
-            }
+            renderMenuItems();
             CherryGUI::EndMenu();
           }
         }
       }
     }
-
     CherryGUI::EndMenu();
   }
 
