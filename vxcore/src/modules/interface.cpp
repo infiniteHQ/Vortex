@@ -21,7 +21,7 @@
  *
  * @param function The ModuleFunction to add.
  */
-VORTEX_API void ModuleInterface::add_module_function(const ModuleFunction &function) {
+void ModuleInterface::add_module_function(const ModuleFunction &function) {
   // Create a shared_ptr to the ModuleFunction
   std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(function);
 
@@ -37,7 +37,7 @@ VORTEX_API void ModuleInterface::add_module_function(const ModuleFunction &funct
  *
  * @param event The ModuleOutputEvent to add.
  */
-VORTEX_API void ModuleInterface::add_output_event(const ModuleOutputEvent &event) {
+void ModuleInterface::add_output_event(const ModuleOutputEvent &event) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(event);
 
@@ -45,7 +45,7 @@ VORTEX_API void ModuleInterface::add_output_event(const ModuleOutputEvent &event
   this->output_events_.push_back(p_event);
 }
 
-VORTEX_API void ModuleInterface::add_input_event(const ModuleInputEvent &event) {
+void ModuleInterface::add_input_event(const ModuleInputEvent &event) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(event);
 
@@ -53,14 +53,12 @@ VORTEX_API void ModuleInterface::add_input_event(const ModuleInputEvent &event) 
   this->input_events_.push_back(p_event);
 }
 
-VORTEX_API void ModuleInterface::add_toolbar_handler(
-    const ToolbarHandlerInterface &handler,
-    const std::vector<std::string> &topic) {
+void ModuleInterface::add_toolbar_handler(const ToolbarHandlerInterface &handler, const std::vector<std::string> &topic) {
   vxe::enable_modules_section_on_toolbar();
   toolbar_handlers_.push_back(std::make_shared<ToolbarHandlerInterface>(handler));
 }
 
-VORTEX_API std::vector<std::shared_ptr<ToolbarHandlerInterface>> &ModuleInterface::get_toolbar_handlers() {
+std::vector<std::shared_ptr<ToolbarHandlerInterface>> &ModuleInterface::get_toolbar_handlers() {
   return toolbar_handlers_;
 }
 
@@ -72,33 +70,42 @@ void ModuleInterface::toolbar_main_title(std::string v) {
   toolbar_main_title_ = std::move(v);
 }
 
-const std::string &ModuleInterface::toolbar_main_logo_path() const noexcept {
+const std::string &ModuleInterface::get_toolbar_main_logo_path() const noexcept {
   return toolbar_main_logo_path_;
 }
 
-void ModuleInterface::toolbar_main_logo_path(std::string v) {
+void ModuleInterface::set_toolbar_main_logo_path(std::string v) {
   toolbar_main_logo_path_ = std::move(v);
 }
 
-VORTEX_API void ModuleInterface::add_content_browser_item_handler(const ItemHandlerInterface &handler) {
+void ModuleInterface::add_toolbar_topic_logo(const std::string &id, const std::string &v) {
+  toolbar_topic_logos_[id] = v;
+}
+
+const std::string &ModuleInterface::get_toolbar_topic_logo(const std::string &id) const noexcept {
+  static const std::string empty;
+  auto it = toolbar_topic_logos_.find(id);
+  return it != toolbar_topic_logos_.end() ? it->second : empty;
+}
+
+void ModuleInterface::add_content_browser_item_handler(const ItemHandlerInterface &handler) {
   item_handlers_.push_back(std::make_shared<ItemHandlerInterface>(handler));
 }
 
-VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> &ModuleInterface::get_content_browser_item_handlers() {
+std::vector<std::shared_ptr<ItemHandlerInterface>> &ModuleInterface::get_content_browser_item_handlers() {
   return item_handlers_;
 }
 
-VORTEX_API std::string ModuleInterface::cook_path(const std::string &path) {
+std::string ModuleInterface::cook_path(const std::string &path) {
   return this->path() + "/" + path;
 }
 
-VORTEX_API void
-ModuleInterface::add_documentation(const std::string &section, const std::string &title, const std::string &path) {
+void ModuleInterface::add_documentation(const std::string &section, const std::string &title, const std::string &path) {
   std::string topic = "module:" + this->name_;
   vxe::add_documentation(topic, section, title, path);
 }
 
-VORTEX_API void ModuleInterface::refresh_main_window() {
+void ModuleInterface::refresh_main_window() {
   if (!&Cherry::Application::Get()) {
     return;
   }
@@ -118,7 +125,7 @@ VORTEX_API void ModuleInterface::refresh_main_window() {
   }
 }
 
-VORTEX_API void ModuleInterface::set_main_window(const std::shared_ptr<Cherry::AppWindow> &win) {
+void ModuleInterface::set_main_window(const std::shared_ptr<Cherry::AppWindow> &win) {
   main_window_ = win;
 
   if (&Cherry::Application::Get()) {
@@ -134,7 +141,7 @@ VORTEX_API void ModuleInterface::set_main_window(const std::shared_ptr<Cherry::A
  *
  * @param renderInstance The shared_ptr to the ModuleRenderInstance to add.
  */
-VORTEX_API void ModuleInterface::add_module_render_instance(const std::shared_ptr<ModuleRenderInstance> &renderInstance) {
+void ModuleInterface::add_module_render_instance(const std::shared_ptr<ModuleRenderInstance> &renderInstance) {
   // Add the shared_ptr to the list of render instances
   this->render_instances_.push_back(renderInstance);
 }
@@ -147,16 +154,16 @@ VORTEX_API void ModuleInterface::add_module_render_instance(const std::shared_pt
  * @param hexa Pointer to the logo data as an array of uint8_t.
  * @param size Size of the logo data in bytes.
  */
-VORTEX_API void ModuleInterface::add_logo(const uint8_t *hexa, size_t size) {
+void ModuleInterface::add_logo(const uint8_t *hexa, size_t size) {
   // Set the logo data and size
   this->logo_ = hexa;
   this->logo_size_ = size;
 }
 
-VORTEX_API void ModuleInterface::add_logo(const std::string &relative_path) {
+void ModuleInterface::add_logo(const std::string &relative_path) {
 }
 
-VORTEX_API void ModuleInterface::add_output_event(std::function<void()> foo, const std::string &name) {
+void ModuleInterface::add_output_event(std::function<void()> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(foo, name);
 
@@ -164,7 +171,7 @@ VORTEX_API void ModuleInterface::add_output_event(std::function<void()> foo, con
   this->output_events_.push_back(p_event);
 }
 
-VORTEX_API void ModuleInterface::add_output_event(std::function<void(ArgumentValues &)> foo, const std::string &name) {
+void ModuleInterface::add_output_event(std::function<void(ArgumentValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(foo, name);
 
@@ -172,7 +179,7 @@ VORTEX_API void ModuleInterface::add_output_event(std::function<void(ArgumentVal
   this->output_events_.push_back(p_event);
 }
 
-VORTEX_API void ModuleInterface::add_output_event(std::function<void(ReturnValues &)> foo, const std::string &name) {
+void ModuleInterface::add_output_event(std::function<void(ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(foo, name);
 
@@ -180,9 +187,7 @@ VORTEX_API void ModuleInterface::add_output_event(std::function<void(ReturnValue
   this->output_events_.push_back(p_event);
 }
 
-VORTEX_API void ModuleInterface::add_output_event(
-    std::function<void(ArgumentValues &, ReturnValues &)> foo,
-    const std::string &name) {
+void ModuleInterface::add_output_event(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleOutputEvent> p_event = std::make_shared<ModuleOutputEvent>(foo, name);
 
@@ -190,7 +195,7 @@ VORTEX_API void ModuleInterface::add_output_event(
   this->output_events_.push_back(p_event);
 }
 
-VORTEX_API void ModuleInterface::add_input_event(std::function<void()> foo, const std::string &name) {
+void ModuleInterface::add_input_event(std::function<void()> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(foo, name);
 
@@ -198,7 +203,7 @@ VORTEX_API void ModuleInterface::add_input_event(std::function<void()> foo, cons
   this->input_events_.push_back(p_event);
 }
 
-VORTEX_API void ModuleInterface::add_input_event(std::function<void(ArgumentValues &)> foo, const std::string &name) {
+void ModuleInterface::add_input_event(std::function<void(ArgumentValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(foo, name);
 
@@ -206,7 +211,7 @@ VORTEX_API void ModuleInterface::add_input_event(std::function<void(ArgumentValu
   this->input_events_.push_back(p_event);
 }
 
-VORTEX_API void ModuleInterface::add_input_event(std::function<void(ReturnValues &)> foo, const std::string &name) {
+void ModuleInterface::add_input_event(std::function<void(ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(foo, name);
 
@@ -214,9 +219,7 @@ VORTEX_API void ModuleInterface::add_input_event(std::function<void(ReturnValues
   this->input_events_.push_back(p_event);
 }
 
-VORTEX_API void ModuleInterface::add_input_event(
-    std::function<void(ArgumentValues &, ReturnValues &)> foo,
-    const std::string &name) {
+void ModuleInterface::add_input_event(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleOutputEvent
   std::shared_ptr<ModuleInputEvent> p_event = std::make_shared<ModuleInputEvent>(foo, name);
 
@@ -233,7 +236,7 @@ VORTEX_API void ModuleInterface::add_input_event(
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-VORTEX_API void ModuleInterface::add_function(std::function<void()> foo, const std::string &name) {
+void ModuleInterface::add_function(std::function<void()> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleFunction
   std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(foo, name);
 
@@ -250,7 +253,7 @@ VORTEX_API void ModuleInterface::add_function(std::function<void()> foo, const s
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-VORTEX_API void ModuleInterface::add_function(std::function<void(ArgumentValues &)> foo, const std::string &name) {
+void ModuleInterface::add_function(std::function<void(ArgumentValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleFunction
   std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(foo, name);
 
@@ -267,7 +270,7 @@ VORTEX_API void ModuleInterface::add_function(std::function<void(ArgumentValues 
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-VORTEX_API void ModuleInterface::add_function(std::function<void(ReturnValues &)> foo, const std::string &name) {
+void ModuleInterface::add_function(std::function<void(ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleFunction
   std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(foo, name);
 
@@ -284,9 +287,7 @@ VORTEX_API void ModuleInterface::add_function(std::function<void(ReturnValues &)
  * @param item Pointer to the function.
  * @param name Name of the function.
  */
-VORTEX_API void ModuleInterface::add_function(
-    std::function<void(ArgumentValues &, ReturnValues &)> foo,
-    const std::string &name) {
+void ModuleInterface::add_function(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name) {
   // Create a shared_ptr to the ModuleFunction
   std::shared_ptr<ModuleFunction> p_function = std::make_shared<ModuleFunction>(foo, name);
 
@@ -302,7 +303,7 @@ VORTEX_API void ModuleInterface::add_function(
  *
  * @return A shared_ptr to a copy of the ModuleInterface.
  */
-VORTEX_API std::shared_ptr<ModuleInterface> ModuleInterface::get_interface() {
+std::shared_ptr<ModuleInterface> ModuleInterface::get_interface() {
   // Create a shared_ptr to a new ModuleInterface object, copying the current
   // instance
   return std::make_shared<ModuleInterface>(*this);
@@ -317,7 +318,7 @@ VORTEX_API std::shared_ptr<ModuleInterface> ModuleInterface::get_interface() {
  * @param name The name of the editor module to search for.
  * @return A shared_ptr to the editor module if found, otherwise nullptr.
  */
-VORTEX_API std::shared_ptr<ModuleInterface> ModuleInterface::get_editor_module_by_name(const std::string &name) {
+std::shared_ptr<ModuleInterface> ModuleInterface::get_editor_module_by_name(const std::string &name) {
   auto ctx = vxe::get_current_context();
 
   for (auto em : ctx->IO.em) {
@@ -339,7 +340,7 @@ VORTEX_API std::shared_ptr<ModuleInterface> ModuleInterface::get_editor_module_b
  *
  * @param name The name of the function to execute.
  */
-VORTEX_API void ModuleInterface::execute_function(const std::string &name) {
+void ModuleInterface::execute_function(const std::string &name) {
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
       ArgumentValues empty_args;
@@ -358,7 +359,7 @@ VORTEX_API void ModuleInterface::execute_function(const std::string &name) {
  *
  * @param name The name of the function to execute.
  */
-VORTEX_API void ModuleInterface::execute_function(const std::string &name, ReturnValues &ret) {
+void ModuleInterface::execute_function(const std::string &name, ReturnValues &ret) {
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
       ArgumentValues empty_args;
@@ -376,7 +377,7 @@ VORTEX_API void ModuleInterface::execute_function(const std::string &name, Retur
  *
  * @param name The name of the function to execute.
  */
-VORTEX_API void ModuleInterface::execute_function(const std::string &name, ArgumentValues &args) {
+void ModuleInterface::execute_function(const std::string &name, ArgumentValues &args) {
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
       ReturnValues empty_ret;
@@ -394,7 +395,7 @@ VORTEX_API void ModuleInterface::execute_function(const std::string &name, Argum
  *
  * @param name The name of the function to execute.
  */
-VORTEX_API void ModuleInterface::execute_function(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
+void ModuleInterface::execute_function(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto foo : this->functions_) {
     if (foo->name_ == name) {
       foo->function_(args, ret);
@@ -410,7 +411,7 @@ VORTEX_API void ModuleInterface::execute_function(const std::string &name, Argum
  * and executes its associated function with the provided arguments if found.
  *
  */
-VORTEX_API void ModuleInterface::execute_input_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
+void ModuleInterface::execute_input_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->input_events_) {
     if (event->name_ == name) {
       event->function_(args, ret);
@@ -425,7 +426,7 @@ VORTEX_API void ModuleInterface::execute_input_event(const std::string &name, Ar
  * and executes its associated function with the provided arguments if found.
  *
  */
-VORTEX_API void ModuleInterface::execute_output_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
+void ModuleInterface::execute_output_event(const std::string &name, ArgumentValues &args, ReturnValues &ret) {
   for (auto event : this->output_events_) {
     if (event->name_ == name) {
       event->function_(args, ret);
@@ -441,7 +442,7 @@ VORTEX_API void ModuleInterface::execute_output_event(const std::string &name, A
  *
  * @param message The message to log.
  */
-VORTEX_API void ModuleInterface::log_info(const std::string &message) {
+void ModuleInterface::log_info(const std::string &message) {
   vxe::log_info(this->name_, message);
 }
 
@@ -452,7 +453,7 @@ VORTEX_API void ModuleInterface::log_info(const std::string &message) {
  *
  * @param message The warning message to log.
  */
-VORTEX_API void ModuleInterface::log_warning(const std::string &message) {
+void ModuleInterface::log_warning(const std::string &message) {
   vxe::log_warn(this->name_, message);
 }
 
@@ -463,7 +464,7 @@ VORTEX_API void ModuleInterface::log_warning(const std::string &message) {
  *
  * @param message The error message to log.
  */
-VORTEX_API void ModuleInterface::log_error(const std::string &message) {
+void ModuleInterface::log_error(const std::string &message) {
   vxe::log_error(this->name_, message);
 }
 
@@ -474,7 +475,7 @@ VORTEX_API void ModuleInterface::log_error(const std::string &message) {
  *
  * @param message The fatal error message to log.
  */
-VORTEX_API void ModuleInterface::log_fatal(const std::string &message) {
+void ModuleInterface::log_fatal(const std::string &message) {
   vxe::log_fatal(this->name_, message);
 }
 
@@ -484,7 +485,7 @@ VORTEX_API void ModuleInterface::log_fatal(const std::string &message) {
  * This function checks if the dependencies specified for the module interface
  * are satisfied based on the current context.
  */
-VORTEX_API void ModuleInterface::check_dependencies() {
+void ModuleInterface::check_dependencies() {
   // Get the current Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -523,7 +524,7 @@ VORTEX_API void ModuleInterface::check_dependencies() {
  * dependencies, and sets the state to "failed". If all dependencies are
  * satisfied, executes the main function and sets the state to "running".
  */
-VORTEX_API void ModuleInterface::start() {
+void ModuleInterface::start() {
   // Get the current Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -624,7 +625,7 @@ VORTEX_API void ModuleInterface::start() {
  * Calls the destroy function to clean up resources and sets the state to
  * "stopped".
  */
-VORTEX_API void ModuleInterface::stop() {
+void ModuleInterface::stop() {
   // Get the current Vortex context
   auto ctx = vxe::get_current_context();
 
@@ -662,15 +663,15 @@ VORTEX_API void ModuleInterface::stop() {
   }
 }
 
-VORTEX_API void ModuleInterface::reset_module() {
+void ModuleInterface::reset_module() {
   item_handlers_.clear();
 }
 
-VORTEX_API void ModuleInterface::call_output_event(const std::string &event_name, ArgumentValues &args, ReturnValues &ret) {
+void ModuleInterface::call_output_event(const std::string &event_name, ArgumentValues &args, ReturnValues &ret) {
   vxe::call_output_event(event_name, args, ret, this->name_);
 }
 
-VORTEX_API void ModuleInterface::call_input_event(
+void ModuleInterface::call_input_event(
     const std::string &module_name,
     const std::string &event_name,
     ArgumentValues &args,
@@ -678,30 +679,30 @@ VORTEX_API void ModuleInterface::call_input_event(
   vxe::call_input_event(module_name, event_name, args, ret, this->name_);
 }
 
-VORTEX_API void ModuleInterface::check_version() {
+void ModuleInterface::check_version() {
 }
 
 std::vector<std::shared_ptr<ModuleRenderInstance>> ModuleInterface::get_module_render_instances() {
   return this->render_instances_;
 };
 
-VORTEX_API void ModuleInterface::add_content_browser_item_identifier(const ItemIdentifierInterface &item) {
+void ModuleInterface::add_content_browser_item_identifier(const ItemIdentifierInterface &item) {
   item_identifiers_.push_back(std::make_shared<ItemIdentifierInterface>(item));
 }
 
-VORTEX_API std::vector<std::shared_ptr<ItemIdentifierInterface>> &ModuleInterface::get_content_browser_item_identifiers() {
+std::vector<std::shared_ptr<ItemIdentifierInterface>> &ModuleInterface::get_content_browser_item_identifiers() {
   return item_identifiers_;
 }
 
-VORTEX_API void ModuleInterface::add_content_browser_item_creator(const ItemCreatorInterface &item) {
+void ModuleInterface::add_content_browser_item_creator(const ItemCreatorInterface &item) {
   item_creators_.push_back(std::make_shared<ItemCreatorInterface>(item));
 }
 
-VORTEX_API std::vector<std::shared_ptr<ItemCreatorInterface>> &ModuleInterface::get_content_browser_item_creators() {
+std::vector<std::shared_ptr<ItemCreatorInterface>> &ModuleInterface::get_content_browser_item_creators() {
   return item_creators_;
 }
 
-VORTEX_API void ModuleInterface::set_credits_file(const std::string &file_path) {
+void ModuleInterface::set_credits_file(const std::string &file_path) {
   vxe::set_credits_file(this->proper_name_ + "(" + this->name_ + ")", file_path);
 }
 

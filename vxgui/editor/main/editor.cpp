@@ -631,29 +631,75 @@ void Editor::render_menubar() {
 
     if (ctx->modules_section_on_toolbar) {
       CherryKit::SeparatorText("From modules");
+
       for (auto &m : ctx->IO.em) {
         auto handlers = m->get_toolbar_handlers();
         if (handlers.empty())
           continue;
 
         const std::string name = m->toolbar_main_title().empty() ? m->proper_name() : m->toolbar_main_title();
-        const std::string logo = m->toolbar_main_logo_path();
+        const std::string logo = m->get_toolbar_main_logo_path();
 
-        auto renderMenuItems = [&]() {
-          for (auto &h : handlers) {
-            if (!h->topic.empty())
-              continue;
+        auto splitTopic = [](const std::string &topic) {
+          std::vector<std::string> parts;
+          std::stringstream ss(topic);
+          std::string part;
+          while (std::getline(ss, part, '/'))
+            if (!part.empty())
+              parts.push_back(part);
+          return parts;
+        };
 
+        struct TopicNode {
+          std::unordered_map<std::string, TopicNode> children;
+          std::vector<std::shared_ptr<ToolbarHandlerInterface>> items;
+        };
+
+        TopicNode root;
+
+        for (auto &h : handlers) {
+          if (h->topic.empty()) {
+            root.items.push_back(h);
+          } else {
+            auto parts = splitTopic(h->topic);
+            TopicNode *node = &root;
+            for (auto &p : parts)
+              node = &node->children[p];
+            node->items.push_back(h);
+          }
+        }
+
+        std::function<void(const TopicNode &, const std::string &)> renderNode = [&](const TopicNode &node,
+                                                                                     const std::string &currentPath) {
+          for (auto &h : node.items) {
             if (h->logo.empty()) {
-              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), ImTextureID(), false)) {
+              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), (bool *)nullptr)) {
                 if (h->handler)
                   h->handler();
               }
             } else {
-              auto text = Cherry::GetTexture(h->logo);
-              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), text, false)) {
+              auto tex = Cherry::GetTexture(h->logo);
+              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), tex, false, true)) {
                 if (h->handler)
                   h->handler();
+              }
+            }
+          }
+
+          for (auto &[childName, childNode] : node.children) {
+            const std::string childPath = currentPath.empty() ? childName : currentPath + "/" + childName;
+            const std::string &topicLogo = m->get_toolbar_topic_logo(childPath);
+
+            if (topicLogo.empty()) {
+              if (CherryGUI::BeginMenu(childName.c_str())) {
+                renderNode(childNode, childPath);
+                CherryGUI::EndMenu();
+              }
+            } else {
+              auto tex = Cherry::GetTexture(topicLogo);
+              if (CherryGUI::BeginMenuImage(childName.c_str(), &tex)) {
+                renderNode(childNode, childPath);
+                CherryGUI::EndMenu();
               }
             }
           }
@@ -661,13 +707,13 @@ void Editor::render_menubar() {
 
         if (logo.empty()) {
           if (CherryGUI::BeginMenu(name.c_str())) {
-            renderMenuItems();
+            renderNode(root, "");
             CherryGUI::EndMenu();
           }
         } else {
           auto text = Cherry::GetTexture(logo);
           if (CherryGUI::BeginMenuImage(name.c_str(), &text)) {
-            renderMenuItems();
+            renderNode(root, "");
             CherryGUI::EndMenu();
           }
         }
