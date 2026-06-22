@@ -827,6 +827,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   spec.SetDefaultWidth(1800);
   spec.SetCustomTitlebar(true);
   spec.SetRenderMode(Cherry::WindowRenderingMethod::DockingWindows);
+  spec.EnableSnapToEdge();
   spec.DisableWindowManagerTitleBar = true;
   spec.DisableTitle = true;
   spec.WindowSaves = false;
