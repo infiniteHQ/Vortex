@@ -252,7 +252,7 @@ VORTEX_API void vxe::verify_and_populate_themes() {
           {"color_checkmark", "#C8C8C8FF"},
           {"color_slidergrab", "#828282B3"},
           {"color_slidergrab_active", "#A8A8A8FF"},
-          {"color_separator", "#151515FF"},
+          {"color_separator", "#302F2FFF"},
           {"color_separator_active", "#27B9F2FF"},
           {"color_separator_hovered", "#151515FF"},
           {"color_window_bg", "#151515FF"},
@@ -354,7 +354,7 @@ VORTEX_API void vxe::verify_and_populate_themes() {
           {"notification_color_bg_hovered", "#343434FF"},
 
           // Separator
-          {"separator_color", "#424242"},
+          {"separator_color", "#302F2FFF"},
           {"separator_color_text", "#454545B2"},
 
           // Keyval
