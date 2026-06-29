@@ -308,7 +308,7 @@ namespace vxe {
             CherryNextComponent.SetProperty("size_y", "18.0f");
             CherryNextComponent.SetProperty("padding_x", "1.0f");
             CherryNextComponent.SetProperty("padding_y", "1.0f");
-            if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png"))
+            if (CherryKit::ButtonImage(CherryID(trashId), Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png"))
                     .GetDataAs<bool>("isClicked")) {
               vxe::remove_pool(pool.first, pool.second);
               refresh_pools();
