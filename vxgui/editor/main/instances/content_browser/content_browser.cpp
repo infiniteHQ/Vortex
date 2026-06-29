@@ -191,6 +191,10 @@ namespace vxe {
     if (!isDir)
       return;
 
+    if (!std::filesystem::exists(path)) {
+      return;
+    }
+
     std::string tree_label = (label.empty() ? path.filename().string() : label);
     std::string unique_id = path.string() + "##treenode";
 

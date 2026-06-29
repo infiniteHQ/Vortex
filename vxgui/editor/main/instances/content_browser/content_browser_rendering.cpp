@@ -271,7 +271,14 @@ namespace vxe {
           }
 
           for (auto pool : pools_) {
-            draw_hierarchy(pool.first, true, pool.second);
+            bool poolExists = std::filesystem::exists(pool.first);
+            if (!poolExists) {
+              CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.2f, 1.0f));
+              CherryGUI::TextUnformatted(pool.second.c_str());
+              CherryGUI::PopStyleColor();
+            } else {
+              draw_hierarchy(pool.first, true, pool.second);
+            }
           }
 
           CherryGUI::PopStyleVar();
@@ -616,6 +623,10 @@ namespace vxe {
     std::vector<std::filesystem::directory_entry> files;
 
     recognized_modules_items_.clear();
+
+    if (!std::filesystem::exists(current_directory_)) {
+      current_directory_ = base_directory_;
+    }
 
     for (auto &directoryEntry : std::filesystem::directory_iterator(current_directory_)) {
       bool isItem = false;

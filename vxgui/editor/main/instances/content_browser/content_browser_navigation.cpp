@@ -29,6 +29,10 @@ namespace vxe {
   }
 
   void ContentBrowser::change_directory(const std::filesystem::path &new_directory) {
+    if (!std::filesystem::exists(new_directory)) {
+      return;
+    }
+
     if (new_directory != current_directory_.string()) {
       if (!current_directory_.empty()) {
         back_history_.push(current_directory_.string());
