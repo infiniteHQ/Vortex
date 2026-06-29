@@ -272,12 +272,46 @@ namespace vxe {
 
           for (auto pool : pools_) {
             bool poolExists = std::filesystem::exists(pool.first);
+
+            if (!poolExists) {
+              CherryStyle::RemoveMarginX(6.0f);
+
+              ImVec2 folderIconPos = CherryGUI::GetCursorScreenPos();
+              folderIconPos.x += 6.0f;
+              folderIconPos.y += 2.0f;
+              draw_folder(
+                  poolExists ? get_content_browser_folder_color(pool.first) : "#CC2222", 12.0f, 12.0f, folderIconPos);
+              CherryGUI::Dummy(ImVec2(20.0f, 0.0f));
+              CherryGUI::SameLine();
+            }
+
             if (!poolExists) {
               CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.2f, 1.0f));
+            }
+
+            if (poolExists) {
+              draw_hierarchy(pool.first, true, pool.second);
+            } else {
               CherryGUI::TextUnformatted(pool.second.c_str());
               CherryGUI::PopStyleColor();
-            } else {
-              draw_hierarchy(pool.first, true, pool.second);
+            }
+
+            CherryGUI::SameLine();
+            float available = CherryGUI::GetContentRegionAvail().x;
+            CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + available - 20.0f);
+
+            std::string trashId = "##trash_pool_" + pool.first + pool.second;
+            CherryNextComponent.SetProperty("color_border", "#00000000");
+            CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+            CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+            CherryNextComponent.SetProperty("size_x", "18.0f");
+            CherryNextComponent.SetProperty("size_y", "18.0f");
+            CherryNextComponent.SetProperty("padding_x", "1.0f");
+            CherryNextComponent.SetProperty("padding_y", "1.0f");
+            if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png"))
+                    .GetDataAs<bool>("isClicked")) {
+              vxe::remove_pool(pool.first, pool.second);
+              refresh_pools();
             }
           }
 
@@ -906,10 +940,6 @@ namespace vxe {
                   highlightTextColor);
             }
 
-            float textH = CherryGUI::GetTextLineHeightWithSpacing();
-            float nameLines = (CherryGUI::CalcTextSize(filenameString.c_str()).x > reducedthumbnail_size) ? 2.0f : 1.0f;
-            CherryGUI::Dummy(ImVec2(reducedthumbnail_size, textH * nameLines));
-
             if (CherryGUI::BeginPopupContextItem("ContextPopup")) {
               CherryKit::SeparatorText("Main");
 
@@ -1070,6 +1100,10 @@ namespace vxe {
 
               CherryGUI::EndPopup();
             }
+
+            float textH = CherryGUI::GetTextLineHeightWithSpacing();
+            float nameLines = (CherryGUI::CalcTextSize(filenameString.c_str()).x > reducedthumbnail_size) ? 2.0f : 1.0f;
+            CherryGUI::Dummy(ImVec2(reducedthumbnail_size, textH * nameLines));
 
             CherryGUI::PopID();
             CherryGUI::NextColumn();

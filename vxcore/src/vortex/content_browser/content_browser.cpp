@@ -99,6 +99,21 @@ VORTEX_API void vxe::publish_pool(const std::string &absolute_pool_path, const s
   vxe::post_pools_to_json();
 }
 
+VORTEX_API void vxe::remove_pool(const std::string &absolute_pool_path, const std::string &name) {
+  auto ctx = vxe::get_current_context();
+
+  ctx->IO.contentbrowser_pools.erase(
+      std::remove_if(
+          ctx->IO.contentbrowser_pools.begin(),
+          ctx->IO.contentbrowser_pools.end(),
+          [&](const std::pair<std::string, std::string> &pool) {
+            return pool.first == absolute_pool_path && pool.second == name;
+          }),
+      ctx->IO.contentbrowser_pools.end());
+
+  vxe::post_pools_to_json();
+}
+
 VORTEX_API void
 vxe::publish_content_browser_custom_folder(const std::string &path, const std::string &hex_color, const bool &isFav) {
   auto ctx = vxe::get_current_context();
