@@ -665,6 +665,7 @@ void ModuleInterface::stop() {
 
 void ModuleInterface::reset_module() {
   item_handlers_.clear();
+  item_identifiers_.clear();
 }
 
 void ModuleInterface::call_output_event(const std::string &event_name, ArgumentValues &args, ReturnValues &ret) {
