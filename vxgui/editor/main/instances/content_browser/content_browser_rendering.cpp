@@ -895,6 +895,10 @@ namespace vxe {
                   highlightTextColor);
             }
 
+            float textH = CherryGUI::GetTextLineHeightWithSpacing();
+            float nameLines = (CherryGUI::CalcTextSize(filenameString.c_str()).x > reducedthumbnail_size) ? 2.0f : 1.0f;
+            CherryGUI::Dummy(ImVec2(reducedthumbnail_size, textH * nameLines));
+
             if (CherryGUI::BeginPopupContextItem("ContextPopup")) {
               CherryKit::SeparatorText("Main");
 
