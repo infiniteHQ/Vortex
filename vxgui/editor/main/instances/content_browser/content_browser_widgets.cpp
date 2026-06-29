@@ -1124,7 +1124,7 @@ namespace vxe {
     CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, buttonActiveColor);
 
     if (CherryGUI::Button("Cancel", ImVec2(75.0f, 0.0f))) {
-      //
+      return true;
     }
 
     CherryGUI::PopStyleColor(3);
@@ -1139,11 +1139,13 @@ namespace vxe {
       *color = ImColor(col[0], col[1], col[2]);
       vxe::publish_content_browser_custom_folder(
           current_editing_folder_.first, Cherry::ImU32ToHex(*color), current_editing_folder_is_favorite_);
+      refresh_custom_folders();
+      return true;
     }
 
     CherryGUI::PopStyleColor(3);
 
-    return result;
+    return false;
   }
 
 }  // namespace vxe

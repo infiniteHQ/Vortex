@@ -123,6 +123,48 @@ vxe::publish_content_browser_custom_folder(const std::string &path, const std::s
   vxe::post_custom_folder_to_json();
 }
 
+VORTEX_API void vxe::publish_content_browser_custom_folder_color(const std::string &path, const std::string &hex_color) {
+  auto ctx = vxe::get_current_context();
+
+  for (auto folder : ctx->IO.contentbrowser_customfolders) {
+    if (folder->path == path) {
+      folder->color = hex_color;
+      folder->path = path;
+      vxe::post_custom_folder_to_json();
+      return;
+    }
+  }
+
+  std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
+  new_folder->color = hex_color;
+  new_folder->path = path;
+
+  ctx->IO.contentbrowser_customfolders.push_back(new_folder);
+
+  vxe::post_custom_folder_to_json();
+}
+
+VORTEX_API void vxe::publish_content_browser_custom_folder_is_fav(const std::string &path, const bool &isFav) {
+  auto ctx = vxe::get_current_context();
+
+  for (auto folder : ctx->IO.contentbrowser_customfolders) {
+    if (folder->path == path) {
+      folder->is_fav = isFav;
+      folder->path = path;
+      vxe::post_custom_folder_to_json();
+      return;
+    }
+  }
+
+  std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
+  new_folder->is_fav = isFav;
+  new_folder->path = path;
+
+  ctx->IO.contentbrowser_customfolders.push_back(new_folder);
+
+  vxe::post_custom_folder_to_json();
+}
+
 VORTEX_API bool vxe::content_browser_folder_is_fav(const std::string &path) {
   auto ctx = vxe::get_current_context();
 

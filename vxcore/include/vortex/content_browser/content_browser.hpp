@@ -46,6 +46,8 @@ namespace vxe {
 
   VORTEX_API void
   publish_content_browser_custom_folder(const std::string &path, const std::string &hex_color, const bool &isFav);
+  VORTEX_API void publish_content_browser_custom_folder_color(const std::string &path, const std::string &hex_color);
+  VORTEX_API void publish_content_browser_custom_folder_is_fav(const std::string &path, const bool &isFav);
   VORTEX_API void publish_pool(const std::string &absolute_pool_path, const std::string &name);
   VORTEX_API void post_custom_folder_to_json();
   VORTEX_API void post_pools_to_json();

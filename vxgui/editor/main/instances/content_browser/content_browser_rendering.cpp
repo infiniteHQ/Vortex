@@ -1015,10 +1015,14 @@ namespace vxe {
                 static bool options_menu = true;
                 static bool hdr = false;
 
-                draw_color_picker_3U32("MyColor", &current_editing_folder_.second);
+                bool is_picker_finished = draw_color_picker_3U32("MyColor", &current_editing_folder_.second);
 
                 if (current_editing_folder_.second != Cherry::HexToImU32(folder_color)) {
                   ColorChanged = true;
+                }
+
+                if (is_picker_finished) {
+                  ImGui::CloseCurrentPopup();
                 }
 
                 CherryGUI::EndMenu();
@@ -1028,14 +1032,15 @@ namespace vxe {
               }
 
               if (CherryGUI::MenuItem("Mark as favorite", "", current_editing_folder_is_favorite_)) {
-                current_editing_folder_ = { directoryEntry.path().string(), current_editing_folder_.second };
+                current_editing_folder_ = { directoryEntry.path().string(),
+                                            HexToImU32(get_content_browser_folder_color(path.string())) };
 
                 current_editing_folder_is_favorite_ = !current_editing_folder_is_favorite_;
                 set_colored_folder(current_editing_folder_.first, ImU32ToHex(current_editing_folder_.second));
-
+                std::cout << Cherry::ImU32ToHex(current_editing_folder_.second) << std::endl;
                 vxe::publish_content_browser_custom_folder(
                     current_editing_folder_.first,
-                    Cherry::ImU32ToHex(current_editing_folder_.second),
+                    ImU32ToHex(current_editing_folder_.second),
                     current_editing_folder_is_favorite_);
 
                 if (current_editing_folder_is_favorite_) {
