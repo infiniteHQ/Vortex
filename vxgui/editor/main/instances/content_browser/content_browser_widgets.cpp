@@ -311,17 +311,18 @@ namespace vxe {
       selected_.push_back(p.content.path);
     }
 
+    bool isWindowFocused = CherryGUI::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
     bool ctrl = CherryApp.IsKeyPressed(CherryKey::CTRL);
     bool alt = CherryApp.IsKeyPressed(CherryKey::ALT);
     bool shift = CherryApp.IsKeyPressed(CherryKey::SHIFT);
 
-    bool shortcutRename = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_R);
-    bool shortcutCut = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_X);
-    bool shortcutCutAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
-    bool shortcutCopy = ctrl && CherryApp.IsKeyPressed(CherryKey::C);
-    bool shortcutCopyAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
-    bool shortcutDelete = CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
-    bool shortcutDeleteMulti = alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+    bool shortcutRename = isWindowFocused && ctrl && CherryGUI::IsKeyPressed(ImGuiKey_R);
+    bool shortcutCut = isWindowFocused && ctrl && CherryGUI::IsKeyPressed(ImGuiKey_X);
+    bool shortcutCutAdd = isWindowFocused && ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
+    bool shortcutCopy = isWindowFocused && ctrl && CherryApp.IsKeyPressed(CherryKey::C);
+    bool shortcutCopyAdd = isWindowFocused && ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
+    bool shortcutDelete = isWindowFocused && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+    bool shortcutDeleteMulti = isWindowFocused && alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
 
     if (shortcutRename && !path_to_rename_.empty()) {
       path_to_rename_ = p.content.path;
@@ -777,17 +778,18 @@ namespace vxe {
       }
     }
 
+    bool isWindowFocused = CherryGUI::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
     bool ctrl = CherryApp.IsKeyPressed(CherryKey::CTRL);
     bool alt = CherryApp.IsKeyPressed(CherryKey::ALT);
     bool shift = CherryApp.IsKeyPressed(CherryKey::SHIFT);
 
-    bool shortcutRename = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_R);
-    bool shortcutCut = ctrl && CherryGUI::IsKeyPressed(ImGuiKey_X);
-    bool shortcutCutAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
-    bool shortcutCopy = ctrl && CherryApp.IsKeyPressed(CherryKey::C);
-    bool shortcutCopyAdd = ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
-    bool shortcutDelete = CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
-    bool shortcutDeleteMulti = alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+    bool shortcutRename = isWindowFocused && ctrl && CherryGUI::IsKeyPressed(ImGuiKey_R);
+    bool shortcutCut = isWindowFocused && ctrl && CherryGUI::IsKeyPressed(ImGuiKey_X);
+    bool shortcutCutAdd = isWindowFocused && ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
+    bool shortcutCopy = isWindowFocused && ctrl && CherryApp.IsKeyPressed(CherryKey::C);
+    bool shortcutCopyAdd = isWindowFocused && ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
+    bool shortcutDelete = isWindowFocused && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
+    bool shortcutDeleteMulti = isWindowFocused && alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
 
     if (shortcutRename && !path_to_rename_.empty()) {
       path_to_rename_ = p.content.path;
