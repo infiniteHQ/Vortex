@@ -177,6 +177,13 @@ namespace vxe {
     std::vector<std::shared_ptr<vxe::AddWindow>> add_windows_;
     int add_windows_counter_ = 0;
 
+    // deletion
+    std::vector<std::string> pending_delete_paths_;
+    bool request_open_delete_modal_ = false;
+
+    void request_delete(const std::vector<std::string> &paths);
+    void draw_delete_confirmation_modal();
+
     std::shared_ptr<AppWindow> app_window_;
   };
 }  // namespace vxe

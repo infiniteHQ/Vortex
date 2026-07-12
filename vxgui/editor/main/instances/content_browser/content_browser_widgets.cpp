@@ -371,17 +371,11 @@ namespace vxe {
     }
 
     if (shortcutDelete && selected_.size() == 1) {
-      if (delete_path_callback_)
-        delete_path_callback_(selected_[0]);
-      selected_.clear();
+      request_delete({ selected_[0] });
     }
 
     if (shortcutDeleteMulti && selected_.size() > 1) {
-      if (delete_path_callback_) {
-        for (const auto &path : selected_)
-          delete_path_callback_(path);
-      }
-      selected_.clear();
+      request_delete(selected_);
     }
 
     item_context_menu_opened_ = false;
@@ -838,17 +832,11 @@ namespace vxe {
     }
 
     if (shortcutDelete && selected_.size() == 1) {
-      if (delete_path_callback_)
-        delete_path_callback_(selected_[0]);
-      selected_.clear();
+      request_delete({ selected_[0] });
     }
 
     if (shortcutDeleteMulti && selected_.size() > 1) {
-      if (delete_path_callback_) {
-        for (const auto &path : selected_)
-          delete_path_callback_(path);
-      }
-      selected_.clear();
+      request_delete(selected_);
     }
 
     if (CherryGUI::BeginPopupContextItem(("context_" + p.content.path).c_str())) {

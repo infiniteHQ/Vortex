@@ -653,6 +653,8 @@ namespace vxe {
 
     CherryGUI::Spacing();
 
+    draw_delete_confirmation_modal();
+
     std::vector<std::filesystem::directory_entry> directories;
     std::vector<std::filesystem::directory_entry> files;
 
@@ -1384,18 +1386,13 @@ namespace vxe {
             }
 
             if (shortcutDelete && selected_.size() == 1) {
-              if (delete_path_callback_)
-                delete_path_callback_(selected_[0]);
-              selected_.clear();
+              request_delete({ selected_[0] });
             }
 
             if (shortcutDeleteMulti && selected_.size() > 1) {
-              if (delete_path_callback_) {
-                for (const auto &path : selected_)
-                  delete_path_callback_(path);
-              }
-              selected_.clear();
+              request_delete(selected_);
             }
+
             if (CherryGUI::BeginPopupContextItem(("context_" + path.string()).c_str())) {
               CherryGUI::GetFont()->Scale = 0.9;
               CherryGUI::PushFont(CherryGUI::GetFont());
@@ -2368,5 +2365,76 @@ namespace vxe {
 
   void ContentBrowser::spawn_import_window() {
     // TODO
+  }
+
+  void ContentBrowser::request_delete(const std::vector<std::string> &paths) {
+    if (paths.empty())
+      return;
+
+    pending_delete_paths_ = paths;
+    request_open_delete_modal_ = true;
+  }
+
+  void ContentBrowser::draw_delete_confirmation_modal() {
+    if (request_open_delete_modal_) {
+      CherryGUI::OpenPopup("Confirm Delete##content_browser_delete_confirm");
+      request_open_delete_modal_ = false;
+    }
+
+    CherryGUI::SetNextWindowSize(ImVec2(420, 0), ImGuiCond_Appearing);
+
+    if (CherryGUI::BeginPopupModal(
+            "Confirm Delete##content_browser_delete_confirm", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+      CherryGUI::Text(
+          "Are you sure you want to delete %zu item%s?",
+          pending_delete_paths_.size(),
+          pending_delete_paths_.size() > 1 ? "s" : "");
+
+      CherryGUI::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f), "This action cannot be undone.");
+      CherryGUI::Separator();
+
+      CherryGUI::BeginChild(
+          "DeletePreviewList", ImVec2(400, (std::min)(150.0f, pending_delete_paths_.size() * 20.0f + 10.0f)), true);
+      for (auto &p : pending_delete_paths_) {
+        std::filesystem::path fp(p);
+        bool isDir = std::filesystem::is_directory(fp);
+        CherryGUI::TextUnformatted((isDir ? "[dir] " : "[file] "));
+        CherryGUI::SameLine();
+        CherryGUI::TextUnformatted(fp.filename().string().c_str());
+      }
+      CherryGUI::EndChild();
+
+      CherryGUI::Spacing();
+
+      float buttonWidth = 120.0f;
+      float totalWidth = buttonWidth * 2 + 10.0f;
+      CherryGUI::SetCursorPosX((CherryGUI::GetWindowWidth() - totalWidth) * 0.5f);
+
+      if (CherryGUI::Button("Cancel", ImVec2(buttonWidth, 0))) {
+        pending_delete_paths_.clear();
+        CherryGUI::CloseCurrentPopup();
+      }
+
+      CherryGUI::SameLine();
+
+      CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.75f, 0.15f, 0.15f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.85f, 0.2f, 0.2f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.1f, 0.1f, 1.0f));
+
+      if (CherryGUI::Button("Delete", ImVec2(buttonWidth, 0))) {
+        if (delete_path_callback_) {
+          for (auto &p : pending_delete_paths_) {
+            delete_path_callback_(p);
+          }
+        }
+        selected_.clear();
+        pending_delete_paths_.clear();
+        CherryGUI::CloseCurrentPopup();
+      }
+
+      CherryGUI::PopStyleColor(3);
+
+      CherryGUI::EndPopup();
+    }
   }
 }  // namespace vxe
