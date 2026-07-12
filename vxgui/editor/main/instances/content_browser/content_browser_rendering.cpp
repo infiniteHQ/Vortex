@@ -1014,23 +1014,14 @@ namespace vxe {
               }
 
               if (CherryGUI::MenuItem("Delete", "Suppr")) {
-                if (delete_path_callback_) {
-                  delete_path_callback_(path.string());
-                }
-                selected_.clear();
+                request_delete({ path.string() });
                 CherryGUI::CloseCurrentPopup();
               }
 
               if (selected_.size() > 1) {
                 std::string label = "Delete (" + std::to_string(selected_.size()) + " selected)";
                 if (CherryGUI::MenuItem(label.c_str(), "Alt + Suppr")) {
-                  if (delete_path_callback_) {
-                    for (auto &path : selected_) {
-                      delete_path_callback_(path);
-                    }
-                  }
-                  selected_.clear();
-
+                  request_delete(selected_);
                   CherryGUI::CloseCurrentPopup();
                 }
               }
@@ -1572,23 +1563,14 @@ namespace vxe {
               }
 
               if (CherryGUI::MenuItem("Delete", "Suppr")) {
-                if (delete_path_callback_) {
-                  delete_path_callback_(path.string());
-                }
-                selected_.clear();
+                request_delete({ path.string() });
                 CherryGUI::CloseCurrentPopup();
               }
 
               if (selected_.size() > 1) {
                 std::string label = "Delete (" + std::to_string(selected_.size()) + " selected)";
                 if (CherryGUI::MenuItem(label.c_str(), "Alt + Suppr")) {
-                  if (delete_path_callback_) {
-                    for (auto &path : selected_) {
-                      delete_path_callback_(path);
-                    }
-                  }
-                  selected_.clear();
-
+                  request_delete(selected_);
                   CherryGUI::CloseCurrentPopup();
                 }
               }
