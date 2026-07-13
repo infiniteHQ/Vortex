@@ -26,7 +26,7 @@ namespace vxe {
   }
 
   std::string ContentBrowser::format_file_size(size_t size) {
-    const char *units[] = { "o", "ko", "Mo", "Go", "To" };
+    const char *units[] = { "B", "KB", "MB", "GB", "TB" };
     int unitIndex = 0;
     double displaySize = static_cast<double>(size);
 
