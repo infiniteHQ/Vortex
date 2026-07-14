@@ -370,11 +370,7 @@ namespace vxe {
       selected_.clear();
     }
 
-    if (shortcutDelete && selected_.size() == 1) {
-      request_delete({ selected_[0] });
-    }
-
-    if (shortcutDeleteMulti && selected_.size() > 1) {
+    if (shortcutDelete && !selected_.empty()) {
       request_delete(selected_);
     }
 
@@ -838,11 +834,7 @@ namespace vxe {
       selected_.clear();
     }
 
-    if (shortcutDelete && selected_.size() == 1) {
-      request_delete({ selected_[0] });
-    }
-
-    if (shortcutDeleteMulti && selected_.size() > 1) {
+    if (shortcutDelete && !selected_.empty()) {
       request_delete(selected_);
     }
 
