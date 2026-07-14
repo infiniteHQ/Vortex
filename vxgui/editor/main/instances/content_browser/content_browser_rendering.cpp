@@ -380,7 +380,7 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     CherryKit::ButtonImageText(
-        GetLocale("loc.window.content.content_browser.save"), GetPath("resources/imgs/icons/misc/icon_save.png"));
+        GetLocale("loc.window.content.content_browser.save_all"), GetPath("resources/imgs/icons/misc/icon_save.png"));
 
     CherryNextComponent.SetProperty("color_border", "#00000000");
     CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
@@ -954,7 +954,7 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
                   if (cut_paths_callback_) {
-                    cut_paths_callback_(selected_, true);
+                    cut_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       cut_selection_.push_back(path);
                     }
@@ -986,7 +986,7 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
                   if (copy_paths_callback_) {
-                    copy_paths_callback_(selected_, true);
+                    copy_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       copy_selection_.push_back(path);
                     }
@@ -1338,7 +1338,7 @@ namespace vxe {
               if (cut_paths_callback_) {
                 copy_selection_.clear();
                 cut_selection_.clear();
-                cut_paths_callback_(selected_, true);
+                cut_paths_callback_(selected_, false);
                 for (const auto &path : selected_)
                   cut_selection_.push_back(path);
               }
@@ -1359,7 +1359,7 @@ namespace vxe {
               if (copy_paths_callback_) {
                 copy_selection_.clear();
                 cut_selection_.clear();
-                copy_paths_callback_(selected_, true);
+                copy_paths_callback_(selected_, false);
                 for (const auto &path : selected_)
                   copy_selection_.push_back(path);
               }
@@ -1503,7 +1503,7 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
                   if (cut_paths_callback_) {
-                    cut_paths_callback_(selected_, true);
+                    cut_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       cut_selection_.push_back(path);
                     }
@@ -1535,7 +1535,7 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
                   if (copy_paths_callback_) {
-                    copy_paths_callback_(selected_, true);
+                    copy_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       copy_selection_.push_back(path);
                     }
@@ -1978,7 +1978,7 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
                   if (cut_paths_callback_) {
-                    cut_paths_callback_(selected_, true);
+                    cut_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       cut_selection_.push_back(path);
                     }
@@ -2010,7 +2010,7 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
                   if (copy_paths_callback_) {
-                    copy_paths_callback_(selected_, true);
+                    copy_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       copy_selection_.push_back(path);
                     }

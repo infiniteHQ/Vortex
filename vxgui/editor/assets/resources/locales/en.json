@@ -23,6 +23,7 @@
         {"loc.window.content.content_browser.add": "Add"},
         {"loc.window.content.content_browser.import": "Import"},
         {"loc.window.content.content_browser.save": "Save"},
+        {"loc.window.content.content_browser.save_all": "Save all"},
         {"loc.window.content.content_browser.options": "Options"},
         {"loc.window.content.content_browser.favorite": "Favorites"},
         {"loc.window.content.content_browser.main": "Project Files"},

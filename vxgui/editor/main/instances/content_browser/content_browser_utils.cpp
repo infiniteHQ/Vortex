@@ -26,6 +26,7 @@ namespace vxe {
   }
 
   std::string ContentBrowser::format_file_size(size_t size) {
+    // TODO: change unit in project settings
     const char *units[] = { "B", "KB", "MB", "GB", "TB" };
     int unitIndex = 0;
     double displaySize = static_cast<double>(size);

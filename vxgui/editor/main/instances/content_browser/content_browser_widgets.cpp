@@ -332,7 +332,7 @@ namespace vxe {
       if (cut_paths_callback_) {
         copy_selection_.clear();
         cut_selection_.clear();
-        cut_paths_callback_(selected_, true);
+        cut_paths_callback_(selected_, false);
         for (const auto &path : selected_)
           cut_selection_.push_back(path);
       }
@@ -353,7 +353,7 @@ namespace vxe {
       if (copy_paths_callback_) {
         copy_selection_.clear();
         cut_selection_.clear();
-        copy_paths_callback_(selected_, true);
+        copy_paths_callback_(selected_, false);
         for (const auto &path : selected_)
           copy_selection_.push_back(path);
       }
@@ -454,7 +454,14 @@ namespace vxe {
       }
       if (CherryGUI::MenuItem(
               "Cut", "Ctrl + X", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")), NULL)) {
-        change_directory(p.content.path);
+        if (cut_paths_callback_) {
+          copy_selection_.clear();
+          cut_selection_.clear();
+          cut_paths_callback_(selected_, false);
+          for (auto &path : selected_)
+            cut_selection_.push_back(path);
+        }
+        selected_.clear();
         CherryGUI::CloseCurrentPopup();
       }
 
@@ -793,7 +800,7 @@ namespace vxe {
       if (cut_paths_callback_) {
         copy_selection_.clear();
         cut_selection_.clear();
-        cut_paths_callback_(selected_, true);
+        cut_paths_callback_(selected_, false);
         for (const auto &path : selected_)
           cut_selection_.push_back(path);
       }
@@ -814,7 +821,7 @@ namespace vxe {
       if (copy_paths_callback_) {
         copy_selection_.clear();
         cut_selection_.clear();
-        copy_paths_callback_(selected_, true);
+        copy_paths_callback_(selected_, false);
         for (const auto &path : selected_)
           copy_selection_.push_back(path);
       }
@@ -913,7 +920,14 @@ namespace vxe {
       }
       if (CherryGUI::MenuItem(
               "Cut", "Ctrl + X", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")), NULL)) {
-        change_directory(p.content.path);
+        if (cut_paths_callback_) {
+          copy_selection_.clear();
+          cut_selection_.clear();
+          cut_paths_callback_(selected_, false);
+          for (auto &path : selected_)
+            cut_selection_.push_back(path);
+        }
+        selected_.clear();
         CherryGUI::CloseCurrentPopup();
       }
 
