@@ -834,6 +834,19 @@ namespace vxe {
             float availableWidth = CherryGUI::GetContentRegionAvail().x;
             float imageOffsetX = (availableWidth - reducedthumbnail_size) * 0.5f;
 
+            float textH = CherryGUI::GetTextLineHeightWithSpacing();
+            float nameLines = (CherryGUI::CalcTextSize(filenameString.c_str()).x > reducedthumbnail_size) ? 2.0f : 1.0f;
+
+            if (selected) {
+              ImVec2 cellScreenPos = CherryGUI::GetCursorScreenPos();
+              ImVec2 cellSize(availableWidth, reducedthumbnail_size + textH * nameLines + 6.0f);
+              ImDrawList *bgDrawList = CherryGUI::GetWindowDrawList();
+              bgDrawList->AddRectFilled(
+                  cellScreenPos,
+                  ImVec2(cellScreenPos.x + cellSize.x, cellScreenPos.y + cellSize.y),
+                  IM_COL32(40, 90, 220, 80),
+                  4.0f);
+            }
             CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
             CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
             CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
@@ -1094,8 +1107,6 @@ namespace vxe {
               CherryGUI::EndPopup();
             }
 
-            float textH = CherryGUI::GetTextLineHeightWithSpacing();
-            float nameLines = (CherryGUI::CalcTextSize(filenameString.c_str()).x > reducedthumbnail_size) ? 2.0f : 1.0f;
             CherryGUI::Dummy(ImVec2(reducedthumbnail_size, textH * nameLines));
 
             CherryGUI::PopID();
