@@ -310,11 +310,11 @@ namespace vxe {
       CherryNextComponent.SetProperty("padding_y", "1.0f");
       CherryNextComponent.SetProperty("image_size", "14.0f");
 
-      CherryNextComponent.SetProperty("color_border", "#34343400");
+      CherryNextComponent.SetProperty("color_border", "#34343466");
       CherryNextComponent.SetProperty("size_x", std::to_string(grid_width - 28.0f));
       CherryNextComponent.SetProperty("color_bg", "#23232300");
-      CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
-      CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
+      CherryNextComponent.SetProperty("color_bg_hovered", "#34343455");
+      CherryNextComponent.SetProperty("color_bg_clicked", "#45454555");
       CherryKit::HeaderImageText(
           m->proper_name(), Cherry::Application::CookPath("resources/imgs/icons/misc/icon_star.png"), [&]() {
             for (auto &ic : filtered_creators) {

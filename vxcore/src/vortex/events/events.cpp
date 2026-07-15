@@ -38,11 +38,14 @@ void vxe::call_output_event(
           output_event->function_(args, ret);
 
           // Trigger a information trigger in the input event
-          output_event->trigger_happening(
-              origin + ":call_output_event",
-              HappeningState::INFO,
-              "Output event \"" + output_event->name_ + "\" of module \"" + em->name() + "\" called succefully from \"" +
-                  origin + "\" !");
+          // TODO, change this log to a debug optional information only
+          /*
+        output_event->trigger_happening(
+            origin + ":call_output_event",
+            HappeningState::INFO,
+            "Output event \"" + output_event->name_ + "\" of module \"" + em->name() + "\" called succefully from \"" +
+                origin + "\" !");
+                */
         } else {
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
@@ -74,11 +77,14 @@ void vxe::call_output_event(
           output_event->function_(args, ret);
 
           // Trigger a information trigger in the input event
+          // TODO, change this log to a debug optional information only
+          /*
           output_event->trigger_happening(
               origin + ":call_output_event",
               HappeningState::INFO,
               "Output event \"" + output_event->name_ + "\" of module \"" + ep->name() + "\" called succefully from \"" +
                   origin + "\" !");
+                  */
         } else {
           // Trigger a information trigger in the input event
           output_event->trigger_happening(
@@ -108,22 +114,29 @@ void vxe::call_input_event(
       for (auto input_event : em->input_events()) {
         if (input_event->name_ == event_name) {
           if (input_event->function_) {
-            // Trigger a information trigger in the input event
+            // TODO, change this log to a debug optional information only
+            /*
             input_event->trigger_happening(
                 origin + ":call_input_event",
                 HappeningState::INFO,
                 "Calling module input event \"" + input_event->name_ + "\" of module \"" + em->name() + "\" from \"" +
                     origin + "\"");
 
+            */
+
             // Call the corresponding event function with the provided arguments
             input_event->function_(args, ret);
 
             // Trigger a information trigger in the input event
-            input_event->trigger_happening(
-                origin + ":call_input_event",
-                HappeningState::INFO,
-                "Input event \"" + input_event->name_ + "\" of module \"" + em->name() + "\" called succefully from \"" +
-                    origin + "\" !");
+
+            // TODO, change this log to a debug optional information only
+            /*
+              input_event->trigger_happening(
+                  origin + ":call_input_event",
+                  HappeningState::INFO,
+                  "Input event \"" + input_event->name_ + "\" of module \"" + em->name() + "\" called succefully from \"" +
+                      origin + "\" !");
+                      */
           } else {
             input_event->trigger_happening(
                 origin + ":call_input_event",
@@ -149,21 +162,28 @@ void vxe::call_input_event(
           // Check if the event function pointer is valid
           if (input_event->function_) {
             // Trigger a information trigger in the input event
+            // TODO, change this log to a debug optional information only
+            /*
             input_event->trigger_happening(
                 origin + ":call_input_event",
                 HappeningState::INFO,
                 "Calling module input event \"" + input_event->name_ + "\" of module \"" + ep->name() + "\" from \"" +
                     origin + "\"");
+                    */
 
             // Call the corresponding event function with the provided arguments
             input_event->function_(args, ret);
 
             // Trigger a information trigger in the input event
-            input_event->trigger_happening(
-                origin + ":call_input_event",
-                HappeningState::INFO,
-                "Input event \"" + input_event->name_ + "\" of module \"" + ep->name() + "\" called succefully from \"" +
-                    origin + "\" !");
+
+            // TODO, change this log to a debug optional information only
+            /*
+              input_event->trigger_happening(
+                  origin + ":call_input_event",
+                  HappeningState::INFO,
+                  "Input event \"" + input_event->name_ + "\" of module \"" + ep->name() + "\" called succefully from \"" +
+                      origin + "\" !");
+                      */
           } else {
             input_event->trigger_happening(
                 origin + ":call_input_event",
