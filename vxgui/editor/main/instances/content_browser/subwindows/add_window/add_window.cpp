@@ -162,30 +162,6 @@ namespace vxe {
     app_window_->SetInternalPaddingX(8.0f);
     app_window_->SetInternalPaddingY(8.0f);
 
-    app_window_->SetRightBottombarCallback([this]() {
-      CherryStyle::RemoveMarginY(7.5f);
-      CherryStyle::RemoveMarginX(130.0f);
-      CherryNextComponent.SetProperty("padding_y", "6.0f");
-      CherryNextComponent.SetProperty("padding_x", "10.0f");
-      CherryNextComponent.SetProperty("color_border", "#00000000");
-      CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
-      CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
-      if (CherryKit::ButtonImageText("Cancel", Cherry::GetPath("resources/imgs/icons/misc/icon_return.png"))
-              .GetDataAs<bool>("isClicked")) {
-        Cherry::DeleteAppWindow(app_window_);
-      }
-
-      CherryNextComponent.SetProperty("padding_y", "6.0f");
-      CherryNextComponent.SetProperty("padding_x", "10.0f");
-
-      if (CherryKit::ButtonImageText(
-              Cherry::GetLocale("loc.window.content.content_browser.add"),
-              Cherry::GetPath("resources/imgs/icons/misc/icon_add.png"))
-              .GetDataAs<bool>("isClicked")) {
-        // TODO
-      }
-    });
-
     creation_path_ = path;
 
     std::shared_ptr<Cherry::AppWindow> win = app_window_;
@@ -212,7 +188,7 @@ namespace vxe {
 
   void AddWindow::render() {
     float window_width = CherryGUI::GetWindowSize().x;
-    float content_width = window_width - 17.0f;
+    float content_width = window_width;
     float main_image_height = window_width / 4.720f;
 
     CherryGUI::Image(
@@ -221,19 +197,10 @@ namespace vxe {
     CherryStyle::AddMarginX(8.0f);
     CherryGUI::Spacing();
 
-    CherryStyle::AddMarginX(8.0f);
-    CherryNextComponent.SetProperty("color_border", "#00000000");
-    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
-    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
-    CherryNextComponent.SetProperty("padding_y", "6.0f");
-    if (CherryKit::ButtonImageText("Filters", Cherry::GetPath("resources/imgs/icons/misc/icon_filter.png"))
-            .GetDataAs<bool>("isClicked")) {
-      // TODO
-    }
+    float search_width = content_width - 16.0f;
+    CherryGUI::SetCursorPosX((window_width - search_width) * 0.5f);
 
-    CherryGUI::SameLine();
-
-    CherryNextComponent.SetProperty("size_x", std::to_string(content_width - 90.0f));
+    CherryNextComponent.SetProperty("size_x", std::to_string(search_width));
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     CherryNextComponent.SetProperty("description", "Search content...");
     CherryNextComponent.SetProperty(
@@ -243,7 +210,7 @@ namespace vxe {
 
     std::string search = add_window_search_;
 
-    float grid_width = content_width - 8.0f;
+    float grid_width = content_width - 22.0f;
 
     std::vector<TileEntry> quick_tiles = {
       { "addwin_tile_folder",
@@ -286,59 +253,33 @@ namespace vxe {
     }
 
     if (!filtered_quick_tiles.empty()) {
-      CherryStyle::AddMarginX(8.0f);
       CherryGUI::Spacing();
+      CherryStyle::AddMarginX(18.0f);
       CherryKit::SeparatorText("Quick create");
-      CherryStyle::AddMarginX(8.0f);
+      CherryStyle::AddMarginX(12.0f);
       DrawTileGrid(filtered_quick_tiles, grid_width, 92.0f, 76.0f, 10.0f);
     }
 
-    std::vector<TileEntry> simple_files = {
-      { "addwin_tile_json",
-        Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/files/icon_json_file.png")),
-        "JSON",
-        true,
-        [this]() {
-          if (create_file_callback_) {
-            create_file_callback_();
-          }
-          Cherry::DeleteAppWindow(app_window_);
-        } },
-      { "addwin_tile_cfg",
-        Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/files/icon_cfg_file.png")),
-        "Config",
-        true,
-        [this]() {
-          if (create_file_callback_) {
-            create_file_callback_();
-          }
-          Cherry::DeleteAppWindow(app_window_);
-        } },
-      { "addwin_tile_ini",
-        Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/files/icon_ini_file.png")),
-        "INI",
-        true,
-        [this]() {
-          if (create_file_callback_) {
-            create_file_callback_();
-          }
-          Cherry::DeleteAppWindow(app_window_);
-        } },
-    };
-
-    std::vector<TileEntry> filtered_simple_files;
-    for (auto &t : simple_files) {
-      if (MatchesSearch(t.title, search)) {
-        filtered_simple_files.push_back(t);
+    bool has_module_items = false;
+    for (auto m : vxe::get_current_context()->IO.em) {
+      if (!m) {
+        continue;
+      }
+      for (auto &ic : m->get_content_browser_item_creators()) {
+        if (MatchesSearch(ic->name, search)) {
+          has_module_items = true;
+          break;
+        }
+      }
+      if (has_module_items) {
+        break;
       }
     }
 
-    if (!filtered_simple_files.empty()) {
-      CherryStyle::AddMarginX(8.0f);
+    if (has_module_items) {
       CherryGUI::Spacing();
-      CherryKit::SeparatorText("Create simple files");
-      CherryStyle::AddMarginX(8.0f);
-      DrawTileGrid(filtered_simple_files, grid_width, 92.0f, 76.0f, 10.0f);
+      CherryStyle::AddMarginX(18.0f);
+      CherryKit::SeparatorText("From module");
     }
 
     for (auto m : vxe::get_current_context()->IO.em) {
@@ -362,21 +303,37 @@ namespace vxe {
         continue;
       }
 
-      CherryStyle::AddMarginX(8.0f);
-      CherryNextComponent.SetProperty("size_x", content_width);
-      CherryNextComponent.SetProperty("color_border", "#343434");
-      CherryNextComponent.SetProperty("color_bg", "#232323");
+      float row_width = content_width - 16.0f;
+      CherryStyle::AddMarginX(12.0f);
+
+      CherryNextComponent.SetProperty("size_y", "34.0f");
+      CherryNextComponent.SetProperty("padding_y", "1.0f");
+      CherryNextComponent.SetProperty("image_size", "14.0f");
+
+      CherryNextComponent.SetProperty("color_border", "#34343400");
+      CherryNextComponent.SetProperty("size_x", std::to_string(grid_width - 28.0f));
+      CherryNextComponent.SetProperty("color_bg", "#23232300");
       CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
       CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
       CherryKit::HeaderImageText(
           m->proper_name(), Cherry::Application::CookPath("resources/imgs/icons/misc/icon_star.png"), [&]() {
-            float row_width = content_width - 16.0f;
-
             for (auto &ic : filtered_creators) {
-              CherryStyle::AddMarginX(8.0f);
+              CherryStyle::AddMarginX(12.0f);
 
               std::string row_id = "addwin_row_" + ic->name;
+
               ImTextureID icon = Cherry::GetTexture(ic->logo_path);
+
+              CherryNextComponent.SetProperty("size_x", std::to_string(row_width));
+              CherryNextComponent.SetProperty("padding_y", "8.0f");
+              CherryNextComponent.SetProperty("padding_x", "10.0f");
+              CherryNextComponent.SetProperty("rounding", "8.0f");
+              CherryNextComponent.SetProperty("color_bg", "#232323");
+              CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
+              CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
+              CherryNextComponent.SetProperty("color_border", "#343434");
+              CherryNextComponent.SetProperty("image", icon);
+              CherryNextComponent.SetProperty("image_size", "32.0f");
 
               if (DrawRow(row_id.c_str(), icon, ic->name, ic->description, row_width)) {
                 if (ic->create_function && !creation_path_.empty()) {
