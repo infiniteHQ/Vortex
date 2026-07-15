@@ -20,6 +20,7 @@
 #include "content_browser_helpers.hpp"
 
 namespace vxe {
+  VORTEX_API std::string create_item(const std::string &path);
   VORTEX_API std::string create_file(const std::string &path);
   VORTEX_API std::string create_folder(const std::string &path);
   VORTEX_API void move_all_content();

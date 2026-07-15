@@ -58,13 +58,4 @@ namespace vxe {
     selected_.push_back(path);
   }
 
-  void ContentBrowser::create_file() {
-    auto path = vxe::create_file(current_directory_.string());
-    path_to_rename_ = path;
-  }
-
-  void ContentBrowser::create_folder() {
-    auto path = vxe::create_folder(current_directory_.string());
-    path_to_rename_ = path;
-  }
 }  // namespace vxe

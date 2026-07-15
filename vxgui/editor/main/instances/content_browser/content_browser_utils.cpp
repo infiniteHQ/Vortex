@@ -330,4 +330,23 @@ namespace vxe {
     paste_paths_callback_ = foo;
   }
 
+  void ContentBrowser::create_file() {
+    auto path = vxe::create_file(current_directory_.string());
+    path_to_rename_ = path;
+  }
+
+  void ContentBrowser::create_folder() {
+    auto path = vxe::create_folder(current_directory_.string());
+    path_to_rename_ = path;
+  }
+
+  void ContentBrowser::create_item(const std::function<void(const std::string &)> &creator) {
+    auto path = vxe::create_item(current_directory_.string());
+
+    if (creator && !path.empty()) {
+      creator(path);
+    }
+
+    path_to_rename_ = path;
+  }
 }  // namespace vxe

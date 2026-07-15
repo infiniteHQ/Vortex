@@ -2327,6 +2327,7 @@ namespace vxe {
     new_win->get_app_window()->SetVisibility(true);
     new_win->set_create_file_callback([this]() { this->create_file(); });
     new_win->set_create_folder_callback([this]() { this->create_folder(); });
+    new_win->set_create_item_callback([this](const std::function<void(const std::string &)> &c) { this->create_item(c); });
     new_win->set_import_content_callback([this]() { this->spawn_import_window(); });
 
     std::string label = "Add content";

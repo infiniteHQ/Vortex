@@ -72,6 +72,7 @@ namespace vxe {
     // fs manipulation
     void create_file();
     void create_folder();
+    void create_item(const std::function<void(const std::string &)> &creator);
 
     // utils
     void set_default_folder_color(const std::string &hex);

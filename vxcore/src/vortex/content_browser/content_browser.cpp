@@ -29,6 +29,22 @@ VORTEX_API std::string vxe::create_file(const std::string &path) {
   return fs::absolute(fullPath).string();
 }
 
+VORTEX_API std::string vxe::create_item(const std::string &path) {
+  fs::path basePath(path);
+  std::string baseName = "New item";
+  fs::path fullPath = basePath / baseName;
+
+  int counter = 2;
+  while (fs::exists(fullPath)) {
+    fullPath = basePath / (baseName + " " + std::to_string(counter));
+    ++counter;
+  }
+
+  fs::create_directories(fullPath);
+
+  return fs::absolute(fullPath).string();
+}
+
 VORTEX_API std::string vxe::create_folder(const std::string &path) {
   fs::path basePath(path);
   std::string baseName = "New folder";

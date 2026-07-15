@@ -336,10 +336,10 @@ namespace vxe {
               CherryNextComponent.SetProperty("image_size", "32.0f");
 
               if (DrawRow(row_id.c_str(), icon, ic->name, ic->description, row_width)) {
-                if (ic->create_function && !creation_path_.empty()) {
-                  ic->create_function(creation_path_);
+                if (ic->create_function && !creation_path_.empty() && create_item_callback_) {
+                  create_item_callback_([ic](const std::string &path) { ic->create_function(path); });
+                  Cherry::DeleteAppWindow(app_window_);
                 }
-                Cherry::DeleteAppWindow(app_window_);
               }
 
               CherryGUI::Dummy(ImVec2(0.0f, 4.0f));
@@ -358,6 +358,11 @@ namespace vxe {
 
   void AddWindow::set_import_content_callback(const std::function<void()> &callback) {
     import_content_callback_ = callback;
+  }
+
+  void AddWindow::set_create_item_callback(
+      const std::function<void(const std::function<void(const std::string &)> &creator)> &callback) {
+    create_item_callback_ = callback;
   }
 
 }  // namespace vxe

@@ -28,8 +28,10 @@ namespace vxe {
     void render();
 
     // utils
-    void set_create_file_callback(const std::function<void()> &callback);
     void set_create_folder_callback(const std::function<void()> &callback);
+    void set_create_file_callback(const std::function<void()> &callback);
+    void set_create_item_callback(
+        const std::function<void(const std::function<void(const std::string &)> &creator)> &callback);
     void set_import_content_callback(const std::function<void()> &callback);
 
    private:
@@ -37,6 +39,7 @@ namespace vxe {
     std::function<void()> create_file_callback_;
     std::function<void()> create_folder_callback_;
     std::function<void()> import_content_callback_;
+    std::function<void(const std::function<void(const std::string &)> &creator)> create_item_callback_;
 
     std::string creation_path_;
     std::string add_window_search_;
