@@ -29,7 +29,7 @@ namespace vxe {
     app_window_->SetRightMenubarCallback([this]() { render_right_menubar(); });
 
     set_selected_category("all");
-    selected_show_mode_ = ShowModes::Thumbmails;
+    selected_show_mode_ = ShowModes::List;
     refresh_categories();
 
     std::shared_ptr<Cherry::AppWindow> win = app_window_;

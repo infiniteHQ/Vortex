@@ -42,6 +42,7 @@ namespace vxe {
     void render_module_deletion_modal();
     void render_left_menubar();
     void render_right_menubar();
+    void render_module_list_row(const std::shared_ptr<ModuleInterface> &mod);
 
     // logic
     void refresh_categories();
@@ -63,7 +64,7 @@ namespace vxe {
     std::string module_to_delete_version_;
     std::string module_to_delete_logo_path_;
 
-    ShowModes selected_show_mode_ = ShowModes::Thumbmails;
+    ShowModes selected_show_mode_ = ShowModes::List;
     Pannels selected_pannel_ = Pannels::Installed;
 
     std::string selected_category_;
