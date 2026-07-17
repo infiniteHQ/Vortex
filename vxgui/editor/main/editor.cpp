@@ -484,6 +484,7 @@ void Editor::render_menubar() {
     }
 
     CherryKit::SeparatorText("Static contents");
+    CherryGUI::BeginDisabled();
     if (CherryGUI::MenuItem(
             "Templates utility",
             "Open the templates utility",
@@ -497,6 +498,7 @@ void Editor::render_menubar() {
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
             get_templates_utility_visibility())) {
     }
+    CherryGUI::EndDisabled();
 
     CherryKit::SeparatorText("Configurations & Settings");
     if (CherryGUI::MenuItem(
