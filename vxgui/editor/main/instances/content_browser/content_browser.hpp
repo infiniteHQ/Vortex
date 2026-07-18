@@ -74,6 +74,9 @@ namespace vxe {
     void create_folder();
     void create_item(const std::function<void(const std::string &)> &creator);
 
+    bool is_in_copy_selection(const std::string &path) const;
+    bool has_new_paths_to_copy(const std::vector<std::string> &paths) const;
+
     // utils
     void set_default_folder_color(const std::string &hex);
     void set_colored_folder(const std::string &path, const std::string &hex_color);

@@ -725,11 +725,6 @@ namespace vxe {
 
       CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 
-      if (CherryGUI::IsWindowHovered() && CherryGUI::IsMouseReleased(ImGuiMouseButton_Right)) {
-        selected_.clear();
-        CherryGUI::OpenPopup("EmptySpacePopup");
-      }
-
       if (CherryGUI::IsWindowHovered() && CherryGUI::IsMouseReleased(ImGuiMouseButton_Left)) {
         selected_.clear();
       }
@@ -999,6 +994,8 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
                   if (copy_paths_callback_) {
+                    copy_selection_.clear();
+                    cut_selection_.clear();
                     copy_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       copy_selection_.push_back(path);
@@ -1006,24 +1003,35 @@ namespace vxe {
                   }
 
                   selected_.clear();
-
                   CherryGUI::CloseCurrentPopup();
                 }
               }
 
               if (copy_selection_.size() > 0) {
+                bool nothing_new_to_copy = !has_new_paths_to_copy(selected_);
                 std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
+
+                ImGui::BeginDisabled(nothing_new_to_copy);
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
                   if (copy_paths_callback_) {
-                    copy_paths_callback_(selected_, true);
-
+                    std::vector<std::string> to_copy;
                     for (auto &path : selected_) {
-                      copy_selection_.push_back(path);
+                      if (!is_in_copy_selection(path)) {
+                        to_copy.push_back(path);
+                      }
+                    }
+
+                    if (!to_copy.empty()) {
+                      copy_paths_callback_(to_copy, true);
+                      for (auto &path : to_copy) {
+                        copy_selection_.push_back(path);
+                      }
                     }
                   }
                   selected_.clear();
                   CherryGUI::CloseCurrentPopup();
                 }
+                ImGui::EndDisabled();
               }
 
               if (CherryGUI::MenuItem("Delete", "Suppr")) {
@@ -1267,6 +1275,13 @@ namespace vxe {
           }
         }
       }
+
+      if (CherryGUI::IsWindowHovered() && !CherryGUI::IsAnyItemHovered() &&
+          CherryGUI::IsMouseReleased(ImGuiMouseButton_Right)) {
+        selected_.clear();
+        CherryGUI::OpenPopup("EmptySpacePopup");
+      }
+
       CherryGUI::Columns(1);
     }
 
@@ -1451,21 +1466,33 @@ namespace vxe {
                 CherryGUI::CloseCurrentPopup();
               }
 
-              if (selected_.size() > 0) {
-                std::string label = "Copy in addition (" + std::to_string(selected_.size()) + " copies)";
-                if (CherryGUI::MenuItem(
-                        label.c_str(),
-                        "Ctrl + C",
-                        Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")),
-                        NULL)) {
-                  if (copy_paths_callback_) {
-                    copy_paths_callback_(selected_, true);
-                  }
+              if (copy_selection_.size() > 0) {
+                bool nothing_new_to_copy = !has_new_paths_to_copy(selected_);
+                std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
 
+                ImGui::BeginDisabled(nothing_new_to_copy);
+                if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+                  if (copy_paths_callback_) {
+                    std::vector<std::string> to_copy;
+                    for (auto &path : selected_) {
+                      if (!is_in_copy_selection(path)) {
+                        to_copy.push_back(path);
+                      }
+                    }
+
+                    if (!to_copy.empty()) {
+                      copy_paths_callback_(to_copy, true);
+                      for (auto &path : to_copy) {
+                        copy_selection_.push_back(path);
+                      }
+                    }
+                  }
                   selected_.clear();
                   CherryGUI::CloseCurrentPopup();
                 }
+                ImGui::EndDisabled();
               }
+
               if (CherryGUI::MenuItem(
                       "Cut",
                       "Ctrl + X",
@@ -1542,6 +1569,8 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
                   if (copy_paths_callback_) {
+                    copy_selection_.clear();
+                    cut_selection_.clear();
                     copy_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       copy_selection_.push_back(path);
@@ -1549,24 +1578,35 @@ namespace vxe {
                   }
 
                   selected_.clear();
-
                   CherryGUI::CloseCurrentPopup();
                 }
               }
 
               if (copy_selection_.size() > 0) {
+                bool nothing_new_to_copy = !has_new_paths_to_copy(selected_);
                 std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
+
+                ImGui::BeginDisabled(nothing_new_to_copy);
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
                   if (copy_paths_callback_) {
-                    copy_paths_callback_(selected_, true);
-
+                    std::vector<std::string> to_copy;
                     for (auto &path : selected_) {
-                      copy_selection_.push_back(path);
+                      if (!is_in_copy_selection(path)) {
+                        to_copy.push_back(path);
+                      }
+                    }
+
+                    if (!to_copy.empty()) {
+                      copy_paths_callback_(to_copy, true);
+                      for (auto &path : to_copy) {
+                        copy_selection_.push_back(path);
+                      }
                     }
                   }
                   selected_.clear();
                   CherryGUI::CloseCurrentPopup();
                 }
+                ImGui::EndDisabled();
               }
 
               if (CherryGUI::MenuItem("Delete", "Suppr")) {
@@ -1855,11 +1895,6 @@ namespace vxe {
 
       CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
 
-      if (CherryGUI::IsWindowHovered() && CherryGUI::IsMouseReleased(ImGuiMouseButton_Right)) {
-        selected_.clear();
-        CherryGUI::OpenPopup("EmptySpacePopup");
-      }
-
       if (CherryGUI::IsWindowHovered() && CherryGUI::IsMouseReleased(ImGuiMouseButton_Left)) {
         selected_.clear();
       }
@@ -2011,12 +2046,13 @@ namespace vxe {
                   CherryGUI::CloseCurrentPopup();
                 }
               }
-
               {
                 std::string label = "Copy (" + std::to_string(selected_.size()) + ") selected";
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + C")) {
                   if (copy_paths_callback_) {
+                    copy_selection_.clear();
+                    cut_selection_.clear();
                     copy_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       copy_selection_.push_back(path);
@@ -2024,24 +2060,35 @@ namespace vxe {
                   }
 
                   selected_.clear();
-
                   CherryGUI::CloseCurrentPopup();
                 }
               }
 
               if (copy_selection_.size() > 0) {
+                bool nothing_new_to_copy = !has_new_paths_to_copy(selected_);
                 std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
+
+                ImGui::BeginDisabled(nothing_new_to_copy);
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
                   if (copy_paths_callback_) {
-                    copy_paths_callback_(selected_, true);
-
+                    std::vector<std::string> to_copy;
                     for (auto &path : selected_) {
-                      copy_selection_.push_back(path);
+                      if (!is_in_copy_selection(path)) {
+                        to_copy.push_back(path);
+                      }
+                    }
+
+                    if (!to_copy.empty()) {
+                      copy_paths_callback_(to_copy, true);
+                      for (auto &path : to_copy) {
+                        copy_selection_.push_back(path);
+                      }
                     }
                   }
                   selected_.clear();
                   CherryGUI::CloseCurrentPopup();
                 }
+                ImGui::EndDisabled();
               }
 
               if (CherryGUI::MenuItem("Delete", "Suppr")) {
@@ -2311,6 +2358,12 @@ namespace vxe {
           }
         }
       }
+
+      if (CherryGUI::IsWindowHovered() && !CherryGUI::IsAnyItemHovered() &&
+          CherryGUI::IsMouseReleased(ImGuiMouseButton_Right)) {
+        selected_.clear();
+        CherryGUI::OpenPopup("EmptySpacePopup");
+      }
     }
   }
 
@@ -2327,7 +2380,6 @@ namespace vxe {
     new_win->get_app_window()->SetVisibility(true);
     new_win->set_create_file_callback([this]() { this->create_file(); });
     new_win->set_create_folder_callback([this]() { this->create_folder(); });
-    new_win->set_create_item_callback([this](const std::function<void(const std::string &)> &c) { this->create_item(c); });
     new_win->set_import_content_callback([this]() { this->spawn_import_window(); });
 
     std::string label = "Add content";

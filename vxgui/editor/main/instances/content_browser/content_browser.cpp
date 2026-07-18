@@ -265,4 +265,16 @@ namespace vxe {
     });
   }
 
+  bool ContentBrowser::is_in_copy_selection(const std::string &path) const {
+    return std::find(copy_selection_.begin(), copy_selection_.end(), path) != copy_selection_.end();
+  }
+
+  bool ContentBrowser::has_new_paths_to_copy(const std::vector<std::string> &paths) const {
+    for (auto &p : paths) {
+      if (!is_in_copy_selection(p)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }  // namespace vxe
