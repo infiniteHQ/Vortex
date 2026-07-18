@@ -447,7 +447,11 @@ namespace vxe {
         std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
 
         ImGui::BeginDisabled(nothing_new_to_copy);
-        if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+        if (CherryGUI::MenuItem(
+                label.c_str(),
+                "Ctrl + Alt + C",
+                Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")),
+                NULL)) {
           if (copy_paths_callback_) {
             std::vector<std::string> to_copy;
             for (auto &path : selected_) {
@@ -934,7 +938,11 @@ namespace vxe {
         std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
 
         ImGui::BeginDisabled(nothing_new_to_copy);
-        if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+        if (CherryGUI::MenuItem(
+                label.c_str(),
+                "Ctrl + Alt + C",
+                Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")),
+                NULL)) {
           if (copy_paths_callback_) {
             std::vector<std::string> to_copy;
             for (auto &path : selected_) {
