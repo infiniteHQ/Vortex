@@ -277,4 +277,17 @@ namespace vxe {
     }
     return false;
   }
+
+  bool ContentBrowser::is_in_cut_selection(const std::string &path) const {
+    return std::find(cut_selection_.begin(), cut_selection_.end(), path) != cut_selection_.end();
+  }
+
+  bool ContentBrowser::has_new_paths_to_cut(const std::vector<std::string> &paths) const {
+    for (auto &p : paths) {
+      if (!is_in_cut_selection(p)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }  // namespace vxe

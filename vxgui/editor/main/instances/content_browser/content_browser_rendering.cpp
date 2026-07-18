@@ -962,31 +962,45 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
                   if (cut_paths_callback_) {
+                    cut_selection_.clear();
+                    copy_selection_.clear();
                     cut_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       cut_selection_.push_back(path);
                     }
                   }
-
                   selected_.clear();
-
                   CherryGUI::CloseCurrentPopup();
                 }
               }
 
               if (cut_selection_.size() > 0) {
+                bool nothing_new_to_cut = !has_new_paths_to_cut(selected_);
                 std::string label = "Cut in addition (" + std::to_string(cut_selection_.size()) + " copies)";
+
+                ImGui::BeginDisabled(nothing_new_to_cut);
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
                   if (cut_paths_callback_) {
-                    cut_paths_callback_(selected_, true);
+                    copy_selection_.clear();
 
+                    std::vector<std::string> to_cut;
                     for (auto &path : selected_) {
-                      cut_selection_.push_back(path);
+                      if (!is_in_cut_selection(path)) {
+                        to_cut.push_back(path);
+                      }
+                    }
+
+                    if (!to_cut.empty()) {
+                      cut_paths_callback_(to_cut, true);
+                      for (auto &path : to_cut) {
+                        cut_selection_.push_back(path);
+                      }
                     }
                   }
                   selected_.clear();
                   CherryGUI::CloseCurrentPopup();
                 }
+                ImGui::EndDisabled();
               }
 
               {
@@ -1014,6 +1028,7 @@ namespace vxe {
                 ImGui::BeginDisabled(nothing_new_to_copy);
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
                   if (copy_paths_callback_) {
+                    cut_selection_.clear();
                     std::vector<std::string> to_copy;
                     for (auto &path : selected_) {
                       if (!is_in_copy_selection(path)) {
@@ -1490,6 +1505,7 @@ namespace vxe {
                         Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")),
                         NULL)) {
                   if (copy_paths_callback_) {
+                    cut_selection_.clear();
                     std::vector<std::string> to_copy;
                     for (auto &path : selected_) {
                       if (!is_in_copy_selection(path)) {
@@ -1510,12 +1526,17 @@ namespace vxe {
                 ImGui::EndDisabled();
               }
 
-              if (CherryGUI::MenuItem(
-                      "Cut",
-                      "Ctrl + X",
-                      Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
-                      NULL)) {
-                change_directory(path);
+              if (CherryGUI::MenuItem("Cut", "Ctrl + X")) {
+                if (cut_paths_callback_) {
+                  cut_selection_.clear();
+                  copy_selection_.clear();
+                  cut_paths_callback_(selected_, false);
+                  for (auto &path : selected_) {
+                    cut_selection_.push_back(path);
+                  }
+                }
+
+                selected_.clear();
                 CherryGUI::CloseCurrentPopup();
               }
 
@@ -1554,31 +1575,44 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
                   if (cut_paths_callback_) {
+                    cut_selection_.clear();
+                    copy_selection_.clear();
                     cut_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       cut_selection_.push_back(path);
                     }
                   }
-
                   selected_.clear();
-
                   CherryGUI::CloseCurrentPopup();
                 }
               }
-
               if (cut_selection_.size() > 0) {
+                bool nothing_new_to_cut = !has_new_paths_to_cut(selected_);
                 std::string label = "Cut in addition (" + std::to_string(cut_selection_.size()) + " copies)";
+
+                ImGui::BeginDisabled(nothing_new_to_cut);
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
                   if (cut_paths_callback_) {
-                    cut_paths_callback_(selected_, true);
+                    copy_selection_.clear();
 
+                    std::vector<std::string> to_cut;
                     for (auto &path : selected_) {
-                      cut_selection_.push_back(path);
+                      if (!is_in_cut_selection(path)) {
+                        to_cut.push_back(path);
+                      }
+                    }
+
+                    if (!to_cut.empty()) {
+                      cut_paths_callback_(to_cut, true);
+                      for (auto &path : to_cut) {
+                        cut_selection_.push_back(path);
+                      }
                     }
                   }
                   selected_.clear();
                   CherryGUI::CloseCurrentPopup();
                 }
+                ImGui::EndDisabled();
               }
 
               {
@@ -1606,6 +1640,7 @@ namespace vxe {
                 ImGui::BeginDisabled(nothing_new_to_copy);
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
                   if (copy_paths_callback_) {
+                    cut_selection_.clear();
                     std::vector<std::string> to_copy;
                     for (auto &path : selected_) {
                       if (!is_in_copy_selection(path)) {
@@ -2037,32 +2072,47 @@ namespace vxe {
 
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + X")) {
                   if (cut_paths_callback_) {
+                    cut_selection_.clear();
+                    copy_selection_.clear();
                     cut_paths_callback_(selected_, false);
                     for (auto &path : selected_) {
                       cut_selection_.push_back(path);
                     }
                   }
-
                   selected_.clear();
-
                   CherryGUI::CloseCurrentPopup();
                 }
               }
 
               if (cut_selection_.size() > 0) {
+                bool nothing_new_to_cut = !has_new_paths_to_cut(selected_);
                 std::string label = "Cut in addition (" + std::to_string(cut_selection_.size()) + " copies)";
+
+                ImGui::BeginDisabled(nothing_new_to_cut);
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + X")) {
                   if (cut_paths_callback_) {
-                    cut_paths_callback_(selected_, true);
+                    copy_selection_.clear();
 
+                    std::vector<std::string> to_cut;
                     for (auto &path : selected_) {
-                      cut_selection_.push_back(path);
+                      if (!is_in_cut_selection(path)) {
+                        to_cut.push_back(path);
+                      }
+                    }
+
+                    if (!to_cut.empty()) {
+                      cut_paths_callback_(to_cut, true);
+                      for (auto &path : to_cut) {
+                        cut_selection_.push_back(path);
+                      }
                     }
                   }
                   selected_.clear();
                   CherryGUI::CloseCurrentPopup();
                 }
+                ImGui::EndDisabled();
               }
+
               {
                 std::string label = "Copy (" + std::to_string(selected_.size()) + ") selected";
 
@@ -2088,6 +2138,7 @@ namespace vxe {
                 ImGui::BeginDisabled(nothing_new_to_copy);
                 if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
                   if (copy_paths_callback_) {
+                    cut_selection_.clear();
                     std::vector<std::string> to_copy;
                     for (auto &path : selected_) {
                       if (!is_in_copy_selection(path)) {
