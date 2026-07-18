@@ -1342,6 +1342,14 @@ namespace vxe {
             }
           }
 
+          if (CherryGUI::IsItemHovered() && CherryGUI::IsMouseReleased(ImGuiMouseButton_Right)) {
+            bool already_selected = std::find(selected_.begin(), selected_.end(), path.string()) != selected_.end();
+            if (!already_selected) {
+              selected_.clear();
+              selected_.push_back(path.string());
+            }
+          }
+
           item_context_menu_opened_ = false;
           if (!isFolder) {
             bool ctrl = CherryApp.IsKeyPressed(CherryKey::CTRL);
@@ -1459,7 +1467,12 @@ namespace vxe {
                       Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")),
                       NULL)) {
                 if (copy_paths_callback_) {
+                  copy_selection_.clear();
+                  cut_selection_.clear();
                   copy_paths_callback_(selected_, false);
+                  for (auto &path : selected_) {
+                    copy_selection_.push_back(path);
+                  }
                 }
 
                 selected_.clear();
@@ -1471,7 +1484,11 @@ namespace vxe {
                 std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
 
                 ImGui::BeginDisabled(nothing_new_to_copy);
-                if (CherryGUI::MenuItem(label.c_str(), "Ctrl + Alt + C")) {
+                if (CherryGUI::MenuItem(
+                        label.c_str(),
+                        "Ctrl + Alt + C",
+                        Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")),
+                        NULL)) {
                   if (copy_paths_callback_) {
                     std::vector<std::string> to_copy;
                     for (auto &path : selected_) {
