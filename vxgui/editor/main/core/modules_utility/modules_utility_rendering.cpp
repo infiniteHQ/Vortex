@@ -792,6 +792,7 @@ namespace vxe {
       selected_pannel_ = Pannels::Installed;
     }
 
+    CherryGUI::BeginDisabled();
     if (selected_pannel_ != Pannels::Downloads) {
       CherryNextComponent.SetProperty("color_border", "#00000000");
       CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
@@ -814,6 +815,7 @@ namespace vxe {
             .GetDataAs<bool>("isClicked")) {
       selected_pannel_ = Pannels::Import;
     }
+    CherryGUI::EndDisabled();
   }
 
   void ModulesUtility::render_right_menubar() {
