@@ -85,7 +85,11 @@ namespace vxe {
     void set_delete_path_callback(const std::function<void(const std::string &)> &foo);
     void set_copy_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo);
     void set_cut_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo);
+    void set_delete_copy_selection_callback(const std::function<void()> &foo);
+    void set_delete_cut_selection_callback(const std::function<void()> &foo);
     void set_paste_paths_callback(const std::function<void(const std::string &)> &foo);
+    void clear_copy_selection();
+    void clear_cut_selection();
     void toggle_extension(const std::string &ext, bool *state);
     void change_show_mode(ContentShowMode mode);
     std::string get_extension(const std::string &path);
@@ -108,6 +112,8 @@ namespace vxe {
     std::function<void(const std::vector<std::string> &, bool)> copy_paths_callback_;
     std::function<void(const std::vector<std::string> &, bool)> cut_paths_callback_;
     std::function<void(const std::string &)> paste_paths_callback_;
+    std::function<void()> delete_copy_selection_callback_;
+    std::function<void()> delete_cut_selection_callback_;
 
     // directories
     std::filesystem::path base_directory_;

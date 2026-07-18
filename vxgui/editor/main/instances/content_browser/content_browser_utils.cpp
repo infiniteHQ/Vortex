@@ -330,6 +330,28 @@ namespace vxe {
     paste_paths_callback_ = foo;
   }
 
+  void ContentBrowser::set_delete_copy_selection_callback(const std::function<void()> &foo) {
+    delete_copy_selection_callback_ = foo;
+  }
+
+  void ContentBrowser::set_delete_cut_selection_callback(const std::function<void()> &foo) {
+    delete_cut_selection_callback_ = foo;
+  }
+
+  void ContentBrowser::clear_copy_selection() {
+    copy_selection_.clear();
+    if (delete_copy_selection_callback_) {
+      delete_copy_selection_callback_();
+    }
+  }
+
+  void ContentBrowser::clear_cut_selection() {
+    cut_selection_.clear();
+    if (delete_cut_selection_callback_) {
+      delete_cut_selection_callback_();
+    }
+  }
+
   void ContentBrowser::create_file() {
     auto path = vxe::create_file(current_directory_.string());
     path_to_rename_ = path;

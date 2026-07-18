@@ -334,8 +334,8 @@ namespace vxe {
 
     if (shortcutCut && !selected_.empty()) {
       if (cut_paths_callback_) {
-        copy_selection_.clear();
-        cut_selection_.clear();
+        clear_copy_selection();
+        clear_cut_selection();
         cut_paths_callback_(selected_, false);
         for (const auto &path : selected_)
           cut_selection_.push_back(path);
@@ -345,7 +345,7 @@ namespace vxe {
 
     if (shortcutCutAdd && !selected_.empty()) {
       if (cut_paths_callback_) {
-        copy_selection_.clear();
+        clear_copy_selection();
         cut_paths_callback_(selected_, true);
         for (const auto &path : selected_)
           cut_selection_.push_back(path);
@@ -355,8 +355,8 @@ namespace vxe {
 
     if (shortcutCopy && !selected_.empty()) {
       if (copy_paths_callback_) {
-        copy_selection_.clear();
-        cut_selection_.clear();
+        clear_copy_selection();
+        clear_cut_selection();
         copy_paths_callback_(selected_, false);
         for (const auto &path : selected_)
           copy_selection_.push_back(path);
@@ -366,7 +366,7 @@ namespace vxe {
 
     if (shortcutCopyAdd && !selected_.empty()) {
       if (copy_paths_callback_) {
-        cut_selection_.clear();
+        clear_cut_selection();
         copy_paths_callback_(selected_, true);
         for (const auto &path : selected_)
           copy_selection_.push_back(path);
@@ -430,8 +430,8 @@ namespace vxe {
       if (CherryGUI::MenuItem(
               "Copy", "Ctrl + C", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")), NULL)) {
         if (copy_paths_callback_) {
-          copy_selection_.clear();
-          cut_selection_.clear();
+          clear_copy_selection();
+          clear_cut_selection();
           copy_paths_callback_(selected_, false);
           for (auto &path : selected_) {
             copy_selection_.push_back(path);
@@ -453,7 +453,7 @@ namespace vxe {
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")),
                 NULL)) {
           if (copy_paths_callback_) {
-            cut_selection_.clear();
+            clear_cut_selection();
             std::vector<std::string> to_copy;
             for (auto &path : selected_) {
               if (!is_in_copy_selection(path)) {
@@ -476,8 +476,8 @@ namespace vxe {
 
       if (CherryGUI::MenuItem("Cut", "Ctrl + X")) {
         if (cut_paths_callback_) {
-          cut_selection_.clear();
-          copy_selection_.clear();
+          clear_cut_selection();
+          clear_copy_selection();
           cut_paths_callback_(selected_, false);
           for (auto &path : selected_) {
             cut_selection_.push_back(path);
@@ -499,7 +499,7 @@ namespace vxe {
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
                 NULL)) {
           if (cut_paths_callback_) {
-            copy_selection_.clear();
+            clear_copy_selection();
 
             std::vector<std::string> to_cut;
             for (auto &path : selected_) {
@@ -745,8 +745,8 @@ namespace vxe {
 
     if (shortcutCut && !selected_.empty()) {
       if (cut_paths_callback_) {
-        copy_selection_.clear();
-        cut_selection_.clear();
+        clear_copy_selection();
+        clear_cut_selection();
         cut_paths_callback_(selected_, false);
         for (const auto &path : selected_)
           cut_selection_.push_back(path);
@@ -756,7 +756,7 @@ namespace vxe {
 
     if (shortcutCutAdd && !selected_.empty()) {
       if (cut_paths_callback_) {
-        copy_selection_.clear();
+        clear_copy_selection();
         cut_paths_callback_(selected_, true);
         for (const auto &path : selected_)
           cut_selection_.push_back(path);
@@ -766,8 +766,8 @@ namespace vxe {
 
     if (shortcutCopy && !selected_.empty()) {
       if (copy_paths_callback_) {
-        copy_selection_.clear();
-        cut_selection_.clear();
+        clear_copy_selection();
+        clear_cut_selection();
         copy_paths_callback_(selected_, false);
         for (const auto &path : selected_)
           copy_selection_.push_back(path);
@@ -777,7 +777,7 @@ namespace vxe {
 
     if (shortcutCopyAdd && !selected_.empty()) {
       if (copy_paths_callback_) {
-        cut_selection_.clear();
+        clear_cut_selection();
         copy_paths_callback_(selected_, true);
         for (const auto &path : selected_)
           copy_selection_.push_back(path);
@@ -847,8 +847,8 @@ namespace vxe {
       if (CherryGUI::MenuItem(
               "Copy", "Ctrl + C", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")), NULL)) {
         if (copy_paths_callback_) {
-          copy_selection_.clear();
-          cut_selection_.clear();
+          clear_copy_selection();
+          clear_cut_selection();
           copy_paths_callback_(selected_, false);
           for (auto &path : selected_) {
             copy_selection_.push_back(path);
@@ -870,7 +870,7 @@ namespace vxe {
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")),
                 NULL)) {
           if (copy_paths_callback_) {
-            cut_selection_.clear();
+            clear_cut_selection();
             std::vector<std::string> to_copy;
             for (auto &path : selected_) {
               if (!is_in_copy_selection(path)) {
@@ -893,8 +893,8 @@ namespace vxe {
 
       if (CherryGUI::MenuItem("Cut", "Ctrl + X")) {
         if (cut_paths_callback_) {
-          cut_selection_.clear();
-          copy_selection_.clear();
+          clear_cut_selection();
+          clear_copy_selection();
           cut_paths_callback_(selected_, false);
           for (auto &path : selected_) {
             cut_selection_.push_back(path);
@@ -916,7 +916,7 @@ namespace vxe {
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
                 NULL)) {
           if (cut_paths_callback_) {
-            copy_selection_.clear();
+            clear_copy_selection();
 
             std::vector<std::string> to_cut;
             for (auto &path : selected_) {

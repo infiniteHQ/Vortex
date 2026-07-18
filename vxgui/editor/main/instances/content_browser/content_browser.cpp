@@ -38,6 +38,12 @@ namespace vxe {
         std::string label = std::to_string(copy_selection_.size()) + " element" + terminaison + " copied.";
         CherryGUI::Text(label.c_str());
       }
+
+      if (cut_selection_.size() > 0) {
+        std::string terminaison = cut_selection_.size() > 0 ? "s" : "";
+        std::string label = std::to_string(cut_selection_.size()) + " element" + terminaison + " cutted.";
+        CherryGUI::Text(label.c_str());
+      }
     });
 
     base_directory_ = start_path;
