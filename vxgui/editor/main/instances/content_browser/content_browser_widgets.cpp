@@ -446,7 +446,7 @@ namespace vxe {
         bool nothing_new_to_copy = !has_new_paths_to_copy(selected_);
         std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
 
-        ImGui::BeginDisabled(nothing_new_to_copy);
+        CherryGUI::BeginDisabled(nothing_new_to_copy);
         if (CherryGUI::MenuItem(
                 label.c_str(),
                 "Ctrl + Alt + C",
@@ -471,7 +471,7 @@ namespace vxe {
           selected_.clear();
           CherryGUI::CloseCurrentPopup();
         }
-        ImGui::EndDisabled();
+        CherryGUI::EndDisabled();
       }
 
       if (CherryGUI::MenuItem("Cut", "Ctrl + X")) {
@@ -492,7 +492,7 @@ namespace vxe {
         bool nothing_new_to_cut = !has_new_paths_to_cut(selected_);
         std::string label = "Cut in addition (" + std::to_string(cut_selection_.size()) + " copies)";
 
-        ImGui::BeginDisabled(nothing_new_to_cut);
+        CherryGUI::BeginDisabled(nothing_new_to_cut);
         if (CherryGUI::MenuItem(
                 label.c_str(),
                 "Ctrl + Alt + X",
@@ -518,7 +518,7 @@ namespace vxe {
           selected_.clear();
           CherryGUI::CloseCurrentPopup();
         }
-        ImGui::EndDisabled();
+        CherryGUI::EndDisabled();
       }
 
       CherryKit::SeparatorText("Customize");
@@ -863,7 +863,7 @@ namespace vxe {
         bool nothing_new_to_copy = !has_new_paths_to_copy(selected_);
         std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
 
-        ImGui::BeginDisabled(nothing_new_to_copy);
+        CherryGUI::BeginDisabled(nothing_new_to_copy);
         if (CherryGUI::MenuItem(
                 label.c_str(),
                 "Ctrl + Alt + C",
@@ -888,7 +888,7 @@ namespace vxe {
           selected_.clear();
           CherryGUI::CloseCurrentPopup();
         }
-        ImGui::EndDisabled();
+        CherryGUI::EndDisabled();
       }
 
       if (CherryGUI::MenuItem("Cut", "Ctrl + X")) {
@@ -909,7 +909,7 @@ namespace vxe {
         bool nothing_new_to_cut = !has_new_paths_to_cut(selected_);
         std::string label = "Cut in addition (" + std::to_string(cut_selection_.size()) + " copies)";
 
-        ImGui::BeginDisabled(nothing_new_to_cut);
+        CherryGUI::BeginDisabled(nothing_new_to_cut);
         if (CherryGUI::MenuItem(
                 label.c_str(),
                 "Ctrl + Alt + X",
@@ -935,7 +935,7 @@ namespace vxe {
           selected_.clear();
           CherryGUI::CloseCurrentPopup();
         }
-        ImGui::EndDisabled();
+        CherryGUI::EndDisabled();
       }
 
       CherryKit::SeparatorText("Customize");
