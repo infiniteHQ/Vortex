@@ -303,6 +303,11 @@ namespace vxe {
         CherryStyle::PushFontSize(0.50f);
       }
       if (CherryGUI::BeginTable("LogsTable", 4, flags)) {
+        bool auto_scroll = CherryGUI::GetScrollY() >= CherryGUI::GetScrollMaxY() - 5.0f;
+
+        bool has_new_logs = vxe::get_current_context()->registered_logs.size() != previous_log_count_;
+        previous_log_count_ = vxe::get_current_context()->registered_logs.size();
+
         CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 6.0f));
 
         CherryGUI::TableSetupColumn("Level", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 6.0f);
@@ -443,6 +448,10 @@ namespace vxe {
           }
         }
 
+        if (auto_scroll && has_new_logs) {
+          CherryGUI::SetScrollHereY(1.0f);
+        }
+
         CherryGUI::EndTable();
       }
 
@@ -468,6 +477,11 @@ namespace vxe {
         CherryStyle::PushFontSize(0.50f);
       }
       if (CherryGUI::BeginTable("LogsTableSimple", 2, flags)) {
+        bool auto_scroll = CherryGUI::GetScrollY() >= CherryGUI::GetScrollMaxY() - 5.0f;
+
+        bool has_new_logs = vxe::get_current_context()->registered_logs.size() != previous_log_count_;
+        previous_log_count_ = vxe::get_current_context()->registered_logs.size();
+
         CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 6.0f));
 
         CherryGUI::TableSetupColumn("Message", ImGuiTableColumnFlags_WidthStretch);
@@ -558,6 +572,10 @@ namespace vxe {
           }
         }
 
+        if (auto_scroll && has_new_logs) {
+          CherryGUI::SetScrollHereY(1.0f);
+        }
+
         CherryGUI::EndTable();
       }
 
@@ -572,7 +590,12 @@ namespace vxe {
       CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
       CherryGUI::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 
-      if (CherryGUI::BeginChild("LogTextBlock", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) {
+      if (CherryGUI::BeginChild("LogTextBlock", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) { 
+        bool auto_scroll = CherryGUI::GetScrollY() >= CherryGUI::GetScrollMaxY() - 5.0f;
+
+        bool has_new_logs = vxe::get_current_context()->registered_logs.size() != previous_log_count_;
+        previous_log_count_ = vxe::get_current_context()->registered_logs.size();
+        
         auto oldFilterStates = topics_filter_states_;
         topics_filter_states_.clear();
 
@@ -607,6 +630,12 @@ namespace vxe {
         }
         CherryGUI::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.1f, 0.1f, 0.1f, 0.3f));
         CherryGUI::InputTextMultiline("##FullLogText", buffer.data(), buffer.size(), ImVec2(-FLT_MIN, -FLT_MIN), flags);
+        
+        
+        if (auto_scroll && has_new_logs) {
+          CherryGUI::SetScrollHereY(1.0f);
+        }
+        
         CherryGUI::PopStyleColor();
         if (console_font_) {
           Cherry::PopFont();

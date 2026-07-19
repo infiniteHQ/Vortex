@@ -56,6 +56,7 @@ namespace vxe {
     std::vector<std::string> command_history_;
     std::vector<ConsoleEntry> entries_;
     std::map<std::string, bool> topics_filter_states_;
+    int previous_log_count_;
 
     // ui properties
     bool use_warning_filter_ = false;
