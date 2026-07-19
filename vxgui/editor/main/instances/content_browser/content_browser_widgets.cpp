@@ -474,7 +474,9 @@ namespace vxe {
         CherryGUI::EndDisabled();
       }
 
-      if (CherryGUI::MenuItem("Cut", "Ctrl + X")) {
+      if (CherryGUI::MenuItem("Cut", "Ctrl + X",
+                Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
+                NULL)) {
         if (cut_paths_callback_) {
           clear_cut_selection();
           clear_copy_selection();
@@ -891,7 +893,9 @@ namespace vxe {
         CherryGUI::EndDisabled();
       }
 
-      if (CherryGUI::MenuItem("Cut", "Ctrl + X")) {
+      if (CherryGUI::MenuItem("Cut", "Ctrl + X",
+                Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
+                NULL)) {
         if (cut_paths_callback_) {
           clear_cut_selection();
           clear_copy_selection();
