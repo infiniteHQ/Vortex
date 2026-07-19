@@ -189,6 +189,24 @@ namespace vxe {
           child.m_Size = (std::max)(child.m_Size * scaleFactor, 50.0f);
         }
       }
+    } else if (totalChildSize < availableSize.x) {
+      float extraSpace = availableSize.x - totalChildSize;
+
+      float totalResizable = 0.0f;
+      for (auto &child : children) {
+        if (!child.m_Disabled) {
+          totalResizable += child.m_Size;
+        }
+      }
+
+      if (totalResizable > 0.0f) {
+        for (auto &child : children) {
+          if (!child.m_Disabled) {
+            float ratio = child.m_Size / totalResizable;
+            child.m_Size += ratio * extraSpace;
+          }
+        }
+      }
     }
 
     for (size_t i = 0; i < children.size(); ++i) {
