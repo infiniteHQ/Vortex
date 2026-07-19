@@ -26,6 +26,8 @@ namespace vxe {
   VORTEX_API void log_error(const std::string &scope, const std::string &message);
   VORTEX_API void log_fatal(const std::string &scope, const std::string &message);
 
+  VORTEX_API std::string log_level_to_string(const spdlog::level::level_enum& level);
+
 #define VXINFO(scope, message)                log_info(scope, message);
 #define VXPOOLINFO(pool_name, scope, message) log_info(pool_name, scope, message);
 #define VXWARN(scope, message)                log_warn(scope, message);

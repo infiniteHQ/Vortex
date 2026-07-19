@@ -64,7 +64,7 @@ struct VxSystemLog {
   std::string message;
   std::string timestamp;
 
-  VxSystemLog(spdlog::level::level_enum level, std::string filter, std::string message)
+  VxSystemLog(const spdlog::level::level_enum& level, const std::string& filter, const std::string& message)
       : level(level),
         filter(filter),
         message(message) { };

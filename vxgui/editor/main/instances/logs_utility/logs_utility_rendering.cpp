@@ -614,7 +614,7 @@ namespace vxe {
 
         std::string logText;
         for (auto log : vxe::get_current_context()->registered_logs) {
-          std::string line = log->timestamp + " | " + log->filter + " | " + log->message + "\n";
+          std::string line = log->timestamp + " | " + log->filter + " | "  + vxe::log_level_to_string(log->level) + " | "+ log->message + "\n";
           logText += line;
         }
 

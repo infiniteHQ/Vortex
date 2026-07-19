@@ -144,3 +144,35 @@ void vxe::log_fatal(const std::string &scope, const std::string &message) {
     }
   }
 }
+
+
+std::string vxe::log_level_to_string(const spdlog::level::level_enum& level) {
+switch(level){
+  case spdlog::level::level_enum::err:{
+  return "error";
+    break;
+  }
+  case spdlog::level::level_enum::warn:{
+  return "warning";
+    break;
+  }
+  case spdlog::level::level_enum::info:{
+  return "info";
+    break;
+  }
+  case spdlog::level::level_enum::trace:{
+  return "trace";
+    break;
+  }
+  case spdlog::level::level_enum::critical:{
+  return "fatal";
+    break;
+  }
+  default:{
+  return "unknown";
+    break;
+  }
+}
+
+  return "unknown";
+}
