@@ -19,28 +19,28 @@ namespace vxe {
     VXLUA_FUNC(Log) {
       std::string log = vxlua_getstring(L, 1);
 
-      VXINFO("Vortex", log);
+      vxe::log_info("Vortex", log);
       return 0;
     }
 
     VXLUA_FUNC(log_warn) {
       std::string log = vxlua_getstring(L, 1);
 
-      VXINFO("Vortex", log);
+      vxe::log_warn("Vortex", log);
       return 0;
     }
 
     VXLUA_FUNC(log_error) {
       std::string log = vxlua_getstring(L, 1);
 
-      VXINFO("Vortex", log);
+      vxe::log_error("Vortex", log);
       return 0;
     }
 
     VXLUA_FUNC(log_fatal) {
       std::string log = vxlua_getstring(L, 1);
 
-      VXINFO("Vortex", log);
+      vxe::log_fatal("Vortex", log);
       return 0;
     }
 
