@@ -186,6 +186,7 @@ namespace vxe {
 
   void ContentBrowser::render_side_bar() {
     const float header_width = sidebar_width_ - 46.0f;
+    const std::string unique_suffix = "##" + get_app_window()->m_IdName;
 
     CherryStyle::RemoveMarginX(6.0f);
     CherryNextComponent.SetProperty("size_x", header_width);
@@ -194,7 +195,7 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_bg", "#232323");
     CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
     CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
-    CherryKit::HeaderImageText("Favorite", Cherry::GetPath("resources/imgs/icons/misc/icon_star.png"), [this]() {
+    CherryKit::HeaderImageText(CherryID(("Favorite" + unique_suffix)), "Favorite", Cherry::GetPath("resources/imgs/icons/misc/icon_star.png"), [this]() {
       for (auto custom_dir : favorite_folders_) {
         draw_hierarchy(custom_dir, true);
       }
@@ -207,7 +208,7 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_bg", "#232323");
     CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
     CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
-    CherryKit::HeaderImageText("Main", Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"), [this]() {
+    CherryKit::HeaderImageText(CherryID(("Main" + unique_suffix)), "Main", Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"), [this]() {
       draw_hierarchy(base_directory_, true, "Main");
     });
 
@@ -218,7 +219,7 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_bg", "#232323");
     CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
     CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
-    CherryKit::HeaderImageText(
+    CherryKit::HeaderImageText(CherryID(("Pools & Collections" + unique_suffix)), 
         "Pools & Collections", Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"), [this]() {
           CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 2.0f));
           CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
@@ -899,7 +900,7 @@ namespace vxe {
 
             if (path_to_rename_ == path.string()) {
               CherryGUI::SetItemAllowOverlap();
-              CherryGUI::PushID(path.c_str());
+              CherryGUI::PushID(path.string().c_str());
 
               auto &buffer = renameBuffers[path.string()];
               if (buffer[0] == '\0') {
@@ -2218,7 +2219,7 @@ namespace vxe {
             static std::unordered_map<std::string, char[256]> renameBuffers;
 
             if (path_to_rename_ == path.string()) {
-              CherryGUI::PushID(path.c_str());
+              CherryGUI::PushID(path.string().c_str());
               auto &buffer = renameBuffers[path.string()];
               if (buffer[0] == '\0') {
                 std::strncpy(buffer, filenameString.c_str(), sizeof(buffer));
