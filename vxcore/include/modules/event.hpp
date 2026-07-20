@@ -16,7 +16,7 @@
 
 #include "helpers.hpp"
 
-class ModuleInputEvent {
+class VORTEX_API ModuleInputEvent {
  public:
   ModuleInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
   ModuleInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name);
@@ -37,7 +37,7 @@ class ModuleInputEvent {
 /**
  * @brief Emmiting this even with custom parameters.
  */
-class ModuleOutputEvent {
+class VORTEX_API ModuleOutputEvent {
  public:
   ModuleOutputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
   ModuleOutputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name);
