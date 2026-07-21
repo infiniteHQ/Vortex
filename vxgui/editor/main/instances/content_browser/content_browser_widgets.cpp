@@ -12,7 +12,7 @@
 
 namespace vxe {
 
-  void ContentBrowser::draw_path_bar(const std::string &path) {
+  void ContentBrowser::draw_path_bar(const std::string& path) {
     std::string homePath = vxe::get_current_context()->projectDataPath.string();
     bool FirstPathPartIsHome = false;
     std::string displayPath = path;
@@ -50,7 +50,7 @@ namespace vxe {
     const float ellipsisWidth = CherryGUI::CalcTextSize("...").x;
 
     std::vector<float> widths;
-    for (const auto &el : elements)
+    for (const auto& el : elements)
       widths.push_back(CherryGUI::CalcTextSize(el.c_str()).x);
 
     for (float w : widths)
@@ -95,7 +95,7 @@ namespace vxe {
     }
 
     for (size_t i = 0; i < displayElements.size(); ++i) {
-      const std::string &el = displayElements[i];
+      const std::string& el = displayElements[i];
       CherryNextComponent.SetProperty("padding_y", "0.0f");
       CherryNextComponent.SetProperty("padding_x", "0.0f");
       CherryNextComponent.SetProperty("color_border", "#00000000");
@@ -139,7 +139,7 @@ namespace vxe {
               test_path += separator + elements[j];
           }
 
-          for (auto &item : itepath_s_) {
+          for (auto& item : itepath_s_) {
             if (test_path == item.first) {
               ImVec2 min = CherryGUI::GetItemRectMin();
               ImVec2 max = CherryGUI::GetItemRectMax();
@@ -170,7 +170,7 @@ namespace vxe {
   }
 
   void ContentBrowser::draw_folder_icon(ImVec2 pos, ImVec2 size, ImU32 color) {
-    ImDrawList *drawList = CherryGUI::GetWindowDrawList();
+    ImDrawList* drawList = CherryGUI::GetWindowDrawList();
 
     float folderFlapHeight = size.y * 0.2f;
     float flapSlopeWidth = size.x * 0.15f;
@@ -197,7 +197,7 @@ namespace vxe {
     drawList->AddTriangleFilled(flapBottomRight, flapSlopeEnd, ImVec2(flapBottomRight.x - 3, flapTopLeft.y), color);
   }
 
-  bool ContentBrowser::draw_item_card(const ItemCardParams &p) {
+  bool ContentBrowser::draw_item_card(const ItemCardParams& p) {
     bool pressed = false;
 
     float logoSize = 60.0f;
@@ -218,7 +218,7 @@ namespace vxe {
 
     ImVec2 squareSize(logoSize, logoSize);
 
-    const char *originalText = p.content.name.c_str();
+    const char* originalText = p.content.name.c_str();
     std::string truncatedText = p.content.name;
 
     if (CherryGUI::CalcTextSize(originalText).x > p.style.max_text_width) {
@@ -321,10 +321,10 @@ namespace vxe {
     bool shift = CherryApp.IsKeyPressed(CherryKey::SHIFT);
 
     bool shortcutRename = isWindowFocused && ctrl && CherryGUI::IsKeyPressed(ImGuiKey_R);
-    bool shortcutCut = isWindowFocused && ctrl && CherryGUI::IsKeyPressed(ImGuiKey_X);
-    bool shortcutCutAdd = isWindowFocused && ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
-    bool shortcutCopy = isWindowFocused && ctrl && CherryApp.IsKeyPressed(CherryKey::C);
     bool shortcutCopyAdd = isWindowFocused && ctrl && alt && CherryApp.IsKeyPressed(CherryKey::C);
+    bool shortcutCutAdd = isWindowFocused && ctrl && alt && CherryApp.IsKeyPressed(CherryKey::X);
+    bool shortcutCopy = !shortcutCopyAdd && isWindowFocused && ctrl && CherryApp.IsKeyPressed(CherryKey::C);
+    bool shortcutCut = !shortcutCutAdd && isWindowFocused && ctrl && CherryGUI::IsKeyPressed(ImGuiKey_X);
     bool shortcutDelete = isWindowFocused && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
     bool shortcutDeleteMulti = isWindowFocused && alt && CherryApp.IsKeyPressed(CherryKey::KEY_DELETE);
 
@@ -337,7 +337,7 @@ namespace vxe {
         clear_copy_selection();
         clear_cut_selection();
         cut_paths_callback_(selected_, false);
-        for (const auto &path : selected_)
+        for (const auto& path : selected_)
           cut_selection_.push_back(path);
       }
       selected_.clear();
@@ -346,9 +346,20 @@ namespace vxe {
     if (shortcutCutAdd && !selected_.empty()) {
       if (cut_paths_callback_) {
         clear_copy_selection();
-        cut_paths_callback_(selected_, true);
-        for (const auto &path : selected_)
-          cut_selection_.push_back(path);
+
+        std::vector<std::string> to_cut;
+        for (auto& path : selected_) {
+          if (!is_in_cut_selection(path)) {
+            to_cut.push_back(path);
+          }
+        }
+
+        if (!to_cut.empty()) {
+          cut_paths_callback_(to_cut, true);
+          for (auto& path : to_cut) {
+            cut_selection_.push_back(path);
+          }
+        }
       }
       selected_.clear();
     }
@@ -358,7 +369,7 @@ namespace vxe {
         clear_copy_selection();
         clear_cut_selection();
         copy_paths_callback_(selected_, false);
-        for (const auto &path : selected_)
+        for (const auto& path : selected_)
           copy_selection_.push_back(path);
       }
       selected_.clear();
@@ -367,9 +378,20 @@ namespace vxe {
     if (shortcutCopyAdd && !selected_.empty()) {
       if (copy_paths_callback_) {
         clear_cut_selection();
-        copy_paths_callback_(selected_, true);
-        for (const auto &path : selected_)
-          copy_selection_.push_back(path);
+
+        std::vector<std::string> to_copy;
+        for (auto& path : selected_) {
+          if (!is_in_copy_selection(path)) {
+            to_copy.push_back(path);
+          }
+        }
+
+        if (!to_copy.empty()) {
+          copy_paths_callback_(to_copy, true);
+          for (auto& path : to_copy) {
+            copy_selection_.push_back(path);
+          }
+        }
       }
       selected_.clear();
     }
@@ -433,7 +455,7 @@ namespace vxe {
           clear_copy_selection();
           clear_cut_selection();
           copy_paths_callback_(selected_, false);
-          for (auto &path : selected_) {
+          for (auto& path : selected_) {
             copy_selection_.push_back(path);
           }
         }
@@ -455,7 +477,7 @@ namespace vxe {
           if (copy_paths_callback_) {
             clear_cut_selection();
             std::vector<std::string> to_copy;
-            for (auto &path : selected_) {
+            for (auto& path : selected_) {
               if (!is_in_copy_selection(path)) {
                 to_copy.push_back(path);
               }
@@ -463,7 +485,7 @@ namespace vxe {
 
             if (!to_copy.empty()) {
               copy_paths_callback_(to_copy, true);
-              for (auto &path : to_copy) {
+              for (auto& path : to_copy) {
                 copy_selection_.push_back(path);
               }
             }
@@ -474,14 +496,13 @@ namespace vxe {
         CherryGUI::EndDisabled();
       }
 
-      if (CherryGUI::MenuItem("Cut", "Ctrl + X",
-                Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
-                NULL)) {
+      if (CherryGUI::MenuItem(
+              "Cut", "Ctrl + X", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")), NULL)) {
         if (cut_paths_callback_) {
           clear_cut_selection();
           clear_copy_selection();
           cut_paths_callback_(selected_, false);
-          for (auto &path : selected_) {
+          for (auto& path : selected_) {
             cut_selection_.push_back(path);
           }
         }
@@ -504,7 +525,7 @@ namespace vxe {
             clear_copy_selection();
 
             std::vector<std::string> to_cut;
-            for (auto &path : selected_) {
+            for (auto& path : selected_) {
               if (!is_in_cut_selection(path)) {
                 to_cut.push_back(path);
               }
@@ -512,7 +533,7 @@ namespace vxe {
 
             if (!to_cut.empty()) {
               cut_paths_callback_(to_cut, true);
-              for (auto &path : to_cut) {
+              for (auto& path : to_cut) {
                 cut_selection_.push_back(path);
               }
             }
@@ -552,7 +573,7 @@ namespace vxe {
     CherryGUI::PopStyleVar();
     CherryGUI::PopStyleColor(2);
 
-    ImDrawList *drawList = CherryGUI::GetWindowDrawList();
+    ImDrawList* drawList = CherryGUI::GetWindowDrawList();
 
     drawList->AddRectFilled(
         cursorPos, ImVec2(cursorPos.x + fixedSize.x, cursorPos.y + fixedSize.y), p.style.bg_color, p.style.border_radius);
@@ -610,7 +631,7 @@ namespace vxe {
       CherryGUI::SetItemAllowOverlap();
       CherryGUI::PushID(p.content.path.c_str());
 
-      auto &buffer = renameBuffers[p.content.path];
+      auto& buffer = renameBuffers[p.content.path];
       if (buffer[0] == '\0') {
         std::string filename = p.content.path.substr(p.content.path.find_last_of("/\\") + 1);
         std::strncpy(buffer, filename.c_str(), sizeof(buffer));
@@ -690,7 +711,7 @@ namespace vxe {
     return pressed;
   }
 
-  bool ContentBrowser::draw_horizontal_draw_item_card(const ItemCardParams &p) {
+  bool ContentBrowser::draw_horizontal_draw_item_card(const ItemCardParams& p) {
     bool pressed = false;
 
     float logoSize = 40.0f;
@@ -700,7 +721,7 @@ namespace vxe {
     float versionBoxHeight = 20.0f;
 
     float oldFontScale = CherryGUI::GetFont()->Scale;
-    ImFont *oldFont = CherryGUI::GetFont();
+    ImFont* oldFont = CherryGUI::GetFont();
 
     if (p.selected) {
       p.style.bg_color = IM_COL32(80, 80, 240, 255);
@@ -750,7 +771,7 @@ namespace vxe {
         clear_copy_selection();
         clear_cut_selection();
         cut_paths_callback_(selected_, false);
-        for (const auto &path : selected_)
+        for (const auto& path : selected_)
           cut_selection_.push_back(path);
       }
       selected_.clear();
@@ -759,9 +780,20 @@ namespace vxe {
     if (shortcutCutAdd && !selected_.empty()) {
       if (cut_paths_callback_) {
         clear_copy_selection();
-        cut_paths_callback_(selected_, true);
-        for (const auto &path : selected_)
-          cut_selection_.push_back(path);
+
+        std::vector<std::string> to_cut;
+        for (auto& path : selected_) {
+          if (!is_in_cut_selection(path)) {
+            to_cut.push_back(path);
+          }
+        }
+
+        if (!to_cut.empty()) {
+          cut_paths_callback_(to_cut, true);
+          for (auto& path : to_cut) {
+            cut_selection_.push_back(path);
+          }
+        }
       }
       selected_.clear();
     }
@@ -771,7 +803,7 @@ namespace vxe {
         clear_copy_selection();
         clear_cut_selection();
         copy_paths_callback_(selected_, false);
-        for (const auto &path : selected_)
+        for (const auto& path : selected_)
           copy_selection_.push_back(path);
       }
       selected_.clear();
@@ -780,9 +812,20 @@ namespace vxe {
     if (shortcutCopyAdd && !selected_.empty()) {
       if (copy_paths_callback_) {
         clear_cut_selection();
-        copy_paths_callback_(selected_, true);
-        for (const auto &path : selected_)
-          copy_selection_.push_back(path);
+
+        std::vector<std::string> to_copy;
+        for (auto& path : selected_) {
+          if (!is_in_copy_selection(path)) {
+            to_copy.push_back(path);
+          }
+        }
+
+        if (!to_copy.empty()) {
+          copy_paths_callback_(to_copy, true);
+          for (auto& path : to_copy) {
+            copy_selection_.push_back(path);
+          }
+        }
       }
       selected_.clear();
     }
@@ -852,7 +895,7 @@ namespace vxe {
           clear_copy_selection();
           clear_cut_selection();
           copy_paths_callback_(selected_, false);
-          for (auto &path : selected_) {
+          for (auto& path : selected_) {
             copy_selection_.push_back(path);
           }
         }
@@ -874,7 +917,7 @@ namespace vxe {
           if (copy_paths_callback_) {
             clear_cut_selection();
             std::vector<std::string> to_copy;
-            for (auto &path : selected_) {
+            for (auto& path : selected_) {
               if (!is_in_copy_selection(path)) {
                 to_copy.push_back(path);
               }
@@ -882,7 +925,7 @@ namespace vxe {
 
             if (!to_copy.empty()) {
               copy_paths_callback_(to_copy, true);
-              for (auto &path : to_copy) {
+              for (auto& path : to_copy) {
                 copy_selection_.push_back(path);
               }
             }
@@ -893,14 +936,13 @@ namespace vxe {
         CherryGUI::EndDisabled();
       }
 
-      if (CherryGUI::MenuItem("Cut", "Ctrl + X",
-                Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
-                NULL)) {
+      if (CherryGUI::MenuItem(
+              "Cut", "Ctrl + X", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")), NULL)) {
         if (cut_paths_callback_) {
           clear_cut_selection();
           clear_copy_selection();
           cut_paths_callback_(selected_, false);
-          for (auto &path : selected_) {
+          for (auto& path : selected_) {
             cut_selection_.push_back(path);
           }
         }
@@ -923,7 +965,7 @@ namespace vxe {
             clear_copy_selection();
 
             std::vector<std::string> to_cut;
-            for (auto &path : selected_) {
+            for (auto& path : selected_) {
               if (!is_in_cut_selection(path)) {
                 to_cut.push_back(path);
               }
@@ -931,7 +973,7 @@ namespace vxe {
 
             if (!to_cut.empty()) {
               cut_paths_callback_(to_cut, true);
-              for (auto &path : to_cut) {
+              for (auto& path : to_cut) {
                 cut_selection_.push_back(path);
               }
             }
@@ -964,7 +1006,7 @@ namespace vxe {
       CherryGUI::EndPopup();
     }
 
-    ImDrawList *drawList = CherryGUI::GetWindowDrawList();
+    ImDrawList* drawList = CherryGUI::GetWindowDrawList();
 
     drawList->AddRectFilled(
         cursorPos, ImVec2(cursorPos.x + cardSize.x, cursorPos.y + cardSize.y), p.style.bg_color, p.style.border_radius);
@@ -994,7 +1036,7 @@ namespace vxe {
     static std::unordered_map<std::string, char[256]> renameBuffers;
     if (path_to_rename_ == p.content.path) {
       CherryGUI::PushID(p.content.path.c_str());
-      auto &buffer = renameBuffers[p.content.path];
+      auto& buffer = renameBuffers[p.content.path];
       if (buffer[0] == '\0') {
         std::strncpy(buffer, p.content.name.c_str(), sizeof(buffer));
       }
@@ -1044,10 +1086,10 @@ namespace vxe {
   }
 
   void ContentBrowser::draw_highlighted_text_(
-      ImDrawList *drawList,
+      ImDrawList* drawList,
       ImVec2 textPos,
-      const char *text,
-      const char *search,
+      const char* text,
+      const char* search,
       ImU32 highlightColor,
       ImU32 textColor,
       ImU32 highlightTextColor) {
@@ -1056,8 +1098,8 @@ namespace vxe {
       return;
     }
 
-    const char *start = text;
-    const char *found = strstr(start, search);
+    const char* start = text;
+    const char* found = strstr(start, search);
     while (found) {
       if (found > start) {
         std::string preText(start, found);
@@ -1081,8 +1123,8 @@ namespace vxe {
     }
   }
 
-  void ContentBrowser::draw_folder(const std::string &colorHex, float width, float height, ImVec2 pos) {
-    ImDrawList *drawList = CherryGUI::GetWindowDrawList();
+  void ContentBrowser::draw_folder(const std::string& colorHex, float width, float height, ImVec2 pos) {
+    ImDrawList* drawList = CherryGUI::GetWindowDrawList();
     ImU32 color = HexToImU32(colorHex);
 
     float flapHeight = height * 0.2f;
@@ -1116,7 +1158,7 @@ namespace vxe {
     }
   }
 
-  bool ContentBrowser::draw_color_picker_3U32(const char *label, ImU32 *color, ImGuiColorEditFlags flags) {
+  bool ContentBrowser::draw_color_picker_3U32(const char* label, ImU32* color, ImGuiColorEditFlags flags) {
     float col[3];
     col[0] = (float)((*color >> 0) & 0xFF) / 255.0f;
     col[1] = (float)((*color >> 8) & 0xFF) / 255.0f;

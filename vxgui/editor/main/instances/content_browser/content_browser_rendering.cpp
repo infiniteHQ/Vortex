@@ -16,11 +16,11 @@ namespace vxe {
     const float splitterWidth = 1.5f;
     const float margin = 10.0f;
 
-    auto &children = childs_;
+    auto& children = childs_;
     ImVec2 availableSize = CherryGUI::GetContentRegionAvail();
 
     for (size_t i = 0; i < children.size(); ++i) {
-      auto &child = children[i];
+      auto& child = children[i];
 
       if (child.name == "render_filters_bar") {
         child.m_Disabled = !show_filter_pannel_;
@@ -40,14 +40,14 @@ namespace vxe {
       float totalAvailableWidth = availableSize.x - (children.size() - 1) * splitterWidth;
       int visibleChildrenCount = 0;
 
-      for (auto &child : children) {
+      for (auto& child : children) {
         if (!child.m_Disabled)
           visibleChildrenCount++;
       }
 
       float defaultSize = visibleChildrenCount > 0 ? totalAvailableWidth / visibleChildrenCount : 0.0f;
 
-      for (auto &child : children) {
+      for (auto& child : children) {
         if (!child.m_Disabled) {
           if (child.m_DefaultSize == 0.0f) {
             float total_child_size = 0.0f;
@@ -73,7 +73,7 @@ namespace vxe {
     float totalChildSize = 0.0f;
     int visibleChildrenCount = 0;
 
-    for (auto &child : children) {
+    for (auto& child : children) {
       if (!child.m_Disabled) {
         totalChildSize += child.m_Size;
         visibleChildrenCount++;
@@ -85,7 +85,7 @@ namespace vxe {
     if (totalChildSize > availableSize.x) {
       float scaleFactor = availableSize.x / totalChildSize;
 
-      for (auto &child : children) {
+      for (auto& child : children) {
         if (!child.m_Disabled) {
           child.m_Size = (std::max)(child.m_Size * scaleFactor, 50.0f);
         }
@@ -94,13 +94,13 @@ namespace vxe {
       float extraSpace = availableSize.x - totalChildSize;
 
       float totalResizable = 0.0f;
-      for (auto &child : children) {
+      for (auto& child : children) {
         if (!child.m_Disabled) {
           totalResizable += child.m_Size;
         }
       }
 
-      for (auto &child : children) {
+      for (auto& child : children) {
         if (!child.m_Disabled) {
           float ratio = child.m_Size / totalResizable;
           child.m_Size += ratio * extraSpace;
@@ -109,7 +109,7 @@ namespace vxe {
     }
 
     for (size_t i = 0; i < children.size(); ++i) {
-      auto &child = children[i];
+      auto& child = children[i];
 
       if (child.m_Disabled) {
         continue;
@@ -142,7 +142,7 @@ namespace vxe {
       }
 
       if (nextChildIndex != -1) {
-        vxe::ContentBrowserChild &next_child = children[nextChildIndex];
+        vxe::ContentBrowserChild& next_child = children[nextChildIndex];
 
         if (i + 1 < children.size() && !children[i].m_Disabled && !next_child.m_Disabled) {
           CherryGUI::SameLine();
@@ -195,11 +195,15 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_bg", "#232323");
     CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
     CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
-    CherryKit::HeaderImageText(CherryID(("Favorite" + unique_suffix)), "Favorite", Cherry::GetPath("resources/imgs/icons/misc/icon_star.png"), [this]() {
-      for (auto custom_dir : favorite_folders_) {
-        draw_hierarchy(custom_dir, true);
-      }
-    });
+    CherryKit::HeaderImageText(
+        CherryID(("Favorite" + unique_suffix)),
+        "Favorite",
+        Cherry::GetPath("resources/imgs/icons/misc/icon_star.png"),
+        [this]() {
+          for (auto custom_dir : favorite_folders_) {
+            draw_hierarchy(custom_dir, true);
+          }
+        });
 
     CherryStyle::RemoveMarginX(6.0f);
     CherryNextComponent.SetProperty("size_x", header_width);
@@ -208,9 +212,10 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_bg", "#232323");
     CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
     CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
-    CherryKit::HeaderImageText(CherryID(("Main" + unique_suffix)), "Main", Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"), [this]() {
-      draw_hierarchy(base_directory_, true, "Main");
-    });
+    CherryKit::HeaderImageText(
+        CherryID(("Main" + unique_suffix)), "Main", Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"), [this]() {
+          draw_hierarchy(base_directory_, true, "Main");
+        });
 
     CherryStyle::RemoveMarginX(6.0f);
     CherryNextComponent.SetProperty("size_x", header_width);
@@ -219,8 +224,11 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_bg", "#232323");
     CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
     CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
-    CherryKit::HeaderImageText(CherryID(("Pools & Collections" + unique_suffix)), 
-        "Pools & Collections", Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"), [this]() {
+    CherryKit::HeaderImageText(
+        CherryID(("Pools & Collections" + unique_suffix)),
+        "Pools & Collections",
+        Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"),
+        [this]() {
           CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 2.0f));
           CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.4f, 0.4f, 0.4f, 0.7f));
           if (!pool_add_mode_) {
@@ -353,10 +361,10 @@ namespace vxe {
         { "Configuration", { ".cfg", ".ini", ".config" } }, { "Text based formats", { ".txt", ".json" } }
       };
 
-      for (auto &category : categories) {
+      for (auto& category : categories) {
         CherryKit::SeparatorText(category.first);
 
-        for (auto &ext : category.second) {
+        for (auto& ext : category.second) {
           bool state = has_extension(ext);
           CherryKit::CheckboxText(ext.c_str(), &state);
           toggle_extension(ext, &state);
@@ -410,7 +418,8 @@ namespace vxe {
       CherryNextComponent.SetProperty("size_x", "15.0f");
       CherryNextComponent.SetProperty("size_y", "15.0f");
       if (CherryKit::ButtonImage(GetPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"))
-              .GetDataAs<bool>("isClicked") || CherryApp.IsNavigateBackRequested()) {
+              .GetDataAs<bool>("isClicked") ||
+          CherryApp.IsNavigateBackRequested()) {
         go_back();
       }
     }
@@ -430,7 +439,8 @@ namespace vxe {
       CherryNextComponent.SetProperty("size_x", "15.0f");
       CherryNextComponent.SetProperty("size_y", "15.0f");
       if (CherryKit::ButtonImage(GetPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"))
-              .GetDataAs<bool>("isClicked") || CherryApp.IsNavigateForwardRequested()) {
+              .GetDataAs<bool>("isClicked") ||
+          CherryApp.IsNavigateForwardRequested()) {
         go_forward();
       }
     }
@@ -597,7 +607,7 @@ namespace vxe {
   }
 
   void ContentBrowser::render_content_bar() {
-    ImGuiStyle &style = CherryGUI::GetStyle();
+    ImGuiStyle& style = CherryGUI::GetStyle();
     ImVec4 originalChildBgColor = style.Colors[ImGuiCol_ChildBg];
     ImVec4 originalBorderColor = style.Colors[ImGuiCol_Border];
     ImVec4 originalBorderShadowColor = style.Colors[ImGuiCol_BorderShadow];
@@ -648,7 +658,7 @@ namespace vxe {
       current_directory_ = base_directory_;
     }
 
-    for (auto &directoryEntry : std::filesystem::directory_iterator(current_directory_)) {
+    for (auto& directoryEntry : std::filesystem::directory_iterator(current_directory_)) {
       bool isItem = false;
       for (auto em : vxe::get_current_context()->IO.em) {
         for (auto item : em->get_content_browser_item_identifiers()) {
@@ -681,7 +691,7 @@ namespace vxe {
       }
     }
 
-    std::sort(directories.begin(), directories.end(), [](const auto &a, const auto &b) {
+    std::sort(directories.begin(), directories.end(), [](const auto& a, const auto& b) {
       return a.path().filename().string() < b.path().filename().string();
     });
 
@@ -781,8 +791,8 @@ namespace vxe {
       CherryGUI::PopStyleColor(2);
 
       if (show_folders_) {
-        for (auto &directoryEntry : directories) {
-          const auto &path = directoryEntry.path();
+        for (auto& directoryEntry : directories) {
+          const auto& path = directoryEntry.path();
           std::string filenameString = path.filename().string();
 
           bool selected = false;
@@ -819,7 +829,7 @@ namespace vxe {
             if (selected) {
               ImVec2 cellScreenPos = CherryGUI::GetCursorScreenPos();
               ImVec2 cellSize(availableWidth, reducedthumbnail_size + textH * nameLines + 6.0f);
-              ImDrawList *bgDrawList = CherryGUI::GetWindowDrawList();
+              ImDrawList* bgDrawList = CherryGUI::GetWindowDrawList();
               bgDrawList->AddRectFilled(
                   cellScreenPos,
                   ImVec2(cellScreenPos.x + cellSize.x, cellScreenPos.y + cellSize.y),
@@ -874,7 +884,7 @@ namespace vxe {
             CherryGUI::SetCursorPos(ImVec2(textX + CherryGUI::GetCursorPosX(), cursorPos.y));
             // CherryGUI::TextWrapped(filenameString.c_str());
 
-            ImDrawList *drawList = CherryGUI::GetWindowDrawList();
+            ImDrawList* drawList = CherryGUI::GetWindowDrawList();
 
             ImU32 textColor = IM_COL32(255, 255, 255, 255);
             ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
@@ -885,7 +895,7 @@ namespace vxe {
               CherryGUI::SetItemAllowOverlap();
               CherryGUI::PushID(path.string().c_str());
 
-              auto &buffer = renameBuffers[path.string()];
+              auto& buffer = renameBuffers[path.string()];
               if (buffer[0] == '\0') {
                 std::string filename = path.string().substr(path.string().find_last_of("/\\") + 1);
                 std::strncpy(buffer, filename.c_str(), sizeof(buffer));
@@ -949,7 +959,7 @@ namespace vxe {
                     clear_cut_selection();
                     clear_copy_selection();
                     cut_paths_callback_(selected_, false);
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       cut_selection_.push_back(path);
                     }
                   }
@@ -968,7 +978,7 @@ namespace vxe {
                     clear_copy_selection();
 
                     std::vector<std::string> to_cut;
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       if (!is_in_cut_selection(path)) {
                         to_cut.push_back(path);
                       }
@@ -976,7 +986,7 @@ namespace vxe {
 
                     if (!to_cut.empty()) {
                       cut_paths_callback_(to_cut, true);
-                      for (auto &path : to_cut) {
+                      for (auto& path : to_cut) {
                         cut_selection_.push_back(path);
                       }
                     }
@@ -995,7 +1005,7 @@ namespace vxe {
                     clear_copy_selection();
                     clear_cut_selection();
                     copy_paths_callback_(selected_, false);
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       copy_selection_.push_back(path);
                     }
                   }
@@ -1014,7 +1024,7 @@ namespace vxe {
                   if (copy_paths_callback_) {
                     clear_cut_selection();
                     std::vector<std::string> to_copy;
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       if (!is_in_copy_selection(path)) {
                         to_copy.push_back(path);
                       }
@@ -1022,7 +1032,7 @@ namespace vxe {
 
                     if (!to_copy.empty()) {
                       copy_paths_callback_(to_copy, true);
-                      for (auto &path : to_copy) {
+                      for (auto& path : to_copy) {
                         copy_selection_.push_back(path);
                       }
                     }
@@ -1095,7 +1105,6 @@ namespace vxe {
 
                 current_editing_folder_is_favorite_ = !current_editing_folder_is_favorite_;
                 set_colored_folder(current_editing_folder_.first, ImU32ToHex(current_editing_folder_.second));
-                std::cout << Cherry::ImU32ToHex(current_editing_folder_.second) << std::endl;
                 vxe::publish_content_browser_custom_folder(
                     current_editing_folder_.first,
                     ImU32ToHex(current_editing_folder_.second),
@@ -1123,8 +1132,8 @@ namespace vxe {
       }
 
       if (show_items_) {
-        for (auto &itemEntry : recognized_modules_items_) {
-          const auto &path = itemEntry.second;
+        for (auto& itemEntry : recognized_modules_items_) {
+          const auto& path = itemEntry.second;
           std::filesystem::path fsPath(path);
           std::string filenameString = fsPath.filename().string();
 
@@ -1136,7 +1145,7 @@ namespace vxe {
 
           if (!extentions_filters_.empty()) {
             bool match = false;
-            for (const auto &ext : extentions_filters_) {
+            for (const auto& ext : extentions_filters_) {
               if (filenameString.size() >= ext.size() &&
                   filenameString.compare(filenameString.size() - ext.size(), ext.size(), ext) == 0) {
                 match = true;
@@ -1195,8 +1204,8 @@ namespace vxe {
       }
 
       if (show_files_) {
-        for (auto &fileEntry : files) {
-          const auto &path = fileEntry.path();
+        for (auto& fileEntry : files) {
+          const auto& path = fileEntry.path();
           std::string filenameString = path.filename().string();
 
           bool selected = false;
@@ -1207,7 +1216,7 @@ namespace vxe {
 
           if (!extentions_filters_.empty()) {
             bool match = false;
-            for (const auto &ext : extentions_filters_) {
+            for (const auto& ext : extentions_filters_) {
               if (filenameString.size() >= ext.size() &&
                   filenameString.compare(filenameString.size() - ext.size(), ext.size(), ext) == 0) {
                 match = true;
@@ -1239,7 +1248,7 @@ namespace vxe {
             FileTypes fileType = detect_file(path.string());
 
             auto it = FILE_TYPE_INFOS.find(fileType);
-            const FileTypeInfo &info = (it != FILE_TYPE_INFOS.end()) ? it->second : DEFAULT_TYPE_INFO;
+            const FileTypeInfo& info = (it != FILE_TYPE_INFOS.end()) ? it->second : DEFAULT_TYPE_INFO;
 
             ItemCardContent content{
               .name = filenameString,
@@ -1294,13 +1303,13 @@ namespace vxe {
         CherryGUI::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed, 80.0f);
         CherryGUI::TableSetupColumn("Last Updated", ImGuiTableColumnFlags_WidthFixed, 120.0f);
         CherryGUI::TableHeadersRow();
-        auto drawRow = [&](const std::string &filename,
-                           const fs::path &path,
+        auto drawRow = [&](const std::string& filename,
+                           const fs::path& path,
                            bool isFolder,
                            size_t size = 0,
                            std::time_t cftime = 0,
                            ImTextureID tex = nullptr,
-                           const std::shared_ptr<ItemIdentifierInterface> &item_ident = nullptr) {
+                           const std::shared_ptr<ItemIdentifierInterface>& item_ident = nullptr) {
           std::string filenameString = path.filename().string();
           float rowHeight = 20.0f;
           CherryGUI::TableNextRow(ImGuiTableRowFlags_None, rowHeight);
@@ -1372,7 +1381,7 @@ namespace vxe {
                 clear_copy_selection();
                 clear_cut_selection();
                 cut_paths_callback_(selected_, false);
-                for (const auto &path : selected_)
+                for (const auto& path : selected_)
                   cut_selection_.push_back(path);
               }
               selected_.clear();
@@ -1381,9 +1390,20 @@ namespace vxe {
             if (shortcutCutAdd && !selected_.empty()) {
               if (cut_paths_callback_) {
                 clear_copy_selection();
-                cut_paths_callback_(selected_, true);
-                for (const auto &path : selected_)
-                  cut_selection_.push_back(path);
+
+                std::vector<std::string> to_cut;
+                for (auto& path : selected_) {
+                  if (!is_in_cut_selection(path)) {
+                    to_cut.push_back(path);
+                  }
+                }
+
+                if (!to_cut.empty()) {
+                  cut_paths_callback_(to_cut, true);
+                  for (auto& path : to_cut) {
+                    cut_selection_.push_back(path);
+                  }
+                }
               }
               selected_.clear();
             }
@@ -1393,7 +1413,7 @@ namespace vxe {
                 clear_copy_selection();
                 clear_cut_selection();
                 copy_paths_callback_(selected_, false);
-                for (const auto &path : selected_)
+                for (const auto& path : selected_)
                   copy_selection_.push_back(path);
               }
               selected_.clear();
@@ -1402,9 +1422,20 @@ namespace vxe {
             if (shortcutCopyAdd && !selected_.empty()) {
               if (copy_paths_callback_) {
                 clear_cut_selection();
-                copy_paths_callback_(selected_, true);
-                for (const auto &path : selected_)
-                  copy_selection_.push_back(path);
+
+                std::vector<std::string> to_copy;
+                for (auto& path : selected_) {
+                  if (!is_in_copy_selection(path)) {
+                    to_copy.push_back(path);
+                  }
+                }
+
+                if (!to_copy.empty()) {
+                  copy_paths_callback_(to_copy, true);
+                  for (auto& path : to_copy) {
+                    copy_selection_.push_back(path);
+                  }
+                }
               }
               selected_.clear();
             }
@@ -1469,7 +1500,7 @@ namespace vxe {
                   clear_copy_selection();
                   clear_cut_selection();
                   copy_paths_callback_(selected_, false);
-                  for (auto &path : selected_) {
+                  for (auto& path : selected_) {
                     copy_selection_.push_back(path);
                   }
                 }
@@ -1491,7 +1522,7 @@ namespace vxe {
                   if (copy_paths_callback_) {
                     clear_cut_selection();
                     std::vector<std::string> to_copy;
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       if (!is_in_copy_selection(path)) {
                         to_copy.push_back(path);
                       }
@@ -1499,7 +1530,7 @@ namespace vxe {
 
                     if (!to_copy.empty()) {
                       copy_paths_callback_(to_copy, true);
-                      for (auto &path : to_copy) {
+                      for (auto& path : to_copy) {
                         copy_selection_.push_back(path);
                       }
                     }
@@ -1515,7 +1546,7 @@ namespace vxe {
                   clear_cut_selection();
                   clear_copy_selection();
                   cut_paths_callback_(selected_, false);
-                  for (auto &path : selected_) {
+                  for (auto& path : selected_) {
                     cut_selection_.push_back(path);
                   }
                 }
@@ -1562,7 +1593,7 @@ namespace vxe {
                     clear_cut_selection();
                     clear_copy_selection();
                     cut_paths_callback_(selected_, false);
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       cut_selection_.push_back(path);
                     }
                   }
@@ -1580,7 +1611,7 @@ namespace vxe {
                     clear_copy_selection();
 
                     std::vector<std::string> to_cut;
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       if (!is_in_cut_selection(path)) {
                         to_cut.push_back(path);
                       }
@@ -1588,7 +1619,7 @@ namespace vxe {
 
                     if (!to_cut.empty()) {
                       cut_paths_callback_(to_cut, true);
-                      for (auto &path : to_cut) {
+                      for (auto& path : to_cut) {
                         cut_selection_.push_back(path);
                       }
                     }
@@ -1607,7 +1638,7 @@ namespace vxe {
                     clear_copy_selection();
                     clear_cut_selection();
                     copy_paths_callback_(selected_, false);
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       copy_selection_.push_back(path);
                     }
                   }
@@ -1626,7 +1657,7 @@ namespace vxe {
                   if (copy_paths_callback_) {
                     clear_cut_selection();
                     std::vector<std::string> to_copy;
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       if (!is_in_copy_selection(path)) {
                         to_copy.push_back(path);
                       }
@@ -1634,7 +1665,7 @@ namespace vxe {
 
                     if (!to_copy.empty()) {
                       copy_paths_callback_(to_copy, true);
-                      for (auto &path : to_copy) {
+                      for (auto& path : to_copy) {
                         copy_selection_.push_back(path);
                       }
                     }
@@ -1708,7 +1739,7 @@ namespace vxe {
             CherryGUI::SetItemAllowOverlap();
             CherryGUI::PushID(path.string().c_str());
 
-            auto &buffer = renameBuffers[path.string()];
+            auto& buffer = renameBuffers[path.string()];
             if (buffer[0] == '\0') {
               std::string filename = path.string().substr(path.string().find_last_of("/\\") + 1);
               std::strncpy(buffer, filename.c_str(), sizeof(buffer));
@@ -1751,7 +1782,7 @@ namespace vxe {
               filenameString = "...";
             }
 
-            ImDrawList *drawList = CherryGUI::GetWindowDrawList();
+            ImDrawList* drawList = CherryGUI::GetWindowDrawList();
             draw_highlighted_text_(
                 drawList,
                 CherryGUI::GetCursorScreenPos(),
@@ -1793,8 +1824,8 @@ namespace vxe {
         }
 
         if (show_folders_) {
-          for (auto &directoryEntry : directories) {
-            const auto &path = directoryEntry.path();
+          for (auto& directoryEntry : directories) {
+            const auto& path = directoryEntry.path();
             std::string filename = path.filename().string();
 
             if (!are_strings_similar(filename, project_search_, threshold_) &&
@@ -1827,8 +1858,8 @@ namespace vxe {
         }
 
         if (show_items_) {
-          for (auto &itemEntry : recognized_modules_items_) {
-            const auto &path = itemEntry.second;
+          for (auto& itemEntry : recognized_modules_items_) {
+            const auto& path = itemEntry.second;
             std::filesystem::path fsPath(path);
             std::filesystem::directory_entry fsDirectoryEntry(path);
             std::string filenameString = fsPath.filename().string();
@@ -1839,7 +1870,7 @@ namespace vxe {
 
             if (!extentions_filters_.empty()) {
               bool match = false;
-              for (const auto &ext : extentions_filters_) {
+              for (const auto& ext : extentions_filters_) {
                 if (filenameString.size() >= ext.size() &&
                     filenameString.compare(filenameString.size() - ext.size(), ext.size(), ext) == 0) {
                   match = true;
@@ -1878,8 +1909,8 @@ namespace vxe {
         }
 
         if (show_files_) {
-          for (auto &fileEntry : files) {
-            const auto &path = fileEntry.path();
+          for (auto& fileEntry : files) {
+            const auto& path = fileEntry.path();
             std::string filename = path.filename().string();
 
             if (!show_hidden_ && !filename.empty() && filename[0] == '.') {
@@ -1888,7 +1919,7 @@ namespace vxe {
 
             if (!extentions_filters_.empty()) {
               bool match = false;
-              for (const auto &ext : extentions_filters_) {
+              for (const auto& ext : extentions_filters_) {
                 if (filename.size() >= ext.size() && filename.compare(filename.size() - ext.size(), ext.size(), ext) == 0) {
                   match = true;
                   break;
@@ -2003,8 +2034,8 @@ namespace vxe {
       CherryGUI::PopStyleColor(2);
 
       if (show_folders_) {
-        for (auto &directoryEntry : directories) {
-          const auto &path = directoryEntry.path();
+        for (auto& directoryEntry : directories) {
+          const auto& path = directoryEntry.path();
           std::string filenameString = path.filename().string();
 
           bool selected = (std::find(selected_.begin(), selected_.end(), path) != selected_.end());
@@ -2024,7 +2055,6 @@ namespace vxe {
 
             if (CherryGUI::InvisibleButton(("folder_card_" + filenameString).c_str(), cardSize)) {
               if (CherryGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-                std::cout << "[LOG] Double click on: " << path.string() << std::endl;
                 change_directory(path);
               } else {
                 if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) || CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
@@ -2059,7 +2089,7 @@ namespace vxe {
                     clear_cut_selection();
                     clear_copy_selection();
                     cut_paths_callback_(selected_, false);
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       cut_selection_.push_back(path);
                     }
                   }
@@ -2078,7 +2108,7 @@ namespace vxe {
                     clear_copy_selection();
 
                     std::vector<std::string> to_cut;
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       if (!is_in_cut_selection(path)) {
                         to_cut.push_back(path);
                       }
@@ -2086,7 +2116,7 @@ namespace vxe {
 
                     if (!to_cut.empty()) {
                       cut_paths_callback_(to_cut, true);
-                      for (auto &path : to_cut) {
+                      for (auto& path : to_cut) {
                         cut_selection_.push_back(path);
                       }
                     }
@@ -2105,7 +2135,7 @@ namespace vxe {
                     clear_copy_selection();
                     clear_cut_selection();
                     copy_paths_callback_(selected_, false);
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       copy_selection_.push_back(path);
                     }
                   }
@@ -2124,7 +2154,7 @@ namespace vxe {
                   if (copy_paths_callback_) {
                     clear_cut_selection();
                     std::vector<std::string> to_copy;
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       if (!is_in_copy_selection(path)) {
                         to_copy.push_back(path);
                       }
@@ -2132,7 +2162,7 @@ namespace vxe {
 
                     if (!to_copy.empty()) {
                       copy_paths_callback_(to_copy, true);
-                      for (auto &path : to_copy) {
+                      for (auto& path : to_copy) {
                         copy_selection_.push_back(path);
                       }
                     }
@@ -2155,7 +2185,7 @@ namespace vxe {
                 std::string label = "Delete (" + std::to_string(selected_.size()) + " selected)";
                 if (CherryGUI::MenuItem(label.c_str(), "Alt + Suppr")) {
                   if (delete_path_callback_) {
-                    for (auto &path : selected_) {
+                    for (auto& path : selected_) {
                       delete_path_callback_(path);
                     }
                   }
@@ -2173,7 +2203,7 @@ namespace vxe {
             ImU32 bgColor = selected ? IM_COL32(80, 80, 240, 255) : IM_COL32(40, 40, 40, 255);
             ImU32 borderColor = selected ? IM_COL32(150, 150, 255, 255) : IM_COL32(90, 90, 90, 255);
 
-            ImDrawList *drawList = CherryGUI::GetWindowDrawList();
+            ImDrawList* drawList = CherryGUI::GetWindowDrawList();
 
             drawList->AddRectFilled(
                 cursorPos, ImVec2(cursorPos.x + cardSize.x, cursorPos.y + cardSize.y), bgColor, borderRadius);
@@ -2203,7 +2233,7 @@ namespace vxe {
 
             if (path_to_rename_ == path.string()) {
               CherryGUI::PushID(path.string().c_str());
-              auto &buffer = renameBuffers[path.string()];
+              auto& buffer = renameBuffers[path.string()];
               if (buffer[0] == '\0') {
                 std::strncpy(buffer, filenameString.c_str(), sizeof(buffer));
                 buffer[sizeof(buffer) - 1] = '\0';
@@ -2260,8 +2290,8 @@ namespace vxe {
       }
 
       if (show_items_) {
-        for (auto &itemEntry : recognized_modules_items_) {
-          const auto &path = itemEntry.second;
+        for (auto& itemEntry : recognized_modules_items_) {
+          const auto& path = itemEntry.second;
           std::filesystem::path fsPath(path);
           std::string filenameString = fsPath.filename().string();
 
@@ -2273,7 +2303,7 @@ namespace vxe {
 
           if (!extentions_filters_.empty()) {
             bool match = false;
-            for (const auto &ext : extentions_filters_) {
+            for (const auto& ext : extentions_filters_) {
               if (filenameString.size() >= ext.size() &&
                   filenameString.compare(filenameString.size() - ext.size(), ext.size(), ext) == 0) {
                 match = true;
@@ -2333,8 +2363,8 @@ namespace vxe {
       }
 
       if (show_files_) {
-        for (auto &fileEntry : files) {
-          const auto &path = fileEntry.path();
+        for (auto& fileEntry : files) {
+          const auto& path = fileEntry.path();
           std::string filenameString = path.filename().string();
 
           bool selected = false;
@@ -2344,7 +2374,7 @@ namespace vxe {
 
           if (!extentions_filters_.empty()) {
             bool match = false;
-            for (const auto &ext : extentions_filters_) {
+            for (const auto& ext : extentions_filters_) {
               if (filenameString.size() >= ext.size() &&
                   filenameString.compare(filenameString.size() - ext.size(), ext.size(), ext) == 0) {
                 match = true;
@@ -2376,7 +2406,7 @@ namespace vxe {
             FileTypes fileType = detect_file(path.string());
 
             auto it = FILE_TYPE_INFOS.find(fileType);
-            const FileTypeInfo &info = (it != FILE_TYPE_INFOS.end()) ? it->second : DEFAULT_TYPE_INFO;
+            const FileTypeInfo& info = (it != FILE_TYPE_INFOS.end()) ? it->second : DEFAULT_TYPE_INFO;
 
             ItemCardContent content{
               .name = filenameString,
@@ -2419,7 +2449,7 @@ namespace vxe {
     }
   }
 
-  void ContentBrowser::add_child(const ContentBrowserChild &child) {
+  void ContentBrowser::add_child(const ContentBrowserChild& child) {
     childs_.push_back(child);
   }
 
@@ -2432,7 +2462,8 @@ namespace vxe {
     new_win->get_app_window()->SetVisibility(true);
     new_win->set_create_file_callback([this]() { this->create_file(); });
     new_win->set_create_folder_callback([this]() { this->create_folder(); });
-    new_win->set_create_item_callback([this](const std::function<void(const std::string &)> &creator) { this->create_item(creator); });
+    new_win->set_create_item_callback(
+        [this](const std::function<void(const std::string&)>& creator) { this->create_item(creator); });
     new_win->set_import_content_callback([this]() { this->spawn_import_window(); });
 
     std::string label = "Add content";
@@ -2462,7 +2493,7 @@ namespace vxe {
     // TODO
   }
 
-  void ContentBrowser::request_delete(const std::vector<std::string> &paths) {
+  void ContentBrowser::request_delete(const std::vector<std::string>& paths) {
     if (paths.empty())
       return;
 
@@ -2490,7 +2521,7 @@ namespace vxe {
 
       CherryGUI::BeginChild(
           "DeletePreviewList", ImVec2(400, (std::min)(150.0f, pending_delete_paths_.size() * 20.0f + 10.0f)), true);
-      for (auto &p : pending_delete_paths_) {
+      for (auto& p : pending_delete_paths_) {
         std::filesystem::path fp(p);
         bool isDir = std::filesystem::is_directory(fp);
         CherryGUI::TextUnformatted((isDir ? "[dir] " : "[file] "));
@@ -2518,7 +2549,7 @@ namespace vxe {
 
       if (CherryGUI::Button("Delete", ImVec2(buttonWidth, 0))) {
         if (delete_path_callback_) {
-          for (auto &p : pending_delete_paths_) {
+          for (auto& p : pending_delete_paths_) {
             delete_path_callback_(p);
           }
         }
