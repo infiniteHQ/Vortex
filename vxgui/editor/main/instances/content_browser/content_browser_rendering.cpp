@@ -395,9 +395,6 @@ namespace vxe {
     CherryGUI::Separator();
     CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
 
-    static bool wasButtonX1Pressed = false;
-    static bool wasButtonX2Pressed = false;
-
     CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 1.0f);
     if (back_history_.empty()) {
       CherryNextComponent.SetProperty("color_border", "#00000000");
@@ -413,16 +410,9 @@ namespace vxe {
       CherryNextComponent.SetProperty("size_x", "15.0f");
       CherryNextComponent.SetProperty("size_y", "15.0f");
       if (CherryKit::ButtonImage(GetPath("resources/imgs/icons/misc/icon_arrow_l_enabled.png"))
-              .GetDataAs<bool>("isClicked")) {
+              .GetDataAs<bool>("isClicked") || CherryApp.IsNavigateBackRequested()) {
         go_back();
       }
-
-      Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
-      bool isButtonX1Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X1);
-      if (isButtonX1Pressed && !wasButtonX1Pressed) {
-        go_back();
-      }
-      wasButtonX1Pressed = isButtonX1Pressed;
     }
 
     if (forward_history_.empty()) {
@@ -440,16 +430,9 @@ namespace vxe {
       CherryNextComponent.SetProperty("size_x", "15.0f");
       CherryNextComponent.SetProperty("size_y", "15.0f");
       if (CherryKit::ButtonImage(GetPath("resources/imgs/icons/misc/icon_arrow_r_enabled.png"))
-              .GetDataAs<bool>("isClicked")) {
+              .GetDataAs<bool>("isClicked") || CherryApp.IsNavigateForwardRequested()) {
         go_forward();
       }
-
-      Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
-      bool isButtonX2Pressed = mouseState & SDL_BUTTON(SDL_BUTTON_X2);
-      if (isButtonX2Pressed && !wasButtonX2Pressed) {
-        go_forward();
-      }
-      wasButtonX2Pressed = isButtonX2Pressed;
     }
 
     CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 1.5f);
