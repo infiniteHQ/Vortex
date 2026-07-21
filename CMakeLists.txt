@@ -16,10 +16,10 @@ endif()
 # ---------------------------------------------------------------------------
 set(VORTEX_VERSION "1.0")
 set(VORTEX_FULL_VERSION "1.0.build4")
-set(VORTEX_BUILDID "3")
+set(VORTEX_BUILDID "4")
 set(VORTEX_BUILDNAME "1.0 [Build 4]")
 set(VORTEX_DIST "beta")
-set(VORTEX_BUILD "dev")
+set(VORTEX_BUILD "prod")
 
 if(VORTEX_BUILD STREQUAL "prod")
     add_compile_definitions(BUILD_STR="01")
