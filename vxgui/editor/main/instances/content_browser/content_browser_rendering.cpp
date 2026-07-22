@@ -186,7 +186,6 @@ namespace vxe {
 
   void ContentBrowser::render_side_bar() {
     const float header_width = sidebar_width_ - 46.0f;
-    const std::string unique_suffix = "##" + get_app_window()->m_IdName;
 
     CherryStyle::RemoveMarginX(6.0f);
     CherryNextComponent.SetProperty("size_x", header_width);
@@ -195,11 +194,9 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_bg", "#232323");
     CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
     CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
+    const std::string fav_id = get_app_window()->m_IdName + "Favorite";
     CherryKit::HeaderImageText(
-        CherryID(("Favorite" + unique_suffix)),
-        "Favorite",
-        Cherry::GetPath("resources/imgs/icons/misc/icon_star.png"),
-        [this]() {
+        CherryID(fav_id), "Favorite", Cherry::GetPath("resources/imgs/icons/misc/icon_star.png"), [this]() {
           for (auto custom_dir : favorite_folders_) {
             draw_hierarchy(custom_dir, true);
           }
@@ -212,8 +209,9 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_bg", "#232323");
     CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
     CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
+    const std::string main_id = get_app_window()->m_IdName + "Main";
     CherryKit::HeaderImageText(
-        CherryID(("Main" + unique_suffix)), "Main", Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"), [this]() {
+        CherryID(main_id), "Main", Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"), [this]() {
           draw_hierarchy(base_directory_, true, "Main");
         });
 
@@ -224,8 +222,9 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_bg", "#232323");
     CherryNextComponent.SetProperty("color_bg_hovered", "#343434");
     CherryNextComponent.SetProperty("color_bg_clicked", "#454545");
+    const std::string pools_id = get_app_window()->m_IdName + "Pools";
     CherryKit::HeaderImageText(
-        CherryID(("Pools & Collections" + unique_suffix)),
+        CherryID(pools_id),
         "Pools & Collections",
         Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"),
         [this]() {
