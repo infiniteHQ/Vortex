@@ -86,6 +86,16 @@ namespace vxe {
     if (FirstPathPartIsHome) {
       CherryStyle::AddMarginY(8.0f);
       CherryGUI::Image(Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_home.png")), ImVec2(15.0f, 15.0f));
+
+      if (CherryGUI::IsItemHovered()) {
+        CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
+        CherryGUI::SetTooltip("Go to home directory");
+      }
+
+      if (CherryGUI::IsItemClicked()) {
+        change_directory(base_directory_);
+      }
+
       CherryStyle::RemoveMarginY(11.0f);
       CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
       CherryGUI::TextUnformatted(separator.c_str());
