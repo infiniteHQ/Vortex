@@ -220,10 +220,15 @@ namespace vxe {
 
     const char* originalText = p.content.name.c_str();
     std::string truncatedText = p.content.name;
+    std::string truncationSuffix = "";
+    bool isTruncated = false;
 
     if (CherryGUI::CalcTextSize(originalText).x > p.style.max_text_width) {
+      isTruncated = true;
       truncatedText = p.content.name.substr(0, 20);
-      if (CherryGUI::CalcTextSize(truncatedText.c_str()).x > p.style.max_text_width) {
+      truncationSuffix = " [...]";
+
+      if (CherryGUI::CalcTextSize((truncatedText + truncationSuffix).c_str()).x > p.style.max_text_width) {
         truncatedText = p.content.name.substr(0, 10) + "\n" + p.content.name.substr(10, 10);
       }
     } else {
@@ -672,6 +677,27 @@ namespace vxe {
     } else {
       draw_highlighted_text_(
           drawList, textPos, truncatedText.c_str(), project_search_.c_str(), highlightColor, textColor, highlightTextColor);
+
+      ImVec2 textSize = CherryGUI::CalcTextSize(truncatedText.c_str());
+      ImVec2 textEnd = ImVec2(textPos.x + textSize.x, textPos.y + textSize.y);
+
+      if (isTruncated) {
+        ImVec2 suffixPos = ImVec2(
+            textPos.x + CherryGUI::CalcTextSize(truncatedText.substr(truncatedText.find_last_of('\n') + 1).c_str()).x,
+            textEnd.y - CherryGUI::GetFontSize());
+
+        ImU32 grayTextColor = IM_COL32(140, 140, 140, 255);
+        drawList->AddText(suffixPos, grayTextColor, truncationSuffix.c_str());
+
+        ImVec2 suffixSize = CherryGUI::CalcTextSize(truncationSuffix.c_str());
+        ImVec2 suffixEnd = ImVec2(suffixPos.x + suffixSize.x, suffixPos.y + suffixSize.y);
+
+        if (CherryGUI::IsMouseHoveringRect(textPos, suffixEnd)) {
+          CherryGUI::BeginTooltip();
+          CherryGUI::TextUnformatted(p.content.name.c_str());
+          CherryGUI::EndTooltip();
+        }
+      }
     }
 
     CherryGUI::PopItemWidth();
