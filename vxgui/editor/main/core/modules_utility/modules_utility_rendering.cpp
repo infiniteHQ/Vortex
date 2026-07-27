@@ -783,14 +783,15 @@ namespace vxe {
       CherryGUI::BeginDisabled();
     }
 
-    CherryNextComponent.SetProperty("padding_y", "6.0f");
-    if (CherryKit::ButtonImageText("Flash Link", Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png"))
+    CherryNextComponent.SetProperty("size_x", "15.0f");
+    CherryNextComponent.SetProperty("size_y", "15.0f");
+    if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_lightning.png"))
             .GetDataAs<bool>("isClicked")) {
       spawn_flash_link_window("flash");
     }
 
     CherryNextComponent.SetProperty("padding_y", "6.0f");
-    if (CherryKit::ButtonImageText("Enter code", Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png"))
+    if (CherryKit::ButtonImageText("Enter code", Cherry::GetPath("resources/imgs/icons/misc/icon_graynet.png"))
             .GetDataAs<bool>("isClicked")) {
       spawn_flash_link_window("prompt");
     }
