@@ -30,6 +30,11 @@ namespace vxe {
   VORTEX_API bool is_content_flashlink(const std::string &str);
   VORTEX_API bool is_template_flashlink(const std::string &str);
 
+  VORTEX_API bool run_command_capture_output(const std::string &cmd, std::string &output);
+  VORTEX_API std::string to_lower(std::string s);
+  VORTEX_API std::string trim(const std::string &s);
+  VORTEX_API std::string filename_from_url(const std::string &url);
+  VORTEX_API bool ensure_directory_exists(const std::string &path);
 }  // namespace vxe
 
 #endif  // VORTEX_UTILITIES_HPP

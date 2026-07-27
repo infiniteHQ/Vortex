@@ -34,6 +34,7 @@
 #include "./vortex/session/session.hpp"
 #include "./vortex/theme/theme.hpp"
 #include "./vortex/utilities/utilities.hpp"
+#include "./vortex/web/web.hpp"
 
 struct VxContext;
 

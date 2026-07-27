@@ -150,7 +150,210 @@ namespace vxe {
       return clicked;
     }
 
+    std::string detect_current_platform() {
+#if defined(_WIN32)
+      return "windows";
+#elif defined(__APPLE__)
+      return "macos";
+#elif defined(__linux__)
+      return "linux";
+#else
+      return "unknown";
+#endif
+    }
+
+    std::string detect_current_arch() {
+#if defined(__aarch64__) || defined(_M_ARM64)
+      return "arm64";
+#elif defined(__x86_64__) || defined(_M_X64)
+      return "x86_64";
+#else
+      return "unknown";
+#endif
+    }
+
+    std::vector<int> parse_version_numbers(const std::string &v) {
+      std::vector<int> parts;
+      std::stringstream ss(v);
+      std::string item;
+      while (std::getline(ss, item, '.')) {
+        try {
+          parts.push_back(std::stoi(item));
+        } catch (...) {
+          parts.push_back(0);
+        }
+      }
+      return parts;
+    }
+
+    bool version_greater(const std::string &a, const std::string &b) {
+      auto pa = parse_version_numbers(a);
+      auto pb = parse_version_numbers(b);
+      size_t n = std::max(pa.size(), pb.size());
+      for (size_t i = 0; i < n; i++) {
+        int va = i < pa.size() ? pa[i] : 0;
+        int vb = i < pb.size() ? pb[i] : 0;
+        if (va != vb) {
+          return va > vb;
+        }
+      }
+      return false;
+    }
+
+    std::string extract_major(const std::string &version, int keep = 2) {
+      auto parts = parse_version_numbers(version);
+      std::string result;
+      for (int i = 0; i < keep && i < (int)parts.size(); i++) {
+        if (i > 0) {
+          result += ".";
+        }
+        result += std::to_string(parts[i]);
+      }
+      return result;
+    }
+
   }  // namespace
+
+  ModuleFetchResult fetch_module_from_flashlink(const std::string &flashlink) {
+    ModuleFetchResult result;
+
+    if (vxe::get_current_context()->disconnected) {
+      result.error = "No internet connexion";
+      return result;
+    }
+
+    const std::string prefix = "mod:";
+    if (flashlink.rfind(prefix, 0) != 0) {
+      result.error = "Invalid flashlink";
+      return result;
+    }
+    std::string uuid = flashlink.substr(prefix.size());
+
+    auto &ctx = *vxe::get_current_context();
+
+    std::string module_url = "http://api.infinite.si:9000/api/garagevortex/get_module?uuid=" + uuid;
+    std::string module_body;
+    try {
+      module_body = ctx.net.GET(module_url);
+    } catch (...) {
+      result.error = "Unable to fetch the service API";
+      return result;
+    }
+
+    if (module_body.empty()) {
+      result.error = "Empty response from the API";
+      return result;
+    }
+
+    nlohmann::json module_json;
+    try {
+      module_json = nlohmann::json::parse(module_body);
+    } catch (...) {
+      result.error = "Invalid JSON";
+      return result;
+    }
+
+    ModuleInfo info;
+    info.uuid = module_json.value("uuid", "");
+    info.name = module_json.value("name", "");
+    info.proper_name = module_json.value("proper_name", "");
+    info.description = module_json.value("description", "");
+    info.picture_link = module_json.value("picture_link", "");
+    info.banner_link = module_json.value("banner_link", "");
+    info.host = module_json.value("host", "");
+    info.host_link = module_json.value("host_link", "");
+    info.certified = module_json.value("certified", false);
+    info.state = module_json.value("state", "");
+
+    result.info = info;
+
+    std::string releases_url =
+        "https://api.infinite.si/api/garagevortex/get_content_releases_summary?parent_uuid=" + uuid + "&kind=module";
+
+    std::string releases_body;
+    try {
+      releases_body = ctx.net.GET(releases_url);
+    } catch (...) {
+      result.success = true;
+      return result;
+    }
+
+    if (releases_body.empty()) {
+      result.success = true;
+      return result;
+    }
+
+    nlohmann::json releases_json;
+    try {
+      releases_json = nlohmann::json::parse(releases_body);
+    } catch (...) {
+      result.success = true;
+      return result;
+    }
+
+    if (!releases_json.contains("releases") || !releases_json["releases"].is_array()) {
+      result.success = true;
+      return result;
+    }
+
+    std::string current_platform = detect_current_platform();
+    std::string current_arch = detect_current_arch();
+    std::string current_major = extract_major(VORTEX_VERSION);
+
+    std::vector<ModuleRelease> parsed;
+
+    for (auto &item : releases_json["releases"]) {
+      if (!item.is_object()) {
+        continue;
+      }
+
+      ModuleRelease rel;
+      rel.uuid = item.value("uuid", "");
+      rel.name = item.value("name", "");
+
+      // fmt : vx:platform:arch:major:version
+      std::vector<std::string> tokens;
+      std::stringstream ss(rel.name);
+      std::string tok;
+      while (std::getline(ss, tok, ':')) {
+        tokens.push_back(tok);
+      }
+
+      if (tokens.size() != 5 || tokens[0] != "vx") {
+        continue;
+      }
+
+      rel.platform = tokens[1];
+      rel.arch = tokens[2];
+      rel.major = tokens[3];
+      rel.version = tokens[4];
+
+      parsed.push_back(rel);
+    }
+
+    std::vector<ModuleRelease> compatible;
+    for (auto &rel : parsed) {
+      if (rel.platform == current_platform && rel.arch == current_arch && rel.major == current_major) {
+        compatible.push_back(rel);
+      }
+    }
+
+    if (compatible.empty()) {
+      for (auto &rel : parsed) {
+        if (rel.platform == current_platform && rel.arch == current_arch) {
+          compatible.push_back(rel);
+        }
+      }
+    }
+
+    std::sort(compatible.begin(), compatible.end(), [](const ModuleRelease &a, const ModuleRelease &b) {
+      return version_greater(a.version, b.version);
+    });
+
+    result.compatible_releases = compatible;
+    result.success = true;
+    return result;
+  }
 
   FlashLinkWindow::FlashLinkWindow(const std::string &name) {
     app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
@@ -188,13 +391,56 @@ namespace vxe {
     uint64_t my_token = ++search_token;
 
     current_flashlink = flashlink;
+    selected_release_index_ = 0;
     state = FlashLinkState::Loading;
 
-    std::thread([this, my_token]() {
-      while (search_token.load() == my_token) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    std::thread([this, my_token, flashlink]() {
+      ModuleFetchResult res = vxe::fetch_module_from_flashlink(flashlink);
+
+      if (search_token.load() != my_token) {
+        return;
       }
+
+      {
+        std::lock_guard<std::mutex> lock(result_mutex_);
+        fetch_result_ = res;
+      }
+
+      state = res.success ? FlashLinkState::Ready : FlashLinkState::Error;
     }).detach();
+  }
+
+  void FlashLinkWindow::tryProcessCandidate(const std::string &raw, bool clear_input_on_success) {
+    if (raw.empty() || raw.length() >= 70) {
+      return;
+    }
+
+    bool all_valid = true;
+    for (unsigned char c : raw) {
+      if (!is_base64(c) && c != '=') {
+        all_valid = false;
+        break;
+      }
+    }
+
+    if (!all_valid) {
+      return;
+    }
+
+    std::string decoded = base64_decode(raw);
+
+    if (!is_module_flashlink(decoded)) {
+      return;
+    }
+
+    detected = true;
+    decoded_text = decoded;
+
+    startSearch(decoded);
+
+    if (clear_input_on_success) {
+      input_buffer[0] = '\0';
+    }
   }
 
   void FlashLinkWindow::render() {
@@ -203,28 +449,7 @@ namespace vxe {
 
       const char *clipboard = ImGui::GetClipboardText();
       if (clipboard != nullptr) {
-        std::string clip_str(clipboard);
-
-        if (!clip_str.empty() && clip_str.length() < 70) {
-          bool all_valid = true;
-          for (unsigned char c : clip_str) {
-            if (!is_base64(c) && c != '=') {
-              all_valid = false;
-              break;
-            }
-          }
-
-          if (all_valid) {
-            detected = true;
-            decoded_text = base64_decode(clip_str);
-
-            if (is_module_flashlink(decoded_text)) {
-              startSearch(decoded_text);
-            }
-          } else {
-            detected = false;
-          }
-        }
+        tryProcessCandidate(std::string(clipboard), false);
       }
     }
 
@@ -233,35 +458,14 @@ namespace vxe {
     bool edited = ImGui::InputText("##flashlink_input", input_buffer, IM_ARRAYSIZE(input_buffer));
 
     if (edited) {
-      std::string typed(input_buffer);
-
-      if (!typed.empty() && typed.length() < 70) {
-        bool all_valid = true;
-        for (unsigned char c : typed) {
-          if (!is_base64(c) && c != '=') {
-            all_valid = false;
-            break;
-          }
-        }
-
-        if (all_valid) {
-          std::string decoded = base64_decode(typed);
-
-          if (is_module_flashlink(decoded)) {
-            detected = true;
-            decoded_text = decoded;
-
-            startSearch(decoded);
-
-            input_buffer[0] = '\0';
-          }
-        }
-      }
+      tryProcessCandidate(std::string(input_buffer), true);
     }
 
     ImGui::Separator();
 
-    switch (state) {
+    FlashLinkState current_state = state.load();
+
+    switch (current_state) {
       case FlashLinkState::WaitingForClipboard: {
         ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "No flashlink for module detected");
         ImGui::TextWrapped("Please enter a valid flashlink");
@@ -277,9 +481,133 @@ namespace vxe {
         break;
       }
 
+      case FlashLinkState::Error: {
+        std::string error_msg;
+        {
+          std::lock_guard<std::mutex> lock(result_mutex_);
+          error_msg = fetch_result_.error;
+        }
+
+        ImGui::TextColored(ImVec4(1.0f, 0.45f, 0.45f, 1.0f), "An error occured");
+        ImGui::TextWrapped("%s", error_msg.c_str());
+        break;
+      }
+
       case FlashLinkState::Ready: {
-        ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), "Search terminated !");
-        ImGui::Text("Flashlink : %s", current_flashlink.c_str());
+        ModuleFetchResult local_result;
+        {
+          std::lock_guard<std::mutex> lock(result_mutex_);
+          local_result = fetch_result_;
+        }
+
+        float avail_w = ImGui::GetContentRegionAvail().x;
+
+        if (!local_result.info.banner_link.empty()) {
+          ImGui::Image(Cherry::GetTexture(Cherry::GetHttpPath(local_result.info.banner_link)), ImVec2(avail_w, 120.0f));
+          ImGui::Spacing();
+        }
+
+        ImGui::BeginGroup();
+        {
+          if (!local_result.info.picture_link.empty()) {
+            ImGui::Image(Cherry::GetTexture(Cherry::GetHttpPath(local_result.info.picture_link)), ImVec2(64.0f, 64.0f));
+            ImGui::SameLine();
+          }
+
+          ImGui::BeginGroup();
+          ImGui::SetWindowFontScale(1.3f);
+          ImGui::TextUnformatted(
+              local_result.info.proper_name.empty() ? "Unknown module" : local_result.info.proper_name.c_str());
+          ImGui::SetWindowFontScale(1.0f);
+
+          ImGui::TextDisabled("%s", local_result.info.name.c_str());
+          ImGui::EndGroup();
+        }
+        ImGui::EndGroup();
+
+        ImGui::Spacing();
+        ImGui::TextWrapped("%s", local_result.info.description.c_str());
+
+        ImGui::Separator();
+
+        if (local_result.compatible_releases.empty()) {
+          ImGui::TextColored(
+              ImVec4(1.0f, 0.75f, 0.3f, 1.0f), "No compatible version of this module found for your platform.");
+        } else {
+          std::vector<std::string> combo_labels;
+          combo_labels.reserve(local_result.compatible_releases.size());
+          for (const auto &rel : local_result.compatible_releases) {
+            combo_labels.push_back(rel.version + "  (" + rel.platform + " / " + rel.arch + ")");
+          }
+
+          if (selected_release_index_ < 0 || selected_release_index_ >= (int)combo_labels.size()) {
+            selected_release_index_ = 0;
+          }
+
+          ImGui::TextUnformatted("Available versions :");
+          if (ImGui::BeginCombo("##version_combo", combo_labels[selected_release_index_].c_str())) {
+            for (int i = 0; i < (int)combo_labels.size(); i++) {
+              bool is_selected = (i == selected_release_index_);
+              if (ImGui::Selectable(combo_labels[i].c_str(), is_selected)) {
+                selected_release_index_ = i;
+              }
+              if (is_selected) {
+                ImGui::SetItemDefaultFocus();
+              }
+            }
+            ImGui::EndCombo();
+          }
+
+          ImGui::Spacing();
+
+          if (ImGui::Button("Download and install")) {
+            const ModuleRelease &chosen = local_result.compatible_releases[selected_release_index_];
+
+            std::string release_url =
+                "https://api.infinite.si/api/garagevortex/get_release/module?parent_uuid=" + local_result.info.uuid +
+                "&uuid=" + chosen.uuid;
+
+            install_progress_ = std::make_shared<vxe::ModuleInstallProgress>();
+
+            auto progress = install_progress_;
+            std::thread([release_url, progress]() {
+              std::string body;
+              try {
+                body = vxe::get_current_context()->net.GET(release_url);
+              } catch (...) {
+                progress->set_error("Unable to fetch release details.");
+                return;
+              }
+
+              nlohmann::json release_json;
+              try {
+                release_json = nlohmann::json::parse(body);
+              } catch (...) {
+                progress->set_error("Invalid JSON.");
+                return;
+              }
+
+              vxe::install_module_release_async(release_json, progress);
+            }).detach();
+          }
+
+          if (install_progress_) {
+            vxe::ModuleInstallState st = install_progress_->state.load();
+            ImGui::Separator();
+
+            switch (st) {
+              case vxe::ModuleInstallState::Error:
+                ImGui::TextColored(ImVec4(1.0f, 0.45f, 0.45f, 1.0f), "%s", install_progress_->get_error().c_str());
+                break;
+              case vxe::ModuleInstallState::Done:
+                ImGui::TextColored(ImVec4(0.4f, 0.9f, 0.4f, 1.0f), "%s", install_progress_->get_status().c_str());
+                ImGui::TextDisabled("%s", install_progress_->get_install_path().c_str());
+                break;
+              default: ImGui::Text("%s", install_progress_->get_status().c_str()); break;
+            }
+          }
+        }
+
         break;
       }
     }

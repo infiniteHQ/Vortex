@@ -63,7 +63,7 @@ option(CHERRY_IMGUI_EXPORT "Disable workspace saves"                     ON)
 option(CHERRY_PACKAGE "Enable packaging features with pyinstaller"      OFF)
 option(CHERRY_MULTIAPP "Use multiple apps in one executable"             ON)
 
-option(CHERRY_ENABLE_NET "Enable net features"                          OFF)
+option(CHERRY_ENABLE_NET "Enable net features"                           ON)
 option(CHERRY_ENABLE_AUDIO "Enable audio features"                      OFF)
 option(CHERRY_ENABLE_MARKDOWN "Enable markdown parsing and render"       ON)
 option(CHERRY_ENABLE_SCRIPTING "Enable script engine"                    ON)

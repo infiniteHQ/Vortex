@@ -175,3 +175,59 @@ bool vxe::is_template_flashlink(const std::string &str) {
   static const std::regex pattern("^tem:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
   return std::regex_match(str, pattern);
 }
+
+bool vxe::run_command_capture_output(const std::string &cmd, std::string &output) {
+#ifdef _WIN32
+  FILE *pipe = _popen(cmd.c_str(), "r");
+#else
+  FILE *pipe = popen(cmd.c_str(), "r");
+#endif
+  if (!pipe) {
+    return false;
+  }
+
+  std::array<char, 256> buffer{};
+  output.clear();
+  while (fgets(buffer.data(), (int)buffer.size(), pipe) != nullptr) {
+    output += buffer.data();
+  }
+
+#ifdef _WIN32
+  _pclose(pipe);
+#else
+  pclose(pipe);
+#endif
+  return true;
+}
+
+std::string vxe::to_lower(std::string s) {
+  std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
+  return s;
+}
+
+std::string vxe::trim(const std::string &s) {
+  size_t start = s.find_first_not_of(" \t\r\n");
+  size_t end = s.find_last_not_of(" \t\r\n");
+  if (start == std::string::npos) {
+    return "";
+  }
+  return s.substr(start, end - start + 1);
+}
+
+std::string vxe::filename_from_url(const std::string &url) {
+  size_t pos = url.find_last_of('/');
+  std::string name = (pos == std::string::npos) ? url : url.substr(pos + 1);
+  size_t qpos = name.find('?');
+  if (qpos != std::string::npos) {
+    name = name.substr(0, qpos);
+  }
+  return name.empty() ? "download.tmp" : name;
+}
+
+bool vxe::ensure_directory_exists(const std::string &path) {
+  std::error_code ec;
+  if (std::filesystem::exists(path, ec)) {
+    return std::filesystem::is_directory(path, ec);
+  }
+  return std::filesystem::create_directories(path, ec);
+}
