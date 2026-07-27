@@ -266,10 +266,8 @@ void vxe::install_module_release_async(const nlohmann::json &release_json, std::
     progress->state.store(ModuleInstallState::Extracting);
     progress->set_status("Extracting the module...");
 
-    std::string moduleDestDir = modulesDir + "/" + (release_uuid.empty() ? filename : release_uuid);
-
     std::string extractError;
-    if (!extract_tar(archivePath, moduleDestDir, extractError)) {
+    if (!extract_tar(archivePath, modulesDir, extractError)) {
       progress->set_error("Module extraction failed : " + extractError);
       return;
     }
@@ -280,7 +278,7 @@ void vxe::install_module_release_async(const nlohmann::json &release_json, std::
 
     {
       std::lock_guard<std::mutex> lock(progress->mutex);
-      progress->install_path = moduleDestDir;
+      progress->install_path = modulesDir;
       progress->status_message = "Module installed in this project with success.";
     }
     progress->state.store(ModuleInstallState::Done);

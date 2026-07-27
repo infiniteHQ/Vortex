@@ -786,7 +786,13 @@ namespace vxe {
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     if (CherryKit::ButtonImageText("Flash Link", Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png"))
             .GetDataAs<bool>("isClicked")) {
-      spawn_flash_link_window();
+      spawn_flash_link_window("flash");
+    }
+
+    CherryNextComponent.SetProperty("padding_y", "6.0f");
+    if (CherryKit::ButtonImageText("Enter code", Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png"))
+            .GetDataAs<bool>("isClicked")) {
+      spawn_flash_link_window("prompt");
     }
 
     if (vxe::get_current_context()->disconnected) {
@@ -872,12 +878,12 @@ namespace vxe {
     CherryGUI::PopStyleColor(2);
   }
 
-  void ModulesUtility::spawn_flash_link_window() {
+  void ModulesUtility::spawn_flash_link_window(const std::string &mode) {
     flash_link_windows_counter_++;
     Cherry::ApplicationSpecification spec;
 
     std::string name = "?loc:loc.window_names.flash_link" + std::to_string(flash_link_windows_counter_);
-    auto new_win = vxe::FlashLinkWindow::create(name);
+    auto new_win = vxe::FlashLinkWindow::create(name, mode);
     new_win->get_app_window()->SetVisibility(true);
 
     std::string label = "Use flash link";

@@ -54,7 +54,7 @@ namespace vxe {
     void set_selected_category(const std::string &c);
     std::string get_selected_category();
 
-    void spawn_flash_link_window();
+    void spawn_flash_link_window(const std::string &mode);
 
    private:
     std::vector<ModulesUtilityChild> childs_;

@@ -10,6 +10,10 @@
 
 #include "./flash_link_window.hpp"
 
+#include <algorithm>
+#include <sstream>
+#include <thread>
+
 namespace vxe {
 
   namespace {
@@ -212,6 +216,17 @@ namespace vxe {
       return result;
     }
 
+    std::string native_platform_label(const std::string &platform, const std::string &arch) {
+      std::string pretty = platform;
+      if (platform == "windows")
+        pretty = "Windows";
+      else if (platform == "macos")
+        pretty = "macOS";
+      else if (platform == "linux")
+        pretty = "Linux";
+      return pretty + " (" + arch + ")";
+    }
+
   }  // namespace
 
   ModuleFetchResult fetch_module_from_flashlink(const std::string &flashlink) {
@@ -311,7 +326,6 @@ namespace vxe {
       rel.uuid = item.value("uuid", "");
       rel.name = item.value("name", "");
 
-      // fmt : vx:platform:arch:major:version
       std::vector<std::string> tokens;
       std::stringstream ss(rel.name);
       std::string tok;
@@ -330,6 +344,16 @@ namespace vxe {
 
       parsed.push_back(rel);
     }
+
+    std::vector<ModuleRelease> cross;
+    for (auto &rel : parsed) {
+      if (rel.platform == "cross") {
+        cross.push_back(rel);
+      }
+    }
+    std::sort(cross.begin(), cross.end(), [](const ModuleRelease &a, const ModuleRelease &b) {
+      return version_greater(a.version, b.version);
+    });
 
     std::vector<ModuleRelease> compatible;
     for (auto &rel : parsed) {
@@ -351,11 +375,12 @@ namespace vxe {
     });
 
     result.compatible_releases = compatible;
+    result.compatible_cross_releases = cross;
     result.success = true;
     return result;
   }
 
-  FlashLinkWindow::FlashLinkWindow(const std::string &name) {
+  FlashLinkWindow::FlashLinkWindow(const std::string &name, const std::string &mode) {
     app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
     app_window_->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
 
@@ -365,6 +390,15 @@ namespace vxe {
     app_window_->SetInternalPaddingX(8.0f);
     app_window_->SetInternalPaddingY(8.0f);
 
+    mode_ = "prompt";
+
+    if (mode == "prompt") {
+      mode_ = "prompt";
+    }
+    if (mode == "flash") {
+      mode_ = "flash";
+    }
+
     std::shared_ptr<Cherry::AppWindow> win = app_window_;
   }
 
@@ -372,8 +406,8 @@ namespace vxe {
     return app_window_;
   }
 
-  std::shared_ptr<FlashLinkWindow> FlashLinkWindow::create(const std::string &name) {
-    auto instance = std::shared_ptr<FlashLinkWindow>(new FlashLinkWindow(name));
+  std::shared_ptr<FlashLinkWindow> FlashLinkWindow::create(const std::string &name, const std::string &mode) {
+    auto instance = std::shared_ptr<FlashLinkWindow>(new FlashLinkWindow(name, mode));
     instance->setup_render_callback();
     return instance;
   }
@@ -390,8 +424,11 @@ namespace vxe {
   void FlashLinkWindow::startSearch(const std::string &flashlink) {
     uint64_t my_token = ++search_token;
 
+    manual_search_error_.clear();
     current_flashlink = flashlink;
     selected_release_index_ = 0;
+    platform_mode_initialized_ = false;
+    install_progress_.reset();
     state = FlashLinkState::Loading;
 
     std::thread([this, my_token, flashlink]() {
@@ -410,9 +447,9 @@ namespace vxe {
     }).detach();
   }
 
-  void FlashLinkWindow::tryProcessCandidate(const std::string &raw, bool clear_input_on_success) {
+  bool FlashLinkWindow::tryProcessCandidate(const std::string &raw, bool clear_input_on_success) {
     if (raw.empty() || raw.length() >= 70) {
-      return;
+      return false;
     }
 
     bool all_valid = true;
@@ -424,13 +461,13 @@ namespace vxe {
     }
 
     if (!all_valid) {
-      return;
+      return false;
     }
 
     std::string decoded = base64_decode(raw);
 
     if (!is_module_flashlink(decoded)) {
-      return;
+      return false;
     }
 
     detected = true;
@@ -441,34 +478,68 @@ namespace vxe {
     if (clear_input_on_success) {
       input_buffer[0] = '\0';
     }
+
+    return true;
+  }
+
+  void FlashLinkWindow::renderCloseButton() {
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    float avail_w = ImGui::GetContentRegionAvail().x;
+    if (ImGui::Button("Close", ImVec2(avail_w, 0.0f))) {
+      Cherry::DeleteAppWindow(app_window_);
+    }
   }
 
   void FlashLinkWindow::render() {
-    if (!clipboard_checked) {
-      clipboard_checked = true;
+    if (mode_ == "flash") {
+      if (!clipboard_checked) {
+        clipboard_checked = true;
 
-      const char *clipboard = ImGui::GetClipboardText();
-      if (clipboard != nullptr) {
-        tryProcessCandidate(std::string(clipboard), false);
+        const char *clipboard = ImGui::GetClipboardText();
+        bool ok = false;
+        if (clipboard != nullptr) {
+          ok = tryProcessCandidate(std::string(clipboard), false);
+        }
+        (void)ok;
+      }
+    } else {
+      ImGui::TextUnformatted("Please copy module flash code");
+      ImGui::Spacing();
+
+      ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 90.0f);
+      ImGui::InputTextWithHint("##flashlink_input", "Paste flashlink here...", input_buffer, IM_ARRAYSIZE(input_buffer));
+
+      ImGui::SameLine();
+
+      if (ImGui::Button("Search", ImVec2(80.0f, 0.0f))) {
+        bool ok = tryProcessCandidate(std::string(input_buffer), false);
+        if (!ok) {
+          manual_search_error_ = "Invalid flashlink code. Please copy a valid module flashlink.";
+        }
+      }
+
+      if (!manual_search_error_.empty()) {
+        ImGui::Spacing();
+        ImGui::TextColored(ImVec4(1.0f, 0.55f, 0.55f, 1.0f), "%s", manual_search_error_.c_str());
       }
     }
 
-    ImGui::TextUnformatted("Paste flashlink");
-
-    bool edited = ImGui::InputText("##flashlink_input", input_buffer, IM_ARRAYSIZE(input_buffer));
-
-    if (edited) {
-      tryProcessCandidate(std::string(input_buffer), true);
-    }
-
+    ImGui::Spacing();
     ImGui::Separator();
+    ImGui::Spacing();
 
     FlashLinkState current_state = state.load();
 
     switch (current_state) {
       case FlashLinkState::WaitingForClipboard: {
-        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "No flashlink for module detected");
-        ImGui::TextWrapped("Please enter a valid flashlink");
+        if (mode_ == "flash") {
+          ImGui::TextColored(ImVec4(1.0f, 0.75f, 0.3f, 1.0f), "Please click on a FlashLink icon before !");
+        } else {
+          ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Enter a module flashlink above and click Search.");
+        }
         break;
       }
 
@@ -528,89 +599,158 @@ namespace vxe {
         ImGui::Spacing();
         ImGui::TextWrapped("%s", local_result.info.description.c_str());
 
+        ImGui::Spacing();
         ImGui::Separator();
+        ImGui::Spacing();
 
-        if (local_result.compatible_releases.empty()) {
+        bool has_native = !local_result.compatible_releases.empty();
+        bool has_cross = !local_result.compatible_cross_releases.empty();
+
+        if (!has_native && !has_cross) {
           ImGui::TextColored(
               ImVec4(1.0f, 0.75f, 0.3f, 1.0f), "No compatible version of this module found for your platform.");
-        } else {
-          std::vector<std::string> combo_labels;
-          combo_labels.reserve(local_result.compatible_releases.size());
-          for (const auto &rel : local_result.compatible_releases) {
-            combo_labels.push_back(rel.version + "  (" + rel.platform + " / " + rel.arch + ")");
+          break;
+        }
+
+        if (!platform_mode_initialized_) {
+          selected_platform_mode_ = has_cross ? PlatformTargetMode::Cross : PlatformTargetMode::Native;
+          platform_mode_initialized_ = true;
+        }
+
+        std::string current_platform = detect_current_platform();
+        std::string current_arch = detect_current_arch();
+        std::string native_label = native_platform_label(current_platform, current_arch);
+
+        if (has_cross && has_native) {
+          ImGui::TextUnformatted("Install target :");
+          ImGui::Spacing();
+
+          bool is_cross = (selected_platform_mode_ == PlatformTargetMode::Cross);
+
+          if (ImGui::RadioButton("Cross-platform", is_cross)) {
+            selected_platform_mode_ = PlatformTargetMode::Cross;
+            selected_release_index_ = 0;
+          }
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip(
+                "Selecting a cross-platform module will take a bit more disk\n"
+                "space, but makes it easy to share the project with other\n"
+                "platforms.");
           }
 
-          if (selected_release_index_ < 0 || selected_release_index_ >= (int)combo_labels.size()) {
+          ImGui::SameLine();
+
+          if (ImGui::RadioButton(native_label.c_str(), !is_cross)) {
+            selected_platform_mode_ = PlatformTargetMode::Native;
             selected_release_index_ = 0;
           }
 
-          ImGui::TextUnformatted("Available versions :");
-          if (ImGui::BeginCombo("##version_combo", combo_labels[selected_release_index_].c_str())) {
-            for (int i = 0; i < (int)combo_labels.size(); i++) {
-              bool is_selected = (i == selected_release_index_);
-              if (ImGui::Selectable(combo_labels[i].c_str(), is_selected)) {
-                selected_release_index_ = i;
-              }
-              if (is_selected) {
-                ImGui::SetItemDefaultFocus();
-              }
-            }
-            ImGui::EndCombo();
+          ImGui::Spacing();
+        } else if (has_cross && !has_native) {
+          selected_platform_mode_ = PlatformTargetMode::Cross;
+          ImGui::TextDisabled("Cross-platform module (works on Linux, Windows and macOS)");
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip(
+                "This module is cross-platform: it takes a bit more disk\n"
+                "space, but makes it easy to share the project with other\n"
+                "platforms.");
           }
+          ImGui::Spacing();
+        } else {
+          selected_platform_mode_ = PlatformTargetMode::Native;
+          ImGui::TextDisabled("Platform : %s", native_label.c_str());
+          ImGui::Spacing();
+        }
 
+        const std::vector<ModuleRelease> &active_releases = (selected_platform_mode_ == PlatformTargetMode::Cross)
+                                                                ? local_result.compatible_cross_releases
+                                                                : local_result.compatible_releases;
+
+        std::vector<std::string> combo_labels;
+        combo_labels.reserve(active_releases.size());
+        for (const auto &rel : active_releases) {
+          if (selected_platform_mode_ == PlatformTargetMode::Cross) {
+            combo_labels.push_back(rel.version);
+          } else {
+            combo_labels.push_back(rel.version + "  (" + rel.platform + " / " + rel.arch + ")");
+          }
+        }
+
+        if (selected_release_index_ < 0 || selected_release_index_ >= (int)combo_labels.size()) {
+          selected_release_index_ = 0;
+        }
+
+        ImGui::TextUnformatted("Available versions :");
+        if (ImGui::BeginCombo("##version_combo", combo_labels[selected_release_index_].c_str())) {
+          for (int i = 0; i < (int)combo_labels.size(); i++) {
+            bool is_selected = (i == selected_release_index_);
+            if (ImGui::Selectable(combo_labels[i].c_str(), is_selected)) {
+              selected_release_index_ = i;
+            }
+            if (is_selected) {
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+          ImGui::EndCombo();
+        }
+
+        ImGui::Spacing();
+        ImGui::Spacing();
+
+        if (ImGui::Button("Download and install", ImVec2(avail_w, 0.0f))) {
+          const ModuleRelease &chosen = active_releases[selected_release_index_];
+
+          std::string release_url =
+              "https://api.infinite.si/api/garagevortex/get_release/module?parent_uuid=" + local_result.info.uuid +
+              "&uuid=" + chosen.uuid;
+
+          install_progress_ = std::make_shared<vxe::ModuleInstallProgress>();
+
+          auto progress = install_progress_;
+          std::thread([release_url, progress]() {
+            std::string body;
+            try {
+              body = vxe::get_current_context()->net.GET(release_url);
+            } catch (...) {
+              progress->set_error("Unable to fetch release details.");
+              return;
+            }
+
+            nlohmann::json release_json;
+            try {
+              release_json = nlohmann::json::parse(body);
+            } catch (...) {
+              progress->set_error("Invalid JSON.");
+              return;
+            }
+
+            vxe::install_module_release_async(release_json, progress);
+          }).detach();
+        }
+
+        if (install_progress_) {
+          vxe::ModuleInstallState st = install_progress_->state.load();
+          ImGui::Spacing();
+          ImGui::Separator();
           ImGui::Spacing();
 
-          if (ImGui::Button("Download and install")) {
-            const ModuleRelease &chosen = local_result.compatible_releases[selected_release_index_];
-
-            std::string release_url =
-                "https://api.infinite.si/api/garagevortex/get_release/module?parent_uuid=" + local_result.info.uuid +
-                "&uuid=" + chosen.uuid;
-
-            install_progress_ = std::make_shared<vxe::ModuleInstallProgress>();
-
-            auto progress = install_progress_;
-            std::thread([release_url, progress]() {
-              std::string body;
-              try {
-                body = vxe::get_current_context()->net.GET(release_url);
-              } catch (...) {
-                progress->set_error("Unable to fetch release details.");
-                return;
-              }
-
-              nlohmann::json release_json;
-              try {
-                release_json = nlohmann::json::parse(body);
-              } catch (...) {
-                progress->set_error("Invalid JSON.");
-                return;
-              }
-
-              vxe::install_module_release_async(release_json, progress);
-            }).detach();
-          }
-
-          if (install_progress_) {
-            vxe::ModuleInstallState st = install_progress_->state.load();
-            ImGui::Separator();
-
-            switch (st) {
-              case vxe::ModuleInstallState::Error:
-                ImGui::TextColored(ImVec4(1.0f, 0.45f, 0.45f, 1.0f), "%s", install_progress_->get_error().c_str());
-                break;
-              case vxe::ModuleInstallState::Done:
-                ImGui::TextColored(ImVec4(0.4f, 0.9f, 0.4f, 1.0f), "%s", install_progress_->get_status().c_str());
-                ImGui::TextDisabled("%s", install_progress_->get_install_path().c_str());
-                break;
-              default: ImGui::Text("%s", install_progress_->get_status().c_str()); break;
-            }
+          switch (st) {
+            case vxe::ModuleInstallState::Error:
+              ImGui::TextColored(ImVec4(1.0f, 0.45f, 0.45f, 1.0f), "%s", install_progress_->get_error().c_str());
+              break;
+            case vxe::ModuleInstallState::Done:
+              ImGui::TextColored(ImVec4(0.4f, 0.9f, 0.4f, 1.0f), "%s", install_progress_->get_status().c_str());
+              ImGui::TextDisabled("%s", install_progress_->get_install_path().c_str());
+              break;
+            default: ImGui::Text("%s", install_progress_->get_status().c_str()); break;
           }
         }
 
         break;
       }
     }
+
+    renderCloseButton();
   }
 
 }  // namespace vxe

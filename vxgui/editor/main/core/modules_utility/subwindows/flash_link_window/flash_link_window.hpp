@@ -45,17 +45,18 @@ namespace vxe {
     std::string error;
     ModuleInfo info;
     std::vector<ModuleRelease> compatible_releases;
+    std::vector<ModuleRelease> compatible_cross_releases;
   };
 
   ModuleFetchResult fetch_module_from_flashlink(const std::string &flashlink);
 
   class FlashLinkWindow : public std::enable_shared_from_this<FlashLinkWindow> {
    public:
-    FlashLinkWindow(const std::string &name);
+    FlashLinkWindow(const std::string &name, const std::string &mode);
 
     // window and rendering
     std::shared_ptr<Cherry::AppWindow> &get_app_window();
-    static std::shared_ptr<FlashLinkWindow> create(const std::string &name);
+    static std::shared_ptr<FlashLinkWindow> create(const std::string &name, const std::string &mode);
     void setup_render_callback();
     void render();
 
@@ -69,6 +70,12 @@ namespace vxe {
     bool detected = false;
     std::string decoded_text;
 
+    std::string mode_;
+    std::string manual_search_error_;
+
+    enum class PlatformTargetMode { Cross, Native };
+    PlatformTargetMode selected_platform_mode_ = PlatformTargetMode::Native;
+    bool platform_mode_initialized_ = false;
     enum class FlashLinkState { WaitingForClipboard, Loading, Ready, Error };
 
     std::atomic<FlashLinkState> state{ FlashLinkState::WaitingForClipboard };
@@ -81,7 +88,10 @@ namespace vxe {
     int selected_release_index_ = 0;
 
     void startSearch(const std::string &flashlink);
-    void tryProcessCandidate(const std::string &raw, bool clear_input_on_success);
+
+    bool tryProcessCandidate(const std::string &raw, bool clear_input_on_success);
+
+    void renderCloseButton();
   };
 }  // namespace vxe
 
