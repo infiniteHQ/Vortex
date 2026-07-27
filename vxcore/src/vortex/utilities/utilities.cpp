@@ -59,3 +59,119 @@ VORTEX_API std::string vxe::replace_placeholders(
   }
   return result;
 }
+
+VORTEX_API std::string vxe::base64_encode(const std::string &data) {
+  static const std::string base64_chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz"
+      "0123456789+/";
+
+  std::string ret;
+  int i = 0, j = 0;
+  unsigned char char_array_3[3];
+  unsigned char char_array_4[4];
+  size_t in_len = data.size();
+  size_t pos = 0;
+
+  while (in_len--) {
+    char_array_3[i++] = data[pos++];
+    if (i == 3) {
+      char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+      char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+      char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+      char_array_4[3] = char_array_3[2] & 0x3f;
+
+      for (i = 0; i < 4; i++)
+        ret += base64_chars[char_array_4[i]];
+      i = 0;
+    }
+  }
+
+  if (i) {
+    for (j = i; j < 3; j++)
+      char_array_3[j] = '\0';
+
+    char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+    char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+    char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+
+    for (j = 0; j < i + 1; j++)
+      ret += base64_chars[char_array_4[j]];
+
+    while (i++ < 3)
+      ret += '=';
+  }
+
+  return ret;
+}
+
+bool vxe::is_base64(unsigned char c) {
+  return (isalnum(c) || (c == '+') || (c == '/'));
+}
+
+std::string vxe::base64_decode(const std::string &encoded) {
+  const std::string base64_chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz"
+      "0123456789+/";
+
+  size_t in_len = encoded.size();
+  int i = 0, j = 0;
+  int in_ = 0;
+  unsigned char char_array_4[4], char_array_3[3];
+  std::string ret;
+
+  while (in_len-- && (encoded[in_] != '=') && vxe::is_base64(encoded[in_])) {
+    char_array_4[i++] = encoded[in_];
+    in_++;
+    if (i == 4) {
+      for (i = 0; i < 4; i++)
+        char_array_4[i] = static_cast<unsigned char>(base64_chars.find(char_array_4[i]));
+
+      char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+      char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+      char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+      for (i = 0; i < 3; i++)
+        ret += char_array_3[i];
+      i = 0;
+    }
+  }
+
+  if (i) {
+    for (j = i; j < 4; j++)
+      char_array_4[j] = 0;
+
+    for (j = 0; j < 4; j++)
+      char_array_4[j] = static_cast<unsigned char>(base64_chars.find(char_array_4[j]));
+
+    char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+    char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+    char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+    for (j = 0; j < i - 1; j++)
+      ret += char_array_3[j];
+  }
+
+  return ret;
+}
+
+bool vxe::is_module_flashlink(const std::string &str) {
+  static const std::regex pattern("^mod:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+  return std::regex_match(str, pattern);
+}
+
+bool vxe::is_plugin_flashlink(const std::string &str) {
+  static const std::regex pattern("^plu:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+  return std::regex_match(str, pattern);
+}
+
+bool vxe::is_content_flashlink(const std::string &str) {
+  static const std::regex pattern("^con:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+  return std::regex_match(str, pattern);
+}
+
+bool vxe::is_template_flashlink(const std::string &str) {
+  static const std::regex pattern("^tem:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+  return std::regex_match(str, pattern);
+}

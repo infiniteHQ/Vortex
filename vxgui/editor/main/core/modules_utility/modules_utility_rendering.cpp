@@ -780,9 +780,9 @@ namespace vxe {
     CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 3.0f);
 
     CherryNextComponent.SetProperty("padding_y", "6.0f");
-    if (CherryKit::ButtonImageText("Download", Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png"))
+    if (CherryKit::ButtonImageText("Flash Link", Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png"))
             .GetDataAs<bool>("isClicked")) {
-      //
+      spawn_flash_link_window();
     }
 
     CherryNextComponent.SetProperty("padding_y", "6.0f");
@@ -862,5 +862,36 @@ namespace vxe {
 
     CherryGUI::PopStyleVar();
     CherryGUI::PopStyleColor(2);
+  }
+
+  void ModulesUtility::spawn_flash_link_window() {
+    flash_link_windows_counter_++;
+    Cherry::ApplicationSpecification spec;
+
+    std::string name = "?loc:loc.window_names.flash_link" + std::to_string(flash_link_windows_counter_);
+    auto new_win = vxe::FlashLinkWindow::create(name);
+    new_win->get_app_window()->SetVisibility(true);
+
+    std::string label = "Use flash link";
+    spec.Name = label;
+    spec.MinHeight = 300;
+    spec.MinWidth = 175;
+    spec.Height = 600;
+    spec.DisableLogo = true;
+    spec.DisableResize = true;
+    spec.Width = 400;
+    spec.CustomTitlebar = true;
+    spec.DisableWindowManagerTitleBar = true;
+    spec.WindowOnlyClosable = true;
+    spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+    spec.UniqueAppWindowName = new_win->get_app_window()->m_Name;
+    spec.FramebarCallback = []() { };
+    spec.UsingCloseCallback = true;
+    spec.CloseCallback = [this, new_win]() { Cherry::DeleteAppWindow(new_win->get_app_window()); };
+
+    spec.MenubarCallback = []() { };
+    spec.WindowSaves = false;
+    new_win->get_app_window()->AttachOnNewWindow(spec);
+    Cherry::AddAppWindow(new_win->get_app_window());
   }
 }  // namespace vxe

@@ -22,6 +22,13 @@ namespace vxe {
   VORTEX_API std::string replace_placeholders(
       const std::string &command,
       const std::unordered_map<std::string, std::string> &replacements);
+  VORTEX_API std::string base64_encode(const std::string &data);
+  VORTEX_API std::string base64_decode(const std::string &encoded);
+  VORTEX_API bool is_base64(unsigned char c);
+  VORTEX_API bool is_module_flashlink(const std::string &str);
+  VORTEX_API bool is_plugin_flashlink(const std::string &str);
+  VORTEX_API bool is_content_flashlink(const std::string &str);
+  VORTEX_API bool is_template_flashlink(const std::string &str);
 
 }  // namespace vxe
 
