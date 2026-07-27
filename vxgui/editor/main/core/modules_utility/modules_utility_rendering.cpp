@@ -779,10 +779,18 @@ namespace vxe {
   void ModulesUtility::render_left_menubar() {
     CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 3.0f);
 
+    if (vxe::get_current_context()->disconnected) {
+      CherryGUI::BeginDisabled();
+    }
+
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     if (CherryKit::ButtonImageText("Flash Link", Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png"))
             .GetDataAs<bool>("isClicked")) {
       spawn_flash_link_window();
+    }
+
+    if (vxe::get_current_context()->disconnected) {
+      CherryGUI::EndDisabled();
     }
 
     CherryNextComponent.SetProperty("padding_y", "6.0f");

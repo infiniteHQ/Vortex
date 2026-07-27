@@ -64,7 +64,7 @@ struct VxSystemLog {
   std::string message;
   std::string timestamp;
 
-  VxSystemLog(const spdlog::level::level_enum& level, const std::string& filter, const std::string& message)
+  VxSystemLog(const spdlog::level::level_enum &level, const std::string &filter, const std::string &message)
       : level(level),
         filter(filter),
         message(message) { };
@@ -204,6 +204,24 @@ struct Theme {
   std::unordered_map<std::string, std::string> theme;
 };
 
+// Net features
+class VortexNet {
+ public:
+  VortexNet();
+  ~VortexNet();
+
+  bool CheckNet();
+  std::string GET(const std::string &url);
+  std::string POST(const std::string &url, const std::string &body, const std::string &contentType = "application/json");
+
+ private:
+  std::string Request(
+      const std::string &url,
+      const std::string &method,
+      const std::string &body = "",
+      const std::string &contentType = "");
+};
+
 struct VxIO {
   int MetricsActiveAllocations;
 
@@ -301,6 +319,10 @@ struct VxContext {
 
   // Vendor
   PlatformVendor platform_vendor;
+
+  // Net
+  VortexNet net;
+  std::atomic<bool> disconnected{ true };
 
   // Components
   VxIO IO;

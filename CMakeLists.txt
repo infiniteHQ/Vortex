@@ -72,6 +72,7 @@ option(CHERRY_ENABLE_LINUXDRM "Enable Linux Direct Rendering Manager"   OFF)
 option(CHERRY_ENABLE_NODES "Disable nodal systems"                      OFF)
 option(CHERRY_ENABLE_WORKSPACESAVES "Disable workspace saves"           OFF)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/cherry cherry_build)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/httpcl httpcl_build)
 
 file(GLOB_RECURSE VORTEX_ALL_SOURCES 
     "${CMAKE_CURRENT_SOURCE_DIR}/vxcore/src/*.cpp"
@@ -93,11 +94,12 @@ target_include_directories(vortex_shared PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/cherry
 )
 
-target_link_libraries(vortex_shared PUBLIC cherry)
+target_link_libraries(vortex_shared PUBLIC cherry httpcl)
 
 if(UNIX AND NOT APPLE)
     target_link_libraries(vortex_shared PRIVATE crypto)
 endif()
+
 
 
 # ---------------------------------------------------------------------------
@@ -113,6 +115,7 @@ target_link_libraries(vortex_utils PUBLIC vortex_shared)
 if(UNIX AND NOT APPLE)
     find_package(CURL REQUIRED)
     target_link_libraries(vortex PRIVATE CURL::libcurl)
+    target_link_libraries(vortex_shared PRIVATE CURL::libcurl)
 endif()
 
 

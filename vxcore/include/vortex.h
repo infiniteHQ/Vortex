@@ -50,6 +50,7 @@
 
 // Third party includes
 #include "../../lib/cherry/cherry.hpp"
+#include "../../lib/httpcl/httpcl.h"
 #include "../../lib/json/single_include/nlohmann/json.hpp"
 #include "../../lib/spdlog/include/spdlog/sinks/basic_file_sink.h"
 #include "../../lib/spdlog/include/spdlog/sinks/daily_file_sink.h"
@@ -120,6 +121,7 @@ namespace vxe {
    private:
     std::string value = "null";
   };
+
 }  // namespace vxe
 
 struct ArgumentValues : public vxe::Values {

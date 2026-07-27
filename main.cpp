@@ -158,6 +158,17 @@ bool check_directory() {
 std::shared_ptr<VxContext> init_runtime() {
   auto ctx = vxe::create_context();
 
+  ctx->disconnected = true;
+
+  std::thread([=]() {
+    if (vxe::get_current_context()->net.CheckNet()) {
+      vxe::get_current_context()->disconnected = false;
+      vxe::log_info("Net", "Connected to internet.");
+    } else {
+      vxe::log_warn("Net", "Offline.");
+    }
+  }).detach();
+
   vxe::initialize_platform_vendor();
   vxe::add_credits("vx", Cherry::GetPath("CREDITS"));
 
@@ -192,6 +203,17 @@ std::shared_ptr<VxContext> init_runtime() {
 
 std::shared_ptr<VxContext> init_blank_runtime() {
   auto ctx = vxe::create_context();
+
+  ctx->disconnected = true;
+
+  std::thread([=]() {
+    if (vxe::get_current_context()->net.CheckNet()) {
+      vxe::get_current_context()->disconnected = false;
+      vxe::log_info("Net", "Connected to internet.");
+    } else {
+      vxe::log_warn("Net", "Offline.");
+    }
+  }).detach();
 
   ctx->state.session_id = session_id;
 
