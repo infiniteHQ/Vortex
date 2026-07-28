@@ -700,14 +700,15 @@ namespace vxe {
         if (ImGui::Button("Download and install", ImVec2(avail_w, 0.0f))) {
           const ModuleRelease &chosen = active_releases[selected_release_index_];
 
+          std::string parent_uuid = local_result.info.uuid;
           std::string release_url =
-              "https://api.infinite.si/api/garagevortex/get_release/module?parent_uuid=" + local_result.info.uuid +
+              "https://api.infinite.si/api/garagevortex/get_release/module?parent_uuid=" + parent_uuid +
               "&uuid=" + chosen.uuid;
 
           install_progress_ = std::make_shared<vxe::ModuleInstallProgress>();
 
           auto progress = install_progress_;
-          std::thread([release_url, progress]() {
+          std::thread([release_url, parent_uuid, progress]() {
             std::string body;
             try {
               body = vxe::get_current_context()->net.GET(release_url);
@@ -724,7 +725,7 @@ namespace vxe {
               return;
             }
 
-            vxe::install_module_release_async(release_json, progress);
+            vxe::install_module_release_async(release_json, parent_uuid, progress);
           }).detach();
         }
 

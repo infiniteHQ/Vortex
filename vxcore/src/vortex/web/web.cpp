@@ -1,5 +1,5 @@
 //
-//  utilities.cpp
+//  web.cpp
 //  Sources for optional web services
 //
 //	Copyright (c) 2026 Infinite
@@ -166,7 +166,10 @@ std::string vxe::get_module_install_temp_directory() {
   return path;
 }
 
-void vxe::install_module_release_async(const nlohmann::json &release_json, std::shared_ptr<ModuleInstallProgress> progress) {
+void vxe::install_module_release_async(
+    const nlohmann::json &release_json,
+    const std::string &parent_uuid,
+    std::shared_ptr<ModuleInstallProgress> progress) {
   if (!progress) {
     return;
   }
@@ -174,7 +177,7 @@ void vxe::install_module_release_async(const nlohmann::json &release_json, std::
   progress->state.store(ModuleInstallState::CheckingIntegrityInfo);
   progress->set_status("Verification of release informations...");
 
-  std::thread([release_json, progress]() {
+  std::thread([release_json, parent_uuid, progress]() {
     std::string release_uuid = release_json.value("uuid", "");
 
     if (!release_json.contains("files") || !release_json["files"].is_array() || release_json["files"].empty()) {
@@ -282,5 +285,18 @@ void vxe::install_module_release_async(const nlohmann::json &release_json, std::
       progress->status_message = "Module installed in this project with success.";
     }
     progress->state.store(ModuleInstallState::Done);
+
+    vxe::notify_module_download(parent_uuid);
   }).detach();
+}
+
+void vxe::notify_module_download(const std::string &parent_uuid) {
+  try {
+    nlohmann::json payload;
+    payload["uuid"] = parent_uuid;
+
+    vxe::get_current_context()->net.POST("https://api.infinite.si/api/garagevortex/download_module", payload.dump());
+  } catch (...) {
+    // no error needed
+  }
 }
