@@ -72,30 +72,29 @@ bool vxe::compute_file_sha256(const std::string &filePath, std::string &outSum, 
 
   std::istringstream iss(raw);
   std::string line;
-  std::string hashLine;
-  bool nextIsHash = false;
+  std::vector<std::string> lines;
+
   while (std::getline(iss, line)) {
-    line = vxe::trim(line);
-    if (nextIsHash) {
-      hashLine = line;
-      break;
-    }
-    if (line.find("hash of file") != std::string::npos) {
-      nextIsHash = true;
+    std::string trimmed = vxe::trim(line);
+    if (!trimmed.empty()) {
+      lines.push_back(trimmed);
     }
   }
 
-  if (hashLine.empty()) {
+  if (lines.size() < 2) {
     errorOut = "Cannot verify the file...";
     return false;
   }
 
+  std::string hashLine = lines[1];
+
   std::string cleaned;
   for (char c : hashLine) {
-    if (!std::isspace((unsigned char)c)) {
+    if (!std::isspace(static_cast<unsigned char>(c))) {
       cleaned += c;
     }
   }
+  
   outSum = vxe::to_lower(cleaned);
 #else
   std::string cmd = "sha256sum \"" + filePath + "\" 2>/dev/null";
@@ -114,7 +113,7 @@ bool vxe::compute_file_sha256(const std::string &filePath, std::string &outSum, 
     errorOut = "Unexpected output of sha256sum/shasum.";
     return false;
   }
-  outSum = to_lower(hash);
+  outSum = vxe::to_lower(hash);
 #endif
 
   return true;
