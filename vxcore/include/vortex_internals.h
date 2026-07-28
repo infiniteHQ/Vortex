@@ -206,7 +206,7 @@ struct Theme {
 };
 
 // Net features
-class VortexNet {
+class VORTEX_API VortexNet {
  public:
   VortexNet();
   ~VortexNet();

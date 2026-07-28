@@ -11,6 +11,11 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
+#if defined(_WIN32)
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 VORTEX_API std::string vxe::get_current_timestamp() {
   // Get actual time
   std::time_t currentTime = std::time(nullptr);

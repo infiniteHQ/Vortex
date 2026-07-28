@@ -193,7 +193,7 @@ namespace vxe {
     bool version_greater(const std::string &a, const std::string &b) {
       auto pa = parse_version_numbers(a);
       auto pb = parse_version_numbers(b);
-      size_t n = std::max(pa.size(), pb.size());
+      size_t n = (std::max)(pa.size(), pb.size());
       for (size_t i = 0; i < n; i++) {
         int va = i < pa.size() ? pa[i] : 0;
         int vb = i < pb.size() ? pb[i] : 0;

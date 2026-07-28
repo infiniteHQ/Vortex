@@ -6,6 +6,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (MSVC)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+endif()
+
+if (MSVC)
     add_compile_options(/utf-8)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC")
@@ -71,8 +81,11 @@ option(CHERRY_ENABLE_KIT "Enable base component kit"                     ON)
 option(CHERRY_ENABLE_LINUXDRM "Enable Linux Direct Rendering Manager"   OFF)
 option(CHERRY_ENABLE_NODES "Disable nodal systems"                      OFF)
 option(CHERRY_ENABLE_WORKSPACESAVES "Disable workspace saves"           OFF)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/cherry cherry_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/httpcl httpcl_build)
+if(NOT TARGET httpcl)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/lib/httpcl httpcl_build)
+endif()
 
 file(GLOB_RECURSE VORTEX_ALL_SOURCES 
     "${CMAKE_CURRENT_SOURCE_DIR}/vxcore/src/*.cpp"
@@ -118,9 +131,11 @@ if(UNIX AND NOT APPLE)
     target_link_libraries(vortex_shared PRIVATE CURL::libcurl)
 endif()
 
-
 if(WIN32)
-    target_link_libraries(vortex_shared PRIVATE dbghelp psapi)
+    target_link_libraries(vortex_shared PRIVATE dbghelp psapi ws2_32 shell32)
+    target_compile_definitions(vortex_shared PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+    target_compile_definitions(vortex        PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+    target_compile_definitions(vortex_utils  PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
 
     target_compile_options(vortex_shared PRIVATE /Zi)
     target_compile_options(vortex        PRIVATE /Zi)
