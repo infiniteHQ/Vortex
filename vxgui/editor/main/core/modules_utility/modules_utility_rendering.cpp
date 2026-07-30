@@ -33,10 +33,9 @@ namespace vxe {
     CherryGUI::SetNextWindowSize(ImVec2(520, 0), ImGuiCond_Appearing);
     CherryGUI::SetNextWindowBgAlpha(1.0f);
 
-    CherryGUI::PushStyleVar(ImGuiStyleVar_WindowRounding, 12.0f);
+    CherryGUI::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     CherryGUI::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
-    CherryGUI::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.11f, 0.11f, 0.12f, 1.00f));
     CherryGUI::PushStyleColor(ImGuiCol_ModalWindowDimBg, ImVec4(0.00f, 0.00f, 0.00f, 0.65f));
     CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.22f, 0.22f, 0.24f, 1.00f));
 
@@ -45,9 +44,8 @@ namespace vxe {
             &trigger_module_deletion_modal_,
             ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar)) {
       const float MODAL_W = 520.0f;
-
-      CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.62f, 0.10f, 0.10f, 1.0f));
-      CherryGUI::BeginChild("##topbar", ImVec2(MODAL_W, 48.0f), false, ImGuiWindowFlags_NoScrollbar);
+      CherryGUI::BeginChild(
+          "##topbar", ImVec2(MODAL_W, 48.0f), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
       {
         CherryGUI::SetCursorPos(ImVec2(16.0f, 13.0f));
         CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -55,19 +53,23 @@ namespace vxe {
         CherryGUI::PopStyleColor();
       }
       CherryGUI::EndChild();
-      CherryGUI::PopStyleColor();
 
       CherryGUI::SetCursorPosX(0.0f);
-      CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
       CherryGUI::BeginChild(
-          "##body", ImVec2(MODAL_W, 200.0f), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysAutoResize);
+          "##body",
+          ImVec2(MODAL_W, 230.0f),
+          false,
+          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize);
       {
         CherryGUI::SetCursorPos(ImVec2(20.0f, 16.0f));
 
-        CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.16f, 0.16f, 0.18f, 1.0f));
-        CherryGUI::PushStyleVar(ImGuiStyleVar_ChildRounding, 8.0f);
+        CherryGUI::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.0f);
         CherryGUI::SetCursorPosX(20.0f);
-        CherryGUI::BeginChild("##modulecard", ImVec2(MODAL_W - 40.0f, 82.0f), false, ImGuiWindowFlags_NoScrollbar);
+        CherryGUI::BeginChild(
+            "##modulecard",
+            ImVec2(MODAL_W - 40.0f, 82.0f),
+            false,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         {
           const float LOGO_SIZE = 52.0f;
           CherryGUI::SetCursorPos(ImVec2(14.0f, 15.0f));
@@ -85,7 +87,7 @@ namespace vxe {
           } else {
             ImVec2 p = CherryGUI::GetCursorScreenPos();
             ImDrawList *dl = CherryGUI::GetWindowDrawList();
-            dl->AddRectFilled(p, ImVec2(p.x + LOGO_SIZE, p.y + LOGO_SIZE), IM_COL32(80, 40, 40, 255), 8.0f);
+            dl->AddRectFilled(p, ImVec2(p.x + LOGO_SIZE, p.y + LOGO_SIZE), IM_COL32(80, 40, 40, 255), 0.0f);
             std::string initials =
                 module_to_delete_proper_name_.size() >= 2 ? module_to_delete_proper_name_.substr(0, 2) : "??";
             CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.6f, 1.0f));
@@ -124,7 +126,6 @@ namespace vxe {
         }
         CherryGUI::EndChild();
         CherryGUI::PopStyleVar();
-        CherryGUI::PopStyleColor();
 
         CherryGUI::SetCursorPos(ImVec2(20.0f, CherryGUI::GetCursorPosY() + 8.0f));
         CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.62f, 0.62f, 0.65f, 1.0f));
@@ -148,7 +149,7 @@ namespace vxe {
 
         CherryGUI::SetCursorPos(ImVec2(MODAL_W - (BTN_W * 2.0f + 8.0f + PAD), CherryGUI::GetCursorPosY() + 12.0f));
 
-        CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 7.0f);
+        CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
         CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.20f, 0.20f, 0.22f, 1.0f));
         CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.26f, 0.26f, 0.28f, 1.0f));
         CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.17f, 0.17f, 0.19f, 1.0f));
@@ -193,15 +194,13 @@ namespace vxe {
         CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 14.0f);
       }
       CherryGUI::EndChild();
-      CherryGUI::PopStyleColor();
 
       CherryGUI::EndPopup();
     }
 
-    CherryGUI::PopStyleColor(3);
+    CherryGUI::PopStyleColor(2);
     CherryGUI::PopStyleVar(3);
   }
-
   void ModulesUtility::render_download() {
     ImGuiIO &io = CherryGUI::GetIO();
     ImVec2 windowSize = CherryGUI::GetContentRegionAvail();
