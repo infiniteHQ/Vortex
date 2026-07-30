@@ -783,13 +783,6 @@ namespace vxe {
       CherryGUI::BeginDisabled();
     }
 
-    CherryNextComponent.SetProperty("size_x", "15.0f");
-    CherryNextComponent.SetProperty("size_y", "15.0f");
-    if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_lightning.png"))
-            .GetDataAs<bool>("isClicked")) {
-      spawn_flash_link_window("flash");
-    }
-
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     if (CherryKit::ButtonImageText("Enter code", Cherry::GetPath("resources/imgs/icons/misc/icon_graynet.png"))
             .GetDataAs<bool>("isClicked")) {
@@ -800,11 +793,37 @@ namespace vxe {
       CherryGUI::EndDisabled();
     }
 
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     CherryNextComponent.SetProperty("padding_x", "10.0f");
     if (CherryKit::ButtonImageText("Import", Cherry::GetPath("resources/imgs/icons/misc/icon_import.png"))
             .GetDataAs<bool>("isClicked")) {
-      //
+      spawn_import_window();
+    }
+
+    CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+    CherryGUI::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444AA"));
+    CherryGUI::Separator();
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
+
+    if (vxe::get_current_context()->disconnected) {
+      CherryGUI::BeginDisabled();
+    }
+
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    CherryNextComponent.SetProperty("size_x", "15.0f");
+    CherryNextComponent.SetProperty("size_y", "15.0f");
+    if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_lightning.png"))
+            .GetDataAs<bool>("isClicked")) {
+      spawn_flash_link_window("flash");
+    }
+
+    if (vxe::get_current_context()->disconnected) {
+      CherryGUI::EndDisabled();
     }
   }
 
@@ -879,6 +898,37 @@ namespace vxe {
     CherryGUI::PopStyleColor(2);
   }
 
+  void ModulesUtility::spawn_import_window() {
+    import_windows_counter_++;
+    Cherry::ApplicationSpecification spec;
+
+    std::string name = "?loc:loc.window_names.import" + std::to_string(import_windows_counter_);
+    auto new_win = vxe::ImportWindow::create(name);
+    new_win->get_app_window()->SetVisibility(true);
+
+    std::string label = "Import modules";
+    spec.Name = label;
+    spec.MinHeight = 300;
+    spec.MinWidth = 175;
+    spec.Height = 600;
+    spec.DisableLogo = true;
+    spec.DisableResize = true;
+    spec.Width = 400;
+    spec.CustomTitlebar = true;
+    spec.DisableWindowManagerTitleBar = true;
+    spec.WindowOnlyClosable = true;
+    spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+    spec.UniqueAppWindowName = new_win->get_app_window()->m_Name;
+    spec.FramebarCallback = []() { };
+    spec.UsingCloseCallback = true;
+    spec.CloseCallback = [this, new_win]() { Cherry::DeleteAppWindow(new_win->get_app_window()); };
+
+    spec.MenubarCallback = []() { };
+    spec.WindowSaves = false;
+    new_win->get_app_window()->AttachOnNewWindow(spec);
+    Cherry::AddAppWindow(new_win->get_app_window());
+  }
+
   void ModulesUtility::spawn_flash_link_window(const std::string &mode) {
     flash_link_windows_counter_++;
     Cherry::ApplicationSpecification spec;
@@ -891,10 +941,10 @@ namespace vxe {
     spec.Name = label;
     spec.MinHeight = 300;
     spec.MinWidth = 175;
-    spec.Height = 600;
+    spec.Height = 350;
     spec.DisableLogo = true;
     spec.DisableResize = true;
-    spec.Width = 400;
+    spec.Width = 600;
     spec.CustomTitlebar = true;
     spec.DisableWindowManagerTitleBar = true;
     spec.WindowOnlyClosable = true;

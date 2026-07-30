@@ -18,6 +18,7 @@
 #include "../../../../../vxcore/include/vortex_internals.h"
 #include "../../instances/modules_details/modules_details.hpp"
 #include "./subwindows/flash_link_window/flash_link_window.hpp"
+#include "./subwindows/import_window/import_window.hpp"
 #include "./ui/module_card_item.hpp"
 #include "modules_utility_helpers.hpp"
 
@@ -55,6 +56,7 @@ namespace vxe {
     std::string get_selected_category();
 
     void spawn_flash_link_window(const std::string &mode);
+    void spawn_import_window();
 
    private:
     std::vector<ModulesUtilityChild> childs_;
@@ -78,6 +80,9 @@ namespace vxe {
 
     std::vector<std::shared_ptr<vxe::FlashLinkWindow>> flash_link_windows_;
     int flash_link_windows_counter_ = 0;
+
+    std::vector<std::shared_ptr<vxe::ImportWindow>> import_windows_;
+    int import_windows_counter_ = 0;
 
     std::shared_ptr<Cherry::AppWindow> app_window_;
   };
