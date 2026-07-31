@@ -494,6 +494,10 @@ namespace vxe {
   }
 
   void FlashLinkWindow::render() {
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    ImGui::BeginChild("##import_modules", ImVec2(0.0f, 0.0f), true);
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
+
     if (mode_ == "flash") {
       if (!clipboard_checked) {
         clipboard_checked = true;
@@ -752,6 +756,9 @@ namespace vxe {
     }
 
     renderCloseButton();
+    ImGui::PopStyleColor();
+    ImGui::EndChild();
+    ImGui::PopStyleColor();
   }
 
 }  // namespace vxe
