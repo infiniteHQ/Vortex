@@ -909,10 +909,10 @@ namespace vxe {
     spec.Name = label;
     spec.MinHeight = 300;
     spec.MinWidth = 175;
-    spec.Height = 600;
+    spec.Height = 700;
     spec.DisableLogo = true;
     spec.DisableResize = true;
-    spec.Width = 400;
+    spec.Width = 500;
     spec.CustomTitlebar = true;
     spec.DisableWindowManagerTitleBar = true;
     spec.WindowOnlyClosable = true;

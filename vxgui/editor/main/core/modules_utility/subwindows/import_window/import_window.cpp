@@ -269,11 +269,10 @@ namespace vxe {
 
       ImGui::PopID();
 
-      ImGui::Dummy(ImVec2(0.0f, 10.0f));
       ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(1.0f, 1.0f, 1.0f, 0.08f));
+      ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 30.0f);
       ImGui::Separator();
       ImGui::PopStyleColor();
-      ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
 
     if (!query.empty() && shown_count == 0) {
