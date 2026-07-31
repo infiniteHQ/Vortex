@@ -42,6 +42,7 @@ namespace vxe {
     void render_plugin_deletion_modal();
     void render_left_menubar();
     void render_right_menubar();
+    void render_module_list_row(const std::shared_ptr<PluginInterface> &mod);
 
     // logic
     void refresh_categories();

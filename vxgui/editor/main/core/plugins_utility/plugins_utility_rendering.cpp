@@ -406,6 +406,116 @@ namespace vxe {
     CherryGUI::PopStyleColor();
   }
 
+  void PluginsUtility::render_module_list_row(const std::shared_ptr<PluginInterface> &plu) {
+    if (!plu) {
+      return;
+    }
+
+    const float ROW_H = 78.0f;
+    const float LOGO_SIZE = 44.0f;
+    const float BTN_SIZE = 22.0f;
+    const float BTN_SPACING = 8.0f;
+    const float PADDING = 6.0f;
+
+    std::string row_id = "##module_row_" + plu->name() + "_" + plu->version();
+
+    CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.14f, 0.14f, 0.15f, 1.0f));
+    CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.20f, 0.20f, 0.22f, 1.0f));
+    CherryGUI::PushStyleVar(ImGuiStyleVar_ChildRounding, 6.0f);
+    CherryGUI::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 1.0f);
+
+    CherryGUI::BeginChild(row_id.c_str(), ImVec2(-FLT_MIN, ROW_H), true, ImGuiWindowFlags_NoScrollbar);
+    {
+      ImVec2 rowPos = CherryGUI::GetCursorScreenPos();
+      ImVec2 rowSize = CherryGUI::GetContentRegionAvail();
+      ImDrawList *dl = CherryGUI::GetWindowDrawList();
+
+      float logoY = rowPos.y + (ROW_H - LOGO_SIZE) * 0.5f - CherryGUI::GetScrollY() - 20.0f;
+      ImTextureID logo = Cherry::GetTexture(plu->logo_path());
+      if (logo) {
+        ImVec2 logoSize = Cherry::GetTextureSize(plu->logo_path());
+        float scale = LOGO_SIZE / (std::max)(logoSize.x, logoSize.y);
+        ImVec2 drawSize(logoSize.x * scale, logoSize.y * scale);
+        ImVec2 imgPos(rowPos.x + PADDING + (LOGO_SIZE - drawSize.x) * 0.5f, logoY + (LOGO_SIZE - drawSize.y) * 0.5f);
+        dl->AddImage(logo, imgPos, ImVec2(imgPos.x + drawSize.x, imgPos.y + drawSize.y));
+      } else {
+        ImVec2 p(rowPos.x + PADDING, logoY);
+        dl->AddRectFilled(p, ImVec2(p.x + LOGO_SIZE, p.y + LOGO_SIZE), IM_COL32(60, 60, 64, 255), 6.0f);
+        std::string initials = plu->proper_name().size() >= 2 ? plu->proper_name().substr(0, 2) : "??";
+        ImVec2 ts = CherryGUI::CalcTextSize(initials.c_str());
+        dl->AddText(
+            ImVec2(p.x + (LOGO_SIZE - ts.x) * 0.5f, p.y + (LOGO_SIZE - ts.y) * 0.5f),
+            IM_COL32(200, 200, 205, 255),
+            initials.c_str());
+      }
+
+      float btnAreaW = BTN_SIZE * 3.0f + BTN_SPACING * 2.0f;
+      float btnX = rowPos.x + rowSize.x - PADDING - BTN_SIZE;
+      float btnY = rowPos.y + (ROW_H - BTN_SIZE) * 0.5f - 26.0f;
+
+      CherryGUI::SetCursorScreenPos(ImVec2(btnX, btnY));
+      if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png"))
+              .GetDataAs<bool>("isClicked")) {
+        std::string label = "Details of " + plu->proper_name() + "####" + plu->path();
+        // std::shared_ptr<PluginDetails> window = PluginDetails::Create(label, plu);
+        // Cherry::AddAppWindow(window->GetAppWindow());
+      }
+
+      btnX -= (BTN_SIZE + BTN_SPACING);
+      CherryGUI::SetCursorScreenPos(ImVec2(btnX, btnY));
+      if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_trash.png")).GetDataAs<bool>("isClicked")) {
+        plu->stop();
+        set_plugin_to_delete(plu);
+      }
+
+      btnX -= (BTN_SIZE + BTN_SPACING);
+      CherryGUI::SetCursorScreenPos(ImVec2(btnX, btnY));
+      if (plu->state() == "failed") {
+        if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_retry.png"))
+                .GetDataAs<bool>("isClicked")) {
+          plu->start();
+        }
+      } else if (plu->state() == "unknow" || plu->state() == "stopped") {
+        if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_start.png"))
+                .GetDataAs<bool>("isClicked")) {
+          plu->start();
+        }
+      } else {
+        if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_stop.png"))
+                .GetDataAs<bool>("isClicked")) {
+          plu->stop();
+        }
+      }
+
+      float textX = rowPos.x + PADDING + LOGO_SIZE + 16.0f;
+      float textMaxW = rowSize.x - (textX - rowPos.x) - btnAreaW - PADDING - 12.0f;
+      if (textMaxW < 80.0f) {
+        textMaxW = 80.0f;
+      }
+
+      std::string title = plu->proper_name();
+      ImVec2 titlePos(textX, rowPos.y);
+      dl->AddText(titlePos, IM_COL32(240, 240, 242, 255), title.c_str());
+      ImVec2 titleSize = CherryGUI::CalcTextSize(title.c_str());
+
+      std::string ver = "  v" + plu->version();
+      dl->AddText(ImVec2(titlePos.x + titleSize.x, titlePos.y), IM_COL32(140, 140, 145, 255), ver.c_str());
+
+      CherryGUI::SetCursorScreenPos(ImVec2(textX, rowPos.y + 22.0f));
+      CherryGUI::PushTextWrapPos(textX + textMaxW);
+      CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.58f, 0.58f, 0.62f, 1.0f));
+      CherryGUI::PushItemWidth(textMaxW);
+      CherryGUI::TextWrapped("%s", plu->description().c_str());
+      CherryGUI::PopItemWidth();
+      CherryGUI::PopStyleColor();
+      CherryGUI::PopTextWrapPos();
+    }
+    CherryGUI::EndChild();
+
+    CherryGUI::PopStyleVar(2);
+    CherryGUI::PopStyleColor(2);
+  }
+
   void PluginsUtility::render_installed() {
     const float minPaneWidth = 50.0f;
     const float splitterWidth = 1.5f;
@@ -633,6 +743,30 @@ namespace vxe {
           selected_category_changed_ = false;
         }
       } else if (selected_show_mode_ == PluginsUtilityShowModes::List) {
+        for (int i = 0; i < vxe::get_current_context()->IO.ep.size(); i++) {
+          if (!vxe::get_current_context()->IO.ep[i]) {
+            continue;
+          }
+
+          const auto &plu = vxe::get_current_context()->IO.ep[i];
+
+          if (!selected_category_.empty() && selected_category_ != "all") {
+            if (selected_category_ != plu->group()) {
+              continue;
+            }
+          }
+
+          if (!plugins_search_.empty()) {
+            if (!has_common_subsequence(plu->name(), plugins_search_) &&
+                !has_common_subsequence(plu->proper_name(), plugins_search_) &&
+                !has_common_subsequence(plu->description(), plugins_search_)) {
+              continue;
+            }
+          }
+
+          render_module_list_row(plu);
+          CherryKit::Space(6.0f);
+        }
       }
     }
     CherryGUI::EndChild();
