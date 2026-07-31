@@ -8,6 +8,8 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
+#include <vortex.h>
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -91,9 +93,9 @@ namespace vxe {
 
     void ScriptingEngine::capture_output(const std::string &text) {
       if (text.find("[Error]") != std::string::npos || text.find("[Runtime Error]") != std::string::npos) {
-        CH_ERROR_TAG("Lua", "%s", text.c_str());
+        vxe::log_error("Lua", text);
       } else {
-        CH_INFO_TAG("Lua", "%s", text.c_str());
+        vxe::log_info("Lua", text);
       }
     }
 

@@ -75,9 +75,11 @@ VORTEX_API void vxe::start_all_plugins() {
       ep->datapath(datapath);
 
       // Try to create the datapath folder (if not exist yet)
-      std::string cmd = "sudo mkdir ";
-      cmd += datapath.c_str();
-      system(cmd.c_str());
+
+      // TODO: Really old feature. Remake this but better.
+      // std::string cmd = "sudo mkdir ";
+      // cmd += datapath.c_str();
+      // system(cmd.c_str());
     }
 
     start_plugin(ep->name());
@@ -93,10 +95,10 @@ VORTEX_API void vxe::bootstrapp_all_plugins() {
       datapath += "/.vx/data/" + ep->name();
       ep->datapath(datapath);
 
-      // TODO : Rework that with API
-      std::string cmd = "sudo mkdir ";
-      cmd += datapath.c_str();
-      system(cmd.c_str());
+      // TODO: Really old feature. Remake this but better.
+      // std::string cmd = "sudo mkdir ";
+      // cmd += datapath.c_str();
+      // system(cmd.c_str());
     }
 
     if (ep->auto_exec()) {
