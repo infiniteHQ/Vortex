@@ -16,6 +16,29 @@ namespace vxe {
     const float header_width = filterbar_width_ - 46.0f;
 
     CherryStyle::RemoveMarginX(6.0f);
+    if (use_info_filter_) {
+      CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#AAAAAA"));
+    } else {
+      CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#343434"));
+    }
+    CherryGUI::PushStyleColor(ImGuiCol_Button, Cherry::HexToRGBA("#232323"));
+    CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered, Cherry::HexToRGBA("#343434"));
+    CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, Cherry::HexToRGBA("#454545"));
+    if (CherryGUI::ImageSizeButtonWithText(
+            Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")),
+            header_width,
+            "Informations",
+            ImVec2(-FLT_MIN, 0.0f),
+            ImVec2(0, 0),
+            ImVec2(1, 1),
+            -1,
+            ImVec4(0, 0, 0, 0),
+            ImVec4(1, 1, 1, 1))) {
+      use_info_filter_ = !use_info_filter_;
+    }
+    CherryGUI::PopStyleColor(4);
+
+    CherryStyle::RemoveMarginX(6.0f);
     if (use_warning_filter_) {
       CherryGUI::PushStyleColor(ImGuiCol_Border, Cherry::HexToRGBA("#FF9F31"));
     } else {
@@ -608,12 +631,12 @@ namespace vxe {
       CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
       CherryGUI::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 
-      if (CherryGUI::BeginChild("LogTextBlock", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) { 
+      if (CherryGUI::BeginChild("LogTextBlock", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) {
         bool auto_scroll = CherryGUI::GetScrollY() >= CherryGUI::GetScrollMaxY() - 5.0f;
 
         bool has_new_logs = vxe::get_current_context()->registered_logs.size() != previous_log_count_;
         previous_log_count_ = vxe::get_current_context()->registered_logs.size();
-        
+
         auto oldFilterStates = topics_filter_states_;
         topics_filter_states_.clear();
 
@@ -632,7 +655,8 @@ namespace vxe {
 
         std::string logText;
         for (auto log : vxe::get_current_context()->registered_logs) {
-          std::string line = log->timestamp + " | " + log->filter + " | "  + vxe::log_level_to_string(log->level) + " | "+ log->message + "\n";
+          std::string line = log->timestamp + " | " + log->filter + " | " + vxe::log_level_to_string(log->level) + " | " +
+                             log->message + "\n";
           logText += line;
         }
 
@@ -648,12 +672,11 @@ namespace vxe {
         }
         CherryGUI::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.1f, 0.1f, 0.1f, 0.3f));
         CherryGUI::InputTextMultiline("##FullLogText", buffer.data(), buffer.size(), ImVec2(-FLT_MIN, -FLT_MIN), flags);
-        
-        
+
         if (auto_scroll && has_new_logs) {
           CherryGUI::SetScrollHereY(1.0f);
         }
-        
+
         CherryGUI::PopStyleColor();
         if (console_font_) {
           Cherry::PopFont();
