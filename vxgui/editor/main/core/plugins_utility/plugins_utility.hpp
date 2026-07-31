@@ -64,7 +64,7 @@ namespace vxe {
     std::string plugin_to_delete_version_;
     std::string plugin_to_delete_logo_path_;
 
-    PluginsUtilityShowModes selected_show_mode_ = PluginsUtilityShowModes::Thumbmails;
+    PluginsUtilityShowModes selected_show_mode_ = PluginsUtilityShowModes::List;
     PluginsUtilityPannels selected_pannel_ = PluginsUtilityPannels::Installed;
 
     std::string selected_category_;
