@@ -86,6 +86,46 @@ VORTEX_API void vxe::install_module(const std::string &module_name, const std::s
   // Restart modules
 }
 
+VORTEX_API void
+vxe::install_module_by_path(const std::string &module_name, const std::string &module_path, bool &restart_modules) {
+  auto ctx = vxe::get_current_context();
+
+  std::string module_json_path = module_path + "/module.json";
+
+  if (!vxe::file_exists(module_json_path)) {
+    vxe::log_error("Core", "Failed to find module.json at path " + module_path + " for module " + module_name);
+    return;
+  }
+
+  try {
+    auto json_data = vxe::dump_json(module_json_path);
+    std::string name = json_data["name"].get<std::string>();
+
+    if (name != module_name) {
+      vxe::log_error(
+          "Core", "Module name mismatch at path " + module_path + ": expected " + module_name + ", found " + name);
+      return;
+    }
+
+    std::string cmd = "cp -r " + module_path + " " + ctx->projectPath.string() + "/.vx/modules/";
+    system(cmd.c_str());
+
+    if (restart_modules) {
+      for (auto em : ctx->IO.em) {
+        em->stop();
+      }
+
+      ctx->IO.em.clear();
+
+      vxe::load_editor_modules(ctx->projectPath.string(), ctx->IO.em_handles, ctx->IO.em);
+
+      vxe::start_all_modules();
+    }
+  } catch (std::exception e) {
+    vxe::log_error("Core", e.what());
+  }
+}
+
 VORTEX_API std::shared_ptr<ModuleInterface> vxe::find_module_in_directory(const std::string &directory) {
   // Search modules registered
   auto module_files = vxe::search_files(directory, "module.json");

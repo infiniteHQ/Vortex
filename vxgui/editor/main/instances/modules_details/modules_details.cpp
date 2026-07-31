@@ -267,16 +267,22 @@ void ModuleDetails::Render() {
       CherryGUI::EndTable();
     }
   }
+
   if (CherryGUI::CollapsingHeader("Logs")) {
     static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders |
                                    ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
 
     static std::vector<std::shared_ptr<VxSystemLog>> logs;
-
     logs.clear();
-    for (int i = 0; i < this->m_ctx->registered_logs.size(); i++) {
-      if (this->m_ctx->registered_logs[i]->filter == this->m_module->name()) {
-        logs.push_back(this->m_ctx->registered_logs[i]);
+
+    if (this->m_ctx && this->m_module) {
+      const std::string module_name = this->m_module->name();
+
+      for (size_t i = 0; i < this->m_ctx->registered_logs.size(); i++) {
+        const auto &log_entry = this->m_ctx->registered_logs[i];
+        if (log_entry && log_entry->filter == module_name) {
+          logs.push_back(log_entry);
+        }
       }
     }
 
@@ -286,26 +292,31 @@ void ModuleDetails::Render() {
       CherryGUI::TableSetupColumn("Timestamp", ImGuiTableColumnFlags_WidthFixed);
       CherryGUI::TableSetupColumn("Log", ImGuiTableColumnFlags_WidthFixed);
       CherryGUI::TableHeadersRow();
-      for (int i = 0; i < logs.size(); i++) {
+
+      for (size_t i = 0; i < logs.size(); i++) {
+        if (!logs[i])
+          continue;
+
         CherryGUI::TableNextRow();
         for (int column = 0; column < 4; column++) {
           CherryGUI::TableSetColumnIndex(column);
-          if (column == 0) {
-            if (logs[i]->level == spdlog::level::critical) {
-              CherryGUI::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
-            } else if (logs[i]->level == spdlog::level::err) {
-              CherryGUI::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
-            } else if (logs[i]->level == spdlog::level::warn) {
-              CherryGUI::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Warning");
-            } else if (logs[i]->level == spdlog::level::info) {
-              CherryGUI::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Information");
-            }
-          } else if (column == 1) {
-            CherryGUI::Text(logs[i]->timestamp.c_str());
-          } else if (column == 2) {
-            CherryGUI::Text(logs[i]->filter.c_str());
-          } else if (column == 3) {
-            CherryGUI::TextWrapped(logs[i]->message.c_str());
+          switch (column) {
+            case 0:
+              if (logs[i]->level == spdlog::level::critical) {
+                CherryGUI::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Fatal");
+              } else if (logs[i]->level == spdlog::level::err) {
+                CherryGUI::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Error");
+              } else if (logs[i]->level == spdlog::level::warn) {
+                CherryGUI::TextColored(ImVec4(0.8f, 0.8f, 0.0f, 1.0f), "Warning");
+              } else if (logs[i]->level == spdlog::level::info) {
+                CherryGUI::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Information");
+              } else {
+                CherryGUI::Text("Unknown");
+              }
+              break;
+            case 1: CherryGUI::Text("%s", logs[i]->timestamp.c_str()); break;
+            case 2: CherryGUI::Text("%s", logs[i]->filter.c_str()); break;
+            case 3: CherryGUI::TextWrapped("%s", logs[i]->message.c_str()); break;
           }
         }
       }

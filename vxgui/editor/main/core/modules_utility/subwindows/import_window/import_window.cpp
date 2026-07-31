@@ -166,6 +166,8 @@ namespace vxe {
     }
 
     int shown_count = 0;
+    const float button_width = 90.0f;
+    const float row_height = 64.0f;
 
     for (const auto &module : sys_modules) {
       if (!module)
@@ -177,7 +179,8 @@ namespace vxe {
       std::string version = module->version();
       std::string author = module->author();
       std::string group = module->group();
-      std::string folder_name = get_folder_name(module->path());
+      std::string module_path = module->path();
+      std::string folder_name = get_folder_name(module_path);
 
       bool already_installed = installed_names.find(name) != installed_names.end();
 
@@ -196,12 +199,14 @@ namespace vxe {
 
       shown_count++;
 
-      ImGui::PushID((name + version).c_str());
+      ImGui::PushID((name + version + module_path).c_str());
+
+      float row_start_y = ImGui::GetCursorPosY();
 
       ImGui::BeginGroup();
 
       ImGui::Image(Cherry::GetTexture(module->logo_path()), ImVec2(48.0f, 48.0f));
-      ImGui::SameLine();
+      ImGui::SameLine(0.0f, 12.0f);
 
       ImGui::BeginGroup();
       {
@@ -214,24 +219,40 @@ namespace vxe {
           ImGui::TextDisabled("- %s", group.c_str());
         }
 
-        ImGui::TextDisabled("%s", folder_name.c_str());
-
-        if (!author.empty()) {
-          ImGui::TextDisabled("from ");
-          ImGui::SameLine(0.0f, 0.0f);
-          ImGui::TextUnformatted(author.c_str());
-        }
-
         if (!description.empty()) {
-          ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x + ImGui::GetCursorPosX());
+          ImGui::Dummy(ImVec2(0.0f, 2.0f));
+          ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 1.0f));
+          ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x + ImGui::GetCursorPosX() - button_width);
           ImGui::TextUnformatted(description.c_str());
           ImGui::PopTextWrapPos();
+          ImGui::PopStyleColor();
+        }
+
+        ImGui::Dummy(ImVec2(0.0f, 3.0f));
+
+        ImGui::SetWindowFontScale(0.85f);
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.55f, 0.55f, 0.55f, 1.0f));
+        ImGui::TextUnformatted(folder_name.c_str());
+        ImGui::PopStyleColor();
+        ImGui::SetWindowFontScale(1.0f);
+
+        if (!author.empty()) {
+          ImGui::SetWindowFontScale(0.78f);
+          ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.42f, 0.42f, 0.42f, 1.0f));
+          ImGui::Text("from %s", author.c_str());
+          ImGui::PopStyleColor();
+          ImGui::SetWindowFontScale(1.0f);
         }
       }
       ImGui::EndGroup();
 
-      ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 90.0f);
-      ImGui::BeginGroup();
+      ImGui::EndGroup();
+
+      float group_height = ImGui::GetItemRectSize().y;
+      float button_y = row_start_y + (group_height - ImGui::GetFrameHeight()) * 0.5f;
+
+      ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - button_width);
+      ImGui::SetCursorPosY(button_y);
 
       if (already_installed) {
         ImGui::BeginDisabled();
@@ -240,21 +261,19 @@ namespace vxe {
       } else {
         if (ImGui::Button("Install", ImVec2(80.0f, 0.0f))) {
           bool restart = restart_after_install;
-          vxe::install_module(name, version, restart);
+          vxe::install_module_by_path(name, module_path, restart);
 
           feedback_message = "Module \"" + (proper_name.empty() ? name : proper_name) + "\" installed.";
         }
       }
 
-      ImGui::EndGroup();
-
-      ImGui::EndGroup();
-
-      ImGui::Dummy(ImVec2(0.0f, 4.0f));
-      ImGui::Separator();
-      ImGui::Dummy(ImVec2(0.0f, 4.0f));
-
       ImGui::PopID();
+
+      ImGui::Dummy(ImVec2(0.0f, 10.0f));
+      ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(1.0f, 1.0f, 1.0f, 0.08f));
+      ImGui::Separator();
+      ImGui::PopStyleColor();
+      ImGui::Dummy(ImVec2(0.0f, 10.0f));
     }
 
     if (!query.empty() && shown_count == 0) {

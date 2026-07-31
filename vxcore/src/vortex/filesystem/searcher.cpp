@@ -1,5 +1,5 @@
 //
-//  create.cpp
+//  searcher.cpp
 //  Sources for search folders and files on a filesystem
 //
 //	Copyright (c) 2026 Infinite
