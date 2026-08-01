@@ -17,6 +17,8 @@
 #include "../../../../../vxcore/include/vortex.h"
 #include "../../../../../vxcore/include/vortex_internals.h"
 #include "../../instances/modules_details/modules_details.hpp"
+#include "./subwindows/flash_link_window/flash_link_window.hpp"
+#include "./subwindows/import_window/import_window.hpp"
 #include "./ui/plugin_card_item.hpp"
 #include "plugins_utility_helpers.hpp"
 
@@ -42,7 +44,7 @@ namespace vxe {
     void render_plugin_deletion_modal();
     void render_left_menubar();
     void render_right_menubar();
-    void render_module_list_row(const std::shared_ptr<PluginInterface> &mod);
+    void render_plugin_list_row(const std::shared_ptr<PluginInterface> &mod);
 
     // logic
     void refresh_categories();
@@ -52,6 +54,9 @@ namespace vxe {
     void set_plugin_to_delete(const std::shared_ptr<PluginInterface> &mod);
     void set_selected_category(const std::string &c);
     std::string get_selected_category();
+
+    void spawn_flash_link_window(const std::string &mode);
+    void spawn_import_window();
 
    private:
     std::vector<PluginsUtilityChild> childs_;
@@ -72,6 +77,12 @@ namespace vxe {
     std::unordered_map<std::string, int> all_categories;
 
     float left_panel_width = 290.0f;
+
+    std::vector<std::shared_ptr<vxe::FlashLinkPluginWindow>> flash_link_windows_;
+    int flash_link_windows_counter_ = 0;
+
+    std::vector<std::shared_ptr<vxe::ImportPluginWindow>> import_windows_;
+    int import_windows_counter_ = 0;
 
     std::shared_ptr<Cherry::AppWindow> app_window_;
   };

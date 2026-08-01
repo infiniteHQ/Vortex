@@ -406,7 +406,7 @@ namespace vxe {
     CherryGUI::PopStyleColor();
   }
 
-  void PluginsUtility::render_module_list_row(const std::shared_ptr<PluginInterface> &plu) {
+  void PluginsUtility::render_plugin_list_row(const std::shared_ptr<PluginInterface> &plu) {
     if (!plu) {
       return;
     }
@@ -417,7 +417,7 @@ namespace vxe {
     const float BTN_SPACING = 8.0f;
     const float PADDING = 6.0f;
 
-    std::string row_id = "##module_row_" + plu->name() + "_" + plu->version();
+    std::string row_id = "##plugin_row_" + plu->name() + "_" + plu->version();
 
     CherryGUI::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.14f, 0.14f, 0.15f, 1.0f));
     CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.20f, 0.20f, 0.22f, 1.0f));
@@ -764,7 +764,7 @@ namespace vxe {
             }
           }
 
-          render_module_list_row(plu);
+          render_plugin_list_row(plu);
           CherryKit::Space(6.0f);
         }
       }
@@ -779,40 +779,51 @@ namespace vxe {
   void PluginsUtility::render_left_menubar() {
     CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 3.0f);
 
-    if (selected_pannel_ != PluginsUtilityPannels::Installed) {
-      CherryNextComponent.SetProperty("color_border", "#00000000");
-      CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
-      CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    if (vxe::get_current_context()->disconnected) {
+      CherryGUI::BeginDisabled();
     }
+
     CherryNextComponent.SetProperty("padding_y", "6.0f");
-    CherryNextComponent.SetProperty("padding_x", "10.0f");
-
-    if (CherryKit::ButtonImageText("Installed", Cherry::GetPath("resources/imgs/icons/misc/icon_folder.png"))
+    if (CherryKit::ButtonImageText("Enter code", Cherry::GetPath("resources/imgs/icons/misc/icon_graynet.png"))
             .GetDataAs<bool>("isClicked")) {
-      selected_pannel_ = PluginsUtilityPannels::Installed;
+      spawn_flash_link_window("prompt");
     }
 
-    if (selected_pannel_ != PluginsUtilityPannels::Downloads) {
-      CherryNextComponent.SetProperty("color_border", "#00000000");
-      CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
-      CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
-    }
-    CherryNextComponent.SetProperty("padding_y", "6.0f");
-    if (CherryKit::ButtonImageText("Download", Cherry::GetPath("resources/imgs/icons/misc/icon_wadd.png"))
-            .GetDataAs<bool>("isClicked")) {
-      selected_pannel_ = PluginsUtilityPannels::Downloads;
+    if (vxe::get_current_context()->disconnected) {
+      CherryGUI::EndDisabled();
     }
 
-    if (selected_pannel_ != PluginsUtilityPannels::Import) {
-      CherryNextComponent.SetProperty("color_border", "#00000000");
-      CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
-      CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
-    }
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
     CherryNextComponent.SetProperty("padding_y", "6.0f");
     CherryNextComponent.SetProperty("padding_x", "10.0f");
     if (CherryKit::ButtonImageText("Import", Cherry::GetPath("resources/imgs/icons/misc/icon_import.png"))
             .GetDataAs<bool>("isClicked")) {
-      selected_pannel_ = PluginsUtilityPannels::Import;
+      spawn_import_window();
+    }
+
+    CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+    CherryGUI::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444AA"));
+    CherryGUI::Separator();
+    CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
+
+    if (vxe::get_current_context()->disconnected) {
+      CherryGUI::BeginDisabled();
+    }
+
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    CherryNextComponent.SetProperty("size_x", "15.0f");
+    CherryNextComponent.SetProperty("size_y", "15.0f");
+    if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_lightning.png"))
+            .GetDataAs<bool>("isClicked")) {
+      spawn_flash_link_window("flash");
+    }
+
+    if (vxe::get_current_context()->disconnected) {
+      CherryGUI::EndDisabled();
     }
   }
 
@@ -885,5 +896,67 @@ namespace vxe {
 
     CherryGUI::PopStyleVar();
     CherryGUI::PopStyleColor(2);
+  }
+
+  void PluginsUtility::spawn_import_window() {
+    import_windows_counter_++;
+    Cherry::ApplicationSpecification spec;
+
+    std::string name = "?loc:loc.window_names.import" + std::to_string(import_windows_counter_);
+    auto new_win = vxe::ImportPluginWindow::create(name);
+    new_win->get_app_window()->SetVisibility(true);
+
+    std::string label = "Import plugins";
+    spec.Name = label;
+    spec.MinHeight = 300;
+    spec.MinWidth = 175;
+    spec.Height = 700;
+    spec.DisableLogo = true;
+    spec.DisableResize = true;
+    spec.Width = 500;
+    spec.CustomTitlebar = true;
+    spec.DisableWindowManagerTitleBar = true;
+    spec.WindowOnlyClosable = true;
+    spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+    spec.UniqueAppWindowName = new_win->get_app_window()->m_Name;
+    spec.FramebarCallback = []() { };
+    spec.UsingCloseCallback = true;
+    spec.CloseCallback = [this, new_win]() { Cherry::DeleteAppWindow(new_win->get_app_window()); };
+
+    spec.MenubarCallback = []() { };
+    spec.WindowSaves = false;
+    new_win->get_app_window()->AttachOnNewWindow(spec);
+    Cherry::AddAppWindow(new_win->get_app_window());
+  }
+
+  void PluginsUtility::spawn_flash_link_window(const std::string &mode) {
+    flash_link_windows_counter_++;
+    Cherry::ApplicationSpecification spec;
+
+    std::string name = "?loc:loc.window_names.flash_link" + std::to_string(flash_link_windows_counter_);
+    auto new_win = vxe::FlashLinkPluginWindow::create(name, mode);
+    new_win->get_app_window()->SetVisibility(true);
+
+    std::string label = "Use flash link";
+    spec.Name = label;
+    spec.MinHeight = 300;
+    spec.MinWidth = 175;
+    spec.Height = 700;
+    spec.DisableLogo = true;
+    spec.DisableResize = true;
+    spec.Width = 500;
+    spec.CustomTitlebar = true;
+    spec.DisableWindowManagerTitleBar = true;
+    spec.WindowOnlyClosable = true;
+    spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+    spec.UniqueAppWindowName = new_win->get_app_window()->m_Name;
+    spec.FramebarCallback = []() { };
+    spec.UsingCloseCallback = true;
+    spec.CloseCallback = [this, new_win]() { Cherry::DeleteAppWindow(new_win->get_app_window()); };
+
+    spec.MenubarCallback = []() { };
+    spec.WindowSaves = false;
+    new_win->get_app_window()->AttachOnNewWindow(spec);
+    Cherry::AddAppWindow(new_win->get_app_window());
   }
 }  // namespace vxe
