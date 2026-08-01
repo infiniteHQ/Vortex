@@ -56,6 +56,8 @@ VORTEX_API void vxe::delete_project_plugin(const std::string &name, const std::s
 
     const std::filesystem::path pluginPath = plugin->path();
 
+    vxe::log_warn("DEBUG", pluginPath);
+
     if (!pluginPath.is_absolute()) {
       vxe::log_error("Core", "delete_project_plugin: plugin path is not absolute: " + pluginPath.string());
       return;

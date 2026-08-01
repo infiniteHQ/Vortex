@@ -71,9 +71,16 @@ namespace vxe {
   std::string get_modules_directory();
   std::string get_module_install_temp_directory();
   void notify_module_download(const std::string &parent_uuid);
+  std::string get_plugins_directory();
+  std::string get_plugin_install_temp_directory();
+  void notify_plugin_download(const std::string &parent_uuid);
 
   // main web features
   void install_module_release_async(
+      const nlohmann::json &release_json,
+      const std::string &parent_uuid,
+      std::shared_ptr<ModuleInstallProgress> progress);
+  void install_plugin_release_async(
       const nlohmann::json &release_json,
       const std::string &parent_uuid,
       std::shared_ptr<ModuleInstallProgress> progress);

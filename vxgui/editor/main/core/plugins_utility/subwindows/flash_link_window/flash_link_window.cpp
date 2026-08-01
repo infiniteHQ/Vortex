@@ -237,7 +237,7 @@ namespace vxe {
       return result;
     }
 
-    const std::string prefix = "mod:";
+    const std::string prefix = "plu:";
     if (flashlink.rfind(prefix, 0) != 0) {
       result.error = "Invalid flashlink";
       return result;
@@ -728,8 +728,7 @@ namespace vxe {
               progress->set_error("Invalid JSON.");
               return;
             }
-            // TODO
-            // vxe::install_plugin_release_async(release_json, parent_uuid, progress);
+            vxe::install_module_release_async(release_json, parent_uuid, progress);
           }).detach();
         }
 

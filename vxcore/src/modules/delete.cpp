@@ -14,12 +14,6 @@
 #include "../../include/vortex.h"
 #include "../../include/vortex_internals.h"
 
-/**
- * @brief Delete a module of the system
- *
- * @param name Name of the system module.
- * @param version Version of the system module.
- */
 VORTEX_API void vxe::delete_project_module(const std::string &name, const std::string &version) {
   if (name.empty() || version.empty()) {
     vxe::log_error("Core", "delete_project_module: name and version must not be empty.");
