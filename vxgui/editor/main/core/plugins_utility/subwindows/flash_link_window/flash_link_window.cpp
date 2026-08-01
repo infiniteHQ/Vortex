@@ -728,7 +728,7 @@ namespace vxe {
               progress->set_error("Invalid JSON.");
               return;
             }
-            vxe::install_module_release_async(release_json, parent_uuid, progress);
+            vxe::install_plugin_release_async(release_json, parent_uuid, progress);
           }).detach();
         }
 

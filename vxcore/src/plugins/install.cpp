@@ -86,6 +86,46 @@ VORTEX_API void vxe::install_plugin(const std::string &plugin_name, const std::s
   // Restart plugins
 }
 
+VORTEX_API void
+vxe::install_plugin_by_path(const std::string &plugin_name, const std::string &plugin_path, bool &restart_plugins) {
+  auto ctx = vxe::get_current_context();
+
+  std::string plugin_json_path = plugin_path + "/plugin.json";
+
+  if (!vxe::file_exists(plugin_json_path)) {
+    vxe::log_error("Core", "Failed to find plugin.json at path " + plugin_path + " for plugin " + plugin_name);
+    return;
+  }
+
+  try {
+    auto json_data = vxe::dump_json(plugin_json_path);
+    std::string name = json_data["name"].get<std::string>();
+
+    if (name != plugin_name) {
+      vxe::log_error(
+          "Core", "Module name mismatch at path " + plugin_path + ": expected " + plugin_name + ", found " + name);
+      return;
+    }
+
+    std::string cmd = "cp -r " + plugin_path + " " + ctx->projectPath.string() + "/.vx/plugins/";
+    system(cmd.c_str());
+
+    if (restart_plugins) {
+      for (auto em : ctx->IO.ep) {
+        em->stop();
+      }
+
+      ctx->IO.ep.clear();
+
+      vxe::load_editor_plugins(ctx->projectPath.string(), ctx->IO.ep_handles, ctx->IO.ep);
+
+      vxe::start_all_plugins();
+    }
+  } catch (std::exception e) {
+    vxe::log_error("Core", e.what());
+  }
+}
+
 VORTEX_API std::shared_ptr<PluginInterface> vxe::find_plugin_in_directory(const std::string &directory) {
   // Search plugins registered
   auto plugin_files = vxe::search_files(directory, "plugin.json");

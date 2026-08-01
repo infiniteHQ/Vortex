@@ -16,7 +16,7 @@
 #include <sstream>
 #include <thread>
 
-#include "../../vxcore/include/modules/install.hpp"
+#include "../../vxcore/include/plugins/install.hpp"
 #include "../../vxcore/include/vortex_internals.h"
 
 namespace vxe {
@@ -82,11 +82,11 @@ namespace vxe {
       return trimmed.substr(pos + 1);
     }
 
-    std::set<std::string> get_installed_module_names() {
+    std::set<std::string> get_installed_plugin_names() {
       std::set<std::string> installed;
-      auto installed_modules = vxe::get_current_context()->IO.em;
+      auto installed_plugins = vxe::get_current_context()->IO.ep;
 
-      for (const auto &m : installed_modules) {
+      for (const auto &m : installed_plugins) {
         if (m)
           installed.insert(m->name());
       }
@@ -134,20 +134,20 @@ namespace vxe {
     auto ctx = vxe::get_current_context();
 
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-    ImGui::BeginChild("##import_modules", ImVec2(0.0f, 0.0f), true);
+    ImGui::BeginChild("##import_plugins", ImVec2(0.0f, 0.0f), true);
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
-    ImGui::Text("Import modules from system to this project");
-    ImGui::TextDisabled("Browse your system's modules and import thems into this project.");
+    ImGui::Text("Import plugins from system to this project");
+    ImGui::TextDisabled("Browse your system's plugins and import thems into this project.");
     ImGui::Dummy(ImVec2(0.0f, 4.0f));
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0.0f, 4.0f));
 
     ImGui::PushItemWidth(-1);
-    ImGui::InputTextWithHint("##module_search", "Search by name", search_buffer, IM_ARRAYSIZE(search_buffer));
+    ImGui::InputTextWithHint("##plugin_search", "Search by name", search_buffer, IM_ARRAYSIZE(search_buffer));
     ImGui::PopItemWidth();
 
     ImGui::Dummy(ImVec2(0.0f, 4.0f));
-    ImGui::Checkbox("Restart all modules after installation", &restart_after_install);
+    ImGui::Checkbox("Restart all plugins after installation", &restart_after_install);
 
     ImGui::Dummy(ImVec2(0.0f, 6.0f));
     ImGui::Separator();
@@ -155,32 +155,32 @@ namespace vxe {
 
     std::string query(search_buffer);
 
-    std::set<std::string> installed_names = get_installed_module_names();
+    std::set<std::string> installed_names = get_installed_plugin_names();
 
-    ImGui::BeginChild("##modules_list", ImVec2(0.0f, 0.0f), true);
+    ImGui::BeginChild("##plugins_list", ImVec2(0.0f, 0.0f), true);
 
-    const auto &sys_modules = ctx->IO.sys_em;
+    const auto &sys_plugins = ctx->IO.sys_ep;
 
-    if (sys_modules.empty()) {
-      ImGui::TextDisabled("No modules installed in this system.");
+    if (sys_plugins.empty()) {
+      ImGui::TextDisabled("No plugins installed in this system.");
     }
 
     int shown_count = 0;
     const float button_width = 90.0f;
     const float row_height = 64.0f;
 
-    for (const auto &module : sys_modules) {
-      if (!module)
+    for (const auto &plugin : sys_plugins) {
+      if (!plugin)
         continue;
 
-      std::string name = module->name();
-      std::string proper_name = module->proper_name();
-      std::string description = module->description();
-      std::string version = module->version();
-      std::string author = module->author();
-      std::string group = module->group();
-      std::string module_path = module->path();
-      std::string folder_name = get_folder_name(module_path);
+      std::string name = plugin->name();
+      std::string proper_name = plugin->proper_name();
+      std::string description = plugin->description();
+      std::string version = plugin->version();
+      std::string author = plugin->author();
+      std::string group = plugin->group();
+      std::string plugin_path = plugin->path();
+      std::string folder_name = get_folder_name(plugin_path);
 
       bool already_installed = installed_names.find(name) != installed_names.end();
 
@@ -199,13 +199,13 @@ namespace vxe {
 
       shown_count++;
 
-      ImGui::PushID((name + version + module_path).c_str());
+      ImGui::PushID((name + version + plugin_path).c_str());
 
       float row_start_y = ImGui::GetCursorPosY();
 
       ImGui::BeginGroup();
 
-      ImGui::Image(Cherry::GetTexture(module->logo_path()), ImVec2(48.0f, 48.0f));
+      ImGui::Image(Cherry::GetTexture(plugin->logo_path()), ImVec2(48.0f, 48.0f));
       ImGui::SameLine(0.0f, 12.0f);
 
       ImGui::BeginGroup();
@@ -261,7 +261,7 @@ namespace vxe {
       } else {
         if (ImGui::Button("Install", ImVec2(80.0f, 0.0f))) {
           bool restart = restart_after_install;
-          vxe::install_module_by_path(name, module_path, restart);
+          vxe::install_plugin_by_path(name, plugin_path, restart);
 
           feedback_message = "Module \"" + (proper_name.empty() ? name : proper_name) + "\" installed.";
         }
@@ -276,7 +276,7 @@ namespace vxe {
     }
 
     if (!query.empty() && shown_count == 0) {
-      ImGui::TextDisabled("No modules correspond to \"%s\".", query.c_str());
+      ImGui::TextDisabled("No plugins correspond to \"%s\".", query.c_str());
     }
 
     ImGui::EndChild();
