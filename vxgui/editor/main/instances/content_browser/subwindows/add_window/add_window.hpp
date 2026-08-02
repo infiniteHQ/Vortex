@@ -20,7 +20,37 @@
 
 namespace vxe {
 
-  enum class ContentFlashLinkState { Idle, Processing, Success, Error };
+  struct ContentRelease {
+    std::string uuid;
+    std::string name;
+    std::string platform;
+    std::string arch;
+    std::string major;
+    std::string version;
+  };
+
+  struct ContentInfo {
+    std::string uuid;
+    std::string name;
+    std::string proper_name;
+    std::string description;
+    std::string picture_link;
+    std::string banner_link;
+    std::string host;
+    std::string host_link;
+    bool certified = false;
+    std::string state;
+  };
+
+  struct ContentFetchResult {
+    bool success = false;
+    std::string error;
+    ContentInfo info;
+    std::vector<ContentRelease> compatible_releases;
+    std::vector<ContentRelease> compatible_cross_releases;
+  };
+
+  ContentFetchResult fetch_content_from_flashlink(const std::string &flashlink);
 
   class AddWindow : public std::enable_shared_from_this<AddWindow> {
    public:
@@ -53,10 +83,30 @@ namespace vxe {
 
     // content flash link ui state
     bool show_content_flash_link_ = false;
-    std::string content_flash_link_input_;
-    std::mutex content_flash_link_mutex_;
-    std::string content_flash_link_feedback_;
-    ContentFlashLinkState content_flash_link_state_ = ContentFlashLinkState::Idle;
+
+    std::shared_ptr<vxe::ModuleInstallProgress> install_progress_;
+    bool detected = false;
+    std::string decoded_text;
+
+    std::string manual_search_error_;
+
+    enum class PlatformTargetMode { Cross, Native };
+    PlatformTargetMode selected_platform_mode_ = PlatformTargetMode::Native;
+    bool platform_mode_initialized_ = false;
+    enum class FlashLinkState { WaitingForClipboard, Loading, Ready, Error };
+
+    std::atomic<FlashLinkState> state{ FlashLinkState::WaitingForClipboard };
+    std::string current_flashlink;
+    std::atomic<uint64_t> search_token{ 0 };
+    char input_buffer[128] = "";
+
+    std::mutex result_mutex_;
+    ContentFetchResult fetch_result_;
+    int selected_release_index_ = 0;
+
+    void startSearch(const std::string &flashlink);
+
+    bool tryProcessCandidate(const std::string &raw, bool clear_input_on_success);
 
     std::shared_ptr<Cherry::AppWindow> app_window_;
   };

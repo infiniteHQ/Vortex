@@ -76,10 +76,6 @@ namespace vxe {
   void notify_plugin_download(const std::string &parent_uuid);
   std::string get_content_install_temp_directory();
   void notify_content_download(const std::string &parent_uuid);
-  void install_content_from_flash_link_async(
-      const std::string &flash_link,
-      const std::string &destination_path,
-      std::function<void(bool success, const std::string &message)> callback);
 
   // main web features
   void install_module_release_async(
@@ -89,6 +85,11 @@ namespace vxe {
   void install_plugin_release_async(
       const nlohmann::json &release_json,
       const std::string &parent_uuid,
+      std::shared_ptr<ModuleInstallProgress> progress);
+  void install_content_release_async(
+      const nlohmann::json &release_json,
+      const std::string &parent_uuid,
+      const std::string &destination_path,
       std::shared_ptr<ModuleInstallProgress> progress);
 }  // namespace vxe
 

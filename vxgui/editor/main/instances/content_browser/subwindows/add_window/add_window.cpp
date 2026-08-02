@@ -149,8 +149,232 @@ namespace vxe {
 
       return clicked;
     }
+    // TODO Remove tht and use vxe::
+    std::string detect_current_platform() {
+#if defined(_WIN32)
+      return "windows";
+#elif defined(__APPLE__)
+      return "macos";
+#elif defined(__linux__)
+      return "linux";
+#else
+      return "unknown";
+#endif
+    }
+
+    std::string detect_current_arch() {
+#if defined(__aarch64__) || defined(_M_ARM64)
+      return "arm64";
+#elif defined(__x86_64__) || defined(_M_X64)
+      return "x86_64";
+#else
+      return "unknown";
+#endif
+    }
+
+    std::vector<int> parse_version_numbers(const std::string &v) {
+      std::vector<int> parts;
+      std::stringstream ss(v);
+      std::string item;
+      while (std::getline(ss, item, '.')) {
+        try {
+          parts.push_back(std::stoi(item));
+        } catch (...) {
+          parts.push_back(0);
+        }
+      }
+      return parts;
+    }
+
+    bool version_greater(const std::string &a, const std::string &b) {
+      auto pa = parse_version_numbers(a);
+      auto pb = parse_version_numbers(b);
+      size_t n = (std::max)(pa.size(), pb.size());
+      for (size_t i = 0; i < n; i++) {
+        int va = i < pa.size() ? pa[i] : 0;
+        int vb = i < pb.size() ? pb[i] : 0;
+        if (va != vb) {
+          return va > vb;
+        }
+      }
+      return false;
+    }
+
+    std::string extract_major(const std::string &version, int keep = 2) {
+      auto parts = parse_version_numbers(version);
+      std::string result;
+      for (int i = 0; i < keep && i < (int)parts.size(); i++) {
+        if (i > 0) {
+          result += ".";
+        }
+        result += std::to_string(parts[i]);
+      }
+      return result;
+    }
+
+    std::string native_platform_label(const std::string &platform, const std::string &arch) {
+      std::string pretty = platform;
+      if (platform == "windows")
+        pretty = "Windows";
+      else if (platform == "macos")
+        pretty = "macOS";
+      else if (platform == "linux")
+        pretty = "Linux";
+      return pretty + " (" + arch + ")";
+    }
 
   }  // namespace
+
+  ContentFetchResult fetch_content_from_flashlink(const std::string &flashlink) {
+    ContentFetchResult result;
+
+    if (vxe::get_current_context()->disconnected) {
+      result.error = "No internet connexion";
+      return result;
+    }
+
+    const std::string prefix = "con:";
+    if (flashlink.rfind(prefix, 0) != 0) {
+      result.error = "Invalid flashlink";
+      return result;
+    }
+    std::string uuid = flashlink.substr(prefix.size());
+
+    auto &ctx = *vxe::get_current_context();
+
+    std::string content_url = "http://api.infinite.si:9000/api/garagevortex/get_content?uuid=" + uuid;
+    std::string content_body;
+    try {
+      content_body = ctx.net.GET(content_url);
+    } catch (...) {
+      result.error = "Unable to fetch the service API";
+      return result;
+    }
+
+    if (content_body.empty()) {
+      result.error = "Empty response from the API";
+      return result;
+    }
+
+    nlohmann::json content_json;
+    try {
+      content_json = nlohmann::json::parse(content_body);
+    } catch (...) {
+      result.error = "Invalid JSON";
+      return result;
+    }
+
+    ContentInfo info;
+    info.uuid = content_json.value("uuid", "");
+    info.name = content_json.value("name", "");
+    info.proper_name = content_json.value("proper_name", "");
+    info.description = content_json.value("description", "");
+    info.picture_link = content_json.value("picture_link", "");
+    info.banner_link = content_json.value("banner_link", "");
+    info.host = content_json.value("host", "");
+    info.host_link = content_json.value("host_link", "");
+    info.certified = content_json.value("certified", false);
+    info.state = content_json.value("state", "");
+
+    result.info = info;
+
+    std::string releases_url =
+        "https://api.infinite.si/api/garagevortex/get_content_releases_summary?parent_uuid=" + uuid + "&kind=content";
+
+    std::string releases_body;
+    try {
+      releases_body = ctx.net.GET(releases_url);
+    } catch (...) {
+      result.success = true;
+      return result;
+    }
+
+    if (releases_body.empty()) {
+      result.success = true;
+      return result;
+    }
+
+    nlohmann::json releases_json;
+    try {
+      releases_json = nlohmann::json::parse(releases_body);
+    } catch (...) {
+      result.success = true;
+      return result;
+    }
+
+    if (!releases_json.contains("releases") || !releases_json["releases"].is_array()) {
+      result.success = true;
+      return result;
+    }
+
+    std::string current_platform = detect_current_platform();
+    std::string current_arch = detect_current_arch();
+    std::string current_major = extract_major(VORTEX_VERSION);
+
+    std::vector<ContentRelease> parsed;
+
+    for (auto &item : releases_json["releases"]) {
+      if (!item.is_object()) {
+        continue;
+      }
+
+      ContentRelease rel;
+      rel.uuid = item.value("uuid", "");
+      rel.name = item.value("name", "");
+
+      std::vector<std::string> tokens;
+      std::stringstream ss(rel.name);
+      std::string tok;
+      while (std::getline(ss, tok, ':')) {
+        tokens.push_back(tok);
+      }
+
+      if (tokens.size() != 5 || tokens[0] != "vx") {
+        continue;
+      }
+
+      rel.platform = tokens[1];
+      rel.arch = tokens[2];
+      rel.major = tokens[3];
+      rel.version = tokens[4];
+
+      parsed.push_back(rel);
+    }
+
+    std::vector<ContentRelease> cross;
+    for (auto &rel : parsed) {
+      if (rel.platform == "cross") {
+        cross.push_back(rel);
+      }
+    }
+    std::sort(cross.begin(), cross.end(), [](const ContentRelease &a, const ContentRelease &b) {
+      return version_greater(a.version, b.version);
+    });
+
+    std::vector<ContentRelease> compatible;
+    for (auto &rel : parsed) {
+      if (rel.platform == current_platform && rel.arch == current_arch && rel.major == current_major) {
+        compatible.push_back(rel);
+      }
+    }
+
+    if (compatible.empty()) {
+      for (auto &rel : parsed) {
+        if (rel.platform == current_platform && rel.arch == current_arch) {
+          compatible.push_back(rel);
+        }
+      }
+    }
+
+    std::sort(compatible.begin(), compatible.end(), [](const ContentRelease &a, const ContentRelease &b) {
+      return version_greater(a.version, b.version);
+    });
+
+    result.compatible_releases = compatible;
+    result.compatible_cross_releases = cross;
+    result.success = true;
+    return result;
+  }
 
   AddWindow::AddWindow(const std::string &name, const std::string &path) {
     app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
@@ -186,6 +410,68 @@ namespace vxe {
     });
   }
 
+  void AddWindow::startSearch(const std::string &flashlink) {
+    uint64_t my_token = ++search_token;
+
+    manual_search_error_.clear();
+    current_flashlink = flashlink;
+    selected_release_index_ = 0;
+    platform_mode_initialized_ = false;
+    install_progress_.reset();
+    state = FlashLinkState::Loading;
+
+    auto self = shared_from_this();
+    std::thread([self, my_token, flashlink]() {
+      ContentFetchResult res = vxe::fetch_content_from_flashlink(flashlink);
+
+      if (!self || self->search_token.load() != my_token) {
+        return;
+      }
+
+      {
+        std::lock_guard<std::mutex> lock(self->result_mutex_);
+        self->fetch_result_ = res;
+      }
+
+      self->state = res.success ? FlashLinkState::Ready : FlashLinkState::Error;
+    }).detach();
+  }
+
+  bool AddWindow::tryProcessCandidate(const std::string &raw, bool clear_input_on_success) {
+    if (raw.empty() || raw.length() >= 70) {
+      return false;
+    }
+
+    bool all_valid = true;
+    for (unsigned char c : raw) {
+      if (!is_base64(c) && c != '=') {
+        all_valid = false;
+        break;
+      }
+    }
+
+    if (!all_valid) {
+      return false;
+    }
+
+    std::string decoded = base64_decode(raw);
+
+    if (!is_content_flashlink(decoded)) {
+      return false;
+    }
+
+    detected = true;
+    decoded_text = decoded;
+
+    startSearch(decoded);
+
+    if (clear_input_on_success) {
+      input_buffer[0] = '\0';
+    }
+
+    return true;
+  }
+
   void AddWindow::render() {
     if (show_content_flash_link_) {
       render_content_flash_link();
@@ -196,17 +482,10 @@ namespace vxe {
   }
 
   void AddWindow::render_content_flash_link() {
-    float window_width = CherryGUI::GetWindowSize().x;
-    float content_width = window_width;
-    float main_image_height = window_width / 4.720f;
+    CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    CherryGUI::BeginChild("##content_flash_link", ImVec2(0.0f, 0.0f), true);
+    CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
 
-    CherryGUI::Image(
-        Cherry::GetTexture(Cherry::GetPath("resources/imgs/banner_add.png")), ImVec2(window_width, main_image_height));
-
-    CherryStyle::AddMarginX(8.0f);
-    CherryGUI::Spacing();
-
-    CherryStyle::AddMarginX(18.0f);
     CherryNextComponent.SetProperty("color_border", "#00000000");
     CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
     CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
@@ -218,103 +497,275 @@ namespace vxe {
     }
 
     CherryGUI::Spacing();
-    CherryStyle::AddMarginX(18.0f);
-    CherryKit::SeparatorText("Garage content flash link");
 
-    bool is_processing = (content_flash_link_state_ == ContentFlashLinkState::Processing);
+    CherryGUI::TextUnformatted("Please copy content flash code");
+    CherryGUI::Spacing();
 
-    float row_width = content_width - 24.0f;
-    float lightning_size = 34.0f;
-    float spacing = 8.0f;
-    float input_w = row_width - lightning_size - spacing;
+    CherryGUI::SetNextItemWidth(CherryGUI::GetContentRegionAvail().x - 130.0f);
+    CherryGUI::InputTextWithHint(
+        "##content_flashlink_input", "Paste flashlink here...", input_buffer, IM_ARRAYSIZE(input_buffer));
 
-    CherryStyle::AddMarginX(12.0f);
+    CherryGUI::SameLine();
 
-    if (is_processing) {
-      CherryGUI::BeginDisabled();
+    if (CherryGUI::Button("Search", ImVec2(80.0f, 0.0f))) {
+      bool ok = tryProcessCandidate(std::string(input_buffer), false);
+      if (!ok) {
+        manual_search_error_ = "Invalid flashlink code. Please copy a valid content flashlink.";
+      }
     }
 
-    CherryNextComponent.SetProperty("size_x", std::to_string(input_w));
-    CherryNextComponent.SetProperty("padding_y", "8.0f");
-    CherryNextComponent.SetProperty("description", "Paste flashlink here...");
-    CherryKit::InputString("##content_flash_link", &content_flash_link_input_);
+    CherryGUI::SameLine();
 
-    CherryGUI::SameLine(0.0f, spacing);
-
-    CherryNextComponent.SetProperty("size_x", std::to_string(lightning_size));
-    CherryNextComponent.SetProperty("size_y", std::to_string(lightning_size));
     if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_lightning.png"))
             .GetDataAs<bool>("isClicked")) {
-      std::string raw_input = content_flash_link_input_;
-      std::string destination = creation_path_;
-
-      bool all_valid = !raw_input.empty() && raw_input.length() < 70;
-      if (all_valid) {
-        for (unsigned char c : raw_input) {
-          if (!vxe::is_base64(c) && c != '=') {
-            all_valid = false;
-            break;
-          }
-        }
+      const char *clipboard = CherryGUI::GetClipboardText();
+      bool ok = false;
+      if (clipboard != nullptr) {
+        ok = tryProcessCandidate(std::string(clipboard), true);
       }
-
-      std::string decoded;
-      if (all_valid) {
-        decoded = vxe::base64_decode(raw_input);
-      }
-
-      if (!all_valid || !vxe::is_content_flashlink(decoded)) {
-        std::lock_guard<std::mutex> lock(content_flash_link_mutex_);
-        content_flash_link_feedback_ = "Invalid flashlink code. Please copy a valid content flashlink.";
-        content_flash_link_state_ = ContentFlashLinkState::Error;
-      } else {
-        {
-          std::lock_guard<std::mutex> lock(content_flash_link_mutex_);
-          content_flash_link_feedback_ = "Resoling flash link...";
-        }
-        content_flash_link_state_ = ContentFlashLinkState::Processing;
-
-        auto self = shared_from_this();
-        vxe::install_content_from_flash_link_async(decoded, destination, [self](bool success, const std::string &message) {
-          if (!self) {
-            return;
-          }
-          std::lock_guard<std::mutex> lock(self->content_flash_link_mutex_);
-          self->content_flash_link_feedback_ = message;
-          self->content_flash_link_state_ = success ? ContentFlashLinkState::Success : ContentFlashLinkState::Error;
-        });
+      if (!ok) {
+        manual_search_error_ = "No valid content flashlink found in clipboard.";
       }
     }
 
-    if (is_processing) {
-      CherryGUI::EndDisabled();
-    }
-
-    std::string feedback_copy;
-    ContentFlashLinkState state_copy;
-    {
-      std::lock_guard<std::mutex> lock(content_flash_link_mutex_);
-      feedback_copy = content_flash_link_feedback_;
-      state_copy = content_flash_link_state_;
-    }
-
-    if (!feedback_copy.empty()) {
+    if (!manual_search_error_.empty()) {
       CherryGUI::Spacing();
-      CherryStyle::AddMarginX(18.0f);
-
-      ImVec4 color;
-      switch (state_copy) {
-        case ContentFlashLinkState::Success: color = ImVec4(0.4f, 0.9f, 0.4f, 1.0f); break;
-        case ContentFlashLinkState::Error: color = ImVec4(0.9f, 0.4f, 0.4f, 1.0f); break;
-        default: color = ImVec4(0.65f, 0.65f, 0.75f, 1.0f); break;
-      }
-
-      CherryGUI::PushStyleColor(ImGuiCol_Text, color);
-      CherryGUI::PushTextWrapPos(CherryGUI::GetCursorPosX() + row_width);
-      CherryGUI::TextUnformatted(feedback_copy.c_str());
-      CherryGUI::PopTextWrapPos();
+      CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.55f, 0.55f, 1.0f));
+      CherryGUI::TextUnformatted(manual_search_error_.c_str());
       CherryGUI::PopStyleColor();
     }
+
+    CherryGUI::Spacing();
+    CherryGUI::Separator();
+    CherryGUI::Spacing();
+
+    FlashLinkState current_state = state.load();
+
+    switch (current_state) {
+      case FlashLinkState::WaitingForClipboard: {
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1.0f));
+        CherryGUI::TextUnformatted("Enter a content flashlink above and click Search.");
+        CherryGUI::PopStyleColor();
+        break;
+      }
+
+      case FlashLinkState::Loading: {
+        static const char *frames[] = { "|", "/", "-", "\\" };
+        int frame = static_cast<int>(CherryGUI::GetTime() / 0.15f) % 4;
+
+        CherryGUI::Text("Searching %s", frames[frame]);
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.8f, 1.0f, 1.0f));
+        CherryGUI::Text("Flashlink : %s", current_flashlink.c_str());
+        CherryGUI::PopStyleColor();
+        break;
+      }
+
+      case FlashLinkState::Error: {
+        std::string error_msg;
+        {
+          std::lock_guard<std::mutex> lock(result_mutex_);
+          error_msg = fetch_result_.error;
+        }
+
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.45f, 0.45f, 1.0f));
+        CherryGUI::TextUnformatted("An error occured");
+        CherryGUI::PopStyleColor();
+        CherryGUI::TextWrapped("%s", error_msg.c_str());
+        break;
+      }
+
+      case FlashLinkState::Ready: {
+        ContentFetchResult local_result;
+        {
+          std::lock_guard<std::mutex> lock(result_mutex_);
+          local_result = fetch_result_;
+        }
+
+        float avail_w = CherryGUI::GetContentRegionAvail().x;
+
+        if (!local_result.info.banner_link.empty()) {
+          CherryGUI::Image(Cherry::GetTexture(Cherry::GetHttpPath(local_result.info.banner_link)), ImVec2(avail_w, 120.0f));
+          CherryGUI::Spacing();
+        }
+
+        CherryGUI::BeginGroup();
+        {
+          if (!local_result.info.picture_link.empty()) {
+            CherryGUI::Image(Cherry::GetTexture(Cherry::GetHttpPath(local_result.info.picture_link)), ImVec2(64.0f, 64.0f));
+            CherryGUI::SameLine();
+          }
+
+          CherryGUI::BeginGroup();
+          CherryGUI::SetWindowFontScale(1.3f);
+          CherryGUI::TextUnformatted(
+              local_result.info.proper_name.empty() ? "Unknown content" : local_result.info.proper_name.c_str());
+          CherryGUI::SetWindowFontScale(1.0f);
+
+          CherryGUI::TextDisabled("%s", local_result.info.name.c_str());
+          CherryGUI::EndGroup();
+        }
+        CherryGUI::EndGroup();
+
+        CherryGUI::Spacing();
+        CherryGUI::TextWrapped("%s", local_result.info.description.c_str());
+
+        CherryGUI::Spacing();
+        CherryGUI::Separator();
+        CherryGUI::Spacing();
+
+        bool has_native = !local_result.compatible_releases.empty();
+        bool has_cross = !local_result.compatible_cross_releases.empty();
+
+        if (!has_native && !has_cross) {
+          CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.75f, 0.3f, 1.0f));
+          CherryGUI::TextUnformatted("No compatible version of this content found for your platform.");
+          CherryGUI::PopStyleColor();
+          break;
+        }
+
+        if (!platform_mode_initialized_) {
+          selected_platform_mode_ = has_cross ? PlatformTargetMode::Cross : PlatformTargetMode::Native;
+          platform_mode_initialized_ = true;
+        }
+
+        std::string current_platform = detect_current_platform();
+        std::string current_arch = detect_current_arch();
+        std::string native_label = native_platform_label(current_platform, current_arch);
+
+        if (has_cross && has_native) {
+          CherryGUI::TextUnformatted("Install target :");
+          CherryGUI::Spacing();
+
+          bool is_cross = (selected_platform_mode_ == PlatformTargetMode::Cross);
+
+          if (CherryGUI::RadioButton("Cross-platform", is_cross)) {
+            selected_platform_mode_ = PlatformTargetMode::Cross;
+            selected_release_index_ = 0;
+          }
+          if (CherryGUI::IsItemHovered()) {
+            CherryGUI::SetTooltip(
+                "Selecting a cross-platform content will take a bit more disk\n"
+                "space, but makes it easy to share the project with other\n"
+                "platforms.");
+          }
+
+          CherryGUI::SameLine();
+
+          if (CherryGUI::RadioButton(native_label.c_str(), !is_cross)) {
+            selected_platform_mode_ = PlatformTargetMode::Native;
+            selected_release_index_ = 0;
+          }
+
+          CherryGUI::Spacing();
+        } else if (has_cross && !has_native) {
+          selected_platform_mode_ = PlatformTargetMode::Cross;
+          CherryGUI::TextDisabled("Cross-platform content (works on Linux, Windows and macOS)");
+          if (CherryGUI::IsItemHovered()) {
+            CherryGUI::SetTooltip(
+                "This content is cross-platform: it takes a bit more disk\n"
+                "space, but makes it easy to share the project with other\n"
+                "platforms.");
+          }
+          CherryGUI::Spacing();
+        } else {
+          selected_platform_mode_ = PlatformTargetMode::Native;
+          CherryGUI::TextDisabled("Platform : %s", native_label.c_str());
+          CherryGUI::Spacing();
+        }
+
+        const std::vector<ContentRelease> &active_releases = (selected_platform_mode_ == PlatformTargetMode::Cross)
+                                                                 ? local_result.compatible_cross_releases
+                                                                 : local_result.compatible_releases;
+
+        std::vector<std::string> combo_labels;
+        combo_labels.reserve(active_releases.size());
+        for (const auto &rel : active_releases) {
+          if (selected_platform_mode_ == PlatformTargetMode::Cross) {
+            combo_labels.push_back(rel.version);
+          } else {
+            combo_labels.push_back(rel.version + "  (" + rel.platform + " / " + rel.arch + ")");
+          }
+        }
+
+        if (selected_release_index_ < 0 || selected_release_index_ >= (int)combo_labels.size()) {
+          selected_release_index_ = 0;
+        }
+
+        CherryGUI::TextUnformatted("Available versions :");
+        if (CherryGUI::BeginCombo("##content_version_combo", combo_labels[selected_release_index_].c_str())) {
+          for (int i = 0; i < (int)combo_labels.size(); i++) {
+            bool is_selected = (i == selected_release_index_);
+            if (CherryGUI::Selectable(combo_labels[i].c_str(), is_selected)) {
+              selected_release_index_ = i;
+            }
+            if (is_selected) {
+              CherryGUI::SetItemDefaultFocus();
+            }
+          }
+          CherryGUI::EndCombo();
+        }
+
+        CherryGUI::Spacing();
+        CherryGUI::Spacing();
+
+        if (CherryGUI::Button("Download and install", ImVec2(avail_w, 0.0f))) {
+          const ContentRelease &chosen = active_releases[selected_release_index_];
+
+          std::string parent_uuid = local_result.info.uuid;
+          std::string release_url =
+              "https://api.infinite.si/api/garagevortex/get_release/content?parent_uuid=" + parent_uuid +
+              "&uuid=" + chosen.uuid;
+          std::string destination = creation_path_;
+
+          install_progress_ = std::make_shared<vxe::ModuleInstallProgress>();
+
+          auto progress = install_progress_;
+          std::thread([release_url, parent_uuid, destination, progress]() {
+            std::string body;
+            try {
+              body = vxe::get_current_context()->net.GET(release_url);
+            } catch (...) {
+              progress->set_error("Unable to fetch release details.");
+              return;
+            }
+
+            nlohmann::json release_json;
+            try {
+              release_json = nlohmann::json::parse(body);
+            } catch (...) {
+              progress->set_error("Invalid JSON.");
+              return;
+            }
+
+            vxe::install_content_release_async(release_json, parent_uuid, destination, progress);
+          }).detach();
+        }
+
+        if (install_progress_) {
+          vxe::ModuleInstallState st = install_progress_->state.load();
+          CherryGUI::Spacing();
+          CherryGUI::Separator();
+          CherryGUI::Spacing();
+
+          switch (st) {
+            case vxe::ModuleInstallState::Error:
+              CherryGUI::TextColored(ImVec4(1.0f, 0.45f, 0.45f, 1.0f), "%s", install_progress_->get_error().c_str());
+              break;
+            case vxe::ModuleInstallState::Done:
+              CherryGUI::TextColored(ImVec4(0.4f, 0.9f, 0.4f, 1.0f), "%s", install_progress_->get_status().c_str());
+              CherryGUI::TextDisabled("%s", install_progress_->get_install_path().c_str());
+              break;
+            default: CherryGUI::Text("%s", install_progress_->get_status().c_str()); break;
+          }
+        }
+
+        break;
+      }
+    }
+
+    CherryGUI::PopStyleColor();
+    CherryGUI::EndChild();
+    CherryGUI::PopStyleColor();
   }
 
   void AddWindow::render_default() {

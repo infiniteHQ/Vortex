@@ -471,46 +471,26 @@ void vxe::notify_content_download(const std::string &parent_uuid) {
     // no error needed
   }
 }
-
-void vxe::install_content_from_flash_link_async(
-    const std::string &flash_link,
+void vxe::install_content_release_async(
+    const nlohmann::json &release_json,
+    const std::string &parent_uuid,
     const std::string &destination_path,
-    std::function<void(bool success, const std::string &message)> callback) {
-  std::thread([flash_link, destination_path, callback]() {
-    const std::string prefix = "con:";
+    std::shared_ptr<ModuleInstallProgress> progress) {
+  if (!progress) {
+    return;
+  }
 
-    if (flash_link.rfind(prefix, 0) != 0) {
-      if (callback) {
-        callback(false, "Invalid flash link, a content flash link must start with \"con:\".");
-      }
-      return;
-    }
+  progress->state.store(ModuleInstallState::CheckingIntegrityInfo);
+  progress->set_status("Verification of release informations...");
 
-    std::string content_id = flash_link.substr(prefix.size());
-
-    nlohmann::json release_json;
-    try {
-      nlohmann::json request;
-      request["id"] = content_id;
-
-      std::string response = vxe::get_current_context()->net.POST(
-          "https://api.infinite.si/api/garagevortex/resolve_content_flashlink", request.dump());
-      release_json = nlohmann::json::parse(response);
-    } catch (const std::exception &e) {
-      if (callback) {
-        callback(false, std::string("Unable to resolve this flash link : ") + e.what());
-      }
-      return;
-    }
+  std::thread([release_json, parent_uuid, destination_path, progress]() {
+    std::string release_uuid = release_json.value("uuid", "");
 
     if (!release_json.contains("files") || !release_json["files"].is_array() || release_json["files"].empty()) {
-      if (callback) {
-        callback(false, "This content has no files to install.");
-      }
+      progress->set_error("This release has no files to install.");
       return;
     }
 
-    std::string parent_uuid = release_json.value("uuid", "");
     std::string file_url = release_json["files"][0].get<std::string>();
     std::string expected_sum;
     bool sum_found = false;
@@ -535,29 +515,22 @@ void vxe::install_content_from_flash_link_async(
     }
 
     if (!sum_found || expected_sum.empty()) {
-      if (callback) {
-        callback(false, "No sha256 sum for this content files, cannot process.");
-      }
+      progress->set_error("No sha256 sum for this content files, cannot process.");
       return;
     }
 
-    if (!vxe::ensure_directory_exists(destination_path)) {
-      if (callback) {
-        callback(false, "Unable to prepare the destination folder : " + destination_path);
-      }
-      return;
-    }
+    progress->state.store(ModuleInstallState::CreatingDirs);
+    progress->set_status("Preparing installation folder...");
 
     std::string tempDir = vxe::get_content_install_temp_directory();
-    if (tempDir.empty()) {
-      if (callback) {
-        callback(false, "Unable to prepare a temporary folder.");
-      }
+
+    if (destination_path.empty() || tempDir.empty() || !vxe::ensure_directory_exists(destination_path)) {
+      progress->set_error("Unable to prepare installation folder.");
       return;
     }
 
     std::string filename = file_url.substr(file_url.find_last_of('/') + 1);
-    std::size_t qpos = filename.find('?');
+    size_t qpos = filename.find('?');
     if (qpos != std::string::npos) {
       filename = filename.substr(0, qpos);
     }
@@ -567,52 +540,57 @@ void vxe::install_content_from_flash_link_async(
 
     std::string archivePath = tempDir + "/" + filename;
 
+    // download
+    progress->state.store(ModuleInstallState::Downloading);
+    progress->set_status("Downloading " + filename + "...");
+
     std::string dlError;
-    if (!vxe::download_file(file_url, archivePath, dlError)) {
-      if (callback) {
-        callback(false, "Downloading error : " + dlError);
-      }
+    if (!download_file(file_url, archivePath, dlError)) {
+      progress->set_error("Downloading error : " + dlError);
       return;
     }
+
+    // sum check
+    progress->state.store(ModuleInstallState::VerifyingChecksum);
+    progress->set_status("Verify files integrity (sha256)...");
 
     std::string actualSum;
     std::string sumError;
-    if (!vxe::compute_file_sha256(archivePath, actualSum, sumError)) {
+    if (!compute_file_sha256(archivePath, actualSum, sumError)) {
+      progress->set_error("Sum check error : " + sumError);
       std::filesystem::remove(archivePath);
-      if (callback) {
-        callback(false, "Sum check error : " + sumError);
-      }
       return;
     }
 
-    if (!vxe::compare_sha256(actualSum, expected_sum)) {
+    if (!compare_sha256(actualSum, expected_sum)) {
+      progress->set_error(
+          "The sha256 sum is not corresponding to the file, cannot proceed for security reasons, the file maybe corrupted "
+          "or modified by the owner.");
       std::filesystem::remove(archivePath);
-      if (callback) {
-        callback(
-            false,
-            "The sha256 sum is not corresponding to the file, cannot proceed for security reasons, the file maybe "
-            "corrupted or modified by the owner.");
-      }
       return;
     }
+
+    // extraction
+    progress->state.store(ModuleInstallState::Extracting);
+    progress->set_status("Extracting the content...");
 
     std::string extractError;
-    if (!vxe::extract_tar(archivePath, destination_path, extractError)) {
-      if (callback) {
-        callback(false, "Content extraction failed : " + extractError);
-      }
+    if (!extract_tar(archivePath, destination_path, extractError)) {
+      progress->set_error("Content extraction failed : " + extractError);
       return;
     }
 
+    // cleaning
     std::error_code ec;
     std::filesystem::remove(archivePath, ec);
 
-    if (!parent_uuid.empty()) {
-      vxe::notify_content_download(parent_uuid);
+    {
+      std::lock_guard<std::mutex> lock(progress->mutex);
+      progress->install_path = destination_path;
+      progress->status_message = "Content installed at this location with success.";
     }
+    progress->state.store(ModuleInstallState::Done);
 
-    if (callback) {
-      callback(true, "Content installed in this folder with success.");
-    }
+    vxe::notify_content_download(parent_uuid);
   }).detach();
 }
