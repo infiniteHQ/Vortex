@@ -178,11 +178,11 @@ namespace vxe {
     void ScriptingEngine::register_vortex_api() {
       lua_newtable(L);
       register_main_api(L);
-      lua_setglobal(L, "Vortex");
+      lua_setglobal(L, "vx");
 
       lua_newtable(L);
       register_plugin_api(L);
-      lua_setglobal(L, "VortexP");
+      lua_setglobal(L, "Vortex");
     }
   }  // namespace script
 }  // namespace vxe

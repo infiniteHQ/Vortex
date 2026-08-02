@@ -71,8 +71,8 @@ namespace vxe {
 
   void LogsUtility::send_command(const std::string &cmd) {
     std::string finalCmd = cmd;
-    if (cmd.rfind("Vortex.", 0) != 0) {
-      finalCmd = "Vortex." + cmd;
+    if (cmd.rfind("vx.", 0) != 0) {
+      finalCmd = "vx." + cmd;
     }
     vxe::script::get_scripting_engine().execute(finalCmd);
   }
