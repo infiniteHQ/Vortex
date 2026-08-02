@@ -187,6 +187,137 @@ namespace vxe {
   }
 
   void AddWindow::render() {
+    if (show_content_flash_link_) {
+      render_content_flash_link();
+      return;
+    }
+
+    render_default();
+  }
+
+  void AddWindow::render_content_flash_link() {
+    float window_width = CherryGUI::GetWindowSize().x;
+    float content_width = window_width;
+    float main_image_height = window_width / 4.720f;
+
+    CherryGUI::Image(
+        Cherry::GetTexture(Cherry::GetPath("resources/imgs/banner_add.png")), ImVec2(window_width, main_image_height));
+
+    CherryStyle::AddMarginX(8.0f);
+    CherryGUI::Spacing();
+
+    CherryStyle::AddMarginX(18.0f);
+    CherryNextComponent.SetProperty("color_border", "#00000000");
+    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+    CherryNextComponent.SetProperty("padding_y", "6.0f");
+    CherryNextComponent.SetProperty("padding_x", "10.0f");
+    if (CherryKit::ButtonImageText("Back", Cherry::GetPath("resources/imgs/icons/misc/icon_back.png"))
+            .GetDataAs<bool>("isClicked")) {
+      show_content_flash_link_ = false;
+    }
+
+    CherryGUI::Spacing();
+    CherryStyle::AddMarginX(18.0f);
+    CherryKit::SeparatorText("Garage content flash link");
+
+    bool is_processing = (content_flash_link_state_ == ContentFlashLinkState::Processing);
+
+    float row_width = content_width - 24.0f;
+    float lightning_size = 34.0f;
+    float spacing = 8.0f;
+    float input_w = row_width - lightning_size - spacing;
+
+    CherryStyle::AddMarginX(12.0f);
+
+    if (is_processing) {
+      CherryGUI::BeginDisabled();
+    }
+
+    CherryNextComponent.SetProperty("size_x", std::to_string(input_w));
+    CherryNextComponent.SetProperty("padding_y", "8.0f");
+    CherryNextComponent.SetProperty("description", "Paste flashlink here...");
+    CherryKit::InputString("##content_flash_link", &content_flash_link_input_);
+
+    CherryGUI::SameLine(0.0f, spacing);
+
+    CherryNextComponent.SetProperty("size_x", std::to_string(lightning_size));
+    CherryNextComponent.SetProperty("size_y", std::to_string(lightning_size));
+    if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_lightning.png"))
+            .GetDataAs<bool>("isClicked")) {
+      std::string raw_input = content_flash_link_input_;
+      std::string destination = creation_path_;
+
+      bool all_valid = !raw_input.empty() && raw_input.length() < 70;
+      if (all_valid) {
+        for (unsigned char c : raw_input) {
+          if (!vxe::is_base64(c) && c != '=') {
+            all_valid = false;
+            break;
+          }
+        }
+      }
+
+      std::string decoded;
+      if (all_valid) {
+        decoded = vxe::base64_decode(raw_input);
+      }
+
+      if (!all_valid || !vxe::is_content_flashlink(decoded)) {
+        std::lock_guard<std::mutex> lock(content_flash_link_mutex_);
+        content_flash_link_feedback_ = "Invalid flashlink code. Please copy a valid content flashlink.";
+        content_flash_link_state_ = ContentFlashLinkState::Error;
+      } else {
+        {
+          std::lock_guard<std::mutex> lock(content_flash_link_mutex_);
+          content_flash_link_feedback_ = "Resoling flash link...";
+        }
+        content_flash_link_state_ = ContentFlashLinkState::Processing;
+
+        auto self = shared_from_this();
+        vxe::install_content_from_flash_link_async(decoded, destination, [self](bool success, const std::string &message) {
+          if (!self) {
+            return;
+          }
+          std::lock_guard<std::mutex> lock(self->content_flash_link_mutex_);
+          self->content_flash_link_feedback_ = message;
+          self->content_flash_link_state_ = success ? ContentFlashLinkState::Success : ContentFlashLinkState::Error;
+        });
+      }
+    }
+
+    if (is_processing) {
+      CherryGUI::EndDisabled();
+    }
+
+    std::string feedback_copy;
+    ContentFlashLinkState state_copy;
+    {
+      std::lock_guard<std::mutex> lock(content_flash_link_mutex_);
+      feedback_copy = content_flash_link_feedback_;
+      state_copy = content_flash_link_state_;
+    }
+
+    if (!feedback_copy.empty()) {
+      CherryGUI::Spacing();
+      CherryStyle::AddMarginX(18.0f);
+
+      ImVec4 color;
+      switch (state_copy) {
+        case ContentFlashLinkState::Success: color = ImVec4(0.4f, 0.9f, 0.4f, 1.0f); break;
+        case ContentFlashLinkState::Error: color = ImVec4(0.9f, 0.4f, 0.4f, 1.0f); break;
+        default: color = ImVec4(0.65f, 0.65f, 0.75f, 1.0f); break;
+      }
+
+      CherryGUI::PushStyleColor(ImGuiCol_Text, color);
+      CherryGUI::PushTextWrapPos(CherryGUI::GetCursorPosX() + row_width);
+      CherryGUI::TextUnformatted(feedback_copy.c_str());
+      CherryGUI::PopTextWrapPos();
+      CherryGUI::PopStyleColor();
+    }
+  }
+
+  void AddWindow::render_default() {
     float window_width = CherryGUI::GetWindowSize().x;
     float content_width = window_width;
     float main_image_height = window_width / 4.720f;
@@ -233,17 +364,16 @@ namespace vxe {
           }
           Cherry::DeleteAppWindow(app_window_);
         } },
-      { "addwin_tile_import",
-        Cherry::GetTexture(Cherry::GetPath("resources/imgs/favicon.png")),
-        "Import",
-        false,
-        [this]() {
-          if (import_content_callback_) {
-            import_content_callback_();
-          }
-          Cherry::DeleteAppWindow(app_window_);
-        } },
     };
+
+    if (vxe::get_current_context()->IO.allow_net) {
+      quick_tiles.push_back(
+          { "addwin_tile_import",
+            Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/garage2.png")),
+            "Garage content",
+            true,
+            [this]() { show_content_flash_link_ = true; } });
+    }
 
     std::vector<TileEntry> filtered_quick_tiles;
     for (auto &t : quick_tiles) {

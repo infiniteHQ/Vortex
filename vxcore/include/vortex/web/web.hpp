@@ -74,6 +74,12 @@ namespace vxe {
   std::string get_plugins_directory();
   std::string get_plugin_install_temp_directory();
   void notify_plugin_download(const std::string &parent_uuid);
+  std::string get_content_install_temp_directory();
+  void notify_content_download(const std::string &parent_uuid);
+  void install_content_from_flash_link_async(
+      const std::string &flash_link,
+      const std::string &destination_path,
+      std::function<void(bool success, const std::string &message)> callback);
 
   // main web features
   void install_module_release_async(

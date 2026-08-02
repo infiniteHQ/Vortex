@@ -888,7 +888,7 @@ namespace vxe {
       }
 
       CherryNextComponent.SetProperty("padding_y", "6.0f");
-      if (CherryKit::ButtonImageText("Enter code", Cherry::GetPath("resources/imgs/icons/misc/icon_graynet.png"))
+      if (CherryKit::ButtonImageText("Enter code", Cherry::GetPath("resources/imgs/icons/garage1.png"))
               .GetDataAs<bool>("isClicked")) {
         spawn_flash_link_window("prompt");
       }

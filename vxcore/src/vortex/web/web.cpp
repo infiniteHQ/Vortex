@@ -450,3 +450,169 @@ void vxe::notify_plugin_download(const std::string &parent_uuid) {
     // no error needed
   }
 }
+
+std::string vxe::get_content_install_temp_directory() {
+#ifdef _WIN32
+  std::string path = std::filesystem::temp_directory_path().string() + "\\vortex_content_install";
+#else
+  std::string path = "/tmp/vortex_content_install";
+#endif
+  vxe::ensure_directory_exists(path);
+  return path;
+}
+
+void vxe::notify_content_download(const std::string &parent_uuid) {
+  try {
+    nlohmann::json payload;
+    payload["uuid"] = parent_uuid;
+
+    vxe::get_current_context()->net.POST("https://api.infinite.si/api/garagevortex/download_content", payload.dump());
+  } catch (...) {
+    // no error needed
+  }
+}
+
+void vxe::install_content_from_flash_link_async(
+    const std::string &flash_link,
+    const std::string &destination_path,
+    std::function<void(bool success, const std::string &message)> callback) {
+  std::thread([flash_link, destination_path, callback]() {
+    const std::string prefix = "con:";
+
+    if (flash_link.rfind(prefix, 0) != 0) {
+      if (callback) {
+        callback(false, "Invalid flash link, a content flash link must start with \"con:\".");
+      }
+      return;
+    }
+
+    std::string content_id = flash_link.substr(prefix.size());
+
+    nlohmann::json release_json;
+    try {
+      nlohmann::json request;
+      request["id"] = content_id;
+
+      std::string response = vxe::get_current_context()->net.POST(
+          "https://api.infinite.si/api/garagevortex/resolve_content_flashlink", request.dump());
+      release_json = nlohmann::json::parse(response);
+    } catch (const std::exception &e) {
+      if (callback) {
+        callback(false, std::string("Unable to resolve this flash link : ") + e.what());
+      }
+      return;
+    }
+
+    if (!release_json.contains("files") || !release_json["files"].is_array() || release_json["files"].empty()) {
+      if (callback) {
+        callback(false, "This content has no files to install.");
+      }
+      return;
+    }
+
+    std::string parent_uuid = release_json.value("uuid", "");
+    std::string file_url = release_json["files"][0].get<std::string>();
+    std::string expected_sum;
+    bool sum_found = false;
+
+    if (release_json.contains("metadata") && release_json["metadata"].contains("sums") &&
+        release_json["metadata"]["sums"].is_array()) {
+      for (auto &entry : release_json["metadata"]["sums"]) {
+        if (!entry.is_object()) {
+          continue;
+        }
+        for (auto it = entry.begin(); it != entry.end(); ++it) {
+          if (it.key() == file_url) {
+            expected_sum = it.value().get<std::string>();
+            sum_found = true;
+            break;
+          }
+        }
+        if (sum_found) {
+          break;
+        }
+      }
+    }
+
+    if (!sum_found || expected_sum.empty()) {
+      if (callback) {
+        callback(false, "No sha256 sum for this content files, cannot process.");
+      }
+      return;
+    }
+
+    if (!vxe::ensure_directory_exists(destination_path)) {
+      if (callback) {
+        callback(false, "Unable to prepare the destination folder : " + destination_path);
+      }
+      return;
+    }
+
+    std::string tempDir = vxe::get_content_install_temp_directory();
+    if (tempDir.empty()) {
+      if (callback) {
+        callback(false, "Unable to prepare a temporary folder.");
+      }
+      return;
+    }
+
+    std::string filename = file_url.substr(file_url.find_last_of('/') + 1);
+    std::size_t qpos = filename.find('?');
+    if (qpos != std::string::npos) {
+      filename = filename.substr(0, qpos);
+    }
+    if (filename.empty()) {
+      filename = "content_download.tar.gz";
+    }
+
+    std::string archivePath = tempDir + "/" + filename;
+
+    std::string dlError;
+    if (!vxe::download_file(file_url, archivePath, dlError)) {
+      if (callback) {
+        callback(false, "Downloading error : " + dlError);
+      }
+      return;
+    }
+
+    std::string actualSum;
+    std::string sumError;
+    if (!vxe::compute_file_sha256(archivePath, actualSum, sumError)) {
+      std::filesystem::remove(archivePath);
+      if (callback) {
+        callback(false, "Sum check error : " + sumError);
+      }
+      return;
+    }
+
+    if (!vxe::compare_sha256(actualSum, expected_sum)) {
+      std::filesystem::remove(archivePath);
+      if (callback) {
+        callback(
+            false,
+            "The sha256 sum is not corresponding to the file, cannot proceed for security reasons, the file maybe "
+            "corrupted or modified by the owner.");
+      }
+      return;
+    }
+
+    std::string extractError;
+    if (!vxe::extract_tar(archivePath, destination_path, extractError)) {
+      if (callback) {
+        callback(false, "Content extraction failed : " + extractError);
+      }
+      return;
+    }
+
+    std::error_code ec;
+    std::filesystem::remove(archivePath, ec);
+
+    if (!parent_uuid.empty()) {
+      vxe::notify_content_download(parent_uuid);
+    }
+
+    if (callback) {
+      callback(true, "Content installed in this folder with success.");
+    }
+  }).detach();
+}

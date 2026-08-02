@@ -2,13 +2,16 @@
 //  add_window.hpp
 //  Headers and declarations for the "add window" of the content browser
 //
-//	Copyright (c) 2026 Infinite
+//  Copyright (c) 2026 Infinite
 //
-//	This work is licensed under the terms of the Apache-2.0 license.
-//	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
+//  This work is licensed under the terms of the Apache-2.0 license.
+//  For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
 #pragma once
+#include <atomic>
+#include <mutex>
+
 #include "../../../../../../../vxcore/include/vortex.h"
 #include "../../../../../../../vxcore/include/vortex_internals.h"
 
@@ -16,6 +19,8 @@
 #define CONTENT_BROWSER_ADD_WINDOW_HPP
 
 namespace vxe {
+
+  enum class ContentFlashLinkState { Idle, Processing, Success, Error };
 
   class AddWindow : public std::enable_shared_from_this<AddWindow> {
    public:
@@ -26,6 +31,8 @@ namespace vxe {
     static std::shared_ptr<AddWindow> create(const std::string &name, const std::string &path);
     void setup_render_callback();
     void render();
+    void render_default();
+    void render_content_flash_link();
 
     // utils
     void set_create_folder_callback(const std::function<void()> &callback);
@@ -43,6 +50,13 @@ namespace vxe {
 
     std::string creation_path_;
     std::string add_window_search_;
+
+    // content flash link ui state
+    bool show_content_flash_link_ = false;
+    std::string content_flash_link_input_;
+    std::mutex content_flash_link_mutex_;
+    std::string content_flash_link_feedback_;
+    ContentFlashLinkState content_flash_link_state_ = ContentFlashLinkState::Idle;
 
     std::shared_ptr<Cherry::AppWindow> app_window_;
   };
