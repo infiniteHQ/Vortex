@@ -129,6 +129,7 @@ namespace vxe {
         },
         Cherry::GetPath("resources/imgs/icons/misc/icon_info.png")));
   };
+
   void ProjectSettings::add_configurations_child() {
     this->add_child(ProjectSettingsChild(
         "Configurations",

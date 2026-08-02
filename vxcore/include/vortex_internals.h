@@ -28,6 +28,7 @@
 #include "./vortex/filesystem/filesystem.hpp"
 #include "./vortex/json/json.hpp"
 #include "./vortex/logger/logger.hpp"
+#include "./vortex/main_events/main_events.hpp"
 #include "./vortex/project/project.hpp"
 #include "./vortex/random/random.hpp"
 #include "./vortex/scripting/scripting.hpp"

@@ -387,8 +387,11 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
     CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
     CherryNextComponent.SetProperty("padding_y", "6.0f");
-    CherryKit::ButtonImageText(
-        GetLocale("loc.window.content.content_browser.save_all"), GetPath("resources/imgs/icons/misc/icon_save.png"));
+    if (CherryKit::ButtonImageText(
+            GetLocale("loc.window.content.content_browser.save_all"), GetPath("resources/imgs/icons/misc/icon_save.png"))
+            .GetDataAs<bool>("isClicked")) {
+      vxe::trigger_save_all_event();
+    }
 
     CherryNextComponent.SetProperty("color_border", "#00000000");
     CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
