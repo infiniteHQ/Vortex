@@ -186,6 +186,41 @@ namespace vxe {
         },
         Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png")));
   };
+
+  void ProjectSettings::add_network_child() {
+    this->add_child(ProjectSettingsChild(
+        "Network",
+        [this]() {
+          Cherry::PushFont("ClashBold");
+          CherryNextProp("color_text", "#797979");
+          CherryKit::TitleFive("Network configurations");
+          Cherry::PopFont();
+
+          CherryNextProp("color", "#252525");
+          CherryKit::Separator();
+
+          bool allowed = vxe::get_current_context()->IO.allow_net;
+          bool previous = allowed;
+
+          CherryKit::TableSimple(
+              "Information table",
+              { {
+                  CherryKit::KeyValParent(
+                      "System",
+                      true,
+                      {
+                          CherryKit::KeyValBool("Allow Vortex to connect the internet", &allowed),
+                      }),
+              } });
+
+          if (allowed != previous) {
+            vxe::toggle_vortex_net_permission(
+                [](const std::string &err) { std::cerr << "[render_net_permission_modal] " << err << std::endl; });
+          }
+        },
+        Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png")));
+  };
+
   void ProjectSettings::add_appearance_child() {  // TODO : Start a little the editor window, with dedicated save/refresh
     // button. And display a list of themes to modify/delete. Remove Delete from
     // project in the used
@@ -811,6 +846,7 @@ namespace vxe {
     add_plugins_child();
     add_startup_child();
     add_accessibility_child();
+    add_network_child();
     add_help_child();
   };
 }  // namespace vxe

@@ -33,6 +33,7 @@ namespace vxe {
     void remove_child(const std::string &child_name);
     void add_informations_child();
     void add_configurations_child();
+    void add_network_child();
     void add_appearance_child();
     void add_interface_child();
     void add_contents_templates_child();
