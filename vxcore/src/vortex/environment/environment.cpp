@@ -20,12 +20,10 @@ VORTEX_API void vxe::init_environment() {
     std::string path = vxe::get_home_directory() + "/.vx/modules/";
     vxe::create_folder_if_not_exists(path);
   }
-
   {
     std::string path = vxe::get_home_directory() + "/.vx/templates/";
     vxe::create_folder_if_not_exists(path);
   }
-
   {
     std::string path = vxe::get_home_directory() + "/.vx/templates/vortex.templates.builtin.__blankproject/";
     vxe::create_folder_if_not_exists(path);
@@ -39,8 +37,13 @@ VORTEX_API void vxe::init_environment() {
 
     vxe::create_file_if_not_exists(file, default_data);
   }
-}
 
+  {
+    vxe::ensure_net_config(
+        [](const std::string &err) { std::cerr << "[vxe::init_environment] net.json : " << err << std::endl; });
+    vxe::refresh_net_permission_state();
+  }
+}
 VORTEX_API void vxe::refresh_environment_projects() {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
@@ -320,4 +323,85 @@ VORTEX_API void vxe::update_environment_project(const std::string &oldname) {
     // Print error if an exception occurs
     vxe::log_error("Error: ", e.what());
   }
+}
+
+std::string vxe::net_config_path() {
+  return vxe::get_home_directory() + "/.vx/configs/net.json";
+}
+
+nlohmann::json vxe::ensure_net_config(std::function<void(const std::string &)> on_error) {
+  std::string dir = vxe::get_home_directory() + "/.vx/configs/";
+  std::string file = vxe::net_config_path();
+
+  vxe::create_folder_if_not_exists(dir);
+
+  nlohmann::json default_data = { { "allow_net", false } };
+  vxe::create_file_if_not_exists(file, default_data);
+
+  std::ifstream in(file);
+  if (!in.is_open()) {
+    if (on_error)
+      on_error("cannot open net.json");
+    std::ofstream out(file);
+    out << default_data.dump(4);
+    return default_data;
+  }
+
+  nlohmann::json data;
+  try {
+    in >> data;
+  } catch (const std::exception &e) {
+    if (on_error)
+      on_error(std::string("net.json (invalid JSON) : ") + e.what());
+    in.close();
+    std::ofstream out(file, std::ios::trunc);
+    out << default_data.dump(4);
+    return default_data;
+  }
+  in.close();
+
+  if (!data.contains("allow_net") || !data["allow_net"].is_boolean()) {
+    if (on_error)
+      on_error("net.json invalide : key 'allow_net' missing");
+    data = default_data;
+    std::ofstream out(file, std::ios::trunc);
+    out << data.dump(4);
+  }
+
+  return data;
+}
+
+VORTEX_API void vxe::refresh_net_permission_state() {
+  nlohmann::json data = vxe::ensure_net_config([](const std::string &err) { vxe::log_error("Net", err); });
+
+  bool allow_net = data.value("allow_net", false);
+  vxe::get_current_context()->IO.allow_net = allow_net;
+}
+
+VORTEX_API bool vxe::toggle_vortex_net_permission(std::function<void(const std::string &)> on_error) {
+  std::string file = vxe::net_config_path();
+
+  nlohmann::json data = vxe::ensure_net_config(on_error);
+
+  bool current = data.value("allow_net", false);
+  bool new_value = !current;
+  data["allow_net"] = new_value;
+
+  try {
+    std::ofstream out(file, std::ios::trunc);
+    if (!out.is_open()) {
+      if (on_error)
+        on_error("Cannot open net.json");
+      return current;
+    }
+    out << data.dump(4);
+  } catch (const std::exception &e) {
+    if (on_error)
+      on_error(std::string("Error while writting net.json : ") + e.what());
+    return current;
+  }
+
+  vxe::refresh_net_permission_state();
+
+  return new_value;
 }

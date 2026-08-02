@@ -14,6 +14,7 @@ namespace vxe {
 
   void ModulesUtility::render() {
     render_module_deletion_modal();
+    render_net_permission_modal();
     if (selected_pannel_ == Pannels::Installed) {
       render_installed();
     } else if (selected_pannel_ == Pannels::Import) {
@@ -21,6 +22,108 @@ namespace vxe {
     } else if (selected_pannel_ == Pannels::Downloads) {
       render_download();
     }
+  }
+
+  void ModulesUtility::render_net_permission_modal() {
+    if (trigger_net_permission_modal_) {
+      CherryGUI::OpenPopup("##net_permission_modal");
+    }
+
+    ImVec2 center = CherryGUI::GetMainViewport()->GetCenter();
+    CherryGUI::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    CherryGUI::SetNextWindowSize(ImVec2(460, 0), ImGuiCond_Appearing);
+    CherryGUI::SetNextWindowBgAlpha(1.0f);
+
+    CherryGUI::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    CherryGUI::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    CherryGUI::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.0f, 8.0f));
+    CherryGUI::PushStyleColor(ImGuiCol_ModalWindowDimBg, ImVec4(0.00f, 0.00f, 0.00f, 0.65f));
+    CherryGUI::PushStyleColor(ImGuiCol_Border, ImVec4(0.22f, 0.22f, 0.24f, 1.00f));
+
+    if (CherryGUI::BeginPopupModal(
+            "##net_permission_modal",
+            &trigger_net_permission_modal_,
+            ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar)) {
+      const float MODAL_W = 460.0f;
+
+      CherryGUI::BeginChild(
+          "##net_topbar", ImVec2(MODAL_W, 48.0f), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+      {
+        CherryGUI::SetCursorPos(ImVec2(16.0f, 13.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+        CherryGUI::TextUnformatted("Allow net features");
+        CherryGUI::PopStyleColor();
+      }
+      CherryGUI::EndChild();
+
+      CherryGUI::SetCursorPosX(0.0f);
+      CherryGUI::BeginChild(
+          "##net_body",
+          ImVec2(MODAL_W, 150.0f),
+          false,
+          ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize);
+      {
+        CherryGUI::SetCursorPos(ImVec2(20.0f, 16.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.62f, 0.62f, 0.65f, 1.0f));
+        CherryGUI::PushTextWrapPos(CherryGUI::GetCursorPosX() + MODAL_W - 40.0f);
+        CherryGUI::TextUnformatted(
+            "Enabling net features allows Vortex to perform network requests. "
+            "However, Vortex will never share data of any kind with anyone. This only "
+            "enables searching public sources. Once enabled, you can disable this feature "
+            "from the project settings window.");
+        CherryGUI::PopTextWrapPos();
+        CherryGUI::PopStyleColor();
+
+        CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 14.0f);
+        ImDrawList *dl = CherryGUI::GetWindowDrawList();
+        ImVec2 sepA = CherryGUI::GetCursorScreenPos();
+        dl->AddLine(sepA, ImVec2(sepA.x + MODAL_W, sepA.y), IM_COL32(50, 50, 55, 255), 1.0f);
+        CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 1.0f);
+
+        const float BTN_H = 36.0f;
+        const float BTN_W = 140.0f;
+        const float PAD = 16.0f;
+
+        CherryGUI::SetCursorPos(ImVec2(MODAL_W - (BTN_W * 2.0f + 8.0f + PAD), CherryGUI::GetCursorPosY() + 12.0f));
+
+        CherryGUI::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+        CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.20f, 0.20f, 0.22f, 1.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.26f, 0.26f, 0.28f, 1.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.17f, 0.17f, 0.19f, 1.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(0.78f, 0.78f, 0.80f, 1.0f));
+
+        if (CherryGUI::Button("Cancel", ImVec2(BTN_W, BTN_H))) {
+          trigger_net_permission_modal_ = false;
+          CherryGUI::CloseCurrentPopup();
+        }
+        CherryGUI::PopStyleColor(4);
+
+        CherryGUI::SameLine(0.0f, 8.0f);
+
+        CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0.20f, 0.45f, 0.20f, 1.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.26f, 0.55f, 0.26f, 1.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.16f, 0.38f, 0.16f, 1.0f));
+        CherryGUI::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+        if (CherryGUI::Button("Allow net", ImVec2(BTN_W, BTN_H))) {
+          vxe::toggle_vortex_net_permission(
+              [](const std::string &err) { std::cerr << "[render_net_permission_modal] " << err << std::endl; });
+          // toggle_vortex_net_permission refresh the ctx automaticly
+          trigger_net_permission_modal_ = false;
+          CherryGUI::CloseCurrentPopup();
+        }
+        CherryGUI::PopStyleColor(4);
+        CherryGUI::PopStyleVar();
+
+        CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 14.0f);
+      }
+      CherryGUI::EndChild();
+
+      CherryGUI::EndPopup();
+    }
+
+    CherryGUI::PopStyleColor(2);
+    CherryGUI::PopStyleVar(3);
   }
 
   void ModulesUtility::render_module_deletion_modal() {
@@ -201,6 +304,7 @@ namespace vxe {
     CherryGUI::PopStyleColor(2);
     CherryGUI::PopStyleVar(3);
   }
+
   void ModulesUtility::render_download() {
     ImGuiIO &io = CherryGUI::GetIO();
     ImVec2 windowSize = CherryGUI::GetContentRegionAvail();
@@ -778,18 +882,20 @@ namespace vxe {
   void ModulesUtility::render_left_menubar() {
     CherryGUI::SetCursorPosX(CherryGUI::GetCursorPosX() + 3.0f);
 
-    if (vxe::get_current_context()->disconnected) {
-      CherryGUI::BeginDisabled();
-    }
+    if (vxe::get_current_context()->IO.allow_net) {
+      if (vxe::get_current_context()->disconnected) {
+        CherryGUI::BeginDisabled();
+      }
 
-    CherryNextComponent.SetProperty("padding_y", "6.0f");
-    if (CherryKit::ButtonImageText("Enter code", Cherry::GetPath("resources/imgs/icons/misc/icon_graynet.png"))
-            .GetDataAs<bool>("isClicked")) {
-      spawn_flash_link_window("prompt");
-    }
+      CherryNextComponent.SetProperty("padding_y", "6.0f");
+      if (CherryKit::ButtonImageText("Enter code", Cherry::GetPath("resources/imgs/icons/misc/icon_graynet.png"))
+              .GetDataAs<bool>("isClicked")) {
+        spawn_flash_link_window("prompt");
+      }
 
-    if (vxe::get_current_context()->disconnected) {
-      CherryGUI::EndDisabled();
+      if (vxe::get_current_context()->disconnected) {
+        CherryGUI::EndDisabled();
+      }
     }
 
     CherryNextComponent.SetProperty("color_border", "#00000000");
@@ -806,23 +912,43 @@ namespace vxe {
     CherryGUI::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444AA"));
     CherryGUI::Separator();
     CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 12));
-
-    if (vxe::get_current_context()->disconnected) {
-      CherryGUI::BeginDisabled();
+    if (!vxe::get_current_context()->IO.allow_net) {
+      CherryNextComponent.SetProperty("color_border", "#00000000");
+      CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+      CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+      CherryNextComponent.SetProperty("padding_y", "6.0f");
+      CherryNextComponent.SetProperty("padding_x", "10.0f");
+      if (!vxe::get_current_context()->IO.allow_net) {
+        CherryNextComponent.SetProperty("color_border", "#00000000");
+        CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+        CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+        CherryNextComponent.SetProperty("padding_y", "6.0f");
+        CherryNextComponent.SetProperty("padding_x", "10.0f");
+        if (CherryKit::ButtonImageText("Allow net features", Cherry::GetPath("resources/imgs/icons/misc/icon_graynet.png"))
+                .GetDataAs<bool>("isClicked")) {
+          trigger_net_permission_modal_ = true;
+        }
+      }
     }
 
-    CherryNextComponent.SetProperty("color_border", "#00000000");
-    CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
-    CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
-    CherryNextComponent.SetProperty("size_x", "15.0f");
-    CherryNextComponent.SetProperty("size_y", "15.0f");
-    if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_lightning.png"))
-            .GetDataAs<bool>("isClicked")) {
-      spawn_flash_link_window("flash");
-    }
+    if (vxe::get_current_context()->IO.allow_net) {
+      if (vxe::get_current_context()->disconnected) {
+        CherryGUI::BeginDisabled();
+      }
 
-    if (vxe::get_current_context()->disconnected) {
-      CherryGUI::EndDisabled();
+      CherryNextComponent.SetProperty("color_border", "#00000000");
+      CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
+      CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
+      CherryNextComponent.SetProperty("size_x", "15.0f");
+      CherryNextComponent.SetProperty("size_y", "15.0f");
+      if (CherryKit::ButtonImage(Cherry::GetPath("resources/imgs/icons/misc/icon_lightning.png"))
+              .GetDataAs<bool>("isClicked")) {
+        spawn_flash_link_window("flash");
+      }
+
+      if (vxe::get_current_context()->disconnected) {
+        CherryGUI::EndDisabled();
+      }
     }
   }
 

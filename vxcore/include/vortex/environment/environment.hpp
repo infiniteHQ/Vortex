@@ -27,6 +27,10 @@ namespace vxe {
   VORTEX_API void init_environment();
   VORTEX_API void initialize_platform_vendor();
   VORTEX_API void refresh_environment_vortex_versions_pools();
+  VORTEX_API bool toggle_vortex_net_permission(std::function<void(const std::string &)> on_error = nullptr);
+  VORTEX_API void refresh_net_permission_state();
+  VORTEX_API std::string net_config_path();
+  VORTEX_API nlohmann::json ensure_net_config(std::function<void(const std::string &)> on_error);
   VORTEX_API void update_environment_project();
   VORTEX_API void update_environment_project(const std::string &oldname);
   VORTEX_API void update_environment_project(

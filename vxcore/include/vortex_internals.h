@@ -226,6 +226,9 @@ class VORTEX_API VortexNet {
 struct VxIO {
   int MetricsActiveAllocations;
 
+  // System settings
+  bool allow_net = false;  // Is Vortex allowed by the user to go on the internet?
+
   // EM / Editor Modules
   std::vector<void *> em_handles;
   std::vector<std::shared_ptr<ModuleInterface>> em;

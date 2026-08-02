@@ -42,6 +42,7 @@ namespace vxe {
     void render_import();
     void render_download();
     void render_plugin_deletion_modal();
+    void render_net_permission_modal();
     void render_left_menubar();
     void render_right_menubar();
     void render_plugin_list_row(const std::shared_ptr<PluginInterface> &mod);
@@ -68,6 +69,7 @@ namespace vxe {
     std::string plugin_to_delete_description_;
     std::string plugin_to_delete_version_;
     std::string plugin_to_delete_logo_path_;
+    bool trigger_net_permission_modal_ = false;
 
     PluginsUtilityShowModes selected_show_mode_ = PluginsUtilityShowModes::List;
     PluginsUtilityPannels selected_pannel_ = PluginsUtilityPannels::Installed;

@@ -42,6 +42,7 @@ namespace vxe {
     void render_import();
     void render_download();
     void render_module_deletion_modal();
+    void render_net_permission_modal();
     void render_left_menubar();
     void render_right_menubar();
     void render_module_list_row(const std::shared_ptr<ModuleInterface> &mod);
@@ -68,6 +69,7 @@ namespace vxe {
     std::string module_to_delete_description_;
     std::string module_to_delete_version_;
     std::string module_to_delete_logo_path_;
+    bool trigger_net_permission_modal_ = false;
 
     ShowModes selected_show_mode_ = ShowModes::List;
     Pannels selected_pannel_ = Pannels::Installed;

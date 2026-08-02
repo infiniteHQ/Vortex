@@ -163,7 +163,7 @@ std::shared_ptr<VxContext> init_runtime() {
   std::thread([=]() {
     if (vxe::get_current_context()->net.CheckNet()) {
       vxe::get_current_context()->disconnected = false;
-      vxe::log_info("Net", "Connected to internet.");
+      vxe::log_info("Net", "Internet available.");
     } else {
       vxe::log_warn("Net", "Offline.");
     }
@@ -209,7 +209,7 @@ std::shared_ptr<VxContext> init_blank_runtime() {
   std::thread([=]() {
     if (vxe::get_current_context()->net.CheckNet()) {
       vxe::get_current_context()->disconnected = false;
-      vxe::log_info("Net", "Connected to internet.");
+      vxe::log_info("Net", "Internet available.");
     } else {
       vxe::log_warn("Net", "Offline.");
     }
