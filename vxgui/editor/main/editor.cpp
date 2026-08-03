@@ -822,6 +822,10 @@ void Editor::render_menubar() {
 }
 
 void Editor::window_close_callback() {
+  if (CherryApp.IsKeyPressed(CherryKey::CTRL)) {
+    Application::Get().Close();
+  }
+
   auto app_windows = CherryApp.GetAllAppWindowOfWindow(CherryWindow.GetName());
   for (auto &a : app_windows) {
     if (!a) {
