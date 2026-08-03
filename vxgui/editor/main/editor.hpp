@@ -48,6 +48,8 @@ namespace vxe {
     void set_plugins_utility_visibility(const bool &visibility);
     void set_welcome_visibility(const bool &visibility);
 
+    void window_close_callback();
+
     std::string spawn_content_browser();
     std::string spawn_doc_viewer();
     void spawn_content_browser_on_bottom();

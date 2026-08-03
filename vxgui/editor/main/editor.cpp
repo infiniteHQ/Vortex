@@ -821,11 +821,25 @@ void Editor::render_menubar() {
   vxe::clear_custom_menus();
 }
 
+void Editor::window_close_callback() {
+  auto app_windows = CherryApp.GetAllAppWindowOfWindow(CherryWindow.GetName());
+  for (auto &a : app_windows) {
+    if (!a) {
+      continue;
+    }
+    if (CherryApp.GetAppWindows().size() == 1) {
+      Application::Get().Close();
+    } else {
+      Cherry::DeleteAppWindow(a);
+    }
+  }
+}
+
 Cherry::Application *CreateEditor(int argc, char **argv) {
   c_Editor = std::make_shared<Editor>();
   Cherry::ApplicationSpecification spec;
 
-  spec.SetName("Vortex Editor");
+  spec.SetName("Vortex Editor");  // TODO project name for title instead
   spec.SetMinimumHeight(500);
   spec.SetMinimumWidth(500);
   spec.SetDefaultHeight(900);
@@ -833,6 +847,8 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   spec.SetCustomTitlebar(true);
   spec.SetRenderMode(Cherry::WindowRenderingMethod::DockingWindows);
   spec.EnableSnapToEdge();
+  spec.SetCloseCallback([]() { c_Editor->window_close_callback(); });
+  spec.UsingCloseCallback = true;
   spec.DisableWindowManagerTitleBar = true;
   spec.DisableTitle = true;
   spec.WindowSaves = false;
