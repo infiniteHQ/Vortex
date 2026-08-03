@@ -856,7 +856,7 @@ namespace vxe {
                 "Select eveything on this directory",
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
                 NULL)) {
-          // TODO
+          select_all_visible();
         }
 
         CherryGUI::GetFont()->Scale = oldfontsize;
@@ -2136,7 +2136,7 @@ namespace vxe {
                 "Select eveything on this directory",
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_stack.png")),
                 NULL)) {
-          // TODO
+          select_all_visible();
         }
 
         CherryGUI::GetFont()->Scale = oldfontsize;
