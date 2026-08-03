@@ -843,7 +843,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   c_Editor = std::make_shared<Editor>();
   Cherry::ApplicationSpecification spec;
 
-  spec.SetName("Vortex Editor");  // TODO project name for title instead
+  spec.SetName(vxe::get_current_context()->name);
   spec.SetMinimumHeight(500);
   spec.SetMinimumWidth(500);
   spec.SetDefaultHeight(900);
