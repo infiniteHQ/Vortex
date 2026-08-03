@@ -707,6 +707,82 @@ namespace vxe {
       }
     }
 
+    auto select_all_visible = [&]() {
+      selected_.clear();
+
+      if (show_folders_) {
+        for (auto& directoryEntry : directories) {
+          std::string filenameString = directoryEntry.path().filename().string();
+
+          if (are_strings_similar(filenameString, project_search_, threshold_) ||
+              is_only_spaces_or_empty(project_search_.c_str())) {
+            selected_.push_back(directoryEntry.path().string());
+          }
+        }
+      }
+
+      if (show_items_) {
+        for (auto& itemEntry : recognized_modules_items_) {
+          const auto& path = itemEntry.second;
+          std::string filenameString = std::filesystem::path(path).filename().string();
+
+          if (!show_hidden_ && !filenameString.empty() && filenameString[0] == '.')
+            continue;
+
+          if (!extentions_filters_.empty()) {
+            bool match = false;
+            for (const auto& ext : extentions_filters_) {
+              if (filenameString.size() >= ext.size() &&
+                  filenameString.compare(filenameString.size() - ext.size(), ext.size(), ext) == 0) {
+                match = true;
+                break;
+              }
+            }
+            if (!match)
+              continue;
+          }
+
+          if (are_strings_similar(filenameString, project_search_, threshold_) ||
+              is_only_spaces_or_empty(project_search_.c_str())) {
+            selected_.push_back(path);
+          }
+        }
+      }
+
+      if (show_files_) {
+        for (auto& fileEntry : files) {
+          std::string filenameString = fileEntry.path().filename().string();
+
+          if (!show_hidden_ && !filenameString.empty() && filenameString[0] == '.')
+            continue;
+
+          if (!extentions_filters_.empty()) {
+            bool match = false;
+            for (const auto& ext : extentions_filters_) {
+              if (filenameString.size() >= ext.size() &&
+                  filenameString.compare(filenameString.size() - ext.size(), ext.size(), ext) == 0) {
+                match = true;
+                break;
+              }
+            }
+            if (!match)
+              continue;
+          }
+
+          if (are_strings_similar(filenameString, project_search_, threshold_) ||
+              is_only_spaces_or_empty(project_search_.c_str())) {
+            selected_.push_back(fileEntry.path().string());
+          }
+        }
+      }
+    };
+
+    bool aPressed = CherryGUI::IsKeyPressed(ImGuiKey_A);
+
+    if (isWindowFocused && ctrl && aPressed) {
+      select_all_visible();
+    }
+
     ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
     ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);
     ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
