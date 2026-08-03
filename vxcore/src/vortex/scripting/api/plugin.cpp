@@ -13,6 +13,8 @@
 #include <plugins/interface.hpp>
 #include <vortex/scripting/scripting.hpp>
 
+#include "../../../../vxgui/editor/main/instances/custom_window/custom_window.hpp"
+
 namespace vxe {
   namespace script {
 
@@ -728,6 +730,37 @@ namespace vxe {
       return 0;
     }
 
+    VXLUA_FUNC(PluginWindow) {
+      std::string name = vxlua_getstring(L, 1);
+
+      auto plugin = GetActivePlugin(L);
+      if (!plugin)
+        return luaL_error(L, "Window called outside of plugin context");
+
+      std::shared_ptr<vxe::CustomWindow> window;
+
+      if (lua_isstring(L, 2)) {
+        std::string rel_path = vxlua_getstring(L, 2);
+        std::string full_path = plugin->path() + "/" + rel_path;
+        window = vxe::CustomWindow::create_from_file(name, plugin, full_path);
+
+      } else if (lua_isfunction(L, 2)) {
+        lua_pushvalue(L, 2);
+        int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+        if (ref == LUA_NOREF || ref == LUA_REFNIL)
+          return luaL_error(L, "Failed to store render callback reference");
+        window = vxe::CustomWindow::create_from_function(name, plugin, ref);
+
+      } else {
+        return luaL_error(L, "Argument 2 must be a function or a lua file path (string)");
+      }
+
+      // TODO Do this with plugin interface directly
+      Cherry::AddAppWindow(window->get_app_window());
+
+      return 0;
+    }
+
     // TODO add_function
     // TODO execute_function (with support of args and return)
 
@@ -750,6 +783,7 @@ namespace vxe {
 
       VXLUA_REGISTER_AS(L, PluginAddInputEvent, "AddInputEvent");
       VXLUA_REGISTER_AS(L, PluginCallInputEvent, "CallInputEvent");
+      VXLUA_REGISTER_AS(L, PluginWindow, "Window");
     }
 
   }  // namespace script

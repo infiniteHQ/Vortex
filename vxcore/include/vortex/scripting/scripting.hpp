@@ -79,6 +79,11 @@ namespace vxe {
     };
 
     VORTEX_API ScriptingEngine &get_scripting_engine();
+    VORTEX_API void inject_vortex_api(lua_State *L);
+
+    VORTEX_API std::shared_ptr<PluginInterface> get_active_plugin(lua_State *L);
+    VORTEX_API void set_active_plugin_context(lua_State *L, std::shared_ptr<PluginInterface> *plugin_slot);
+    VORTEX_API void clear_active_plugin_context(lua_State *L);
 
     void register_main_api(lua_State *L);
     void register_plugin_api(lua_State *L);

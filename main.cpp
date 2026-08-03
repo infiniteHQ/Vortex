@@ -189,7 +189,7 @@ std::shared_ptr<VxContext> init_runtime() {
   vxe::refresh_environment_projects();
 
   vxe::load_system_templates(ctx->IO.sys_templates);
-
+  vxe::script::inject_vortex_api(Cherry::Script::GetScriptingEngine().GetState());
   std::ifstream file("vortex.config");
 
   if (file) {
@@ -222,6 +222,7 @@ std::shared_ptr<VxContext> init_blank_runtime() {
   vxe::initialize_platform_vendor();
 
   vxe::create_session_topic(ctx->state.session_id);
+  vxe::script::inject_vortex_api(Cherry::Script::GetScriptingEngine().GetState());
 
   return ctx;
 }

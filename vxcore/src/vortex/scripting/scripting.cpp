@@ -176,14 +176,37 @@ namespace vxe {
     }
 
     void ScriptingEngine::register_vortex_api() {
-      lua_newtable(L);
-      register_main_api(L);
-      lua_setglobal(L, "vx");
+      inject_vortex_api(L);
+      Cherry::Script::InjectCherryAPI(L);
+    }
 
+    void inject_vortex_api(lua_State *L) {
       lua_newtable(L);
       register_plugin_api(L);
       lua_setglobal(L, "Vortex");
     }
+
+    std::shared_ptr<PluginInterface> get_active_plugin(lua_State *L) {
+      lua_rawgetp(L, LUA_REGISTRYINDEX, (void *)&ACTIVE_PLUGIN_KEY);
+      if (!lua_islightuserdata(L, -1)) {
+        lua_pop(L, 1);
+        return nullptr;
+      }
+      auto *stored = (std::shared_ptr<PluginInterface> *)lua_touserdata(L, -1);
+      lua_pop(L, 1);
+      return stored ? *stored : nullptr;
+    }
+
+    void set_active_plugin_context(lua_State *L, std::shared_ptr<PluginInterface> *plugin_slot) {
+      lua_pushlightuserdata(L, (void *)plugin_slot);
+      lua_rawsetp(L, LUA_REGISTRYINDEX, (void *)&ACTIVE_PLUGIN_KEY);
+    }
+
+    void clear_active_plugin_context(lua_State *L) {
+      lua_pushnil(L);
+      lua_rawsetp(L, LUA_REGISTRYINDEX, (void *)&ACTIVE_PLUGIN_KEY);
+    }
+
   }  // namespace script
 }  // namespace vxe
 
