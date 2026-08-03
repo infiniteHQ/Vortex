@@ -1543,7 +1543,11 @@ namespace vxe {
                 CherryGUI::EndDisabled();
               }
 
-              if (CherryGUI::MenuItem("Cut", "Ctrl + X")) {
+              if (CherryGUI::MenuItem(
+                      "Cut",
+                      "Ctrl + X",
+                      Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
+                      NULL)) {
                 if (cut_paths_callback_) {
                   clear_cut_selection();
                   clear_copy_selection();
@@ -1555,6 +1559,39 @@ namespace vxe {
 
                 selected_.clear();
                 CherryGUI::CloseCurrentPopup();
+              }
+
+              if (cut_selection_.size() > 0) {
+                bool nothing_new_to_cut = !has_new_paths_to_cut(selected_);
+                std::string label = "Cut in addition (" + std::to_string(cut_selection_.size()) + " copies)";
+
+                CherryGUI::BeginDisabled(nothing_new_to_cut);
+                if (CherryGUI::MenuItem(
+                        label.c_str(),
+                        "Ctrl + Alt + X",
+                        Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
+                        NULL)) {
+                  if (cut_paths_callback_) {
+                    clear_copy_selection();
+
+                    std::vector<std::string> to_cut;
+                    for (auto& path : selected_) {
+                      if (!is_in_cut_selection(path)) {
+                        to_cut.push_back(path);
+                      }
+                    }
+
+                    if (!to_cut.empty()) {
+                      cut_paths_callback_(to_cut, true);
+                      for (auto& path : to_cut) {
+                        cut_selection_.push_back(path);
+                      }
+                    }
+                  }
+                  selected_.clear();
+                  CherryGUI::CloseCurrentPopup();
+                }
+                CherryGUI::EndDisabled();
               }
 
               CherryKit::SeparatorText("Customize");
