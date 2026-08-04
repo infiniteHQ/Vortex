@@ -397,8 +397,11 @@ namespace vxe {
     CherryNextComponent.SetProperty("color_border_hovered", "#00000000");
     CherryNextComponent.SetProperty("color_border_pressed", "#00000000");
     CherryNextComponent.SetProperty("padding_y", "6.0f");
-    CherryKit::ButtonImageText(
-        GetLocale("loc.window.content.content_browser.import"), GetPath("resources/imgs/icons/misc/icon_import.png"));
+    if (CherryKit::ButtonImageText(
+            GetLocale("loc.window.content.content_browser.import"), GetPath("resources/imgs/icons/misc/icon_import.png"))
+            .GetDataAs<bool>("isClicked")) {
+      begin_import_content();
+    }
 
     CherryGUI::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
     CherryGUI::PushStyleColor(ImGuiCol_Separator, Cherry::HexToRGBA("#444444AA"));

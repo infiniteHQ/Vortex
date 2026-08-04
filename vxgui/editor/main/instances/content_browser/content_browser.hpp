@@ -11,6 +11,7 @@
 
 #pragma once
 #include "../../../../../vxcore/include/vortex.h"
+#include "../asset_finder/asset_finder.hpp"
 #include "./content_browser_helpers.hpp"
 
 #ifndef VORTEX_EDITOR_CONTENT_BROWSER_HPP
@@ -186,6 +187,7 @@ namespace vxe {
 
     // hosted
     std::vector<ContentBrowserChild> childs_;
+    std::shared_ptr<vxe::AssetFinder> asset_finder_;
     std::vector<std::shared_ptr<vxe::AddWindow>> add_windows_;
     int add_windows_counter_ = 0;
 
@@ -197,6 +199,13 @@ namespace vxe {
     void draw_delete_confirmation_modal();
 
     std::shared_ptr<AppWindow> app_window_;
+
+    // à côté de: std::shared_ptr<AssetFinder> asset_finder_;
+    bool import_window_open_ = false;
+
+    void begin_import_content();
+    void close_import_content();  // <- nouvelle méthode
+    void check_import_content();
   };
 }  // namespace vxe
 

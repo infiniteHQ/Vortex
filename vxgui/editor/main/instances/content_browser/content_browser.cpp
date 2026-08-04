@@ -296,4 +296,83 @@ namespace vxe {
     }
     return false;
   }
+
+  void ContentBrowser::begin_import_content() {
+    if (import_window_open_ && asset_finder_) {
+      asset_finder_->GetAppWindow()->SetVisibility(true);
+      return;
+    }
+
+    if (asset_finder_) {
+      Cherry::DeleteAppWindow(asset_finder_->GetAppWindow());
+      asset_finder_.reset();
+    }
+
+    std::string name = "Import";
+    asset_finder_ = AssetFinder::Create(name, vxe::get_home_directory());
+    asset_finder_->m_ElementName = "file";
+
+    Cherry::ApplicationSpecification spec;
+    spec.Name = name;
+    spec.MinHeight = 500;
+    spec.MinWidth = 500;
+    spec.Height = 600;
+    spec.Width = 1150;
+    spec.DisableTitle = false;
+    spec.CustomTitlebar = true;
+    spec.DisableWindowManagerTitleBar = true;
+    spec.WindowOnlyClosable = false;
+    spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
+    spec.UniqueAppWindowName = name;
+    spec.UsingCloseCallback = true;
+    spec.FavIconPath = Cherry::GetPath("resources/imgs/vbox.png");
+    spec.IconPath = Cherry::GetPath("resources/imgs/vbox.png");
+
+    spec.CloseCallback = [this]() {
+      Cherry::DeleteAppWindow(asset_finder_->GetAppWindow());
+      asset_finder_.reset();
+      import_window_open_ = false;
+    };
+    spec.WindowSaves = false;
+    spec.MenubarCallback = [this]() {
+      if (CherryGUI::BeginMenu("Window")) {
+        if (CherryGUI::MenuItem("Close")) {
+          close_import_content();
+        }
+        CherryGUI::EndMenu();
+      }
+    };
+
+    asset_finder_->m_ValidateCallback = [this](const std::string &selected) {
+      vxe::copy_paste_directories(selected, current_directory_.string());
+      close_import_content();
+    };
+
+    asset_finder_->m_CancelCallback = [this]() { close_import_content(); };
+
+    asset_finder_->GetAppWindow()->AttachOnNewWindow(spec);
+    asset_finder_->GetAppWindow()->SetVisibility(true);
+
+    Cherry::AddAppWindow(asset_finder_->GetAppWindow());
+
+    import_window_open_ = true;
+  }
+
+  void ContentBrowser::close_import_content() {
+    if (!asset_finder_) {
+      import_window_open_ = false;
+      return;
+    }
+
+    Cherry::DeleteAppWindow(asset_finder_->GetAppWindow());
+    asset_finder_.reset();
+    import_window_open_ = false;
+  }
+
+  void ContentBrowser::check_import_content() {
+    if (asset_finder_ && asset_finder_->m_GetFileBrowserPath) {
+      asset_finder_->m_GetFileBrowserPath = false;
+      close_import_content();
+    }
+  }
 }  // namespace vxe
