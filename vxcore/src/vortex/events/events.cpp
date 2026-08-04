@@ -109,6 +109,23 @@ void vxe::call_input_event(
 
   bool event_hit = false;
 
+  if (module_name == "vortex") {
+    for (auto input_event : vxe::get_current_context()->input_events) {
+      if (input_event->name_ == event_name) {
+        if (input_event->function_) {
+          input_event->function_(args, ret);
+        } else {
+          input_event->trigger_happening(
+              origin + ":call_input_event",
+              HappeningState::INFO,
+              "Trying to call \"" + input_event->name_ + "\" of vortex from \"" + origin + "\" but it not exist !");
+        }
+
+        event_hit = true;
+      }
+    }
+  }
+
   for (auto em : ctx->IO.em) {
     if (em->name() == module_name) {
       for (auto input_event : em->input_events()) {
@@ -202,4 +219,57 @@ void vxe::call_input_event(
     std::string log = "Input event not found. (target:" + module_name + " , event:" + event_name + ")";
     vxe::log_error("Events", log);
   }
+}
+
+void CoreInputEvent::trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log) {
+  std::shared_ptr<CoreInputEventHappening> new_trigger = std::make_shared<CoreInputEventHappening>();
+  new_trigger->timestamp = trigger_name;
+  new_trigger->state = state;
+  new_trigger->log = log;
+  new_trigger->timestamp = vxe::get_current_timestamp();
+
+  if (state == HappeningState::INFO) {
+    vxe::log_info("Modules Events", log);
+  } else if (state == HappeningState::WARNING) {
+    vxe::log_warn("Modules Events", log);
+  } else if (state == HappeningState::ERR) {
+    vxe::log_error("Modules Events", log);
+  } else if (state == HappeningState::FATAL) {
+    vxe::log_fatal("Modules Events", log);
+  }
+
+  this->happenings_.push_back(new_trigger);
+}
+
+CoreInputEvent::CoreInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name)
+    : function_(foo),
+      name_(name) {
+}
+
+CoreInputEvent::CoreInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name)
+    : function_([foo](ArgumentValues &args, ReturnValues &ret) {
+        ret = ReturnValues();
+        foo(args);
+      }),
+      name_(name) {
+}
+
+CoreInputEvent::CoreInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name)
+    : function_([foo](ArgumentValues &, ReturnValues &ret) { foo(ret); }),
+      name_(name) {
+}
+
+CoreInputEvent::CoreInputEvent(std::function<void()> foo, const std::string &name)
+    : function_([foo](ArgumentValues &, ReturnValues &) { foo(); }),
+      name_(name) {
+}
+
+void vxe::add_core_input_event(const CoreInputEvent &event) {
+  std::shared_ptr<CoreInputEvent> p_event = std::make_shared<CoreInputEvent>(event);
+
+  vxe::get_current_context()->input_events.push_back(p_event);
+}
+
+void vxe::register_all_input_events() {
+  vxe::register_open_content_browser_event();
 }

@@ -155,6 +155,9 @@ VORTEX_API void vxe::init_project(const nlohmann::json &main_configs) {
   vxe::refresh_project_themes();
   vxe::rebuild_theme();
 
+  // Load input events
+  vxe::register_all_input_events();
+
   // Startup features
   vxe::execute_start_script();
 

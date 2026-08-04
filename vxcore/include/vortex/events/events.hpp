@@ -11,6 +11,31 @@
 #pragma once
 #include <vortex.h>
 
+struct CoreInputEventHappening {
+  std::string trigger_name;
+  HappeningState state;
+  std::string log;
+  std::string timestamp;
+};
+
+class VORTEX_API CoreInputEvent {
+ public:
+  CoreInputEvent(std::function<void(ArgumentValues &, ReturnValues &)> foo, const std::string &name);
+  CoreInputEvent(std::function<void(ArgumentValues &)> foo, const std::string &name);
+  CoreInputEvent(std::function<void(ReturnValues &)> foo, const std::string &name);
+  CoreInputEvent(std::function<void()> foo, const std::string &name);
+
+  void trigger_happening(const std::string &trigger_name, HappeningState state, const std::string &log);
+
+  std::function<void(ArgumentValues &, ReturnValues &)> function_;
+  std::string name_;
+  std::string description_;
+  std::vector<std::tuple<std::string, std::string, std::string>> params_;
+  bool can_callback_;
+  DevFlag devflag_;
+  std::vector<std::shared_ptr<CoreInputEventHappening>> happenings_;
+};
+
 #ifndef VORTEX_EVENTS_HPP
 #define VORTEX_EVENTS_HPP
 
@@ -32,6 +57,12 @@ namespace vxe {
       ArgumentValues &args,
       ReturnValues &ret,
       const std::string &origin = "unknow");
+
+  // Main core inputs events
+  VORTEX_API void add_core_input_event(const CoreInputEvent &event);
+
+  VORTEX_API void register_all_input_events();
+
 }  // namespace vxe
 
 #endif  // VORTEX_EVENTS_HPP

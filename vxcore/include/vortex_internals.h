@@ -322,6 +322,9 @@ struct VxContext {
   std::shared_ptr<spdlog::logger> console_logger;
   std::vector<std::pair<std::string, std::shared_ptr<spdlog::logger>>> pool_loggers;
 
+  // Main events
+  std::vector<std::shared_ptr<CoreInputEvent>> input_events;
+
   // Vendor
   PlatformVendor platform_vendor;
 
