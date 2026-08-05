@@ -845,10 +845,29 @@ void Editor::window_close_callback() {
   }
 
   auto app_windows = CherryApp.GetAllAppWindowOfWindow(CherryWindow.GetName());
+  const std::string main_window_name = CherryApp.GetWindows()[0]->GetName();
+
   for (auto &a : app_windows) {
     if (!a) {
       continue;
     }
+
+    bool is_static_singleton = (welcome_window_ && a == welcome_window_->get_app_window()) ||
+                               (modules_utility_window_ && a == modules_utility_window_->get_app_window()) ||
+                               (plugins_utility_window_ && a == plugins_utility_window_->get_app_window()) ||
+                               (project_settings_window_ && a == project_settings_window_->get_app_window()) ||
+                               (about_window_ && a == about_window_->get_app_window()) ||
+                               (about_project_window_ && a == about_project_window_->get_app_window()) ||
+                               (credits_window_ && a == credits_window_->get_app_window());
+
+    if (is_static_singleton) {
+      if (main_window_name != CherryWindow.GetName()) {
+        a->SetParentWindow(main_window_name);
+      }
+      a->SetVisibility(false);
+      continue;
+    }
+
     if (CherryApp.GetAppWindows().size() == 1) {
       Application::Get().Close();
     } else {
