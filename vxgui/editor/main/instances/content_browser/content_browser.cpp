@@ -325,8 +325,8 @@ namespace vxe {
     spec.RenderMode = Cherry::WindowRenderingMethod::SimpleWindow;
     spec.UniqueAppWindowName = name;
     spec.UsingCloseCallback = true;
-    spec.FavIconPath = Cherry::GetPath("resources/imgs/vbox.png");
-    spec.IconPath = Cherry::GetPath("resources/imgs/vbox.png");
+    spec.FavIconPath = Cherry::GetPath("resources/imgs/vortex_install.png");
+    spec.IconPath = Cherry::GetPath("resources/imgs/vortex_install.png");
 
     spec.CloseCallback = [this]() {
       Cherry::DeleteAppWindow(asset_finder_->GetAppWindow());

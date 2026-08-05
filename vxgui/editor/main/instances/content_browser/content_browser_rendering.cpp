@@ -823,7 +823,7 @@ namespace vxe {
                 "Import a component",
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_import.png")),
                 NULL)) {
-          // TODO
+          begin_import_content();
         }
 
         CherryKit::SeparatorText("Create");
@@ -2115,7 +2115,7 @@ namespace vxe {
                 "Import a component",
                 Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_import.png")),
                 NULL)) {
-          // TODO
+          begin_import_content();
         }
 
         CherryKit::SeparatorText("Create");

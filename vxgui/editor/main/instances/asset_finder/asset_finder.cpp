@@ -96,15 +96,25 @@ namespace vxe {
     m_AppWindow->SetRightMenubarCallback([this]() {
       int mode_index = (m_ShowMode == AssetFinderShowMode::Thumbnails) ? 0 : 1;
       CherryNextComponent.SetProperty("size_x", 150.0f);
-      switch (CherryKit::ComboImageText(
+      switch (CherryNextComponent.SetProperty("size_x", 150.0f);
+              CherryKit::ComboImageText(
                   "",
                   { { "Thumbnails", Cherry::GetPath("resources/imgs/icons/misc/icon_thumbnails.png") },
                     { "List", Cherry::GetPath("resources/imgs/icons/misc/icon_lines.png") } },
                   mode_index)
                   .GetPropertyAs<int>("selected")) {
-        case 0: m_ShowMode = AssetFinderShowMode::Thumbnails; break;
-        case 1: m_ShowMode = AssetFinderShowMode::List; break;
-        default: break;
+        case 0: {
+          m_ShowMode = AssetFinderShowMode::Thumbnails;
+          break;
+        }
+        case 1: {
+          m_ShowMode = AssetFinderShowMode::List;
+          break;
+        }
+        default: {
+          m_ShowMode = AssetFinderShowMode::Thumbnails;
+          break;
+        }
       }
 
       CherryGUI::SameLine();
@@ -625,9 +635,6 @@ namespace vxe {
   }
 
   void AssetFinder::RenderSideBar() {
-    CherryKit::SeparatorText("Install Target");
-    CherryNextComponent.SetProperty("size_x", CherryGUI::GetContentRegionAvail().x);
-
     CherryKit::SeparatorText("Quick Access");
 
     CherryGUI::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 2.0f));
@@ -655,7 +662,7 @@ namespace vxe {
     quickAccessButton("Pictures", "resources/imgs/icons/misc/icon_pictures.png", "PICTURES");
     quickAccessButton("Music", "resources/imgs/icons/misc/icon_music.png", "MUSIC");
 
-    CherryKit::SeparatorText("Custom Folders");
+    /*CherryKit::SeparatorText("Custom Folders");
     Cherry::SetNextComponentProperty("size_x", "220.0f");
     Cherry::SetNextComponentProperty("padding_y", "4.0f");
     CherryKit::HeaderImageTextButton(
@@ -731,7 +738,7 @@ namespace vxe {
       std::size_t lastSlashPos = custom_dir.find_last_of("/\\");
       std::string name = custom_dir.substr(lastSlashPos + 1);
       DrawHierarchy(custom_dir, true, name);
-    }
+    }*/
   }
 
   bool AssetFinder::DrawItemCard(const AssetFinderItemParams &p) {
