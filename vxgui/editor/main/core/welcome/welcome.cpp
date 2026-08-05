@@ -49,12 +49,12 @@ namespace vxe {
 
     // If Browser Clicked
     if (CherryApp.GetComponentData(CherryID("welcome_browser"), "isClicked") == "true") {
-      c_Editor->spawn_content_browser_on_bottom();
+      c_Editor->spawn_content_browser(CherryApp.GetCurrentRenderedWindow()->GetName());
     }
 
     // If Terminal Clicked
     if (CherryApp.GetComponentData(CherryID("welcome_terminal"), "isClicked") == "true") {
-      c_Editor->spawn_logs_utility();
+      c_Editor->spawn_logs_utility(CherryApp.GetCurrentRenderedWindow()->GetName());
     }
 
     // If Scripts Clicked
@@ -63,11 +63,11 @@ namespace vxe {
     }
 
     if (CherryApp.GetComponentData(CherryID("open_terminal"), "isClicked") == "true") {
-      c_Editor->spawn_logs_utility();
+      c_Editor->spawn_logs_utility(CherryApp.GetCurrentRenderedWindow()->GetName());
     }
 
     if (CherryApp.GetComponentData(CherryID("open_content_browser"), "isClicked") == "true") {
-      c_Editor->spawn_content_browser();
+      c_Editor->spawn_content_browser(CherryApp.GetCurrentRenderedWindow()->GetName());
     }
 
     if (CherryApp.GetComponentData(CherryID("open_project_settings"), "isClicked") == "true") {

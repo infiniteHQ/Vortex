@@ -22,11 +22,11 @@ namespace vxe {
 
   class LogsUtility : public std::enable_shared_from_this<LogsUtility> {
    public:
-    LogsUtility(const std::string &name);
+    LogsUtility(const std::string &name, const std::string &focus_window = "");
 
     // window
     std::shared_ptr<Cherry::AppWindow> &get_app_window();
-    static std::shared_ptr<LogsUtility> create(const std::string &name);
+    static std::shared_ptr<LogsUtility> create(const std::string &name, const std::string &focus_window = "");
     void setup_render_callback();
 
     // rendering
@@ -69,6 +69,8 @@ namespace vxe {
     bool show_filter_pannel_ = false;
     float filterbar_width_ = 250.0f;
     ShowMode show_mode_ = ShowMode::Simple;
+    std::string focus_window_;
+    bool focus_window_applied_ = false;
 
     // ui states
     bool will_show_filter_pannel_ = false;

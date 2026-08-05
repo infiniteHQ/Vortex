@@ -53,7 +53,7 @@ namespace vxe {
     std::string spawn_content_browser(const std::string &focus_window = "");
     std::string spawn_doc_viewer();
     void spawn_content_browser_on_bottom();
-    void spawn_logs_utility();
+    void spawn_logs_utility(const std::string &focus_window = "");
     void toggle_project_settings();
 
     void render_menubar();

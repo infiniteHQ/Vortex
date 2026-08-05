@@ -249,9 +249,9 @@ void Editor::spawn_content_browser_on_bottom() {
   CherryApp.SetCurrentDragDropState(nullptr);
 }
 
-void Editor::spawn_logs_utility() {
+void Editor::spawn_logs_utility(const std::string &focus_window) {
   std::string label = "Logs utility ####Logs utility-" + std::to_string(logs_utility_instances_.size() + 1);
-  std::shared_ptr<vxe::LogsUtility> LogsUtility = vxe::LogsUtility::create(label.c_str());
+  std::shared_ptr<vxe::LogsUtility> LogsUtility = vxe::LogsUtility::create(label.c_str(), focus_window);
   Cherry::AddAppWindow(LogsUtility->get_app_window());
   logs_utility_instances_.push_back(LogsUtility);
 }
@@ -631,7 +631,7 @@ void Editor::render_menubar() {
             "Open a console with logs",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/frame_cli.png")),
             false)) {
-      spawn_logs_utility();
+      spawn_logs_utility(CherryApp.GetCurrentRenderedWindow()->GetName());
     }
 
     if (ctx->modules_section_on_toolbar) {

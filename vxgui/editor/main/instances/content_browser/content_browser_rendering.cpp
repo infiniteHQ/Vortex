@@ -18,7 +18,6 @@ namespace vxe {
         for (auto& w : CherryApp.GetWindows()) {
           if (w->GetName() == focus_window_) {
             CherryApp.QuickRedock(app_window_->GetName(), w->GetName());
-            vxe::log_warn(app_window_->GetName(), w->GetName());
           }
         }
       }
