@@ -50,19 +50,36 @@ namespace vxe {
   }
 
   void Welcome::focus() {
-    CherryApp.FocusAppWindow(app_window_->GetName());
+    focus_pending_ = true;
   }
 
   void Welcome::render() {
+    bool redocked_this_frame = false;
+
     if (!focus_window_applied_) {
       if (!focus_window_.empty()) {
         for (auto &w : CherryApp.GetWindows()) {
-          if (w->GetName() == focus_window_) {
+          if (w && w->GetName() == focus_window_) {
             CherryApp.QuickRedock(app_window_->GetName(), w->GetName());
+            redocked_this_frame = true;
+            break;
           }
         }
       }
       focus_window_applied_ = true;
+    }
+
+    if (focus_pending_) {
+      if (redocked_this_frame) {
+        wait_one_frame_for_focus_ = true;
+      } else if (wait_one_frame_for_focus_) {
+        wait_one_frame_for_focus_ = false;
+        CherryApp.FocusAppWindow(app_window_->GetName());
+        focus_pending_ = false;
+      } else {
+        CherryApp.FocusAppWindow(app_window_->GetName());
+        focus_pending_ = false;
+      }
     }
 
     Cherry::Script::RenderLuaFreshScript(Cherry::GetPath("ui/windows/welcome/main.lua"));

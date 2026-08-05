@@ -37,6 +37,8 @@ namespace vxe {
     std::shared_ptr<Cherry::AppWindow> app_window_;
     std::string focus_window_;
     bool focus_window_applied_ = false;
+    bool focus_pending_ = false;
+    bool wait_one_frame_for_focus_ = false;
   };
 }  // namespace vxe
 #endif  // WELCOME_HPP

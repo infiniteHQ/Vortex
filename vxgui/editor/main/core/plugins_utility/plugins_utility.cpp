@@ -95,6 +95,6 @@ namespace vxe {
   }
 
   void PluginsUtility::focus() {
-    CherryApp.FocusAppWindow(app_window_->GetName());
+    focus_pending_ = true;
   }
 }  // namespace vxe

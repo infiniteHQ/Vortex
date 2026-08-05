@@ -81,6 +81,8 @@ namespace vxe {
     float left_panel_width_ = 290.0f;
     std::string focus_window_;
     bool focus_window_applied_ = false;
+    bool focus_pending_ = false;
+    bool wait_one_frame_for_focus_ = false;
   };
 }  // namespace vxe
 

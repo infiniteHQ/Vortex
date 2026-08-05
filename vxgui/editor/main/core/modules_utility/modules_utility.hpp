@@ -74,6 +74,8 @@ namespace vxe {
     bool trigger_net_permission_modal_ = false;
     std::string focus_window_;
     bool focus_window_applied_ = false;
+    bool focus_pending_ = false;
+    bool wait_one_frame_for_focus_ = false;
 
     ShowModes selected_show_mode_ = ShowModes::List;
     Pannels selected_pannel_ = Pannels::Installed;

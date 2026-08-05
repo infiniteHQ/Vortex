@@ -74,7 +74,7 @@ namespace vxe {
   }
 
   void ProjectSettings::focus() {
-    CherryApp.FocusAppWindow(app_window_->GetName());
+    focus_pending_ = true;
   }
 
   void ProjectSettings::setup_render_callback() {
@@ -97,15 +97,32 @@ namespace vxe {
   }
 
   void ProjectSettings::render() {
+    bool redocked_this_frame = false;
+
     if (!focus_window_applied_) {
       if (!focus_window_.empty()) {
         for (auto &w : CherryApp.GetWindows()) {
-          if (w->GetName() == focus_window_) {
+          if (w && w->GetName() == focus_window_) {
             CherryApp.QuickRedock(app_window_->GetName(), w->GetName());
+            redocked_this_frame = true;
+            break;
           }
         }
       }
       focus_window_applied_ = true;
+    }
+
+    if (focus_pending_) {
+      if (redocked_this_frame) {
+        wait_one_frame_for_focus_ = true;
+      } else if (wait_one_frame_for_focus_) {
+        wait_one_frame_for_focus_ = false;
+        CherryApp.FocusAppWindow(app_window_->GetName());
+        focus_pending_ = false;
+      } else {
+        CherryApp.FocusAppWindow(app_window_->GetName());
+        focus_pending_ = false;
+      }
     }
 
     const float minPaneWidth = 50.0f;
@@ -277,7 +294,7 @@ namespace vxe {
       .root_content_path = ctx->root_content_path,
     };
 
-    current_project_info_ = initial_project_info_;  // copie propre
+    current_project_info_ = initial_project_info_;
   }
 
   void ProjectSettings::update_project_informations() {

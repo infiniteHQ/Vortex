@@ -212,6 +212,7 @@ bool Editor::get_plugins_utility_visibility() {
 
 void Editor::set_welcome_visibility(const bool &visibility, const std::string &focus_window) {
   welcome_window_->get_app_window()->SetVisibility(visibility);
+  std::cout << focus_window << std::endl;
   if (!focus_window.empty()) {
     welcome_window_->redock_to_window(focus_window);
   }
@@ -274,7 +275,7 @@ void Editor::spawn_logs_utility(const std::string &focus_window) {
 }
 
 void Editor::toggle_project_settings(const std::string &focus_window) {
-  c_Editor->set_project_settings_visibility(!c_Editor->get_project_settings_visibility(), focus_window);
+  c_Editor->set_project_settings_visibility(!c_Editor->get_project_settings_visibility(), "", focus_window);
 }
 
 // Frame task
@@ -526,7 +527,7 @@ void Editor::render_menubar() {
             "Open the main settings of this project",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png")),
             get_project_settings_visibility())) {
-      set_project_settings_visibility(!get_project_settings_visibility(), CherryWindow.GetName());
+      set_project_settings_visibility(!get_project_settings_visibility(), "", CherryWindow.GetName());
     }
 
     CherryKit::SeparatorText("Other");
@@ -752,14 +753,14 @@ void Editor::render_menubar() {
             "Change selected language",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_language.png")),
             false)) {
-      set_project_settings_visibility(true, "language");
+      set_project_settings_visibility(true, "language", CherryWindow.GetName());
     }
     if (CherryGUI::MenuItem(
             "Switch theme",
             "Change selected theme",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_palette.png")),
             false)) {
-      set_project_settings_visibility(true, "theme");
+      set_project_settings_visibility(true, "theme", CherryWindow.GetName());
     }
 
     CherryGUI::EndMenu();
