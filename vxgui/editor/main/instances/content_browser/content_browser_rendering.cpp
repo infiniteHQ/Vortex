@@ -876,6 +876,10 @@ namespace vxe {
           const auto& path = directoryEntry.path();
           std::string filenameString = path.filename().string();
 
+          if (!show_hidden_ && !filenameString.empty() && filenameString[0] == '.') {
+            continue;
+          }
+
           bool selected = false;
 
           if (std::find(selected_.begin(), selected_.end(), path) != selected_.end()) {
@@ -1347,6 +1351,10 @@ namespace vxe {
               .max_text_width = 100.0f,
               .border_radius = 5.0f,
             };
+
+            if (!filenameString.empty() && filenameString[0] == '.') {
+              style.bg_color = darken_color(style.bg_color, 0.35f);
+            }
 
             if (draw_item_card({ .content = content, .style = style, .selected = selected })) {
               if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) || CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
@@ -1946,6 +1954,10 @@ namespace vxe {
             const auto& path = directoryEntry.path();
             std::string filename = path.filename().string();
 
+            if (!show_hidden_ && !filename.empty() && filename[0] == '.') {
+              continue;
+            }
+
             if (!are_strings_similar(filename, project_search_, threshold_) &&
                 !is_only_spaces_or_empty(project_search_.c_str()))
               continue;
@@ -2155,6 +2167,10 @@ namespace vxe {
         for (auto& directoryEntry : directories) {
           const auto& path = directoryEntry.path();
           std::string filenameString = path.filename().string();
+
+          if (!show_hidden_ && !filenameString.empty() && filenameString[0] == '.') {
+            continue;
+          }
 
           bool selected = (std::find(selected_.begin(), selected_.end(), path) != selected_.end());
 
@@ -2542,6 +2558,10 @@ namespace vxe {
               .max_text_width = 200.f,
               .border_radius = 8.f,
             };
+
+            if (!filenameString.empty() && filenameString[0] == '.') {
+              style.bg_color = darken_color(style.bg_color, 0.35f);
+            }
 
             if (draw_horizontal_draw_item_card({ .content = content, .style = style, .selected = selected })) {
               if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) || CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {

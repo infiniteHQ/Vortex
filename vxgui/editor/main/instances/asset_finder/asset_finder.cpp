@@ -191,7 +191,7 @@ namespace vxe {
   }
 
   std::string AssetFinder::formatFileSize(size_t size) {
-    const char *units[] = { "o", "ko", "Mo", "Go", "To" };
+    const char *units[] = { "B", "KB", "MB", "GB", "TB" };
     int unitIndex = 0;
     double displaySize = static_cast<double>(size);
 
@@ -337,7 +337,7 @@ namespace vxe {
           dp[i][j] = i;
         } else {
           int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
-          dp[i][j] = std::min({ dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost });
+          dp[i][j] = (std::min)({ dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost });
         }
       }
     }
@@ -359,7 +359,7 @@ namespace vxe {
     std::string lower_s2 = toLowerCase(s2);
 
     int dist = levenshteinDistance(lower_s1, lower_s2);
-    int maxLength = std::max(lower_s1.size(), lower_s2.size());
+    int maxLength = (std::max)(lower_s1.size(), lower_s2.size());
     double similarity = maxLength == 0 ? 1.0 : (1.0 - (static_cast<double>(dist) / maxLength));
 
     if (std::strlen(ProjectSearch) < 5) {

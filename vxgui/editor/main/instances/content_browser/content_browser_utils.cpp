@@ -371,4 +371,17 @@ namespace vxe {
 
     path_to_rename_ = path;
   }
+
+  ImU32 ContentBrowser::darken_color(ImU32 color, float amount) {
+    int r = (color >> IM_COL32_R_SHIFT) & 0xFF;
+    int g = (color >> IM_COL32_G_SHIFT) & 0xFF;
+    int b = (color >> IM_COL32_B_SHIFT) & 0xFF;
+    int a = (color >> IM_COL32_A_SHIFT) & 0xFF;
+
+    r = static_cast<int>(r * (1.0f - amount));
+    g = static_cast<int>(g * (1.0f - amount));
+    b = static_cast<int>(b * (1.0f - amount));
+
+    return IM_COL32(r, g, b, a);
+  }
 }  // namespace vxe

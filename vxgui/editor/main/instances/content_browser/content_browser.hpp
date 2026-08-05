@@ -106,6 +106,7 @@ namespace vxe {
     int levenshtein_distance(const std::string &s1, const std::string &s2);
     std::uintmax_t get_directory_size(const std::filesystem::path &directoryPath);
     FileTypes detect_file(const std::string &path);
+    ImU32 darken_color(ImU32 color, float amount);
 
    private:
     // callbacks
@@ -189,6 +190,7 @@ namespace vxe {
     std::vector<ContentBrowserChild> childs_;
     std::shared_ptr<vxe::AssetFinder> asset_finder_;
     std::vector<std::shared_ptr<vxe::AddWindow>> add_windows_;
+    bool import_window_open_ = false;
     int add_windows_counter_ = 0;
 
     // deletion
@@ -200,11 +202,8 @@ namespace vxe {
 
     std::shared_ptr<AppWindow> app_window_;
 
-    // à côté de: std::shared_ptr<AssetFinder> asset_finder_;
-    bool import_window_open_ = false;
-
     void begin_import_content();
-    void close_import_content();  // <- nouvelle méthode
+    void close_import_content();
     void check_import_content();
   };
 }  // namespace vxe
