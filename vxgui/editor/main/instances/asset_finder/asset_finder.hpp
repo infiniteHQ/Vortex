@@ -18,6 +18,12 @@
 namespace vxe {
   enum class AssetFinderShowMode { Thumbnails, List };
 
+  struct AssetFinderFileTypeInfo {
+    std::string icon;
+    std::string label;
+    ImU32 color;
+  };
+
   class AssetFinderItem {
    public:
     bool (*f_Detect)(const std::string &path);
@@ -105,6 +111,38 @@ namespace vxe {
   class AssetFinder : public std::enable_shared_from_this<AssetFinder> {
    public:
     AssetFinder(const std::string &name, const std::string &start_path);
+
+    enum class FileTypes {
+      File_ASM,
+      File_BIN,
+
+      File_C,
+      File_H,
+      File_CPP,
+      File_HPP,
+      File_INL,
+      File_RUST,
+      File_ZIG,
+      File_GO,
+      File_JAVA,
+      File_JAVASCRIPT,
+      File_COBOL,
+      File_PASCAL,
+      File_CARBON,
+
+      File_CFG,
+      File_JSON,
+      File_PICTURE,
+      File_TXT,
+      File_MD,
+      File_YAML,
+      File_INI,
+      File_GIT,
+
+      File_VORTEX_CONFIG,
+
+      File_UNKNOW,
+    };
 
     std::shared_ptr<Cherry::AppWindow> &GetAppWindow();
     static std::shared_ptr<AssetFinder> Create(const std::string &name, const std::string &base_path);
@@ -198,13 +236,57 @@ namespace vxe {
       m_CancelCallback = cb;
     }
 
+    void DrawHighlightedText(
+        ImDrawList *drawList,
+        ImVec2 textPos,
+        const char *text,
+        const char *search,
+        ImU32 highlightColor,
+        ImU32 textColor,
+        ImU32 highlightTextColor);
+    bool isOnlySpacesOrEmpty(const char *str);
+
+    std::string toLowerCase(const std::string &str);
+
+    int levenshteinDistance(const std::string &s1, const std::string &s2);
+
+    bool hasCommonLetters(const std::string &s1, const std::string &s2);
+
+    bool areStringsSimilar(const std::string &s1, const std::string &s2, double threshold);
+
+#ifndef _WIN32
+    std::string ExecCommand(const char *cmd);
+#endif
+
+    std::string GetUserDirectory(const std::string &xdgName);
+
+    std::uintmax_t getDirectorySize(const std::filesystem::path &directoryPath);
+
+    std::string formatFileSize(size_t size);
+    ImU32 DarkenColor(ImU32 color, float amount);
+    std::string get_extension(const std::string &path);
+    FileTypes detect_file(const std::string &path);
+
+    const AssetFinderFileTypeInfo &GetFileTypeInfo(FileTypes type);
+
    private:
     bool opened;
 
+    const std::string def = Cherry::GetPath("resources/imgs/icons/files/icon_default_file.png");
+    const std::string pic = Cherry::GetPath("resources/imgs/icons/files/icon_picture_file.png");
+    const std::string unk = Cherry::GetPath("resources/imgs/icons/files/icon_unknow_file.png");
     bool m_ShowFolderPannel = true;
     bool m_ShowFilterPannel = false;
     bool m_ShowThumbnailVisualizer = false;
     bool m_ShowSelectionQuantifier = false;
+    float padding = 30.0f;
+    float thumbnailSize = 94.0f;
+    std::string pathToRename = "";
+    char pathRename[256] = {};
+    bool pool_add_mode = false;
+    char pool_add_path[512] = {};
+    char ProjectSearch[256] = {};
+    float threshold = 0.4f;
 
     std::filesystem::path m_BaseDirectory;
 

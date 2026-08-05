@@ -12,318 +12,6 @@
 #include <unistd.h>
 #endif
 
-// To move in class members
-static float padding = 30.0f;
-static float thumbnailSize = 94.0f;
-static std::string pathToRename = "";
-static char pathRename[256];
-static bool pool_add_mode = false;
-static char pool_add_path[512];
-static char ProjectSearch[256];
-static float threshold = 0.4f;
-
-static void DrawHighlightedText(
-    ImDrawList *drawList,
-    ImVec2 textPos,
-    const char *text,
-    const char *search,
-    ImU32 highlightColor,
-    ImU32 textColor,
-    ImU32 highlightTextColor) {
-  if (!text || !search || !*search) {
-    drawList->AddText(textPos, textColor, text);
-    return;
-  }
-
-  const char *start = text;
-  const char *found = strstr(start, search);
-  while (found) {
-    if (found > start) {
-      std::string preText(start, found);
-      drawList->AddText(textPos, textColor, preText.c_str());
-      textPos.x += CherryGUI::CalcTextSize(preText.c_str()).x;
-    }
-
-    ImVec2 highlightPos = textPos;
-    ImVec2 highlightSize = CherryGUI::CalcTextSize(search);
-    drawList->AddRectFilled(
-        highlightPos, ImVec2(highlightPos.x + highlightSize.x, highlightPos.y + highlightSize.y), highlightColor);
-    drawList->AddText(textPos, highlightTextColor, search);
-    textPos.x += highlightSize.x;
-
-    start = found + strlen(search);
-    found = strstr(start, search);
-  }
-
-  if (*start) {
-    drawList->AddText(textPos, textColor, start);
-  }
-}
-
-static bool isOnlySpacesOrEmpty(const char *str) {
-  if (str == nullptr || std::strlen(str) == 0) {
-    return true;
-  }
-
-  for (size_t i = 0; i < std::strlen(str); ++i) {
-    if (str[i] != ' ') {
-      return false;
-    }
-  }
-  return true;
-}
-
-static std::string toLowerCase(const std::string &str) {
-  std::string result = str;
-  std::transform(result.begin(), result.end(), result.begin(), ::tolower);
-  return result;
-}
-
-static int levenshteinDistance(const std::string &s1, const std::string &s2) {
-  const size_t m = s1.size();
-  const size_t n = s2.size();
-  std::vector<std::vector<int>> dp(m + 1, std::vector<int>(n + 1));
-
-  for (size_t i = 0; i <= m; ++i) {
-    for (size_t j = 0; j <= n; ++j) {
-      if (i == 0) {
-        dp[i][j] = j;
-      } else if (j == 0) {
-        dp[i][j] = i;
-      } else {
-        int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
-        dp[i][j] = std::min({ dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost });
-      }
-    }
-  }
-  return dp[m][n];
-}
-
-static bool hasCommonLetters(const std::string &s1, const std::string &s2) {
-  std::unordered_set<char> set1(s1.begin(), s1.end());
-  for (char c : s2) {
-    if (set1.find(c) != set1.end()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-static bool areStringsSimilar(const std::string &s1, const std::string &s2, double threshold) {
-  std::string lower_s1 = toLowerCase(s1);
-  std::string lower_s2 = toLowerCase(s2);
-
-  int dist = levenshteinDistance(lower_s1, lower_s2);
-  int maxLength = std::max(lower_s1.size(), lower_s2.size());
-  double similarity = maxLength == 0 ? 1.0 : (1.0 - (static_cast<double>(dist) / maxLength));
-
-  if (std::strlen(ProjectSearch) < 5) {
-    return similarity >= threshold || hasCommonLetters(lower_s1, lower_s2);
-  }
-
-  return similarity >= threshold;
-}
-
-#ifndef _WIN32
-std::string ExecCommand(const char *cmd) {
-  std::array<char, 256> buffer;
-  std::string result;
-  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-  if (!pipe)
-    return "";
-  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-    result += buffer.data();
-  }
-  if (!result.empty() && result.back() == '\n')
-    result.pop_back();
-  return result;
-}
-#endif
-
-std::string GetUserDirectory(const std::string &xdgName) {
-#ifdef _WIN32
-  static const std::map<std::string, const KNOWNFOLDERID> folderMap = {
-    { "DESKTOP", FOLDERID_Desktop }, { "DOCUMENTS", FOLDERID_Documents }, { "DOWNLOAD", FOLDERID_Downloads },
-    { "MUSIC", FOLDERID_Music },     { "PICTURES", FOLDERID_Pictures },   { "VIDEOS", FOLDERID_Videos },
-    { "HOME", FOLDERID_Profile }
-  };
-
-  auto it = folderMap.find(xdgName);
-  if (it == folderMap.end())
-    return "";
-
-  PWSTR path = nullptr;
-  if (SUCCEEDED(SHGetKnownFolderPath(it->second, 0, NULL, &path))) {
-    std::wstring ws(path);
-    CoTaskMemFree(path);
-    return std::string(ws.begin(), ws.end());
-  }
-  return "";
-
-#else  // Unix-like
-  if (xdgName == "HOME") {
-    const char *homeDir = getenv("HOME");
-    if (!homeDir) {
-      struct passwd *pw = getpwuid(getuid());
-      homeDir = pw->pw_dir;
-    }
-    return std::string(homeDir);
-  }
-
-  std::string cmd = "xdg-user-dir " + xdgName;
-  std::string output = ExecCommand(cmd.c_str());
-  if (!output.empty())
-    return output;
-
-  const char *homeDir = getenv("HOME");
-  if (!homeDir) {
-    struct passwd *pw = getpwuid(getuid());
-    homeDir = pw->pw_dir;
-  }
-  return std::string(homeDir) + "/" + xdgName;
-#endif
-}
-
-static std::uintmax_t getDirectorySize(const std::filesystem::path &directoryPath) {
-  std::uintmax_t size = 0;
-  std::error_code ec;
-
-  for (const auto &entry : std::filesystem::recursive_directory_iterator(
-           directoryPath, std::filesystem::directory_options::skip_permission_denied, ec)) {
-    if (std::filesystem::is_regular_file(entry.path())) {
-      size += std::filesystem::file_size(entry.path());
-    }
-  }
-
-  return size;
-}
-
-enum class FileTypes {
-  File_ASM,
-  File_BIN,
-
-  File_C,
-  File_H,
-  File_CPP,
-  File_HPP,
-  File_INL,
-  File_RUST,
-  File_ZIG,
-  File_GO,
-  File_JAVA,
-  File_JAVASCRIPT,
-  File_COBOL,
-  File_PASCAL,
-  File_CARBON,
-
-  File_CFG,
-  File_JSON,
-  File_PICTURE,
-  File_TXT,
-  File_MD,
-  File_YAML,
-  File_INI,
-  File_GIT,
-
-  File_VORTEX_CONFIG,
-
-  File_UNKNOW,
-};
-
-static std::string formatFileSize(size_t size) {
-  const char *units[] = { "o", "ko", "Mo", "Go", "To" };
-  int unitIndex = 0;
-  double displaySize = static_cast<double>(size);
-
-  while (displaySize >= 1024 && unitIndex < 4) {
-    displaySize /= 1024;
-    ++unitIndex;
-  }
-
-  char formattedSize[20];
-  snprintf(formattedSize, sizeof(formattedSize), "%.2f %s", displaySize, units[unitIndex]);
-  return std::string(formattedSize);
-}
-
-static ImU32 DarkenColor(ImU32 color, float amount) {
-  int r = (color >> IM_COL32_R_SHIFT) & 0xFF;
-  int g = (color >> IM_COL32_G_SHIFT) & 0xFF;
-  int b = (color >> IM_COL32_B_SHIFT) & 0xFF;
-  int a = (color >> IM_COL32_A_SHIFT) & 0xFF;
-
-  r = static_cast<int>(r * (1.0f - amount));
-  g = static_cast<int>(g * (1.0f - amount));
-  b = static_cast<int>(b * (1.0f - amount));
-
-  return IM_COL32(r, g, b, a);
-}
-
-std::string get_extension(const std::string &path) {
-  size_t dot_pos = path.find_last_of('.');
-  if (dot_pos == std::string::npos)
-    return "";
-  return path.substr(dot_pos + 1);
-}
-
-FileTypes detect_file(const std::string &path) {
-  static const std::unordered_map<std::string, FileTypes> extension_map = {
-    { "asm", FileTypes::File_ASM },      { "bin", FileTypes::File_BIN },       { "c", FileTypes::File_C },
-    { "h", FileTypes::File_H },          { "cpp", FileTypes::File_CPP },       { "hpp", FileTypes::File_HPP },
-    { "inl", FileTypes::File_INL },      { "rs", FileTypes::File_RUST },       { "zig", FileTypes::File_ZIG },
-    { "go", FileTypes::File_GO },        { "cfg", FileTypes::File_CFG },       { "json", FileTypes::File_JSON },
-    { "txt", FileTypes::File_TXT },      { "md", FileTypes::File_MD },         { "yaml", FileTypes::File_YAML },
-    { "ini", FileTypes::File_INI },      { "gitignore", FileTypes::File_GIT }, { "gitmodules", FileTypes::File_GIT },
-    { "git", FileTypes::File_GIT },      { "png", FileTypes::File_PICTURE },   { "jpg", FileTypes::File_PICTURE },
-    { "jpeg", FileTypes::File_PICTURE },
-  };
-
-  std::string extension = get_extension(path);
-  auto it = extension_map.find(extension);
-  if (it != extension_map.end()) {
-    return it->second;
-  } else {
-    return FileTypes::File_UNKNOW;
-  }
-}
-
-struct AssetFinderFileTypeInfo {
-  std::string icon;
-  std::string label;
-  ImU32 color;
-};
-
-static const AssetFinderFileTypeInfo &GetFileTypeInfo(FileTypes type) {
-  static const std::string def = Cherry::GetPath("resources/imgs/icons/files/icon_default_file.png");
-  static const std::string pic = Cherry::GetPath("resources/imgs/icons/files/icon_picture_file.png");
-  static const std::string unk = Cherry::GetPath("resources/imgs/icons/files/icon_unknow_file.png");
-
-  static const std::unordered_map<FileTypes, AssetFinderFileTypeInfo> infos = {
-    { FileTypes::File_PICTURE, { pic, "Image", IM_COL32(90, 200, 140, 255) } },
-    { FileTypes::File_CPP, { def, "C++ Source", IM_COL32(0, 150, 220, 255) } },
-    { FileTypes::File_HPP, { def, "C++ Header", IM_COL32(0, 150, 220, 255) } },
-    { FileTypes::File_C, { def, "C Source", IM_COL32(90, 150, 220, 255) } },
-    { FileTypes::File_H, { def, "C Header", IM_COL32(90, 150, 220, 255) } },
-    { FileTypes::File_INL, { def, "Inline Source", IM_COL32(90, 150, 220, 255) } },
-    { FileTypes::File_RUST, { def, "Rust Source", IM_COL32(222, 165, 132, 255) } },
-    { FileTypes::File_ZIG, { def, "Zig Source", IM_COL32(247, 164, 29, 255) } },
-    { FileTypes::File_GO, { def, "Go Source", IM_COL32(0, 173, 216, 255) } },
-    { FileTypes::File_JSON, { def, "JSON", IM_COL32(219, 174, 89, 255) } },
-    { FileTypes::File_TXT, { def, "Text", IM_COL32(180, 180, 180, 255) } },
-    { FileTypes::File_MD, { def, "Markdown", IM_COL32(180, 180, 180, 255) } },
-    { FileTypes::File_YAML, { def, "YAML", IM_COL32(160, 120, 220, 255) } },
-    { FileTypes::File_INI, { def, "Config", IM_COL32(160, 160, 160, 255) } },
-    { FileTypes::File_CFG, { def, "Config", IM_COL32(160, 160, 160, 255) } },
-    { FileTypes::File_GIT, { def, "Git", IM_COL32(240, 90, 60, 255) } },
-    { FileTypes::File_ASM, { def, "Assembly", IM_COL32(200, 100, 100, 255) } },
-    { FileTypes::File_BIN, { def, "Binary", IM_COL32(120, 120, 120, 255) } },
-  };
-
-  static const AssetFinderFileTypeInfo default_info = { unk, "File", IM_COL32(140, 140, 140, 255) };
-
-  auto it = infos.find(type);
-  return it != infos.end() ? it->second : default_info;
-}
-
 namespace vxe {
   AssetFinder::AssetFinder(const std::string &name, const std::string &start_path) {
     m_AppWindow = std::make_shared<Cherry::AppWindow>(name, name);
@@ -483,6 +171,266 @@ namespace vxe {
     AssetFinderChild contentbar("RenderContentBar", [this]() { RenderContentBar(); });
     contentbar.Enable();
     AddChild(contentbar);
+  }
+
+  std::string AssetFinder::get_extension(const std::string &path) {
+    size_t dot_pos = path.find_last_of('.');
+    if (dot_pos == std::string::npos)
+      return "";
+    return path.substr(dot_pos + 1);
+  }
+
+  std::string AssetFinder::formatFileSize(size_t size) {
+    const char *units[] = { "o", "ko", "Mo", "Go", "To" };
+    int unitIndex = 0;
+    double displaySize = static_cast<double>(size);
+
+    while (displaySize >= 1024 && unitIndex < 4) {
+      displaySize /= 1024;
+      ++unitIndex;
+    }
+
+    char formattedSize[20];
+    snprintf(formattedSize, sizeof(formattedSize), "%.2f %s", displaySize, units[unitIndex]);
+    return std::string(formattedSize);
+  }
+
+  ImU32 AssetFinder::DarkenColor(ImU32 color, float amount) {
+    int r = (color >> IM_COL32_R_SHIFT) & 0xFF;
+    int g = (color >> IM_COL32_G_SHIFT) & 0xFF;
+    int b = (color >> IM_COL32_B_SHIFT) & 0xFF;
+    int a = (color >> IM_COL32_A_SHIFT) & 0xFF;
+
+    r = static_cast<int>(r * (1.0f - amount));
+    g = static_cast<int>(g * (1.0f - amount));
+    b = static_cast<int>(b * (1.0f - amount));
+
+    return IM_COL32(r, g, b, a);
+  }
+
+  AssetFinder::FileTypes AssetFinder::detect_file(const std::string &path) {
+    static const std::unordered_map<std::string, FileTypes> extension_map = {
+      { "asm", FileTypes::File_ASM },      { "bin", FileTypes::File_BIN },       { "c", FileTypes::File_C },
+      { "h", FileTypes::File_H },          { "cpp", FileTypes::File_CPP },       { "hpp", FileTypes::File_HPP },
+      { "inl", FileTypes::File_INL },      { "rs", FileTypes::File_RUST },       { "zig", FileTypes::File_ZIG },
+      { "go", FileTypes::File_GO },        { "cfg", FileTypes::File_CFG },       { "json", FileTypes::File_JSON },
+      { "txt", FileTypes::File_TXT },      { "md", FileTypes::File_MD },         { "yaml", FileTypes::File_YAML },
+      { "ini", FileTypes::File_INI },      { "gitignore", FileTypes::File_GIT }, { "gitmodules", FileTypes::File_GIT },
+      { "git", FileTypes::File_GIT },      { "png", FileTypes::File_PICTURE },   { "jpg", FileTypes::File_PICTURE },
+      { "jpeg", FileTypes::File_PICTURE },
+    };
+
+    std::string extension = get_extension(path);
+    auto it = extension_map.find(extension);
+    if (it != extension_map.end()) {
+      return it->second;
+    } else {
+      return FileTypes::File_UNKNOW;
+    }
+  }
+
+  const AssetFinderFileTypeInfo &AssetFinder::GetFileTypeInfo(FileTypes type) {
+    static const std::unordered_map<FileTypes, AssetFinderFileTypeInfo> infos = {
+      { FileTypes::File_PICTURE, { pic, "Image", IM_COL32(90, 200, 140, 255) } },
+      { FileTypes::File_CPP, { def, "C++ Source", IM_COL32(0, 150, 220, 255) } },
+      { FileTypes::File_HPP, { def, "C++ Header", IM_COL32(0, 150, 220, 255) } },
+      { FileTypes::File_C, { def, "C Source", IM_COL32(90, 150, 220, 255) } },
+      { FileTypes::File_H, { def, "C Header", IM_COL32(90, 150, 220, 255) } },
+      { FileTypes::File_INL, { def, "Inline Source", IM_COL32(90, 150, 220, 255) } },
+      { FileTypes::File_RUST, { def, "Rust Source", IM_COL32(222, 165, 132, 255) } },
+      { FileTypes::File_ZIG, { def, "Zig Source", IM_COL32(247, 164, 29, 255) } },
+      { FileTypes::File_GO, { def, "Go Source", IM_COL32(0, 173, 216, 255) } },
+      { FileTypes::File_JSON, { def, "JSON", IM_COL32(219, 174, 89, 255) } },
+      { FileTypes::File_TXT, { def, "Text", IM_COL32(180, 180, 180, 255) } },
+      { FileTypes::File_MD, { def, "Markdown", IM_COL32(180, 180, 180, 255) } },
+      { FileTypes::File_YAML, { def, "YAML", IM_COL32(160, 120, 220, 255) } },
+      { FileTypes::File_INI, { def, "Config", IM_COL32(160, 160, 160, 255) } },
+      { FileTypes::File_CFG, { def, "Config", IM_COL32(160, 160, 160, 255) } },
+      { FileTypes::File_GIT, { def, "Git", IM_COL32(240, 90, 60, 255) } },
+      { FileTypes::File_ASM, { def, "Assembly", IM_COL32(200, 100, 100, 255) } },
+      { FileTypes::File_BIN, { def, "Binary", IM_COL32(120, 120, 120, 255) } },
+    };
+
+    static const AssetFinderFileTypeInfo default_info = { unk, "File", IM_COL32(140, 140, 140, 255) };
+
+    auto it = infos.find(type);
+    return it != infos.end() ? it->second : default_info;
+  }
+
+  void AssetFinder::DrawHighlightedText(
+      ImDrawList *drawList,
+      ImVec2 textPos,
+      const char *text,
+      const char *search,
+      ImU32 highlightColor,
+      ImU32 textColor,
+      ImU32 highlightTextColor) {
+    if (!text || !search || !*search) {
+      drawList->AddText(textPos, textColor, text);
+      return;
+    }
+
+    const char *start = text;
+    const char *found = strstr(start, search);
+    while (found) {
+      if (found > start) {
+        std::string preText(start, found);
+        drawList->AddText(textPos, textColor, preText.c_str());
+        textPos.x += CherryGUI::CalcTextSize(preText.c_str()).x;
+      }
+
+      ImVec2 highlightPos = textPos;
+      ImVec2 highlightSize = CherryGUI::CalcTextSize(search);
+      drawList->AddRectFilled(
+          highlightPos, ImVec2(highlightPos.x + highlightSize.x, highlightPos.y + highlightSize.y), highlightColor);
+      drawList->AddText(textPos, highlightTextColor, search);
+      textPos.x += highlightSize.x;
+
+      start = found + strlen(search);
+      found = strstr(start, search);
+    }
+
+    if (*start) {
+      drawList->AddText(textPos, textColor, start);
+    }
+  }
+
+  bool AssetFinder::isOnlySpacesOrEmpty(const char *str) {
+    if (str == nullptr || std::strlen(str) == 0) {
+      return true;
+    }
+
+    for (size_t i = 0; i < std::strlen(str); ++i) {
+      if (str[i] != ' ') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  std::string AssetFinder::toLowerCase(const std::string &str) {
+    std::string result = str;
+    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    return result;
+  }
+
+  int AssetFinder::levenshteinDistance(const std::string &s1, const std::string &s2) {
+    const size_t m = s1.size();
+    const size_t n = s2.size();
+    std::vector<std::vector<int>> dp(m + 1, std::vector<int>(n + 1));
+
+    for (size_t i = 0; i <= m; ++i) {
+      for (size_t j = 0; j <= n; ++j) {
+        if (i == 0) {
+          dp[i][j] = j;
+        } else if (j == 0) {
+          dp[i][j] = i;
+        } else {
+          int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
+          dp[i][j] = std::min({ dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost });
+        }
+      }
+    }
+    return dp[m][n];
+  }
+
+  bool AssetFinder::hasCommonLetters(const std::string &s1, const std::string &s2) {
+    std::unordered_set<char> set1(s1.begin(), s1.end());
+    for (char c : s2) {
+      if (set1.find(c) != set1.end()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool AssetFinder::areStringsSimilar(const std::string &s1, const std::string &s2, double threshold) {
+    std::string lower_s1 = toLowerCase(s1);
+    std::string lower_s2 = toLowerCase(s2);
+
+    int dist = levenshteinDistance(lower_s1, lower_s2);
+    int maxLength = std::max(lower_s1.size(), lower_s2.size());
+    double similarity = maxLength == 0 ? 1.0 : (1.0 - (static_cast<double>(dist) / maxLength));
+
+    if (std::strlen(ProjectSearch) < 5) {
+      return similarity >= threshold || hasCommonLetters(lower_s1, lower_s2);
+    }
+
+    return similarity >= threshold;
+  }
+
+#ifndef _WIN32
+  std::string AssetFinder::ExecCommand(const char *cmd) {
+    std::array<char, 256> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe)
+      return "";
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+      result += buffer.data();
+    }
+    if (!result.empty() && result.back() == '\n')
+      result.pop_back();
+    return result;
+  }
+#endif
+
+  std::string AssetFinder::GetUserDirectory(const std::string &xdgName) {
+#ifdef _WIN32
+    static const std::map<std::string, const KNOWNFOLDERID> folderMap = {
+      { "DESKTOP", FOLDERID_Desktop }, { "DOCUMENTS", FOLDERID_Documents }, { "DOWNLOAD", FOLDERID_Downloads },
+      { "MUSIC", FOLDERID_Music },     { "PICTURES", FOLDERID_Pictures },   { "VIDEOS", FOLDERID_Videos },
+      { "HOME", FOLDERID_Profile }
+    };
+
+    auto it = folderMap.find(xdgName);
+    if (it == folderMap.end())
+      return "";
+
+    PWSTR path = nullptr;
+    if (SUCCEEDED(SHGetKnownFolderPath(it->second, 0, NULL, &path))) {
+      std::wstring ws(path);
+      CoTaskMemFree(path);
+      return std::string(ws.begin(), ws.end());
+    }
+    return "";
+
+#else  // Unix-like
+    if (xdgName == "HOME") {
+      const char *homeDir = getenv("HOME");
+      if (!homeDir) {
+        struct passwd *pw = getpwuid(getuid());
+        homeDir = pw->pw_dir;
+      }
+      return std::string(homeDir);
+    }
+
+    std::string cmd = "xdg-user-dir " + xdgName;
+    std::string output = ExecCommand(cmd.c_str());
+    if (!output.empty())
+      return output;
+
+    const char *homeDir = getenv("HOME");
+    if (!homeDir) {
+      struct passwd *pw = getpwuid(getuid());
+      homeDir = pw->pw_dir;
+    }
+    return std::string(homeDir) + "/" + xdgName;
+#endif
+  }
+
+  std::uintmax_t AssetFinder::getDirectorySize(const std::filesystem::path &directoryPath) {
+    std::uintmax_t size = 0;
+    std::error_code ec;
+
+    for (const auto &entry : std::filesystem::recursive_directory_iterator(
+             directoryPath, std::filesystem::directory_options::skip_permission_denied, ec)) {
+      if (std::filesystem::is_regular_file(entry.path())) {
+        size += std::filesystem::file_size(entry.path());
+      }
+    }
+
+    return size;
   }
 
   void AssetFinder::DrawPathBar(const std::string &path) {
