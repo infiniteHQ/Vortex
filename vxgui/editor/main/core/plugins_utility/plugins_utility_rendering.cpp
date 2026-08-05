@@ -13,6 +13,17 @@
 namespace vxe {
 
   void PluginsUtility::render() {
+    if (!focus_window_applied_) {
+      if (!focus_window_.empty()) {
+        for (auto &w : CherryApp.GetWindows()) {
+          if (w->GetName() == focus_window_) {
+            CherryApp.QuickRedock(app_window_->GetName(), w->GetName());
+          }
+        }
+      }
+      focus_window_applied_ = true;
+    }
+
     render_plugin_deletion_modal();
     if (selected_pannel_ == PluginsUtilityPannels::Installed) {
       render_installed();

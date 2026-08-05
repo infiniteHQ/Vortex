@@ -47,6 +47,8 @@ namespace vxe {
     // ui
     float sidebar_width_ = 250.0f;
     bool console_font_ = false;
+    std::string focus_window_;
+    bool focus_window_applied_ = false;
 
     std::shared_ptr<Cherry::AppWindow> app_window_;
   };

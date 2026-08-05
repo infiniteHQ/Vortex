@@ -28,6 +28,8 @@ namespace vxe {
     static std::shared_ptr<ProjectSettings> create(const std::string &name);
     void setup_render_callback();
     std::shared_ptr<Cherry::AppWindow> &get_app_window();
+    void redock_to_window(const std::string &window_name);
+    void focus();
     ProjectSettingsChild *get_child(const std::string &child_name);
     void add_child(const ProjectSettingsChild &child);
     void remove_child(const std::string &child_name);
@@ -77,6 +79,8 @@ namespace vxe {
     std::shared_ptr<Cherry::AppWindow> app_window_;
     std::string selected_child_name_;
     float left_panel_width_ = 290.0f;
+    std::string focus_window_;
+    bool focus_window_applied_ = false;
   };
 }  // namespace vxe
 

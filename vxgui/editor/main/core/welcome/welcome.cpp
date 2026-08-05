@@ -44,34 +44,54 @@ namespace vxe {
     });
   }
 
+  void Welcome::redock_to_window(const std::string &window_name) {
+    focus_window_applied_ = false;
+    focus_window_ = window_name;
+  }
+
+  void Welcome::focus() {
+    CherryApp.FocusAppWindow(app_window_->GetName());
+  }
+
   void Welcome::render() {
+    if (!focus_window_applied_) {
+      if (!focus_window_.empty()) {
+        for (auto &w : CherryApp.GetWindows()) {
+          if (w->GetName() == focus_window_) {
+            CherryApp.QuickRedock(app_window_->GetName(), w->GetName());
+          }
+        }
+      }
+      focus_window_applied_ = true;
+    }
+
     Cherry::Script::RenderLuaFreshScript(Cherry::GetPath("ui/windows/welcome/main.lua"));
 
     // If Browser Clicked
     if (CherryApp.GetComponentData(CherryID("welcome_browser"), "isClicked") == "true") {
-      c_Editor->spawn_content_browser(CherryApp.GetCurrentRenderedWindow()->GetName());
+      c_Editor->spawn_content_browser(CherryWindow.GetName());
     }
 
     // If Terminal Clicked
     if (CherryApp.GetComponentData(CherryID("welcome_terminal"), "isClicked") == "true") {
-      c_Editor->spawn_logs_utility(CherryApp.GetCurrentRenderedWindow()->GetName());
+      c_Editor->spawn_logs_utility(CherryWindow.GetName());
     }
 
     // If Scripts Clicked
     if (CherryApp.GetComponentData(CherryID("welcome_settings"), "isClicked") == "true") {
-      c_Editor->toggle_project_settings();
+      c_Editor->toggle_project_settings(CherryWindow.GetName());
     }
 
     if (CherryApp.GetComponentData(CherryID("open_terminal"), "isClicked") == "true") {
-      c_Editor->spawn_logs_utility(CherryApp.GetCurrentRenderedWindow()->GetName());
+      c_Editor->spawn_logs_utility(CherryWindow.GetName());
     }
 
     if (CherryApp.GetComponentData(CherryID("open_content_browser"), "isClicked") == "true") {
-      c_Editor->spawn_content_browser(CherryApp.GetCurrentRenderedWindow()->GetName());
+      c_Editor->spawn_content_browser(CherryWindow.GetName());
     }
 
     if (CherryApp.GetComponentData(CherryID("open_project_settings"), "isClicked") == "true") {
-      c_Editor->toggle_project_settings();
+      c_Editor->toggle_project_settings(CherryWindow.GetName());
     }
 
     if (CherryApp.GetComponentData(CherryID("taking_control"), "isClicked") == "true") {

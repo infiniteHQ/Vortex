@@ -24,7 +24,7 @@ bool Editor::get_credits_visibility() {
   return credits_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_credits_visibility(const bool visibility) {
+void Editor::set_credits_visibility(const bool visibility, const std::string &focus_window) {
   if (visibility) {
     if (!credits_window_) {
       credits_window_ = vxe::Credits::create("Credits");
@@ -71,7 +71,7 @@ bool Editor::get_about_visibility() {
   return about_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_about_visibility(const bool visibility) {
+void Editor::set_about_visibility(const bool visibility, const std::string &focus_window) {
   if (visibility) {
     if (!about_window_) {
       about_window_ = vxe::AboutVortex::create("About Vortex");
@@ -118,7 +118,7 @@ bool Editor::get_about_project_visibility() {
   return about_project_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_about_project_visibility(const bool visibility) {
+void Editor::set_about_project_visibility(const bool visibility, const std::string &focus_window) {
   if (visibility) {
     if (!about_project_window_) {
       about_project_window_ = vxe::AboutProject::create("About this project");
@@ -158,7 +158,7 @@ void Editor::set_about_project_visibility(const bool visibility) {
     }
   }
 }
-void Editor::set_templates_utility_visibility(const bool &visibility) {
+void Editor::set_templates_utility_visibility(const bool &visibility, const std::string &focus_window) {
   /*m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(visibility);*/
 }
 
@@ -167,38 +167,55 @@ bool Editor::get_templates_utility_visibility() {
   return false;
 }
 
-void Editor::set_project_settings_visibility(const bool &visibility, const std::string &tab = "") {
+void Editor::set_project_settings_visibility(
+    const bool &visibility,
+    const std::string &tab,
+    const std::string &focus_window) {
   if (!tab.empty()) {
-    project_settings_window_->load_tab_user_want(tab);
+    // project_settings_window_->load_tab_user_want(tab);
   }
   project_settings_window_->get_app_window()->SetVisibility(visibility);
-  if (visibility) {
-    CherryGUI::SetWindowFocus(project_settings_window_->get_app_window()->m_IdName.c_str());
+
+  if (!focus_window.empty()) {
+    project_settings_window_->redock_to_window(focus_window);
   }
+  project_settings_window_->focus();
 }
 
 bool Editor::get_project_settings_visibility() {
   return project_settings_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_modules_utility_visibility(const bool &visibility) {
+void Editor::set_modules_utility_visibility(const bool &visibility, const std::string &focus_window) {
   modules_utility_window_->get_app_window()->SetVisibility(visibility);
+  if (!focus_window.empty()) {
+    modules_utility_window_->redock_to_window(focus_window);
+  }
+  modules_utility_window_->focus();
 }
 
 bool Editor::get_modules_utility_visibility() {
   return modules_utility_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_plugins_utility_visibility(const bool &visibility) {
+void Editor::set_plugins_utility_visibility(const bool &visibility, const std::string &focus_window) {
   plugins_utility_window_->get_app_window()->SetVisibility(visibility);
+  if (!focus_window.empty()) {
+    plugins_utility_window_->redock_to_window(focus_window);
+  }
+  plugins_utility_window_->focus();
 }
 
 bool Editor::get_plugins_utility_visibility() {
   return plugins_utility_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_welcome_visibility(const bool &visibility) {
+void Editor::set_welcome_visibility(const bool &visibility, const std::string &focus_window) {
   welcome_window_->get_app_window()->SetVisibility(visibility);
+  if (!focus_window.empty()) {
+    welcome_window_->redock_to_window(focus_window);
+  }
+  welcome_window_->focus();
 }
 
 bool Editor::get_welcome_visibility() {
@@ -222,7 +239,7 @@ std::string Editor::spawn_content_browser(const std::string &focus_window) {
   return label;
 }
 
-std::string Editor::spawn_doc_viewer() {
+std::string Editor::spawn_doc_viewer(const std::string &focus_window) {
   std::string label = "Doc viewer ####Doc viewer -" + std::to_string(doc_viewer_instances_.size() + 1);
   std::shared_ptr<vxe::DocViewer> DocViewer = vxe::DocViewer::create(label.c_str());
 
@@ -256,8 +273,8 @@ void Editor::spawn_logs_utility(const std::string &focus_window) {
   logs_utility_instances_.push_back(LogsUtility);
 }
 
-void Editor::toggle_project_settings() {
-  c_Editor->set_project_settings_visibility(!c_Editor->get_project_settings_visibility());
+void Editor::toggle_project_settings(const std::string &focus_window) {
+  c_Editor->set_project_settings_visibility(!c_Editor->get_project_settings_visibility(), focus_window);
 }
 
 // Frame task
@@ -466,7 +483,7 @@ void Editor::render_menubar() {
             "",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_hand.png")),
             get_welcome_visibility())) {
-      set_welcome_visibility(!get_welcome_visibility());
+      set_welcome_visibility(!get_welcome_visibility(), CherryWindow.GetName());
     }
 
     CherryKit::SeparatorText("Logical contents");
@@ -476,14 +493,14 @@ void Editor::render_menubar() {
             "Open the modules utility",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_bricksearch.png")),
             get_modules_utility_visibility())) {
-      set_modules_utility_visibility(!get_modules_utility_visibility());
+      set_modules_utility_visibility(!get_modules_utility_visibility(), CherryWindow.GetName());
     }
     if (CherryGUI::MenuItem(
             "Plugins utility",
             "Open the plugins utility",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_plugin.png")),
             get_plugins_utility_visibility())) {
-      set_plugins_utility_visibility(!get_plugins_utility_visibility());
+      set_plugins_utility_visibility(!get_plugins_utility_visibility(), CherryWindow.GetName());
     }
 
     CherryKit::SeparatorText("Static contents");
@@ -509,7 +526,7 @@ void Editor::render_menubar() {
             "Open the main settings of this project",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_settings.png")),
             get_project_settings_visibility())) {
-      set_project_settings_visibility(!get_project_settings_visibility());
+      set_project_settings_visibility(!get_project_settings_visibility(), CherryWindow.GetName());
     }
 
     CherryKit::SeparatorText("Other");
@@ -622,7 +639,7 @@ void Editor::render_menubar() {
             "Open a content browser",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/frame_files.png")),
             false)) {
-      spawn_content_browser(CherryApp.GetCurrentRenderedWindow()->GetName());
+      spawn_content_browser(CherryWindow.GetName());
     }
 
     CherryKit::SeparatorText("Console, logs, debugging");
@@ -631,7 +648,7 @@ void Editor::render_menubar() {
             "Open a console with logs",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/frame_cli.png")),
             false)) {
-      spawn_logs_utility(CherryApp.GetCurrentRenderedWindow()->GetName());
+      spawn_logs_utility(CherryWindow.GetName());
     }
 
     if (ctx->modules_section_on_toolbar) {

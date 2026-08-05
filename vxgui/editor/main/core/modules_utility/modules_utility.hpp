@@ -35,6 +35,8 @@ namespace vxe {
     std::shared_ptr<Cherry::AppWindow> &get_app_window();
     static std::shared_ptr<ModulesUtility> create(const std::string &name);
     void setup_render_callback();
+    void redock_to_window(const std::string &window_name);
+    void focus();
 
     // rendering
     void render();
@@ -70,6 +72,8 @@ namespace vxe {
     std::string module_to_delete_version_;
     std::string module_to_delete_logo_path_;
     bool trigger_net_permission_modal_ = false;
+    std::string focus_window_;
+    bool focus_window_applied_ = false;
 
     ShowModes selected_show_mode_ = ShowModes::List;
     Pannels selected_pannel_ = Pannels::Installed;

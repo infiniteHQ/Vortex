@@ -88,4 +88,13 @@ namespace vxe {
   std::string ModulesUtility::get_selected_category() {
     return selected_category_;
   }
+
+  void ModulesUtility::redock_to_window(const std::string &window_name) {
+    focus_window_applied_ = false;
+    focus_window_ = window_name;
+  }
+
+  void ModulesUtility::focus() {
+    CherryApp.FocusAppWindow(app_window_->GetName());
+  }
 }  // namespace vxe

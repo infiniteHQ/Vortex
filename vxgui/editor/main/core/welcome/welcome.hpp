@@ -26,6 +26,8 @@ namespace vxe {
     std::shared_ptr<Cherry::AppWindow> &get_app_window();
     static std::shared_ptr<Welcome> create(const std::string &name);
     void setup_render_callback();
+    void redock_to_window(const std::string &window_name);
+    void focus();
 
     // rendering
     void render();
@@ -33,6 +35,8 @@ namespace vxe {
    private:
     // window
     std::shared_ptr<Cherry::AppWindow> app_window_;
+    std::string focus_window_;
+    bool focus_window_applied_ = false;
   };
 }  // namespace vxe
 #endif  // WELCOME_HPP

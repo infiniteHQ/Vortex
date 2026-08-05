@@ -68,6 +68,15 @@ namespace vxe {
     }
   }
 
+  void ProjectSettings::redock_to_window(const std::string &window_name) {
+    focus_window_applied_ = false;
+    focus_window_ = window_name;
+  }
+
+  void ProjectSettings::focus() {
+    CherryApp.FocusAppWindow(app_window_->GetName());
+  }
+
   void ProjectSettings::setup_render_callback() {
     auto self = shared_from_this();
     app_window_->SetRenderCallback([self]() {
@@ -88,6 +97,17 @@ namespace vxe {
   }
 
   void ProjectSettings::render() {
+    if (!focus_window_applied_) {
+      if (!focus_window_.empty()) {
+        for (auto &w : CherryApp.GetWindows()) {
+          if (w->GetName() == focus_window_) {
+            CherryApp.QuickRedock(app_window_->GetName(), w->GetName());
+          }
+        }
+      }
+      focus_window_applied_ = true;
+    }
+
     const float minPaneWidth = 50.0f;
     const float splitterWidth = 1.5f;
 

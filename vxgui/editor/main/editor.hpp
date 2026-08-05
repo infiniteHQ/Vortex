@@ -39,22 +39,25 @@ namespace vxe {
     bool get_plugins_utility_visibility();
     bool get_welcome_visibility();
 
-    void set_credits_visibility(const bool visibility);
-    void set_about_visibility(const bool visibility);
-    void set_about_project_visibility(const bool visibility);
-    void set_templates_utility_visibility(const bool &visibility);
-    void set_project_settings_visibility(const bool &visibility, const std::string &tab);
-    void set_modules_utility_visibility(const bool &visibility);
-    void set_plugins_utility_visibility(const bool &visibility);
-    void set_welcome_visibility(const bool &visibility);
+    void set_credits_visibility(const bool visibility, const std::string &focus_window = "");
+    void set_about_visibility(const bool visibility, const std::string &focus_window = "");
+    void set_about_project_visibility(const bool visibility, const std::string &focus_window = "");
+    void set_templates_utility_visibility(const bool &visibility, const std::string &focus_window = "");
+    void set_project_settings_visibility(
+        const bool &visibility,
+        const std::string &tab = "",
+        const std::string &focus_window = "");
+    void set_modules_utility_visibility(const bool &visibility, const std::string &focus_window = "");
+    void set_plugins_utility_visibility(const bool &visibility, const std::string &focus_window = "");
+    void set_welcome_visibility(const bool &visibility, const std::string &focus_window = "");
 
     void window_close_callback();
 
     std::string spawn_content_browser(const std::string &focus_window = "");
-    std::string spawn_doc_viewer();
+    std::string spawn_doc_viewer(const std::string &focus_window = "");
     void spawn_content_browser_on_bottom();
     void spawn_logs_utility(const std::string &focus_window = "");
-    void toggle_project_settings();
+    void toggle_project_settings(const std::string &focus_window = "");
 
     void render_menubar();
     void render_framebar();
