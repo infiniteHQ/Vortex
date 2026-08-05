@@ -1,7 +1,6 @@
 //
-//  content_browser.hpp
-//  Header and declarations for the content browser of the editor, with UI
-//  window and front-end logic.
+//  asset_finder.hpp
+//  Header and declarations for the asset finder window
 //
 //	Copyright (c) 2026 Infinite
 //
