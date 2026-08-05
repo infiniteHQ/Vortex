@@ -21,11 +21,11 @@ namespace vxe {
 
   class DocViewer : public std::enable_shared_from_this<DocViewer> {
    public:
-    DocViewer(const std::string &name);
+    DocViewer(const std::string &name, const std::string &focus_window = "");
 
     // window
     std::shared_ptr<Cherry::AppWindow> &get_app_window();
-    static std::shared_ptr<DocViewer> create(const std::string &name);
+    static std::shared_ptr<DocViewer> create(const std::string &name, const std::string &focus_window = "");
     void setup_render_callback();
 
     // rendering

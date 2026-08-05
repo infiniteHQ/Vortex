@@ -12,9 +12,11 @@
 #include "doc_viewer.hpp"
 
 namespace vxe {
-  DocViewer::DocViewer(const std::string &name) {
+  DocViewer::DocViewer(const std::string &name, const std::string &focus_window) {
     app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
     std::shared_ptr<Cherry::AppWindow> win = app_window_;
+
+    focus_window_ = focus_window;
 
     app_window_->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_journal.png"));
     app_window_->SetClosable(true);
@@ -27,8 +29,8 @@ namespace vxe {
     return app_window_;
   }
 
-  std::shared_ptr<DocViewer> DocViewer::create(const std::string &name) {
-    auto instance = std::shared_ptr<DocViewer>(new DocViewer(name));
+  std::shared_ptr<DocViewer> DocViewer::create(const std::string &name, const std::string &focus_window) {
+    auto instance = std::shared_ptr<DocViewer>(new DocViewer(name, focus_window));
     instance->setup_render_callback();
     return instance;
   }
@@ -116,6 +118,17 @@ namespace vxe {
   }
 
   void DocViewer::render() {
+    if (!focus_window_applied_) {
+      if (!focus_window_.empty()) {
+        for (auto &w : CherryApp.GetWindows()) {
+          if (w->GetName() == focus_window_) {
+            CherryApp.QuickRedock(app_window_->GetName(), w->GetName());
+          }
+        }
+      }
+      focus_window_applied_ = true;
+    }
+
     auto ctx = vxe::get_current_context();
 
     CherryGUI::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(255, 221, 0, 255));

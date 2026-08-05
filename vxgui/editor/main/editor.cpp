@@ -241,7 +241,7 @@ std::string Editor::spawn_content_browser(const std::string &focus_window) {
 
 std::string Editor::spawn_doc_viewer(const std::string &focus_window) {
   std::string label = "Doc viewer ####Doc viewer -" + std::to_string(doc_viewer_instances_.size() + 1);
-  std::shared_ptr<vxe::DocViewer> DocViewer = vxe::DocViewer::create(label.c_str());
+  std::shared_ptr<vxe::DocViewer> DocViewer = vxe::DocViewer::create(label.c_str(), focus_window);
 
   Cherry::AddAppWindow(DocViewer->get_app_window());
   doc_viewer_instances_.push_back(DocViewer);
@@ -777,7 +777,7 @@ void Editor::render_menubar() {
             "Open embedded documentations",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_journal.png")),
             false)) {
-      spawn_doc_viewer();
+      spawn_doc_viewer(CherryWindow.GetName());
     }
 
     CherryKit::SeparatorText("About");
