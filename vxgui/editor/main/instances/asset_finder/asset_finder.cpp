@@ -95,13 +95,21 @@ namespace vxe {
 
     m_AppWindow->SetRightMenubarCallback([this]() {
       int mode_index = (m_ShowMode == AssetFinderShowMode::Thumbnails) ? 0 : 1;
-      CherryNextComponent.SetProperty("size_x", 150.0f);
+
+      int default_index = 0;
+
+      if (m_ShowMode == AssetFinderShowMode::Thumbnails) {
+        default_index = 0;
+      } else if (m_ShowMode == AssetFinderShowMode::List) {
+        default_index = 1;
+      }
+
       switch (CherryNextComponent.SetProperty("size_x", 150.0f);
               CherryKit::ComboImageText(
                   "",
                   { { "Thumbnails", Cherry::GetPath("resources/imgs/icons/misc/icon_thumbnails.png") },
                     { "List", Cherry::GetPath("resources/imgs/icons/misc/icon_lines.png") } },
-                  mode_index)
+                  default_index)
                   .GetPropertyAs<int>("selected")) {
         case 0: {
           m_ShowMode = AssetFinderShowMode::Thumbnails;
