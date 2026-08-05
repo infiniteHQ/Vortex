@@ -23,10 +23,11 @@ namespace vxe {
 
   class ContentBrowser : public std::enable_shared_from_this<ContentBrowser> {
    public:
-    ContentBrowser(const std::string &name, const std::string &start_path);
+    ContentBrowser(const std::string &name, const std::string &start_path, const std::string &focus_window = "");
 
     // window managment
-    static std::shared_ptr<ContentBrowser> create(const std::string &name, const std::string &base_path);
+    static std::shared_ptr<ContentBrowser>
+    create(const std::string &name, const std::string &base_path, const std::string &focus_window = "");
     std::shared_ptr<Cherry::AppWindow> &get_app_window();
     void setup_render_callback();
 
@@ -185,6 +186,8 @@ namespace vxe {
     bool previous_thumbnail_visualizer_state_ = false;
     std::string pool_add_path_;
     std::string pool_add_name_;
+    std::string focus_window_;
+    bool focus_window_applied_ = false;
 
     // hosted
     std::vector<ContentBrowserChild> childs_;

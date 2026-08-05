@@ -13,13 +13,15 @@
 
 namespace vxe {
 
-  ContentBrowser::ContentBrowser(const std::string &name, const std::string &start_path) {
+  ContentBrowser::ContentBrowser(const std::string &name, const std::string &start_path, const std::string &focus_window) {
     app_window_ = std::make_shared<AppWindow>(name, name);
     app_window_->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_collection.png"));
     std::shared_ptr<AppWindow> win = app_window_;
 
     refresh_custom_folders();
     refresh_pools();
+
+    focus_window_ = focus_window;
 
     app_window_->SetLeftMenubarCallback([this]() { render_menubar(); });
     app_window_->m_Closable = true;
@@ -256,8 +258,9 @@ namespace vxe {
     return app_window_;
   }
 
-  std::shared_ptr<ContentBrowser> ContentBrowser::create(const std::string &name, const std::string &base_path) {
-    auto instance = std::shared_ptr<ContentBrowser>(new ContentBrowser(name, base_path));
+  std::shared_ptr<ContentBrowser>
+  ContentBrowser::create(const std::string &name, const std::string &base_path, const std::string &focus_window) {
+    auto instance = std::shared_ptr<ContentBrowser>(new ContentBrowser(name, base_path, focus_window));
     instance->setup_render_callback();
     return instance;
   }

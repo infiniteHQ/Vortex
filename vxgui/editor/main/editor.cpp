@@ -205,10 +205,10 @@ bool Editor::get_welcome_visibility() {
   return welcome_window_->get_app_window()->m_Visible;
 }
 
-std::string Editor::spawn_content_browser() {
+std::string Editor::spawn_content_browser(const std::string &focus_window) {
   std::string label = "Content Browser ####Content Browser-" + std::to_string(content_browser_instances_.size() + 1);
   std::shared_ptr<vxe::ContentBrowser> ContentBrowser =
-      vxe::ContentBrowser::create(label.c_str(), vxe::get_current_context()->projectDataPath.string());
+      vxe::ContentBrowser::create(label.c_str(), vxe::get_current_context()->projectDataPath.string(), focus_window);
 
   ContentBrowser->set_cut_paths_callback(vxe::cut);
   ContentBrowser->set_copy_paths_callback(vxe::copy);
@@ -622,7 +622,7 @@ void Editor::render_menubar() {
             "Open a content browser",
             Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/frame_files.png")),
             false)) {
-      spawn_content_browser();
+      spawn_content_browser(CherryApp.GetCurrentRenderedWindow()->GetName());
     }
 
     CherryKit::SeparatorText("Console, logs, debugging");

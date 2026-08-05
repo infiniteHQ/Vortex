@@ -13,6 +13,18 @@
 namespace vxe {
 
   void ContentBrowser::render() {
+    if (!focus_window_applied_) {
+      if (!focus_window_.empty()) {
+        for (auto& w : CherryApp.GetWindows()) {
+          if (w->GetName() == focus_window_) {
+            CherryApp.QuickRedock(app_window_->GetName(), w->GetName());
+            vxe::log_warn(app_window_->GetName(), w->GetName());
+          }
+        }
+      }
+      focus_window_applied_ = true;
+    }
+
     const float splitterWidth = 1.5f;
     const float margin = 10.0f;
 
