@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 project(vortex)
 
+# Build configuration
+set(VORTEX_VERSION "1.0")
+set(VORTEX_FULL_VERSION "1.0.build5")
+set(VORTEX_BUILDID "5")
+set(VORTEX_BUILDNAME "1.0 [Build 5]")
+set(VORTEX_DIST "beta")
+set(VORTEX_BUILD "dev")
+
+# C++ config
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -20,16 +29,6 @@ if (MSVC)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC")
 endif()
-
-# ---------------------------------------------------------------------------
-# Version / Build infos
-# ---------------------------------------------------------------------------
-set(VORTEX_VERSION "1.0")
-set(VORTEX_FULL_VERSION "1.0.build5")
-set(VORTEX_BUILDID "5")
-set(VORTEX_BUILDNAME "1.0 [Build 5]")
-set(VORTEX_DIST "beta")
-set(VORTEX_BUILD "dev")
 
 if(VORTEX_BUILD STREQUAL "prod")
     add_compile_definitions(BUILD_STR="01")

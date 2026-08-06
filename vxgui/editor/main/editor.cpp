@@ -844,8 +844,10 @@ void Editor::window_close_callback() {
     Application::Get().Close();
   }
 
-  auto app_windows = CherryApp.GetAllAppWindowOfWindow(CherryWindow.GetName());
+  const std::string closing_window_name = CherryWindow.GetName();
   const std::string main_window_name = CherryApp.GetWindows()[0]->GetName();
+
+  auto app_windows = CherryApp.GetAllAppWindowOfWindow(closing_window_name);
 
   for (auto &a : app_windows) {
     if (!a) {
@@ -861,18 +863,27 @@ void Editor::window_close_callback() {
                                (credits_window_ && a == credits_window_->get_app_window());
 
     if (is_static_singleton) {
-      if (main_window_name != CherryWindow.GetName()) {
+      if (main_window_name != closing_window_name) {
         a->SetParentWindow(main_window_name);
       }
       a->SetVisibility(false);
       continue;
     }
 
-    if (CherryApp.GetAppWindows().size() == 1) {
-      Application::Get().Close();
-    } else {
-      Cherry::DeleteAppWindow(a);
+    Cherry::DeleteAppWindow(a);
+  }
+
+  bool any_visible_left = false;
+  for (auto &aw : CherryApp.GetAppWindows()) {
+    if (aw && aw->m_Visible) {
+      any_visible_left = true;
+      break;
     }
+  }
+
+  if (!any_visible_left) {
+    Application::Get().Close();
+    return;
   }
 }
 
