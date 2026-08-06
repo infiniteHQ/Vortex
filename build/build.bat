@@ -32,8 +32,8 @@ cd ..
 echo %cd%
 
 xcopy /E /Y .\build\bin\ dist\%VERSION%\bin\
-xcopy /E /Y .\build\Release\ prod\
-xcopy /E /Y .\build\cherry_build\Release\ prod\
+xcopy /E /Y .\build\lib\Release\ prod\
+xcopy /E /Y .\build\cherry_build\ prod\
 
 copy /Y ..\manifest.json dist\%VERSION%\
 copy /Y ..\manifest.json dist\%VERSION%\bin\
