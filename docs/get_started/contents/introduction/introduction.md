@@ -2,7 +2,7 @@
 Vortex is an open, free, and open-source platform designed for creators and hackers of all kinds. It empowers users to create, transform, repair, or enhance a wide variety of projects, tools and ideas. Whether you aim to bring dreams and concepts to life or simply need tools for diagnostics and repairs, Vortex makes it possible.
 
 <image
-  src="3.png"
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/3.png"
   width="828"
   height="423"
   alt="Vortex Background"
@@ -28,3 +28,133 @@ The goal of this documentation is to help you understand and explore Vortex’s 
 
 To get started, we recommend beginning with Installing Vortex and Getting Familiar with the Interface.
 
+## History
+
+### Prequel
+The Vortex story start in 2019. The project was created around "FZTOS" a modular operating system dedicated to hackers who want a modular operatring system based on Pacman package manager. The original goal of FZTOS was to give the power to people of creating every custom Linux based systems. With the goal of create homelabs, data storage systems, game system, etc. Anectote: "FZT" is for "FizzTeam", oriented around a old project names "CraftWorld", a old minecraft server created around 2017/2018 that not have a really big success.
+
+Later, in 2020 FZTOS is renamed "InfiniteOS" to represent the infnite possibilities of this modular system.
+
+### Beginings of Vortex
+Create a operating system is interesting and cool, but creating a modular one is pretty complex, to help modulartiy, weve created "The Vortex Scripts", theses scripts help to build a custom build of InfiniteOS with specified parameters including distribution managment like rolling release.
+In 2022 Vortex scripts are at this time pretty cool, but if we need them, others will probably need them too. Well, weve created the Vortex Creation Platform, allowing everyone to create their own hacky systems !
+
+
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/firstsys.png"
+  description="This is the first system entierly created by Vortex"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+
+###### First images (2022/2023)
+
+<carrousel>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/vx1.png"
+  description="Vortex Alpha running on bench table"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/vx3.png"
+  description="Hardware managment development of the Vortex system creator (called in 2024 Fusion)"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/vx4.png"
+  description="Vortex CLI (firsts versions)"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/vx5.png"
+  description="The first bench table running Vortex"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/firstsys.png"
+  description="The first system entierly made with Vortex"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/firstsys2.png"
+  description="The first system entierly made with Vortex"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/vx2.png"
+  description="Vortex Alpha with remote use"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+</carrousel>
+
+###### Firsts versions of the Editor
+<carrousel>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/ed2.png"
+  description="Firsts versions of the Vortex editor"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/ed1.png"
+  description="Vortex run a system assembly from the editor"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/ed3.png"
+  description="Vortex editor logs & CLI when creating a system"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/ed4.png"
+  description="The Vortex editor with generator features (Fusion)"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/eda.png"
+  description="The first version of the Editor"
+  type="bordered"
+  width="828"
+  height="423"
+  alt="Vortex Launcher Projects def"
+/>
+</carrousel>
+
+### Vortex now
+Vortex is now a advanced creation platform. This project allow the creation of systems, apps, services & devices, but it's also allow everyone to use tools, debugers, diag tools and more. Data is project oriented, so every Vortex project can have their own purposes and goals.
+
+<img src="https://static.infinite.si/vxdocs/1.0/get_started/media/vortexnow.png" />

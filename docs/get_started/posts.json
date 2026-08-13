@@ -4,7 +4,7 @@
             "name": "introduction",
             "slug": "Introduction",
             "title": "Introduction",
-            "sumary": "qsd",
+            "sumary": "",
             "pages": [
                 {
                     "name": "introduction",
@@ -12,14 +12,6 @@
                     "description": "",
                     "logo": "",
                     "link": "introduction.md",
-                    "subpages": []
-                },
-                {
-                    "name": "what_is_vortex",
-                    "slug": "What is Vortex ?",
-                    "description": "",
-                    "logo": "",
-                    "link": "what_is_vortex.md",
                     "subpages": []
                 },
                 {
@@ -41,34 +33,109 @@
             ]
         },
         {
-            "name": "take_vortex_launcher",
-            "slug": "Take the Vortex Launcher",
-            "title": "Take Vortex Launcher",
-            "sumary": "qsd",
+            "name": "basics",
+            "slug": "Basics",
+            "title": "Basics",
+            "sumary": "",
             "pages": [
                 {
-                    "name": "understand_vortexlauncher",
-                    "slug": "Understand Vortex Launcher",
-                    "description": "",
-                    "logo": "",
-                    "link": "understand_vortexlauncher.md",
-                    "subpages": []
-                },
-                {
                     "name": "discover_interface",
-                    "slug": "Discover interface",
+                    "slug": "Discover Interface",
                     "description": "",
                     "logo": "",
                     "link": "discover_interface.md",
-                    "subpages": []
+                    "subpages": [
+                        {
+                            "name": "interface_tour",
+                            "slug": "Interface tour",
+                            "description": "",
+                            "logo": "",
+                            "link": "interface_tour.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "the_content_browser",
+                            "slug": "The content browser",
+                            "description": "",
+                            "logo": "",
+                            "link": "the_content_browser.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "console_logs",
+                            "slug": "Consoles/logs utility",
+                            "description": "",
+                            "logo": "",
+                            "link": "console_logs.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "project_settings",
+                            "slug": "Project settings",
+                            "description": "",
+                            "logo": "",
+                            "link": "project_settings.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "modules_utility",
+                            "slug": "Modules utility",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_utility.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "plugins_utility",
+                            "slug": "Plugins utility",
+                            "description": "",
+                            "logo": "",
+                            "link": "plugins_utility.md",
+                            "subpages": []
+                        }
+                    ]
                 },
                 {
-                    "name": "update_launcher",
-                    "slug": "Update the Launcher",
+                    "name": "interact_with_contents",
+                    "slug": "Interact with contents",
                     "description": "",
                     "logo": "",
-                    "link": "update_launcher.md",
-                    "subpages": []
+                    "link": "interact_with_contents.md",
+                    "subpages": [
+                        {
+                            "name": "create_contents",
+                            "slug": "Create contents",
+                            "description": "",
+                            "logo": "",
+                            "link": "create_contents.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "create_from_templates",
+                            "slug": "Create from templates",
+                            "description": "",
+                            "logo": "",
+                            "link": "create_from_templates.md",
+                            "subpages": []
+                        }
+                    ]
+                },
+                {
+                    "name": "plugins_and_modules",
+                    "slug": "Plugins and Modules",
+                    "description": "",
+                    "logo": "",
+                    "link": "plugins_and_modules.md",
+                    "subpages": [
+                        {
+                            "name": "introduction_plugin_modules",
+                            "slug": "Introduction to plugins and modules",
+                            "description": "",
+                            "logo": "",
+                            "link": "introduction_plugin_modules.md",
+                            "subpages": []
+                        }
+                    ]
                 },
                 {
                     "name": "manage_projects",
@@ -77,188 +144,138 @@
                     "logo": "",
                     "link": "manage_projects.md",
                     "subpages": []
-                },
-                {
-                    "name": "understand_logical_contents",
-                    "slug": "Understand logical contents",
-                    "description": "",
-                    "logo": "",
-                    "link": "understand_logical_contents.md",
-                    "subpages": [
-                        {
-                            "name": "manage_system_modules",
-                            "slug": "Manage system modules",
-                            "description": "",
-                            "logo": "",
-                            "link": "manage_system_modules.md"
-                        },
-                        {
-                            "name": "manage_system_plugins",
-                            "slug": "Manage system plugins",
-                            "description": "",
-                            "logo": "",
-                            "link": "manage_system_plugins.md"
-                        }
-                    ]
-                },
-                {
-                    "name": "understand_static_contents",
-                    "slug": "Understand static contents",
-                    "description": "",
-                    "logo": "",
-                    "link": "understand_static_contents.md",
-                    "subpages": [
-                        {
-                            "name": "manage_system_templates",
-                            "slug": "Manage system templates",
-                            "description": "",
-                            "logo": "",
-                            "link": "manage_system_templates.md",
-                            "subpages": []
-                        },
-                        {
-                            "name": "manage_system_contents",
-                            "slug": "Manage system contents",
-                            "description": "",
-                            "logo": "",
-                            "link": "manage_system_contents.md",
-                            "subpages": []
-                        }
-                    ]
-                },
-                {
-                    "name": "manage_vortex_editor_versions",
-                    "slug": "Manage Vortex editors",
-                    "description": "",
-                    "logo": "",
-                    "link": "manage_vortex_editor_versions.md",
-                    "subpages": []
-                },
-                {
-                    "name": "subscribe_to_beta",
-                    "slug": "Subscribe to beta",
-                    "description": "",
-                    "logo": "",
-                    "link": "subscribe_to_beta.md",
-                    "subpages": []
-                },
-                {
-                    "name": "uninstall",
-                    "slug": "Uninstallation",
-                    "description": "",
-                    "logo": "",
-                    "link": "uninstall.md",
-                    "subpages": []
                 }
             ]
         },
         {
-            "name": "take_vortex_editor",
-            "slug": "Take the Vortex Editor",
-            "title": "Take the Vortex Editor",
-            "sumary": "qsd",
+            "name": "next_steps",
+            "slug": "Next Steps",
+            "title": "next_steps",
+            "sumary": "",
             "pages": [
-            {
-                "name": "understand_vortexeditor",
-                "slug": "Understand Vortex Editor",
-                "description": "",
-                "logo": "",
-                "link": "understand_vortexeditor.md",
-                "subpages": []
-            },
                 {
-                    "name": "discover_interface",
-                    "slug": "Discover interface",
+                    "name": "create_firmware_for_mcus",
+                    "slug": "Create firmwares for MCUs",
                     "description": "",
                     "logo": "",
-                    "link": "discover_interface.md",
-                    "subpages": []
-                },
-                {
-                    "name": "content_browser",
-                    "slug": "Content browser",
-                    "description": "",
-                    "logo": "",
-                    "link": "content_browser.md",
-                    "subpages": []
-                },
-                {
-                    "name": "project_settings",
-                    "slug": "Project settings",
-                    "description": "",
-                    "logo": "",
-                    "link": "project_settings.md",
-                    "subpages": []
-                },
-                {
-                    "name": "console_logs",
-                    "slug": "Console logs",
-                    "description": "",
-                    "logo": "",
-                    "link": "console_logs.md",
-                    "subpages": []
-                },
-                {
-                    "name": "handle_modules",
-                    "slug": "Handle modules",
-                    "description": "",
-                    "logo": "",
-                    "link": "handle_modules.md",
-                    "subpages": []
-                },
-                {
-                    "name": "handle_plugins",
-                    "slug": "Handle plugins",
-                    "description": "",
-                    "logo": "",
-                    "link": "handle_plugins.md",
-                    "subpages": []
-                },
-                {
-                    "name": "import_contents",
-                    "slug": "Import contents",
-                    "description": "",
-                    "logo": "",
-                    "link": "import_contents.md",
-                    "subpages": []
-                },
-                {
-                    "name": "create_with_templates",
-                    "slug": "Create with templates",
-                    "description": "",
-                    "logo": "",
-                    "link": "create_with_templates.md",
-                    "subpages": []
-                },
-                {
-                    "name": "share_contents",
-                    "slug": "Share contents",
-                    "description": "",
-                    "logo": "",
-                    "link": "share_contents.md",
+                    "link": "create_firmware_for_mcus.md",
                     "subpages": [
                         {
-                            "name": "export_project",
-                            "slug": "Export project/tool",
+                            "name": "introduction_plugin_modules",
+                            "slug": "Introduction to plugins and modules",
                             "description": "",
                             "logo": "",
-                            "link": "export_project.md",
+                            "link": "introduction_plugin_modules.md",
                             "subpages": []
-                        },
+                        }
+                    ]
+                },
+                {
+                    "name": "create_embedded_systems",
+                    "slug": "Create embedded systems",
+                    "description": "",
+                    "logo": "",
+                    "link": "create_embedded_systems.md",
+                    "subpages": [
                         {
-                            "name": "share_a_content",
-                            "slug": "Share a content",
+                            "name": "introduction_plugin_modules",
+                            "slug": "Introduction to plugins and modules",
                             "description": "",
                             "logo": "",
-                            "link": "share_a_content.md",
+                            "link": "introduction_plugin_modules.md",
                             "subpages": []
-                        },
+                        }
+                    ]
+                },
+                {
+                    "name": "create_operating_systems",
+                    "slug": "Create operating systems",
+                    "description": "",
+                    "logo": "",
+                    "link": "create_operating_systems.md",
+                    "subpages": [
                         {
-                            "name": "create_a_template",
-                            "slug": "Create a template",
+                            "name": "introduction_plugin_modules",
+                            "slug": "Introduction to plugins and modules",
                             "description": "",
                             "logo": "",
-                            "link": "create_a_template.md",
+                            "link": "introduction_plugin_modules.md",
+                            "subpages": []
+                        }
+                    ]
+                },
+                {
+                    "name": "tooling_for_binaries",
+                    "slug": "Tooling for binaries",
+                    "description": "",
+                    "logo": "",
+                    "link": "tooling_for_binaries.md",
+                    "subpages": [
+                        {
+                            "name": "introduction_plugin_modules",
+                            "slug": "Introduction to plugins and modules",
+                            "description": "",
+                            "logo": "",
+                            "link": "introduction_plugin_modules.md",
+                            "subpages": []
+                        }
+                    ]
+                },
+                {
+                    "name": "tooling_for_electronics",
+                    "slug": "Tooling for electronics",
+                    "description": "",
+                    "logo": "",
+                    "link": "tooling_for_electronics.md",
+                    "subpages": [
+                        {
+                            "name": "introduction_plugin_modules",
+                            "slug": "Introduction to plugins and modules",
+                            "description": "",
+                            "logo": "",
+                            "link": "introduction_plugin_modules.md",
+                            "subpages": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "develop_plugins_modules",
+            "slug": "Develop plugins & modules",
+            "title": "Develop plugins & modules",
+            "sumary": "",
+            "pages": [
+                {
+                    "name": "make_plugins",
+                    "slug": "Make plugins",
+                    "description": "",
+                    "logo": "",
+                    "link": "make_plugins.md",
+                    "subpages": [
+                        {
+                            "name": "plugins_basics",
+                            "slug": "Plugin basics",
+                            "description": "",
+                            "logo": "",
+                            "link": "plugins_basics.md",
+                            "subpages": []
+                        }
+                    ]
+                },
+                {
+                    "name": "create_modules",
+                    "slug": "Create modules",
+                    "description": "",
+                    "logo": "",
+                    "link": "create_modules.md",
+                    "subpages": [
+                        {
+                            "name": "modules_basics",
+                            "slug": "Modules basics",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_basics.md",
                             "subpages": []
                         }
                     ]
