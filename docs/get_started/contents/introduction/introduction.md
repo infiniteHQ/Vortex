@@ -1,15 +1,17 @@
-### Welcome to Vortex
-Vortex is an open, free, and open-source platform designed for creators and hackers of all kinds. It empowers users to create, transform, repair, or enhance a wide variety of projects, tools and ideas. Whether you aim to bring dreams and concepts to life or simply need tools for diagnostics and repairs, Vortex makes it possible.
+## Welcome to Vortex
+Vortex is a free and open-source software for making firmwares, operating systems, embedded systems, and tooling.
+
+The Vortex Creation Platform allows everyone to create or work on innovative projects centered around the concepts of healthy, reliable, efficient, and secure computing for free.
 
 <image
-  src="https://static.infinite.si/vxdocs/1.0/get_started/media/3.png"
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/ed1.png"
   width="828"
   height="423"
   alt="Vortex Background"
 />
 
 
-### About
+## About
 #### Freedom, Openness, and Open Source
 
 Vortex is a fully open, hackable, free, and open-source project. These values are crucial to us and our community, ensuring the project's transparency, health, and most importantly, its creative and innovative potential. A private project would not offer the same level of freedom to allow individuals in the community to modify and adapt the software to their unique needs.
@@ -17,8 +19,6 @@ Vortex is a fully open, hackable, free, and open-source project. These values ar
 #### No Private or Profit-Driven Interests
 
 Like Infinite, Vortex is not a profit-driven project but a technological initiative. Above all, we are passionate individuals committed to building safe, reliable technology and powerful tools that bring maximum benefits to users while respecting them and their environment.
-
-That said, it’s evident that such a project involves significant costs and requires funding. To address this, we welcome sponsorships and plan to sell ethical and open hardware to help everyone bring their projects to life. [(Learn more about funding)].
 
 #### About This Documentation
 
