@@ -1,5 +1,5 @@
 ## Welcome to Vortex
-Vortex is a free and open-source software for making firmwares, operating systems, embedded systems, and tooling.
+Vortex is a free and open-source software for making firmwares, operating systems, embedded systems, apps, and tooling.
 
 The Vortex Creation Platform allows everyone to create or work on innovative projects centered around the concepts of healthy, reliable, efficient, and secure computing for free.
 
