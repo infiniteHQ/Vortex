@@ -9,7 +9,7 @@ mkdir build
 
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../..
-make -j$(nproc) install
+make -j4 install
 
 cd ..
 

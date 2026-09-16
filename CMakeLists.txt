@@ -59,6 +59,7 @@ endif()
 # Deps
 # ---------------------------------------------------------------------------
 find_package(Vulkan REQUIRED)
+find_package(OpenSSL REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include")
 
@@ -111,7 +112,9 @@ target_link_libraries(vortex_shared PUBLIC cherry httpcl)
 if(UNIX AND NOT APPLE)
     target_link_libraries(vortex_shared PRIVATE crypto)
 endif()
-
+if(APPLE)
+    target_link_libraries(vortex_shared PRIVATE OpenSSL::Crypto)
+endif()
 
 
 # ---------------------------------------------------------------------------
@@ -173,11 +176,31 @@ set(INSTALL_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/dist/${VORTEX_FULL_VERSIO
 set(INSTALL_BIN_DIR ${INSTALL_BASE_DIR}/bin)
 set(INSTALL_LIB_DIR ${INSTALL_BASE_DIR}/bin)
 
-set_target_properties(vortex PROPERTIES
-    INSTALL_RPATH "$ORIGIN"
-    BUILD_WITH_INSTALL_RPATH TRUE
-    INSTALL_RPATH_USE_LINK_PATH FALSE
-)
+if(APPLE)
+    set_target_properties(vortex PROPERTIES
+        INSTALL_RPATH "@loader_path"
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH_USE_LINK_PATH FALSE
+    )
+
+    set_target_properties(vortex_shared PROPERTIES
+        INSTALL_RPATH "@loader_path"
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH_USE_LINK_PATH FALSE
+    )
+elseif(UNIX)
+    set_target_properties(vortex PROPERTIES
+        INSTALL_RPATH "$ORIGIN"
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH_USE_LINK_PATH FALSE
+    )
+
+    set_target_properties(vortex_shared PROPERTIES
+        INSTALL_RPATH "$ORIGIN"
+        BUILD_WITH_INSTALL_RPATH TRUE
+        INSTALL_RPATH_USE_LINK_PATH FALSE
+    )
+endif()
 
 install(TARGETS vortex DESTINATION ${INSTALL_BIN_DIR})
 install(TARGETS vortex_shared
