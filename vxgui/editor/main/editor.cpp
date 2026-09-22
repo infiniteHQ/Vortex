@@ -888,7 +888,6 @@ void Editor::window_close_callback() {
 }
 
 Cherry::Application *CreateEditor(int argc, char **argv) {
-  c_Editor = std::make_shared<Editor>();
   Cherry::ApplicationSpecification spec;
 
   spec.SetName(vxe::get_current_context()->name);
@@ -909,6 +908,9 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   spec.SetFramebarCallback([]() { c_Editor->render_framebar(); });
 
   Cherry::Application *app = new Cherry::Application(spec);
+  
+  c_Editor = std::make_shared<Editor>();
+
   app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/icon.png"));
   app->AddFont("Consola", Cherry::Application::CookPath("resources/fonts/consola.ttf"), 50.0f);
   app->AddFont("Clash", Cherry::Application::CookPath("resources/fonts/clash.ttf"), 70.0f);
@@ -931,7 +933,6 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   }
 
   app->SetMenubarCallback([]() { c_Editor->render_menubar(); });
-
   return app;
 }
 
