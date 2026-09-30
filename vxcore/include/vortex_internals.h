@@ -24,6 +24,7 @@
 #include "./vortex/customizations/customizations.hpp"
 #include "./vortex/documentation/documentation.hpp"
 #include "./vortex/environment/environment.hpp"
+#include "./vortex/environment/project_sessions.hpp"
 #include "./vortex/events/events.hpp"
 #include "./vortex/filesystem/filesystem.hpp"
 #include "./vortex/json/json.hpp"
@@ -66,7 +67,7 @@ struct VxSystemLog {
   std::string message;
   std::string timestamp;
 
-  VxSystemLog(const spdlog::level::level_enum &level, const std::string &filter, const std::string &message)
+  VxSystemLog(const spdlog::level::level_enum& level, const std::string& filter, const std::string& message)
       : level(level),
         filter(filter),
         message(message) { };
@@ -104,7 +105,7 @@ struct SessionState {
 };
 
 struct ItemIdentifierInterface {
-  bool (*detection_callback)(const std::string &path);
+  bool (*detection_callback)(const std::string& path);
 
   std::string name;
 
@@ -114,12 +115,12 @@ struct ItemIdentifierInterface {
   std::string description;
 
   ItemIdentifierInterface(
-      bool (*detect_function)(const std::string &path),
-      const std::string &name,
-      const std::string &description,
-      const std::string &line_color,
-      const std::string &logo_path = "",
-      const std::string &bg_image_path = "")
+      bool (*detect_function)(const std::string& path),
+      const std::string& name,
+      const std::string& description,
+      const std::string& line_color,
+      const std::string& logo_path = "",
+      const std::string& bg_image_path = "")
       : name(name),
         description(description),
         detection_callback(detect_function),
@@ -129,18 +130,18 @@ struct ItemIdentifierInterface {
 };
 
 struct ItemHandlerInterface {
-  std::function<void(const std::string &)> handler;
+  std::function<void(const std::string&)> handler;
   std::string title;
   std::string type;
   std::string description;
   std::string logo;
 
   ItemHandlerInterface(
-      const std::string &ty,
-      std::function<void(const std::string &)> h,
-      const std::string &ti,
-      const std::string &d = "",
-      const std::string &l = "")
+      const std::string& ty,
+      std::function<void(const std::string&)> h,
+      const std::string& ti,
+      const std::string& d = "",
+      const std::string& l = "")
       : handler(std::move(h)),
         type(ty),
         title(ti),
@@ -158,10 +159,10 @@ struct ToolbarHandlerInterface {
 
   ToolbarHandlerInterface(
       std::function<void()> h,
-      const std::string &ti,
-      const std::string &d = "",
-      const std::string &t = "",
-      const std::string &l = "")
+      const std::string& ti,
+      const std::string& d = "",
+      const std::string& t = "",
+      const std::string& l = "")
       : handler(std::move(h)),
         title(ti),
         description(d),
@@ -172,7 +173,7 @@ struct ToolbarHandlerInterface {
 
 // Todo : Creation configurations (names, variantes, etc)
 struct ItemCreatorInterface {
-  std::function<void(const std::string &path)> create_function;
+  std::function<void(const std::string& path)> create_function;
   std::string name;
 
   std::string logo_path;
@@ -180,11 +181,11 @@ struct ItemCreatorInterface {
   std::string description;
 
   ItemCreatorInterface(
-      std::function<void(const std::string &path)> function,
-      const std::string &name,
-      const std::string &description,
-      const std::string &line_color = "#343434",
-      const std::string &logo_path = "")
+      std::function<void(const std::string& path)> function,
+      const std::string& name,
+      const std::string& description,
+      const std::string& line_color = "#343434",
+      const std::string& logo_path = "")
       : name(name),
         description(description),
         create_function(function),
@@ -213,15 +214,15 @@ class VORTEX_API VortexNet {
   ~VortexNet();
 
   bool CheckNet();
-  std::string GET(const std::string &url);
-  std::string POST(const std::string &url, const std::string &body, const std::string &contentType = "application/json");
+  std::string GET(const std::string& url);
+  std::string POST(const std::string& url, const std::string& body, const std::string& contentType = "application/json");
 
  private:
   std::string Request(
-      const std::string &url,
-      const std::string &method,
-      const std::string &body = "",
-      const std::string &contentType = "");
+      const std::string& url,
+      const std::string& method,
+      const std::string& body = "",
+      const std::string& contentType = "");
 };
 
 struct VxIO {
@@ -231,12 +232,12 @@ struct VxIO {
   bool allow_net = false;  // Is Vortex allowed by the user to go on the internet?
 
   // EM / Editor Modules
-  std::vector<void *> em_handles;
+  std::vector<void*> em_handles;
   std::vector<std::shared_ptr<ModuleInterface>> em;
   std::vector<std::shared_ptr<ModuleInterface>> sys_em;
 
   // EP / Editor Plugins
-  std::vector<void *> ep_handles;
+  std::vector<void*> ep_handles;
   std::vector<std::shared_ptr<PluginInterface>> ep;
   std::vector<std::shared_ptr<PluginInterface>> sys_ep;
 
@@ -311,6 +312,7 @@ struct CustomMenu {
   std::function<void()> render;
 };
 
+static std::unique_ptr<sessions::Heartbeat> g_heartbeat;
 struct VxContext {
   // Master flags
   bool initialized;

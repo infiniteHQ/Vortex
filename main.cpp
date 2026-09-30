@@ -48,7 +48,7 @@ void PrintInfinite() {
             << std::endl;
 }
 
-void print_header(const std::string &additions = "") {
+void print_header(const std::string& additions = "") {
   // Print this every time
   std::cout << std::endl;
   std::cout << "\033[38;2;177;255;49m";
@@ -196,6 +196,9 @@ std::shared_ptr<VxContext> init_runtime() {
     nlohmann::json jsonContent;
     file >> jsonContent;
     vxe::init_project(jsonContent);
+
+    g_heartbeat = std::make_unique<sessions::Heartbeat>(std::filesystem::current_path());
+    g_heartbeat->Start();
   }
 
   return ctx;
@@ -227,7 +230,7 @@ std::shared_ptr<VxContext> init_blank_runtime() {
   return ctx;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   if (argc < 2) {
     print_header();
   } else {

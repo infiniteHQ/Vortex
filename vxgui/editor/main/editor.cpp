@@ -24,7 +24,7 @@ bool Editor::get_credits_visibility() {
   return credits_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_credits_visibility(const bool visibility, const std::string &focus_window) {
+void Editor::set_credits_visibility(const bool visibility, const std::string& focus_window) {
   if (visibility) {
     if (!credits_window_) {
       credits_window_ = vxe::Credits::create("Credits");
@@ -71,7 +71,7 @@ bool Editor::get_about_visibility() {
   return about_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_about_visibility(const bool visibility, const std::string &focus_window) {
+void Editor::set_about_visibility(const bool visibility, const std::string& focus_window) {
   if (visibility) {
     if (!about_window_) {
       about_window_ = vxe::AboutVortex::create("About Vortex");
@@ -118,7 +118,7 @@ bool Editor::get_about_project_visibility() {
   return about_project_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_about_project_visibility(const bool visibility, const std::string &focus_window) {
+void Editor::set_about_project_visibility(const bool visibility, const std::string& focus_window) {
   if (visibility) {
     if (!about_project_window_) {
       about_project_window_ = vxe::AboutProject::create("About this project");
@@ -158,7 +158,7 @@ void Editor::set_about_project_visibility(const bool visibility, const std::stri
     }
   }
 }
-void Editor::set_templates_utility_visibility(const bool &visibility, const std::string &focus_window) {
+void Editor::set_templates_utility_visibility(const bool& visibility, const std::string& focus_window) {
   /*m_TemplatesUtilityAppWindow->GetAppWindow()->SetVisibility(visibility);*/
 }
 
@@ -168,9 +168,9 @@ bool Editor::get_templates_utility_visibility() {
 }
 
 void Editor::set_project_settings_visibility(
-    const bool &visibility,
-    const std::string &tab,
-    const std::string &focus_window) {
+    const bool& visibility,
+    const std::string& tab,
+    const std::string& focus_window) {
   if (!tab.empty()) {
     // project_settings_window_->load_tab_user_want(tab);
   }
@@ -186,7 +186,7 @@ bool Editor::get_project_settings_visibility() {
   return project_settings_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_modules_utility_visibility(const bool &visibility, const std::string &focus_window) {
+void Editor::set_modules_utility_visibility(const bool& visibility, const std::string& focus_window) {
   modules_utility_window_->get_app_window()->SetVisibility(visibility);
   if (!focus_window.empty()) {
     modules_utility_window_->redock_to_window(focus_window);
@@ -198,7 +198,7 @@ bool Editor::get_modules_utility_visibility() {
   return modules_utility_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_plugins_utility_visibility(const bool &visibility, const std::string &focus_window) {
+void Editor::set_plugins_utility_visibility(const bool& visibility, const std::string& focus_window) {
   plugins_utility_window_->get_app_window()->SetVisibility(visibility);
   if (!focus_window.empty()) {
     plugins_utility_window_->redock_to_window(focus_window);
@@ -210,7 +210,7 @@ bool Editor::get_plugins_utility_visibility() {
   return plugins_utility_window_->get_app_window()->m_Visible;
 }
 
-void Editor::set_welcome_visibility(const bool &visibility, const std::string &focus_window) {
+void Editor::set_welcome_visibility(const bool& visibility, const std::string& focus_window) {
   welcome_window_->get_app_window()->SetVisibility(visibility);
   std::cout << focus_window << std::endl;
   if (!focus_window.empty()) {
@@ -223,7 +223,7 @@ bool Editor::get_welcome_visibility() {
   return welcome_window_->get_app_window()->m_Visible;
 }
 
-std::string Editor::spawn_content_browser(const std::string &focus_window) {
+std::string Editor::spawn_content_browser(const std::string& focus_window) {
   std::string label = "Content Browser ####Content Browser-" + std::to_string(content_browser_instances_.size() + 1);
   std::shared_ptr<vxe::ContentBrowser> ContentBrowser =
       vxe::ContentBrowser::create(label.c_str(), vxe::get_current_context()->projectDataPath.string(), focus_window);
@@ -240,7 +240,7 @@ std::string Editor::spawn_content_browser(const std::string &focus_window) {
   return label;
 }
 
-std::string Editor::spawn_doc_viewer(const std::string &focus_window) {
+std::string Editor::spawn_doc_viewer(const std::string& focus_window) {
   std::string label = "Doc viewer ####Doc viewer -" + std::to_string(doc_viewer_instances_.size() + 1);
   std::shared_ptr<vxe::DocViewer> DocViewer = vxe::DocViewer::create(label.c_str(), focus_window);
 
@@ -267,14 +267,14 @@ void Editor::spawn_content_browser_on_bottom() {
   CherryApp.SetCurrentDragDropState(nullptr);
 }
 
-void Editor::spawn_logs_utility(const std::string &focus_window) {
+void Editor::spawn_logs_utility(const std::string& focus_window) {
   std::string label = "Logs utility ####Logs utility-" + std::to_string(logs_utility_instances_.size() + 1);
   std::shared_ptr<vxe::LogsUtility> LogsUtility = vxe::LogsUtility::create(label.c_str(), focus_window);
   Cherry::AddAppWindow(LogsUtility->get_app_window());
   logs_utility_instances_.push_back(LogsUtility);
 }
 
-void Editor::toggle_project_settings(const std::string &focus_window) {
+void Editor::toggle_project_settings(const std::string& focus_window) {
   c_Editor->set_project_settings_visibility(!c_Editor->get_project_settings_visibility(), "", focus_window);
 }
 
@@ -318,7 +318,7 @@ void Editor::render_framebar() {
   float oldSize = CherryGUI::GetFont()->Scale;
   CherryGUI::PushFont(CherryGUI::GetFont());
 
-  const char *text = vxe::get_current_context()->name.c_str();
+  const char* text = vxe::get_current_context()->name.c_str();
   CherryGUI::GetFont()->Scale *= 0.84;
   CherryGUI::PushFont(CherryGUI::GetFont());
 
@@ -339,7 +339,7 @@ void Editor::render_framebar() {
   ImVec2 rectMax =
       ImVec2(rectMin.x + textSize.x + 2 * rectanglePaddingX, cursorPos.y + textSize.y + 2 * rectanglePaddingY - 45);
 
-  ImDrawList *drawList = CherryGUI::GetWindowDrawList();
+  ImDrawList* drawList = CherryGUI::GetWindowDrawList();
   if (ShowProjectName) {
     drawList->AddRectFilled(rectMin, rectMax, IM_COL32(15, 15, 15, 255));
   }
@@ -559,7 +559,7 @@ void Editor::render_menubar() {
   }
 
   if (CherryGUI::BeginMenu("Edit")) {
-    const auto &items = ctx->editMenuItems;
+    const auto& items = ctx->editMenuItems;
 
     if (items.empty()) {
       CherryNextComponent.SetProperty("text_color", "#343434");
@@ -567,17 +567,17 @@ void Editor::render_menubar() {
     }
 
     std::vector<std::string> sectionOrder;
-    std::unordered_map<std::string, std::vector<const EditMenuItem *>> grouped;
+    std::unordered_map<std::string, std::vector<const EditMenuItem*>> grouped;
 
-    for (const auto &item : items) {
-      const std::string &sec = item.section.empty() ? "" : item.section;
+    for (const auto& item : items) {
+      const std::string& sec = item.section.empty() ? "" : item.section;
       if (grouped.find(sec) == grouped.end())
         sectionOrder.push_back(sec);
       grouped[sec].push_back(&item);
     }
 
     bool firstSection = true;
-    for (const auto &sec : sectionOrder) {
+    for (const auto& sec : sectionOrder) {
       if (!sec.empty())
         CherryKit::SeparatorText(sec.c_str());
       else if (!firstSection)
@@ -585,7 +585,7 @@ void Editor::render_menubar() {
 
       firstSection = false;
 
-      for (const auto *item : grouped[sec]) {
+      for (const auto* item : grouped[sec]) {
         ImTextureID tex = item->logo.empty() ? nullptr : Cherry::GetTexture(Cherry::GetPath(item->logo));
 
         if (CherryGUI::MenuItem(item->title.c_str(), "", tex, false)) {
@@ -655,7 +655,7 @@ void Editor::render_menubar() {
     if (ctx->modules_section_on_toolbar) {
       CherryKit::SeparatorText("From modules");
 
-      for (auto &m : ctx->IO.em) {
+      for (auto& m : ctx->IO.em) {
         auto handlers = m->get_toolbar_handlers();
         if (handlers.empty())
           continue;
@@ -663,7 +663,7 @@ void Editor::render_menubar() {
         const std::string name = m->toolbar_main_title().empty() ? m->proper_name() : m->toolbar_main_title();
         const std::string logo = m->get_toolbar_main_logo_path();
 
-        auto splitTopic = [](const std::string &topic) {
+        auto splitTopic = [](const std::string& topic) {
           std::vector<std::string> parts;
           std::stringstream ss(topic);
           std::string part;
@@ -680,23 +680,23 @@ void Editor::render_menubar() {
 
         TopicNode root;
 
-        for (auto &h : handlers) {
+        for (auto& h : handlers) {
           if (h->topic.empty()) {
             root.items.push_back(h);
           } else {
             auto parts = splitTopic(h->topic);
-            TopicNode *node = &root;
-            for (auto &p : parts)
+            TopicNode* node = &root;
+            for (auto& p : parts)
               node = &node->children[p];
             node->items.push_back(h);
           }
         }
 
-        std::function<void(const TopicNode &, const std::string &)> renderNode = [&](const TopicNode &node,
-                                                                                     const std::string &currentPath) {
-          for (auto &h : node.items) {
+        std::function<void(const TopicNode&, const std::string&)> renderNode = [&](const TopicNode& node,
+                                                                                   const std::string& currentPath) {
+          for (auto& h : node.items) {
             if (h->logo.empty()) {
-              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), (bool *)nullptr)) {
+              if (CherryGUI::MenuItem(h->title.c_str(), h->description.c_str(), (bool*)nullptr)) {
                 if (h->handler)
                   h->handler();
               }
@@ -709,9 +709,9 @@ void Editor::render_menubar() {
             }
           }
 
-          for (auto &[childName, childNode] : node.children) {
+          for (auto& [childName, childNode] : node.children) {
             const std::string childPath = currentPath.empty() ? childName : currentPath + "/" + childName;
-            const std::string &topicLogo = m->get_toolbar_topic_logo(childPath);
+            const std::string& topicLogo = m->get_toolbar_topic_logo(childPath);
 
             if (topicLogo.empty()) {
               if (CherryGUI::BeginMenu(childName.c_str())) {
@@ -819,7 +819,7 @@ void Editor::render_menubar() {
           ImVec2(pos.x, pos.y), ImVec2(pos.x + thickness, pos.y + height), IM_COL32(89, 89, 89, 155));
       CherryGUI::Dummy(ImVec2(thickness + 4.0f, 0));
     }
-    for (auto &menu : ctx->customMenus) {
+    for (auto& menu : ctx->customMenus) {
       if (CherryGUI::BeginMenu(menu.title.c_str())) {
         if (menu.render) {
           menu.render();
@@ -840,6 +840,8 @@ void Editor::render_menubar() {
 }
 
 void Editor::window_close_callback() {
+  g_heartbeat.reset();
+
   if (CherryApp.IsKeyPressed(CherryKey::CTRL)) {
     Application::Get().Close();
   }
@@ -849,7 +851,7 @@ void Editor::window_close_callback() {
 
   auto app_windows = CherryApp.GetAllAppWindowOfWindow(closing_window_name);
 
-  for (auto &a : app_windows) {
+  for (auto& a : app_windows) {
     if (!a) {
       continue;
     }
@@ -874,7 +876,7 @@ void Editor::window_close_callback() {
   }
 
   bool any_visible_left = false;
-  for (auto &aw : CherryApp.GetAppWindows()) {
+  for (auto& aw : CherryApp.GetAppWindows()) {
     if (aw && aw->m_Visible) {
       any_visible_left = true;
       break;
@@ -887,7 +889,7 @@ void Editor::window_close_callback() {
   }
 }
 
-Cherry::Application *CreateEditor(int argc, char **argv) {
+Cherry::Application* CreateEditor(int argc, char** argv) {
   Cherry::ApplicationSpecification spec;
 
   spec.SetName(vxe::get_current_context()->name);
@@ -907,8 +909,8 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   spec.FavIconPath = Cherry::Application::CookPath("resources/imgs/icon.png");
   spec.SetFramebarCallback([]() { c_Editor->render_framebar(); });
 
-  Cherry::Application *app = new Cherry::Application(spec);
-  
+  Cherry::Application* app = new Cherry::Application(spec);
+
   c_Editor = std::make_shared<Editor>();
 
   app->SetFavIconPath(Cherry::Application::CookPath("resources/imgs/icon.png"));
@@ -928,7 +930,7 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
     }
   }
 
-  for (auto &modules : vxe::get_current_context()->IO.em) {
+  for (auto& modules : vxe::get_current_context()->IO.em) {
     modules->refresh_main_window();
   }
 
@@ -936,6 +938,6 @@ Cherry::Application *CreateEditor(int argc, char **argv) {
   return app;
 }
 
-int vxe::VortexEditor(int argc, char **argv) {
+int vxe::VortexEditor(int argc, char** argv) {
   return Cherry::ThirdMain(argc, argv, CreateEditor);
 }
