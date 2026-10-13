@@ -12,7 +12,7 @@
 
 namespace vxe {
 
-  bool ContentBrowser::is_only_spaces_or_empty(const char *str) {
+  bool ContentBrowser::is_only_spaces_or_empty(const char* str) {
     if (str == nullptr || std::strlen(str) == 0) {
       return true;
     }
@@ -27,7 +27,7 @@ namespace vxe {
 
   std::string ContentBrowser::format_file_size(size_t size) {
     // TODO: change unit in project settings
-    const char *units[] = { "B", "KB", "MB", "GB", "TB" };
+    const char* units[] = { "B", "KB", "MB", "GB", "TB" };
     int unitIndex = 0;
     double displaySize = static_cast<double>(size);
 
@@ -41,10 +41,10 @@ namespace vxe {
     return std::string(formattedSize);
   }
 
-  std::uintmax_t ContentBrowser::get_directory_size(const std::filesystem::path &directoryPath) {
+  std::uintmax_t ContentBrowser::get_directory_size(const std::filesystem::path& directoryPath) {
     std::uintmax_t size = 0;
 
-    for (const auto &entry : std::filesystem::recursive_directory_iterator(directoryPath)) {
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(directoryPath)) {
       if (std::filesystem::is_regular_file(entry.path())) {
         size += std::filesystem::file_size(entry.path());
       }
@@ -53,13 +53,22 @@ namespace vxe {
     return size;
   }
 
-  std::string ContentBrowser::to_lower_case(const std::string &str) {
+  std::string ContentBrowser::to_lower_case(const std::string& str) {
     std::string result = str;
-    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    std::transform(
+        result.begin(), result.end(), result.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     return result;
   }
 
-  int ContentBrowser::levenshtein_distance(const std::string &s1, const std::string &s2) {
+  bool ContentBrowser::matches_search(const std::string& name) {
+    if (is_only_spaces_or_empty(project_search_.c_str())) {
+      return true;
+    }
+
+    return to_lower_case(name).find(to_lower_case(project_search_)) != std::string::npos;
+  }
+
+  int ContentBrowser::levenshtein_distance(const std::string& s1, const std::string& s2) {
     const size_t m = s1.size();
     const size_t n = s2.size();
     std::vector<std::vector<int>> dp(m + 1, std::vector<int>(n + 1));
@@ -79,7 +88,7 @@ namespace vxe {
     return dp[m][n];
   }
 
-  bool ContentBrowser::has_common_letters(const std::string &s1, const std::string &s2) {
+  bool ContentBrowser::has_common_letters(const std::string& s1, const std::string& s2) {
     std::unordered_set<char> set1(s1.begin(), s1.end());
     for (char c : s2) {
       if (set1.find(c) != set1.end()) {
@@ -89,7 +98,7 @@ namespace vxe {
     return false;
   }
 
-  bool ContentBrowser::are_strings_similar(const std::string &s1, const std::string &s2, double threshold_) {
+  bool ContentBrowser::are_strings_similar(const std::string& s1, const std::string& s2, double threshold_) {
     std::string lower_s1 = to_lower_case(s1);
     std::string lower_s2 = to_lower_case(s2);
 
@@ -104,14 +113,14 @@ namespace vxe {
     return similarity >= threshold_;
   }
 
-  std::string ContentBrowser::get_extension(const std::string &path) {
+  std::string ContentBrowser::get_extension(const std::string& path) {
     size_t dot_pos = path.find_last_of('.');
     if (dot_pos == std::string::npos)
       return "";
     return path.substr(dot_pos + 1);
   }
 
-  FileTypes ContentBrowser::detect_file(const std::string &path) {
+  FileTypes ContentBrowser::detect_file(const std::string& path) {
     static const std::unordered_map<std::string, FileTypes> extension_map = {
       // Very low level
       { "asm", FileTypes::File_ASM },
@@ -248,11 +257,11 @@ namespace vxe {
       return FileTypes::File_UNKNOWN;
   }
 
-  bool ContentBrowser::has_extension(const std::string &ext) {
+  bool ContentBrowser::has_extension(const std::string& ext) {
     return std::find(extentions_filters_.begin(), extentions_filters_.end(), ext) != extentions_filters_.end();
   }
 
-  void ContentBrowser::toggle_extension(const std::string &ext, bool *state) {
+  void ContentBrowser::toggle_extension(const std::string& ext, bool* state) {
     if (*state) {
       if (!has_extension(ext)) {
         extentions_filters_.push_back(ext);
@@ -293,11 +302,11 @@ namespace vxe {
     this->show_mode_ = mode;
   }
 
-  std::string ContentBrowser::get_content_browser_folder_color(const std::string &path) {
+  std::string ContentBrowser::get_content_browser_folder_color(const std::string& path) {
     size_t lastSlashIndex = path.find_last_of('/');
     std::string folderName = path.substr(lastSlashIndex + 1);
 
-    for (auto &colored_folder : folder_colors_) {
+    for (auto& colored_folder : folder_colors_) {
       if (colored_folder.first == path) {
         return colored_folder.second;
       }
@@ -310,31 +319,31 @@ namespace vxe {
     return "#c2a24c";
   }
 
-  void ContentBrowser::set_colored_folder(const std::string &path, const std::string &hex_color) {
+  void ContentBrowser::set_colored_folder(const std::string& path, const std::string& hex_color) {
     // TODO or DELETE ?
   }
 
-  void ContentBrowser::set_delete_path_callback(const std::function<void(const std::string &)> &foo) {
+  void ContentBrowser::set_delete_path_callback(const std::function<void(const std::string&)>& foo) {
     delete_path_callback_ = foo;
   }
 
-  void ContentBrowser::set_copy_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo) {
+  void ContentBrowser::set_copy_paths_callback(const std::function<void(const std::vector<std::string>&, bool)>& foo) {
     copy_paths_callback_ = foo;
   }
 
-  void ContentBrowser::set_cut_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo) {
+  void ContentBrowser::set_cut_paths_callback(const std::function<void(const std::vector<std::string>&, bool)>& foo) {
     cut_paths_callback_ = foo;
   }
 
-  void ContentBrowser::set_paste_paths_callback(const std::function<void(const std::string &)> &foo) {
+  void ContentBrowser::set_paste_paths_callback(const std::function<void(const std::string&)>& foo) {
     paste_paths_callback_ = foo;
   }
 
-  void ContentBrowser::set_delete_copy_selection_callback(const std::function<void()> &foo) {
+  void ContentBrowser::set_delete_copy_selection_callback(const std::function<void()>& foo) {
     delete_copy_selection_callback_ = foo;
   }
 
-  void ContentBrowser::set_delete_cut_selection_callback(const std::function<void()> &foo) {
+  void ContentBrowser::set_delete_cut_selection_callback(const std::function<void()>& foo) {
     delete_cut_selection_callback_ = foo;
   }
 
@@ -362,7 +371,7 @@ namespace vxe {
     path_to_rename_ = path;
   }
 
-  void ContentBrowser::create_item(const std::function<void(const std::string &)> &creator) {
+  void ContentBrowser::create_item(const std::function<void(const std::string&)>& creator) {
     auto path = vxe::create_item(current_directory_.string());
 
     if (creator && !path.empty()) {

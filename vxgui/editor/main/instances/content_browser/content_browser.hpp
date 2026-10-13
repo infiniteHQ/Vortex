@@ -73,6 +73,8 @@ namespace vxe {
     void draw_item_context_menu(const std::string& path, const std::shared_ptr<ItemIdentifierInterface>& item_ident);
     void draw_folder_customization_menu(const std::string& path);
     void folder_icon(ImVec2 size, ImU32 color);
+    std::string truncate_text(const std::string& text, float max_width);
+    void draw_truncated_name(ImDrawList* drawList, ImVec2 pos, const std::string& name, float max_width, ImU32 color);
 
     // navigation
     void change_directory(const std::filesystem::path& new_directory);
@@ -122,6 +124,7 @@ namespace vxe {
     std::uintmax_t get_directory_size(const std::filesystem::path& directoryPath);
     FileTypes detect_file(const std::string& path);
     ImU32 darken_color(ImU32 color, float amount);
+    bool matches_search(const std::string& name);
 
    private:
     // callbacks
