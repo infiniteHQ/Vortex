@@ -1111,10 +1111,13 @@ namespace vxe {
                   CherryGUI::CloseCurrentPopup();
                 }
               }
-
               CherryKit::SeparatorText("Customizations");
 
               CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
+
+              draw_folder_customization_menu(path.string());
+
+              CherryGUI::EndPopup();
 
               static bool EditingColor = false;
               static bool ColorChanged = false;
@@ -1354,14 +1357,25 @@ namespace vxe {
     }
 
     if (show_mode_ == ContentShowMode::List) {
-      static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders |
-                                     ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
+      static ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV |
+                                     ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable |
+                                     ImGuiTableFlags_NoSavedSettings;
+      const float rowHeight = 26.0f;
+      CherryGUI::PushStyleColor(ImGuiCol_TableHeaderBg, ImVec4(0.09f, 0.09f, 0.09f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_TableRowBg, ImVec4(0.11f, 0.11f, 0.11f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_TableRowBgAlt, ImVec4(0.13f, 0.13f, 0.13f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_TableBorderLight, ImVec4(0.17f, 0.17f, 0.17f, 1.0f));
+      CherryGUI::PushStyleColor(ImGuiCol_TableBorderStrong, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+      CherryGUI::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(8.0f, 3.0f));
 
-      if (CherryGUI::BeginTable("ContentBrowserTable", 5, flags)) {
-        CherryGUI::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
-        CherryGUI::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-        CherryGUI::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-        CherryGUI::TableSetupColumn("Last Updated", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+      if (CherryGUI::BeginTable("ContentBrowserTable", 4, flags)) {
+        CherryGUI::TableSetupColumn(
+            "Name",
+            ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_NoReorder,
+            1.0f);
+        CherryGUI::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+        CherryGUI::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed, 90.0f);
+        CherryGUI::TableSetupColumn("Last Updated", ImGuiTableColumnFlags_WidthFixed, 140.0f);
         CherryGUI::TableHeadersRow();
         auto drawRow = [&](const std::string& filename,
                            const fs::path& path,
@@ -1371,42 +1385,46 @@ namespace vxe {
                            ImTextureID tex = nullptr,
                            const std::shared_ptr<ItemIdentifierInterface>& item_ident = nullptr) {
           std::string filenameString = path.filename().string();
-          float rowHeight = 20.0f;
-          CherryGUI::TableNextRow(ImGuiTableRowFlags_None, rowHeight);
 
+          CherryGUI::TableNextRow(ImGuiTableRowFlags_None, rowHeight);
           CherryGUI::TableSetColumnIndex(0);
+
+          ImVec2 cell_pos = CherryGUI::GetCursorScreenPos();
+          CherryGUI::PushID(path.string().c_str());
 
           bool selected = std::find(selected_.begin(), selected_.end(), path.string()) != selected_.end();
 
-          if (CherryGUI::Selectable(
-                  ("##row_" + path.string()).c_str(),
-                  selected,
-                  ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowDoubleClick,
-                  ImVec2(0, rowHeight))) {
-            if (CherryGUI::GetIO().KeyCtrl) {
-              if (!selected)
+          CherryGUI::PushStyleColor(ImGuiCol_Header, ImVec4(0.16f, 0.35f, 0.86f, 0.35f));
+          CherryGUI::PushStyleColor(
+              ImGuiCol_HeaderHovered, selected ? ImVec4(0.16f, 0.35f, 0.86f, 0.45f) : ImVec4(1.0f, 1.0f, 1.0f, 0.06f));
+          CherryGUI::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.16f, 0.35f, 0.86f, 0.55f));
+
+          bool row_clicked = CherryGUI::Selectable(
+              ("##row_" + path.string()).c_str(),
+              selected,
+              ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowDoubleClick,
+              ImVec2(0, rowHeight));
+          if (path_to_rename_ == path.string()) {
+            CherryGUI::SetItemAllowOverlap();
+          }
+
+          CherryGUI::PopStyleColor(3);
+
+          if (row_clicked && path_to_rename_ != path.string()) {
+            if (CherryGUI::IsMouseDoubleClicked(0)) {
+              if (isFolder) {
+                change_directory(path);
+              }
+            } else if (CherryGUI::GetIO().KeyCtrl) {
+              auto it = std::find(selected_.begin(), selected_.end(), path.string());
+              if (it != selected_.end()) {
+                selected_.erase(it);
+              } else {
                 selected_.push_back(path.string());
+              }
             } else {
               selected_.clear();
               selected_.push_back(path.string());
-            }
-
-            if (CherryGUI::IsMouseClicked(0)) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) || CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                selected_.push_back(path.string());
-              } else {
-                selected_.clear();
-                selected_.push_back(path.string());
-              }
-            }
-
-            if (CherryGUI::IsMouseDoubleClicked(0)) {
-              if (!isFolder) {
-                // Default action
-              } else {
-                change_directory(path);
-              }
-              //
             }
           }
 
@@ -1796,10 +1814,19 @@ namespace vxe {
             item_handles_.clear();
           }
 
-          CherryGUI::SameLine();
-          FileTypes fileType = detect_file(path.string());
+          const float icon_size = 18.0f;
+          const ImVec4 muted(0.55f, 0.55f, 0.55f, 1.0f);
+          const float text_y = cell_pos.y + (rowHeight - CherryGUI::GetTextLineHeight()) * 0.5f;
+          const ImVec2 icon_pos(cell_pos.x + 4.0f, cell_pos.y + (rowHeight - icon_size) * 0.5f);
+          const ImVec2 name_pos(icon_pos.x + icon_size + 8.0f, text_y);
+
+          auto align_text = [&]() { CherryGUI::SetCursorScreenPos(ImVec2(CherryGUI::GetCursorScreenPos().x, text_y)); };
+
+          CherryGUI::SetCursorScreenPos(icon_pos);
 
           if (!isFolder) {
+            FileTypes fileType = detect_file(path.string());
+
             if (item_ident) {
               tex = Cherry::GetTexture(item_ident->logo_path);
             } else {
@@ -1812,37 +1839,31 @@ namespace vxe {
             }
 
             if (tex) {
-              CherryGUI::Image(tex, ImVec2(24, 24));
-              CherryGUI::SameLine();
+              CherryGUI::Image(tex, ImVec2(icon_size, icon_size));
             }
           } else {
-            if (current_editing_folder_.first == path.string()) {
-              draw_folder_button(
-                  "draw_folder_icon", ImVec2(16, 16), path.string(), get_content_browser_folder_color(path.string()));
-            } else {
-              draw_folder_button(
-                  "draw_folder_icon", ImVec2(16, 16), path.string(), get_content_browser_folder_color(path.string()));
-            }
-            CherryGUI::SameLine();
+            draw_folder_button(
+                "draw_folder_icon",
+                ImVec2(icon_size, icon_size),
+                path.string(),
+                get_content_browser_folder_color(path.string()));
           }
-          // CherryGUI::TextUnformatted(filename.c_str());
 
           ImU32 textColor = IM_COL32(255, 255, 255, 255);
           ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
           ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
-          static std::unordered_map<std::string, char[256]> renameBuffers;
 
           if (path_to_rename_ == path.string()) {
+            CherryGUI::SetCursorScreenPos(ImVec2(name_pos.x, cell_pos.y + (rowHeight - CherryGUI::GetFrameHeight()) * 0.5f));
             draw_rename_input(path.string(), CherryGUI::GetContentRegionAvail().x);
           } else {
             if (filename == "...") {
               filenameString = "...";
             }
 
-            ImDrawList* drawList = CherryGUI::GetWindowDrawList();
             draw_highlighted_text_(
-                drawList,
-                CherryGUI::GetCursorScreenPos(),
+                CherryGUI::GetWindowDrawList(),
+                name_pos,
                 filenameString.c_str(),
                 project_search_.c_str(),
                 highlightColor,
@@ -1851,22 +1872,34 @@ namespace vxe {
           }
 
           CherryGUI::TableSetColumnIndex(1);
+          align_text();
           if (item_ident) {
-            CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), item_ident->description.c_str());
+            CherryGUI::TextColored(muted, "%s", item_ident->description.c_str());
           } else {
-            CherryGUI::TextColored(ImVec4(0.4f, 0.4f, 0.4f, 1.0f), isFolder ? "Folder" : "File");
+            CherryGUI::TextColored(muted, "%s", isFolder ? "Folder" : "File");
+          }
+
+          std::string size_label = "---";
+          if (filename != "...") {
+            if (isFolder || item_ident) {
+              size_label = get_folder_size_cached(path.string());
+            } else {
+              size_label = format_file_size(size);
+            }
           }
 
           CherryGUI::TableSetColumnIndex(2);
-          CherryGUI::TextUnformatted(isFolder ? "---" : format_file_size(size).c_str());
+          align_text();
+          CherryGUI::TextUnformatted(size_label.c_str());
 
           CherryGUI::TableSetColumnIndex(3);
+          align_text();
           if (cftime != 0) {
             char buffer[64];
             std::strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M", std::localtime(&cftime));
-            CherryGUI::TextUnformatted(buffer);
+            CherryGUI::TextColored(muted, "%s", buffer);
           } else {
-            CherryGUI::TextUnformatted("---");
+            CherryGUI::TextColored(muted, "---");
           }
         };
 
@@ -1948,10 +1981,6 @@ namespace vxe {
                 !is_only_spaces_or_empty(project_search_.c_str()))
               continue;
 
-            std::uintmax_t folderSize = get_directory_size(path);
-            std::string folderSizeString = format_file_size(folderSize);
-            CherryGUI::PushID(filenameString.c_str());
-
             ImTextureID tex = Application::GetCurrentRenderedWindow()->GetTexture(
                 Cherry::GetPath("resources/imgs/icons/files/icon_default_file.png"));
 
@@ -2014,6 +2043,9 @@ namespace vxe {
         }
         CherryGUI::EndTable();
       }
+
+      CherryGUI::PopStyleVar();
+      CherryGUI::PopStyleColor(5);
     }
 
     if (show_mode_ == ContentShowMode::Objects) {
@@ -2022,10 +2054,6 @@ namespace vxe {
       CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
 
       CherryGUI::PushStyleVar(ImGuiStyleVar_PopupRounding, 3.0f);
-
-      if (CherryGUI::IsWindowHovered() && CherryGUI::IsMouseReleased(ImGuiMouseButton_Left)) {
-        selected_.clear();
-      }
 
       if (CherryGUI::BeginPopup("EmptySpacePopup")) {
         CherryGUI::GetFont()->Scale = 0.9;
@@ -2110,35 +2138,34 @@ namespace vxe {
             CherryGUI::PushID(filenameString.c_str());
 
             float padding = 10.0f;
-            float logoSize = 40.0f;
-            float borderRadius = 5.0f;
+            float logoSize = 36.0f;
+            float borderRadius = 6.0f;
 
             float availableWidth = CherryGUI::GetContentRegionAvail().x;
             float cardHeight = logoSize + padding * 2;
             ImVec2 cursorPos = CherryGUI::GetCursorScreenPos();
             ImVec2 cardSize(availableWidth, cardHeight);
+            bool is_renaming = path_to_rename_ == path.string();
 
-            if (CherryGUI::InvisibleButton(("folder_card_" + filenameString).c_str(), cardSize)) {
-              if (CherryGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-                change_directory(path);
-              } else {
-                if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) || CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                  selected_.push_back(path.string());
-                } else {
-                  selected_.clear();
-                  selected_.push_back(path.string());
-                }
-              }
+            CherryGUI::InvisibleButton(("folder_card_" + filenameString).c_str(), cardSize);
+
+            if (is_renaming) {
+              CherryGUI::SetItemAllowOverlap();
             }
+            bool hovered = CherryGUI::IsItemHovered();
 
-            if (CherryGUI::IsItemHovered()) {
+            if (hovered && !is_renaming) {
               CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
 
               if (CherryGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
                 change_directory(path);
+              } else if (CherryGUI::IsMouseClicked(ImGuiMouseButton_Left)) {
+                select_on_click(path.string());
+              } else if (CherryGUI::IsMouseClicked(ImGuiMouseButton_Right) && !selected) {
+                selected_.clear();
+                selected_.push_back(path.string());
               }
             }
-
             if (CherryGUI::BeginPopupContextItem("ContextPopup")) {
               CherryKit::SeparatorText("Main");
 
@@ -2265,17 +2292,25 @@ namespace vxe {
               CherryGUI::EndPopup();
             }
 
-            ImU32 bgColor = selected ? IM_COL32(80, 80, 240, 255) : IM_COL32(40, 40, 40, 255);
-            ImU32 borderColor = selected ? IM_COL32(150, 150, 255, 255) : IM_COL32(90, 90, 90, 255);
+            ImU32 bgColor =
+                selected ? IM_COL32(40, 90, 220, 80) : (hovered ? IM_COL32(52, 52, 52, 255) : IM_COL32(40, 40, 40, 255));
+            ImU32 borderColor =
+                selected ? IM_COL32(90, 130, 255, 255) : (hovered ? IM_COL32(80, 80, 80, 255) : IM_COL32(60, 60, 60, 255));
+            std::string folder_color = current_editing_folder_.first == path.string()
+                                           ? Cherry::ImU32ToHex(current_editing_folder_.second)
+                                           : get_content_browser_folder_color(path.string());
+
+            ImU32 accentColor = Cherry::HexToImU32(get_content_browser_folder_color(path.string()));
 
             ImDrawList* drawList = CherryGUI::GetWindowDrawList();
+            ImVec2 cardMax(cursorPos.x + cardSize.x, cursorPos.y + cardSize.y);
 
+            drawList->AddRectFilled(cursorPos, cardMax, bgColor, borderRadius);
+            drawList->AddRect(cursorPos, cardMax, borderColor, borderRadius);
             drawList->AddRectFilled(
-                cursorPos, ImVec2(cursorPos.x + cardSize.x, cursorPos.y + cardSize.y), bgColor, borderRadius);
-            drawList->AddRect(
-                cursorPos, ImVec2(cursorPos.x + cardSize.x, cursorPos.y + cardSize.y), borderColor, borderRadius);
+                cursorPos, ImVec2(cursorPos.x + 4.0f, cardMax.y), accentColor, borderRadius, ImDrawFlags_RoundCornersLeft);
 
-            ImVec2 logoPos(cursorPos.x + padding, cursorPos.y + (cardHeight - logoSize) * 0.5f);
+            ImVec2 logoPos(cursorPos.x + padding + 4.0f, cursorPos.y + (cardHeight - logoSize) * 0.5f);
             CherryGUI::SetCursorScreenPos(logoPos);
             draw_folder_button(
                 "draw_folder_icon",
@@ -2283,22 +2318,24 @@ namespace vxe {
                 path.string(),
                 get_content_browser_folder_color(path.string()));
 
-            ImVec2 logoEnd(logoPos.x + logoSize, logoPos.y + logoSize);
+            float logoEndX = logoPos.x + logoSize;
 
-            CherryGUI::PushFont(CherryGUI::GetFont());
-            CherryGUI::GetFont()->Scale = 0.9f;
+            std::string sizeLabel = get_folder_size_cached(path.string());
+            float sizeWidth = CherryGUI::CalcTextSize(sizeLabel.c_str()).x;
+            float textH = CherryGUI::GetTextLineHeight();
+            float textMaxWidth = cardMax.x - logoEndX - padding * 3.0f - sizeWidth;
 
-            ImVec2 textPos(logoEnd.x + padding, cursorPos.y + padding);
-            CherryGUI::SetCursorScreenPos(textPos);
+            ImVec2 textPos(logoEndX + padding, cursorPos.y + (cardHeight - (textH * 2.0f + 2.0f)) * 0.5f);
 
             ImU32 textColor = IM_COL32(255, 255, 255, 255);
             ImU32 highlightColor = IM_COL32(255, 255, 0, 255);
             ImU32 highlightTextColor = IM_COL32(0, 0, 0, 255);
-            static std::unordered_map<std::string, char[256]> renameBuffers;
 
-            if (path_to_rename_ == path.string()) {
-              draw_rename_input(path.string(), 200.0f);
+            if (is_renaming) {
+              CherryGUI::SetCursorScreenPos(textPos);
+              draw_rename_input(path.string(), textMaxWidth);
             } else {
+              drawList->PushClipRect(textPos, ImVec2(textPos.x + textMaxWidth, cardMax.y), true);
               draw_highlighted_text_(
                   drawList,
                   textPos,
@@ -2307,35 +2344,16 @@ namespace vxe {
                   highlightColor,
                   textColor,
                   highlightTextColor);
+              drawList->PopClipRect();
             }
 
-            CherryGUI::GetFont()->Scale = oldfontsize;
-            CherryGUI::PopFont();
+            drawList->AddText(ImVec2(textPos.x, textPos.y + textH + 2.0f), IM_COL32(140, 140, 140, 255), "Folder");
+            drawList->AddText(
+                ImVec2(cardMax.x - padding - sizeWidth, cursorPos.y + (cardHeight - textH) * 0.5f),
+                IM_COL32(170, 170, 170, 255),
+                sizeLabel.c_str());
 
-            std::string folderSizeStr = "[dir]";
-            std::string lastModifiedStr = "???";
-
-            ImVec2 rightTextPos(cursorPos.x + cardSize.x - padding - 200, cursorPos.y + padding);
-            CherryGUI::SetCursorScreenPos(rightTextPos);
-            CherryGUI::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 200, 200, 255));
-            CherryGUI::Text("%s | %s", folderSizeStr.c_str(), lastModifiedStr.c_str());
-            CherryGUI::PopStyleColor();
-
-            float lineOffset = 15.0f;
-            ImVec2 lineStart(cursorPos.x + cardSize.x - lineOffset, cursorPos.y + padding);
-            ImVec2 lineEnd(cursorPos.x + cardSize.x - lineOffset, cursorPos.y + cardSize.y - padding);
-            drawList->AddLine(lineStart, lineEnd, IM_COL32(255, 200, 0, 255), 3.0f);
-
-            float versionBoxWidth = 10.0f, versionBoxHeight = 20.0f;
-            ImVec2 versionPos(
-                cursorPos.x + cardSize.x - versionBoxWidth - padding, cursorPos.y + cardSize.y - versionBoxHeight - padding);
-            drawList->AddRectFilled(
-                versionPos,
-                ImVec2(versionPos.x + versionBoxWidth, versionPos.y + versionBoxHeight),
-                IM_COL32(0, 0, 0, 255),
-                borderRadius);
-
-            CherryGUI::SetCursorScreenPos(ImVec2(cursorPos.x, cursorPos.y + cardSize.y + padding));
+            CherryGUI::SetCursorScreenPos(ImVec2(cursorPos.x, cursorPos.y + cardSize.y + 6.0f));
 
             CherryGUI::PopID();
           }
@@ -2375,42 +2393,23 @@ namespace vxe {
 
           if (are_strings_similar(filenameString, project_search_, threshold_) ||
               is_only_spaces_or_empty(project_search_.c_str())) {
-            std::uintmax_t folderSize = get_directory_size(path);
-            std::string folderSizeString = format_file_size(folderSize);
             CherryGUI::PushID(filenameString.c_str());
 
-            ItemCardContent content{
-              .name = filenameString,
-              .path = path,
-              .description = itemEntry.first->description,
-              .size = folderSizeString,
-              .logo = itemEntry.first->logo_path,
-              .item_ident = itemEntry.first,
-            };
+            const auto& ident = itemEntry.first;
 
-            ItemCardStyle style{
-              .bg_color = IM_COL32(56, 56, 56, 150),
-              .border_color = IM_COL32(50, 50, 50, 255),
-              .line_color = Cherry::HexToImU32(itemEntry.first->line_color),
-              .max_text_width = 100.0f,
-              .border_radius = 5.0f,
-            };
-
-            if (draw_horizontal_draw_item_card(
-                    { .content = content, .style = style, .selected = selected, .isFolder = false })) {
-              if (CherryGUI::IsMouseDoubleClicked(0)) {
-                // itemEntry.first->f_execute(path);
-                // VXERROR("te", "tyr");
-              }
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) || CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                selected_.push_back(path);
-              } else {
-                selected_.clear();
-                selected_.push_back(path);
-              }
+            if (draw_object_card(
+                    path,
+                    filenameString,
+                    ident->description,
+                    get_folder_size_cached(path),
+                    ident->logo_path,
+                    Cherry::HexToImU32(ident->line_color),
+                    selected,
+                    ident)) {
+              select_on_click(path);
             }
+
             CherryGUI::PopID();
-            CherryGUI::NextColumn();
           }
         }
       }
@@ -2453,7 +2452,6 @@ namespace vxe {
               fileSize += std::filesystem::file_size(fileEntry.path(), ec);
             }
 
-            std::string fileSizeString = format_file_size(fileSize);
             CherryGUI::PushID(filenameString.c_str());
 
             FileTypes fileType = detect_file(path.string());
@@ -2461,41 +2459,25 @@ namespace vxe {
             auto it = FILE_TYPE_INFOS.find(fileType);
             const FileTypeInfo& info = (it != FILE_TYPE_INFOS.end()) ? it->second : DEFAULT_TYPE_INFO;
 
-            ItemCardContent content{
-              .name = filenameString,
-              .path = path.string(),
-              .description = info.label,
-              .size = fileSizeString,
-              .logo = Cherry::GetPath(info.icon),
-              .item_ident = nullptr,
-            };
-
-            ItemCardStyle style{
-              .bg_color = IM_COL32(56, 56, 56, 150),
-              .border_color = IM_COL32(50, 50, 50, 255),
-              .line_color = Cherry::HexToImU32(info.color),
-              .max_text_width = 200.f,
-              .border_radius = 8.f,
-            };
-
-            if (!filenameString.empty() && filenameString[0] == '.') {
-              style.bg_color = darken_color(style.bg_color, 0.35f);
+            if (draw_object_card(
+                    path.string(),
+                    filenameString,
+                    info.label,
+                    format_file_size(fileSize),
+                    Cherry::GetPath(info.icon),
+                    Cherry::HexToImU32(info.color),
+                    selected)) {
+              select_on_click(path.string());
             }
-
-            if (draw_horizontal_draw_item_card({ .content = content, .style = style, .selected = selected })) {
-              if (CherryGUI::IsKeyDown(ImGuiKey_LeftCtrl) || CherryGUI::IsKeyDown(ImGuiKey_RightCtrl)) {
-                selected_.push_back(path.string());
-              } else {
-                selected_.clear();
-                selected_.push_back(path.string());
-              }
-            }
-
-            float oldsize = CherryGUI::GetFont()->Scale;
 
             CherryGUI::PopID();
           }
         }
+      }
+
+      if (CherryGUI::IsWindowHovered() && !CherryGUI::IsAnyItemHovered() &&
+          CherryGUI::IsMouseReleased(ImGuiMouseButton_Left)) {
+        selected_.clear();
       }
 
       if (CherryGUI::IsWindowHovered() && !CherryGUI::IsAnyItemHovered() &&
@@ -2504,6 +2486,20 @@ namespace vxe {
         CherryGUI::OpenPopup("EmptySpacePopup");
       }
     }
+  }
+
+  std::string ContentBrowser::get_folder_size_cached(const std::string& path) {
+    double now = CherryGUI::GetTime();
+    auto it = folder_size_cache_.find(path);
+
+    if (it != folder_size_cache_.end() && now - it->second.first < 3.0) {
+      return it->second.second;
+    }
+
+    std::string size = format_file_size(get_directory_size(path));
+    folder_size_cache_[path] = { now, size };
+
+    return size;
   }
 
   void ContentBrowser::add_child(const ContentBrowserChild& child) {
@@ -2660,4 +2656,300 @@ namespace vxe {
     path_to_rename_.clear();
     rename_initialized_path_.clear();
   }
+
+  bool ContentBrowser::draw_object_card(
+      const std::string& path,
+      const std::string& name,
+      const std::string& subtitle,
+      const std::string& size_label,
+      const std::string& logo_path,
+      ImU32 accent,
+      bool selected,
+      const std::shared_ptr<ItemIdentifierInterface>& item_ident) {
+    const float padding = 10.0f;
+    const float logo_size = 36.0f;
+    const float border_radius = 6.0f;
+    const bool dimmed = !name.empty() && name[0] == '.';
+    const bool is_renaming = path_to_rename_ == path;
+
+    float width = CherryGUI::GetContentRegionAvail().x;
+    float height = logo_size + padding * 2;
+    ImVec2 pos = CherryGUI::GetCursorScreenPos();
+    ImVec2 max(pos.x + width, pos.y + height);
+
+    CherryGUI::InvisibleButton("##object_card", ImVec2(width, height));
+    if (is_renaming) {
+      CherryGUI::SetItemAllowOverlap();
+    }
+    bool hovered = CherryGUI::IsItemHovered();
+    bool clicked = hovered && !is_renaming && CherryGUI::IsMouseClicked(ImGuiMouseButton_Left);
+
+    if (hovered && !is_renaming) {
+      CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+      if (CherryGUI::IsMouseClicked(ImGuiMouseButton_Right) && !selected) {
+        selected_.clear();
+        selected_.push_back(path);
+        selected = true;
+      }
+    }
+
+    if (!is_renaming && CherryGUI::BeginPopupContextItem("##object_card_context")) {
+      draw_item_context_menu(path, item_ident);
+      CherryGUI::EndPopup();
+    }
+
+    ImU32 bg_color =
+        selected ? IM_COL32(40, 90, 220, 80) : (hovered ? IM_COL32(52, 52, 52, 255) : IM_COL32(40, 40, 40, 255));
+    ImU32 border_color =
+        selected ? IM_COL32(90, 130, 255, 255) : (hovered ? IM_COL32(80, 80, 80, 255) : IM_COL32(60, 60, 60, 255));
+
+    ImDrawList* drawList = CherryGUI::GetWindowDrawList();
+
+    drawList->AddRectFilled(pos, max, bg_color, border_radius);
+    drawList->AddRect(pos, max, border_color, border_radius);
+    drawList->AddRectFilled(pos, ImVec2(pos.x + 4.0f, max.y), accent, border_radius, ImDrawFlags_RoundCornersLeft);
+
+    ImVec2 logo_pos(pos.x + padding + 4.0f, pos.y + (height - logo_size) * 0.5f);
+    ImTextureID tex = Cherry::GetTexture(logo_path);
+    if (tex) {
+      drawList->AddImage(
+          tex,
+          logo_pos,
+          ImVec2(logo_pos.x + logo_size, logo_pos.y + logo_size),
+          ImVec2(0, 0),
+          ImVec2(1, 1),
+          dimmed ? IM_COL32(255, 255, 255, 120) : IM_COL32(255, 255, 255, 255));
+    }
+
+    float text_h = CherryGUI::GetTextLineHeight();
+    float size_width = CherryGUI::CalcTextSize(size_label.c_str()).x;
+    float text_x = logo_pos.x + logo_size + padding;
+    float text_max_width = max.x - text_x - padding * 2.0f - size_width;
+    ImVec2 text_pos(text_x, pos.y + (height - (text_h * 2.0f + 2.0f)) * 0.5f);
+
+    ImU32 text_color = dimmed ? IM_COL32(255, 255, 255, 140) : IM_COL32(255, 255, 255, 255);
+
+    if (is_renaming) {
+      CherryGUI::SetCursorScreenPos(ImVec2(text_x, pos.y + (height - CherryGUI::GetFrameHeight()) * 0.5f));
+      draw_rename_input(path, text_max_width);
+    } else {
+      drawList->PushClipRect(text_pos, ImVec2(text_pos.x + text_max_width, max.y), true);
+      draw_highlighted_text_(
+          drawList,
+          text_pos,
+          name.c_str(),
+          project_search_.c_str(),
+          IM_COL32(255, 255, 0, 255),
+          text_color,
+          IM_COL32(0, 0, 0, 255));
+      drawList->AddText(ImVec2(text_pos.x, text_pos.y + text_h + 2.0f), IM_COL32(140, 140, 140, 255), subtitle.c_str());
+      drawList->PopClipRect();
+    }
+
+    drawList->AddText(
+        ImVec2(max.x - padding - size_width, pos.y + (height - text_h) * 0.5f),
+        IM_COL32(170, 170, 170, 255),
+        size_label.c_str());
+
+    CherryGUI::SetCursorScreenPos(ImVec2(pos.x, max.y + 6.0f));
+
+    return clicked;
+  }
+
+  void ContentBrowser::draw_item_context_menu(
+      const std::string& path,
+      const std::shared_ptr<ItemIdentifierInterface>& item_ident) {
+    float oldfontsize = CherryGUI::GetFont()->Scale;
+
+    CherryGUI::GetFont()->Scale = 0.9;
+    CherryGUI::PushFont(CherryGUI::GetFont());
+
+    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 5.0f);
+
+    auto handlers = item_ident ? vxe::get_all_item_handlers_for(item_ident->name)
+                               : vxe::get_all_item_handlers_for(get_file_type_str(detect_file(path)));
+
+    if (!handlers.empty()) {
+      CherryKit::SeparatorText("Actions");
+    }
+
+    for (auto ih : handlers) {
+      if (CherryGUI::MenuItem(ih->title.c_str(), ih->description.c_str(), Cherry::GetTexture(ih->logo), false)) {
+        ih->handler(path);
+      }
+    }
+
+    CherryKit::SeparatorText("Main");
+
+    CherryGUI::GetFont()->Scale = oldfontsize;
+    CherryGUI::PopFont();
+
+    CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() + 2.0f);
+
+    if (item_ident) {
+      if (CherryGUI::MenuItem(
+              "Open item",
+              "",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_foldersearch.png")),
+              NULL)) {
+        change_directory(path);
+        itepath_s_.push_back({ path, item_ident->line_color });
+        CherryGUI::CloseCurrentPopup();
+      }
+    }
+
+    if (CherryGUI::MenuItem("Rename", "Ctrl + R")) {
+      path_to_rename_ = path;
+    }
+
+    if (CherryGUI::MenuItem(
+            "Copy", "Ctrl + C", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")), NULL)) {
+      if (copy_paths_callback_) {
+        clear_copy_selection();
+        clear_cut_selection();
+        copy_paths_callback_(selected_, false);
+        for (auto& selected : selected_) {
+          copy_selection_.push_back(selected);
+        }
+      }
+
+      selected_.clear();
+      CherryGUI::CloseCurrentPopup();
+    }
+
+    if (copy_selection_.size() > 0) {
+      bool nothing_new_to_copy = !has_new_paths_to_copy(selected_);
+      std::string label = "Copy in addition (" + std::to_string(copy_selection_.size()) + " copies)";
+
+      CherryGUI::BeginDisabled(nothing_new_to_copy);
+      if (CherryGUI::MenuItem(
+              label.c_str(),
+              "Ctrl + Alt + C",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_copy.png")),
+              NULL)) {
+        if (copy_paths_callback_) {
+          clear_cut_selection();
+          std::vector<std::string> to_copy;
+          for (auto& selected : selected_) {
+            if (!is_in_copy_selection(selected)) {
+              to_copy.push_back(selected);
+            }
+          }
+
+          if (!to_copy.empty()) {
+            copy_paths_callback_(to_copy, true);
+            for (auto& selected : to_copy) {
+              copy_selection_.push_back(selected);
+            }
+          }
+        }
+        selected_.clear();
+        CherryGUI::CloseCurrentPopup();
+      }
+      CherryGUI::EndDisabled();
+    }
+
+    if (CherryGUI::MenuItem(
+            "Cut", "Ctrl + X", Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")), NULL)) {
+      if (cut_paths_callback_) {
+        clear_cut_selection();
+        clear_copy_selection();
+        cut_paths_callback_(selected_, false);
+        for (auto& selected : selected_) {
+          cut_selection_.push_back(selected);
+        }
+      }
+
+      selected_.clear();
+      CherryGUI::CloseCurrentPopup();
+    }
+
+    if (cut_selection_.size() > 0) {
+      bool nothing_new_to_cut = !has_new_paths_to_cut(selected_);
+      std::string label = "Cut in addition (" + std::to_string(cut_selection_.size()) + " copies)";
+
+      CherryGUI::BeginDisabled(nothing_new_to_cut);
+      if (CherryGUI::MenuItem(
+              label.c_str(),
+              "Ctrl + Alt + X",
+              Cherry::GetTexture(Cherry::GetPath("resources/imgs/icons/misc/icon_cut.png")),
+              NULL)) {
+        if (cut_paths_callback_) {
+          clear_copy_selection();
+
+          std::vector<std::string> to_cut;
+          for (auto& selected : selected_) {
+            if (!is_in_cut_selection(selected)) {
+              to_cut.push_back(selected);
+            }
+          }
+
+          if (!to_cut.empty()) {
+            cut_paths_callback_(to_cut, true);
+            for (auto& selected : to_cut) {
+              cut_selection_.push_back(selected);
+            }
+          }
+        }
+        selected_.clear();
+        CherryGUI::CloseCurrentPopup();
+      }
+      CherryGUI::EndDisabled();
+    }
+
+    if (CherryGUI::MenuItem("Delete", "Suppr")) {
+      request_delete({ path });
+      CherryGUI::CloseCurrentPopup();
+    }
+
+    if (selected_.size() > 1) {
+      std::string label = "Delete (" + std::to_string(selected_.size()) + " selected)";
+      if (CherryGUI::MenuItem(label.c_str(), "Alt + Suppr")) {
+        request_delete(selected_);
+        CherryGUI::CloseCurrentPopup();
+      }
+    }
+  }
+  void ContentBrowser::draw_folder_customization_menu(const std::string& path) {
+    static bool EditingColor = false;
+
+    current_editing_folder_is_favorite_ = is_path_favorite(path);
+
+    if (CherryGUI::BeginMenu("Change color")) {
+      if (!EditingColor) {
+        current_editing_folder_ = { path, HexToImU32(get_content_browser_folder_color(path)) };
+      }
+
+      EditingColor = true;
+
+      if (draw_color_picker_3U32("MyColor", &current_editing_folder_.second)) {
+        CherryGUI::CloseCurrentPopup();
+      }
+
+      CherryGUI::EndMenu();
+    } else {
+      EditingColor = false;
+      current_editing_folder_ = { "", ImU32() };
+    }
+
+    if (CherryGUI::MenuItem("Mark as favorite", "", current_editing_folder_is_favorite_)) {
+      current_editing_folder_ = { path, HexToImU32(get_content_browser_folder_color(path)) };
+
+      current_editing_folder_is_favorite_ = !current_editing_folder_is_favorite_;
+      set_colored_folder(current_editing_folder_.first, ImU32ToHex(current_editing_folder_.second));
+      vxe::publish_content_browser_custom_folder(
+          current_editing_folder_.first, ImU32ToHex(current_editing_folder_.second), current_editing_folder_is_favorite_);
+
+      if (current_editing_folder_is_favorite_) {
+        favorite_folders_.push_back(current_editing_folder_.first);
+      } else {
+        auto it = std::find(favorite_folders_.begin(), favorite_folders_.end(), current_editing_folder_.first);
+        if (it != favorite_folders_.end()) {
+          favorite_folders_.erase(it);
+        }
+      }
+    }
+  }
+
 }  // namespace vxe

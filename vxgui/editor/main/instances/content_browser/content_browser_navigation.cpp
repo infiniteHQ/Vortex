@@ -28,7 +28,7 @@ namespace vxe {
     }
   }
 
-  void ContentBrowser::change_directory(const std::filesystem::path &new_directory) {
+  void ContentBrowser::change_directory(const std::filesystem::path& new_directory) {
     if (!std::filesystem::exists(new_directory)) {
       return;
     }
@@ -49,7 +49,7 @@ namespace vxe {
     // Fetch Modules item hamdlers
   }
 
-  void ContentBrowser::select(const std::string &path) {
+  void ContentBrowser::select(const std::string& path) {
     for (auto already : selected_) {
       if (path == already) {
         return;
@@ -58,4 +58,18 @@ namespace vxe {
     selected_.push_back(path);
   }
 
+  void ContentBrowser::select_on_click(const std::string& path) {
+    auto it = std::find(selected_.begin(), selected_.end(), path);
+
+    if (CherryGUI::GetIO().KeyCtrl) {
+      if (it != selected_.end()) {
+        selected_.erase(it);
+      } else {
+        selected_.push_back(path);
+      }
+    } else {
+      selected_.clear();
+      selected_.push_back(path);
+    }
+  }
 }  // namespace vxe

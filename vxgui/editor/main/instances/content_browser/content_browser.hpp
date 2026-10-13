@@ -61,6 +61,17 @@ namespace vxe {
         ImU32 highlightColor,
         ImU32 textColor,
         ImU32 highlightTextColor);
+    bool draw_object_card(
+        const std::string& path,
+        const std::string& name,
+        const std::string& subtitle,
+        const std::string& size_label,
+        const std::string& logo_path,
+        ImU32 accent,
+        bool selected,
+        const std::shared_ptr<ItemIdentifierInterface>& item_ident = nullptr);
+    void draw_item_context_menu(const std::string& path, const std::shared_ptr<ItemIdentifierInterface>& item_ident);
+    void draw_folder_customization_menu(const std::string& path);
     void folder_icon(ImVec2 size, ImU32 color);
 
     // navigation
@@ -71,6 +82,7 @@ namespace vxe {
     void select(const std::string& path);
     void refresh_custom_folders();
     void refresh_pools();
+    void select_on_click(const std::string& path);
 
     // fs manipulation
     void create_file();
