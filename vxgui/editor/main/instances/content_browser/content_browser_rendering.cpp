@@ -988,47 +988,7 @@ namespace vxe {
             static std::unordered_map<std::string, char[256]> renameBuffers;
 
             if (path_to_rename_ == path.string()) {
-              CherryGUI::SetItemAllowOverlap();
-              CherryGUI::PushID(path.string().c_str());
-
-              auto& buffer = renameBuffers[path.string()];
-              if (buffer[0] == '\0') {
-                std::string filename = path.string().substr(path.string().find_last_of("/\\") + 1);
-                std::strncpy(buffer, filename.c_str(), sizeof(buffer));
-                buffer[sizeof(buffer) - 1] = '\0';
-                CherryGUI::SetKeyboardFocusHere();
-              }
-
-              ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
-              bool renamed = CherryGUI::InputText("##rename_input", buffer, sizeof(buffer), flags);
-
-              bool renameConfirmed = false;
-              bool renameCancelled = false;
-
-              if (renamed) {
-                renameConfirmed = true;
-              }
-
-              if (!CherryGUI::IsItemActive() && CherryGUI::IsItemDeactivatedAfterEdit()) {
-                renameConfirmed = true;
-              }
-
-              if (CherryGUI::IsItemFocused() && CherryGUI::IsKeyPressed(ImGuiKey_Escape)) {
-                renameCancelled = true;
-              }
-
-              if (renameConfirmed) {
-                vxe::submit_rename(path_to_rename_, buffer);
-                renameBuffers.erase(path_to_rename_);
-                path_to_rename_.clear();
-              }
-
-              if (renameCancelled) {
-                renameBuffers.erase(path_to_rename_);
-                path_to_rename_.clear();
-              }
-
-              CherryGUI::PopID();
+              draw_rename_input(path.string(), reducedthumbnail_size);
             } else {
               draw_highlighted_text_(
                   drawList,
@@ -1873,47 +1833,7 @@ namespace vxe {
           static std::unordered_map<std::string, char[256]> renameBuffers;
 
           if (path_to_rename_ == path.string()) {
-            CherryGUI::SetItemAllowOverlap();
-            CherryGUI::PushID(path.string().c_str());
-
-            auto& buffer = renameBuffers[path.string()];
-            if (buffer[0] == '\0') {
-              std::string filename = path.string().substr(path.string().find_last_of("/\\") + 1);
-              std::strncpy(buffer, filename.c_str(), sizeof(buffer));
-              buffer[sizeof(buffer) - 1] = '\0';
-              CherryGUI::SetKeyboardFocusHere();
-            }
-
-            ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue;
-            bool renamed = CherryGUI::InputText("##rename_input", buffer, sizeof(buffer), flags);
-
-            bool renameConfirmed = false;
-            bool renameCancelled = false;
-
-            if (renamed) {
-              renameConfirmed = true;
-            }
-
-            if (!CherryGUI::IsItemActive() && CherryGUI::IsItemDeactivatedAfterEdit()) {
-              renameConfirmed = true;
-            }
-
-            if (CherryGUI::IsItemFocused() && CherryGUI::IsKeyPressed(ImGuiKey_Escape)) {
-              renameCancelled = true;
-            }
-
-            if (renameConfirmed) {
-              vxe::submit_rename(path_to_rename_, buffer);
-              renameBuffers.erase(path_to_rename_);
-              path_to_rename_.clear();
-            }
-
-            if (renameCancelled) {
-              renameBuffers.erase(path_to_rename_);
-              path_to_rename_.clear();
-            }
-
-            CherryGUI::PopID();
+            draw_rename_input(path.string(), CherryGUI::GetContentRegionAvail().x);
           } else {
             if (filename == "...") {
               filenameString = "...";
@@ -2377,19 +2297,7 @@ namespace vxe {
             static std::unordered_map<std::string, char[256]> renameBuffers;
 
             if (path_to_rename_ == path.string()) {
-              CherryGUI::PushID(path.string().c_str());
-              auto& buffer = renameBuffers[path.string()];
-              if (buffer[0] == '\0') {
-                std::strncpy(buffer, filenameString.c_str(), sizeof(buffer));
-                buffer[sizeof(buffer) - 1] = '\0';
-                CherryGUI::SetKeyboardFocusHere();
-              }
-              if (CherryGUI::InputText("##rename_input", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-                vxe::submit_rename(path_to_rename_, buffer);
-                renameBuffers.erase(path_to_rename_);
-                path_to_rename_.clear();
-              }
-              CherryGUI::PopID();
+              draw_rename_input(path.string(), 200.0f);
             } else {
               draw_highlighted_text_(
                   drawList,
@@ -2711,5 +2619,45 @@ namespace vxe {
 
       CherryGUI::EndPopup();
     }
+  }
+
+  void ContentBrowser::draw_rename_input(const std::string& path, float width) {
+    if (rename_initialized_path_ != path) {
+      std::string name = std::filesystem::path(path).filename().string();
+      std::strncpy(rename_buffer_, name.c_str(), sizeof(rename_buffer_) - 1);
+      rename_buffer_[sizeof(rename_buffer_) - 1] = '\0';
+      rename_initialized_path_ = path;
+      CherryGUI::SetKeyboardFocusHere();
+    }
+
+    CherryGUI::PushID(path.c_str());
+    CherryGUI::SetNextItemWidth(width);
+    bool entered = CherryGUI::InputText(
+        "##rename_input",
+        rename_buffer_,
+        sizeof(rename_buffer_),
+        ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
+    bool hovered = CherryGUI::IsItemHovered();
+    CherryGUI::PopID();
+
+    bool cancelled = CherryGUI::IsKeyPressed(ImGuiKey_Escape);
+    bool clicked_outside =
+        !hovered && (CherryGUI::IsMouseClicked(ImGuiMouseButton_Left) || CherryGUI::IsMouseClicked(ImGuiMouseButton_Right));
+
+    if (!cancelled && !entered && !clicked_outside) {
+      return;
+    }
+
+    std::string new_name = rename_buffer_;
+    std::string old_name = std::filesystem::path(path).filename().string();
+
+    if (!cancelled && !new_name.empty() && new_name != old_name) {
+      vxe::submit_rename(path, new_name);
+      refresh_custom_folders();
+      selected_.clear();
+    }
+
+    path_to_rename_.clear();
+    rename_initialized_path_.clear();
   }
 }  // namespace vxe

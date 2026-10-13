@@ -11,7 +11,7 @@
 #include "../../../include/vortex.h"
 #include "../../../include/vortex_internals.h"
 
-VORTEX_API std::string vxe::create_file(const std::string &path) {
+VORTEX_API std::string vxe::create_file(const std::string& path) {
   fs::path basePath(path);
   std::string baseName = "New file";
   std::string extension = ".txt";
@@ -29,7 +29,7 @@ VORTEX_API std::string vxe::create_file(const std::string &path) {
   return fs::absolute(fullPath).string();
 }
 
-VORTEX_API std::string vxe::create_item(const std::string &path) {
+VORTEX_API std::string vxe::create_item(const std::string& path) {
   fs::path basePath(path);
   std::string baseName = "New item";
   fs::path fullPath = basePath / baseName;
@@ -45,7 +45,7 @@ VORTEX_API std::string vxe::create_item(const std::string &path) {
   return fs::absolute(fullPath).string();
 }
 
-VORTEX_API std::string vxe::create_folder(const std::string &path) {
+VORTEX_API std::string vxe::create_folder(const std::string& path) {
   fs::path basePath(path);
   std::string baseName = "New folder";
   fs::path fullPath = basePath / baseName;
@@ -61,14 +61,14 @@ VORTEX_API std::string vxe::create_folder(const std::string &path) {
   return fs::absolute(fullPath).string();
 }
 
-VORTEX_API void vxe::add_content_browser_item(const std::shared_ptr<ContenBrowserItem> &item) {
+VORTEX_API void vxe::add_content_browser_item(const std::shared_ptr<ContenBrowserItem>& item) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 
   ctx->IO.contentbrowser_items.push_back(item);
 }
 
-VORTEX_API void vxe::add_general_utility(const std::shared_ptr<ModuleInterfaceUtility> &utility) {
+VORTEX_API void vxe::add_general_utility(const std::shared_ptr<ModuleInterfaceUtility>& utility) {
   // TODO
 }
 
@@ -95,7 +95,7 @@ VORTEX_API void vxe::post_custom_folder_to_json() {
   vxe::populate_json(json_data, file_path);
 }
 
-VORTEX_API void vxe::publish_pool(const std::string &absolute_pool_path, const std::string &name) {
+VORTEX_API void vxe::publish_pool(const std::string& absolute_pool_path, const std::string& name) {
   auto ctx = vxe::get_current_context();
 
   std::size_t endPos = absolute_pool_path.size() - 1;
@@ -115,14 +115,14 @@ VORTEX_API void vxe::publish_pool(const std::string &absolute_pool_path, const s
   vxe::post_pools_to_json();
 }
 
-VORTEX_API void vxe::remove_pool(const std::string &absolute_pool_path, const std::string &name) {
+VORTEX_API void vxe::remove_pool(const std::string& absolute_pool_path, const std::string& name) {
   auto ctx = vxe::get_current_context();
 
   ctx->IO.contentbrowser_pools.erase(
       std::remove_if(
           ctx->IO.contentbrowser_pools.begin(),
           ctx->IO.contentbrowser_pools.end(),
-          [&](const std::pair<std::string, std::string> &pool) {
+          [&](const std::pair<std::string, std::string>& pool) {
             return pool.first == absolute_pool_path && pool.second == name;
           }),
       ctx->IO.contentbrowser_pools.end());
@@ -131,7 +131,7 @@ VORTEX_API void vxe::remove_pool(const std::string &absolute_pool_path, const st
 }
 
 VORTEX_API void
-vxe::publish_content_browser_custom_folder(const std::string &path, const std::string &hex_color, const bool &isFav) {
+vxe::publish_content_browser_custom_folder(const std::string& path, const std::string& hex_color, const bool& isFav) {
   auto ctx = vxe::get_current_context();
 
   for (auto folder : ctx->IO.contentbrowser_customfolders) {
@@ -154,7 +154,7 @@ vxe::publish_content_browser_custom_folder(const std::string &path, const std::s
   vxe::post_custom_folder_to_json();
 }
 
-VORTEX_API void vxe::publish_content_browser_custom_folder_color(const std::string &path, const std::string &hex_color) {
+VORTEX_API void vxe::publish_content_browser_custom_folder_color(const std::string& path, const std::string& hex_color) {
   auto ctx = vxe::get_current_context();
 
   for (auto folder : ctx->IO.contentbrowser_customfolders) {
@@ -175,7 +175,7 @@ VORTEX_API void vxe::publish_content_browser_custom_folder_color(const std::stri
   vxe::post_custom_folder_to_json();
 }
 
-VORTEX_API void vxe::publish_content_browser_custom_folder_is_fav(const std::string &path, const bool &isFav) {
+VORTEX_API void vxe::publish_content_browser_custom_folder_is_fav(const std::string& path, const bool& isFav) {
   auto ctx = vxe::get_current_context();
 
   for (auto folder : ctx->IO.contentbrowser_customfolders) {
@@ -196,7 +196,7 @@ VORTEX_API void vxe::publish_content_browser_custom_folder_is_fav(const std::str
   vxe::post_custom_folder_to_json();
 }
 
-VORTEX_API bool vxe::content_browser_folder_is_fav(const std::string &path) {
+VORTEX_API bool vxe::content_browser_folder_is_fav(const std::string& path) {
   auto ctx = vxe::get_current_context();
 
   for (auto customized_folder : ctx->IO.contentbrowser_customfolders) {
@@ -207,7 +207,7 @@ VORTEX_API bool vxe::content_browser_folder_is_fav(const std::string &path) {
   return false;
 }
 
-VORTEX_API bool vxe::get_content_browser_folder_color(const std::string &path, ImU32 *color) {
+VORTEX_API bool vxe::get_content_browser_folder_color(const std::string& path, ImU32* color) {
   auto ctx = vxe::get_current_context();
 
   for (auto customized_folder : ctx->IO.contentbrowser_customfolders) {
@@ -263,7 +263,7 @@ VORTEX_API void vxe::post_pools_to_json() {
   json_data["pools"] = nlohmann::json::array();
   json_data["main_pool"] = ctx->IO.contentbrowser_mainpool;
 
-  for (const auto &pool : ctx->IO.contentbrowser_pools) {
+  for (const auto& pool : ctx->IO.contentbrowser_pools) {
     nlohmann::json folder_data;
     folder_data["name"] = pool.second;
     folder_data["path"] = pool.first;
@@ -292,23 +292,25 @@ VORTEX_API void vxe::fetch_custom_folders() {
       file >> json_data;
       file.close();
     } else {
-      throw std::ios_base::failure("Impossible d'ouvrir le fichier JSON");
+      throw std::ios_base::failure("Unable to open JSON file");
     }
 
     ctx->IO.contentbrowser_customfolders.clear();
 
-    for (auto &directory : json_data["custom_folders"]) {
+    for (auto& directory : json_data["custom_folders"]) {
       std::shared_ptr<ContentBrowserCustomFolder> new_folder = std::make_shared<ContentBrowserCustomFolder>();
       new_folder->color = directory["color"].get<std::string>();
       new_folder->is_fav = directory["isFav"].get<bool>();
       new_folder->path = directory["path"].get<std::string>();
 
-      vxe::create_folder_if_not_exists(new_folder->path);
+      // TODO :
+      // In settings : if persistant custom folder rules is true, keep the rule even if the project not exist, if not, delete
+      // the entry from file.
 
       ctx->IO.contentbrowser_customfolders.push_back(new_folder);
     }
-  } catch (const std::exception &e) {
-    std::cerr << "Erreur lors de la lecture ou du traitement du fichier JSON : " << e.what() << std::endl;
+  } catch (const std::exception& e) {
+    std::cerr << "Error while handle JSON file : " << e.what() << std::endl;
   }
 }
 
@@ -324,7 +326,7 @@ VORTEX_API void vxe::copy(std::vector<std::string> selection, bool in_addition) 
   }
 }
 
-VORTEX_API void vxe::submit_rename(const std::string &oldPathStr, const std::string &newName) {
+VORTEX_API void vxe::submit_rename(const std::string& oldPathStr, const std::string& newName) {
   fs::path oldPath(oldPathStr);
   fs::path parentDir = oldPath.parent_path();
 
@@ -358,8 +360,11 @@ VORTEX_API void vxe::submit_rename(const std::string &oldPathStr, const std::str
 
   try {
     fs::rename(oldPath, newPath);
+    if (fs::is_directory(newPath)) {
+      vxe::transfer_custom_folder_rules(oldPath.string(), newPath.string());
+    }
     std::cout << "Renamed : " << oldPath << " -> " << newPath << "\n";
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     std::cerr << "Error while rename : " << e.what() << "\n";
   }
 }
@@ -376,7 +381,7 @@ VORTEX_API void vxe::cut(std::vector<std::string> selection, bool in_addition) {
   }
 }
 
-static bool isStrictSubPath(const fs::path &potentialSub, const fs::path &base) {
+static bool isStrictSubPath(const fs::path& potentialSub, const fs::path& base) {
   auto rel = fs::weakly_canonical(potentialSub).lexically_relative(fs::weakly_canonical(base));
   return !rel.empty() && rel.native()[0] != '.';
 }
@@ -393,14 +398,14 @@ VORTEX_API void vxe::clear_copy_selection() {
   ctx->IO.copy_selection.clear();
 }
 
-void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest, const fs::path &destRoot) {
+void CopyDirectoryRecursively(const fs::path& src, const fs::path& dest, const fs::path& destRoot) {
   if (!fs::exists(src) || !fs::is_directory(src)) {
     // err
     return;
   }
   fs::create_directories(dest);
-  for (const auto &entry : fs::directory_iterator(src)) {
-    const fs::path &from = entry.path();
+  for (const auto& entry : fs::directory_iterator(src)) {
+    const fs::path& from = entry.path();
     fs::path to = dest / from.filename();
     fs::path fromCanonical;
     fs::path destRootCanonical;
@@ -424,17 +429,17 @@ void CopyDirectoryRecursively(const fs::path &src, const fs::path &dest, const f
       } else {
         fs::copy_file(from, to, fs::copy_options::overwrite_existing);
       }
-    } catch (const fs::filesystem_error &e) {
+    } catch (const fs::filesystem_error& e) {
       // err
     }
   }
 }
 
-VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
+VORTEX_API void vxe::paste_all_selections(const std::string& target_path_str) {
   auto ctx = vxe::get_current_context();
   fs::path targetPath(target_path_str);
 
-  auto generateNonConflictingPath = [](const fs::path &targetDir, const fs::path &originalName) -> fs::path {
+  auto generateNonConflictingPath = [](const fs::path& targetDir, const fs::path& originalName) -> fs::path {
     fs::path newPath = targetDir / originalName;
     if (!fs::exists(newPath))
       return newPath;
@@ -454,7 +459,7 @@ VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
     }
   };
 
-  for (const auto &srcStr : ctx->IO.copy_selection) {
+  for (const auto& srcStr : ctx->IO.copy_selection) {
     fs::path srcPath(srcStr);
     if (!fs::exists(srcPath)) {
       vxe::log_error("Content browser", "Source doesn't exist : " + srcStr);
@@ -470,13 +475,13 @@ VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
         fs::copy_file(srcPath, destPath);
       }
 
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
       vxe::log_error(
           "Content browser", "Error while copying : " + srcPath.string() + " to " + destPath.string() + " : " + e.what());
     }
   }
 
-  for (const auto &srcStr : ctx->IO.cut_selection) {
+  for (const auto& srcStr : ctx->IO.cut_selection) {
     fs::path srcPath(srcStr);
     if (!fs::exists(srcPath)) {
       continue;
@@ -490,7 +495,7 @@ VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
 
     try {
       fs::rename(srcPath, destPath);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
       vxe::log_error(
           "Content browser",
           "Error while paste action : " + srcPath.string() + " to " + destPath.string() + " : " + e.what());
@@ -498,7 +503,7 @@ VORTEX_API void vxe::paste_all_selections(const std::string &target_path_str) {
   }
 }
 
-VORTEX_API void vxe::rename_folder(const std::string &target_path, const std::string &new_name) {
+VORTEX_API void vxe::rename_folder(const std::string& target_path, const std::string& new_name) {
   namespace fs = std::filesystem;
 
   try {
@@ -509,14 +514,15 @@ VORTEX_API void vxe::rename_folder(const std::string &target_path, const std::st
 
     fs::path new_path = target.parent_path() / new_name;
     fs::rename(target, new_path);
-  } catch (const fs::filesystem_error &e) {
+    vxe::transfer_custom_folder_rules(target.string(), new_path.string());
+  } catch (const fs::filesystem_error& e) {
     throw std::runtime_error(std::string("Filesystem error: ") + e.what());
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     throw std::runtime_error(std::string("Error: ") + e.what());
   }
 }
 
-VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> vxe::get_all_item_handlers_for(const std::string &type) {
+VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> vxe::get_all_item_handlers_for(const std::string& type) {
   std::vector<std::shared_ptr<ItemHandlerInterface>> list;
 
   for (auto mod : vxe::get_current_context()->IO.em) {
@@ -540,7 +546,7 @@ VORTEX_API std::vector<std::shared_ptr<ItemHandlerInterface>> vxe::get_all_item_
   return list;
 }
 
-VORTEX_API void vxe::rename_file(const std::string &target_path, const std::string &new_name) {
+VORTEX_API void vxe::rename_file(const std::string& target_path, const std::string& new_name) {
   namespace fs = std::filesystem;
 
   try {
@@ -551,46 +557,46 @@ VORTEX_API void vxe::rename_file(const std::string &target_path, const std::stri
 
     fs::path new_path = target.parent_path() / new_name;
     fs::rename(target, new_path);
-  } catch (const fs::filesystem_error &e) {
+  } catch (const fs::filesystem_error& e) {
     throw std::runtime_error(std::string("Filesystem error: ") + e.what());
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     throw std::runtime_error(std::string("Error: ") + e.what());
   }
 }
 
-VORTEX_API void vxe::delete_file(const std::string &target_path) {
+VORTEX_API void vxe::delete_file(const std::string& target_path) {
   try {
     if (!std::filesystem::exists(target_path) || !std::filesystem::is_regular_file(target_path)) {
       throw std::invalid_argument("The specified path does not exist or is not a file.");
     }
 
     std::filesystem::remove(target_path);
-  } catch (const std::filesystem::filesystem_error &e) {
+  } catch (const std::filesystem::filesystem_error& e) {
     std::cerr << "Filesystem error: " << e.what() << '\n';
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     std::cerr << "General error: " << e.what() << '\n';
   } catch (...) {
     std::cerr << "An unknown error occurred while deleting the file." << '\n';
   }
 }
 
-VORTEX_API void vxe::delete_folder(const std::string &target_path) {
+VORTEX_API void vxe::delete_folder(const std::string& target_path) {
   try {
     if (!std::filesystem::exists(target_path) || !std::filesystem::is_directory(target_path)) {
       throw std::invalid_argument("The specified path does not exist or is not a directory.");
     }
 
     std::filesystem::remove_all(target_path);
-  } catch (const std::filesystem::filesystem_error &e) {
+  } catch (const std::filesystem::filesystem_error& e) {
     std::cerr << "Filesystem error: " << e.what() << '\n';
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     std::cerr << "General error: " << e.what() << '\n';
   } catch (...) {
     std::cerr << "An unknown error occurred while deleting the folder." << '\n';
   }
 }
 
-VORTEX_API void vxe::delete_path(const std::string &target_path) {
+VORTEX_API void vxe::delete_path(const std::string& target_path) {
   try {
     if (!std::filesystem::exists(target_path)) {
       throw std::invalid_argument("The specified path does not exist.");
@@ -603,9 +609,30 @@ VORTEX_API void vxe::delete_path(const std::string &target_path) {
     } else {
       throw std::invalid_argument("The specified path is neither a regular file nor a directory.");
     }
-  } catch (const std::exception &e) {
+  } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << '\n';
   } catch (...) {
     std::cerr << "An unknown error occurred while processing the path." << '\n';
+  }
+}
+
+VORTEX_API void vxe::transfer_custom_folder_rules(const std::string& old_path, const std::string& new_path) {
+  auto ctx = vxe::get_current_context();
+  bool changed = false;
+
+  for (auto folder : ctx->IO.contentbrowser_customfolders) {
+    if (folder->path == old_path) {
+      folder->path = new_path;
+      changed = true;
+    } else if (
+        folder->path.size() > old_path.size() && folder->path.compare(0, old_path.size(), old_path) == 0 &&
+        (folder->path[old_path.size()] == '/' || folder->path[old_path.size()] == '\\')) {
+      folder->path = new_path + folder->path.substr(old_path.size());
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    vxe::post_custom_folder_to_json();
   }
 }

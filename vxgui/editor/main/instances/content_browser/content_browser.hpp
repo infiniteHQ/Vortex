@@ -23,12 +23,12 @@ namespace vxe {
 
   class ContentBrowser : public std::enable_shared_from_this<ContentBrowser> {
    public:
-    ContentBrowser(const std::string &name, const std::string &start_path, const std::string &focus_window = "");
+    ContentBrowser(const std::string& name, const std::string& start_path, const std::string& focus_window = "");
 
     // window managment
     static std::shared_ptr<ContentBrowser>
-    create(const std::string &name, const std::string &base_path, const std::string &focus_window = "");
-    std::shared_ptr<Cherry::AppWindow> &get_app_window();
+    create(const std::string& name, const std::string& base_path, const std::string& focus_window = "");
+    std::shared_ptr<Cherry::AppWindow>& get_app_window();
     void setup_render_callback();
 
     // rendering
@@ -39,82 +39,84 @@ namespace vxe {
     void render_details_bar();
     void render_right_menubar();
     void render_menubar();
-    void add_child(const ContentBrowserChild &child);
+    void add_child(const ContentBrowserChild& child);
     void spawn_add_window();
     void spawn_import_window();
 
     // widgets
-    void draw_folder(const std::string &colorHex, float width, float height, ImVec2 pos);
-    bool draw_item_card(const ItemCardParams &p);
-    bool draw_horizontal_draw_item_card(const ItemCardParams &p);
-    void draw_folder_button(const char *id, ImVec2 size, const std::string &path, const std::string &color);
-    void draw_hierarchy(std::filesystem::path path, bool isDir, const std::string &label = "");
-    void draw_path_bar(const std::string &path);
+    void draw_rename_input(const std::string& path, float width);
+    void draw_folder(const std::string& colorHex, float width, float height, ImVec2 pos);
+    bool draw_item_card(const ItemCardParams& p);
+    bool draw_horizontal_draw_item_card(const ItemCardParams& p);
+    void draw_folder_button(const char* id, ImVec2 size, const std::string& path, const std::string& color);
+    void draw_hierarchy(std::filesystem::path path, bool isDir, const std::string& label = "");
+    void draw_path_bar(const std::string& path);
     void draw_folder_icon(ImVec2 pos, ImVec2 size, ImU32 color);
-    bool draw_color_picker_3U32(const char *label, ImU32 *color, ImGuiColorEditFlags flags = 0);
+    bool draw_color_picker_3U32(const char* label, ImU32* color, ImGuiColorEditFlags flags = 0);
     void draw_highlighted_text_(
-        ImDrawList *drawList,
+        ImDrawList* drawList,
         ImVec2 textPos,
-        const char *text,
-        const char *search,
+        const char* text,
+        const char* search,
         ImU32 highlightColor,
         ImU32 textColor,
         ImU32 highlightTextColor);
     void folder_icon(ImVec2 size, ImU32 color);
 
     // navigation
-    void change_directory(const std::filesystem::path &new_directory);
+    void change_directory(const std::filesystem::path& new_directory);
     void go_back();
     void go_forward();
     void path_changed();
-    void select(const std::string &path);
+    void select(const std::string& path);
     void refresh_custom_folders();
     void refresh_pools();
 
     // fs manipulation
     void create_file();
     void create_folder();
-    void create_item(const std::function<void(const std::string &)> &creator);
+    void create_item(const std::function<void(const std::string&)>& creator);
 
-    bool is_in_copy_selection(const std::string &path) const;
-    bool is_in_cut_selection(const std::string &path) const;
-    bool has_new_paths_to_copy(const std::vector<std::string> &paths) const;
-    bool has_new_paths_to_cut(const std::vector<std::string> &paths) const;
+    bool is_in_copy_selection(const std::string& path) const;
+    bool is_in_cut_selection(const std::string& path) const;
+    bool has_new_paths_to_copy(const std::vector<std::string>& paths) const;
+    bool has_new_paths_to_cut(const std::vector<std::string>& paths) const;
 
     // utils
-    void set_default_folder_color(const std::string &hex);
-    void set_colored_folder(const std::string &path, const std::string &hex_color);
-    void set_delete_path_callback(const std::function<void(const std::string &)> &foo);
-    void set_copy_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo);
-    void set_cut_paths_callback(const std::function<void(const std::vector<std::string> &, bool)> &foo);
-    void set_delete_copy_selection_callback(const std::function<void()> &foo);
-    void set_delete_cut_selection_callback(const std::function<void()> &foo);
-    void set_paste_paths_callback(const std::function<void(const std::string &)> &foo);
+    void set_default_folder_color(const std::string& hex);
+    void set_colored_folder(const std::string& path, const std::string& hex_color);
+    void set_delete_path_callback(const std::function<void(const std::string&)>& foo);
+    void set_copy_paths_callback(const std::function<void(const std::vector<std::string>&, bool)>& foo);
+    void set_cut_paths_callback(const std::function<void(const std::vector<std::string>&, bool)>& foo);
+    void set_delete_copy_selection_callback(const std::function<void()>& foo);
+    void set_delete_cut_selection_callback(const std::function<void()>& foo);
+    void set_paste_paths_callback(const std::function<void(const std::string&)>& foo);
     void clear_copy_selection();
     void clear_cut_selection();
-    void toggle_extension(const std::string &ext, bool *state);
+    void toggle_extension(const std::string& ext, bool* state);
     void change_show_mode(ContentShowMode mode);
-    std::string get_extension(const std::string &path);
-    std::string get_content_browser_folder_color(const std::string &path);
+    std::string get_extension(const std::string& path);
+    std::string get_content_browser_folder_color(const std::string& path);
     std::string get_file_type_str(FileTypes type);
+    std::string get_folder_size_cached(const std::string& path);
     std::string format_file_size(size_t size);
-    std::string to_lower_case(const std::string &str);
-    bool are_strings_similar(const std::string &s1, const std::string &s2, double threshold_);
-    bool has_common_letters(const std::string &s1, const std::string &s2);
-    bool has_extension(const std::string &ext);
-    bool is_only_spaces_or_empty(const char *str);
-    bool is_path_favorite(const std::string &path);
-    int levenshtein_distance(const std::string &s1, const std::string &s2);
-    std::uintmax_t get_directory_size(const std::filesystem::path &directoryPath);
-    FileTypes detect_file(const std::string &path);
+    std::string to_lower_case(const std::string& str);
+    bool are_strings_similar(const std::string& s1, const std::string& s2, double threshold_);
+    bool has_common_letters(const std::string& s1, const std::string& s2);
+    bool has_extension(const std::string& ext);
+    bool is_only_spaces_or_empty(const char* str);
+    bool is_path_favorite(const std::string& path);
+    int levenshtein_distance(const std::string& s1, const std::string& s2);
+    std::uintmax_t get_directory_size(const std::filesystem::path& directoryPath);
+    FileTypes detect_file(const std::string& path);
     ImU32 darken_color(ImU32 color, float amount);
 
    private:
     // callbacks
-    std::function<void(const std::string &)> delete_path_callback_;
-    std::function<void(const std::vector<std::string> &, bool)> copy_paths_callback_;
-    std::function<void(const std::vector<std::string> &, bool)> cut_paths_callback_;
-    std::function<void(const std::string &)> paste_paths_callback_;
+    std::function<void(const std::string&)> delete_path_callback_;
+    std::function<void(const std::vector<std::string>&, bool)> copy_paths_callback_;
+    std::function<void(const std::vector<std::string>&, bool)> cut_paths_callback_;
+    std::function<void(const std::string&)> paste_paths_callback_;
     std::function<void()> delete_copy_selection_callback_;
     std::function<void()> delete_cut_selection_callback_;
 
@@ -174,6 +176,8 @@ namespace vxe {
 
     // ui states
     std::string path_to_rename_ = "";
+    std::string rename_initialized_path_;
+    char rename_buffer_[256] = {};
     std::string project_search_;
     std::pair<std::string, ImU32> current_editing_folder_;
     bool current_editing_folder_is_favorite_;
@@ -186,6 +190,7 @@ namespace vxe {
     bool previous_thumbnail_visualizer_state_ = false;
     std::string pool_add_path_;
     std::string pool_add_name_;
+    std::unordered_map<std::string, std::pair<double, std::string>> folder_size_cache_;
     std::string focus_window_;
     bool focus_window_applied_ = false;
 
@@ -200,7 +205,7 @@ namespace vxe {
     std::vector<std::string> pending_delete_paths_;
     bool request_open_delete_modal_ = false;
 
-    void request_delete(const std::vector<std::string> &paths);
+    void request_delete(const std::vector<std::string>& paths);
     void draw_delete_confirmation_modal();
 
     std::shared_ptr<AppWindow> app_window_;
