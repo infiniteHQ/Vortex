@@ -184,6 +184,7 @@ namespace vxe {
     bool show_selection_quantifier_ = false;
     bool show_types_ = false;
     bool show_sizes_ = false;
+    bool show_side_bar_pannel_ = true;
     bool show_filter_pannel_ = false;
     bool show_thumbnail_visualizer_ = false;
 

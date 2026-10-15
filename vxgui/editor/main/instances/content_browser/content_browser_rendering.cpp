@@ -33,6 +33,10 @@ namespace vxe {
     for (size_t i = 0; i < children.size(); ++i) {
       auto& child = children[i];
 
+      if (child.name == "render_side_bar") {
+        child.m_Disabled = !show_side_bar_pannel_;
+      }
+
       if (child.name == "render_filters_bar") {
         child.m_Disabled = !show_filter_pannel_;
       }
@@ -566,6 +570,7 @@ namespace vxe {
           CherryKit::SeparatorText("Pannels");
           CherryKit::CheckboxText("Show Filter pannel", &show_filter_pannel_);
           CherryKit::CheckboxText("Show Thumbnail pannel", &show_thumbnail_visualizer_);
+          CherryKit::CheckboxText("Show quick access pannel", &show_side_bar_pannel_);
           CherryKit::SeparatorText("Content bar view");
 
           int default_index = 0;
