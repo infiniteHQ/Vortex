@@ -1,6 +1,6 @@
 One of the key core windows of Vortex Editor is the content browser. This utility can navigates tough your project contents and assets, import contents or create things.
 
-## First look at the content browser
+## First look
 
 ### Menubar section
 At the top menu on left, you can see the Add, Save All and Import buttons, then move back and forward buttons based on your navigation history and your current emplacement, the home logo represent the root of your project.
@@ -13,6 +13,8 @@ This sidebar gives you the possibility to create custom pools, even outside your
 
 ### Content section
 The content section is the core of the content browser, you can visualize a real directory, interact with component and manage your project assets. You have 3 views for this section, "thumbnails" (by default), "list" and "objects".
+
+### Search bar
 
 ### Filters
 The filters section can be activated from the filter icon on top, or in the "View" button from menubar. Once activated, the filter bar gives you general filters, like folders, files extension.

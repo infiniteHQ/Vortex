@@ -16,3 +16,5 @@ To open a project, you need a valid version of the Vortex Editor, to get the Vor
 Now you have your project and your editor ready, let's open the project ! Go on Open a project, select the project you've created, and click on Open.
 
 Congrats ! You now have your first project with your Vortex Editor ready, you are now a Vortex user !
+
+### How projects works?
