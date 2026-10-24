@@ -39,11 +39,11 @@
             "sumary": "",
             "pages": [
                 {
-                    "name": "discover_interface",
-                    "slug": "Discover Interface",
+                    "name": "discover_vortex",
+                    "slug": "Discover Vortex",
                     "description": "",
                     "logo": "",
-                    "link": "discover_interface.md",
+                    "link": "discover_vortex.md",
                     "subpages": [
                         {
                             "name": "interface_tour",
@@ -91,48 +91,6 @@
                             "description": "",
                             "logo": "",
                             "link": "plugins_utility.md",
-                            "subpages": []
-                        }
-                    ]
-                },
-                {
-                    "name": "interact_with_contents",
-                    "slug": "Interact with contents",
-                    "description": "",
-                    "logo": "",
-                    "link": "interact_with_contents.md",
-                    "subpages": [
-                        {
-                            "name": "create_contents",
-                            "slug": "Create contents",
-                            "description": "",
-                            "logo": "",
-                            "link": "create_contents.md",
-                            "subpages": []
-                        },
-                        {
-                            "name": "create_from_templates",
-                            "slug": "Create from templates",
-                            "description": "",
-                            "logo": "",
-                            "link": "create_from_templates.md",
-                            "subpages": []
-                        }
-                    ]
-                },
-                {
-                    "name": "plugins_and_modules",
-                    "slug": "Plugins and Modules",
-                    "description": "",
-                    "logo": "",
-                    "link": "plugins_and_modules.md",
-                    "subpages": [
-                        {
-                            "name": "introduction_plugin_modules",
-                            "slug": "Introduction to plugins and modules",
-                            "description": "",
-                            "logo": "",
-                            "link": "introduction_plugin_modules.md",
                             "subpages": []
                         }
                     ]
@@ -247,11 +205,11 @@
             "sumary": "",
             "pages": [
                 {
-                    "name": "make_plugins",
-                    "slug": "Make plugins",
+                    "name": "create_plugins",
+                    "slug": "Create plugins",
                     "description": "",
                     "logo": "",
-                    "link": "make_plugins.md",
+                    "link": "create_plugins.md",
                     "subpages": [
                         {
                             "name": "plugins_basics",
