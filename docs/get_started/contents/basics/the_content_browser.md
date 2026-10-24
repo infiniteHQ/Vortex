@@ -1,40 +1,51 @@
-One of the key core windows of Vortex Editor is the content browser. This utility can navigates tough your project contents and assets, import contents or create things.
+One of the key core windows of Vortex Editor is the content browser. This utility can navigate through your project contents and assets, import contents or create things.
 
-## First look
+### First look
 
-### Menubar section
-At the top menu on left, you can see the Add, Save All and Import buttons, then move back and forward buttons based on your navigation history and your current emplacement, the home logo represent the root of your project.
-At the top menu on right, you can see the Search feature, some presentation settings, and the view settings 
+The content browser contains a menubar with quick actions like "Create", "Save all" or "Import" at the top left. The Create button will open the creation window, Save all is a universal save button: modules editors, or every project window, can listen to it and save. And Import will open the import modal to import custom contents from your system.
 
-### Sidebar
-The sidebar gives you a quick access to folders of your favorites folders, your projects folders. 
+At the right of the menubar you will access the search button that toggles the search bar on the top of the content section, and all other buttons for changing the layout of the content view (between thumbnails, objects and list).
 
-This sidebar gives you the possibility to create custom pools, even outside your project directory and access to it (to import/export contents easely).
+In the middle of the window you will see the content section, and eventually the quick access sidebar at the left, allowing you to quickly access your folders or favorites directory.
 
-### Content section
-The content section is the core of the content browser, you can visualize a real directory, interact with component and manage your project assets. You have 3 views for this section, "thumbnails" (by default), "list" and "objects".
+The content section is the core of the content browser, it shows you all of your data, assets and directories.
 
-### Search bar
+WIP : You can activate the viewer section at the middle right to see a preview of the selection.
 
-### Filters
-The filters section can be activated from the filter icon on top, or in the "View" button from menubar. Once activated, the filter bar gives you general filters, like folders, files extension.
+### Browse and manage contents
 
-### Content viewer
-The viewer section is only a preview of the current selected content of your content browser instance. You can visualise the size of selection and take actions, open tools or other from it.
+You can navigate through your contents in the content section by double clicking on the folders. You can select any content by simply clicking on it, and you can select multiple items by holding Ctrl while left-clicking on additional items.
 
-### Bottombar section
-The bottom bar section gives only few informations of your content browser navigation, like how many items are selected, copied or cutted.
+You can also navigate in your project directory or favorites folders with the quick access section by opening and navigating through folders. It will be connected to the content section.
 
-## Manage contents
+You can see where you are by looking at the menubar hierarchy.
 
-### Create content
-You can create content at any time on the content browser with the "Add" windows, you can open it with the Add button at top left in the menubar, or by right-clicking on the content section and hit "Add content".
+You have all common shortcuts like Ctrl+C for copy, Ctrl+V for paste, Ctrl+X for cut. You can also right click on a selection to access all these features without shortcuts.
 
-When the creation is open you can create from many sources, you can create a simple folder or file.
+### Create contents
 
-You can also navigate between your modules creations possibilities. 
+You can quickly create files or folders by right-clicking and clicking the add folder or add file button, this will create a default file/folder and allow you to edit the name.
 
-If internet is enabled on Vortex, you can also copy contents from the Infinite Garage and bring it directly into Vortex!
+You can create contents, items, files, folders, create from existing templates or even create from the community with the garage¹ with the Create window, by clicking on the "Add" button.
 
-### Interact with content
-You can interact with all contents of the contents of your projects, simply right click on any item and see what you can do. Modules and plugins can ehance the experience by adding new interaction capabilities like opening tools, editors or many more for a selected item.
+Once the Add button is clicked, this modal opens, and you will see quick creation buttons such as Folder, Files or Garage import¹. Under this section you have all modules templates, you can create custom items from modules.
+
+### Search specific contents
+
+On the content section, you can activate the search bar by clicking on the Search button at the top right in the menubar. The search bar contains the filter section toggle button and the search bar itself, you can write anything in the input of the search bar and the content section will show you only items that can correspond to your search.
+
+### Apply filters
+
+You can activate the filter panel in the View menu at the right of the menubar or with the search panel. Once the filter bar is activated, you can show hidden contents, select specific types of files with extensions, or select specific modules items.
+
+### Import contents
+
+You can import contents from your system (or another Vortex project) by clicking on the import button at the left of the menubar. The import window will open. You can then select a content or a folder that you want to import and hit the Import button. Then the selected item will be imported in the active directory of your content browser.
+
+Please be careful not to import items that are too large and make sure your system has enough free storage.
+
+### Change view mode
+
+To change the view mode of the content section, click on the view button at the right of the menubar, you will see the Content bar view selector, simply click on it and change the view mode. The content section will be updated instantly.
+
+¹ Requires an internet connection and Vortex network allowed to access the garage.
