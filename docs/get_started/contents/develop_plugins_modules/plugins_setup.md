@@ -1,17 +1,58 @@
-### What is it?
 
-A plugin is a simple piece of program that users can add to their Vortex Editor to enhance the experience, make simple modifications to the editor, or give more features to a module.
+### Setup the plugin development
 
-A plugin is by design universal between every platform because it only uses high level APIs of Vortex.
+Let's start! Create a folder and open it with your code editor. We recommend using git, to track progress and make versions of your plugin.
 
-You can then develop your own plugins and distribute them really easily for any type of workstation.
+### Create base files
 
-### In this tutorial
+To form a valid plugin architecture, create these files at the root of the folder:
 
-In this section, you will learn how to create your own plugin, with a user interface or not, and distribute it for everyone!
+Create "plugin.json" with these default values:
 
-### What do I need?
+```json
+{
+  "type": "ep",
+  "group": "Basic tools",
+  "name": "yourname.yourpluginname",
+  "proper_name": "Your Plugin Name",
+  "auto_exec": true,
+  "version": "1.0.0",
+  "author": "yourname",
+  "contributors": [
+    "You"
+  ],
+  "deps": [],
+  "compatibility": [
+    "1.0"
+  ],
+  "path": "./src/main.lua",
+  "picture": "./resources/logo.png",
+  "description": "Your plugin description"
+}
+```
 
-To develop plugins for Vortex, you need to know the basics of the Lua programming language. Then you can learn the Vortex Logics Lua API, in the following pages (plugin logics).
+Then, create a "src" folder that will contain all of your source code files.
 
-In order to make graphical user interfaces (GUIs), you need to know a little about Cherry (our own custom user interface framework), and particularly the Cherry Lua API that you can directly use to make interfaces for Vortex Plugins.
+Inside the "src" folder, create the file "main.lua".
+
+Inside main.lua, write this piece of example code:
+
+```lua
+Vortex.Log("Hello World !")
+```
+
+You can also create a "resources" folder and put your plugin logo in it, as logo.png for example.
+
+### Testing
+
+You can test your plugin by creating a prototype project with all the modules and contents you want, and copying the folder containing your plugin into the .vx/plugins/ folder of the project.
+
+You will be able to see the log in the Console logs utility.
+
+### What's next?
+
+You've just created your very own plugin! You can now navigate through all the following pages, such as "Program plugin logic", to learn how to use important functions you can call in your Lua files.
+
+You can also go to "Program plugin interface" to learn how to create windows, buttons, texts and more!
+
+You also have the Vortex Plugins API Reference to see all the functions you can call and which parameters to pass.
