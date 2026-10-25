@@ -63,7 +63,7 @@
                         },
                         {
                             "name": "console_logs",
-                            "slug": "Consoles/logs utility",
+                            "slug": "Consoles logs utility",
                             "description": "",
                             "logo": "",
                             "link": "console_logs.md",
@@ -112,6 +112,14 @@
             "sumary": "",
             "pages": [
                 {
+                    "name": "next_steps_introduction",
+                    "slug": "What's next?",
+                    "description": "",
+                    "logo": "",
+                    "link": "next_steps_introduction.md",
+                    "subpages": []
+                },
+                {
                     "name": "create_firmware_for_mcus",
                     "slug": "Create firmwares for MCUs",
                     "description": "",
@@ -120,7 +128,7 @@
                     "subpages": [
                         {
                             "name": "introduction_plugin_modules",
-                            "slug": "Introduction to plugins and modules",
+                            "slug": "Work in progress....",
                             "description": "",
                             "logo": "",
                             "link": "introduction_plugin_modules.md",
@@ -137,7 +145,7 @@
                     "subpages": [
                         {
                             "name": "introduction_plugin_modules",
-                            "slug": "Introduction to plugins and modules",
+                            "slug": "Work in progress....",
                             "description": "",
                             "logo": "",
                             "link": "introduction_plugin_modules.md",
@@ -154,7 +162,7 @@
                     "subpages": [
                         {
                             "name": "introduction_plugin_modules",
-                            "slug": "Introduction to plugins and modules",
+                            "slug": "Work in progress....",
                             "description": "",
                             "logo": "",
                             "link": "introduction_plugin_modules.md",
@@ -171,7 +179,7 @@
                     "subpages": [
                         {
                             "name": "introduction_plugin_modules",
-                            "slug": "Introduction to plugins and modules",
+                            "slug": "Work in progress....",
                             "description": "",
                             "logo": "",
                             "link": "introduction_plugin_modules.md",
@@ -188,7 +196,7 @@
                     "subpages": [
                         {
                             "name": "introduction_plugin_modules",
-                            "slug": "Introduction to plugins and modules",
+                            "slug": "Work in progress....",
                             "description": "",
                             "logo": "",
                             "link": "introduction_plugin_modules.md",
@@ -213,10 +221,34 @@
                     "subpages": [
                         {
                             "name": "plugins_basics",
-                            "slug": "Plugin basics",
+                            "slug": "Introduction",
                             "description": "",
                             "logo": "",
                             "link": "plugins_basics.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "plugins_logic",
+                            "slug": "Program plugin logic",
+                            "description": "",
+                            "logo": "",
+                            "link": "plugins_logic.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "plugins_ui",
+                            "slug": "Program plugin UI",
+                            "description": "",
+                            "logo": "",
+                            "link": "plugins_ui.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "plugins_api_ref",
+                            "slug": "Lua API Reference",
+                            "description": "",
+                            "logo": "",
+                            "link": "plugins_api_ref.md",
                             "subpages": []
                         }
                     ]
@@ -230,7 +262,7 @@
                     "subpages": [
                         {
                             "name": "modules_basics",
-                            "slug": "Modules basics",
+                            "slug": "Introduction",
                             "description": "",
                             "logo": "",
                             "link": "modules_basics.md",
