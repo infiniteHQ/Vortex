@@ -309,6 +309,46 @@
                             "logo": "",
                             "link": "modules_basics.md",
                             "subpages": []
+                        },
+                        {
+                            "name": "modules_setup",
+                            "slug": "Setup your plugin",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_setup.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "modules_logic",
+                            "slug": "Program plugin logic",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_logic.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "modules_ui",
+                            "slug": "Program plugin UI",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_ui.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "modules_api_ref",
+                            "slug": "Lua API Reference",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_api_ref.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "modules_prod",
+                            "slug": "Distribute your plugins",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_prod.md",
+                            "subpages": []
                         }
                     ]
                 }
