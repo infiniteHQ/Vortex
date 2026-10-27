@@ -96,28 +96,38 @@
                     ]
                 },
                 {
-                    "name": "manage_projects",
-                    "slug": "Manage projects",
+                    "name": "manage_vortex",
+                    "slug": "Manage Vortex",
                     "description": "",
                     "logo": "",
-                    "link": "manage_projects.md",
-                    "subpages": []
-                },
-                {
-                    "name": "manage_vxe",
-                    "slug": "Manage Vortex Editors",
-                    "description": "",
-                    "logo": "",
-                    "link": "manage_vxe.md",
-                    "subpages": []
-                },
-                {
-                    "name": "manage_sys_contents",
-                    "slug": "Manage system contents",
-                    "description": "",
-                    "logo": "",
-                    "link": "manage_sys_contents.md",
-                    "subpages": []
+                    "link": "manage_vortex.md",
+                    "subpages": [
+                        {
+                            "name": "manage_projects",
+                            "slug": "Manage projects",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_projects.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "manage_vxe",
+                            "slug": "Manage Vortex Editors",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_vxe.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "manage_sys_contents",
+                            "slug": "Manage system contents",
+                            "description": "",
+                            "logo": "",
+                            "link": "manage_sys_contents.md",
+                            "subpages": []
+                        }
+
+                    ]
                 }
             ]
         },
@@ -273,6 +283,14 @@
                             "description": "",
                             "logo": "",
                             "link": "plugins_api_ref.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "plugins_prod",
+                            "slug": "Distribute your plugins",
+                            "description": "",
+                            "logo": "",
+                            "link": "plugins_prod.md",
                             "subpages": []
                         }
                     ]

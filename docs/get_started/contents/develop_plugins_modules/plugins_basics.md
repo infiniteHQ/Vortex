@@ -15,3 +15,7 @@ In this section, you will learn how to create your own plugin, with a user inter
 To develop plugins for Vortex, you need to know the basics of the Lua programming language. Then you can learn the Vortex Logics Lua API, in the following pages (plugin logics).
 
 In order to make graphical user interfaces (GUIs), you need to know a little about Cherry (our own custom user interface framework), and particularly the Cherry Lua API that you can directly use to make interfaces for Vortex Plugins.
+
+### Quick start
+
+To start developing modules you can learn from scratch with all following pages, or go on our ready-to-start example here.
