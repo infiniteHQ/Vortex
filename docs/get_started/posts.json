@@ -262,11 +262,11 @@
                             "subpages": []
                         },
                         {
-                            "name": "plugins_logic",
-                            "slug": "Program plugin logic",
+                            "name": "plugins_logics",
+                            "slug": "Program plugin logics",
                             "description": "",
                             "logo": "",
-                            "link": "plugins_logic.md",
+                            "link": "plugins_logics.md",
                             "subpages": []
                         },
                         {
@@ -312,26 +312,18 @@
                         },
                         {
                             "name": "modules_setup",
-                            "slug": "Setup your plugin",
+                            "slug": "Setup your module",
                             "description": "",
                             "logo": "",
                             "link": "modules_setup.md",
                             "subpages": []
                         },
                         {
-                            "name": "modules_logic",
-                            "slug": "Program plugin logic",
+                            "name": "modules_logics",
+                            "slug": "Program modules",
                             "description": "",
                             "logo": "",
-                            "link": "modules_logic.md",
-                            "subpages": []
-                        },
-                        {
-                            "name": "modules_ui",
-                            "slug": "Program plugin UI",
-                            "description": "",
-                            "logo": "",
-                            "link": "modules_ui.md",
+                            "link": "modules_logics.md",
                             "subpages": []
                         },
                         {
@@ -344,7 +336,7 @@
                         },
                         {
                             "name": "modules_prod",
-                            "slug": "Distribute your plugins",
+                            "slug": "Distribute your modules",
                             "description": "",
                             "logo": "",
                             "link": "modules_prod.md",

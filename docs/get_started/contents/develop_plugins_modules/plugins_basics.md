@@ -18,4 +18,4 @@ In order to make graphical user interfaces (GUIs), you need to know a little abo
 
 ### Quick start
 
-To start developing modules you can learn from scratch with all following pages, or go on our ready-to-start example here.
+To start developing plugins you can learn from scratch with all following pages, or go on our ready-to-start example here.
