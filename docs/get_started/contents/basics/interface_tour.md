@@ -40,6 +40,8 @@ Note : the close button will only close open windows in this specific windows in
 
 At the left of theses three buttons you will see optionnal informations such as your project name, messages or other little informations.
 
+At the bottom of three main window buttons, you can aslo see the little close button of the active window attached to the <span style="color:#FF68C8">**dockspace**</span>.
+
 ## Navigate on the Editor
 
 On the menubar, the "Tools" menu, can open main tools such as the content browser or logs utility windows, but also somes installed modules utilities.
@@ -52,6 +54,11 @@ You can also find every window attached titlebars on the menubar just above the 
 ## Dock and undock windows
 
 A cool feature of Vortex is that you can easely dock, undock, drag and redock all the windows of your editor ! And then have multiple window open of the same project, with differentes views, a side content browser or logs terminal to dynamize your experience.
+
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/undock.gif"
+  type="bordered"
+/>
 
 You simply need to drag the titlebar of a window and drop it where ever you want, in the void to create a new main window, or in another existing window to organize your workspace.  
 
