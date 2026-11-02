@@ -62,6 +62,11 @@ A cool feature of Vortex is that you can easely dock, undock, drag and redock al
 
 You simply need to drag the titlebar of a window and drop it where ever you want, in the void to create a new main window, or in another existing window to organize your workspace.  
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/redock.gif"
+  type="bordered"
+/>
+
 ---
 
 You know now how to use the Vortex Editor ! Let's continue and discover the content browser.
