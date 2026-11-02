@@ -2,6 +2,11 @@ The module utility allows you to manage modules installed and used by your proje
 
 ### First look
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/modules_utility.png"
+  type="bordered"
+/>
+
 The Modules utility has a menubar with an import modal, and optionally Infinite Garage buttons (if you allowed Vortex to go on the Web from the settings or from this window).
 
 The sidebar gives you quick access to modules by their topics/scopes, and the content bar lists all modules installed in the project (and not the system!).

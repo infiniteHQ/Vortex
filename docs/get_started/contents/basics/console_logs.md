@@ -4,6 +4,11 @@ The console logs utility gives you an overview of what's happening in the projec
 
 This is the console logs utility. At the top you have the menubar, with the search feature and filter bar toggle at the left, and the view parameters at the right.
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/cl.png"
+  type="bordered"
+/>
+
 ### Read logs
 
 All logs come in the center of this window. You can configure the display type between simple (default), advanced or block. You can also copy logs to your clipboard with the "block view".

@@ -2,6 +2,11 @@ One of the key core windows of Vortex Editor is the content browser. This utilit
 
 ### First look
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/cb.png"
+  type="bordered"
+/>
+
 The content browser contains a menubar with quick actions like "Create", "Save all" or "Import" at the top left. The Create button will open the creation window, Save all is a universal save button: modules editors, or every project window, can listen to it and save. And Import will open the import modal to import custom contents from your system.
 
 At the right of the menubar you will access the search button that toggles the search bar on the top of the content section, and all other buttons for changing the layout of the content view (between thumbnails, objects and list).

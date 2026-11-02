@@ -1,7 +1,13 @@
 The project settings window allows you to configure your project and customize custom settings. You can also customize your experience by changing the Vortex Editor behavior, color theme, or project identity. Every setting is only for the current project, it doesn't impact other projects' settings.
 
 ### First look
+
 In this window you simply have the sidebar with all menus and the content bar with settings to edit.
+
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/project_settings.png"
+  type="bordered"
+/>
 
 ## Project informations
 You can change the project's informations by clicking on the "Informations" menu in the sidebar.

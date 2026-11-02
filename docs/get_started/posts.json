@@ -55,7 +55,7 @@
                         },
                         {
                             "name": "the_content_browser",
-                            "slug": "The content browser",
+                            "slug": "Content browser",
                             "description": "",
                             "logo": "",
                             "link": "the_content_browser.md",

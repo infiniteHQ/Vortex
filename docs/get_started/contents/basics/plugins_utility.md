@@ -2,6 +2,11 @@ The plugin utility allows you to manage plugins installed and used by your proje
 
 ### First look
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/plugins_utility.png"
+  type="bordered"
+/>
+
 The plugins utility has a menubar with an import modal, and optionally Infinite Garage buttons (if you allowed Vortex to go on the Web from the settings or from this window).
 
 The sidebar gives you quick access to plugins by their topics/scopes, and the content bar lists all plugins installed in the project (and not the system!).
