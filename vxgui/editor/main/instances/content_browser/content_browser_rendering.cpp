@@ -480,6 +480,13 @@ namespace vxe {
     {
       CherryNextComponent.SetProperty("padding_y", "6.0f");
       CherryNextComponent.SetProperty("padding_x", "10.0f");
+      CherryNextComponent.SetProperty("color_background", "#121212");
+      CherryNextComponent.SetProperty("color_border", "#232323");
+
+      if (search_bar_) {
+        CherryNextComponent.SetProperty("color_bg", "#12121255");
+        CherryNextComponent.SetProperty("color_border", "#343434");
+      }
 
       if (CherryKit::ButtonImageText("Search", GetPath("resources/imgs/icons/misc/icon_magnifying_glass.png"))
               .GetDataAs<bool>("isClicked")) {
