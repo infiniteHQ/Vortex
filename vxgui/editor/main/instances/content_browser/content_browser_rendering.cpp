@@ -508,7 +508,7 @@ namespace vxe {
       }*/
 
       {
-        CherryNextComponent.SetProperty("padding_y", "6.0f");
+        /*CherryNextComponent.SetProperty("padding_y", "6.0f");
         CherryNextComponent.SetProperty("padding_x", "10.0f");
         CherryNextComponent.SetProperty("disable_callback", "true");
         if (CherryKit::ButtonImageTextDropdown("Settings", GetPath("resources/imgs/icons/misc/icon_settings.png"))
@@ -531,32 +531,31 @@ namespace vxe {
         if (CherryGUI::BeginPopup("SettingsMenuPopup")) {
           CherryKit::CheckboxText("Show SSET pannel", &show_filter_pannel_);
           CherryGUI::EndPopup();
-        }
+        }*/
 
         CherryNextComponent.SetProperty("padding_y", "6.0f");
         CherryNextComponent.SetProperty("padding_x", "10.0f");
         CherryNextComponent.SetProperty("disable_callback", "true");
+        static ImVec2 view_popup_pos;
+        const ImVec2 popupSize(200, 180);
+
         if (CherryKit::ButtonImageTextDropdown("View", GetPath("resources/imgs/icons/misc/icon_eye.png"))
                 .GetDataAs<bool>("isClicked")) {
-          ImVec2 mousePos = CherryGUI::GetMousePos();
           ImVec2 displaySize = CherryGUI::GetIO().DisplaySize;
-          ImVec2 popupSize(350, 100);
+          view_popup_pos = CherryGUI::GetMousePos();
 
-          if (mousePos.x + popupSize.x > displaySize.x) {
-            mousePos.x -= popupSize.x;
+          if (view_popup_pos.x + popupSize.x > displaySize.x) {
+            view_popup_pos.x -= popupSize.x;
           }
-          if (mousePos.y + popupSize.y > displaySize.y) {
-            mousePos.y -= popupSize.y;
+          if (view_popup_pos.y + popupSize.y > displaySize.y) {
+            view_popup_pos.y -= popupSize.y;
           }
-
-          CherryGUI::SetNextWindowSize(popupSize, ImGuiCond_Appearing);
-          CherryGUI::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
+          CherryGUI::SetNextWindowPos(view_popup_pos, ImGuiCond_Appearing);
           CherryGUI::OpenPopup("ViewMenuPopup");
         }
-        ImVec4 grayColor = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);               // TODO : Props
-        ImVec4 graySeparatorColor = ImVec4(0.4f, 0.4f, 0.4f, 0.5f);      // TODO : Props
-        ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);  // TODO : Props
-        ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);        // TODO : Props
+
+        ImVec4 darkBackgroundColor = ImVec4(0.15f, 0.15f, 0.15f, 1.0f);
+        ImVec4 lightBorderColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
 
         CherryGUI::PushStyleColor(ImGuiCol_PopupBg, darkBackgroundColor);
         CherryGUI::PushStyleColor(ImGuiCol_Border, lightBorderColor);
@@ -565,6 +564,8 @@ namespace vxe {
         if (will_show_filter_pannel_ != show_filter_pannel_) {
           show_filter_pannel_ = will_show_filter_pannel_;
         }
+
+        CherryGUI::SetNextWindowPos(view_popup_pos, ImGuiCond_Appearing);
 
         if (CherryGUI::BeginPopup("ViewMenuPopup")) {
           CherryKit::SeparatorText("Pannels");
