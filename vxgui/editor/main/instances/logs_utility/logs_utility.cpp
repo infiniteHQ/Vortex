@@ -12,7 +12,7 @@
 
 namespace vxe {
 
-  LogsUtility::LogsUtility(const std::string &name, const std::string &focus_window) {
+  LogsUtility::LogsUtility(const std::string& name, const std::string& focus_window) {
     app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
     std::shared_ptr<Cherry::AppWindow> win = app_window_;
 
@@ -25,7 +25,7 @@ namespace vxe {
     app_window_->SetRightMenubarCallback([this]() { render_right_menubar(); });
     app_window_->SetLeftBottombarCallback([this]() { render_left_bottombar(); });
 
-    Cherry::Log::AddCallback([this](Cherry::Log::Level level, const std::string &msg) { add_log_entry(level, msg); });
+    Cherry::Log::AddCallback([this](Cherry::Log::Level level, const std::string& msg) { add_log_entry(level, msg); });
 
     LogUtilityChild filterbar("render_filters_bar", [this]() { render_filters_bar(); });
     filterbar.Disable();
@@ -39,15 +39,15 @@ namespace vxe {
     add_child(LogUtilityChild(contentbar));
   }
 
-  void LogsUtility::add_child(const LogUtilityChild &child) {
+  void LogsUtility::add_child(const LogUtilityChild& child) {
     childs_.push_back(child);
   }
 
-  std::shared_ptr<Cherry::AppWindow> &LogsUtility::get_app_window() {
+  std::shared_ptr<Cherry::AppWindow>& LogsUtility::get_app_window() {
     return app_window_;
   }
 
-  std::shared_ptr<LogsUtility> LogsUtility::create(const std::string &name, const std::string &focus_window) {
+  std::shared_ptr<LogsUtility> LogsUtility::create(const std::string& name, const std::string& focus_window) {
     auto instance = std::shared_ptr<LogsUtility>(new LogsUtility(name, focus_window));
     instance->setup_render_callback();
     return instance;
@@ -62,7 +62,7 @@ namespace vxe {
     });
   }
 
-  void LogsUtility::add_log_entry(Cherry::Log::Level level, const std::string &msg) {
+  void LogsUtility::add_log_entry(Cherry::Log::Level level, const std::string& msg) {
     if (!entries_.empty() && entries_.back().message == msg && entries_.back().level == level) {
       entries_.back().count++;
     } else {
@@ -71,19 +71,19 @@ namespace vxe {
     scroll_to_bottom_ = true;
   }
 
-  void LogsUtility::send_command(const std::string &cmd) {
+  void LogsUtility::send_command(const std::string& cmd) {
     std::string finalCmd = cmd;
-    if (cmd.rfind("vx.", 0) != 0) {
-      finalCmd = "vx." + cmd;
+    if (cmd.rfind("Vortex.", 0) != 0) {
+      finalCmd = "Vortex." + cmd;
     }
     vxe::script::get_scripting_engine().execute(finalCmd);
   }
 
-  void LogsUtility::activate_topic_filter(const std::string &topic) {
+  void LogsUtility::activate_topic_filter(const std::string& topic) {
     topics_filter_states_[topic] = true;
   }
 
-  bool LogsUtility::has_common_subsequence(const std::string &a, const std::string &b) {
+  bool LogsUtility::has_common_subsequence(const std::string& a, const std::string& b) {
     int j = 0;
     for (int i = 0; i < a.size() && j < b.size(); i++) {
       if (a[i] == b[j])

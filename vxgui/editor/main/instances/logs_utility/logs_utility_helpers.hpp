@@ -48,7 +48,7 @@ namespace vxe {
       m_Disabled = true;
     }
 
-    LogUtilityChild(const std::string &name, const std::function<void()> &child, float defaultSize = 0.0f)
+    LogUtilityChild(const std::string& name, const std::function<void()>& child, float defaultSize = 0.0f)
         : m_Name(name),
           m_Child(child),
           m_DefaultSize(defaultSize),
@@ -59,7 +59,7 @@ namespace vxe {
 
   static std::vector<CommandDef> COMMAND_DEFINITIONS = {
     // Logs & Debug
-    { "Log", "text", "Simple message to the logs", "Log(\"<cursor>\")" },
+    { "log", "text", "Simple message to the logs", "Log(\"<cursor>\")" },
     { "log_warn", "text", "Warning message to the logs", "log_warn(\"<cursor>\")" },
     { "log_error", "text", "Error message to the logs", "log_error(\"<cursor>\")" },
     { "log_fatal", "text", "Fatal message to the logs", "log_fatal(\"<cursor>\")" },
@@ -73,7 +73,7 @@ namespace vxe {
     { "is_not_linux", "text", "Returns true if not running on Linux", "is_not_linux()" },
     { "is_windows", "text", "Returns true if running on Windows", "is_windows()" },
     { "is_not_windows", "text", "Returns true if not running on Windows", "is_not_windows()" },
-    { "IsMacOS", "text", "Returns true if running on macOS", "IsMacOS()" },
+    { "is_macos", "text", "Returns true if running on macOS", "IsMacOS()" },
     { "is_not_macos", "text", "Returns true if not running on macOS", "is_not_macos()" },
 
     // Information functions

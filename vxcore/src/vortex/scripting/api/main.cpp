@@ -16,7 +16,7 @@
 namespace vxe {
   namespace script {
 
-    VXLUA_FUNC(Log) {
+    VXLUA_FUNC(log) {
       std::string log = vxlua_getstring(L, 1);
 
       vxe::log_info("Vortex", log);
@@ -113,7 +113,7 @@ namespace vxe {
       return 1;
     }
 
-    VXLUA_FUNC(IsMacOS) {
+    VXLUA_FUNC(is_macos) {
       bool res = vxe::is_macos();
 
       lua_pushboolean(L, res);
@@ -169,9 +169,9 @@ namespace vxe {
       return 1;
     }
 
-    void register_main_api(lua_State *L) {
+    void register_main_api(lua_State* L) {
       // Logs & Debug
-      VXLUA_REGISTER(L, -1, Log);
+      VXLUA_REGISTER(L, -1, log);
       VXLUA_REGISTER(L, -1, log_warn);
       VXLUA_REGISTER(L, -1, log_error);
       VXLUA_REGISTER(L, -1, log_fatal);
@@ -185,7 +185,7 @@ namespace vxe {
       VXLUA_REGISTER(L, -1, is_not_linux);
       VXLUA_REGISTER(L, -1, is_windows);
       VXLUA_REGISTER(L, -1, is_not_windows);
-      VXLUA_REGISTER(L, -1, IsMacOS);
+      VXLUA_REGISTER(L, -1, is_macos);
       VXLUA_REGISTER(L, -1, is_not_macos);
 
       // Information functions

@@ -109,7 +109,7 @@ namespace vxe {
 
     CherryKit::Separator();
 
-    for (auto &[topic, isActive] : topics_filter_states_) {
+    for (auto& [topic, isActive] : topics_filter_states_) {
       CherryStyle::RemoveMarginX(6.0f);
 
       if (isActive) {
@@ -142,7 +142,7 @@ namespace vxe {
   void LogsUtility::render() {
     if (!focus_window_applied_) {
       if (!focus_window_.empty()) {
-        for (auto &w : CherryApp.GetWindows()) {
+        for (auto& w : CherryApp.GetWindows()) {
           if (w->GetName() == focus_window_) {
             CherryApp.QuickRedock(app_window_->GetName(), w->GetName());
           }
@@ -154,11 +154,11 @@ namespace vxe {
     const float splitterWidth = 1.5f;
     const float margin = 10.0f;
 
-    auto &children = childs_;
+    auto& children = childs_;
     ImVec2 availableSize = CherryGUI::GetContentRegionAvail();
 
     for (size_t i = 0; i < children.size(); ++i) {
-      auto &child = children[i];
+      auto& child = children[i];
 
       if (child.m_Name == "render_filters_bar") {
         child.m_Disabled = !show_filter_pannel_;
@@ -173,14 +173,14 @@ namespace vxe {
       float totalAvailableWidth = availableSize.x - (children.size() - 1) * splitterWidth;
       int visibleChildrenCount = 0;
 
-      for (auto &child : children) {
+      for (auto& child : children) {
         if (!child.m_Disabled)
           visibleChildrenCount++;
       }
 
       float defaultSize = visibleChildrenCount > 0 ? totalAvailableWidth / visibleChildrenCount : 0.0f;
 
-      for (auto &child : children) {
+      for (auto& child : children) {
         if (!child.m_Disabled) {
           if (child.m_DefaultSize == 0.0f) {
             float total_child_size = 0.0f;
@@ -206,7 +206,7 @@ namespace vxe {
     float totalChildSize = 0.0f;
     int visibleChildrenCount = 0;
 
-    for (auto &child : children) {
+    for (auto& child : children) {
       if (!child.m_Disabled) {
         totalChildSize += child.m_Size;
         visibleChildrenCount++;
@@ -218,7 +218,7 @@ namespace vxe {
     if (totalChildSize > availableSize.x) {
       float scaleFactor = availableSize.x / totalChildSize;
 
-      for (auto &child : children) {
+      for (auto& child : children) {
         if (!child.m_Disabled) {
           child.m_Size = (std::max)(child.m_Size * scaleFactor, 50.0f);
         }
@@ -227,14 +227,14 @@ namespace vxe {
       float extraSpace = availableSize.x - totalChildSize;
 
       float totalResizable = 0.0f;
-      for (auto &child : children) {
+      for (auto& child : children) {
         if (!child.m_Disabled) {
           totalResizable += child.m_Size;
         }
       }
 
       if (totalResizable > 0.0f) {
-        for (auto &child : children) {
+        for (auto& child : children) {
           if (!child.m_Disabled) {
             float ratio = child.m_Size / totalResizable;
             child.m_Size += ratio * extraSpace;
@@ -244,7 +244,7 @@ namespace vxe {
     }
 
     for (size_t i = 0; i < children.size(); ++i) {
-      auto &child = children[i];
+      auto& child = children[i];
 
       if (child.m_Disabled) {
         continue;
@@ -274,7 +274,7 @@ namespace vxe {
       }
 
       if (nextChildIndex != -1) {
-        vxe::LogUtilityChild &next_child = children[nextChildIndex];
+        vxe::LogUtilityChild& next_child = children[nextChildIndex];
 
         if (i + 1 < children.size() && !children[i].m_Disabled && !next_child.m_Disabled) {
           CherryGUI::SameLine();
@@ -374,7 +374,7 @@ namespace vxe {
         topics_filter_states_.clear();
 
         for (auto log : vxe::get_current_context()->registered_logs) {
-          const std::string &topic = log->filter;
+          const std::string& topic = log->filter;
 
           if (oldFilterStates.find(topic) != oldFilterStates.end()) {
             topics_filter_states_[topic] = oldFilterStates[topic];
@@ -384,7 +384,7 @@ namespace vxe {
         }
 
         bool hasActiveFilter = std::any_of(
-            topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto &pair) { return pair.second; });
+            topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto& pair) { return pair.second; });
 
         for (auto log : vxe::get_current_context()->registered_logs) {
           if (oldFilterStates.find(log->filter) != oldFilterStates.end()) {
@@ -544,7 +544,7 @@ namespace vxe {
         topics_filter_states_.clear();
 
         for (auto log : vxe::get_current_context()->registered_logs) {
-          const std::string &topic = log->filter;
+          const std::string& topic = log->filter;
 
           if (oldFilterStates.find(topic) != oldFilterStates.end()) {
             topics_filter_states_[topic] = oldFilterStates[topic];
@@ -554,7 +554,7 @@ namespace vxe {
         }
 
         bool hasActiveFilter = std::any_of(
-            topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto &pair) { return pair.second; });
+            topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto& pair) { return pair.second; });
 
         for (auto log : vxe::get_current_context()->registered_logs) {
           if (oldFilterStates.find(log->filter) != oldFilterStates.end()) {
@@ -652,7 +652,7 @@ namespace vxe {
         topics_filter_states_.clear();
 
         for (auto log : vxe::get_current_context()->registered_logs) {
-          const std::string &topic = log->filter;
+          const std::string& topic = log->filter;
 
           if (oldFilterStates.find(topic) != oldFilterStates.end()) {
             topics_filter_states_[topic] = oldFilterStates[topic];
@@ -662,7 +662,7 @@ namespace vxe {
         }
 
         bool hasActiveFilter = std::any_of(
-            topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto &pair) { return pair.second; });
+            topics_filter_states_.begin(), topics_filter_states_.end(), [](const auto& pair) { return pair.second; });
 
         std::string logText;
         for (auto log : vxe::get_current_context()->registered_logs) {
@@ -724,11 +724,11 @@ namespace vxe {
     CherryStyle::AddMarginX(8.0f);
     CherryGUI::SetCursorPosY(CherryGUI::GetCursorPosY() - 6.5f);
 
-    auto callback = [](ImGuiInputTextCallbackData *data) -> int {
-      LogsUtility *self = static_cast<LogsUtility *>(data->UserData);
-      std::vector<CommandDef *> internal_matches;
+    auto callback = [](ImGuiInputTextCallbackData* data) -> int {
+      LogsUtility* self = static_cast<LogsUtility*>(data->UserData);
+      std::vector<CommandDef*> internal_matches;
       std::string input(data->Buf);
-      for (auto &def : COMMAND_DEFINITIONS) {
+      for (auto& def : COMMAND_DEFINITIONS) {
         if (!input.empty() && def.name.find(input) == 0)
           internal_matches.push_back(&def);
       }
@@ -797,9 +797,9 @@ namespace vxe {
         ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
 
     std::string current_input(input_buffer_);
-    std::vector<CommandDef *> matches;
+    std::vector<CommandDef*> matches;
     if (!current_input.empty() && history_pos_ == -1) {
-      for (auto &def : COMMAND_DEFINITIONS) {
+      for (auto& def : COMMAND_DEFINITIONS) {
         if (def.name.find(current_input) == 0) {
           matches.push_back(&def);
           if (matches.size() >= 12)

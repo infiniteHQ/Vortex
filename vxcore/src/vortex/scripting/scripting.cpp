@@ -20,14 +20,14 @@ namespace vxe {
 
     namespace fs = std::filesystem;
 
-    static long long get_file_mod_time(const std::string &path) {
+    static long long get_file_mod_time(const std::string& path) {
       if (!fs::exists(path))
         return 0;
       auto time = fs::last_write_time(path);
       return std::chrono::duration_cast<std::chrono::seconds>(time.time_since_epoch()).count();
     }
 
-    ScriptingEngine &get_scripting_engine() {
+    ScriptingEngine& get_scripting_engine() {
       static ScriptingEngine instance;
       return instance;
     }
@@ -48,7 +48,7 @@ namespace vxe {
         lua_close(L);
     }
 
-    bool ScriptingEngine::execute(const std::string &code) {
+    bool ScriptingEngine::execute(const std::string& code) {
       if (luaL_dostring(L, code.c_str()) != LUA_OK) {
         m_LastError = lua_tostring(L, -1);
         capture_output("[Error] " + m_LastError);
@@ -58,7 +58,7 @@ namespace vxe {
       return true;
     }
 
-    int ScriptingEngine::load_file(const std::string &path, int nargs) {
+    int ScriptingEngine::load_file(const std::string& path, int nargs) {
       if (luaL_loadfile(L, path.c_str()) != LUA_OK) {
         m_LastError = lua_tostring(L, -1);
         capture_output("[Error] " + m_LastError);
@@ -86,12 +86,12 @@ namespace vxe {
       int currentStack = lua_gettop(L);
       return currentStack - baseStack;
     }
-    void ScriptingEngine::reload_file(const std::string &path) {
+    void ScriptingEngine::reload_file(const std::string& path) {
       capture_output("[System] Reloading: " + path);
       load_file(path);
     }
 
-    void ScriptingEngine::capture_output(const std::string &text) {
+    void ScriptingEngine::capture_output(const std::string& text) {
       if (text.find("[Error]") != std::string::npos || text.find("[Runtime Error]") != std::string::npos) {
         vxe::log_error("Lua", text);
       } else {
@@ -99,8 +99,8 @@ namespace vxe {
       }
     }
 
-    int ScriptingEngine::lua_print(lua_State *L) {
-      ScriptingEngine *engine = (ScriptingEngine *)lua_touserdata(L, lua_upvalueindex(1));
+    int ScriptingEngine::lua_print(lua_State* L) {
+      ScriptingEngine* engine = (ScriptingEngine*)lua_touserdata(L, lua_upvalueindex(1));
       int n = lua_gettop(L);
       std::string out = "";
 
@@ -120,7 +120,7 @@ namespace vxe {
       return 0;
     }
 
-    void ScriptingEngine::enable_hot_reload(const std::string &scriptDir) {
+    void ScriptingEngine::enable_hot_reload(const std::string& scriptDir) {
       m_HotReloadEnabled = true;
       m_ScriptDir = scriptDir;
     }
@@ -129,7 +129,7 @@ namespace vxe {
       if (!m_HotReloadEnabled)
         return;
 
-      for (auto &[path, lastTime] : m_FileTimestamps) {
+      for (auto& [path, lastTime] : m_FileTimestamps) {
         auto currentTime = get_file_mod_time(path);
         if (currentTime > lastTime) {
           m_FileTimestamps[path] = currentTime;
@@ -146,7 +146,7 @@ namespace vxe {
       return m_LastError;
     }
 
-    const std::vector<std::string> &ScriptingEngine::get_output_history() const {
+    const std::vector<std::string>& ScriptingEngine::get_output_history() const {
       return m_OutputHistory;
     }
 
@@ -154,8 +154,8 @@ namespace vxe {
       m_OutputHistory.clear();
     }
 
-    int ScriptingEngine::InternalRenderScript(const std::string &path, bool fresh, int nargs) {
-      auto &engine = get_scripting_engine();
+    int ScriptingEngine::InternalRenderScript(const std::string& path, bool fresh, int nargs) {
+      auto& engine = get_scripting_engine();
       static std::unordered_map<std::string, bool> s_InitializedFiles;
 
       if (fresh && !s_InitializedFiles[path]) {
@@ -167,11 +167,11 @@ namespace vxe {
       return engine.load_file(path, nargs);
     }
 
-    void render_lua_script(const std::string &lua_file_path) {
+    void render_lua_script(const std::string& lua_file_path) {
       ScriptingEngine::InternalRenderScript(lua_file_path, false, 0);
     }
 
-    void render_lua_fresh_script(const std::string &lua_file_path) {
+    void render_lua_fresh_script(const std::string& lua_file_path) {
       ScriptingEngine::InternalRenderScript(lua_file_path, true, 0);
     }
 
@@ -180,31 +180,32 @@ namespace vxe {
       Cherry::Script::InjectCherryAPI(L);
     }
 
-    void inject_vortex_api(lua_State *L) {
+    void inject_vortex_api(lua_State* L) {
       lua_newtable(L);
+      register_main_api(L);
       register_plugin_api(L);
       lua_setglobal(L, "Vortex");
     }
 
-    std::shared_ptr<PluginInterface> get_active_plugin(lua_State *L) {
-      lua_rawgetp(L, LUA_REGISTRYINDEX, (void *)&ACTIVE_PLUGIN_KEY);
+    std::shared_ptr<PluginInterface> get_active_plugin(lua_State* L) {
+      lua_rawgetp(L, LUA_REGISTRYINDEX, (void*)&ACTIVE_PLUGIN_KEY);
       if (!lua_islightuserdata(L, -1)) {
         lua_pop(L, 1);
         return nullptr;
       }
-      auto *stored = (std::shared_ptr<PluginInterface> *)lua_touserdata(L, -1);
+      auto* stored = (std::shared_ptr<PluginInterface>*)lua_touserdata(L, -1);
       lua_pop(L, 1);
       return stored ? *stored : nullptr;
     }
 
-    void set_active_plugin_context(lua_State *L, std::shared_ptr<PluginInterface> *plugin_slot) {
-      lua_pushlightuserdata(L, (void *)plugin_slot);
-      lua_rawsetp(L, LUA_REGISTRYINDEX, (void *)&ACTIVE_PLUGIN_KEY);
+    void set_active_plugin_context(lua_State* L, std::shared_ptr<PluginInterface>* plugin_slot) {
+      lua_pushlightuserdata(L, (void*)plugin_slot);
+      lua_rawsetp(L, LUA_REGISTRYINDEX, (void*)&ACTIVE_PLUGIN_KEY);
     }
 
-    void clear_active_plugin_context(lua_State *L) {
+    void clear_active_plugin_context(lua_State* L) {
       lua_pushnil(L);
-      lua_rawsetp(L, LUA_REGISTRYINDEX, (void *)&ACTIVE_PLUGIN_KEY);
+      lua_rawsetp(L, LUA_REGISTRYINDEX, (void*)&ACTIVE_PLUGIN_KEY);
     }
 
   }  // namespace script
@@ -215,15 +216,15 @@ namespace vxe {
 
 void vxe::execute_start_script() {
   auto ctx = vxe::get_current_context();
-  const auto &startup_file = ctx->startup_script;
+  const auto& startup_file = ctx->startup_script;
 
   if (startup_file.empty())
     return;
 
-  lua_State *L = vxe::script::get_scripting_engine().get_state();
+  lua_State* L = vxe::script::get_scripting_engine().get_state();
 
   if (luaL_loadfile(L, startup_file.c_str()) != LUA_OK) {
-    const char *error = lua_tostring(L, -1);
+    const char* error = lua_tostring(L, -1);
     VXWARN("Invalid startup script : {}", error);
     lua_pop(L, 1);
     return;
