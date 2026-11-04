@@ -13,7 +13,7 @@
 #include "../../include/vortex_internals.h"
 
 VORTEX_API void vxe::final_start_modules(
-    const std::string &module_name,
+    const std::string& module_name,
     std::shared_ptr<std::vector<std::string>> processed_modules) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
@@ -27,7 +27,7 @@ VORTEX_API void vxe::final_start_modules(
 
         try {
           em->start();
-        } catch (const std::exception &e) {
+        } catch (const std::exception& e) {
           // Log the error
           vxe::log_error("Modules", "Error starting module \"" + em->name() + "\": " + e.what());
           // Continue to the next module
@@ -38,7 +38,7 @@ VORTEX_API void vxe::final_start_modules(
   }
 }
 
-VORTEX_API void vxe::start_module(const std::string &module_name) {
+VORTEX_API void vxe::start_module(const std::string& module_name) {
   // Get reference to the Vortex context
   auto ctx = vxe::get_current_context();
 

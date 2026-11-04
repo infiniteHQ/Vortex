@@ -16,9 +16,10 @@
 #ifdef _WIN32
 #include <stringapiset.h>
 #include <windows.h>
+
 #include "../../include/crash/crash_writer.hpp"
 
-std::wstring convert_to_wide_string(const std::string &str) {
+std::wstring convert_to_wide_string(const std::string& str) {
   int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
   if (size_needed == 0) {
     throw std::runtime_error("Error converting string to wide string");
@@ -28,7 +29,7 @@ std::wstring convert_to_wide_string(const std::string &str) {
   return wide_string;
 }
 
-std::string convert_to_string(const std::wstring &wstr) {
+std::string convert_to_string(const std::wstring& wstr) {
   int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
   if (size_needed == 0) {
     throw std::runtime_error("Error converting wide string to string");
@@ -42,15 +43,15 @@ std::string convert_to_string(const std::wstring &wstr) {
 namespace vxe {
 
   VORTEX_API void load_editor_modules(
-      const std::string &directory,
-      std::vector<void *> &modules_handlers,
-      std::vector<std::shared_ptr<ModuleInterface>> &modules) {
+      const std::string& directory,
+      std::vector<void*>& modules_handlers,
+      std::vector<std::shared_ptr<ModuleInterface>>& modules) {
     modules.clear();
     modules_handlers.clear();
 
     auto module_files = vxe::search_files(directory, "module.json");
 
-    for (const auto &file : module_files) {
+    for (const auto& file : module_files) {
       try {
         auto json_data = vxe::dump_json(file);
 
@@ -63,11 +64,11 @@ namespace vxe {
         auto so_files = vxe::search_files(path.string(), "libmodule.so");
 #endif
 
-        for (auto &s : so_files)
+        for (auto& s : so_files)
           std::cout << "  " << s << "\n";
 
-        for (const auto &so_file : so_files) {
-          void *handle = nullptr;
+        for (const auto& so_file : so_files) {
+          void* handle = nullptr;
 
 #ifdef _WIN32
           std::wstring wide_so_file = convert_to_wide_string(so_file);
@@ -98,7 +99,7 @@ namespace vxe {
 
           vxe::crash::detail::register_module(hmod);
 
-          auto create_em = reinterpret_cast<ModuleInterface *(*)()>(GetProcAddress(hmod, "create_em"));
+          auto create_em = reinterpret_cast<ModuleInterface* (*)()>(GetProcAddress(hmod, "create_em"));
           if (!create_em) {
             DWORD error_code = GetLastError();
             LPVOID msg_buffer;
@@ -128,8 +129,8 @@ namespace vxe {
             continue;
           }
 
-          auto create_em = reinterpret_cast<ModuleInterface *(*)()>(dlsym(handle, "create_em"));
-          const char *dlsym_error = dlerror();
+          auto create_em = reinterpret_cast<ModuleInterface* (*)()>(dlsym(handle, "create_em"));
+          const char* dlsym_error = dlerror();
           if (dlsym_error) {
             std::string error_msg = dlsym_error;
             vxe::log_fatal("Modules", "Failed to load symbol: " + error_msg);
@@ -166,27 +167,41 @@ namespace vxe {
             }
 
             new_module->supported_versions(json_data["compatibility"].get<std::vector<std::string>>());
-          } catch (const std::exception &e) {
+          } catch (const std::exception& e) {
             vxe::log_error("Modules", "Failed to load module metadata: " + std::string(e.what()));
           }
 
-          modules.push_back(new_module);
-          modules_handlers.push_back(handle);
+          bool same_name_module_loaded = false;
+          for (auto m : modules) {
+            if (m->name() == new_module->name()) {
+              same_name_module_loaded = true;
+            }
+          }
+
+          if (same_name_module_loaded) {
+            vxe::log_error(
+                "Modules",
+                "Failed to load module : " + new_module->name() + " : Another module with the same name ID already loaded.");
+
+          } else {
+            modules.push_back(new_module);
+            modules_handlers.push_back(handle);
+          }
         }
-      } catch (const std::exception &e) {
+      } catch (const std::exception& e) {
         vxe::log_error("Modules", "Error processing module file: " + std::string(e.what()));
       }
     }
   }
 
-  VORTEX_API void load_system_modules(std::vector<std::shared_ptr<ModuleInterface>> &sys_modules) {
+  VORTEX_API void load_system_modules(std::vector<std::shared_ptr<ModuleInterface>>& sys_modules) {
     std::string homeDir = vxe::get_home_directory();
     std::string path = homeDir + "/.vx/modules";
     auto module_files = vxe::search_system_files(path, "module.json");
 
     sys_modules.clear();
 
-    for (const auto &file : module_files) {
+    for (const auto& file : module_files) {
       try {
         auto json_data = vxe::dump_json(file);
 
@@ -225,7 +240,7 @@ namespace vxe {
 
         vxe::log_info("Modules registered in system ", new_module->name() + " loaded with success !");
         sys_modules.push_back(new_module);
-      } catch (const std::exception &e) {
+      } catch (const std::exception& e) {
         vxe::log_error("Core", std::string("Error: ") + e.what());
       }
     }
