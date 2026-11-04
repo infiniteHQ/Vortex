@@ -16,9 +16,9 @@
 namespace vxe {
 
   VORTEX_API void load_editor_plugins(
-      const std::string &directory,
-      std::vector<void *> &plugins_handlers,
-      std::vector<std::shared_ptr<PluginInterface>> &plugins) {
+      const std::string& directory,
+      std::vector<void*>& plugins_handlers,
+      std::vector<std::shared_ptr<PluginInterface>>& plugins) {
     plugins.clear();
     plugins_handlers.clear();
 
@@ -26,7 +26,7 @@ namespace vxe {
 
     // Load scripts etc instead of dll/so (only for plugins)
 
-    for (const auto &file : plugin_files) {
+    for (const auto& file : plugin_files) {
       try {
         auto json_data = vxe::dump_json(file);
 
@@ -61,14 +61,30 @@ namespace vxe {
         }
 
         new_plugin->supported_versions(json_data["compatibility"].get<std::vector<std::string>>());
-        plugins.push_back(new_plugin);
-      } catch (const std::exception &e) {
+
+        bool same_name_plugin_loaded = false;
+        for (auto m : plugins) {
+          if (m->name() == new_plugin->name()) {
+            same_name_plugin_loaded = true;
+          }
+        }
+
+        if (same_name_plugin_loaded) {
+          vxe::log_error(
+              "Plugins",
+              "Failed to load plugin : " + new_plugin->name() + " : Another plugin with the same name ID already loaded.");
+
+        } else {
+          plugins.push_back(new_plugin);
+        }
+
+      } catch (const std::exception& e) {
         vxe::log_error("Plugins", "Failed to load plugin metadata: " + std::string(e.what()));
       }
     }
   }
 
-  VORTEX_API void load_system_plugins(std::vector<std::shared_ptr<PluginInterface>> &sys_plugins) {
+  VORTEX_API void load_system_plugins(std::vector<std::shared_ptr<PluginInterface>>& sys_plugins) {
     // Get the home directory
     std::string homeDir = vxe::get_home_directory();
 
@@ -82,7 +98,7 @@ namespace vxe {
     sys_plugins.clear();
 
     // Iterate through each found plugin file
-    for (const auto &file : plugin_files) {
+    for (const auto& file : plugin_files) {
       try {
         // Load JSON data from the plugin configuration file
         auto json_data = vxe::dump_json(file);
@@ -126,7 +142,7 @@ namespace vxe {
 
         // Store the plugin instance and handle
         sys_plugins.push_back(new_plugin);
-      } catch (const std::exception &e) {
+      } catch (const std::exception& e) {
         // Print error if an exception occurs
         vxe::log_error("Core", std::string("Error: ") + e.what());
       }
