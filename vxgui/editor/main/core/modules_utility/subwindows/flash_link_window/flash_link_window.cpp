@@ -11,6 +11,7 @@
 #include "./flash_link_window.hpp"
 
 #include <algorithm>
+#include <cstdio>
 #include <sstream>
 #include <thread>
 
@@ -18,139 +19,155 @@ namespace vxe {
 
   namespace {
 
-    struct TileEntry {
-      std::string id;
-      ImTextureID icon;
-      std::string title;
-      bool enabled = true;
-      std::function<void()> on_click;
+    struct Palette {
+      const char* card;
+      const char* border;
+      const char* text;
+      const char* sub;
+      const char* field;
+      const char* neutral;
+      const char* neutralHover;
+      const char* accent;
+      const char* accentHover;
+      const char* accentText;
+      const char* danger;
+      const char* warn;
     };
 
-    bool MatchesSearch(const std::string &title, const std::string &search) {
-      if (search.empty()) {
-        return true;
+    Palette get_palette() {
+      if (CherryApp.GetTheme() == "dark") {
+        return { "#232323", "#333333", "#FFFFFF", "#8A8A8A", "#1B1B1B", "#2E2E2E",
+                 "#3A3A3A", "#B1FF31", "#C3FF53", "#121212", "#EE5555", "#EEAA55" };
       }
-      std::string lowerTitle = title;
-      std::string lowerSearch = search;
-      std::transform(lowerTitle.begin(), lowerTitle.end(), lowerTitle.begin(), ::tolower);
-      std::transform(lowerSearch.begin(), lowerSearch.end(), lowerSearch.begin(), ::tolower);
-      return lowerTitle.find(lowerSearch) != std::string::npos;
+      return { "#FFFFFF", "#D8D8D8", "#232323", "#6B6B6B", "#F1F1F1", "#E6E6E6",
+               "#D2D2D2", "#3E8E00", "#4FA800", "#FFFFFF", "#D32F2F", "#C77700" };
     }
 
-    bool DrawTile(const char *id, ImTextureID icon, const std::string &title, float w, float h, bool enabled) {
-      ImVec2 pos = CherryGUI::GetCursorScreenPos();
-      ImDrawList *dl = CherryGUI::GetWindowDrawList();
+    ImVec4 col(const char* hex) {
+      return Cherry::HexToRGBA(hex);
+    }
 
-      bool clicked = false;
-      bool hovered = false;
+    void colored_text(const char* hex, const std::string& text) {
+      ImGui::PushStyleColor(ImGuiCol_Text, col(hex));
+      ImGui::TextUnformatted(text.c_str());
+      ImGui::PopStyleColor();
+    }
 
-      if (enabled) {
-        clicked = CherryGUI::InvisibleButton(id, ImVec2(w, h));
-        hovered = CherryGUI::IsItemHovered();
-        if (hovered) {
-          CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
-        }
-      } else {
-        CherryGUI::Dummy(ImVec2(w, h));
-      }
+    void wrapped_text(const char* hex, const std::string& text, float wrap_x) {
+      ImGui::PushTextWrapPos(wrap_x);
+      colored_text(hex, text);
+      ImGui::PopTextWrapPos();
+    }
 
-      ImU32 bg = enabled ? (hovered ? IM_COL32(58, 58, 58, 255) : IM_COL32(40, 40, 40, 255)) : IM_COL32(30, 30, 30, 255);
-      ImU32 border =
-          enabled ? (hovered ? IM_COL32(90, 130, 220, 255) : IM_COL32(65, 65, 65, 255)) : IM_COL32(50, 50, 50, 255);
-      ImU32 textColor = enabled ? IM_COL32(215, 215, 215, 255) : IM_COL32(110, 110, 110, 255);
+    void centered_text(const char* hex, const std::string& text) {
+      float w = ImGui::CalcTextSize(text.c_str()).x;
+      ImGui::SetCursorPosX((std::max)(0.0f, (ImGui::GetWindowWidth() - w) * 0.5f));
+      colored_text(hex, text);
+    }
 
-      dl->AddRectFilled(pos, ImVec2(pos.x + w, pos.y + h), bg, 5.0f);
-      dl->AddRect(pos, ImVec2(pos.x + w, pos.y + h), border, 5.0f, 0, 1.2f);
-
-      float iconSize = 28.0f;
-      ImVec2 iconPos(pos.x + (w - iconSize) * 0.5f, pos.y + 12.0f);
-      if (icon) {
-        ImVec4 tint = enabled ? ImVec4(1, 1, 1, 1) : ImVec4(1, 1, 1, 0.35f);
-        dl->AddImage(
-            icon,
-            iconPos,
-            ImVec2(iconPos.x + iconSize, iconPos.y + iconSize),
-            ImVec2(0, 0),
-            ImVec2(1, 1),
-            CherryGUI::ColorConvertFloat4ToU32(tint));
-      }
-
-      ImVec2 textSize = CherryGUI::CalcTextSize(title.c_str());
-      float textX = pos.x + (w - textSize.x) * 0.5f;
-      if (textSize.x > w - 8.0f) {
-        textX = pos.x + 4.0f;
-      }
-      ImVec2 textPos(textX, iconPos.y + iconSize + 8.0f);
-      dl->AddText(textPos, textColor, title.c_str());
-
+    bool action_button(const char* label, const char* bg, const char* hover, const char* fg, float width, float height) {
+      ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
+      ImGui::PushStyleColor(ImGuiCol_Button, col(bg));
+      ImGui::PushStyleColor(ImGuiCol_ButtonHovered, col(hover));
+      ImGui::PushStyleColor(ImGuiCol_ButtonActive, col(hover));
+      ImGui::PushStyleColor(ImGuiCol_Text, col(fg));
+      bool clicked = ImGui::Button(label, ImVec2(width, height));
+      ImGui::PopStyleColor(4);
+      ImGui::PopStyleVar();
       return clicked;
     }
 
-    void
-    DrawTileGrid(const std::vector<TileEntry> &entries, float available_width, float min_tile_w, float tile_h, float gap) {
-      if (entries.empty()) {
-        return;
-      }
-
-      int columns = (int)((available_width + gap) / (min_tile_w + gap));
-      if (columns < 1) {
-        columns = 1;
-      }
-      if (columns > (int)entries.size()) {
-        columns = (int)entries.size();
-      }
-
-      float tile_w = (available_width - (columns - 1) * gap) / columns;
-
-      for (size_t i = 0; i < entries.size(); ++i) {
-        const auto &e = entries[i];
-
-        if (DrawTile(e.id.c_str(), e.icon, e.title, tile_w, tile_h, e.enabled)) {
-          if (e.on_click) {
-            e.on_click();
-          }
-        }
-
-        bool lastInRow = ((i + 1) % columns == 0);
-        bool lastEntry = (i + 1 == entries.size());
-
-        if (!lastInRow && !lastEntry) {
-          CherryGUI::SameLine(0.0f, gap);
-        } else if (!lastEntry) {
-          CherryGUI::Dummy(ImVec2(0.0f, gap));
-        }
-      }
-
-      CherryGUI::Dummy(ImVec2(0.0f, gap));
+    void pill(const std::string& text, const char* bg, const char* fg) {
+      ImVec2 ts = ImGui::CalcTextSize(text.c_str());
+      ImVec2 size(ts.x + 16.0f, ts.y + 6.0f);
+      ImVec2 p = ImGui::GetCursorScreenPos();
+      ImDrawList* dl = ImGui::GetWindowDrawList();
+      dl->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), Cherry::HexToImU32(bg), size.y * 0.5f);
+      dl->AddText(ImVec2(p.x + 8.0f, p.y + 3.0f), Cherry::HexToImU32(fg), text.c_str());
+      ImGui::Dummy(size);
     }
 
-    bool DrawRow(const char *id, ImTextureID icon, const std::string &title, const std::string &description, float width) {
-      float height = 56.0f;
-      float padding = 10.0f;
-      float iconSize = 34.0f;
+    void spinner(float radius, const char* hex) {
+      ImVec2 p = ImGui::GetCursorScreenPos();
+      ImVec2 c(p.x + radius, p.y + radius);
+      float a = (float)ImGui::GetTime() * 6.0f;
+      ImDrawList* dl = ImGui::GetWindowDrawList();
+      dl->PathClear();
+      dl->PathArcTo(c, radius, a, a + 4.5f, 24);
+      dl->PathStroke(Cherry::HexToImU32(hex), 0, 3.0f);
+      ImGui::Dummy(ImVec2(radius * 2.0f, radius * 2.0f));
+    }
 
-      ImVec2 pos = CherryGUI::GetCursorScreenPos();
-      ImDrawList *dl = CherryGUI::GetWindowDrawList();
+    template<class Texture>
+    void rounded_image(Texture texture, ImVec2 size, float rounding) {
+      ImVec2 p = ImGui::GetCursorScreenPos();
+      ImGui::GetWindowDrawList()->AddImageRounded(
+          texture, p, ImVec2(p.x + size.x, p.y + size.y), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), IM_COL32_WHITE, rounding);
+      ImGui::Dummy(size);
+    }
 
-      bool clicked = CherryGUI::InvisibleButton(id, ImVec2(width, height));
-      bool hovered = CherryGUI::IsItemHovered();
+    struct CardScope {
+      ImDrawList* draw_list = nullptr;
+      ImVec2 origin;
+      float width = 0.0f;
+      float pad = 16.0f;
+      float inner_w = 0.0f;
+      float wrap_x = 0.0f;
+    };
 
-      if (hovered) {
-        CherryGUI::SetMouseCursor(ImGuiMouseCursor_Hand);
-      }
+    CardScope begin_card() {
+      CardScope c;
+      c.draw_list = ImGui::GetWindowDrawList();
+      c.width = ImGui::GetContentRegionAvail().x;
+      c.inner_w = c.width - c.pad * 2.0f;
+      c.wrap_x = ImGui::GetCursorPosX() + c.width - c.pad;
+      c.origin = ImGui::GetCursorScreenPos();
+      c.draw_list->ChannelsSplit(2);
+      c.draw_list->ChannelsSetCurrent(1);
+      ImGui::BeginGroup();
+      ImGui::Dummy(ImVec2(0.0f, c.pad));
+      ImGui::Indent(c.pad);
+      return c;
+    }
 
-      ImU32 bg = hovered ? IM_COL32(52, 52, 52, 255) : IM_COL32(38, 38, 38, 255);
-      dl->AddRectFilled(pos, ImVec2(pos.x + width, pos.y + height), bg, 5.0f);
+    void end_card(const CardScope& c, const Palette& pal) {
+      ImGui::Unindent(c.pad);
+      ImGui::Dummy(ImVec2(0.0f, c.pad));
+      ImGui::EndGroup();
+      ImVec2 max(c.origin.x + c.width, ImGui::GetItemRectMax().y);
+      c.draw_list->ChannelsSetCurrent(0);
+      c.draw_list->AddRectFilled(c.origin, max, Cherry::HexToImU32(pal.card), 14.0f);
+      c.draw_list->AddRect(c.origin, max, Cherry::HexToImU32(pal.border), 14.0f);
+      c.draw_list->ChannelsMerge();
+    }
 
-      ImVec2 iconPos(pos.x + padding, pos.y + (height - iconSize) * 0.5f);
-      if (icon) {
-        dl->AddImage(icon, iconPos, ImVec2(iconPos.x + iconSize, iconPos.y + iconSize));
-      }
+    void push_field_style(const Palette& pal) {
+      ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
+      ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 9.0f));
+      ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, col(pal.field));
+      ImGui::PushStyleColor(ImGuiCol_Border, col(pal.border));
+      ImGui::PushStyleColor(ImGuiCol_Text, col(pal.text));
+      ImGui::PushStyleColor(ImGuiCol_PopupBg, col(pal.card));
+    }
 
-      float textX = iconPos.x + iconSize + padding;
-      dl->AddText(ImVec2(textX, pos.y + 9.0f), IM_COL32(230, 230, 230, 255), title.c_str());
-      dl->AddText(ImVec2(textX, pos.y + 30.0f), IM_COL32(150, 150, 150, 255), description.c_str());
+    void pop_field_style() {
+      ImGui::PopStyleColor(4);
+      ImGui::PopStyleVar(3);
+    }
 
+    void separator(const Palette& pal) {
+      ImGui::PushStyleColor(ImGuiCol_Separator, col(pal.border));
+      ImGui::Separator();
+      ImGui::PopStyleColor();
+    }
+
+    bool radio_button(const Palette& pal, const char* label, bool active) {
+      ImGui::PushStyleColor(ImGuiCol_CheckMark, col(pal.accent));
+      ImGui::PushStyleColor(ImGuiCol_FrameBg, col(pal.field));
+      ImGui::PushStyleColor(ImGuiCol_Text, col(pal.text));
+      bool clicked = ImGui::RadioButton(label, active);
+      ImGui::PopStyleColor(3);
       return clicked;
     }
 
@@ -176,7 +193,7 @@ namespace vxe {
 #endif
     }
 
-    std::vector<int> parse_version_numbers(const std::string &v) {
+    std::vector<int> parse_version_numbers(const std::string& v) {
       std::vector<int> parts;
       std::stringstream ss(v);
       std::string item;
@@ -190,7 +207,7 @@ namespace vxe {
       return parts;
     }
 
-    bool version_greater(const std::string &a, const std::string &b) {
+    bool version_greater(const std::string& a, const std::string& b) {
       auto pa = parse_version_numbers(a);
       auto pb = parse_version_numbers(b);
       size_t n = (std::max)(pa.size(), pb.size());
@@ -204,7 +221,7 @@ namespace vxe {
       return false;
     }
 
-    std::string extract_major(const std::string &version, int keep = 2) {
+    std::string extract_major(const std::string& version, int keep = 2) {
       auto parts = parse_version_numbers(version);
       std::string result;
       for (int i = 0; i < keep && i < (int)parts.size(); i++) {
@@ -216,7 +233,7 @@ namespace vxe {
       return result;
     }
 
-    std::string native_platform_label(const std::string &platform, const std::string &arch) {
+    std::string native_platform_label(const std::string& platform, const std::string& arch) {
       std::string pretty = platform;
       if (platform == "windows")
         pretty = "Windows";
@@ -229,7 +246,7 @@ namespace vxe {
 
   }  // namespace
 
-  ModuleFetchResult fetch_module_from_flashlink(const std::string &flashlink) {
+  ModuleFetchResult fetch_module_from_flashlink(const std::string& flashlink) {
     ModuleFetchResult result;
 
     if (vxe::get_current_context()->disconnected) {
@@ -244,7 +261,7 @@ namespace vxe {
     }
     std::string uuid = flashlink.substr(prefix.size());
 
-    auto &ctx = *vxe::get_current_context();
+    auto& ctx = *vxe::get_current_context();
 
     std::string module_url = "http://api.infinite.si:9000/api/garagevortex/get_module?uuid=" + uuid;
     std::string module_body;
@@ -317,7 +334,7 @@ namespace vxe {
 
     std::vector<ModuleRelease> parsed;
 
-    for (auto &item : releases_json["releases"]) {
+    for (auto& item : releases_json["releases"]) {
       if (!item.is_object()) {
         continue;
       }
@@ -346,31 +363,31 @@ namespace vxe {
     }
 
     std::vector<ModuleRelease> cross;
-    for (auto &rel : parsed) {
+    for (auto& rel : parsed) {
       if (rel.platform == "cross") {
         cross.push_back(rel);
       }
     }
-    std::sort(cross.begin(), cross.end(), [](const ModuleRelease &a, const ModuleRelease &b) {
+    std::sort(cross.begin(), cross.end(), [](const ModuleRelease& a, const ModuleRelease& b) {
       return version_greater(a.version, b.version);
     });
 
     std::vector<ModuleRelease> compatible;
-    for (auto &rel : parsed) {
+    for (auto& rel : parsed) {
       if (rel.platform == current_platform && rel.arch == current_arch && rel.major == current_major) {
         compatible.push_back(rel);
       }
     }
 
     if (compatible.empty()) {
-      for (auto &rel : parsed) {
+      for (auto& rel : parsed) {
         if (rel.platform == current_platform && rel.arch == current_arch) {
           compatible.push_back(rel);
         }
       }
     }
 
-    std::sort(compatible.begin(), compatible.end(), [](const ModuleRelease &a, const ModuleRelease &b) {
+    std::sort(compatible.begin(), compatible.end(), [](const ModuleRelease& a, const ModuleRelease& b) {
       return version_greater(a.version, b.version);
     });
 
@@ -380,7 +397,7 @@ namespace vxe {
     return result;
   }
 
-  FlashLinkWindow::FlashLinkWindow(const std::string &name, const std::string &mode) {
+  FlashLinkWindow::FlashLinkWindow(const std::string& name, const std::string& mode) {
     app_window_ = std::make_shared<Cherry::AppWindow>(name, name);
     app_window_->SetIcon(Cherry::GetPath("resources/imgs/icons/misc/icon_home.png"));
 
@@ -390,23 +407,14 @@ namespace vxe {
     app_window_->SetInternalPaddingX(8.0f);
     app_window_->SetInternalPaddingY(8.0f);
 
-    mode_ = "prompt";
-
-    if (mode == "prompt") {
-      mode_ = "prompt";
-    }
-    if (mode == "flash") {
-      mode_ = "flash";
-    }
-
-    std::shared_ptr<Cherry::AppWindow> win = app_window_;
+    mode_ = mode == "flash" ? "flash" : "prompt";
   }
 
-  std::shared_ptr<Cherry::AppWindow> &FlashLinkWindow::get_app_window() {
+  std::shared_ptr<Cherry::AppWindow>& FlashLinkWindow::get_app_window() {
     return app_window_;
   }
 
-  std::shared_ptr<FlashLinkWindow> FlashLinkWindow::create(const std::string &name, const std::string &mode) {
+  std::shared_ptr<FlashLinkWindow> FlashLinkWindow::create(const std::string& name, const std::string& mode) {
     auto instance = std::shared_ptr<FlashLinkWindow>(new FlashLinkWindow(name, mode));
     instance->setup_render_callback();
     return instance;
@@ -421,7 +429,7 @@ namespace vxe {
     });
   }
 
-  void FlashLinkWindow::startSearch(const std::string &flashlink) {
+  void FlashLinkWindow::startSearch(const std::string& flashlink) {
     uint64_t my_token = ++search_token;
 
     manual_search_error_.clear();
@@ -447,7 +455,7 @@ namespace vxe {
     }).detach();
   }
 
-  bool FlashLinkWindow::tryProcessCandidate(const std::string &raw, bool clear_input_on_success) {
+  bool FlashLinkWindow::tryProcessCandidate(const std::string& raw, bool clear_input_on_success) {
     if (raw.empty() || raw.length() >= 70) {
       return false;
     }
@@ -483,76 +491,99 @@ namespace vxe {
   }
 
   void FlashLinkWindow::renderCloseButton() {
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
+    const Palette pal = get_palette();
 
-    float avail_w = ImGui::GetContentRegionAvail().x;
-    if (ImGui::Button("Close", ImVec2(avail_w, 0.0f))) {
+    ImGui::Dummy(ImVec2(0.0f, 2.0f));
+    separator(pal);
+    ImGui::Dummy(ImVec2(0.0f, 6.0f));
+
+    if (action_button("Close", pal.neutral, pal.neutralHover, pal.text, ImGui::GetContentRegionAvail().x, 36.0f)) {
       Cherry::DeleteAppWindow(app_window_);
     }
   }
 
   void FlashLinkWindow::render() {
+    const Palette pal = get_palette();
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(14.0f, 12.0f));
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-    ImGui::BeginChild("##import_modules", ImVec2(0.0f, 0.0f), true);
-    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.0f, 1.0f, 1.0f, 0.1f));
+    ImGui::BeginChild("##flash_module", ImVec2(0.0f, 0.0f), true);
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar();
+
+    Cherry::PushFont("ClashBold");
+    colored_text(pal.text, "Install from a FlashLink");
+    Cherry::PopFont();
+    colored_text(pal.sub, "Install a module shared with a FlashLink.");
+    ImGui::Dummy(ImVec2(0.0f, 8.0f));
 
     if (mode_ == "flash") {
       if (!clipboard_checked) {
         clipboard_checked = true;
 
-        const char *clipboard = ImGui::GetClipboardText();
-        bool ok = false;
+        const char* clipboard = ImGui::GetClipboardText();
         if (clipboard != nullptr) {
-          ok = tryProcessCandidate(std::string(clipboard), false);
+          tryProcessCandidate(std::string(clipboard), false);
         }
-        (void)ok;
       }
     } else {
-      ImGui::TextUnformatted("Please copy module flash code");
-      ImGui::Spacing();
+      const float paste_w = 76.0f;
+      const float search_w = 88.0f;
+      const float gap = ImGui::GetStyle().ItemSpacing.x;
+      const float row_h = ImGui::GetFontSize() + 18.0f;
 
-      ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 90.0f);
-      ImGui::InputTextWithHint("##flashlink_input", "Paste flashlink here...", input_buffer, IM_ARRAYSIZE(input_buffer));
+      push_field_style(pal);
+      ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - paste_w - search_w - gap * 2.0f);
+      bool submitted = ImGui::InputTextWithHint(
+          "##flashlink_input",
+          "Paste your flashlink code here...",
+          input_buffer,
+          IM_ARRAYSIZE(input_buffer),
+          ImGuiInputTextFlags_EnterReturnsTrue);
+      pop_field_style();
 
       ImGui::SameLine();
-
-      if (ImGui::Button("Search", ImVec2(80.0f, 0.0f))) {
-        bool ok = tryProcessCandidate(std::string(input_buffer), false);
-        if (!ok) {
-          manual_search_error_ = "Invalid flashlink code. Please copy a valid module flashlink.";
+      if (action_button("Paste", pal.neutral, pal.neutralHover, pal.text, paste_w, row_h)) {
+        const char* clipboard = ImGui::GetClipboardText();
+        if (clipboard) {
+          std::snprintf(input_buffer, IM_ARRAYSIZE(input_buffer), "%s", clipboard);
         }
+      }
+      ImGui::SameLine();
+      if (action_button("Search", pal.accent, pal.accentHover, pal.accentText, search_w, row_h) || submitted) {
+        bool ok = tryProcessCandidate(std::string(input_buffer), false);
+        manual_search_error_ = ok ? "" : "Invalid flashlink code. Please copy a valid module flashlink.";
       }
 
       if (!manual_search_error_.empty()) {
-        ImGui::Spacing();
-        ImGui::TextColored(ImVec4(1.0f, 0.55f, 0.55f, 1.0f), "%s", manual_search_error_.c_str());
+        ImGui::Dummy(ImVec2(0.0f, 2.0f));
+        colored_text(pal.danger, manual_search_error_);
       }
     }
 
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
+    ImGui::Dummy(ImVec2(0.0f, 6.0f));
+    separator(pal);
+    ImGui::Dummy(ImVec2(0.0f, 8.0f));
 
     FlashLinkState current_state = state.load();
 
     switch (current_state) {
       case FlashLinkState::WaitingForClipboard: {
-        if (mode_ == "flash") {
-          ImGui::TextColored(ImVec4(1.0f, 0.75f, 0.3f, 1.0f), "Please click on a FlashLink icon before !");
-        } else {
-          ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Enter a module flashlink above and click Search.");
-        }
+        ImGui::Dummy(ImVec2(0.0f, 28.0f));
+        centered_text(pal.sub, mode_ == "flash" ? "Click on a FlashLink icon first." : "Enter a code above.");
+        ImGui::Dummy(ImVec2(0.0f, 28.0f));
         break;
       }
 
       case FlashLinkState::Loading: {
-        static const char *frames[] = { "|", "/", "-", "\\" };
-        int frame = static_cast<int>(ImGui::GetTime() / 0.15f) % 4;
-
-        ImGui::Text("Searching %s", frames[frame]);
-        ImGui::TextColored(ImVec4(0.6f, 0.8f, 1.0f, 1.0f), "Flashlink : %s", current_flashlink.c_str());
+        const float radius = 14.0f;
+        ImGui::Dummy(ImVec2(0.0f, 24.0f));
+        ImGui::SetCursorPosX((ImGui::GetWindowWidth() - radius * 2.0f) * 0.5f);
+        spinner(radius, pal.accent);
+        ImGui::Dummy(ImVec2(0.0f, 4.0f));
+        centered_text(pal.sub, "Searching...");
+        centered_text(pal.sub, current_flashlink);
+        ImGui::Dummy(ImVec2(0.0f, 24.0f));
         break;
       }
 
@@ -563,8 +594,14 @@ namespace vxe {
           error_msg = fetch_result_.error;
         }
 
-        ImGui::TextColored(ImVec4(1.0f, 0.45f, 0.45f, 1.0f), "An error occured");
-        ImGui::TextWrapped("%s", error_msg.c_str());
+        CardScope card = begin_card();
+        Cherry::PushFont("ClashBold");
+        colored_text(pal.danger, "An error occurred");
+        Cherry::PopFont();
+        ImGui::Dummy(ImVec2(0.0f, 2.0f));
+        wrapped_text(pal.text, error_msg, card.wrap_x);
+        end_card(card, pal);
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
         break;
       }
 
@@ -578,41 +615,44 @@ namespace vxe {
         float avail_w = ImGui::GetContentRegionAvail().x;
 
         if (!local_result.info.banner_link.empty()) {
-          ImGui::Image(Cherry::GetTexture(Cherry::GetHttpPath(local_result.info.banner_link)), ImVec2(avail_w, 120.0f));
-          ImGui::Spacing();
+          rounded_image(
+              Cherry::GetTexture(Cherry::GetHttpPath(local_result.info.banner_link)), ImVec2(avail_w, 120.0f), 14.0f);
+          ImGui::Dummy(ImVec2(0.0f, 8.0f));
         }
 
+        CardScope info = begin_card();
+        if (!local_result.info.picture_link.empty()) {
+          rounded_image(
+              Cherry::GetTexture(Cherry::GetHttpPath(local_result.info.picture_link)), ImVec2(64.0f, 64.0f), 14.0f);
+          ImGui::SameLine(0.0f, 14.0f);
+        }
         ImGui::BeginGroup();
-        {
-          if (!local_result.info.picture_link.empty()) {
-            ImGui::Image(Cherry::GetTexture(Cherry::GetHttpPath(local_result.info.picture_link)), ImVec2(64.0f, 64.0f));
-            ImGui::SameLine();
-          }
-
-          ImGui::BeginGroup();
-          ImGui::SetWindowFontScale(1.3f);
-          ImGui::TextUnformatted(
-              local_result.info.proper_name.empty() ? "Unknown module" : local_result.info.proper_name.c_str());
-          ImGui::SetWindowFontScale(1.0f);
-
-          ImGui::TextDisabled("%s", local_result.info.name.c_str());
-          ImGui::EndGroup();
-        }
+        ImGui::Dummy(ImVec2(0.0f, 4.0f));
+        Cherry::PushFont("ClashBold");
+        colored_text(pal.text, local_result.info.proper_name.empty() ? "Unknown module" : local_result.info.proper_name);
+        Cherry::PopFont();
+        pill("Module", pal.accent, pal.accentText);
+        ImGui::SameLine(0.0f, 8.0f);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3.0f);
+        colored_text(pal.sub, local_result.info.name);
         ImGui::EndGroup();
 
-        ImGui::Spacing();
-        ImGui::TextWrapped("%s", local_result.info.description.c_str());
-
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
+        if (!local_result.info.description.empty()) {
+          ImGui::Dummy(ImVec2(0.0f, 8.0f));
+          wrapped_text(pal.sub, local_result.info.description, info.wrap_x);
+        }
+        end_card(info, pal);
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
         bool has_native = !local_result.compatible_releases.empty();
         bool has_cross = !local_result.compatible_cross_releases.empty();
 
+        CardScope install = begin_card();
+
         if (!has_native && !has_cross) {
-          ImGui::TextColored(
-              ImVec4(1.0f, 0.75f, 0.3f, 1.0f), "No compatible version of this module found for your platform.");
+          wrapped_text(pal.warn, "No compatible version of this module found for your platform.", install.wrap_x);
+          end_card(install, pal);
+          ImGui::Dummy(ImVec2(0.0f, 10.0f));
           break;
         }
 
@@ -626,12 +666,11 @@ namespace vxe {
         std::string native_label = native_platform_label(current_platform, current_arch);
 
         if (has_cross && has_native) {
-          ImGui::TextUnformatted("Install target :");
-          ImGui::Spacing();
+          colored_text(pal.sub, "Install target");
 
           bool is_cross = (selected_platform_mode_ == PlatformTargetMode::Cross);
 
-          if (ImGui::RadioButton("Cross-platform", is_cross)) {
+          if (radio_button(pal, "Cross-platform", is_cross)) {
             selected_platform_mode_ = PlatformTargetMode::Cross;
             selected_release_index_ = 0;
           }
@@ -644,35 +683,33 @@ namespace vxe {
 
           ImGui::SameLine();
 
-          if (ImGui::RadioButton(native_label.c_str(), !is_cross)) {
+          if (radio_button(pal, native_label.c_str(), !is_cross)) {
             selected_platform_mode_ = PlatformTargetMode::Native;
             selected_release_index_ = 0;
           }
-
-          ImGui::Spacing();
         } else if (has_cross && !has_native) {
           selected_platform_mode_ = PlatformTargetMode::Cross;
-          ImGui::TextDisabled("Cross-platform module (works on Linux, Windows and macOS)");
+          colored_text(pal.sub, "Cross-platform module (works on Linux, Windows and macOS)");
           if (ImGui::IsItemHovered()) {
             ImGui::SetTooltip(
                 "This module is cross-platform: it takes a bit more disk\n"
                 "space, but makes it easy to share the project with other\n"
                 "platforms.");
           }
-          ImGui::Spacing();
         } else {
           selected_platform_mode_ = PlatformTargetMode::Native;
-          ImGui::TextDisabled("Platform : %s", native_label.c_str());
-          ImGui::Spacing();
+          colored_text(pal.sub, "Platform : " + native_label);
         }
 
-        const std::vector<ModuleRelease> &active_releases = (selected_platform_mode_ == PlatformTargetMode::Cross)
+        ImGui::Dummy(ImVec2(0.0f, 8.0f));
+
+        const std::vector<ModuleRelease>& active_releases = (selected_platform_mode_ == PlatformTargetMode::Cross)
                                                                 ? local_result.compatible_cross_releases
                                                                 : local_result.compatible_releases;
 
         std::vector<std::string> combo_labels;
         combo_labels.reserve(active_releases.size());
-        for (const auto &rel : active_releases) {
+        for (const auto& rel : active_releases) {
           if (selected_platform_mode_ == PlatformTargetMode::Cross) {
             combo_labels.push_back(rel.version);
           } else {
@@ -684,7 +721,9 @@ namespace vxe {
           selected_release_index_ = 0;
         }
 
-        ImGui::TextUnformatted("Available versions :");
+        colored_text(pal.sub, "Available versions");
+        push_field_style(pal);
+        ImGui::SetNextItemWidth(install.inner_w);
         if (ImGui::BeginCombo("##version_combo", combo_labels[selected_release_index_].c_str())) {
           for (int i = 0; i < (int)combo_labels.size(); i++) {
             bool is_selected = (i == selected_release_index_);
@@ -697,12 +736,12 @@ namespace vxe {
           }
           ImGui::EndCombo();
         }
+        pop_field_style();
 
-        ImGui::Spacing();
-        ImGui::Spacing();
+        ImGui::Dummy(ImVec2(0.0f, 12.0f));
 
-        if (ImGui::Button("Download and install", ImVec2(avail_w, 0.0f))) {
-          const ModuleRelease &chosen = active_releases[selected_release_index_];
+        if (action_button("Download and install", pal.accent, pal.accentHover, pal.accentText, install.inner_w, 40.0f)) {
+          const ModuleRelease& chosen = active_releases[selected_release_index_];
 
           std::string parent_uuid = local_result.info.uuid;
           std::string release_url =
@@ -735,30 +774,32 @@ namespace vxe {
 
         if (install_progress_) {
           vxe::ModuleInstallState st = install_progress_->state.load();
-          ImGui::Spacing();
-          ImGui::Separator();
-          ImGui::Spacing();
+          ImGui::Dummy(ImVec2(0.0f, 6.0f));
 
           switch (st) {
             case vxe::ModuleInstallState::Error:
-              ImGui::TextColored(ImVec4(1.0f, 0.45f, 0.45f, 1.0f), "%s", install_progress_->get_error().c_str());
+              wrapped_text(pal.danger, install_progress_->get_error(), install.wrap_x);
               break;
             case vxe::ModuleInstallState::Done:
-              ImGui::TextColored(ImVec4(0.4f, 0.9f, 0.4f, 1.0f), "%s", install_progress_->get_status().c_str());
-              ImGui::TextDisabled("%s", install_progress_->get_install_path().c_str());
+              wrapped_text(pal.accent, install_progress_->get_status(), install.wrap_x);
+              wrapped_text(pal.sub, install_progress_->get_install_path(), install.wrap_x);
               break;
-            default: ImGui::Text("%s", install_progress_->get_status().c_str()); break;
+            default:
+              spinner(8.0f, pal.accent);
+              ImGui::SameLine(0.0f, 8.0f);
+              wrapped_text(pal.sub, install_progress_->get_status(), install.wrap_x);
+              break;
           }
         }
 
+        end_card(install, pal);
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
         break;
       }
     }
 
     renderCloseButton();
-    ImGui::PopStyleColor();
     ImGui::EndChild();
-    ImGui::PopStyleColor();
   }
 
 }  // namespace vxe
