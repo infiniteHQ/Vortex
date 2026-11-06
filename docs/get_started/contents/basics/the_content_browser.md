@@ -9,13 +9,31 @@ One of the key core windows of Vortex Editor is the content browser. This utilit
 
 The content browser contains a menubar with quick actions like "Create", "Save all" or "Import" at the top left. The Create button will open the creation window, Save all is a universal save button: modules editors, or every project window, can listen to it and save. And Import will open the import modal to import custom contents from your system.
 
-At the right of the menubar you will access the search button that toggles the search bar on the top of the content section, and all other buttons for changing the layout of the content view (between thumbnails, objects and list).
+---
 
-In the middle of the window you will see the content section, and eventually the quick access sidebar at the left, allowing you to quickly access your folders or favorites directory.
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/cb_right_menubar.png"
+  type="bordered"
+/>
+
+At the right of the menubar you will access the search button that toggles the search bar on the top of the content section, and the view button for changing the layout of the content view (between thumbnails, objects and list).
+
+---
+
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/cb_def.png"
+  type="bordered"
+/>
+
+In the middle of the window you will see the <span style="color:#0084FF">**content section**</span>, and eventually the quick access sidebar at the left, allowing you to quickly access your folders or favorites directory.
 
 The content section is the core of the content browser, it shows you all of your data, assets and directories.
 
-WIP : You can activate the viewer section at the middle right to see a preview of the selection.
+At the left you have the quick <span style="color:#FF7226">**access pannel**</span>, to access favorite folders, or custom pools. You have also a side view of your project.
+
+---
+
+WIP : You can also activate the thumbnails pannel on the view menu to see a preview of the selection.
 
 ### Browse and manage contents
 
@@ -33,15 +51,31 @@ You can quickly create files or folders by right-clicking and clicking the add f
 
 You can create contents, items, files, folders, create from existing templates or even create from the community with the garage¹ with the Create window, by clicking on the "Add" button.
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/cb_create.png"
+  type="bordered"
+  width="300"
+/>
+
 Once the Add button is clicked, this modal opens, and you will see quick creation buttons such as Folder, Files or Garage import¹. Under this section you have all modules templates, you can create custom items from modules.
 
 ### Search specific contents
 
 On the content section, you can activate the search bar by clicking on the Search button at the top right in the menubar. The search bar contains the filter section toggle button and the search bar itself, you can write anything in the input of the search bar and the content section will show you only items that can correspond to your search.
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/cb_search.png"
+  type="bordered"
+/>
+
 ### Apply filters
 
 You can activate the filter panel in the View menu at the right of the menubar or with the search panel. Once the filter bar is activated, you can show hidden contents, select specific types of files with extensions, or select specific modules items.
+
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/cb_filters.png"
+  type="bordered"
+/>
 
 ### Import contents
 
@@ -52,5 +86,8 @@ Please be careful not to import items that are too large and make sure your syst
 ### Change view mode
 
 To change the view mode of the content section, click on the view button at the right of the menubar, you will see the Content bar view selector, simply click on it and change the view mode. The content section will be updated instantly.
+
+---
+---
 
 ¹ Requires an internet connection and Vortex network allowed to access the garage.
