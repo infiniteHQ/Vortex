@@ -1,5 +1,10 @@
 The Vortex Launcher allows you to manage your system contents such as modules/plugins/items/templates. Managing these in the system from the launcher lets you easily import them into all of your projects, without an internet connection.
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/launcher/manage_system_contents.png"
+  type="bordered"
+/>
+
 Warning: Reminder that contents downloaded from outside are pieces of programs/scripts from others, you need to trust every content that you install.
 
 A content installed in your system is only available to your projects, it's not executed directly, this allows you to use only what you need in your projects, without importing all of your contents. You can then have multiple projects/tools of different natures.
