@@ -17,7 +17,21 @@ You can change the view mode with the settings button at the right of the menuba
 
 You can install a plugin from your system by clicking on the import window, you will see all the plugins of your system, simply click install to import them.
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/plugins_import.png"
+  type="bordered"
+  width="350"
+/>
+
+---
+
 If you allowed Vortex to go on the Web, you will be able to download plugins from the Infinite Garage by clicking on the lightning icon after clicking on a similar lightning icon from the Infinite Garage page of a valid and compatible plugin.
+
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/plugins_flashlink.png"
+  type="bordered"
+  width="350"
+/>
 
 ### Delete a plugin
 

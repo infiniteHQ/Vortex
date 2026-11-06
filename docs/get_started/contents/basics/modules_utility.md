@@ -17,7 +17,21 @@ You can change the view mode with the settings button at the right of the menuba
 
 You can install a module from your system by clicking on the import window, you will see all the modules of your system, simply click install to import them.
 
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/modules_import.png"
+  type="bordered"
+  width="350"
+/>
+
+---
+
 If you allowed Vortex to go on the Web, you will be able to download modules from the Infinite Garage by clicking on the lightning icon after clicking on a similar lightning icon from the Infinite Garage page of a valid and compatible module.
+
+<image
+  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/modules_flashlink.png"
+  type="bordered"
+  width="350"
+/>
 
 ### Delete a module
 
