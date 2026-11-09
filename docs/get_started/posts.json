@@ -242,11 +242,27 @@
                             "subpages": []
                         },
                         {
-                            "name": "modules_api_ref",
-                            "slug": "Lua API Reference",
+                            "name": "modules_ui",
+                            "slug": "Program UI",
                             "description": "",
                             "logo": "",
-                            "link": "modules_api_ref.md",
+                            "link": "modules_ui.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "modules_api_m",
+                            "slug": "Modules API Reference",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_api_m.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "modules_api_v",
+                            "slug": "Vortex API Reference",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_api_v.md",
                             "subpages": []
                         },
                         {
