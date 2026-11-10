@@ -564,8 +564,22 @@ VORTEX_API void vxe::rename_file(const std::string& target_path, const std::stri
   }
 }
 
+// TODO: Move that to Vortex API
+namespace {
+  bool is_inside_project(const std::filesystem::path& target) {
+    const auto root = std::filesystem::weakly_canonical(vxe::get_current_context()->projectPath);
+    const auto path = std::filesystem::weakly_canonical(target);
+    const auto rel = path.lexically_relative(root);
+    return !rel.empty() && rel != "." && *rel.begin() != "..";
+  }
+}  // namespace
+
 VORTEX_API void vxe::delete_file(const std::string& target_path) {
   try {
+    if (!is_inside_project(target_path)) {
+      throw std::invalid_argument("The specified path is outside the project path.");
+    }
+
     if (!std::filesystem::exists(target_path) || !std::filesystem::is_regular_file(target_path)) {
       throw std::invalid_argument("The specified path does not exist or is not a file.");
     }
@@ -582,6 +596,10 @@ VORTEX_API void vxe::delete_file(const std::string& target_path) {
 
 VORTEX_API void vxe::delete_folder(const std::string& target_path) {
   try {
+    if (!is_inside_project(target_path)) {
+      throw std::invalid_argument("The specified path is outside the project path.");
+    }
+
     if (!std::filesystem::exists(target_path) || !std::filesystem::is_directory(target_path)) {
       throw std::invalid_argument("The specified path does not exist or is not a directory.");
     }
@@ -598,6 +616,10 @@ VORTEX_API void vxe::delete_folder(const std::string& target_path) {
 
 VORTEX_API void vxe::delete_path(const std::string& target_path) {
   try {
+    if (!is_inside_project(target_path)) {
+      throw std::invalid_argument("The specified path is outside the project path.");
+    }
+
     if (!std::filesystem::exists(target_path)) {
       throw std::invalid_argument("The specified path does not exist.");
     }
