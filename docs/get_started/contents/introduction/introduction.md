@@ -32,18 +32,18 @@ To get started, we recommend beginning with Installing Vortex and Getting Famili
 
 ## History of Vortex
 ### Prequel
-The Vortex story start in 2019. The project was created around "FZTOS" a modular operating system dedicated to hackers who want a modular operatring system based on Pacman package manager. The original goal of FZTOS was to give the power to people of creating every custom Linux based systems. With the goal of create homelabs, data storage systems, game system, etc. Anectote: "FZT" is for "FizzTeam", oriented around a old project names "CraftWorld", a old minecraft server created around 2017/2018 that not have a really big success.
+The Vortex story starts in 2019. The project was created around "FZTOS" a modular operating system dedicated to hackers who want a modular operating system based on Pacman package manager. The original goal of FZTOS was to give of creating every custom Linux-based system. With the goal of creating homelabs, data storage systems, game systems, etc. Anecdote: "FZT" is for "FizzTeam", an old project named "CraftWorld", an old Minecraft server created around 2017/2018 that didn’t have a really big success.
 
-Later, in 2020 FZTOS is renamed "InfiniteOS" to represent the infnite possibilities of this modular system.
+Later, in 2020 FZTOS was renamed "InfiniteOS" to represent the infnite possibilities of this modular system.
 
-### Beginings of Vortex
-Create a operating system is interesting and cool, but creating a modular one is pretty complex, to help modulartiy, weve created "The Vortex Scripts", theses scripts help to build a custom build of InfiniteOS with specified parameters including distribution managment like rolling release.
-In 2022 Vortex scripts are at this time pretty cool, but if we need them, others will probably need them too. Well, weve created the Vortex Creation Platform, allowing everyone to create their own hacky systems !
+### Beginnings of Vortex
+Create an operating system is interesting and cool, but creating a modular one is pretty complex, to help modularity, we've created "The Vortex Scripts", these scripts help to build a custom build of InfiniteOS with specified parameters including distribution management like rolling release.
+In 2022 Vortex's scripts were at that time pretty cool, but if we need them, others will probably need them too. Well, we've created the Vortex Creation Platform, allowing everyone to create their own hacky systems!
 
 
 <image
   src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/firstsys.png"
-  description="This is the first system entierly created by Vortex"
+  description="This is the first system entirely created by Vortex"
   type="bordered"
   width="828"
   height="423"
@@ -63,7 +63,7 @@ In 2022 Vortex scripts are at this time pretty cool, but if we need them, others
 />
 <image
   src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/vx3.png"
-  description="Hardware managment development of the Vortex system creator (called in 2024 Fusion)"
+  description="Hardware management development of the Vortex system creator (called in 2024 Fusion)"
   type="bordered"
   width="828"
   height="423"
@@ -71,7 +71,7 @@ In 2022 Vortex scripts are at this time pretty cool, but if we need them, others
 />
 <image
   src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/vx4.png"
-  description="Vortex CLI (firsts versions)"
+  description="Vortex CLI (first versions)"
   type="bordered"
   width="828"
   height="423"
@@ -87,7 +87,7 @@ In 2022 Vortex scripts are at this time pretty cool, but if we need them, others
 />
 <image
   src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/firstsys.png"
-  description="The first system entierly made with Vortex"
+  description="The first system entirely made with Vortex"
   type="bordered"
   width="828"
   height="423"
@@ -95,7 +95,7 @@ In 2022 Vortex scripts are at this time pretty cool, but if we need them, others
 />
 <image
   src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/firstsys2.png"
-  description="The first system entierly made with Vortex"
+  description="The first system entirely made with Vortex"
   type="bordered"
   width="828"
   height="423"
@@ -111,11 +111,11 @@ In 2022 Vortex scripts are at this time pretty cool, but if we need them, others
 />
 </carrousel>
 
-###### Firsts versions of the Editor
+###### First versions of the Editor
 <carrousel>
 <image
   src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/ed2.png"
-  description="Firsts versions of the Vortex editor"
+  description="First versions of the Vortex editor"
   type="bordered"
   width="828"
   height="423"
@@ -123,7 +123,7 @@ In 2022 Vortex scripts are at this time pretty cool, but if we need them, others
 />
 <image
   src="https://static.infinite.si/vxdocs/1.0/get_started/media/nostalgia/ed1.png"
-  description="Vortex run a system assembly from the editor"
+  description="Vortex runs a system assembly from the editor"
   type="bordered"
   width="828"
   height="423"
@@ -156,6 +156,6 @@ In 2022 Vortex scripts are at this time pretty cool, but if we need them, others
 </carrousel>
 
 ### Vortex now
-Vortex is now a advanced creation platform. This project allow the creation of systems, apps, services & devices, but it's also allow everyone to use tools, debugers, diag tools and more. Data is project oriented, so every Vortex project can have their own purposes and goals.
+Vortex is now an advanced creation platform. This project allows the creation of systems, apps, services & devices, but it also allow everyone to use tools, debuggers, diag tools and more. Data is project oriented, so every Vortex project can have their own purposes and goals.
 
 <img src="https://static.infinite.si/vxdocs/1.0/get_started/media/vortexnow.png" />

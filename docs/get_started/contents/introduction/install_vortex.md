@@ -4,7 +4,7 @@ Here, you’ll learn how to install the **Vortex Launcher**, a utility that simp
 ## Requirement
 This is all requirements for all Vortex softwares, such as Installer, Launcher and Editors:
 
-- You need to have a x86_64 Microsoft Windows 10 or 11, or any modern x86_64 Linux based distribution.
+- You need to have a x86_64 Microsoft Windows 10 or 11, any modern x86_64/ARM64 Linux based distribution or macOS (arm).
 - You need to have administrator permissions for installation.
 
 ## Installing Vortex Launcher
