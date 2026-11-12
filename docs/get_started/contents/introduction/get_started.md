@@ -1,6 +1,6 @@
 This section will show you how to install versions of the Vortex Editor, and get started by creating your first project!
 
-NOTE: This documentation was made from the English version of the Vortex Launcher/Editor.
+NOTE: This documentation was based from from the English version of the Vortex Launcher/Editor.
 
 ## Take Vortex in hand
 
@@ -27,7 +27,7 @@ At the top of the Vortex Launcher, you can see the menubar, with the Vortex menu
 
 The <span style="color:#FF686A">**sidebar**</span> is here to change the view between the main view, the project creator and your projects.
 
-By default, all the <span style="color:#CAFF68">**quick actions**</span> menus will appear as the "Overview" pannel.
+By default, all the <span style="color:#CAFF68">**quick action**</span> menus will appear as the "Overview" panel.
 
 ### Create a project
 
@@ -45,7 +45,7 @@ This is what you see: the project creation menu:
   type="bordered"
 />
 
-You can now select a base in the <span style="color:#6893FF">**template section**</span> (you can have multiple project bases depending on what starting point you want). Put a name and click on "Create project".
+You can now select a base in the <span style="color:#6893FF">**template section**</span> (you can have multiple project bases depending on what starting point you want). Enter a name and click on "Create project".
 
 This is it! Your project is now available in "Your project & tools".
 
@@ -66,7 +66,7 @@ Then a version installer will open. Follow the steps and restart the launcher. I
 
 ---
 
-You can also quickly try to launch the project with the version missing and directly hit the button "Find official versions". This will open the Vortex version utility with the search for the right version:
+You can also quickly try to launch the project if the version is missing and directly hit the "Find official versions" button. This will open the Vortex version utility pre-filled with a search for the right version:
 
 <image
   src="https://static.infinite.si/vxdocs/1.0/get_started/media/launcher/not_installed_version.png"
@@ -79,7 +79,7 @@ You can also quickly try to launch the project with the version missing and dire
 
 Now you have your project and your editor ready, let's open the project! Go to the "Your project & tools" button in the <span style="color:#FF686A">**sidebar**</span>.
 
-This panel regroups all your projects and tools. When you create any project, this panel will automatically appear with the new project selected by default.
+This panel groups all your projects and tools. When you create a project, this panel will automatically appear with the new project selected by default.
 
 <image
   src="https://static.infinite.si/vxdocs/1.0/get_started/media/launcher/projects.png"
@@ -93,16 +93,16 @@ This panel regroups all your projects and tools. When you create any project, th
 
 You can select any project by clicking on it in the <span style="color:#AC68FF">**project & tools**</span> section, then the project card will appear in the <span style="color:#CAFF68">**Selected project or tool**</span> section. You just need to click on Open to open it with your editor. Vortex will automatically choose the right editor to open or ask you if you have multiple editors for the same version.
 
-Congrats! You now have your first project with your Vortex Editor ready. You are now a Vortex user! You can now directly go learn the basics of Vortex by going to the "Discover Vortex" section of this documentation.
+Congrats! You now have your first project and your Vortex Editor ready. You are now a Vortex user! You can now directly go learn the basics of Vortex by going to the "Discover Vortex" section of this documentation.
 
 ### How do projects work?
 
 #### Independence of projects
 Every project and tool is independent from the others! Every module and plugin that you install in a specific project is not installed for your entire Vortex installation.
 
-This gives us two opportunities in the context of Vortex:
-- **Multiply the project/tool natures:** Thanks to that approach, you can have many feature integrations without bloating your entire ecosystem. You can have a firmware project and a network debugger project without colliding these two contexts and without having too many useless features in each context.
-- **Sharing is easy:** You want to share your project with other creators? Or even open it on another system? So you don't need to reproduce your development environment! Because yes, your content follows your project and not your system. Sharing, migration and collaboration are easy.
+This gives you two advantages in the context of Vortex:
+- **Multiply the project/tool natures:** Thanks to that approach, you can have many feature integrations without bloating your entire ecosystem. You can have a firmware project and a network debugger project without these two contexts colliding and without having too many useless features in each context.
+- **Sharing is easy:** You want to share your project with other creators? Or even open it on another system? Then you don’t need to reproduce your development environment! Because yes, your content follows your project and not your system. Sharing, migration and collaboration are easy.
 
 #### Settings
-Like modules and plugins, settings are related to projects, and not to the system, so you can customize a different experience for each project you have, and better than that, you can share projects with custom configurations!
+Like modules and plugins, settings are related to projects, and not to the system, so you can customize a different experience for each project you have, and even better, you can share projects with custom configurations!
