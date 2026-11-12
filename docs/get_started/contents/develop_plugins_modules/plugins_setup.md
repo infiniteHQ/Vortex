@@ -1,8 +1,8 @@
 ### Setup the plugin development
 
-Let's start! Create a folder and open it with your code editor. We recommend using git, to track progress and make versions of your plugin.
+Let's start! Create a folder and open it with your code editor. We recommend using git to track progress and make versions of your plugin.
 
-To live test your plugin, we recommand creating a dedicated Vortex project from the Launcher, and start your plugin base in the [project]/.vx/plugins/[yourplugin]/. With that approach you can develop your plugin directly, without compiling Vortex. Just launching this project alongside your project editor (you can also use Vortex as code editor!).
+To live test your plugin, we recommend creating a dedicated Vortex project from the Launcher, and start your plugin base in the [project]/.vx/plugins/[yourplugin]/. With that approach you can develop your plugin directly, without compiling Vortex. Just launching this project alongside your project editor (you can also use Vortex as code editor!).
 
 Note: You can also look at our example plugin repository, with build scripts [here](https://github.com/infiniteHQ/HelloWorldPlugin)
 
@@ -41,14 +41,14 @@ Inside the "src" folder, create the file "main.lua".
 Inside main.lua, write this piece of example code:
 
 ```lua
-Vortex.Log("Hello World !")
+Vortex.Log("Hello World!")
 ```
 
 You can also create a "resources" folder and put your plugin logo in it, as logo.png for example.
 
 ### Testing
 
-Like this page say at the beegining, you can test your plugin by creating a prototype project with all the modules and contents you want, and copying the folder containing your plugin into the .vx/plugins/ folder of the project.
+Like this page says at the beginning, you can test your plugin by creating a prototype project with all the modules and contents you want, and copying the folder containing your plugin into the .vx/plugins/ folder of the project.
 
 You will be able to see the log in the Console logs utility.
 
