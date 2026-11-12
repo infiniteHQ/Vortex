@@ -3,8 +3,8 @@ The plugin utility allows you to manage plugins installed and used by your proje
 ### First look
 
 <image
-  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/plugins_utility.png"
-  type="bordered"
+src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/plugins_utility.png"
+type="bordered"
 />
 
 The plugins utility has a menubar with an import modal, and optionally Infinite Garage buttons (if you allowed Vortex to go on the Web from the settings or from this window).
@@ -15,12 +15,12 @@ You can change the view mode with the settings button at the right of the menuba
 
 ### Install new plugins
 
-You can install a plugin from your system by clicking on the import window, you will see all the plugins of your system, simply click install to import them.
+You can install a plugin from your system by clicking on the import window; you will see all the plugins of your system, simply click install to import them.
 
 <image
-  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/plugins_import.png"
-  type="bordered"
-  width="350"
+src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/plugins_import.png"
+type="bordered"
+width="350"
 />
 
 ---
@@ -28,14 +28,14 @@ You can install a plugin from your system by clicking on the import window, you 
 If you allowed Vortex to go on the Web, you will be able to download plugins from the Infinite Garage by clicking on the lightning icon after clicking on a similar lightning icon from the Infinite Garage page of a valid and compatible plugin.
 
 <image
-  src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/plugins_flashlink.png"
-  type="bordered"
-  width="350"
+src="https://static.infinite.si/vxdocs/1.0/get_started/media/editor/plugins_flashlink.png"
+type="bordered"
+width="350"
 />
 
 ### Delete a plugin
 
-To delete a plugin from your project (and not the system!), simply click on the trash icon and confirm, you can reinstall it later.
+To delete a plugin from your project (and not the system!), simply click on the trash icon and confirm; you can reinstall it later.
 
 ### Start, restart or stop plugins
 
