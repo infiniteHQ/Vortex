@@ -1,16 +1,16 @@
 Here, you’ll learn how to install the **Vortex Launcher**, a utility that simplifies and centralizes the management of Vortex. The Vortex Launcher allows you to create projects, install *Vortex Editor* versions, add content, integrate plugins or modules into your projects, and configure other useful settings.
 
 
-## Requirement
-This is all requirements for all Vortex softwares, such as Installer, Launcher and Editors:
+## Requirements
+These are all the requirements for all Vortex software, such as the Installer, Launcher and Editors:
 
-- You need to have a x86_64 Microsoft Windows 10 or 11, any modern x86_64/ARM64 Linux based distribution or macOS (arm).
+- You need to have an x86_64 Microsoft Windows 10 or 11, any modern x86_64/ARM64 Linux-based distribution or macOS (ARM).
 - You need to have administrator permissions for installation.
 
 ## Installing Vortex Launcher
 
 - **Download the Installer**  
-   Visit [vortex.infinite.si](http://vortex.infinite.si/) and click on the “Download Vortex Launcher” button to get the Vortex Installer.
+   Visit [vortex.infinite.si](https://vortex.infinite.si/) and click on the “Download Vortex Launcher” button to get the Vortex Installer.
 
 ---
 - **Run the Installer**  
@@ -19,7 +19,7 @@ This is all requirements for all Vortex softwares, such as Installer, Launcher a
 ---
 
 - **Accept the License Agreement**  
-   This is our free/open source public license. Review the license agreement, accept it while clicking on **Accept**.
+   This is our free/open source public license. Review the license agreement, accept by clicking on **Accept**.
 
 ---
 - **Installation method**  
@@ -28,8 +28,8 @@ This is all requirements for all Vortex softwares, such as Installer, Launcher a
 ---
 
 - **Complete the Installation**  
-   The Vortex Launcher will install. If the process is successful, the progress bar will stay green, and you will see a message stating: Vortex Launcher is now installed !”. Then, you can click on **Finish** to close this window.
+   The Vortex Launcher will install. If the process is successful, the progress bar will stay green, and you will see a message stating: “Vortex Launcher is now installed !”. Then, you can click on **Finish** to close this window.
 
-Once installed, Vortex will be listed on your system as **Vortex Launcher**. You can uninstall Vortex by searching for "Uninstall Vortex" programm.
+Once installed, Vortex will be listed on your system as **Vortex Launcher**. You can uninstall Vortex by searching for "Uninstall Vortex" program.
 
-You can now launch it and go on "Get started !" page of this current documentation. 
+You can now launch it and go to the "Get started!" page of this documentation. 
