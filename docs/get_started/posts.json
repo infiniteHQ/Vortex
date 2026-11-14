@@ -201,6 +201,14 @@
                             "subpages": []
                         },
                         {
+                            "name": "plugins_api_e",
+                            "slug": "Vortex core events API",
+                            "description": "",
+                            "logo": "",
+                            "link": "plugins_api_e.md",
+                            "subpages": []
+                        },
+                        {
                             "name": "plugins_prod",
                             "slug": "Distribute your plugins",
                             "description": "",
@@ -263,6 +271,14 @@
                             "description": "",
                             "logo": "",
                             "link": "modules_api_v.md",
+                            "subpages": []
+                        },
+                        {
+                            "name": "modules_api_e",
+                            "slug": "Vortex core events API",
+                            "description": "",
+                            "logo": "",
+                            "link": "modules_api_e.md",
                             "subpages": []
                         },
                         {
