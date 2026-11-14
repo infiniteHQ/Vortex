@@ -62,7 +62,7 @@ In order to download a version of the Vortex Editor, go to the menubar and click
 
 In the version manager you can find every version of Vortex (depending on your distribution channels). Select the right version for your projects and hit Install.
 
-Then a version installer will open. Follow the steps and restart the launcher. If everything is OK, you will be able to open your project.
+Then a version installer will open. Follow the steps to install the editor. If everything is OK, you will be able to open your project and see the Vortex Editor in the version manager.
 
 ---
 

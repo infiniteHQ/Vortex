@@ -12,9 +12,9 @@ The Version manager will open with all available editors of your distribution ch
 
 You can add more distribution channels (for betas, or obsolete versions). In order to do that, look at the following section "Change distribution channel".
 
-To install a version, click on the "Install" button of the version you want; this will open the installer of the Vortex Editor.
+To install a version, click on the "Install" button of the version you want, this will open the installer of the Vortex Editor.
 
-Select the installation target (among your Vortex Editors paths), accept the free and open-source license and install; after that, the Vortex Editor will be ready to launch compatible projects!
+Select the installation target (among your Vortex Editors paths), accept the free and open-source license and install. After that, the Vortex Editor will be ready to launch compatible projects!
 
 ### Change distribution channel
 
