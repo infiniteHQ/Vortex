@@ -12,4 +12,5 @@ This is all the pages of this section :
 - [**Program module UI**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=modules_ui) : Learn how to create user interfaces for your module.
 - [**Vortex API Reference**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=modules_api_v) : The main Vortex API
 - [**Modules API reference**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=modules_api_m) : The API reference of Vortex modules dedicated endpoints.
+- [**Vortex core events API**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=modules_api_e) : The API reference of Vortex core events (and how to use)
 - [**Distribute your modules**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=modules_prod) : Learn how to share and distribute your module to others!

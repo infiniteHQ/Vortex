@@ -11,4 +11,5 @@ This is all the pages of this section :
 - [**Program plugin logics**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=plugins_logics) : Learn how to develop your plugin logics.
 - [**Program plugin UI**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=plugins_ui) : Learn how to create user interfaces for your plugin.
 - [**Lua API reference**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=plugins_api_ref) : The Lua API reference for plugins.
+- [**Vortex core events API**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=plugins_api_e) : The API reference of Vortex core events (and how to use)
 - [**Distribute your plugins**](https://vortex.infinite.si/docpage?version=1.0&content_name=develop_plugins_modules&section=get_started&page_name=plugins_prod) : Learn how to share and distribute your plugin to others!
