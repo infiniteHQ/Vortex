@@ -59,7 +59,9 @@ endif()
 # Deps
 # ---------------------------------------------------------------------------
 find_package(Vulkan REQUIRED)
-find_package(OpenSSL REQUIRED)
+if(NOT WIN32)
+    find_package(OpenSSL REQUIRED)
+endif()
 include_directories(${Vulkan_INCLUDE_DIRS})
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/lib/spdlog/include")
 
