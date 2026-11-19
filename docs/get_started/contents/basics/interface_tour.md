@@ -36,7 +36,7 @@ At the top left of your <span style="color:#6893FF">**menubar**</span>, just fol
 
 At the top right of your <span style="color:#6893FF">**menubar**</span>, you can see the window minimize button, maximize window button and the close button.
 
-Note: the close button will only close open subwindows in this specific window, in case a single project has multiple windows open. To close everything, press Ctrl while clicking on this button.
+<banner type="note">the close button will only close open subwindows in this specific window, in case a single project has multiple windows open. To close everything, press Ctrl while clicking on this button.</banner> 
 
 To the left of theses three buttons you will see optional information such as your project name, messages or other little informations.
 

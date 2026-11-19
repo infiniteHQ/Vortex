@@ -1,6 +1,6 @@
 This section will show you how to install versions of the Vortex Editor, and get started by creating your first project!
 
-NOTE: This documentation was based from from the English version of the Vortex Launcher/Editor.
+<banner type="note">This documentation was based from from the English version of the Vortex Launcher/Editor.</banner> 
 
 ## Take Vortex in hand
 

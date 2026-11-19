@@ -5,7 +5,7 @@ src="https://static.infinite.si/vxdocs/1.0/get_started/media/launcher/manage_sys
 type="bordered"
 />
 
-Warning: Reminder that contents downloaded from outside are pieces of programs/scripts from others; you need to trust every content that you install.
+<banner type="warning">Reminder that contents downloaded from outside are pieces of programs/scripts from others; you need to trust every content that you install.</banner> 
 
 A content installed in your system is only available to your projects; it's not executed directly. This allows you to use only what you need in your projects, without importing all of your contents. You can then have multiple projects/tools of different natures.
 

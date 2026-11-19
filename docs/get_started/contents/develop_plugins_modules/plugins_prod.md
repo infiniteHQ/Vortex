@@ -47,4 +47,4 @@ Work in progress...
 
 Then you simply need to execute these scripts to build your plugin.
 
-Note: A plugin is cross-platform, so building on Linux will make your plugin ready for Microsoft Windows and macOS (and vice versa).
+<banner type="note">A plugin is cross-platform, so building on Linux will make your plugin ready for Microsoft Windows and macOS (and vice versa).</banner> 

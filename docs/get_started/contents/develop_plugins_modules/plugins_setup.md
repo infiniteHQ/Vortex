@@ -4,7 +4,7 @@ Let's start! Create a folder and open it with your code editor. We recommend usi
 
 To live test your plugin, we recommend creating a dedicated Vortex project from the Launcher, and start your plugin base in the [project]/.vx/plugins/[yourplugin]/. With that approach you can develop your plugin directly, without compiling Vortex. Just launching this project alongside your project editor (you can also use Vortex as code editor!).
 
-Note: You can also look at our example plugin repository, with build scripts [here](https://github.com/infiniteHQ/HelloWorldPlugin)
+<banner type="note">You can also look at our example plugin repository, with build scripts [here](https://github.com/infiniteHQ/HelloWorldPlugin)</banner> 
 
 ### Create base files
 
@@ -62,5 +62,4 @@ You can also go to "Program plugin interface" to learn how to create windows, bu
 
 You also have the Vortex Plugins API Reference to see all the functions you can call and which parameters to pass.
 
-
-Note: You can also look at our example plugin repository, with build scripts [here](https://github.com/infiniteHQ/HelloWorldPlugin), if you prefer to learn from existing projects.
+<banner type="note">You can also look at our example plugin repository, with build scripts [here](https://github.com/infiniteHQ/HelloWorldPlugin), if you prefer to learn from existing projects.</banner> 

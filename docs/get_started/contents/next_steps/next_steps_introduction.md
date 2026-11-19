@@ -5,7 +5,7 @@ You can now follow tutorials from this documentation, on all following page of t
 
 You can also see our videos tutorials.
 
-NOTE: We still create theses medias and documentation, work in progress !
+<banner type="note">We still create theses medias and documentation, work in progress !</banner> 
 
 #### On this documentation
 Work in progress...

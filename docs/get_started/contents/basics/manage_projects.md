@@ -21,7 +21,7 @@ src="https://static.infinite.si/vxdocs/1.0/get_started/media/launcher/delete_pro
 type="bordered"
 />
 
-Warning: This action is irreversible and all the data of your project will be erased forever!
+<banner type="warning">This action is irreversible and all the data of your project will be erased forever!</banner> 
 
 ### Import a project
 You can import an external project by clicking on import in the project selection page. After that, a little helper will show you your filesystem and will show you compatible projects to import.
