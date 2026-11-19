@@ -33,3 +33,11 @@ These are all the requirements for all Vortex software, such as the Installer, L
 Once installed, Vortex will be listed on your system as **Vortex Launcher**. You can uninstall Vortex by searching for "Uninstall Vortex" program.
 
 You can now launch it and go to the "Get started!" page of this documentation. 
+
+## Special note for macOS/Unix users
+
+For macOS or some Linux distributions, depending on your security settings, you may need to make the VortexInstaller executable. For these two system types, simply open your terminal and run the following command, and you will then be able to launch the installer:
+
+```bash
+chmod +x ./VortexInstaller
+```

@@ -24,3 +24,5 @@ OPTIONAL BUT RECOMMENDED
 - README.md with basic instructions for contributors and developers
 
 ### Start from the official template
+
+We recommend downloading your module base [here](https://github.com/infiniteHQ/HelloWorldModule) from our official template (with the 1.0 release), uncompressing it, setting up your git, and adding the submodule https://github.com/infiniteHQ/Vortex in lib/vortex. Then you will be able to follow this tutorial correctly. You can also recreate your own architecture based on this tutorial or the template itself.
