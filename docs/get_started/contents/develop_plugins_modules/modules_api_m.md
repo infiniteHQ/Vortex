@@ -970,7 +970,7 @@ void clear_dependencies() noexcept;
 auto dep = std::make_shared<ModuleInterfaceDep>();
 dep->type = "em";
 dep->name = "other_module";
-dep->supported_versions = { "1.0.0" };
+dep->supported_versions = { "1.0" };
 add_dependency(dep);
 ```
 
