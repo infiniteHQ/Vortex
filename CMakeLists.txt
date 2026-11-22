@@ -3,10 +3,10 @@ project(vortex)
 
 # Build configuration
 set(VORTEX_VERSION "1.0")
-set(VORTEX_FULL_VERSION "1.0.build6")
-set(VORTEX_BUILDID "6")
-set(VORTEX_BUILDNAME "1.0 [Build 6]")
-set(VORTEX_DIST "beta")
+set(VORTEX_FULL_VERSION "1.0.fb")
+set(VORTEX_BUILDID "7")
+set(VORTEX_BUILDNAME "1.0 [Final Build]")
+set(VORTEX_DIST "stable")
 set(VORTEX_BUILD "dev")
 
 # C++ config
