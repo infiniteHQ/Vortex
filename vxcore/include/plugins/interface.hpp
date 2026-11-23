@@ -9,7 +9,7 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <vortex_internals.h>
+#include "../vortex_internals.h"
 
 #include <cstddef>
 #include <cstdint>
