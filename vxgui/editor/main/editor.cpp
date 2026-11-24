@@ -437,6 +437,7 @@ void Editor::render_framebar() {
 }
 
 void Editor::render_menubar() {
+  update_scale();
   if (vxe::is_theme_needs_rebuild()) {
     CherryApp.ClearThemes();
     for (auto t : vxe::get_current_context()->IO.themes) {
@@ -763,6 +764,9 @@ void Editor::render_menubar() {
       set_project_settings_visibility(true, "theme", CherryWindow.GetName());
     }
 
+    CherryKit::SeparatorText("Interface scale");
+    render_scale_widget();
+
     CherryGUI::EndMenu();
   }
 
@@ -886,6 +890,98 @@ void Editor::window_close_callback() {
   if (!any_visible_left) {
     Application::Get().Close();
     return;
+  }
+}
+
+void Editor::set_global_scale(const float& scale) {
+  for (auto& w : CherryApp.GetWindows()) {
+    w->SetWindowScale(scale);
+  }
+  global_scale_ = scale;
+}
+
+void Editor::refresh_auto_scale(SDL_Window* window) {
+  auto_scale_ = detect_auto_scale(window);
+}
+
+void Editor::autoset_global_scale() {
+  refresh_auto_scale();
+  set_global_scale(target_scale());
+}
+
+float Editor::detect_auto_scale(SDL_Window* window) {
+  int display = 0;
+  if (window) {
+    display = SDL_GetWindowDisplayIndex(window);
+    if (display < 0)
+      display = 0;
+  }
+
+  SDL_DisplayMode mode;
+  if (SDL_GetDesktopDisplayMode(display, &mode) != 0)
+    return 1.0f;
+std::cout << mode.h << std::endl;
+  if (mode.h >= 2160)
+    return 1.5f;
+  if (mode.h >= 1440)
+    return 1.25f;
+  return 1.0f;
+}
+
+float Editor::clamp_scale(float s) {
+  return std::clamp(s, SCALE_MIN, SCALE_MAX);
+}
+
+float Editor::target_scale() {
+  if (vxe::is_global_scale_registered())
+    return clamp_scale(vxe::get_global_scale());
+  return clamp_scale(auto_scale_);
+}
+
+void Editor::update_scale() {
+  const float target = target_scale();
+  if (std::fabs(target - global_scale_) > 0.001f)
+    set_global_scale(target);
+}
+
+void Editor::render_scale_widget() {
+  const float current = target_scale();
+  const bool is_auto = !vxe::is_global_scale_registered();
+
+  const bool at_min = current <= SCALE_MIN + 0.001f;
+  const bool at_max = current >= SCALE_MAX - 0.001f;
+
+  float requested = current;
+  bool changed = false;
+
+  CherryGUI::BeginDisabled(at_min);
+  if (CherryGUI::Button("-", ImVec2(24.0f, 0.0f))) {
+    requested = current - SCALE_STEP;
+    changed = true;
+  }
+  CherryGUI::EndDisabled();
+
+  CherryGUI::SameLine();
+  CherryGUI::Text("%d%%%s", (int)std::lround(current * 100.0f), is_auto ? " (auto)" : "");
+
+  CherryGUI::SameLine();
+  CherryGUI::BeginDisabled(at_max);
+  if (CherryGUI::Button("+", ImVec2(24.0f, 0.0f))) {
+    requested = current + SCALE_STEP;
+    changed = true;
+  }
+  CherryGUI::EndDisabled();
+
+  CherryGUI::SameLine();
+  CherryGUI::BeginDisabled(is_auto);
+  if (CherryGUI::Button("Auto")) {
+    vxe::reset_global_scale();
+  }
+  CherryGUI::EndDisabled();
+
+  if (changed) {
+    requested = std::round(requested * 20.0f) / 20.0f;
+    vxe::set_global_scale(clamp_scale(requested));
   }
 }
 

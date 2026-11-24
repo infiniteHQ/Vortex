@@ -271,8 +271,9 @@ struct VxIO {
   std::vector<std::pair<std::string, std::string>> contentbrowser_pools;
   std::vector<std::string> copy_selection;
   std::vector<std::string> cut_selection;
-  float past_state;  // from 0.0f (0%) to 1.0f (100%)
-
+  float past_state;
+  float global_scale = 1.0f;
+  bool  global_scale_registered = false;
   // Main utilities
   std::vector<std::shared_ptr<ModuleInterfaceUtility>> em_utilities;
 };

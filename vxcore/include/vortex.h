@@ -10,8 +10,8 @@
 
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals, e.g. '#if
 // VORTEX_VERSION_NUM >= 12345')
-#define VORTEX_VERSION     "1.0"
-#define VORTEX_VERSION_NUM 1000
+#define VORTEX_VERSION     "1.1"
+#define VORTEX_VERSION_NUM 1010
 
 #pragma once
 

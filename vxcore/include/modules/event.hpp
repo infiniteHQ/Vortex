@@ -8,8 +8,8 @@
 //	For a copy, see <https://github.com/infiniteHQ/Vortex/blob/main/LICENSE>.
 //
 
-#include <vortex.h>
-#include <vortex_internals.h>
+#include "../vortex.h"
+#include "../vortex_internals.h"
 
 #ifndef MODULE_EVENT_H
 #define MODULE_EVENT_H

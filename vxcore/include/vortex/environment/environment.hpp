@@ -31,6 +31,13 @@ namespace vxe {
   VORTEX_API void refresh_net_permission_state();
   VORTEX_API std::string net_config_path();
   VORTEX_API nlohmann::json ensure_net_config(std::function<void(const std::string &)> on_error);
+  VORTEX_API std::string ui_config_path();
+  VORTEX_API nlohmann::json ensure_ui_config(std::function<void(const std::string &)> on_error = nullptr);
+  VORTEX_API void refresh_ui_state();
+  VORTEX_API bool is_global_scale_registered();
+  VORTEX_API float get_global_scale();
+  VORTEX_API void set_global_scale(const float &s);
+  VORTEX_API void reset_global_scale();
   VORTEX_API void update_environment_project();
   VORTEX_API void update_environment_project(const std::string &oldname);
   VORTEX_API void update_environment_project(

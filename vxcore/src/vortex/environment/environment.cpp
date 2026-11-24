@@ -43,6 +43,12 @@ VORTEX_API void vxe::init_environment() {
         [](const std::string &err) { std::cerr << "[vxe::init_environment] net.json : " << err << std::endl; });
     vxe::refresh_net_permission_state();
   }
+
+  {
+    vxe::ensure_ui_config(
+        [](const std::string &err) { std::cerr << "[vxe::init_environment] ui.json : " << err << std::endl; });
+    vxe::refresh_ui_state();
+  }
 }
 VORTEX_API void vxe::refresh_environment_projects() {
   // Get reference to the Vortex context
@@ -404,4 +410,118 @@ VORTEX_API bool vxe::toggle_vortex_net_permission(std::function<void(const std::
   vxe::refresh_net_permission_state();
 
   return new_value;
+}
+
+std::string vxe::ui_config_path() {
+  return vxe::get_home_directory() + "/.vx/configs/ui.json";
+}
+
+nlohmann::json vxe::ensure_ui_config(std::function<void(const std::string &)> on_error) {
+  std::string dir = vxe::get_home_directory() + "/.vx/configs/";
+  std::string file = vxe::ui_config_path();
+
+  vxe::create_folder_if_not_exists(dir);
+
+  // Défaut : objet vide => aucune valeur utilisateur
+  nlohmann::json default_data = nlohmann::json::object();
+  vxe::create_file_if_not_exists(file, default_data);
+
+  std::ifstream in(file);
+  if (!in.is_open()) {
+    if (on_error)
+      on_error("cannot open ui.json");
+    std::ofstream out(file, std::ios::trunc);
+    out << default_data.dump(4);
+    return default_data;
+  }
+
+  nlohmann::json data;
+  try {
+    in >> data;
+  } catch (const std::exception &e) {
+    if (on_error)
+      on_error(std::string("ui.json (invalid JSON) : ") + e.what());
+    in.close();
+    std::ofstream out(file, std::ios::trunc);
+    out << default_data.dump(4);
+    return default_data;
+  }
+  in.close();
+
+  if (!data.is_object()) {
+    if (on_error)
+      on_error("ui.json invalid : root must be an object");
+    data = default_data;
+    std::ofstream out(file, std::ios::trunc);
+    out << data.dump(4);
+    return data;
+  }
+
+  // "scale" est optionnel, mais s'il existe il doit être un nombre > 0
+  if (data.contains("scale")) {
+    if (!data["scale"].is_number() || data["scale"].get<float>() <= 0.0f) {
+      if (on_error)
+        on_error("ui.json invalid : 'scale' must be a number > 0, removing it");
+      data.erase("scale");
+      std::ofstream out(file, std::ios::trunc);
+      out << data.dump(4);
+    }
+  }
+
+  return data;
+}
+
+VORTEX_API void vxe::refresh_ui_state() {
+  nlohmann::json data = vxe::ensure_ui_config([](const std::string &err) { vxe::log_error("UI", err); });
+
+  auto ctx = vxe::get_current_context();
+  if (data.contains("scale")) {
+    ctx->IO.global_scale = data["scale"].get<float>();
+    ctx->IO.global_scale_registered = true;
+  } else {
+    ctx->IO.global_scale = 1.0f;
+    ctx->IO.global_scale_registered = false;
+  }
+}
+
+VORTEX_API bool vxe::is_global_scale_registered() {
+  return vxe::get_current_context()->IO.global_scale_registered;
+}
+
+VORTEX_API float vxe::get_global_scale() {
+  auto ctx = vxe::get_current_context();
+  return ctx->IO.global_scale_registered ? ctx->IO.global_scale : 1.0f;
+}
+
+VORTEX_API void vxe::set_global_scale(const float &s) {
+  if (s <= 0.0f)
+    return;
+
+  nlohmann::json data = vxe::ensure_ui_config([](const std::string &err) { vxe::log_error("UI", err); });
+  data["scale"] = s;
+
+  try {
+    std::ofstream out(vxe::ui_config_path(), std::ios::trunc);
+    if (!out.is_open()) {
+      vxe::log_error("UI", "Cannot open ui.json");
+      return;
+    }
+    out << data.dump(4);
+  } catch (const std::exception &e) {
+    vxe::log_error("UI", std::string("Error while writing ui.json : ") + e.what());
+    return;
+  }
+
+  vxe::refresh_ui_state();
+}
+
+VORTEX_API void vxe::reset_global_scale() {
+  nlohmann::json data = vxe::ensure_ui_config([](const std::string &err) { vxe::log_error("UI", err); });
+  data.erase("scale");
+
+  std::ofstream out(vxe::ui_config_path(), std::ios::trunc);
+  if (out.is_open())
+    out << data.dump(4);
+
+  vxe::refresh_ui_state();
 }

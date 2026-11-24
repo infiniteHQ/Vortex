@@ -62,6 +62,20 @@ namespace vxe {
     void render_menubar();
     void render_framebar();
 
+    void set_global_scale(const float& scale);
+    void autoset_global_scale();
+    void refresh_auto_scale(SDL_Window* window = nullptr);
+    void update_scale();
+    void render_scale_widget();
+    float detect_auto_scale(SDL_Window* window = nullptr);
+
+    float clamp_scale(float s);
+    float target_scale();
+
+    static constexpr float SCALE_MIN = 0.75f;
+    static constexpr float SCALE_MAX = 2.5f;
+    static constexpr float SCALE_STEP = 0.1f;
+
    private:
     // ui static windows
     std::shared_ptr<vxe::Welcome> welcome_window_;
@@ -72,7 +86,8 @@ namespace vxe {
     std::shared_ptr<vxe::AboutProject> about_project_window_;
     std::shared_ptr<vxe::Credits> credits_window_;
 
-    // ui instances
+    float global_scale_ = 1.0f;
+    float auto_scale_ = 1.0f;
   };
 
   static std::shared_ptr<Editor> c_Editor;
