@@ -977,6 +977,10 @@ void Editor::render_scale_widget() {
   if (CherryGUI::Button("Auto")) {
     vxe::reset_global_scale();
   }
+
+  CherryGUI::SameLine();
+  CherryGUI::Text("%f", CherryWindow.ApplyScale(100.0f));
+
   CherryGUI::EndDisabled();
 
   if (changed) {
